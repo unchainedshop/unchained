@@ -3,7 +3,7 @@ import type { mongodb } from '@unchainedshop/mongodb';
 import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleCreateMutation, ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
 
@@ -27,7 +27,7 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
   return selector;
 };
 
-export interface EventsModule extends ModuleCreateMutation<Event> {
+export interface EventsModule {
   findEvent: (
     params: mongodb.Filter<Event> & { eventId: string },
     options?: mongodb.FindOptions,
@@ -43,6 +43,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   ) => Promise<Array<Event>>;
 
   type: (event: Event) => string;
+  create: (doc: Event) => Promise<string | null>;
 
   count: (query: EventQuery) => Promise<number>;
   getReport: (params?: { from?: Date; to?: Date; types?: string[] }) => Promise<EventReport[]>;

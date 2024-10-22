@@ -1,5 +1,4 @@
 import { Tree, SortOption, SortDirection } from '@unchainedshop/utils';
-import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
@@ -8,6 +7,7 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';

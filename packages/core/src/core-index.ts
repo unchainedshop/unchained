@@ -1,4 +1,4 @@
-import { BulkImporter, Migration, MigrationRepository, ModuleInput } from './types.js';
+import { BulkImporter } from './types.js';
 import {
   AssortmentsModule,
   AssortmentsSettingsOptions,
@@ -70,7 +70,7 @@ import {
 } from '@unchainedshop/core-users';
 import { configureWarehousingModule, WarehousingModule } from '@unchainedshop/core-warehousing';
 import { configureWorkerModule, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
-import { mongodb } from '@unchainedshop/mongodb';
+import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
 
 export * from './types.js';
 
@@ -90,7 +90,7 @@ export interface ModuleOptions {
 
 export interface UnchainedCoreOptions {
   db: mongodb.Db;
-  migrationRepository: MigrationRepository<Migration>;
+  migrationRepository: MigrationRepository<UnchainedCore>;
   bulkImporter: any;
   modules?: Record<
     string,

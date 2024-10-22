@@ -1,5 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Quotation, QuotationItemConfiguration, QuotationProposal } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -7,6 +7,7 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';

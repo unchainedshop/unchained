@@ -1,5 +1,5 @@
 import type { WorkData, WorkResult } from '../worker-index.js';
-import type { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 import os from 'os';
 import { createLogger } from '@unchainedshop/logger';
@@ -8,6 +8,7 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { buildObfuscatedFieldsFilter, SortDirection, SortOption } from '@unchainedshop/utils';

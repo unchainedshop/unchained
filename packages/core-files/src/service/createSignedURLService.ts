@@ -1,11 +1,11 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { getFileFromFileData } from '@unchainedshop/file-upload';
 import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { getFileFromFileData } from '../utils/getFileFromFileData.js';
 import { SignedFileUpload } from '../types.js';
+import { FilesModule } from '../files-index.js';
 
 export type CreateSignedURLService = (
   params: { directoryName: string; fileName: string; meta?: any },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: { files: FilesModule } },
 ) => Promise<SignedFileUpload>;
 
 export const createSignedURLService: CreateSignedURLService = async (

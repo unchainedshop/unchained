@@ -1,20 +1,19 @@
-import { log, LogLevel } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/core';
-import { File, UploadFileData } from '@unchainedshop/core-files';
 import { Readable } from 'stream';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
+import { UploadedFile, UploadFileData } from '../types.js';
 
-export interface IFileAdapter extends IBaseAdapter {
+export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
   createSignedURL: (
     directoryName: string,
     fileName: string,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI: Context,
   ) => Promise<(UploadFileData & { putURL: string }) | null>;
-  removeFiles: (files: Array<File>, unchainedContext: UnchainedCore) => Promise<void>;
+  removeFiles: (files: Array<UploadedFile>, unchainedContext: Context) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
     rawFile: any,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI: Context,
   ) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,
@@ -24,9 +23,9 @@ export interface IFileAdapter extends IBaseAdapter {
       fileId?: string;
       headers?: Record<string, unknown>;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI: Context,
   ) => Promise<UploadFileData | null>;
-  createDownloadStream: (file: File, unchainedAPI: UnchainedCore) => Promise<Readable>;
+  createDownloadStream: (file: UploadedFile, unchainedAPI: Context) => Promise<Readable>;
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
   createSignedURL() {

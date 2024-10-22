@@ -46,3 +46,22 @@ export interface Contact {
   telNumber?: string;
   emailAddress?: string;
 }
+
+export interface Migration<Context = unknown> {
+  id: number;
+  name: string;
+  up: (params: { logger: any | Console; unchainedAPI: Context }) => Promise<void>;
+}
+
+export interface MigrationRepository<Context = unknown> {
+  db: mongodb.Db;
+  migrations: Map<number, Migration<Context>>;
+  register: (migration: Migration<Context>) => void;
+  allMigrations: () => Array<Migration<Context>>;
+}
+
+export interface ModuleInput<Options extends Record<string, any>> {
+  db: mongodb.Db;
+  migrationRepository?: MigrationRepository;
+  options?: Options;
+}

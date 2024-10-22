@@ -14,15 +14,3 @@ export type File = {
 export type SignedFileUpload = File & {
   putURL: string;
 };
-
-export interface UploadFileData {
-  _id?: string;
-  directoryName: string;
-  expiryDate: Date;
-  fileName: string;
-  hash: string;
-  hashedName: string;
-  size?: number;
-  type: string;
-  url: string;
-}

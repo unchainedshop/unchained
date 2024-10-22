@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import { configureCryptopayModule } from '../payment/cryptopay/index.js';
 
 // Warehousing

@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import {
   Fido2Lib,
   PublicKeyCredentialCreationOptions,

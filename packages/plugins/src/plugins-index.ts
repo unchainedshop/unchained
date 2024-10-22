@@ -1,5 +1,6 @@
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import express from 'express';
+import { UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 
 import baseModules from './presets/base-modules.js';
 import './presets/countries/ch.js';

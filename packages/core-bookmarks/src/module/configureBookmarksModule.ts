@@ -1,8 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { ModuleInput } from '@unchainedshop/core';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import type { TimestampFields, ModuleInput } from '@unchainedshop/mongodb';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
 

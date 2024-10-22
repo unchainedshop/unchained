@@ -1,7 +1,7 @@
 import mustache from 'mustache';
 import { MessagingModule } from '@unchainedshop/core-messaging';
 import { createLogger } from '@unchainedshop/logger';
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 
 export const messagingLogger = createLogger('unchained:core-messaging');
 

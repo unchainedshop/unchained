@@ -1,5 +1,3 @@
-import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/core-currencies';
 import { resolveAcceptLanguage } from 'resolve-accept-language';
 
 const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH', UNCHAINED_CURRENCY = 'CHF' } = process.env;
@@ -20,7 +18,7 @@ export const resolveBestSupported = (
 export const resolveBestCountry = (
   localeCountry: string,
   shopCountry: string,
-  countries: Array<Country>,
+  countries: Array<{ isoCode: string }>,
 ) => {
   if (shopCountry) {
     const resolvedCountry = countries.reduce<string>((lastResolved, country) => {
@@ -36,7 +34,7 @@ export const resolveBestCountry = (
   return localeCountry || systemLocale.region;
 };
 
-export const resolveBestCurrency = (localeCurrency: string, currencies: Array<Currency>) => {
+export const resolveBestCurrency = (localeCurrency: string, currencies: Array<{ isoCode: string }>) => {
   if (localeCurrency) {
     const resolvedCurrency = currencies.find((currency) => currency.isoCode === localeCurrency);
     if (resolvedCurrency) {

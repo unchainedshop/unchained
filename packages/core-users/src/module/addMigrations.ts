@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/core';
+import { MigrationRepository } from '@unchainedshop/mongodb';
 import { UsersCollection } from '../db/UsersCollection.js';
 
 const convertTagsToLowerCase = async (collection: Awaited<ReturnType<typeof UsersCollection>>) => {
@@ -20,7 +20,7 @@ const convertTagsToLowerCase = async (collection: Awaited<ReturnType<typeof User
   if (count > 0) bulk.execute();
 };
 
-export default function addMigrations(repository: MigrationRepository<Migration>) {
+export default function addMigrations(repository: MigrationRepository) {
   repository?.register({
     id: 20220603115000,
     name: 'Copy user.profile.customFields to user.meta',

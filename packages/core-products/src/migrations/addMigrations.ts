@@ -1,5 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/core';
-import { mongodb } from '@unchainedshop/mongodb';
+import { mongodb, MigrationRepository } from '@unchainedshop/mongodb';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';
 
@@ -22,7 +21,7 @@ const convertTagsToLowerCase = async (collection: mongodb.Collection<any>) => {
   if (count > 0) bulk.execute();
 };
 
-export default function addMigrations(repository: MigrationRepository<Migration>) {
+export default function addMigrations(repository: MigrationRepository) {
   repository?.register({
     id: 20220920122600,
     name: 'Convert all tags to lower case to make it easy for search',

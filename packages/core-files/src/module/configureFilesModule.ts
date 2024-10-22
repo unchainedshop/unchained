@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import { File } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
@@ -61,7 +61,7 @@ export const configureFilesModule = async ({
       return fileId;
     },
 
-    update: async (fileId: string, doc: File) => {
+    update: async (fileId: string, doc: Partial<File>) => {
       await Files.updateOne(
         { _id: fileId },
         {

@@ -1,10 +1,10 @@
 import { FileDirector } from '@unchainedshop/file-upload';
-import { UnchainedCore } from '@unchainedshop/core';
 import { File } from '../types.js';
+import { FilesModule } from '../files-index.js';
 
 export type LinkFileService = (
   params: { fileId: string; size: number; type?: string },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: { files: FilesModule } },
 ) => Promise<File>;
 
 export const linkFileService: LinkFileService = async ({ fileId, size, type }, unchainedAPI) => {

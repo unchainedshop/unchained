@@ -1,4 +1,4 @@
-import { UploadFileData } from '../types.js';
+import { UploadFileData } from './types.js';
 
 export const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
   _id: fileData._id,
@@ -10,3 +10,5 @@ export const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
   url: fileData.url,
   meta,
 });
+
+export default getFileFromFileData;

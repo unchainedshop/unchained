@@ -1,6 +1,6 @@
 import type { User } from '@unchainedshop/core-users';
 
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import {
   WarehousingContext,
   WarehousingProvider,
@@ -8,7 +8,7 @@ import {
   WarehousingProviderType,
 } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb, ModuleInput } from '@unchainedshop/mongodb';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
 import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';

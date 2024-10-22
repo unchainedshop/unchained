@@ -1,6 +1,6 @@
-import { Migration, UnchainedCore, MigrationRepository } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import { generateDbFilterById } from '@unchainedshop/mongodb';
+import { generateDbFilterById, MigrationRepository } from '@unchainedshop/mongodb';
 import { createMigrationRunner } from './createMigrationRunner.js';
 
 export const runMigrations = async ({
@@ -8,7 +8,7 @@ export const runMigrations = async ({
   logger = createLogger('unchained:migrations'),
   unchainedAPI,
 }: {
-  migrationRepository: MigrationRepository<Migration>;
+  migrationRepository: MigrationRepository<UnchainedCore>;
   logger?: any;
   unchainedAPI: UnchainedCore;
 }) => {

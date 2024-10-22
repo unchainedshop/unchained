@@ -1,11 +1,11 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { getFileFromFileData } from '../utils/getFileFromFileData.js';
+import { getFileFromFileData } from '@unchainedshop/file-upload';
 import { File } from '../types.js';
+import { FilesModule } from '../files-index.js';
 
 export type UploadFileFromStreamService = (
   params: { directoryName: string; rawFile: any; meta?: any },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: { files: FilesModule } },
 ) => Promise<File>;
 
 export const uploadFileFromStreamService: UploadFileFromStreamService = async (

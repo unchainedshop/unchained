@@ -1,8 +1,8 @@
-import { Migration, MigrationRepository } from '@unchainedshop/core';
+import { MigrationRepository } from '@unchainedshop/mongodb';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 import { Country } from '../countries-index.js';
 
-export default function addMigrations(repository: MigrationRepository<Migration>) {
+export default function addMigrations(repository: MigrationRepository) {
   repository?.register({
     id: 20240712123500,
     name: 'Convert all tags to lower case to make it easy for search',

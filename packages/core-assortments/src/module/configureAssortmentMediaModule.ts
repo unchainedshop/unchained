@@ -1,10 +1,10 @@
-import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
   generateDbObjectId,
   mongodb,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
@@ -16,13 +16,6 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_REORDER_MEDIA',
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
-
-FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules }) => {
-  await modules.assortments.media.create({
-    assortmentId: file.meta.assortmentId as string,
-    mediaId: file._id,
-  });
-});
 
 export type AssortmentMediaModule = {
   // Queries
@@ -280,3 +273,16 @@ export const configureAssortmentMediaModule = async ({
     },
   };
 };
+
+FileDirector.registerFileUploadCallback<{
+  modules: {
+    assortments: {
+      media: AssortmentMediaModule;
+    };
+  };
+}>('assortment-media', async (file, { modules }) => {
+  await modules.assortments.media.create({
+    assortmentId: file.meta.assortmentId as string,
+    mediaId: file._id,
+  });
+});

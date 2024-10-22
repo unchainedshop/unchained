@@ -1,9 +1,11 @@
 import { BaseDirector } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
-import { File } from '@unchainedshop/core-files';
 import { IFileAdapter } from './FileAdapter.js';
+import { UploadedFile } from '../types.js';
 
-export type UploadFileCallback = (file: File, unchainedAPI: UnchainedCore) => Promise<void>;
+export type UploadFileCallback<UnchainedAPI = unknown> = (
+  file: UploadedFile,
+  unchainedAPI: UnchainedAPI,
+) => Promise<void>;
 
 const FileUploadRegistry = new Map<string, UploadFileCallback>();
 
@@ -12,7 +14,7 @@ const baseDirector = BaseDirector<IFileAdapter>('FileDirector');
 export const FileDirector = {
   ...baseDirector,
 
-  registerFileUploadCallback(directoryName: string, fn: UploadFileCallback) {
+  registerFileUploadCallback<UnchainedAPI>(directoryName: string, fn: UploadFileCallback<UnchainedAPI>) {
     if (!FileUploadRegistry.has(directoryName)) {
       FileUploadRegistry.set(directoryName, fn);
     }

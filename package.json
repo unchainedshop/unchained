@@ -26,7 +26,41 @@
     "npm": ">=10.0.0"
   },
   "workspaces": [
-    "packages/*",
+    "packages/logger",
+    "packages/utils",
+    "packages/mongodb",
+    "packages/events",
+    "packages/file-upload",
+    "packages/roles",
+    "packages/shared",
+    
+    "packages/core-countries",
+    "packages/core-currencies",
+    "packages/core-languages",
+    "packages/core-events",
+    "packages/core-files",
+    "packages/core-users",
+
+    "packages/core-bookmarks",
+    "packages/core-delivery",
+    "packages/core-messaging",
+    "packages/core-payment",
+    "packages/core-quotations",
+
+    "packages/core-products",
+    "packages/core-assortments",
+    "packages/core-filters",
+    "packages/core-orders",
+    "packages/core-warehousing",
+    "packages/core-worker",
+    "packages/core-enrollments",
+    "packages/core",
+
+    "packages/api",
+    "packages/plugins",
+    "packages/ticketing",
+    "packages/platform",
+
     "examples/kitchensink",
     "examples/minimal"
   ],

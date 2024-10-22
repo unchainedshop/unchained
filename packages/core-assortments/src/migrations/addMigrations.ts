@@ -1,5 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/core';
-import { mongodb } from '@unchainedshop/mongodb';
+import { mongodb, MigrationRepository } from '@unchainedshop/mongodb';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
 import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
 
@@ -22,7 +21,7 @@ const convertTagsToLowerCase = async (collection: mongodb.Collection<any>) => {
   if (count > 0) bulk.execute();
 };
 
-export default function addMigrations(repository: MigrationRepository<Migration>) {
+export default function addMigrations(repository: MigrationRepository) {
   repository?.register({
     id: 20220216000000,
     name: 'Move _cachedProductIds cache to own collection in order to save a lot of bandwidth',
@@ -44,8 +43,8 @@ export default function addMigrations(repository: MigrationRepository<Migration>
               },
               {
                 // eslint-disable-next-line
-                  // @ts-ignore
-                  $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
+                // @ts-ignore
+                $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
               },
               {
                 upsert: true,

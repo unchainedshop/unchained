@@ -7,8 +7,9 @@ import {
   generateDbFilterById,
   buildSortOptions,
   generateDbObjectId,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';

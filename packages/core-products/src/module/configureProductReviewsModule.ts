@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import { ProductReview, ProductReviewQuery, ProductReviewVoteType, ProductVote } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {

@@ -1,5 +1,5 @@
 import { ProductMedia, ProductMediaText } from '../types.js';
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -68,13 +68,6 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_REORDER_MEDIA',
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
-
-FileDirector.registerFileUploadCallback('product-media', async (file, { modules }) => {
-  await modules.products.media.create({
-    productId: file.meta?.productId as string,
-    mediaId: file._id,
-  });
-});
 
 export const configureProductMediaModule = async ({
   db,
@@ -287,3 +280,16 @@ export const configureProductMediaModule = async ({
     },
   };
 };
+
+FileDirector.registerFileUploadCallback<{
+  modules: {
+    products: {
+      media: ProductMediaModule;
+    };
+  };
+}>('product-media', async (file, { modules }) => {
+  await modules.products.media.create({
+    productId: file.meta?.productId as string,
+    mediaId: file._id,
+  });
+});

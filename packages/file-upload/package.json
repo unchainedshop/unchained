@@ -24,7 +24,7 @@
     "ecommerce",
     "core"
   ],
-  "author": "Joël Meiller",
+  "authors": ["Joël Meiller", "Pascal Kaufmann"],
   "license": "EUPL-1.2",
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"

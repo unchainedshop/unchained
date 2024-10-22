@@ -1,4 +1,4 @@
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import {
   Product,
   ProductAssignment,
@@ -17,6 +17,7 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';

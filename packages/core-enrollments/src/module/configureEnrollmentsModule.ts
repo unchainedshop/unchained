@@ -1,5 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import {
   Enrollment,
   EnrollmentData,
@@ -15,6 +15,7 @@ import {
   Address,
   Contact,
   generateDbObjectId,
+  ModuleInput,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { EnrollmentStatus } from '../db/EnrollmentStatus.js';

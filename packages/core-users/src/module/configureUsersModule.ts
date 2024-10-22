@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -18,6 +18,8 @@ import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUs
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import type { Address, Contact } from '@unchainedshop/mongodb';
+import { UserServices } from '../services/userServices.js';
+import { FileServices, FilesModule } from '@unchainedshop/core-files';
 
 export type UsersModule = {
   // Submodules
@@ -125,9 +127,17 @@ export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQ
   return selector;
 };
 
-FileDirector.registerFileUploadCallback('user-avatars', async (file, context: UnchainedCore) => {
+FileDirector.registerFileUploadCallback<{
+  services: {
+    users: UserServices;
+    files: FileServices;
+  };
+  modules: {
+    users: UsersModule;
+    files: FilesModule;
+  };
+}>('user-avatars', async (file, context) => {
   const { services } = context;
-
   return services.users.updateUserAvatarAfterUpload({ file }, context);
 });
 

@@ -1,12 +1,12 @@
 import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { Readable } from 'stream';
+import { FilesModule } from '../files-index.js';
 
 export type CreateDownloadStreamService = (
   params: {
     fileId: string;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: { files: FilesModule } },
 ) => Promise<Readable>;
 
 export const createDownloadStreamService: CreateDownloadStreamService = async (

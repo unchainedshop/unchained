@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/mongodb';
 
 // Delivery
 import '../delivery/post.js';

@@ -1,8 +1,8 @@
 import { createLogger } from '@unchainedshop/logger';
-import { buildDbIndexes } from '@unchainedshop/mongodb';
+import { buildDbIndexes, ModuleInput } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '@unchainedshop/core-files/db/MediaObjectsCollection.js';
 import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing/db/TokenSurrogateCollection.js';
-import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { File } from '@unchainedshop/core-files';
 
