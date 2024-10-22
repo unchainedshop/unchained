@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "3.0.0-alpha3",
+  "version": "3.0.0-alpha4",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -33,20 +33,17 @@
     "packages/file-upload",
     "packages/roles",
     "packages/shared",
-    
     "packages/core-countries",
     "packages/core-currencies",
     "packages/core-languages",
     "packages/core-events",
     "packages/core-files",
     "packages/core-users",
-
     "packages/core-bookmarks",
     "packages/core-delivery",
     "packages/core-messaging",
     "packages/core-payment",
     "packages/core-quotations",
-
     "packages/core-products",
     "packages/core-assortments",
     "packages/core-filters",
@@ -55,12 +52,10 @@
     "packages/core-worker",
     "packages/core-enrollments",
     "packages/core",
-
     "packages/api",
     "packages/plugins",
     "packages/ticketing",
     "packages/platform",
-
     "examples/kitchensink",
     "examples/minimal"
   ],
@@ -85,7 +80,7 @@
     "@shelf/jest-mongodb": "^4.3.2",
     "@types/jest": "^29.5.13",
     "@types/lodash.clone": "^4.5.9",
-    "@types/node": "^22.7.7",
+    "@types/node": "^22.7.8",
     "@typescript-eslint/eslint-plugin": "^8.11.0",
     "@typescript-eslint/parser": "^8.11.0",
     "cross-env": "^7.0.3",
