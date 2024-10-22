@@ -5,7 +5,7 @@ RUN mkdir -p /source
 WORKDIR /source
 
 ADD package* /source/
-RUN NODE_ENV=development npm ci
+RUN NODE_ENV=development npm install
 
 ADD . /source/
 
@@ -20,7 +20,7 @@ RUN apk add --no-cache --update curl
 # Copy the app
 WORKDIR /webapp
 COPY --from=bundler /source /webapp
-RUN NODE_ENV=production npm ci --omit=dev
+RUN NODE_ENV=production npm install --omit=dev
 
 ARG GIT_COMMIT="n/a"
 RUN echo "${GIT_COMMIT}" > /webapp/version.txt
