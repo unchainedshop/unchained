@@ -34,17 +34,17 @@
     "lint": "eslint packages tests --fix --ext=js --ext=ts",
     "pretest": "npm run lint --silent",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
-    "test": "MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --forceExit tests/*",
+    "test": "MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles tests/*",
     "test:ci": "npm run test:integration && npm run test:unit",
-    "test:integration": "MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs node --experimental-vm-modules node_modules/jest/bin/jest.js --ci --runInBand --detectOpenHandles --verbose --forceExit tests/*",
+    "test:integration": "MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs node --experimental-vm-modules node_modules/jest/bin/jest.js --ci --runInBand --detectOpenHandles --verbose tests/*",
     "test:watch": "MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs DEBUG=jest-mongodb:* node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --watch --no-watchman --verbose tests/**",
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "build": "npm run prepublishOnly --workspaces --if-present",
-    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit --config ./packages/unit-jest.config.js",
-    "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js"
+    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --config ./packages/unit-jest.config.js",
+    "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --watch --config ./packages/unit-jest.config.js"
   },
   "devDependencies": {
     "@apollo/client": "^3.11.8",
