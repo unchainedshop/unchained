@@ -25,12 +25,12 @@ ADD jest-mongodb-config.cjs /source/jest-mongodb-config.cjs
 
 ENV MONGOMS_VERSION=7.0.14
 ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
-RUN NODE_ENV=development npm install -ws --include-workspace-root
 ENV NODE_NO_WARNINGS=1
+RUN NODE_ENV=development npm ci -ws --include-workspace-root
 
 ADD . /source/
 
 RUN npm run build || :
-RUN cd examples/kitchensink && npm install && npm run build || :
+RUN cd examples/kitchensink && npm ci && npm run build || :
 
 CMD ["npm"]
