@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { BookmarksModule } from '../bookmarks-index.js';
 
 export type MigrateBookmarksService = (
   params: {
@@ -7,7 +7,7 @@ export type MigrateBookmarksService = (
     shouldMerge: boolean;
     countryContext: string;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: { bookmarks: BookmarksModule } },
 ) => Promise<void>;
 
 const hashBookmark = (bookmark) => {
