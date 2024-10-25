@@ -133,7 +133,7 @@ export const connect = (
       resave: false,
       cookie: {
         domain: UNCHAINED_COOKIE_DOMAIN,
-        httpOnly: Boolean(NODE_ENV === 'production'),
+        httpOnly: true,
         path: UNCHAINED_COOKIE_PATH,
         sameSite: 'lax',
         secure: NODE_ENV === 'production',
