@@ -22,6 +22,12 @@ const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 
 const start = async () => {
   const app = express();
+
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    next();
+  });
+
   const httpServer = http.createServer(app);
   const engine = await startPlatform({
     modules: { ...defaultModules, ...ticketingModules },
