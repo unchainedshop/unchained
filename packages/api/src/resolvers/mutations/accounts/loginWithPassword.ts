@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidCredentialsError } from '../../../errors.js';
+import { InvalidCredentialsError, UserNotFoundError } from '../../../errors.js';
 import { Context } from '../../../types.js';
 
 export default async function loginWithPassword(
@@ -21,6 +21,8 @@ export default async function loginWithPassword(
   let user = username
     ? await context.modules.users.findUserByUsername(username)
     : await context.modules.users.findUserByEmail(email);
+
+  if (!user) throw new InvalidCredentialsError({ username, email });
 
   const verified =
     user.services?.password &&

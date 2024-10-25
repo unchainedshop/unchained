@@ -23,7 +23,10 @@ const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 const start = async () => {
   const app = express();
 
+  // Workaround Express Secure Proxy
+  app.set('trust proxy', 1);
   app.use((req, res, next) => {
+    req.headers['x-forwarded-proto'] = 'https';
     res.setHeader('Access-Control-Allow-Private-Network', 'true');
     next();
   });

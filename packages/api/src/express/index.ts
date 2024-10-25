@@ -31,7 +31,6 @@ const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
-  NODE_ENV,
 } = process.env;
 
 const addContext = async function middlewareWithContext(
@@ -133,10 +132,10 @@ export const connect = (
       resave: false,
       cookie: {
         domain: UNCHAINED_COOKIE_DOMAIN,
-        httpOnly: true,
         path: UNCHAINED_COOKIE_PATH,
-        sameSite: 'lax',
-        secure: NODE_ENV === 'production',
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },
     }),
