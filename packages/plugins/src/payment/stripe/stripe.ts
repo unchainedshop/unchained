@@ -8,18 +8,18 @@ const logger = createLogger('unchained:core-payment:stripe');
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
-let stripe: StripeType;
+let stripe: Awaited<ReturnType<typeof initStripeClient>> | null;
 
-export const initStripeClient = async () => {
+export const initStripeClient = async (): Promise<StripeType> => {
+  if (!STRIPE_SECRET) return null;
   const { default: Stripe } = await import('stripe');
-
   stripe = new Stripe(STRIPE_SECRET, {
     apiVersion: '2024-09-30.acacia',
   });
   return stripe;
 };
 
-initStripeClient().catch(logger.error);
+initStripeClient().catch(logger.warn);
 
 export default function () {
   return stripe;
