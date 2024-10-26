@@ -1,17 +1,31 @@
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/core-orders';
 import { IOrderPricingSheet } from '@unchainedshop/core-orders';
-import Stripe from 'stripe';
+import { createLogger } from '@unchainedshop/logger';
+import type { Stripe as StripeType } from 'stripe';
+
+const logger = createLogger('unchained:core-payment:stripe');
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
-const stripe = new Stripe(STRIPE_SECRET, {
-  apiVersion: '2024-06-20',
-});
+let stripe: StripeType;
+
+export const initStripeClient = async () => {
+  const { default: Stripe } = await import('stripe');
+
+  stripe = new Stripe(STRIPE_SECRET, {
+    apiVersion: '2024-09-30.acacia',
+  });
+  return stripe;
+};
+
+initStripeClient().catch(logger.error);
+
+export default function () {
+  return stripe;
+}
 
 const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
-
-export default stripe;
 
 export const upsertCustomer = async ({ userId, name, email }): Promise<string> => {
   try {
@@ -103,6 +117,7 @@ export const createOrderPaymentIntent = async (
 ) => {
   const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
   const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
+
   const { currency, amount } = pricing.total({ useNetPrice: false });
 
   const paymentIntent = await stripe.paymentIntents.create({

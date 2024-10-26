@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import stripe from './stripe.js';
+import stripeClient from './stripe.js';
 
 const logger = createLogger('unchained:core-payment:stripe:webhook');
 
@@ -16,6 +16,7 @@ export const stripeHandler = async (request, response) => {
   let event;
 
   try {
+    const stripe = stripeClient();
     const sig = request.headers['stripe-signature'];
     event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_ENDPOINT_SECRET);
   } catch (err) {
