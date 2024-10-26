@@ -359,6 +359,7 @@ export const configureUsersModule = async ({
         _id: normalizedUserData._id || generateDbObjectId(),
         roles: roles || [],
         initialPassword: Boolean(initialPassword),
+        services,
         emails: email ? [{ address: email, verified: false }] : [],
         created: new Date(),
       };
