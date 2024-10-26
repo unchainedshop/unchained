@@ -16,7 +16,7 @@ export default async function createUser(root: never, params: UserData, context:
   log('mutation createUser', { email: params.email, username: params.username, userId });
 
   if (!params.username && !params.email) {
-    throw new UsernameOrEmailRequiredError({ username: params?.username });
+    throw new UsernameOrEmailRequiredError({});
   }
 
   if (!params.password && !params.webAuthnPublicKeyCredentials) {

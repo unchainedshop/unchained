@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidCredentialsError, UserNotFoundError } from '../../../errors.js';
+import { InvalidCredentialsError, UsernameOrEmailRequiredError } from '../../../errors.js';
 import { Context } from '../../../types.js';
 
 export default async function loginWithPassword(
@@ -7,16 +7,14 @@ export default async function loginWithPassword(
   params: {
     username?: string;
     email?: string;
-    password?: string;
+    password: string;
   },
   context: Context,
 ) {
   const { username, email, password } = params;
   log('mutation loginWithPassword', { username, email });
 
-  if (!password) {
-    throw new Error('Password is required');
-  }
+  if (!username && !email) throw new UsernameOrEmailRequiredError({});
 
   let user = username
     ? await context.modules.users.findUserByUsername(username)

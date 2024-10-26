@@ -5,7 +5,7 @@ export default [
       """
       Log the user in with a password.
       """
-      loginWithPassword(username: String, email: String, password: String): LoginMethodResponse
+      loginWithPassword(username: String, email: String, password: String!): LoginMethodResponse
 
       """
       Log the user in with a WebAuthn device
