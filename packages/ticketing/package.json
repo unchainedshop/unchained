@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
-  "version": "3.0.0-alpha4",
+  "version": "3.0.0-alpha5",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
@@ -53,7 +53,7 @@
     "express": "^4.21.1"
   },
   "devDependencies": {
-    "@types/node": "^22.7.8",
+    "@types/node": "^22.8.1",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-files": "^3.0.0-alpha4",
     "@unchainedshop/core-worker": "^3.0.0-alpha4",

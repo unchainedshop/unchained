@@ -16,7 +16,7 @@ This tutorial helps you:
 - Deploy an Unchained engine backed the project
 
 This tutorial assumes that you are familiar with the command line and
-JavaScript, and that you have a recent version of Node.js 16+ installed.
+JavaScript, and that you have a recent version of Node.js 22+ installed.
 
 # Building custom unchained engine
 

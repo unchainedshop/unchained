@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "3.0.0-alpha4",
+  "version": "3.0.0-alpha5",
   "main": "lib/platform-index.js",
   "exports": {
     ".": "./lib/platform-index.js",
@@ -45,7 +45,7 @@
     "moniker": "0.1.2"
   },
   "devDependencies": {
-    "@types/node": "^22.7.8",
+    "@types/node": "^22.8.1",
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",

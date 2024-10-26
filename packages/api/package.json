@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "3.0.0-alpha4",
+  "version": "3.0.0-alpha5",
   "main": "lib/api-index.js",
   "exports": {
     ".": "./lib/api-index.js",
@@ -54,7 +54,7 @@
     "passport-strategy": "^1.0.0"
   },
   "dependencies": {
-    "@metamask/eth-sig-util": "^7.0.3",
+    "@metamask/eth-sig-util": "^8.0.0",
     "@unchainedshop/core": "^3.0.0-alpha4",
     "@unchainedshop/events": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
@@ -66,7 +66,7 @@
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.7.8",
+    "@types/node": "^22.8.1",
     "connect-mongo": "^5.1.0",
     "express": "^4.21.1",
     "express-session": "^1.18.1",

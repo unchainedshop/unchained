@@ -50,7 +50,7 @@ Unchained engine <--
 ? Do you want Initialize git? no / yes
 ```
 
-5. Make sure your node version is 16+ and install the npm packages
+5. Make sure your node version is 22+ and install the npm packages
 
 ```bash
 npm install

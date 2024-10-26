@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "3.0.0-alpha4",
+  "version": "3.0.0-alpha5",
   "main": "lib/filters-index.js",
   "exports": {
     ".": "./lib/filters-index.js",
@@ -38,7 +38,7 @@
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.7.8",
+    "@types/node": "^22.8.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.6.3"
