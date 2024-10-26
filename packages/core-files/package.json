@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-files",
-  "version": "3.0.0-alpha5",
+  "version": "3.0.0-alpha6",
   "main": "lib/files-index.js",
   "exports": {
     ".": "./lib/files-index.js",

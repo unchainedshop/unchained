@@ -4,14 +4,17 @@ import { IOrderPricingSheet } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
 import type { Stripe as StripeType } from 'stripe';
 
-const logger = createLogger('unchained:core-payment:stripe');
+const logger = createLogger('unchained:plugins:payment:stripe');
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
 let stripe: Awaited<ReturnType<typeof initStripeClient>> | null;
 
 export const initStripeClient = async (): Promise<StripeType> => {
-  if (!STRIPE_SECRET) return null;
+  if (!STRIPE_SECRET) {
+    logger.warn('STRIPE_SECRET is not set, skipping initialization');
+    return null;
+  }
   const { default: Stripe } = await import('stripe');
   stripe = new Stripe(STRIPE_SECRET, {
     apiVersion: '2024-09-30.acacia',

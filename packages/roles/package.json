@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/roles",
-  "version": "3.0.0-alpha5",
+  "version": "3.0.0-alpha6",
   "description": "Roles package for unchained engine",
   "main": "lib/roles-index.js",
   "exports": {

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-bookmarks",
-  "version": "3.0.0-alpha5",
+  "version": "3.0.0-alpha6",
   "main": "lib/bookmarks-index.js",
   "exports": {
     ".": "./lib/bookmarks-index.js",

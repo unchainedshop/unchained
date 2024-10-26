@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/logger",
-  "version": "3.0.0-alpha5",
+  "version": "3.0.0-alpha6",
   "main": "lib/logger-index.js",
   "exports": {
     ".": "./lib/logger-index.js",

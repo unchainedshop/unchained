@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-warehousing",
-  "version": "3.0.0-alpha5",
+  "version": "3.0.0-alpha6",
   "main": "lib/warehousing-index.js",
   "exports": {
     ".": "./lib/warehousing-index.js",

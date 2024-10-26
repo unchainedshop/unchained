@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-delivery",
-  "version": "3.0.0-alpha5",
+  "version": "3.0.0-alpha6",
   "main": "lib/delivery-index.js",
   "exports": {
     ".": "./lib/delivery-index.js",
