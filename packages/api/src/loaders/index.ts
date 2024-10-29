@@ -220,13 +220,34 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
         const products = await unchainedAPI.modules.products.findProducts({
           productIds,
           productSelector: {
-            status: { $in: [null, ProductStatus.ACTIVE, ProductStatus.DELETED] },
+            status: { $exists: true },
           },
         });
 
         return queries.map(({ productId }) => {
           return products.find((product) => {
             if (product._id !== productId) return false;
+            return true;
+          });
+        });
+      },
+      { batchScheduleFn: (cb) => setImmediate(cb) },
+    ),
+
+    productLoaderBySKU: new DataLoader(
+      async (queries) => {
+        const skus = [...new Set(queries.map((q) => q.sku).filter(Boolean))]; // you don't need lodash, _.unique my ass
+
+        const products = await unchainedAPI.modules.products.findProducts({
+          productSelector: {
+            'warehousing.sku': { $in: skus },
+            status: { $exists: true },
+          },
+        });
+
+        return queries.map(({ sku }) => {
+          return products.find((product) => {
+            if (product.warehousing?.sku !== sku) return false;
             return true;
           });
         });
