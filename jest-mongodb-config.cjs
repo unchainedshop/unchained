@@ -5,7 +5,7 @@ module.exports = {
       port: 4011,
     },
     binary: {
-      version: '5.0.9',
+      version: '8.0.1',
       skipMD5: true,
     },
     autoStart: false,
