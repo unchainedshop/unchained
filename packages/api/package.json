@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "2.15.1",
+  "version": "2.15.2",
   "main": "lib/api-index.js",
   "exports": {
     ".": "./lib/api-index.js",
@@ -48,11 +48,11 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.3",
-    "@unchainedshop/core": "^2.15.1",
-    "@unchainedshop/events": "^2.15.1",
-    "@unchainedshop/logger": "^2.15.1",
-    "@unchainedshop/roles": "^2.15.1",
-    "@unchainedshop/utils": "^2.15.1",
+    "@unchainedshop/core": "^2.15.2",
+    "@unchainedshop/events": "^2.15.2",
+    "@unchainedshop/logger": "^2.15.2",
+    "@unchainedshop/roles": "^2.15.2",
+    "@unchainedshop/utils": "^2.15.2",
     "accounting": "0.4.1",
     "dataloader": "^2.2.2",
     "graphql-scalars": "^1.23.0",
@@ -64,8 +64,8 @@
   "devDependencies": {
     "@types/graphql-upload": "^16.0.7",
     "@types/locale": "^0.1.4",
-    "@types/node": "^22.7.5",
-    "@unchainedshop/types": "^2.15.1",
+    "@types/node": "^22.8.2",
+    "@unchainedshop/types": "^2.15.2",
     "express": "^4.21.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
