@@ -42,6 +42,7 @@ export interface UnchainedLocaleContext {
 export interface UnchainedLoaders {
   loaders: {
     productLoader: InstanceType<typeof DataLoader<{ productId: string }, Product>>;
+    productLoaderBySKU: InstanceType<typeof DataLoader<{ sku: string }, Product>>;
     productTextLoader: InstanceType<
       typeof DataLoader<{ productId: string; locale: string }, ProductText>
     >;
