@@ -28,6 +28,7 @@ export type PlatformOptions = {
   context?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   introspection?: boolean;
+  persistedQueries?: any;
   adminUiConfig?: AdminUiConfig;
 } & Partial<Pick<UnchainedCoreOptions, 'modules' | 'services' | 'options' | 'rolesOptions'>>;
 
@@ -67,6 +68,7 @@ export const startPlatform = async ({
   workQueueOptions,
   context,
   introspection,
+  persistedQueries,
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
   apolloGraphQLServer: any;
@@ -120,6 +122,7 @@ export const startPlatform = async ({
     context,
     introspection,
     adminUiConfig,
+    persistedQueries,
   });
 
   // Setup work queues for scheduled work
