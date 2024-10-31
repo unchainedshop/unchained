@@ -5,7 +5,7 @@ import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 
-const logger = createLogger('unchained:platform:bulk-import');
+const logger = createLogger('unchained:worker:bulk-import');
 
 const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
   logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });

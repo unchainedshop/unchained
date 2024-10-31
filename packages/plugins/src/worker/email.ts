@@ -7,7 +7,7 @@ import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import open from 'open';
 import nodemailer from 'nodemailer';
 
-const logger = createLogger('unchained:plugins:worker:email');
+const logger = createLogger('unchained:worker:email');
 
 export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
@@ -73,8 +73,6 @@ const EmailWorkerPlugin: IWorkerAdapter<
   type: 'EMAIL',
 
   doWork: async ({ from, to, subject, ...rest }) => {
-    logger.debug(`${EmailWorkerPlugin.key} -> doWork: ${from} -> ${to} (${subject})`);
-
     if (!to) {
       return {
         success: false,
@@ -93,7 +91,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
         ...rest,
       };
       if (checkEmailInterceptionEnabled()) {
-        logger.verbose('unchained:platform -> Mailman detected an outgoing email');
+        logger.verbose('Mailman detected an outgoing email');
         await openInBrowser(sendMailOptions);
         return { success: true, result: { intercepted: true } };
       }

@@ -33,10 +33,6 @@ const HttpRequestWorkerPlugin: IWorkerAdapter<
   type: 'HTTP_REQUEST',
 
   async doWork({ url, data = {}, headers, method = 'POST' } = { method: 'POST' }) {
-    log(`${this.key} -> doWork: ${method} ${url} ${data}`, {
-      level: LogLevel.Debug,
-    });
-
     if (!url) {
       return {
         success: false,

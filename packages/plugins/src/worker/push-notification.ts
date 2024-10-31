@@ -5,7 +5,7 @@ import webPush from 'web-push';
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;
 
-const logger = createLogger('unchained:plugins:worker:push-notification');
+const logger = createLogger('unchained:worker:push-notification');
 
 type NotificationOptions = {
   vapidDetails: {
@@ -38,7 +38,6 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
   type: 'PUSH',
 
   doWork: async ({ subscription, subject, payload, urgency = null, topic = null }) => {
-    logger.debug(`${PushNotificationWorkerPlugin.key} -> doWork: Push -> ${subject}`);
     if (!PUSH_NOTIFICATION_PUBLIC_KEY)
       return {
         success: false,

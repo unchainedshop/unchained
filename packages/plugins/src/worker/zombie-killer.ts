@@ -2,14 +2,18 @@ import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:platform:zombie-killer');
+const logger = createLogger('unchained:worker:zombie-killer');
 
 export const ZombieKillerWorker: IWorkerAdapter<
-  never,
+  { bulkImportMaxAgeInDays: number },
   {
     deletedProductMediaCount: number;
     deletedAssortmentMediaCount: number;
     deletedFilesCount: number;
+    deletedFilterTextsCount: number;
+    deletedProductTextsCount: number;
+    deletedProductVariationsCount: number;
+    deletedAssortmentTextsCount: number;
   }
 > = {
   ...WorkerAdapter,
@@ -19,7 +23,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
   version: '1.0.0',
   type: 'ZOMBIE_KILLER',
 
-  doWork: async (_, unchainedAPI) => {
+  doWork: async ({ bulkImportMaxAgeInDays } = { bulkImportMaxAgeInDays: 5 }, unchainedAPI) => {
     const { modules, services } = unchainedAPI;
 
     try {
@@ -82,8 +86,18 @@ export const ZombieKillerWorker: IWorkerAdapter<
         )
       ).map((a) => a._id);
 
-      const fileIdsToRemove = allFileIdsRelevant.filter((fileId) => {
-        return !allFileIdsLinked.includes(fileId);
+      const fileIdsToRemove =
+        allFileIdsRelevant.filter((fileId) => {
+          return !allFileIdsLinked.includes(fileId);
+        }) || [];
+
+      // Remove bulk import streams older than X days
+      const bulkImportMedia = await await modules.files.findFiles({
+        path: 'bulk-import-streams',
+        created: { $lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * bulkImportMaxAgeInDays) },
+      });
+      bulkImportMedia.forEach(async (media) => {
+        fileIdsToRemove.push(media._id);
       });
 
       logger.verbose(`File Id's to remove: ${fileIdsToRemove.join(', ')}`);
