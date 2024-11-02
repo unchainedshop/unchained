@@ -17,6 +17,9 @@ import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 import crypto from 'crypto';
+import { UnchainedCore } from '@unchainedshop/core';
+import { UserServices } from '../users-index.js';
+import { FileServices, FilesModule } from '@unchainedshop/core-files';
 
 const isDate = (value) => {
   const date = new Date(value);
