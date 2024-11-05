@@ -37,8 +37,7 @@
     "@unchainedshop/roles": "^3.0.0-alpha4",
     "@unchainedshop/utils": "^3.0.0-alpha4",
     "bcryptjs": "^2.4.3",
-    "fido2-lib": "^3.5.3",
-    "uuid": "^10.0.0"
+    "fido2-lib": "^3.5.3"
   },
   "devDependencies": {
     "@types/node": "^22.8.1",
