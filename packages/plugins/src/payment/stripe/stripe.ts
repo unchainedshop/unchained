@@ -17,7 +17,7 @@ export const initStripeClient = async (): Promise<StripeType> => {
   }
   const { default: Stripe } = await import('stripe');
   stripe = new Stripe(STRIPE_SECRET, {
-    apiVersion: '2024-09-30.acacia',
+    apiVersion: '2024-10-28.acacia',
   });
   return stripe;
 };

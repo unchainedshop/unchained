@@ -81,7 +81,7 @@
     "memoizee": "^0.4.17",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "^17.2.1",
+    "stripe": "^17.3.1",
     "tiny-secp256k1": "^2.2.3",
     "twilio": "^5.3.5",
     "web-push": "^3.6.3"
