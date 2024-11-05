@@ -38,10 +38,10 @@
     "@fastify/session": "^11.0.1",
     "@unchainedshop/platform": "^3.0.0-alpha4",
     "@unchainedshop/plugins": "^3.0.0-alpha4",
-    "fastify": "^5.0.0"
+    "fastify": "^5.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.8.1",
+    "@types/node": "^22.9.0",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",

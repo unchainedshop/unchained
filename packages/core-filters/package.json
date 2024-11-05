@@ -38,7 +38,7 @@
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.8.1",
+    "@types/node": "^22.9.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.6.3"

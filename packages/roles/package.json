@@ -34,7 +34,7 @@
     "lodash.clone": "4.5.0"
   },
   "devDependencies": {
-    "@types/node": "^22.8.1",
+    "@types/node": "^22.9.0",
     "jest": "^29.7.0",
     "typescript": "^5.6.3"
   }
