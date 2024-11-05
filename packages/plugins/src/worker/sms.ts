@@ -5,7 +5,7 @@ import Twilio from 'twilio';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
 
-const logger = createLogger('unchained:plugins:worker:sms');
+const logger = createLogger('unchained:worker:sms');
 
 /* Potential: no need for twilio npm
 curl -X POST "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json" \
@@ -32,8 +32,6 @@ const SmsWorkerPlugin: IWorkerAdapter<
   type: 'SMS',
 
   doWork: async ({ from, to, text }) => {
-    logger.debug(`${SmsWorkerPlugin.key} -> doWork: ${from} -> ${to}`);
-
     if (!TWILIO_SMS_FROM && !from) {
       return {
         success: false,
