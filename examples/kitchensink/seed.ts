@@ -23,7 +23,7 @@ export default async (unchainedAPI: UnchainedCore) => {
     if ((await modules.users.count({ username: 'admin' })) > 0) {
       return;
     }
-    const adminId = await modules.users.createUser(
+    await modules.users.createUser(
       {
         email: 'admin@unchained.local',
         guest: false,
@@ -37,13 +37,10 @@ export default async (unchainedAPI: UnchainedCore) => {
 
     const languages = await Promise.all(
       [UNCHAINED_LANG ? UNCHAINED_LANG.toLowerCase() : 'de'].map(async (code) => {
-        const languageId = await modules.languages.create(
-          {
-            isoCode: code,
-            isActive: true,
-          },
-          adminId,
-        );
+        const languageId = await modules.languages.create({
+          isoCode: code,
+          isActive: true,
+        });
         const language = await modules.languages.findLanguage({ languageId });
         return language.isoCode;
       }),
@@ -51,13 +48,10 @@ export default async (unchainedAPI: UnchainedCore) => {
 
     const currencies = await Promise.all(
       [UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'CHF'].map(async (code) => {
-        const currencyId = await modules.currencies.create(
-          {
-            isoCode: code,
-            isActive: true,
-          },
-          adminId,
-        );
+        const currencyId = await modules.currencies.create({
+          isoCode: code,
+          isActive: true,
+        });
         const currency = await modules.currencies.findCurrency({
           currencyId,
         });
@@ -67,47 +61,38 @@ export default async (unchainedAPI: UnchainedCore) => {
 
     const countries = await Promise.all(
       [UNCHAINED_COUNTRY ? UNCHAINED_COUNTRY.toUpperCase() : 'CH'].map(async (code, key) => {
-        const countryId = await modules.countries.create(
-          {
-            isoCode: code,
-            isActive: true,
-            defaultCurrencyCode: currencies[key],
-          },
-          adminId,
-        );
+        const countryId = await modules.countries.create({
+          isoCode: code,
+          isActive: true,
+          defaultCurrencyCode: currencies[key],
+        });
         const country = await modules.countries.findCountry({ countryId });
         return country.isoCode;
       }),
     );
 
-    const deliveryProvider = await modules.delivery.create(
-      {
-        adapterKey: 'shop.unchained.delivery.send-message',
-        type: DeliveryProviderType.SHIPPING,
-        configuration: [
-          {
-            key: 'from',
-            value: EMAIL_FROM || 'hello@unchained.local',
-          },
-          {
-            key: 'to',
-            value: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
-          },
-        ],
-        created: new Date(),
-      },
-      adminId,
-    );
+    const deliveryProvider = await modules.delivery.create({
+      adapterKey: 'shop.unchained.delivery.send-message',
+      type: DeliveryProviderType.SHIPPING,
+      configuration: [
+        {
+          key: 'from',
+          value: EMAIL_FROM || 'hello@unchained.local',
+        },
+        {
+          key: 'to',
+          value: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
+        },
+      ],
+      created: new Date(),
+    });
 
-    const paymentProvider = await modules.payment.paymentProviders.create(
-      {
-        adapterKey: 'shop.unchained.invoice',
-        type: PaymentProviderType.INVOICE,
-        configuration: [],
-        created: new Date(),
-      },
-      adminId,
-    );
+    const paymentProvider = await modules.payment.paymentProviders.create({
+      adapterKey: 'shop.unchained.invoice',
+      type: PaymentProviderType.INVOICE,
+      configuration: [],
+      created: new Date(),
+    });
 
     logger.log(`
       initialized database with
