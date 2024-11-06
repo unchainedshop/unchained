@@ -35,12 +35,18 @@ export const Product = {
       offset: number;
       tags?: Array<string>;
     },
-    { modules }: Context,
+    { loaders, modules }: Context,
   ): Promise<Array<ProductMedia>> {
-    return modules.products.media.findProductMedias({
-      productId: product._id,
-      ...params,
-    });
+    if (params.offset || params.tags) {
+      return modules.products.media.findProductMedias({
+        productId: product._id,
+        ...params,
+      });
+    }
+    return (await loaders.productMediasLoader.load({ productId: product._id })).slice(
+      params.offset,
+      params.offset + params.limit,
+    );
   },
 
   async reviews(

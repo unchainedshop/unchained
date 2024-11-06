@@ -26,7 +26,7 @@ export type ProductMediaModule = {
 
   findProductMedias: (
     params: {
-      productId?: string;
+      productId?: Filter<ProductMedia>['productId'];
       limit?: number;
       offset?: number;
       tags?: Array<string>;

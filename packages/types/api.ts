@@ -5,11 +5,11 @@ import type DataLoader from 'dataloader';
 import { User } from './user.js';
 import { UnchainedCore } from './core.js';
 import { Assortment, AssortmentLink, AssortmentProduct, AssortmentText } from './assortments.js';
-import { AssortmentMediaText } from './assortments.media.js';
+import { AssortmentMedia, AssortmentMediaText } from './assortments.media.js';
 import { Filter, FilterText } from './filters.js';
 import { File } from './files.js';
 import { Product, ProductText } from './products.js';
-import { ProductMediaText } from './products.media.js';
+import { ProductMedia, ProductMediaText } from './products.media.js';
 
 export declare type Root = Record<string, unknown>;
 
@@ -49,6 +49,7 @@ export interface UnchainedLoaders {
     productMediaTextLoader: InstanceType<
       typeof DataLoader<{ productMediaId: string; locale: string }, ProductMediaText>
     >;
+    productMediasLoader: InstanceType<typeof DataLoader<{ productId?: string }, ProductMedia[]>>;
 
     fileLoader: InstanceType<typeof DataLoader<{ fileId: string }, File>>;
 
@@ -72,6 +73,9 @@ export interface UnchainedLoaders {
     >;
     assortmentMediaTextLoader: InstanceType<
       typeof DataLoader<{ assortmentMediaId: string; locale: string }, AssortmentMediaText>
+    >;
+    assortmentMediasLoader: InstanceType<
+      typeof DataLoader<{ assortmentId?: string }, AssortmentMedia[]>
     >;
   };
 }

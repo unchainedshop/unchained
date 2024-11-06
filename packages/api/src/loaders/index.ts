@@ -104,6 +104,22 @@ const loaders = async (
       { batchScheduleFn: (cb) => setImmediate(cb) },
     ),
 
+    assortmentMediasLoader: new DataLoader(
+      async (queries) => {
+        const assortmentId = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+        const assortmentMediaItems = await unchainedAPI.modules.assortments.media.findAssortmentMedias({
+          assortmentId,
+        });
+
+        return queries.map((q) => {
+          return assortmentMediaItems.filter((i) => {
+            return i.assortmentId === q.assortmentId;
+          });
+        });
+      },
+      { batchScheduleFn: (cb) => setImmediate(cb) },
+    ),
+
     assortmentLinkLoader: new DataLoader(
       async (queries) => {
         const parentAssortmentIds = [
@@ -322,6 +338,22 @@ const loaders = async (
           return files.find((file) => {
             if (file._id !== fileId) return false;
             return true;
+          });
+        });
+      },
+      { batchScheduleFn: (cb) => setImmediate(cb) },
+    ),
+
+    productMediasLoader: new DataLoader(
+      async (queries) => {
+        const productId = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+        const productMediaItems = await unchainedAPI.modules.products.media.findProductMedias({
+          productId,
+        });
+
+        return queries.map((q) => {
+          return productMediaItems.filter((i) => {
+            return i.productId === q.productId;
           });
         });
       },

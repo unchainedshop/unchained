@@ -24,7 +24,7 @@ export type AssortmentMediaModule = {
 
   findAssortmentMedias: (
     params: {
-      assortmentId?: string;
+      assortmentId?: Filter<AssortmentMedia>['assortmentId'];
       limit?: number;
       offset?: number;
       tags?: Array<string>;
