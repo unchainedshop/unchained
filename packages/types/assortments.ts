@@ -113,7 +113,10 @@ export type AssortmentsModule = {
 
   delete: (assortmentId: string, options?: { skipInvalidation?: boolean }) => Promise<number>;
 
-  invalidateCache: (params: AssortmentQuery, options?: { skipUpstreamTraversal: boolean }) => void;
+  invalidateCache: (
+    params: AssortmentQuery,
+    options?: { skipUpstreamTraversal: boolean },
+  ) => Promise<void>;
 
   setBase: (assortmentId: string) => Promise<void>;
 
