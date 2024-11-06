@@ -128,17 +128,12 @@ export const configureFilterSearchModule = ({
           return leftIndex - rightIndex;
         });
 
-        const relevantProducts = await modules.products.findProducts(
-          {
-            productSelector,
-            productIds: totalProductIds,
-            includeDrafts: searchQuery.includeInactive,
-          },
-          {
-            projection: { _id: 1 },
-          },
-        );
-        const relevantProductIds = relevantProducts.map(({ _id }) => _id);
+        const relevantProductIds = await modules.products.findProductIds({
+          productSelector,
+          productIds: totalProductIds,
+          includeDrafts: searchQuery.includeInactive,
+        });
+
         return Promise.all(
           sortedFilters.map(async (filter) => {
             return loadFilter(

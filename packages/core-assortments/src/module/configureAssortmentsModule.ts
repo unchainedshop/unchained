@@ -466,7 +466,7 @@ export const configureAssortmentsModule = async ({
       await emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
-        invalidateCache({ assortmentIds: [assortmentId] });
+        await invalidateCache({ assortmentIds: [assortmentId] });
       }
       return assortmentId;
     },

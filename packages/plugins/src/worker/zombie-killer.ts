@@ -53,11 +53,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
       });
 
       // Remove unreferenced product entities
-      const products = await modules.products.findProducts(
-        { includeDrafts: true },
-        { projection: { _id: 1 } },
-      );
-      const productIds = products.map((a) => a._id);
+      const productIds = await modules.products.findProductIds({ includeDrafts: true });
       const deletedProductTextsCount = await modules.products.texts.deleteMany({
         excludedProductIds: productIds,
       });

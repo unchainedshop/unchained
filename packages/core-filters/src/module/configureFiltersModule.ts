@@ -130,19 +130,10 @@ export const configureFiltersModule = async ({
     );
 
     if (!productSelector) return [];
-    const products = await modules.products.findProducts(
-      {
-        productSelector,
-        includeDrafts: true,
-        sort: [],
-        offset: 0,
-        limit: 0,
-      },
-      {
-        projection: { _id: true },
-      },
-    );
-    return products.map(({ _id }) => _id);
+    return modules.products.findProductIds({
+      productSelector,
+      includeDrafts: true,
+    });
   };
 
   const buildProductIdMap = async (
