@@ -96,9 +96,9 @@ const loaders = async (
     }),
 
     assortmentMediasLoader: new DataLoader(async (queries) => {
-      const assortmentId = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
       const assortmentMediaItems = await unchainedAPI.modules.assortments.media.findAssortmentMedias({
-        assortmentId,
+        assortmentId: { $in: assortmentIds },
       });
 
       return queries.map((q) => {
@@ -301,11 +301,10 @@ const loaders = async (
     }),
 
     productMediasLoader: new DataLoader(async (queries) => {
-      const productId = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+      const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
       const productMediaItems = await unchainedAPI.modules.products.media.findProductMedias({
-        productId,
+        productId: { $in: productIds },
       });
-
       return queries.map((q) => {
         return productMediaItems.filter((i) => {
           return i.productId === q.productId;
