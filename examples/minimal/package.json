@@ -2,7 +2,7 @@
   "name": "@unchainedshop/minimal",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "2.16.0",
+  "version": "2.16.1",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -34,11 +34,11 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@unchainedshop/platform": "^2.16.0"
+    "@unchainedshop/platform": "^2.16.1"
   },
   "devDependencies": {
-    "@types/node": "^22.8.5",
-    "@unchainedshop/types": "^2.16.0",
+    "@types/node": "^22.9.0",
+    "@unchainedshop/types": "^2.16.1",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
