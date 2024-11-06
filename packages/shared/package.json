@@ -1,7 +1,7 @@
 {
     "name": "@unchainedshop/shared",
     "private": true,
-    "version": "2.16.1",
+    "version": "2.16.2",
     "dependencies": {
         "@types/node": "^22.9.0",
         "typescript": "^5.6.3"
