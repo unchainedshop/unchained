@@ -209,17 +209,22 @@ export const configureProductsModule = async ({
       return Products.findOne(selector, {});
     },
 
-    findProducts: async ({ limit, offset, sort, ...query }) => {
+    findProducts: async ({ limit, offset, sort, ...query }, options) => {
       const defaultSortOption: Array<SortOption> = [
         { key: 'sequence', value: SortDirection.ASC },
         { key: 'published', value: SortDirection.DESC },
       ];
       const products = Products.find(buildFindSelector(query), {
+        ...(options || {}),
         limit,
         skip: offset,
         sort: buildSortOptions(sort || defaultSortOption),
       });
       return products.toArray();
+    },
+
+    findProductIds: async (query) => {
+      return Products.distinct('_id', buildFindSelector(query));
     },
 
     count: async (query) => {

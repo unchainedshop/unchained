@@ -181,6 +181,8 @@ export type ProductsModule = {
     options?: FindOptions,
   ) => Promise<Array<Product>>;
 
+  findProductIds: (params: ProductQuery) => Promise<Array<string>>;
+
   count: (query: ProductQuery) => Promise<number>;
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
