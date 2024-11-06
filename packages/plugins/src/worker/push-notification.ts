@@ -1,11 +1,8 @@
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import webPush from 'web-push';
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;
-
-const logger = createLogger('unchained:worker:push-notification');
 
 type NotificationOptions = {
   vapidDetails: {

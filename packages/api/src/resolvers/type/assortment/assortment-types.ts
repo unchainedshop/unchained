@@ -92,12 +92,17 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  // TODO: Use a loader!
-  async media(obj, params, { modules }) {
-    return modules.assortments.media.findAssortmentMedias({
-      assortmentId: obj._id,
-      ...params,
-    });
+  async media(obj, params, { modules, loaders }) {
+    if (params.offset || params.tags) {
+      return modules.assortments.media.findAssortmentMedias({
+        assortmentId: obj._id,
+        ...params,
+      });
+    }
+    return (await loaders.assortmentMediasLoader.load({ assortmentId: obj._id })).slice(
+      params.offset,
+      params.offset + params.limit,
+    );
   },
 
   async productAssignments(obj, _, { modules }) {
