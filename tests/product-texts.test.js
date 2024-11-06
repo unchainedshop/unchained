@@ -43,7 +43,6 @@ describe('ProductText', () => {
           texts: [textRecord],
         },
       });
-      console.log(errors);
       expect(updateProductTexts.length).toEqual(1);
       expect(updateProductTexts[0]).toMatchObject(textRecord);
     });
