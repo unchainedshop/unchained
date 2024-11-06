@@ -22,7 +22,7 @@ describe('ProductText', () => {
         subtitle: 'subtitle-et',
         vendor: 'vendor-et',
       };
-      const { data: { updateProductTexts } = {}, errors } = await graphqlFetch({
+      const { data: { updateProductTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductTexts($productId: ID!, $texts: [ProductTextInput!]!) {
             updateProductTexts(productId: $productId, texts: $texts) {

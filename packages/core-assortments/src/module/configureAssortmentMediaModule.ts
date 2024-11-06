@@ -23,7 +23,7 @@ export type AssortmentMediaModule = {
 
   findAssortmentMedias: (
     params: {
-      assortmentId?: string;
+      assortmentId?: mongodb.Filter<AssortmentMediaType>['assortmentId'];
       limit?: number;
       offset?: number;
       tags?: Array<string>;

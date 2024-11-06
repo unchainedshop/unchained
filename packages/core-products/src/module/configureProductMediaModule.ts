@@ -16,7 +16,7 @@ export type ProductMediaModule = {
 
   findProductMedias: (
     params: {
-      productId?: string;
+      productId?: mongodb.Filter<ProductMedia>['assortmentId'];
       limit?: number;
       offset?: number;
       tags?: Array<string>;

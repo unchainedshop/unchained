@@ -116,6 +116,8 @@ export type ProductsModule = {
     options?: mongodb.FindOptions,
   ) => Promise<Array<Product>>;
 
+  findProductIds: (query: ProductQuery) => Promise<Array<string>>;
+
   count: (query: ProductQuery) => Promise<number>;
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
