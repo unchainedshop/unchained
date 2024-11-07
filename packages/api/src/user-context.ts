@@ -28,7 +28,7 @@ function setLoginToken(res: OutgoingMessage, token: string | null, expires?: Dat
     '0': false,
   }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
 
-  if (!domain) return;
+  if (!cookieName) return;
 
   const authCookie = cookie.serialize(cookieName, token || null, {
     domain,
