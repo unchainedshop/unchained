@@ -11,13 +11,22 @@ const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
-  NODE_ENV,
+  UNCHAINED_COOKIE_SAMESITE,
+  UNCHAINED_COOKIE_INSECURE,
 } = process.env;
 
 function setLoginToken(res: OutgoingMessage, token: string | null, expires?: Date) {
   const cookieName = UNCHAINED_COOKIE_NAME;
   const domain = UNCHAINED_COOKIE_DOMAIN;
   const path = UNCHAINED_COOKIE_PATH;
+  const secure = UNCHAINED_COOKIE_INSECURE ? false : true;
+  const sameSite = ({
+    none: 'none',
+    lax: 'lax',
+    strict: 'strict',
+    '1': true,
+    '0': false,
+  }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
 
   if (!domain) return;
 
@@ -27,8 +36,8 @@ function setLoginToken(res: OutgoingMessage, token: string | null, expires?: Dat
     path,
     expires: token && expires ? expires : undefined,
     maxAge: token ? undefined : -1,
-    sameSite: 'lax',
-    secure: NODE_ENV === 'production',
+    sameSite,
+    secure,
   });
   res.setHeader('Set-Cookie', authCookie);
 }

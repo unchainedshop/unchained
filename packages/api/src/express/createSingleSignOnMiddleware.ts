@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { IncomingMessage } from 'http';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
@@ -6,7 +5,6 @@ import cookie from 'cookie';
 import { getCurrentContextResolver } from '../context.js';
 
 const {
-  ROOT_URL,
   NODE_ENV,
   UNCHAINED_CLOUD_ENDPOINT,
   UNCHAINED_COOKIE_NAME = 'unchained_token',
@@ -16,14 +14,12 @@ const {
 const logger = createLogger('unchained:unchained-cloud-sso');
 
 const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
-  const domain = UNCHAINED_COOKIE_DOMAIN || new URL(ROOT_URL).hostname || 'localhost';
+  const domain = UNCHAINED_COOKIE_DOMAIN;
   const result = await fetch(UNCHAINED_CLOUD_ENDPOINT, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
     },
-    // eslint-disable-next-line
-    // @ts-ignore
     duplex: 'half',
     body: JSON.stringify({
       operationName: 'consume',
