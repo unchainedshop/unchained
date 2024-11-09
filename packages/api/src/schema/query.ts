@@ -19,12 +19,13 @@ export default [
         includeGuests: Boolean = false
         queryString: String
         sort: [SortOptionInput!]
+        filter: UserFilterInput
       ): [User!]!
 
       """
       Get total number of users in the system that match query
       """
-      usersCount(includeGuests: Boolean = false, queryString: String): Int!
+      usersCount(includeGuests: Boolean = false, queryString: String, filter: UserFilterInput): Int!
 
       """
       Specific user data if userId provided, else returns currently logged in

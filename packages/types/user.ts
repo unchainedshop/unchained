@@ -6,6 +6,32 @@ import { Country } from './countries.js';
 import { File } from './files.js';
 import { Language } from './languages.js';
 
+export enum UserOrderFilter {
+  HAS_ORDERS = 'HAS_ORDERS',
+  NO_ORDERS = 'NO_ORDERS',
+}
+
+export enum UserVerificationFilter {
+  VERIFIED = 'VERIFIED',
+  UNVERIFIED = 'UNVERIFIED',
+}
+
+export enum UserCartFilter {
+  HAS_CART = 'HAS_CART',
+  NO_CART = 'NO_CART',
+}
+export interface DateFilterInput {
+  start?: string;
+  end?: string;
+}
+
+export interface UserFilter {
+  verificationStatus?: UserVerificationFilter;
+  loginWithinDays?: DateFilterInput;
+  cartItems?: UserCartFilter;
+  orderStatus?: UserOrderFilter;
+}
+
 export interface PushSubscription {
   _id: string;
   userAgent: string;
@@ -87,6 +113,7 @@ export type User = {
 export type UserQuery = Filter<User> & {
   includeGuests?: boolean;
   queryString?: string;
+  filter?: UserFilter;
 };
 
 /*

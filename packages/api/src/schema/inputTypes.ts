@@ -277,5 +277,26 @@ export default [
       start: DateTime
       end: DateTime
     }
+
+    enum UserOrderFilter {
+      HAS_ORDERS
+      NO_ORDERS
+    }
+
+    enum UserVerificationFilter {
+      VERIFIED
+      UNVERIFIED
+    }
+    enum UserCartFilter {
+      HAS_CART
+      NO_CART
+    }
+
+    input UserFilterInput {
+      verificationStatus: UserVerificationFilter
+      loginWithinDays: DateFilterInput
+      cartItems: UserCartFilter
+      orderItems: UserOrderFilter
+    }
   `,
 ];

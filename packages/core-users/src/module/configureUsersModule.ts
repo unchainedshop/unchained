@@ -1,6 +1,6 @@
 import localePkg from 'locale';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
+import { User, UserQuery, UsersModule, UserVerificationFilter } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
@@ -30,9 +30,26 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
   return user;
 };
 
-export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
+export const buildFindSelector = ({ includeGuests, queryString, filter, ...rest }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
+  if (filter?.verificationStatus === UserVerificationFilter.VERIFIED) {
+    selector['emails.verified'] = true;
+  }
+  if (filter?.verificationStatus === UserVerificationFilter.UNVERIFIED) {
+    selector['emails.verified'] = false;
+  }
+  if (filter?.loginWithinDays?.end || filter?.loginWithinDays?.start) {
+    if (filter?.loginWithinDays?.end && filter?.loginWithinDays?.start)
+      selector['lastLogin.timestamp'] = {
+        $gte: filter?.loginWithinDays?.start,
+        $lte: filter?.loginWithinDays?.end,
+      };
+    else if (filter?.loginWithinDays?.end)
+      selector['lastLogin.timestamp'] = { $lte: filter?.loginWithinDays?.end };
+    else if (filter?.loginWithinDays?.start)
+      selector['lastLogin.timestamp'] = { $gte: filter?.loginWithinDays?.start };
+  }
   if (queryString) {
     (selector as any).$text = { $search: queryString };
   }
@@ -100,7 +117,7 @@ export const configureUsersModule = async ({
 
     findUsers: async ({ limit, offset, ...query }) => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
-      const selector = buildFindSelector(query);
+      const selector = buildFindSelector({ ...query });
 
       if (query.queryString) {
         return Users.find(selector, {
