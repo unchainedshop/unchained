@@ -1,5 +1,5 @@
 import { SortOption } from './api.js';
-import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
+import { DateFilterInput, IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 
 export enum WorkStatus {
@@ -113,7 +113,7 @@ export type WorkerModule = {
     referenceDate: Date;
   }) => Promise<Array<Work>>;
 
-  getReport: (params?: { types?: string[]; from?: Date; to?: Date }) => Promise<WorkerReport[]>;
+  getReport: (params?: { types?: string[]; dateRange?: DateFilterInput }) => Promise<WorkerReport[]>;
 };
 
 /*

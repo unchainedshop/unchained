@@ -494,7 +494,7 @@ export default [
       """
       Returns aggregated report of all the worker jobs that occurred in the system
       """
-      workStatistics(types: [String!], from: Timestamp, to: Timestamp): [WorkStatistics!]!
+      workStatistics(types: [String!], dateRange: DateFilterInput): [WorkStatistics!]!
     }
   `,
 ];

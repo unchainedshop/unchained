@@ -556,22 +556,22 @@ export const configureWorkerModule = async ({
       );
     },
 
-    getReport: async ({ types, from, to } = { types: null, from: null, to: null }) => {
+    getReport: async ({ types, dateRange } = { types: null, dateRange: {} }) => {
       const pipeline = [];
       const matchConditions = [];
       // build date filter based on provided values it can be a range if both to and from is supplied
       // a upper or lowe limit if either from or to is provided
       // or all if none is provided
-      if (from || to) {
+      if (dateRange?.start || dateRange?.end) {
         const dateConditions = [];
-        if (from) {
-          const fromDate = new Date(from);
+        if (dateRange?.start) {
+          const fromDate = new Date(dateRange?.start);
           dateConditions.push({
             $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
           });
         }
-        if (to) {
-          const toDate = new Date(to);
+        if (dateRange?.end) {
+          const toDate = new Date(dateRange?.end);
           dateConditions.push({
             $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
           });

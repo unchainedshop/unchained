@@ -4,10 +4,10 @@ import { DateFilterInput } from '@unchainedshop/types/common.js';
 
 export default async function eventStatistics(
   root: Root,
-  params: { types?: string[]; dateRange: DateFilterInput },
+  params: { types?: string[]; dateRange?: DateFilterInput },
   { userId, modules }: Context,
 ) {
-  log(`query eventStatistics ${params.types || ''}`, {
+  log(`query eventStatistics ${(params?.types || []).join(', ')}`, {
     userId,
     ...(params?.dateRange || {}),
   });

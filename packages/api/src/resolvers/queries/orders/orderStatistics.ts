@@ -4,7 +4,7 @@ import { DateFilterInput } from '@unchainedshop/types/common.js';
 
 export default async function orderStatistics(
   root: Root,
-  params: { dateRange: DateFilterInput },
+  params: { dateRange?: DateFilterInput },
   { modules, userId }: Context,
 ) {
   log(`query orderStatistics `, {
