@@ -25,13 +25,6 @@ export interface DateFilterInput {
   end?: string;
 }
 
-export interface UserFilter {
-  verificationStatus?: UserVerificationFilter;
-  loginWithinDays?: DateFilterInput;
-  cartItems?: UserCartFilter;
-  orderStatus?: UserOrderFilter;
-}
-
 export interface PushSubscription {
   _id: string;
   userAgent: string;
@@ -113,7 +106,8 @@ export type User = {
 export type UserQuery = Filter<User> & {
   includeGuests?: boolean;
   queryString?: string;
-  filter?: UserFilter;
+  verificationStatus?: UserVerificationFilter;
+  loginWithinDays?: DateFilterInput;
 };
 
 /*

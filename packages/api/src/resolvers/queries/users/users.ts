@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
-import { UserFilter, UserQuery } from '@unchainedshop/types/user.js';
+import { UserQuery } from '@unchainedshop/types/user.js';
 
 export default async function users(
   root: Root,
@@ -8,7 +8,7 @@ export default async function users(
     limit?: number;
     offset?: number;
     sort?: Array<SortOption>;
-    filter?: UserFilter;
+    includeGuests?: boolean;
   },
   { modules, userId }: Context,
 ) {
@@ -18,7 +18,7 @@ export default async function users(
     }`,
     {
       userId,
-      ...(params.filter || {}),
+      ...(params || {}),
     },
   );
 

@@ -30,25 +30,29 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
   return user;
 };
 
-export const buildFindSelector = ({ includeGuests, queryString, filter, ...rest }: UserQuery) => {
+export const buildFindSelector = ({
+  includeGuests,
+  queryString,
+  verificationStatus = null,
+  loginWithinDays = {},
+  ...rest
+}: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
-  if (filter?.verificationStatus === UserVerificationFilter.VERIFIED) {
+  if (verificationStatus === UserVerificationFilter.VERIFIED) {
     selector['emails.verified'] = true;
   }
-  if (filter?.verificationStatus === UserVerificationFilter.UNVERIFIED) {
+  if (verificationStatus === UserVerificationFilter.UNVERIFIED) {
     selector['emails.verified'] = false;
   }
-  if (filter?.loginWithinDays?.end || filter?.loginWithinDays?.start) {
-    if (filter?.loginWithinDays?.end && filter?.loginWithinDays?.start)
+  if (loginWithinDays?.end || loginWithinDays?.start) {
+    if (loginWithinDays?.end && loginWithinDays?.start)
       selector['lastLogin.timestamp'] = {
-        $gte: filter?.loginWithinDays?.start,
-        $lte: filter?.loginWithinDays?.end,
+        $gte: loginWithinDays?.start,
+        $lte: loginWithinDays?.end,
       };
-    else if (filter?.loginWithinDays?.end)
-      selector['lastLogin.timestamp'] = { $lte: filter?.loginWithinDays?.end };
-    else if (filter?.loginWithinDays?.start)
-      selector['lastLogin.timestamp'] = { $gte: filter?.loginWithinDays?.start };
+    else if (loginWithinDays?.end) selector['lastLogin.timestamp'] = { $lte: loginWithinDays?.end };
+    else if (loginWithinDays?.start) selector['lastLogin.timestamp'] = { $gte: loginWithinDays?.start };
   }
   if (queryString) {
     (selector as any).$text = { $search: queryString };
