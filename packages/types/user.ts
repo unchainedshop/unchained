@@ -1,6 +1,6 @@
 import type { Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { Address, Contact, Locale, TimestampFields } from './common.js';
+import { Address, Contact, DateFilterInput, Locale, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { File } from './files.js';
@@ -19,10 +19,6 @@ export enum UserVerificationFilter {
 export enum UserCartFilter {
   HAS_CART = 'HAS_CART',
   NO_CART = 'NO_CART',
-}
-export interface DateFilterInput {
-  start?: string;
-  end?: string;
 }
 
 export interface PushSubscription {
