@@ -490,7 +490,7 @@ export default [
       """
       Returns aggregated report of all the orders that occurred in the system
       """
-      orderStatistics(from: Timestamp, to: Timestamp): OrderStatistics!
+      orderStatistics(dateRange: DateFilterInput): OrderStatistics!
       """
       Returns aggregated report of all the worker jobs that occurred in the system
       """

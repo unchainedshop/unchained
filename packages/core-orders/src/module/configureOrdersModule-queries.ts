@@ -74,15 +74,15 @@ export const configureOrdersModuleQueries = ({
       return Orders.find(selector, findOptions).toArray();
     },
 
-    getReport: async ({ from, to } = { from: null, to: null }) => {
+    getReport: async ({ dateRange } = { dateRange: {} }) => {
       const selector: any = { $exists: true };
-      if (from || to) {
-        if (from) {
-          const fromDate = new Date(from);
+      if (dateRange?.end || dateRange?.start) {
+        if (dateRange?.start) {
+          const fromDate = new Date(dateRange?.start);
           selector.$gte = fromDate;
         }
-        if (to) {
-          const toDate = new Date(to);
+        if (dateRange?.end) {
+          const toDate = new Date(dateRange?.end);
           selector.$lte = toDate;
         }
       }

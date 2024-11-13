@@ -13,7 +13,8 @@ export default async function users(
   { modules, userId }: Context,
 ) {
   log(
-    `query users ${params.limit} ${params.offset} ${params.queryString} ${params.includeGuests ? 'includeGuests' : ''
+    `query users ${params.limit} ${params.offset} ${params.queryString} ${
+      params.includeGuests ? 'includeGuests' : ''
     }`,
     {
       userId,

@@ -1,6 +1,13 @@
 import type { FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { Address, Configuration, Contact, LogFields, TimestampFields } from './common.js';
+import {
+  Address,
+  Configuration,
+  Contact,
+  DateFilterInput,
+  LogFields,
+  TimestampFields,
+} from './common.js';
 import { UnchainedCore } from './core.js';
 import { OrderDeliveriesModule } from './orders.deliveries.js';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts.js';
@@ -87,7 +94,7 @@ export interface OrderQueries {
   ) => Promise<Array<Order>>;
   count: (query: OrderQuery) => Promise<number>;
   orderExists: (params: { orderId: string }) => Promise<boolean>;
-  getReport: (params?: { from?: Date; to?: Date }) => Promise<OrderReport>;
+  getReport: (params?: { dateRange?: DateFilterInput }) => Promise<OrderReport>;
 }
 export interface OrderTransformations {
   discounted: (
