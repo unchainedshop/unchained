@@ -1,7 +1,6 @@
 /// <reference lib="dom" />
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { log, LogLevel } from '@unchainedshop/logger';
 
 const postFetch = async (url, { data, headers }) => {
   return fetch(url, {

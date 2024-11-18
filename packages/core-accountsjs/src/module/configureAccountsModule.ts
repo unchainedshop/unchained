@@ -1,6 +1,5 @@
 import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts.js';
 
-import { v4 as uuidv4 } from 'uuid';
 import { ModuleInput } from '@unchainedshop/types/core.js';
 import { Context } from '@unchainedshop/types/api.js';
 import { accountsSettings } from '../accounts-settings.js';
@@ -198,7 +197,7 @@ export const configureAccountsModule = async ({
     // User management
     setUsername: (_id, username) => dbManager.setUsername(_id, username),
     setPassword: async (userId, { newPlainPassword }) => {
-      const newPassword = newPlainPassword ? hashPassword(newPlainPassword) : uuidv4().split('-').pop();
+      const newPassword = newPlainPassword ? hashPassword(newPlainPassword) : crypto.randomUUID();
       await accountsPassword.setPassword(userId, newPassword);
     },
 

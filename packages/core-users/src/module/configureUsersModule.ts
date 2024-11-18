@@ -7,7 +7,6 @@ import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/
 import { systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 
@@ -153,9 +152,11 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_AVATAR', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (user) {
+        await emit('USER_UPDATE_AVATAR', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
       return user;
     },
 
@@ -180,9 +181,11 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_HEARTBEAT', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (user) {
+        await emit('USER_UPDATE_HEARTBEAT', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
       return user;
     },
 
@@ -208,13 +211,15 @@ export const configureUsersModule = async ({
         if (!verified) return [];
         return [
           {
-            address: `${address}@${uuidv4()}.unchained.local`,
+            address: `${address}@${crypto.randomUUID()}.unchained.local`,
             verified: true,
           },
         ];
       });
 
-      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuidv4()}` : null;
+      const obfuscatedUsername = existingUser.username
+        ? `${existingUser.username}-${crypto.randomUUID()}`
+        : null;
 
       Users.updateOne(userFilter, {
         $set: {
@@ -225,9 +230,11 @@ export const configureUsersModule = async ({
       });
 
       const user = await Users.findOneAndDelete(userFilter);
-      await emit('USER_REMOVE', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (user) {
+        await emit('USER_REMOVE', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
       return user;
     },
     updateProfile: async (userId, updatedData) => {
@@ -259,9 +266,11 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_PROFILE', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (user) {
+        await emit('USER_UPDATE_PROFILE', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
       return user;
     },
 
@@ -291,9 +300,11 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_BILLING_ADDRESS', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (updatedUser) {
+        await emit('USER_UPDATE_BILLING_ADDRESS', {
+          user: removeConfidentialServiceHashes(updatedUser),
+        });
+      }
       return updatedUser;
     },
 
@@ -319,9 +330,11 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_LAST_CONTACT', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (updatedUser) {
+        await emit('USER_UPDATE_LAST_CONTACT', {
+          user: removeConfidentialServiceHashes(updatedUser),
+        });
+      }
       return updatedUser;
     },
 
@@ -337,9 +350,11 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_ROLE', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (user) {
+        await emit('USER_UPDATE_ROLE', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
       return user;
     },
 
@@ -353,9 +368,13 @@ export const configureUsersModule = async ({
       const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
         returnDocument: 'after',
       });
-      await emit('USER_UPDATE_TAGS', {
-        user: removeConfidentialServiceHashes(user),
-      });
+
+      if (user) {
+        await emit('USER_UPDATE_TAGS', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
+
       return user;
     },
 
@@ -364,9 +383,11 @@ export const configureUsersModule = async ({
         ...options,
         returnDocument: 'after',
       });
-      await emit('USER_UPDATE', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (user) {
+        await emit('USER_UPDATE', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
       return user;
     },
 

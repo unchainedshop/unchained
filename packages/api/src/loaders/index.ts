@@ -3,7 +3,6 @@ import DataLoader from 'dataloader';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { ProductStatus } from '@unchainedshop/core-products';
 import { UnchainedLoaders } from '@unchainedshop/types/api.js';
 
 const { Locale } = localePkg;

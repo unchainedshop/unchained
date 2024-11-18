@@ -1,11 +1,8 @@
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import Twilio from 'twilio';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
-
-const logger = createLogger('unchained:worker:sms');
 
 /* Potential: no need for twilio npm
 curl -X POST "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json" \

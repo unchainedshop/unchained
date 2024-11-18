@@ -1,7 +1,6 @@
 import { hashPassword } from '@unchainedshop/api';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { v4 as uuidv4 } from 'uuid';
 
 const logger = console;
 const {
@@ -14,7 +13,7 @@ const {
 } = process.env;
 
 const seedPassword =
-  UNCHAINED_SEED_PASSWORD === 'generate' ? uuidv4().split('-').pop() : UNCHAINED_SEED_PASSWORD;
+  UNCHAINED_SEED_PASSWORD === 'generate' ? crypto.randomUUID() : UNCHAINED_SEED_PASSWORD;
 
 export default async (unchainedAPI) => {
   const { modules } = unchainedAPI;
