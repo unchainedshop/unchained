@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { ProductConfiguration } from '@unchainedshop/core-products';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';

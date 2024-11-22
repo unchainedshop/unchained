@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
 import { PaymentPricingDirector } from '@unchainedshop/core-payment';
 

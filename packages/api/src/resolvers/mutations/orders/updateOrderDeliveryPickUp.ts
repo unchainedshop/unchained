@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, OrderDeliveryNotFoundError, OrderDeliveryTypeError } from '../../../errors.js';

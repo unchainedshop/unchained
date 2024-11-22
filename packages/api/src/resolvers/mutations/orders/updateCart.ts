@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 import { OrderWrongStatusError } from '../../../errors.js';
 import { Address, Contact } from '@unchainedshop/mongodb';

@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../context.js';
 
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {

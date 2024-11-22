@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { Product, ProductConfiguration } from '@unchainedshop/core-products';
 import { ProductVariation } from '@unchainedshop/core-products';
 

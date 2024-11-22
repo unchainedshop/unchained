@@ -4,7 +4,7 @@ import {
   ProductContractStandard,
 } from '@unchainedshop/core-products';
 import { WarehousingContext, WarehousingProvider } from '@unchainedshop/core-warehousing';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { PlanProduct } from './product-plan-types.js';
 import { checkAction } from '../../../acl.js';

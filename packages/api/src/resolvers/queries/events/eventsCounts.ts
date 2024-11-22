@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 type CountEventsParams = Parameters<Context['modules']['events']['count']>['0'];
 

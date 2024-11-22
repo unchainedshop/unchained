@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { DeliverProviderNotFoundError, InvalidIdError } from '../../../errors.js';
 

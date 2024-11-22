@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
 import { EnrollmentQuery } from '@unchainedshop/core-enrollments';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function enrollments(
   root: never,

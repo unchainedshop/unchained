@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { Currency } from '@unchainedshop/core-currencies';
 import { log } from '@unchainedshop/logger';
 import { CurrencyNotFoundError, InvalidIdError } from '../../../errors.js';

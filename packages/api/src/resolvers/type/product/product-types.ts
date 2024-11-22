@@ -5,7 +5,7 @@ import { SortOption } from '@unchainedshop/utils';
 import { AssortmentPathLink } from '@unchainedshop/core-assortments';
 import { ProductMedia } from '@unchainedshop/core-products';
 import { ProductReview } from '@unchainedshop/core-products';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export const Product = {
   __resolveType: (product: ProductType): string => {

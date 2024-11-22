@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { AssortmentMediaType, AssortmentMediaText } from '@unchainedshop/core-assortments';
 import { File } from '@unchainedshop/core-files';
 

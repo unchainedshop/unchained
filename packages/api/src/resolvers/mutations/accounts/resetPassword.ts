@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { InvalidResetTokenError, PasswordInvalidError } from '../../../errors.js';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function resetPassword(
   root: never,

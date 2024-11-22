@@ -1,7 +1,58 @@
 import DataLoader from 'dataloader';
 import { systemLocale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
-import { UnchainedLoaders } from '../types.js';
+import { Product, ProductText, ProductMediaText, ProductMedia } from '@unchainedshop/core-products';
+import { Filter, FilterText } from '@unchainedshop/core-filters';
+import {
+  Assortment,
+  AssortmentLink,
+  AssortmentProduct,
+  AssortmentText,
+  AssortmentMediaType,
+  AssortmentMediaText,
+} from '@unchainedshop/core-assortments';
+import { File } from '@unchainedshop/core-files';
+export interface UnchainedLoaders {
+  loaders: {
+    productLoader: InstanceType<typeof DataLoader<{ productId: string }, Product>>;
+    productLoaderBySKU: InstanceType<typeof DataLoader<{ sku: string }, Product>>;
+    productTextLoader: InstanceType<
+      typeof DataLoader<{ productId: string; locale: string }, ProductText>
+    >;
+    productMediaTextLoader: InstanceType<
+      typeof DataLoader<{ productMediaId: string; locale: string }, ProductMediaText>
+    >;
+
+    fileLoader: InstanceType<typeof DataLoader<{ fileId: string }, File>>;
+
+    filterLoader: InstanceType<typeof DataLoader<{ filterId: string }, Filter>>;
+    filterTextLoader: InstanceType<
+      typeof DataLoader<{ filterId: string; filterOptionValue?: string; locale: string }, FilterText>
+    >;
+
+    assortmentLoader: InstanceType<typeof DataLoader<{ assortmentId: string }, Assortment>>;
+    assortmentTextLoader: InstanceType<
+      typeof DataLoader<{ assortmentId: string; locale: string }, AssortmentText>
+    >;
+    assortmentLinkLoader: InstanceType<
+      typeof DataLoader<{ parentAssortmentId: string; childAssortmentId: string }, AssortmentLink>
+    >;
+    assortmentLinksLoader: InstanceType<
+      typeof DataLoader<{ parentAssortmentId?: string; assortmentId?: string }, AssortmentLink[]>
+    >;
+    assortmentProductLoader: InstanceType<
+      typeof DataLoader<{ assortmentId: string; productId: string }, AssortmentProduct>
+    >;
+    assortmentMediaTextLoader: InstanceType<
+      typeof DataLoader<{ assortmentMediaId: string; locale: string }, AssortmentMediaText>
+    >;
+
+    productMediasLoader: InstanceType<typeof DataLoader<{ productId?: string }, ProductMedia[]>>;
+    assortmentMediasLoader: InstanceType<
+      typeof DataLoader<{ assortmentId?: string }, AssortmentMediaType[]>
+    >;
+  };
+}
 
 function getLocaleStrings(localeObj: Intl.Locale) {
   return [localeObj.baseName, localeObj.language, systemLocale.baseName, systemLocale.language];

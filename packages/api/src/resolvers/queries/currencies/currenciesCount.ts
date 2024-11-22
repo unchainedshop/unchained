@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { CurrencyQuery } from '@unchainedshop/core-currencies';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function currenciesCount(
   root: never,

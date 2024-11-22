@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.js';

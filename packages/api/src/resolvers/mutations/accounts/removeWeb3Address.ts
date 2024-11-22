@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { UserWeb3AddressNotFoundError } from '../../../errors.js';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function removeWeb3Address(
   root: never,

@@ -1,5 +1,5 @@
 import { UserData } from '@unchainedshop/core-users';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import {
   AuthOperationFailedError,

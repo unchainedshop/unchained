@@ -19,7 +19,7 @@ import { Roles, permissions } from '@unchainedshop/roles';
 import { ProductReview } from '@unchainedshop/core-products';
 import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
-import { Context } from '../../types.js';
+import { Context } from '../../context.js';
 import { Contact } from '@unchainedshop/mongodb';
 import { Country } from '@unchainedshop/core-countries';
 

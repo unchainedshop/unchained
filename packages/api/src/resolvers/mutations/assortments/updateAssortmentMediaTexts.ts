@@ -1,7 +1,7 @@
 import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import { log } from '@unchainedshop/logger';
 import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function updateAssortmentMediaTexts(
   root: never,

@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { Assortment, AssortmentProduct as AssortmentProductType } from '@unchainedshop/core-assortments';
 import { Product } from '@unchainedshop/core-products';
 

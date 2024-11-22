@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { DeliveryLocation, DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
 import { DeliveryDirector } from '@unchainedshop/core-delivery';

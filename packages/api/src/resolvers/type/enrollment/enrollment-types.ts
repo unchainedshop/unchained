@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 import { Enrollment as EnrollmentType, EnrollmentPlan } from '@unchainedshop/core-enrollments';

@@ -3,7 +3,7 @@ import {
   ProductPrice,
   Product as ProductType,
 } from '@unchainedshop/core-products';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
 
 export const PlanProduct = {

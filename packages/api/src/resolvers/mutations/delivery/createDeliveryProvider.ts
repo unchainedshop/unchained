@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
 import { ProviderConfigurationInvalid } from '../../../errors.js';

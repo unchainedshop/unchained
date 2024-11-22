@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { LanguageQuery } from '@unchainedshop/core-languages';
 import { log } from '@unchainedshop/logger';
 

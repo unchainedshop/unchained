@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { InvalidEmailVerificationTokenError } from '../../../errors.js';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function verifyEmail(root: never, { token }: { token: any }, context: Context) {
   const { modules, userId } = context;

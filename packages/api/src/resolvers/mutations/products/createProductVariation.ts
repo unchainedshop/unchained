@@ -1,8 +1,10 @@
-import { Context, VariationInputText } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 import { ProductVariationType } from '@unchainedshop/core-products';
+
+export type VariationInputText = { locale: string; title: string; subtitle?: string };
 
 export default async function F(
   root: never,

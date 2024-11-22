@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { OrderPrice } from '@unchainedshop/core-orders';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderDiscount } from '@unchainedshop/core-orders';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 
 type HelperType<P, T> = (
   orderGlobalDiscount: OrderPrice & {

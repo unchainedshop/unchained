@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { AssortmentQuery } from '@unchainedshop/core-assortments';
 
 export default async function assortmentsCount(

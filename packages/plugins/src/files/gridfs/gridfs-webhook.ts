@@ -2,10 +2,10 @@ import { pipeline, finished } from 'stream/promises';
 import { PassThrough } from 'stream';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
-import { Context } from '@unchainedshop/api';
 import express from 'express';
 import sign from './sign.js';
 import { configureGridFSFileUploadModule } from './index.js';
+import { Context } from '@unchainedshop/api';
 
 const { ROOT_URL } = process.env;
 

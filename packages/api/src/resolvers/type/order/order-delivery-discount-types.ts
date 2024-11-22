@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import {
   OrderDiscount,
   OrderPrice,

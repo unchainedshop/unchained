@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../context.js';
 import { DeliveryError, DeliveryProvider as DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 

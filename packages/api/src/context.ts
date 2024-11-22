@@ -1,10 +1,43 @@
 import fs from 'fs';
 import path from 'path';
 import { UnchainedCore } from '@unchainedshop/core';
-import instantiateLoaders from './loaders/index.js';
-import { getLocaleContext } from './locale-context.js';
+import instantiateLoaders, { UnchainedLoaders } from './loaders/index.js';
+import { getLocaleContext, UnchainedLocaleContext } from './locale-context.js';
 import { UnchainedServerOptions } from './api-index.js';
-import { Context, UnchainedHTTPServerContext } from './types.js';
+import { User } from '@unchainedshop/core-users';
+
+export interface UnchainedUserContext {
+  login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;
+  logout: () => Promise<boolean>;
+  userId?: string;
+  user?: User;
+  remoteAddress?: string;
+  remotePort?: string;
+  userAgent?: string;
+}
+
+export interface CustomAdminUiProperties {
+  entityName: string;
+  inlineFragment: string;
+}
+
+export interface AdminUiConfig {
+  customProperties?: CustomAdminUiProperties[];
+}
+
+export type UnchainedHTTPServerContext = {
+  setHeader: (key: string, value: string) => void;
+  getHeader: (key: string) => string | string[];
+};
+
+export type Context = UnchainedCore & {
+  version?: string;
+  roles?: any;
+  adminUiConfig?: AdminUiConfig;
+} & UnchainedUserContext &
+  UnchainedLocaleContext &
+  UnchainedLoaders &
+  UnchainedHTTPServerContext;
 
 let context;
 

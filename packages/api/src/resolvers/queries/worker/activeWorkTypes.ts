@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function activeWorkTypes(root: never, _: any, { modules, userId }: Context) {

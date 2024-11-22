@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { Assortment, AssortmentLink as AssortmentLinkType } from '@unchainedshop/core-assortments';
 
 type HelperType<T> = (assortmentLink: AssortmentLinkType, _: never, context: Context) => T;

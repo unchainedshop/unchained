@@ -1,7 +1,7 @@
 import { AssortmentFilter } from '@unchainedshop/core-assortments';
 import { log } from '@unchainedshop/logger';
 import { AssortmentNotFoundError, FilterNotFoundError, InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function addAssortmentFilter(
   root: never,

@@ -2,7 +2,7 @@ import { IncomingMessage } from 'http';
 import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { systemLocale } from '@unchainedshop/utils';
-import { Context } from '../types.js';
+import { Context } from '../context.js';
 
 const logger = createLogger('unchained:erc-metadata');
 

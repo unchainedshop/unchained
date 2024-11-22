@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { ProductReviewVoteType } from '@unchainedshop/core-products';
 import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.js';
 

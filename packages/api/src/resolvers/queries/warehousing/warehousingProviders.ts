@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { WarehousingProviderQuery } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 

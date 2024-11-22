@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import moniker from 'moniker';
 import { randomValueHex } from '@unchainedshop/utils';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function loginAsGuest(root: never, _: any, context: Context) {
   log('mutation loginAsGuest');

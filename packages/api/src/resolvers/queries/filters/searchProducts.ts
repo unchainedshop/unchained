@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { SearchFilterQuery } from '@unchainedshop/core-filters';
 import { QueryStringRequiredError } from '../../../errors.js';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function searchProducts(
   root: never,

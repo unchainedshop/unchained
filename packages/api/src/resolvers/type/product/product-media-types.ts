@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { File } from '@unchainedshop/core-files';
 import { ProductMedia as ProductMediaType, ProductMediaText } from '@unchainedshop/core-products';
 

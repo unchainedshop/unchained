@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { CountryQuery } from '@unchainedshop/core-countries';
 import { log } from '@unchainedshop/logger';
 

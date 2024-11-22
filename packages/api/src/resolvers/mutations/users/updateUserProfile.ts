@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { UserProfile } from '@unchainedshop/core-users';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { UserNotFoundError } from '../../../errors.js';
 
 export default async function updateUserProfile(

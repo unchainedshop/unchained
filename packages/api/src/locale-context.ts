@@ -7,8 +7,16 @@ import {
 } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import memoizee from 'memoizee';
-import { UnchainedHTTPServerContext, UnchainedLocaleContext } from './types.js';
+import { UnchainedHTTPServerContext } from './context.js';
 
+export interface UnchainedLocaleContext {
+  countryContext: string;
+  localeContext: Intl.Locale;
+  currencyContext: string;
+  remoteAddress?: string;
+  remotePort?: string;
+  userAgent?: string;
+}
 const { NODE_ENV } = process.env;
 
 export type GetHeaderFn = (key: string) => string | string[];

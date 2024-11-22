@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { OrderCheckoutError } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';

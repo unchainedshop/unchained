@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../context.js';
 import { Product, ProductAssignment, ProductConfiguration } from '@unchainedshop/core-products';
 
 export type AssignmentHelperType<T> = (

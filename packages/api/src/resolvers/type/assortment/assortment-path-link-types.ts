@@ -1,4 +1,4 @@
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 import {
   AssortmentPathLink as AssortmentPathLinkType,
   AssortmentLink as AssortmentLinkType,

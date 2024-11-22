@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
 import { AssortmentQuery } from '@unchainedshop/core-assortments';
-import { Context } from '../../../types.js';
+import { Context } from '../../../context.js';
 
 export default async function assortments(
   root: never,
