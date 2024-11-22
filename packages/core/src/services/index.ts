@@ -11,42 +11,7 @@ import { migrateOrderCartsService } from './migrateOrderCartService.js';
 import { nextUserCartService } from './nextUserCartService.js';
 import { removeProductService } from './removeProductService.js';
 
-export interface UserServices {
-  updateUserAvatarAfterUpload: typeof updateUserAvatarAfterUploadService;
-  migrateUserData: typeof migrateUserDataService;
-}
-
-export interface FileServices {
-  linkFile: typeof linkFileService;
-  uploadFileFromStream: typeof uploadFileFromStreamService;
-  uploadFileFromURL: typeof uploadFileFromURLService;
-  createSignedURL: typeof createSignedURLService;
-  removeFiles: typeof removeFilesService;
-  createDownloadStream: typeof createDownloadStreamService;
-}
-
-export interface BookmarkServices {
-  migrateBookmarks: typeof migrateBookmarksService;
-}
-
-export interface OrderServices {
-  migrateOrderCarts: typeof migrateOrderCartsService;
-  nextUserCart: typeof nextUserCartService;
-}
-
-export interface ProductServices {
-  removeProduct: typeof removeProductService;
-}
-
-export interface Services {
-  bookmarks: BookmarkServices;
-  files: FileServices;
-  orders: OrderServices;
-  products: ProductServices;
-  users: UserServices;
-}
-
-export default {
+const services = {
   bookmarks: {
     migrateBookmarks: migrateBookmarksService,
   },
@@ -70,3 +35,7 @@ export default {
     updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
   },
 };
+
+export type Services = typeof services;
+
+export default services;
