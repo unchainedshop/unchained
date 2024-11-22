@@ -1,4 +1,4 @@
-import type { TimestampFields, Address, Contact, mongodb } from '@unchainedshop/mongodb';
+import { TimestampFields, Address, Contact, mongodb } from '@unchainedshop/mongodb';
 
 export interface PushSubscription {
   _id: string;

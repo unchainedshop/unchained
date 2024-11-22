@@ -1,6 +1,6 @@
-import type { Bookmark as BookmarkType } from '@unchainedshop/core-bookmarks';
-import type { Product } from '@unchainedshop/core-products';
-import type { User } from '@unchainedshop/core-users';
+import { Bookmark as BookmarkType } from '@unchainedshop/core-bookmarks';
+import { Product } from '@unchainedshop/core-products';
+import { User } from '@unchainedshop/core-users';
 
 import { Context } from '@unchainedshop/api';
 

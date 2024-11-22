@@ -15,7 +15,7 @@ import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import { Client } from 'minio';
 import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
-import { expiryOffsetInMs } from '@unchainedshop/file-upload/put-expiration.js';
+import { expiryOffsetInMs } from '@unchainedshop/file-upload/lib/put-expiration.js';
 
 const {
   MINIO_ACCESS_KEY,

@@ -1,5 +1,5 @@
-import type { Assortment } from '@unchainedshop/core-assortments';
-import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
+import { Assortment } from '@unchainedshop/core-assortments';
+import { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { Product } from '@unchainedshop/core-products';
 import { UnchainedCore } from '@unchainedshop/core';

@@ -1,5 +1,8 @@
 import { UnchainedCore } from '@unchainedshop/core';
-import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.js';
+import {
+  PaymentCredentialsCollection,
+  PaymentCredentials as PaymentCredentialsType,
+} from '../db/PaymentCredentialsCollection.js';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
 import {
   configurePaymentCredentialsModule,
@@ -10,7 +13,7 @@ import {
   PaymentProvidersModules,
 } from './configurePaymentProvidersModule.js';
 import { paymentSettings, PaymentSettingsOptions } from '../payment-settings.js';
-import { PaymentContext, PaymentCredentials as PaymentCredentialsType } from '../types.js';
+import { PaymentContext } from '../types.js';
 import { ModuleInput } from '@unchainedshop/mongodb';
 export type PaymentModule = {
   /*

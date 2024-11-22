@@ -2,7 +2,6 @@ import { UnchainedCore } from '@unchainedshop/core';
 import {
   PaymentChargeActionResult,
   PaymentContext,
-  PaymentCredentials,
   PaymentError,
   PaymentInterface,
   PaymentProvider,
@@ -19,6 +18,7 @@ import {
   PaymentPricingCalculation,
   PaymentProviderType,
 } from '../payment-index.js';
+import { PaymentCredentials } from '../db/PaymentCredentialsCollection.js';
 
 export type PaymentProvidersModules = {
   // Queries

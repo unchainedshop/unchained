@@ -14,13 +14,12 @@
     "lib": ["esnext"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "lib",
+    "outDir": "./lib",
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
     "baseUrl": "." // This must be specified if "paths" is.
   },
-  "include": ["./*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib"]
 }

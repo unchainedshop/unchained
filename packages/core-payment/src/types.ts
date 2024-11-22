@@ -1,5 +1,5 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import { TimestampFields } from '@unchainedshop/mongodb';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/core-orders';
 import { UnchainedCore } from '@unchainedshop/core';
@@ -20,15 +20,6 @@ export type PaymentProvider = {
   type: PaymentProviderType;
   adapterKey: string;
   configuration: PaymentConfiguration;
-} & TimestampFields;
-
-export type PaymentCredentials = {
-  _id?: string;
-  paymentProviderId: string;
-  userId: string;
-  token?: string;
-  isPreferred?: boolean;
-  meta: any;
 } & TimestampFields;
 
 export enum PaymentError {

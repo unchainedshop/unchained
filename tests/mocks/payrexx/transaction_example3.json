@@ -1,94 +1,94 @@
 {
-    "transaction": {
-        "id": 14447028,
-        "psp": "Native_PSP",
-        "lang": "de",
-        "mode": "TEST",
-        "time": "2024-04-13 16:42:33",
-        "uuid": "27b4cf08",
-        "pspId": 44,
-        "amount": 21580,
-        "status": "reserved",
-        "contact": {
-            "id": 7656364,
-            "zip": "",
-            "uuid": "d67bd714",
-            "email": "kaufmae@me.com",
-            "phone": "",
-            "place": "",
-            "title": "",
-            "street": "",
-            "company": "",
-            "country": "",
-            "lastname": "",
-            "firstname": "",
-            "countryISO": "",
-            "delivery_zip": "",
-            "date_of_birth": "",
-            "delivery_place": "",
-            "delivery_title": "",
-            "delivery_street": "",
-            "delivery_company": "",
-            "delivery_country": "",
-            "delivery_lastname": "",
-            "delivery_firstname": "",
-            "delivery_countryISO": ""
-        },
-        "invoice": {
-            "test": 1,
-            "number": "Unchained%20%235c5201e91f9212eecb13e71a",
-            "currency": "CHF",
-            "discount": {
-                "code": null,
-                "amount": 0,
-                "percentage": null
-            },
-            "products": [
-                {
-                    "sku": null,
-                    "name": "Unchained%20%235c5201e91f9212eecb13e71a",
-                    "price": 21580,
-                    "vatRate": null,
-                    "quantity": 1
-                }
-            ],
-            "paymentLink": {
-                "hash": "0bc521b98be6db1e6aad347b9527cbfb",
-                "email": "",
-                "referenceId": "0d4dcfd7467f83b2336cc5a1"
-            },
-            "referenceId": "0d4dcfd7467f83b2336cc5a1",
-            "custom_fields": [
-                {
-                    "name": "E-Mail",
-                    "type": "email",
-                    "value": "kaufmae@me.com"
-                }
-            ],
-            "originalAmount": 21580,
-            "refundedAmount": 0,
-            "shippingAmount": null,
-            "paymentRequestId": 15716869,
-            "googleAnalyticProducts": [
-                {
-                    "price": 215.8,
-                    "item_id": 19052505,
-                    "quantity": 1,
-                    "item_name": "Unchained%20%235c5201e91f9212eecb13e71a"
-                }
-            ]
-        },
-        "payment": {
-            "brand": "visa",
-            "wallet": null
-        },
-        "metadata": {},
-        "pageUuid": null,
-        "payoutUuid": null,
-        "payrexxFee": 0,
-        "refundable": false,
-        "referenceId": "0d4dcfd7467f83b2336cc5a1",
-        "subscription": null,
-        "partiallyRefundable": false
-    }
+  "transaction": {
+    "id": 14447028,
+    "psp": "Native_PSP",
+    "lang": "de",
+    "mode": "TEST",
+    "time": "2024-04-13 16:42:33",
+    "uuid": "27b4cf08",
+    "pspId": 44,
+    "amount": 21580,
+    "status": "reserved",
+    "contact": {
+      "id": 7656364,
+      "zip": "",
+      "uuid": "d67bd714",
+      "email": "kaufmae@me.com",
+      "phone": "",
+      "place": "",
+      "title": "",
+      "street": "",
+      "company": "",
+      "country": "",
+      "lastname": "",
+      "firstname": "",
+      "countryISO": "",
+      "delivery_zip": "",
+      "date_of_birth": "",
+      "delivery_place": "",
+      "delivery_title": "",
+      "delivery_street": "",
+      "delivery_company": "",
+      "delivery_country": "",
+      "delivery_lastname": "",
+      "delivery_firstname": "",
+      "delivery_countryISO": ""
+    },
+    "invoice": {
+      "test": 1,
+      "number": "Unchained%20%235c5201e91f9212eecb13e71a",
+      "currency": "CHF",
+      "discount": {
+        "code": null,
+        "amount": 0,
+        "percentage": null
+      },
+      "products": [
+        {
+          "sku": null,
+          "name": "Unchained%20%235c5201e91f9212eecb13e71a",
+          "price": 21580,
+          "vatRate": null,
+          "quantity": 1
+        }
+      ],
+      "paymentLink": {
+        "hash": "0bc521b98be6db1e6aad347b9527cbfb",
+        "email": "",
+        "referenceId": "0d4dcfd7467f83b2336cc5a1"
+      },
+      "referenceId": "0d4dcfd7467f83b2336cc5a1",
+      "custom_fields": [
+        {
+          "name": "E-Mail",
+          "type": "email",
+          "value": "kaufmae@me.com"
+        }
+      ],
+      "originalAmount": 21580,
+      "refundedAmount": 0,
+      "shippingAmount": null,
+      "paymentRequestId": 15716869,
+      "googleAnalyticProducts": [
+        {
+          "price": 215.8,
+          "item_id": 19052505,
+          "quantity": 1,
+          "item_name": "Unchained%20%235c5201e91f9212eecb13e71a"
+        }
+      ]
+    },
+    "payment": {
+      "brand": "visa",
+      "wallet": null
+    },
+    "metadata": {},
+    "pageUuid": null,
+    "payoutUuid": null,
+    "payrexxFee": 0,
+    "refundable": false,
+    "referenceId": "0d4dcfd7467f83b2336cc5a1",
+    "subscription": null,
+    "partiallyRefundable": false
+  }
 }

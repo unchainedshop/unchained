@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { WorkQueueQuery } from '@unchainedshop/core-worker/module/configureWorkerModule.js';
+import { WorkQueueQuery } from '@unchainedshop/core-worker/lib/module/configureWorkerModule.js';
 
 export default async function workQueueCount(
   root: never,

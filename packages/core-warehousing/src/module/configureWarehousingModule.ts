@@ -1,4 +1,4 @@
-import type { User } from '@unchainedshop/core-users';
+import { User } from '@unchainedshop/core-users';
 
 import { UnchainedCore } from '@unchainedshop/core';
 import {

@@ -27,14 +27,14 @@
   },
   "scripts": {
     "lint": "prettier -w .",
-    "clean": "rm -rf lib",
-    "build": "npm run clean && tsc",
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
     "start": "node lib/boot.js",
     "dev:run": "node --experimental-fetch --no-warnings --loader ts-node/esm boot.ts",
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@graphql-yoga/plugin-response-cache": "^3.10.0",
+    "@graphql-yoga/plugin-response-cache": "^3.12.3",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-delivery": "^3.0.0-alpha4",
@@ -58,14 +58,14 @@
     "passport-strategy": "^1.0.0",
     "postfinancecheckout": "^4.5.0",
     "serve-static": "^1.15.0",
-    "stripe": "^17.3.1",
+    "stripe": "^17.4.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.3.5",
+    "twilio": "^5.3.6",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",

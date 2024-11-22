@@ -1,12 +1,9 @@
-import type { OrderDiscount } from '@unchainedshop/core-orders';
-import type { UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { IProductPricingSheet, Product } from '@unchainedshop/core-products';
-
-import { Order, OrderPosition } from '../types.js';
+import { Order, OrderPosition, OrderDiscount, OrderDelivery } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { ordersSettings } from '../orders-settings.js';
-import { OrderDelivery } from '@unchainedshop/core-orders';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 
 export type OrderPositionsModule = {

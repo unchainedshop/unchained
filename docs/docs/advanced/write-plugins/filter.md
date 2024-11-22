@@ -20,7 +20,7 @@ Below is a simple filter plugin that will filter products based on there attribu
 
 ```typescript
 
-import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/core-filters';
+import { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/core-filters';
 import { Context } from '@unchainedshop/api';
 
 const ShopAttributeFilter: IFilterAdapter = {
@@ -156,7 +156,7 @@ Incase you only want to change implementation of only few functions and keep the
 Below is a simplified implementation of the `ShopAttributeFilter` above, this time it will use the default implantation and override `transformProductSelector` function only.
 
 ```typescript
-import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/core-filters';
+import { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/core-filters';
 import { Context } from '@unchainedshop/api';
 
 const ShopAttributeFilter: IFilterAdapter = {

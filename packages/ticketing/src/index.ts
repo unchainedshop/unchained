@@ -1,6 +1,6 @@
 import express from 'express';
 import { subscribe } from '@unchainedshop/events';
-import { RawPayloadType } from '@unchainedshop/events/EventDirector.js';
+import { RawPayloadType } from '@unchainedshop/events/lib/EventDirector.js';
 import { WorkerEventTypes, Work } from '@unchainedshop/core-worker';
 import { RendererTypes, registerRenderer } from './template-registry.js';
 import loadAppleWalletHandler from './mobile-tickets/apple-webservice.js';
@@ -9,7 +9,7 @@ import loadPDFHandler from './pdf-tickets/print-webservice.js';
 import passes from './module.js';
 import ticketing from './services.js';
 
-import type { TicketingAPI } from './types.js';
+import { TicketingAPI } from './types.js';
 import setupMagicKey from './magic-key.js';
 import { TicketingServices } from './services.js';
 

@@ -1,5 +1,5 @@
 import splitProperties from './splitProperties.js';
-import type { StatusResponseSuccess } from './api/types.js';
+import { StatusResponseSuccess } from './api/types.js';
 
 export default function parseRegistrationData(transaction: StatusResponseSuccess) {
   const parsed = Object.entries(transaction).reduce((acc, [objectKey, payload]) => {

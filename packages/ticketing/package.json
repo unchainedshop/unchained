@@ -3,24 +3,11 @@
   "version": "3.0.0-alpha7",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "exports": {
-    ".": "./lib/index.js",
-    "./*": "./lib/*"
-  },
-  "typesVersions": {
-    "*": {
-      "mobile-tickets/*": [
-        "./lib/mobile-tickets/*"
-      ],
-      "pdf-tickets/*": [
-        "./lib/pdf-tickets/*"
-      ]
-    }
-  },
   "type": "module",
   "scripts": {
-    "clean": "rm -rf lib",
-    "prepublishOnly": "npm run clean && tsc",
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -53,7 +40,7 @@
     "express": "^4.21.1"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-files": "^3.0.0-alpha4",
     "@unchainedshop/core-worker": "^3.0.0-alpha4",

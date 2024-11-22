@@ -1,4 +1,4 @@
-import type { Tree } from '@unchainedshop/utils';
+import { Tree } from '@unchainedshop/utils';
 import * as R from 'ramda';
 
 export const fillUp = <T>(arr: Array<T>, size: number): Array<T> =>

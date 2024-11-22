@@ -14,7 +14,7 @@ Below is an example implementation of `Pre-Paid INVOICE` payment provider type t
 
 ```typescript
 
-import type { IPaymentAdapter } from '@unchainedshop/core-payment';
+import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import {
   PaymentDirector,
   PaymentAdapter,

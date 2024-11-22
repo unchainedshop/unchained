@@ -1,8 +1,5 @@
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { createLogger } from '@unchainedshop/logger';
-
-const logger = createLogger('unchained:worker:zombie-killer');
 
 export const ZombieKillerWorker: IWorkerAdapter<
   { bulkImportMaxAgeInDays: number },
@@ -96,8 +93,6 @@ export const ZombieKillerWorker: IWorkerAdapter<
         fileIdsToRemove.push(media._id);
       });
 
-      logger.verbose(`File Id's to remove: ${fileIdsToRemove.join(', ')}`);
-
       const deletedFilesCount =
         fileIdsToRemove.length > 0
           ? await services.files.removeFiles(
@@ -131,7 +126,6 @@ export const ZombieKillerWorker: IWorkerAdapter<
         result,
       };
     } catch (err) {
-      logger.error(err.message, err);
       return {
         success: false,
         error: {

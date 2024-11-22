@@ -1,25 +1,17 @@
 {
-    "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
-      "declaration": true,
-      "declarationMap": true,
-      "esModuleInterop": true,
-      "forceConsistentCasingInFileNames": true,
-      "lib": [
-        "ES2022"
-      ],
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "preserveWatchOutput": true,
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "target": "esnext",
-      "types": [
-        "node",
-        "jest"
-      ]
-    },
-    "watchOptions": {
-      "excludeDirectories": ["./node_modules", "./lib"]
-    }
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "types": ["node", "jest"]
   }
+}

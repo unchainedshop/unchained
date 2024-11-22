@@ -3,55 +3,11 @@
   "version": "3.0.0-alpha7",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
-  "exports": {
-    ".": "./lib/plugins-index.js",
-    "./*": "./lib/*",
-    "./worker/BulkImportWorker": "./lib/worker/bulk-import",
-    "./worker/ZombieKillerWorker": "./lib/worker/zombie-killer",
-    "./worker/GenerateOrderWorker": "./lib/worker/enrollment-order-generator",
-    "./worker/MessageWorker": "./lib/worker/message"
-  },
-  "typesVersions": {
-    "*": {
-      "delivery/*": [
-        "./lib/delivery/*"
-      ],
-      "enrollments/*": [
-        "./lib/enrollments/*"
-      ],
-      "events/*": [
-        "./lib/events/*"
-      ],
-      "files/*": [
-        "./lib/files/*"
-      ],
-      "filters/*": [
-        "./lib/filters/*"
-      ],
-      "payment/*": [
-        "./lib/payment/*"
-      ],
-      "pricing/*": [
-        "./lib/pricing/*"
-      ],
-      "quotations/*": [
-        "./lib/quotations/*"
-      ],
-      "warehousing/*": [
-        "./lib/warehousing/*"
-      ],
-      "worker/*": [
-        "./lib/worker/*"
-      ],
-      "worker/GenerateOrderWorker": [
-        "./lib/worker/enrollment-order-generator"
-      ]
-    }
-  },
   "type": "module",
   "scripts": {
-    "clean": "rm -rf lib",
-    "prepublishOnly": "npm run clean && tsc",
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -81,14 +37,14 @@
     "memoizee": "^0.4.17",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "^17.3.1",
+    "stripe": "^17.4.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.3.5",
+    "twilio": "^5.3.6",
     "web-push": "^3.6.3"
   },
   "devDependencies": {
     "@redis/client": "^1.6.0",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-delivery": "^3.0.0-alpha4",
     "@unchainedshop/core-enrollments": "^3.0.0-alpha4",

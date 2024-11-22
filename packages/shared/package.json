@@ -1,9 +1,14 @@
 {
-    "name": "@unchainedshop/shared",
-    "private": true,
-    "version": "3.0.0-alpha7",
-    "dependencies": {
-        "@types/node": "^22.9.0",
-        "typescript": "^5.6.3"
-    }
+  "name": "@unchainedshop/shared",
+  "private": true,
+  "version": "3.0.0-alpha7",
+  "scripts": {
+    "clean": "",
+    "build": "",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "@types/node": "^22.9.1",
+    "typescript": "^5.6.3"
+  }
 }

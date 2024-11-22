@@ -2,7 +2,7 @@ import { Order } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/core-orders';
 import { IOrderPricingSheet } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
-import type { Stripe as StripeType } from 'stripe';
+import { Stripe as StripeType } from 'stripe';
 
 const logger = createLogger('unchained:plugins:payment:stripe');
 
@@ -17,7 +17,7 @@ export const initStripeClient = async (): Promise<StripeType> => {
   }
   const { default: Stripe } = await import('stripe');
   stripe = new Stripe(STRIPE_SECRET, {
-    apiVersion: '2024-10-28.acacia',
+    apiVersion: '2024-11-20.acacia',
   });
   return stripe;
 };

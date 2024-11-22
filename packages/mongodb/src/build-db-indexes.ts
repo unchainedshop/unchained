@@ -1,4 +1,4 @@
-import type { Collection, Document, CreateIndexesOptions, IndexDirection } from 'mongodb';
+import { Collection, Document, CreateIndexesOptions, IndexDirection } from 'mongodb';
 
 import { log, LogLevel } from '@unchainedshop/logger';
 

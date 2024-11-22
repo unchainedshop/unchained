@@ -2,24 +2,12 @@
   "name": "@unchainedshop/api",
   "version": "3.0.0-alpha7",
   "main": "lib/api-index.js",
-  "exports": {
-    ".": "./lib/api-index.js",
-    "./*": "./lib/*"
-  },
-  "typesVersions": {
-    "*": {
-      "express": [
-        "./lib/express/index.d.ts"
-      ],
-      "express/*": [
-        "./lib/express/*"
-      ]
-    }
-  },
+  "types": "lib/api-index.d.ts",
   "type": "module",
   "scripts": {
-    "clean": "rm -rf lib",
-    "prepublishOnly": "npm run clean && tsc",
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -40,7 +28,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "graphql-yoga": "^5.8.0"
+    "graphql-yoga": "^5.10.3"
   },
   "optionalDependencies": {
     "@fastify/cookie": "^11.0.1",
@@ -66,7 +54,7 @@
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "connect-mongo": "^5.1.0",
     "express": "^4.21.1",
     "express-session": "^1.18.1",

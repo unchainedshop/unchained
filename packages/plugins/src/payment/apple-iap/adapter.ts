@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { Context } from '@unchainedshop/api';
 import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';

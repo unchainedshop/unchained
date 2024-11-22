@@ -1,4 +1,4 @@
-import type e from 'express';
+import e from 'express';
 import { getCurrentContextResolver } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';

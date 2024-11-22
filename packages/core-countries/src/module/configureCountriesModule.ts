@@ -1,4 +1,4 @@
-import type { mongodb, TimestampFields, ModuleInput } from '@unchainedshop/mongodb';
+import { mongodb, TimestampFields, ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';

@@ -1,4 +1,4 @@
-import type DataLoader from 'dataloader';
+import DataLoader from 'dataloader';
 import { UnchainedCore } from '@unchainedshop/core';
 import { User } from '@unchainedshop/core-users';
 import { Product, ProductText, ProductMediaText, ProductMedia } from '@unchainedshop/core-products';

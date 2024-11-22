@@ -1,6 +1,7 @@
 import { Order } from '@unchainedshop/core-orders';
-import { PaymentCredentials, PaymentProvider } from './types.js';
+import { PaymentProvider } from './types.js';
 import { UnchainedCore } from '@unchainedshop/core';
+import { PaymentCredentials } from './db/PaymentCredentialsCollection.js';
 
 export type FilterProviders = (
   params: {

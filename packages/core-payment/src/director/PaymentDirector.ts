@@ -1,7 +1,7 @@
-import { IPaymentAdapter, IPaymentDirector, PaymentContext } from '@unchainedshop/core-payment';
 import { BaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
 import { PaymentError } from './PaymentError.js';
+import { IPaymentAdapter, IPaymentDirector, PaymentContext } from '../types.js';
 
 const logger = createLogger('unchained:core-payment');
 const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');

@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import fs from 'fs';
 import util from 'util';
 import { resolve } from 'path';

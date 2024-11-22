@@ -1,9 +1,12 @@
 import mustache from 'mustache';
-import { MessagingModule } from '@unchainedshop/core-messaging';
 import { createLogger } from '@unchainedshop/logger';
 import { ModuleInput } from '@unchainedshop/mongodb';
 
 export const messagingLogger = createLogger('unchained:core-messaging');
+
+export interface MessagingModule {
+  renderToText: (template: string, data: Record<string, any>) => string;
+}
 
 export const configureMessagingModule: (options: ModuleInput<unknown>) => MessagingModule = () => {
   return {

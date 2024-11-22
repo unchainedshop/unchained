@@ -1,7 +1,7 @@
 // https://api-reference.datatrans.ch/#operation/init
 import getPaths from '../getPaths.js';
 
-import type { FetchDatatransFn, SecureFieldsRequestPayload, SecureFieldsResponse } from './types.js';
+import { FetchDatatransFn, SecureFieldsRequestPayload, SecureFieldsResponse } from './types.js';
 
 const defaultRedirect = getPaths();
 

@@ -27,8 +27,8 @@
   },
   "scripts": {
     "lint": "prettier -w .",
-    "clean": "rm -rf lib",
-    "build": "npm run clean && tsc",
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
     "start": "node --env-file .env.defaults lib/boot.js",
     "dev:run": "node --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
     "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
@@ -41,7 +41,7 @@
     "fastify": "^5.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",

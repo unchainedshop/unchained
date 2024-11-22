@@ -1,5 +1,5 @@
-import type { ProductPricingCalculation } from '@unchainedshop/core-products';
-import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
+import { ProductPricingCalculation } from '@unchainedshop/core-products';
+import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 import { OrderPrice } from './director/OrderPricingDirector.js';
 
 export type OrderReport = {

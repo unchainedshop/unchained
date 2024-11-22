@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { URL } from 'url';
 import { Readable, PassThrough } from 'stream';
 import { pipeline } from 'stream/promises';

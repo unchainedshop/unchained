@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { ModuleInput } from '@unchainedshop/mongodb';
+import { ModuleInput, Address, Contact } from '@unchainedshop/mongodb';
 import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -17,7 +17,6 @@ import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
-import type { Address, Contact } from '@unchainedshop/mongodb';
 import { UserServices } from '../services/userServices.js';
 import { FileServices, FilesModule } from '@unchainedshop/core-files';
 

@@ -1,6 +1,8 @@
 export * from './types.js';
 export * from './module/configurePaymentModule.js';
 export * from './payment-settings.js';
+export * from './db/PaymentCredentialsCollection.js';
+export * from './db/PaymentProvidersCollection.js';
 
 export * from './director/PaymentDirector.js';
 export * from './director/PaymentAdapter.js';

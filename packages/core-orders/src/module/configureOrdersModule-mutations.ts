@@ -1,7 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/core';
-import { Order, OrderStatus } from '../types.js';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
+import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   Address,
@@ -10,7 +8,6 @@ import {
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { OrderPosition } from '@unchainedshop/core-orders';
 
 export interface OrderMutations {
   create: (doc: {

@@ -1,6 +1,6 @@
-import type { Work } from '@unchainedshop/core-worker';
-import type { TimestampFields } from '@unchainedshop/mongodb';
-import type { User } from '@unchainedshop/core-users';
+import { Work } from '@unchainedshop/core-worker';
+import { TimestampFields } from '@unchainedshop/mongodb';
+import { User } from '@unchainedshop/core-users';
 
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';

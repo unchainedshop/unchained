@@ -2,12 +2,9 @@ import { mkdtemp, writeFile } from 'fs/promises';
 import { join, isAbsolute } from 'path';
 import { tmpdir } from 'os';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import open from 'open';
 import nodemailer from 'nodemailer';
-
-const logger = createLogger('unchained:worker:email');
 
 export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
@@ -91,7 +88,6 @@ const EmailWorkerPlugin: IWorkerAdapter<
         ...rest,
       };
       if (checkEmailInterceptionEnabled()) {
-        logger.verbose('Mailman detected an outgoing email');
         await openInBrowser(sendMailOptions);
         return { success: true, result: { intercepted: true } };
       }

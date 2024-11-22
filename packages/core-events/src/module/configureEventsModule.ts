@@ -1,4 +1,4 @@
-import type { mongodb } from '@unchainedshop/mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 
 import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';

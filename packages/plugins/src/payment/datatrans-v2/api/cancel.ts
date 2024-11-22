@@ -1,4 +1,4 @@
-import type { FetchDatatransFn, CancelRequestPayload, CancelResponse } from './types.js';
+import { FetchDatatransFn, CancelRequestPayload, CancelResponse } from './types.js';
 
 export default async function cancel({
   transactionId,

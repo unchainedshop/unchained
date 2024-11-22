@@ -1,4 +1,3 @@
-import { Currency, CurrencyQuery } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -7,7 +6,7 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { CurrenciesCollection } from '../db/CurrenciesCollection.js';
+import { CurrenciesCollection, Currency, CurrencyQuery } from '../db/CurrenciesCollection.js';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 

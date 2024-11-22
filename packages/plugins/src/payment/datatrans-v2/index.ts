@@ -3,7 +3,7 @@ import { PaymentAdapter, PaymentError, PaymentDirector } from '@unchainedshop/co
 import { createLogger } from '@unchainedshop/logger';
 import { PaymentPricingRowCategory } from '@unchainedshop/core-payment';
 import createDatatransAPI from './api/index.js';
-import type {
+import {
   AuthorizeAuthenticatedResponseSuccess,
   AuthorizeResponseSuccess,
   InitResponseSuccess,

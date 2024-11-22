@@ -1,8 +1,5 @@
 import { MessagingDirector } from '@unchainedshop/core-messaging';
 import { WorkerAdapter, WorkerDirector, IWorkerAdapter, Work } from '@unchainedshop/core-worker';
-import { createLogger } from '@unchainedshop/logger';
-
-export const messagingLogger = createLogger('unchained:core-messaging');
 
 export const MessageWorker: IWorkerAdapter<
   { template: string; _id?: string; [x: string]: any },
@@ -42,7 +39,6 @@ export const MessageWorker: IWorkerAdapter<
       }
       return { success: true, result: { info: 'Skipped Message' } };
     } catch (err) {
-      messagingLogger.warn(err.stack);
       return {
         success: false,
         error: {

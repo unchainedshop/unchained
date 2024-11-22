@@ -1,13 +1,22 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { PaymentCredentials as PaymentCredentialsType } from '@unchainedshop/core-payment';
+import { TimestampFields } from '@unchainedshop/mongodb';
+
+export type PaymentCredentials = {
+  _id?: string;
+  paymentProviderId: string;
+  userId: string;
+  token?: string;
+  isPreferred?: boolean;
+  meta: any;
+} & TimestampFields;
 
 export const PaymentCredentialsCollection = async (db: mongodb.Db) => {
-  const PaymentCredentials = db.collection<PaymentCredentialsType>('payment_credentials');
+  const PaymentCredentialsCol = db.collection<PaymentCredentials>('payment_credentials');
 
-  await buildDbIndexes<PaymentCredentialsType>(PaymentCredentials, [
+  await buildDbIndexes<PaymentCredentials>(PaymentCredentialsCol, [
     { index: { paymentProviderId: 1 } },
     { index: { userId: 1 } },
   ]);
 
-  return PaymentCredentials;
+  return PaymentCredentialsCol;
 };

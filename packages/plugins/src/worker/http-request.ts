@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 

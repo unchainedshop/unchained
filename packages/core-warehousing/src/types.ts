@@ -1,5 +1,5 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import { TimestampFields } from '@unchainedshop/mongodb';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/core-products';
 import { Order } from '@unchainedshop/core-orders';

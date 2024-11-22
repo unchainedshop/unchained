@@ -1,4 +1,4 @@
-import type { Address } from '@unchainedshop/mongodb';
+import { Address } from '@unchainedshop/mongodb';
 
 export const formatAddress = (address: Address) => {
   return [

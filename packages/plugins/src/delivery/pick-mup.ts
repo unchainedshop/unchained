@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { DeliveryProviderType, IDeliveryAdapter } from '@unchainedshop/core-delivery';
 import { DeliveryAdapter, DeliveryDirector, DeliveryError } from '@unchainedshop/core-delivery';
 

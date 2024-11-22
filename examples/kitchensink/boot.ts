@@ -4,18 +4,18 @@ import http from 'http';
 import { useExecutionCancellation } from 'graphql-yoga';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import { connect } from '@unchainedshop/api/express/index.js';
+import { connect } from '@unchainedshop/api/lib/express/index.js';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 import { log } from '@unchainedshop/logger';
 import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
 import { TicketingAPI } from '@unchainedshop/ticketing';
 
 import serveStatic from 'serve-static';
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
+import '@unchainedshop/plugins/lib/pricing/discount-half-price-manual.js';
+import '@unchainedshop/plugins/lib/pricing/discount-100-off.js';
 
 import seed from './seed.js';
-import ticketingServices from '@unchainedshop/ticketing/services.js';
+import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
 import cookie from 'cookie';
 
 const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;

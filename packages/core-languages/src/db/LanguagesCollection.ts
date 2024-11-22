@@ -1,5 +1,10 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Language } from '@unchainedshop/core-languages';
+import { TimestampFields, buildDbIndexes, mongodb } from '@unchainedshop/mongodb';
+
+export type Language = {
+  _id: string;
+  isoCode: string;
+  isActive?: boolean;
+} & TimestampFields;
 
 export const LanguagesCollection = async (db: mongodb.Db) => {
   const Languages = db.collection<Language>('languages');

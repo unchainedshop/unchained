@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 export class SaferpayConnection {
   private baseUrl: string;
 

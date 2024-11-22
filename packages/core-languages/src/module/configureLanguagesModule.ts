@@ -3,19 +3,13 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   buildSortOptions,
-  TimestampFields,
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
-import { LanguagesCollection } from '../db/LanguagesCollection.js';
-
-export type Language = {
-  _id?: string;
-  isoCode: string;
-  isActive?: boolean;
-} & TimestampFields;
+import { Language, LanguagesCollection } from '../db/LanguagesCollection.js';
+import { UpdateFilter } from 'mongodb';
 
 export type LanguageQuery = {
   includeInactive?: boolean;
@@ -90,7 +84,7 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
       return language.isoCode === systemLocale.language;
     },
 
-    create: async (doc: Language) => {
+    create: async (doc: Partial<Language>) => {
       await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
       const { insertedId: languageId } = await Languages.insertOne({
         _id: generateDbObjectId(),
@@ -103,7 +97,7 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
       return languageId;
     },
 
-    update: async (languageId, doc) => {
+    update: async (languageId: string, doc: UpdateFilter<Language>['$set']) => {
       await Languages.updateOne(generateDbFilterById(languageId), {
         $set: {
           updated: new Date(),
@@ -115,7 +109,7 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
       return languageId;
     },
 
-    delete: async (languageId) => {
+    delete: async (languageId: string) => {
       const { modifiedCount: deletedCount } = await Languages.updateOne(
         generateDbFilterById(languageId),
         {

@@ -1,4 +1,4 @@
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import { TimestampFields } from '@unchainedshop/mongodb';
 
 export type Work = {
   _id?: string;

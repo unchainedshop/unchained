@@ -1,5 +1,5 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
-import { PaymentCredentials as PaymentCredentialsType } from '../types.js';
+import { PaymentCredentials as PaymentCredentialsType } from '../db/PaymentCredentialsCollection.js';
 
 export type PaymentCredentialsModules = {
   // Queries

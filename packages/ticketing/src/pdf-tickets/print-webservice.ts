@@ -1,5 +1,5 @@
-import { checkAction } from '@unchainedshop/api/acl.js';
-import { actions } from '@unchainedshop/api/roles/index.js';
+import { checkAction } from '@unchainedshop/api/lib/acl.js';
+import { actions } from '@unchainedshop/api/lib/roles/index.js';
 import express, { Request, Response } from 'express';
 import { Context } from '@unchainedshop/api';
 import { RendererTypes, getRenderer } from '../template-registry.js';

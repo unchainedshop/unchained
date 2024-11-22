@@ -1,9 +1,9 @@
 {
   "extends": "../shared/base.tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "lib"
+    "declarationDir": "./lib",
+    "rootDir": "./src",
+    "outDir": "./lib"
   },
-  "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
-  "include": ["./src"]
+  "exclude": ["**/*.test.ts", "**/*.test.js", "tests", "lib"]
 }

@@ -1,4 +1,4 @@
-import { resolveBestCountry, resolveBestSupported, slugify, systemLocale } from '@unchainedshop/utils';
+import { resolveBestCountry, resolveBestSupported, slugify, systemLocale } from './utils-index.js';
 import generateHashId from './generate-random-hash.js';
 
 describe('Utils', () => {

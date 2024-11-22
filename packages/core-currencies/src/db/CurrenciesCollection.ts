@@ -1,5 +1,18 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Currency } from '@unchainedshop/core-currencies';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export type Currency = {
+  _id?: string;
+  isoCode: string;
+  isActive: boolean;
+  contractAddress?: string;
+  decimals?: number;
+} & TimestampFields;
+
+export type CurrencyQuery = {
+  includeInactive?: boolean;
+  contractAddress?: string;
+  queryString?: string;
+};
 
 export const CurrenciesCollection = async (db: mongodb.Db) => {
   const Currencies = db.collection<Currency>('currencies');

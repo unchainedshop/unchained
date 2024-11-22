@@ -2,11 +2,8 @@ import { mongodb, generateDbFilterById } from '@unchainedshop/mongodb';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { emit, registerEvents } from '@unchainedshop/events';
 
-import type { Locker } from '@kontsedal/locco';
-import { Order, OrderStatus } from '../types.js';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
+import { Locker } from '@kontsedal/locco';
+import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
 import { UnchainedCore } from '@unchainedshop/core';
 
 import { ordersSettings } from '../orders-settings.js';

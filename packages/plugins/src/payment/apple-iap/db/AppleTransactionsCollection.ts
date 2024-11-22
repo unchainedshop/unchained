@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import { TimestampFields } from '@unchainedshop/mongodb';
 
 export type AppleTransaction = {
   _id?: string;
