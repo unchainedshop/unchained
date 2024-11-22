@@ -1,5 +1,3 @@
-import { productServices, ProductServices } from '@unchainedshop/core-products';
-
 import { migrateUserDataService } from './migrateUserDataService.js';
 import { updateUserAvatarAfterUploadService } from './updateUserAvatarAfterUploadService.js';
 import { linkFileService } from './linkFileService.js';
@@ -11,6 +9,7 @@ import { createDownloadStreamService } from './createDownloadStreamService.js';
 import { migrateBookmarksService } from './migrateBookmarksService.js';
 import { migrateOrderCartsService } from './migrateOrderCartService.js';
 import { nextUserCartService } from './nextUserCartService.js';
+import { removeProductService } from './removeProductService.js';
 
 export interface UserServices {
   updateUserAvatarAfterUpload: typeof updateUserAvatarAfterUploadService;
@@ -33,6 +32,10 @@ export interface BookmarkServices {
 export interface OrderServices {
   migrateOrderCarts: typeof migrateOrderCartsService;
   nextUserCart: typeof nextUserCartService;
+}
+
+export interface ProductServices {
+  removeProduct: typeof removeProductService;
 }
 
 export interface Services {
@@ -59,7 +62,9 @@ export default {
     migrateOrderCarts: migrateOrderCartsService,
     nextUserCart: nextUserCartService,
   },
-  products: productServices,
+  products: {
+    removeProduct: removeProductService,
+  },
   users: {
     migrateUserData: migrateUserDataService,
     updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,

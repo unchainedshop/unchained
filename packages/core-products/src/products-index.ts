@@ -1,6 +1,5 @@
 export * from './types.js';
 export * from './module/configureProductsModule.js';
-export * from './service/productServices.js';
 export * from './products-settings.js';
 
 export { ProductPricingAdapter } from './director/ProductPricingAdapter.js';
