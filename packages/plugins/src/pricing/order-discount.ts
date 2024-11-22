@@ -1,3 +1,4 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
 import {
   OrderPricingDirector,
@@ -6,7 +7,7 @@ import {
 } from '@unchainedshop/core-orders';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
-export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
+export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-discount',

@@ -1,18 +1,11 @@
 import { mongodb, generateDbFilterById } from '@unchainedshop/mongodb';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { emit, registerEvents } from '@unchainedshop/events';
-
 import { Locker } from '@kontsedal/locco';
 import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
-import { UnchainedCore } from '@unchainedshop/core';
-
 import { ordersSettings } from '../orders-settings.js';
 
-export type OrderContextParams<P> = (
-  order: Order,
-  params: P,
-  unchainedAPI: UnchainedCore,
-) => Promise<Order>;
+export type OrderContextParams<P> = (order: Order, params: P, unchainedAPI) => Promise<Order>;
 
 export type OrderTransactionContext = {
   paymentContext?: any;
@@ -22,11 +15,7 @@ export type OrderTransactionContext = {
 };
 
 export interface OrderProcessing {
-  checkout: (
-    orderId: string,
-    params: OrderTransactionContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
+  checkout: (orderId: string, params: OrderTransactionContext, unchainedAPI) => Promise<Order>;
   confirm: OrderContextParams<OrderTransactionContext>;
   reject: OrderContextParams<OrderTransactionContext>;
   processOrder: OrderContextParams<OrderTransactionContext>;
@@ -160,7 +149,7 @@ export const configureOrderModuleProcessing = ({
     return errors;
   };
 
-  const itemValidationErrors = async (order: Order, unchainedAPI: UnchainedCore) => {
+  const itemValidationErrors = async (order: Order, unchainedAPI) => {
     // Check if items are valid
     const orderPositions = await findOrderPositions(order);
     if (orderPositions.length === 0) {
@@ -204,7 +193,7 @@ export const configureOrderModuleProcessing = ({
     return validationErrors.flatMap((f) => f);
   };
 
-  const isAutoConfirmationEnabled = async (order: Order, unchainedAPI: UnchainedCore) => {
+  const isAutoConfirmationEnabled = async (order: Order, unchainedAPI) => {
     const { modules } = unchainedAPI;
 
     if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
@@ -226,7 +215,7 @@ export const configureOrderModuleProcessing = ({
     return true;
   };
 
-  const isAutoFullfillmentEnabled = async (order: Order, unchainedAPI: UnchainedCore) => {
+  const isAutoFullfillmentEnabled = async (order: Order, unchainedAPI) => {
     const { modules } = unchainedAPI;
 
     const orderPayment = await findOrderPayment(order);
@@ -251,7 +240,7 @@ export const configureOrderModuleProcessing = ({
   const findNextStatus = async (
     status: OrderStatus | null,
     order: Order,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ): Promise<OrderStatus | null> => {
     if (status === null) {
       return OrderStatus.PENDING;

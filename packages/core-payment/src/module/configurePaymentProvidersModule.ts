@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   PaymentChargeActionResult,
   PaymentContext,
@@ -40,14 +39,11 @@ export type PaymentProvidersModules = {
   providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
 
   // Payment adapter
-  findSupported: (
-    query: { order: Order },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Array<PaymentProvider>>;
+  findSupported: (query: { order: Order }, unchainedAPI) => Promise<Array<PaymentProvider>>;
   determineDefault: (
     paymentProviders: Array<PaymentProvider>,
     params: { order: Order; paymentCredentials?: Array<PaymentCredentials> },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<PaymentProvider>;
 
   findInterface: (query: PaymentProvider) => PaymentInterface;
@@ -58,50 +54,31 @@ export type PaymentProvidersModules = {
     currency: string;
   }) => IPaymentPricingSheet;
 
-  configurationError: (
-    paymentProvider: PaymentProvider,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<PaymentError>;
+  configurationError: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<PaymentError>;
 
-  isActive: (paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  isActive: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<boolean>;
 
-  isPayLaterAllowed: (paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  isPayLaterAllowed: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<boolean>;
 
   calculate: (
     pricingContext: PaymentPricingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Array<PaymentPricingCalculation>>;
 
   charge: (
     paymentProviderId: string,
     paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<PaymentChargeActionResult | false>;
-  register: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<any>;
-  sign: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<string>;
+  register: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<any>;
+  sign: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<string>;
   validate: (
     paymentProviderId: string,
     paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<boolean>;
-  cancel: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<boolean>;
-  confirm: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<boolean>;
+  cancel: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<boolean>;
+  confirm: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<boolean>;
 };
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
@@ -128,7 +105,7 @@ export const configurePaymentProvidersModule = (
   const getPaymentAdapter = async (
     paymentProviderId: string,
     paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     const provider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId), {});
 

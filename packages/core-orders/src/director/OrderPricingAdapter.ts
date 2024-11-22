@@ -1,10 +1,9 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { BasePricingAdapter, IPricingAdapter, BasePricingAdapterContext } from '@unchainedshop/utils';
 import { IOrderPricingSheet, OrderPricingCalculation, OrderPricingSheet } from './OrderPricingSheet.js';
 import { Order, OrderDelivery, OrderDiscount, OrderPayment, OrderPosition } from '../types.js';
 import { User } from '@unchainedshop/core-users';
 
-export interface OrderPricingAdapterContext extends BasePricingAdapterContext, UnchainedCore {
+export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   currency?: string;
   discounts: Array<OrderDiscount>;
   order: Order;
@@ -21,8 +20,8 @@ export interface OrderPricingContext {
   orderPayment: OrderPayment;
 }
 
-export type IOrderPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
-  OrderPricingAdapterContext,
+export type IOrderPricingAdapter<UnchainedAPI = any, DiscountConfiguration = unknown> = IPricingAdapter<
+  OrderPricingAdapterContext & UnchainedAPI,
   OrderPricingCalculation,
   IOrderPricingSheet,
   DiscountConfiguration
@@ -30,11 +29,7 @@ export type IOrderPricingAdapter<DiscountConfiguration = unknown> = IPricingAdap
 
 const basePricingAdapter = BasePricingAdapter<OrderPricingAdapterContext, OrderPricingCalculation>();
 
-export const OrderPricingAdapter: IPricingAdapter<
-  OrderPricingAdapterContext,
-  OrderPricingCalculation,
-  IOrderPricingSheet
-> = {
+export const OrderPricingAdapter: IOrderPricingAdapter = {
   ...basePricingAdapter,
 
   isActivatedFor: () => {

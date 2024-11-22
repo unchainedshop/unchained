@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { Filter, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { Product } from '@unchainedshop/core-products';
@@ -26,5 +25,5 @@ export interface SearchAssortmentConfiguration extends SearchConfiguration {
 export type FilterProductIds = (
   filter: Filter,
   params: { values: Array<string>; forceLiveCollection?: boolean },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => Promise<Array<string>>;

@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { subscribe } from '@unchainedshop/events';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { WorkData } from '../worker-index.js';
 import { Work } from '../types.js';
 
@@ -19,7 +18,7 @@ export type IScheduler<P> = {
 
   actions: (
     params: P,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     start: () => void;
     stop: () => void;

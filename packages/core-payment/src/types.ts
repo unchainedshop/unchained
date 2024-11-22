@@ -2,7 +2,6 @@ import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { TimestampFields } from '@unchainedshop/mongodb';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/core-orders';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export enum PaymentProviderType {
   CARD = 'CARD',
@@ -61,26 +60,25 @@ export interface IPaymentActions {
   confirm: (transactionContext?: any) => Promise<boolean>;
 }
 
-export type IPaymentAdapter = IBaseAdapter & {
+export type IPaymentAdapter<UnchainedAPI = any> = IBaseAdapter & {
   initialConfiguration: PaymentConfiguration;
 
   typeSupported: (type: PaymentProviderType) => boolean;
 
-  actions: (params: {
-    config: PaymentConfiguration;
-    paymentContext: PaymentContext & {
+  actions: (
+    config: PaymentConfiguration,
+    context: PaymentContext & {
       paymentProviderId: string;
       paymentProvider: PaymentProvider;
-    };
-    context: UnchainedCore;
-  }) => IPaymentActions;
+    } & UnchainedAPI,
+  ) => IPaymentActions;
 };
 
 export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   actions: (
     paymentProvider: PaymentProvider,
     paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<IPaymentActions>;
 };
 

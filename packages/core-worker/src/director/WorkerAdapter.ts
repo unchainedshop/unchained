@@ -1,6 +1,5 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
 export interface WorkResult<Result> {
   success: boolean;
   result?: Result;
@@ -12,7 +11,7 @@ export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   external: boolean;
   maxParallelAllocations?: number;
 
-  doWork: (input: Input, unchainedAPI: UnchainedCore, workId: string) => Promise<WorkResult<Output>>;
+  doWork: (input: Input, unchainedAPI, workId: string) => Promise<WorkResult<Output>>;
 };
 
 export const WorkerAdapter: Omit<IWorkerAdapter<any, void>, 'key' | 'label' | 'type' | 'version'> = {

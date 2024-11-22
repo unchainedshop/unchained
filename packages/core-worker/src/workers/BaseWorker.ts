@@ -1,7 +1,6 @@
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { Work } from '../types.js';
 
 export type WorkData = Pick<
@@ -20,7 +19,7 @@ export type IWorker<P extends { workerId?: string }> = {
 
   actions: (
     params: P,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work | null>>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;

@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
@@ -32,19 +31,12 @@ export type OrderPaymentsModule = {
   discounts: (
     orderPayment: OrderPayment,
     params: { order: Order; orderDiscount: OrderDiscount },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Array<OrderPricingDiscount>;
-  isBlockingOrderConfirmation: (
-    orderPayment: OrderPayment,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<boolean>;
+  isBlockingOrderConfirmation: (orderPayment: OrderPayment, unchainedAPI) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
   normalizedStatus: (orderPayment: OrderPayment) => string;
-  pricingSheet: (
-    orderPayment: OrderPayment,
-    currency: string,
-    unchainedAPI: UnchainedCore,
-  ) => IPaymentPricingSheet;
+  pricingSheet: (orderPayment: OrderPayment, currency: string, unchainedAPI) => IPaymentPricingSheet;
 
   // Mutations
   create: (doc: OrderPayment) => Promise<OrderPayment>;
@@ -55,7 +47,7 @@ export type OrderPaymentsModule = {
       transactionContext: any;
       userId: string;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderPayment>;
 
   confirm: (
@@ -64,7 +56,7 @@ export type OrderPaymentsModule = {
       transactionContext: any;
       userId: string;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderPayment>;
 
   charge: (
@@ -73,7 +65,7 @@ export type OrderPaymentsModule = {
       transactionContext: any;
       userId: string;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderPayment>;
 
   logEvent: (orderPaymentId: string, event: any) => Promise<boolean>;
@@ -87,7 +79,7 @@ export type OrderPaymentsModule = {
     params: { transactionId?: string; status: OrderPaymentStatus; info?: string },
   ) => Promise<OrderPayment>;
 
-  updateCalculation: (orderPayment: OrderPayment, unchainedAPI: UnchainedCore) => Promise<OrderPayment>;
+  updateCalculation: (orderPayment: OrderPayment, unchainedAPI) => Promise<OrderPayment>;
 };
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];

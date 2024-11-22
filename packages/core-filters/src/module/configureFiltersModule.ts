@@ -9,7 +9,6 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/core';
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';
@@ -43,25 +42,21 @@ export type FiltersModule = {
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
 
-  invalidateCache: (query: mongodb.Filter<Filter>, unchainedAPI: UnchainedCore) => Promise<void>;
+  invalidateCache: (query: mongodb.Filter<Filter>, unchainedAPI) => Promise<void>;
 
   // Mutations
   create: (
     doc: Filter & { title: string; locale: string },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
     options?: { skipInvalidation?: boolean },
   ) => Promise<Filter>;
 
-  createFilterOption: (
-    filterId: string,
-    option: { value: string },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Filter>;
+  createFilterOption: (filterId: string, option: { value: string }, unchainedAPI) => Promise<Filter>;
 
   update: (
     filterId: string,
     doc: Filter,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
     options?: { skipInvalidation?: boolean },
   ) => Promise<Filter>;
 
@@ -72,7 +67,7 @@ export type FiltersModule = {
       filterId: string;
       filterOptionValue?: string;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Filter>;
 
   /*
@@ -117,7 +112,7 @@ export const configureFiltersModule = async ({
   const findProductIds = async (
     filter: Filter,
     { value }: { value?: boolean | string },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     const { modules } = unchainedAPI;
     const director = await FilterDirector.actions({ filter, searchQuery: {} }, unchainedAPI);
@@ -138,7 +133,7 @@ export const configureFiltersModule = async ({
 
   const buildProductIdMap = async (
     filter: Filter,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ): Promise<[Array<string>, Record<string, Array<string>>]> => {
     const allProductIds = await findProductIds(filter, {}, unchainedAPI);
     const productIdsMap =
@@ -162,7 +157,7 @@ export const configureFiltersModule = async ({
     async function filterProductIdsRaw(
       filter: Filter,
       { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
-      unchainedAPI: UnchainedCore,
+      unchainedAPI,
     ) {
       const getProductIds =
         (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
@@ -186,7 +181,7 @@ export const configureFiltersModule = async ({
     },
   );
 
-  const invalidateProductIdCache = async (filter: Filter, unchainedAPI: UnchainedCore) => {
+  const invalidateProductIdCache = async (filter: Filter, unchainedAPI) => {
     if (!filter) return;
 
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
@@ -195,7 +190,7 @@ export const configureFiltersModule = async ({
     await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   };
 
-  const invalidateCache = async (selector: mongodb.Filter<Filter>, unchainedAPI: UnchainedCore) => {
+  const invalidateCache = async (selector: mongodb.Filter<Filter>, unchainedAPI) => {
     log('Filters: Start invalidating filter caches', {
       level: LogLevel.Verbose,
     });

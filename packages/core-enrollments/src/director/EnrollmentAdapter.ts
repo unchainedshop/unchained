@@ -44,7 +44,7 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
 
       nextPeriod: async () => {
         const { enrollment } = context;
-        const product = await context.modules.products.findProduct({
+        const product = await (context as any).modules.products.findProduct({
           productId: enrollment.productId,
         });
         const plan = product?.plan;

@@ -1,6 +1,4 @@
 import { WorkData, IWorkerAdapter, WorkResult } from '../worker-index.js';
-import { UnchainedCore } from '@unchainedshop/core';
-
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { Work } from '../types.js';
@@ -28,7 +26,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   disableAutoscheduling: (scheduleId: string) => void;
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
-  doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
+  doWork: (work: Work, unchainedAPI) => Promise<WorkResult<any>>;
 };
 
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();

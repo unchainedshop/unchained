@@ -13,6 +13,7 @@ import {
 } from './api/types.js';
 import parseRegistrationData from './parseRegistrationData.js';
 import roundedAmountFromOrder from './roundedAmountFromOrder.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export * from './middleware.js';
 
@@ -39,7 +40,7 @@ const throwIfResponseError = (result) => {
   }
 };
 
-const Datatrans: IPaymentAdapter = {
+const Datatrans: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.datatrans',
@@ -57,11 +58,11 @@ const Datatrans: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const { modules } = params.context;
+  actions: (config, context) => {
+    const { modules } = context;
 
     const getMerchantId = (): string | undefined => {
-      return params.config.find((item) => item.key === 'merchantId')?.value || DATATRANS_MERCHANT_ID;
+      return config.find((item) => item.key === 'merchantId')?.value || DATATRANS_MERCHANT_ID;
     };
 
     const api = () => {
@@ -70,7 +71,7 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const shouldSettleInUnchained = () => {
-      return params.config.reduce((current, item) => {
+      return config.reduce((current, item) => {
         if (item.key === 'settleInUnchained') return Boolean(item.value);
         return current;
       }, true);
@@ -83,18 +84,18 @@ const Datatrans: IPaymentAdapter = {
         commission: number;
       }[]
     > => {
-      const { order, orderPayment } = params.paymentContext;
+      const { order, orderPayment } = context;
 
       const pricingForOrderPayment = modules.orders.payments.pricingSheet(
         orderPayment,
         order.currency,
-        params.context,
+        context,
       );
       const pricing = modules.orders.pricingSheet(order);
       const { amount: total } = pricing.total({ useNetPrice: false });
 
       return Promise.all(
-        params.config
+        config
           .filter((item) => item.key === 'marketplaceSplit')
           .map((item) => {
             const [subMerchantId, staticDiscountId, sharePercentage] = item.value
@@ -119,11 +120,11 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const authorize = async ({ paymentCredentials, ...arbitraryFields }): Promise<string> => {
-      const { order, orderPayment } = params.paymentContext;
+      const { order, orderPayment } = context;
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
-      const userId = order?.userId || params.paymentContext?.userId;
+      const userId = order?.userId || context?.userId;
       const refno2 = userId;
-      const { currency, amount } = roundedAmountFromOrder(order, params.context);
+      const { currency, amount } = roundedAmountFromOrder(order, context);
       const splits = await getMarketplaceSplits();
       const result = await api().authorize({
         ...arbitraryFields,
@@ -152,8 +153,8 @@ const Datatrans: IPaymentAdapter = {
       refno2,
       ...arbitraryFields
     }): Promise<string> => {
-      const { order } = params.paymentContext;
-      const { currency, amount } = roundedAmountFromOrder(order, params.context);
+      const { order } = context;
+      const { currency, amount } = roundedAmountFromOrder(order, context);
       const result = await api().authorizeAuthenticated({
         ...arbitraryFields,
         transactionId,
@@ -168,8 +169,8 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const isTransactionAmountValid = (transaction: StatusResponseSuccess): boolean => {
-      const { order } = params.paymentContext;
-      const { currency, amount } = roundedAmountFromOrder(order, params.context);
+      const { order } = context;
+      const { currency, amount } = roundedAmountFromOrder(order, context);
       if (
         transaction.currency !== currency ||
         (transaction.detail.authorize as any)?.amount !== amount
@@ -202,8 +203,8 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
-      const { order } = params.paymentContext;
-      const { currency, amount } = roundedAmountFromOrder(order, params.context);
+      const { order } = context;
+      const { currency, amount } = roundedAmountFromOrder(order, context);
       const splits = await getMarketplaceSplits();
       const result = await api().settle({
         transactionId,
@@ -232,7 +233,7 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const adapterActions = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       configurationError() {
         if (!getMerchantId() || !DATATRANS_SECRET || !DATATRANS_SIGN_KEY) {
@@ -252,14 +253,14 @@ const Datatrans: IPaymentAdapter = {
 
       async sign(transactionContext: any = {}) {
         const { useSecureFields = false, ...arbitraryFields } = transactionContext || {};
-        const { orderPayment, paymentProviderId, order } = params.paymentContext;
+        const { orderPayment, paymentProviderId, order } = context;
         const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
           'base64',
         );
-        const userId = order?.userId || params.paymentContext?.userId;
+        const userId = order?.userId || context?.userId;
         const refno2 = userId;
         const price: { amount?: number; currency?: string } = order
-          ? roundedAmountFromOrder(order, params.context)
+          ? roundedAmountFromOrder(order, context)
           : {};
 
         if (useSecureFields) {
@@ -314,7 +315,7 @@ const Datatrans: IPaymentAdapter = {
 
       async confirm() {
         if (!shouldSettleInUnchained()) return false;
-        const { orderPayment, transactionContext } = params.paymentContext;
+        const { orderPayment, transactionContext } = context;
         const { transactionId } = orderPayment;
 
         const { extensions } = transactionContext || {};
@@ -344,7 +345,7 @@ const Datatrans: IPaymentAdapter = {
 
       async cancel() {
         if (!shouldSettleInUnchained()) return false;
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment } = context;
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;

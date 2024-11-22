@@ -32,14 +32,11 @@ export const PaymentDirector: IPaymentDirector = {
       newPaymentContext.order = order;
     }
 
-    const adapter = Adapter.actions({
-      config: paymentProvider.configuration,
-      paymentContext: {
-        paymentProvider,
-        paymentProviderId: paymentProvider._id,
-        ...newPaymentContext,
-      },
-      context: unchainedAPI,
+    const adapter = Adapter.actions(paymentProvider.configuration, {
+      paymentProvider,
+      paymentProviderId: paymentProvider._id,
+      ...newPaymentContext,
+      ...unchainedAPI,
     });
 
     return {

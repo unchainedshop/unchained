@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   Product,
   ProductAssignment,
@@ -122,7 +121,7 @@ export type ProductsModule = {
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
   // Transformations
-  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown, UnchainedCore>;
+  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown, any>;
 
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
@@ -149,7 +148,7 @@ export type ProductsModule = {
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Product>;
 
   prices: {
@@ -168,7 +167,7 @@ export type ProductsModule = {
         useNetPrice?: boolean;
         configuration?: Array<ProductConfiguration>;
       },
-      unchainedAPI: UnchainedCore,
+      unchainedAPI,
     ) => Promise<ProductPrice>;
 
     catalogPrices: (prodct: Product) => Array<ProductPrice>;
@@ -204,7 +203,7 @@ export type ProductsModule = {
         useNetPrice?: boolean;
         vectors: Array<ProductConfiguration>;
       },
-      unchainedAPI: UnchainedCore,
+      unchainedAPI,
     ) => Promise<ProductPriceRange>;
 
     rates: {
@@ -226,7 +225,7 @@ export type ProductsModule = {
 
   calculate: (
     pricingContext: ProductPricingContext & { item: OrderPosition },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations

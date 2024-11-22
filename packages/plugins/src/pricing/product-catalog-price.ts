@@ -1,3 +1,4 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IProductPricingAdapter } from '@unchainedshop/core-products';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
@@ -23,7 +24,7 @@ export const resolveCurrency = memoizee(
   },
 );
 
-export const ProductPrice: IProductPricingAdapter = {
+export const ProductPrice: IProductPricingAdapter<UnchainedCore> = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-price',

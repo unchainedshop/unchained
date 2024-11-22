@@ -1,3 +1,4 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
@@ -6,7 +7,7 @@ const logger = createLogger('unchained:core-payment:braintree');
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
-const BraintreeDirect: IPaymentAdapter = {
+const BraintreeDirect: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.braintree-direct',
@@ -28,16 +29,16 @@ const BraintreeDirect: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
+  actions: (config, context) => {
     const getPublicKey = () => {
-      return params.config.reduce((current, item) => {
+      return config.reduce((current, item) => {
         if (item.key === 'publicKey') return item.value;
         return current;
       }, null);
     };
 
     const getMerchantId = () => {
-      return params.config.reduce((current, item) => {
+      return config.reduce((current, item) => {
         if (item.key === 'merchantId') return item.value;
         return current;
       }, null);
@@ -69,7 +70,7 @@ const BraintreeDirect: IPaymentAdapter = {
     };
 
     const adapter = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       configurationError: () => {
         const publicCredentialsValid =
@@ -103,8 +104,7 @@ const BraintreeDirect: IPaymentAdapter = {
       },
 
       charge: async ({ paypalPaymentMethodNonce }) => {
-        const { modules } = params.context;
-        const { order } = params.paymentContext;
+        const { modules, order } = context;
         if (!paypalPaymentMethodNonce)
           throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
 

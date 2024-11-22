@@ -201,7 +201,7 @@ export const appleIAPHandler = async (req, res) => {
   res.end();
 };
 
-const AppleIAP: IPaymentAdapter = {
+const AppleIAP: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.apple-iap',
@@ -213,11 +213,11 @@ const AppleIAP: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const { modules } = params.context;
+  actions: (params, context) => {
+    const { modules } = context;
 
     const adapterActions = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(params, context),
 
       configurationError() {
         // eslint-disable-line
@@ -278,11 +278,10 @@ const AppleIAP: IPaymentAdapter = {
 
       // eslint-disable-next-line
       async charge(transactionContext) {
-        const { order } = params.paymentContext;
+        const { order } = context;
         const { meta, paymentCredentials, receiptData } = transactionContext || {};
         const { transactionIdentifier } = meta || {};
-        const appleTransactions = (params.context.modules as any)
-          .appleTransactions as AppleTransactionsModule;
+        const appleTransactions = (context.modules as any).appleTransactions as AppleTransactionsModule;
 
         if (!transactionIdentifier) {
           throw new Error('Apple IAP Plugin: You have to set the transaction id on the order payment');
@@ -343,7 +342,7 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
-        const userId = order?.userId || params.paymentContext?.userId;
+        const userId = order?.userId || context?.userId;
         await appleTransactions.createTransaction(
           {
             _id: transactionIdentifier,

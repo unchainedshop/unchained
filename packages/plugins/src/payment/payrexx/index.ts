@@ -3,12 +3,13 @@ import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/co
 import { createLogger } from '@unchainedshop/logger';
 import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.js';
 import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export * from './middleware.js';
 
 const logger = createLogger('unchained:core-payment:payrexx');
 
-const Payrexx: IPaymentAdapter = {
+const Payrexx: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.payrexx',
@@ -19,17 +20,17 @@ const Payrexx: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const { modules } = params.context;
+  actions: (config, context) => {
+    const { modules } = context;
 
     const getInstance = () => {
-      return params.config.find((c) => c.key === 'instance')?.value;
+      return config.find((c) => c.key === 'instance')?.value;
     };
 
     const api = createPayrexxAPI(getInstance(), process.env.PAYREXX_SECRET);
 
     const adapterActions = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       configurationError() {
         if (!process.env.PAYREXX_SECRET) {
@@ -51,7 +52,7 @@ const Payrexx: IPaymentAdapter = {
       },
 
       sign: async (transactionContext = {}) => {
-        const { orderPayment, userId, order } = params.paymentContext;
+        const { orderPayment, userId, order } = context;
         if (orderPayment) {
           // Order Checkout signing (One-time payment)
           const pricing = await modules.orders.pricingSheet(order);
@@ -100,7 +101,7 @@ const Payrexx: IPaymentAdapter = {
       },
 
       async confirm() {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment } = context;
         const { transactionId } = orderPayment;
 
         if (!transactionId) {
@@ -133,7 +134,7 @@ const Payrexx: IPaymentAdapter = {
       },
 
       async cancel() {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment } = context;
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;
@@ -164,7 +165,7 @@ const Payrexx: IPaymentAdapter = {
           throw new Error('You have to provide gatewayId or paymentCredentials');
         }
 
-        const { order } = params.paymentContext;
+        const { order } = context;
         const orderPayment = await modules.orders.payments.findOrderPayment({
           orderPaymentId: order.paymentId,
         });

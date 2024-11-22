@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -25,16 +24,8 @@ export interface OrderMutations {
   setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
   moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
 
-  setDeliveryProvider: (
-    orderId: string,
-    deliveryProviderId: string,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
-  setPaymentProvider: (
-    orderId: string,
-    paymentProviderId: string,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
+  setDeliveryProvider: (orderId: string, deliveryProviderId: string, unchainedAPI) => Promise<Order>;
+  setPaymentProvider: (orderId: string, paymentProviderId: string, unchainedAPI) => Promise<Order>;
 
   updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
   updateContact: (orderId: string, contact: Contact) => Promise<Order>;

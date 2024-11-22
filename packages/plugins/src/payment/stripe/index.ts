@@ -2,12 +2,13 @@ import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import stripeClient, { createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export * from './middleware.js';
 
 const logger = createLogger('unchained:core-payment:stripe');
 
-const Stripe: IPaymentAdapter = {
+const Stripe: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.stripe',
@@ -18,13 +19,13 @@ const Stripe: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const { modules } = params.context;
+  actions: (config, context) => {
+    const { modules } = context;
 
-    const descriptorPrefix = params.config.find(({ key }) => key === 'descriptorPrefix')?.value;
+    const descriptorPrefix = config.find(({ key }) => key === 'descriptorPrefix')?.value;
 
     const getUserData = async (forcedUserId) => {
-      const userId = forcedUserId || params.paymentContext?.userId;
+      const userId = forcedUserId || context?.userId;
       const user = await modules.users.findUserById(userId);
       const email = modules.users.primaryEmail(user)?.address;
       const name = user.profile.displayName || user.username || email;
@@ -35,7 +36,7 @@ const Stripe: IPaymentAdapter = {
       };
     };
     const adapterActions = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       configurationError() {
         const stripe = stripeClient();
@@ -82,7 +83,7 @@ const Stripe: IPaymentAdapter = {
       },
 
       sign: async (transactionContext = {}) => {
-        const { orderPayment, order, paymentProviderId } = params.paymentContext;
+        const { orderPayment, order, paymentProviderId } = context;
 
         if (orderPayment) {
           const pricing = await modules.orders.pricingSheet(order);
@@ -108,7 +109,7 @@ const Stripe: IPaymentAdapter = {
           throw new Error('You have to provide paymentIntentId or paymentCredentials');
         }
 
-        const { order } = params.paymentContext;
+        const { order } = context;
         const orderPayment = await modules.orders.payments.findOrderPayment({
           orderPaymentId: order.paymentId,
         });

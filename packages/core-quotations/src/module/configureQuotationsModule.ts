@@ -1,5 +1,4 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
 import { Quotation, QuotationItemConfiguration, QuotationProposal } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -46,7 +45,7 @@ export interface QuotationTransformations {
 export type QuotationContextParams = (
   quotation: Quotation,
   params: { quotationContext?: any },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => Promise<Quotation>;
 
 // Mutations
@@ -57,7 +56,7 @@ export interface QuotationData {
   userId: string;
 }
 export interface QuotationMutations {
-  create: (doc: QuotationData, unchainedAPI: UnchainedCore) => Promise<Quotation>;
+  create: (doc: QuotationData, unchainedAPI) => Promise<Quotation>;
 
   updateContext: (quotationId: string, context: any) => Promise<Quotation | null>;
 
@@ -70,14 +69,14 @@ export interface QuotationMutations {
 }
 
 export interface QuotationProcessing {
-  fullfillQuotation: (quotationId: string, info: any, unchainedAPI: UnchainedCore) => Promise<Quotation>;
+  fullfillQuotation: (quotationId: string, info: any, unchainedAPI) => Promise<Quotation>;
   proposeQuotation: QuotationContextParams;
   rejectQuotation: QuotationContextParams;
   verifyQuotation: QuotationContextParams;
   transformItemConfiguration: (
     quotation: Quotation,
     configuration: QuotationItemConfiguration,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<QuotationItemConfiguration>;
 }
 
@@ -125,10 +124,7 @@ export const configureQuotationsModule = async ({
     return findNewQuotationNumber(quotation, index + 1);
   };
 
-  const findNextStatus = async (
-    quotation: Quotation,
-    unchainedAPI: UnchainedCore,
-  ): Promise<QuotationStatus> => {
+  const findNextStatus = async (quotation: Quotation, unchainedAPI): Promise<QuotationStatus> => {
     let status = quotation.status as QuotationStatus;
     const director = await QuotationDirector.actions({ quotation }, unchainedAPI);
 
@@ -200,7 +196,7 @@ export const configureQuotationsModule = async ({
   const processQuotation = async (
     initialQuotation: Quotation,
     params: { quotationContext?: any },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     const { modules } = unchainedAPI;
 
@@ -236,7 +232,7 @@ export const configureQuotationsModule = async ({
     return updateStatus(quotation._id, { status: nextStatus, info: 'quotation processed' });
   };
 
-  const sendStatusToCustomer = async (quotation: Quotation, unchainedAPI: UnchainedCore) => {
+  const sendStatusToCustomer = async (quotation: Quotation, unchainedAPI) => {
     const { modules } = unchainedAPI;
 
     const user = await modules.users.findUserById(quotation.userId);

@@ -16,7 +16,6 @@ import {
   SearchProductConfiguration,
 } from '../search/search.js';
 import { SearchQuery, Filter } from '../types.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { Assortment } from '@unchainedshop/core-assortments';
 
 export type SearchProducts = {
@@ -34,13 +33,13 @@ export type FilterSearchModule = {
   searchProducts: (
     searchQuery: SearchQuery,
     params: { forceLiveCollection?: boolean },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<SearchProducts>;
 
   searchAssortments: (
     searchQuery: SearchQuery,
     params: { forceLiveCollection?: boolean },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<SearchAssortments>;
 };
 

@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
@@ -17,19 +16,12 @@ export type OrderDeliveriesModule = {
   discounts: (
     orderDelivery: OrderDelivery,
     params: { order: Order; orderDiscount: OrderDiscount },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Array<OrderPricingDiscount>;
-  isBlockingOrderConfirmation: (
-    orderDelivery: OrderDelivery,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<boolean>;
+  isBlockingOrderConfirmation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
-  pricingSheet: (
-    orderDelivery: OrderDelivery,
-    currency: string,
-    unchainedAPI: UnchainedCore,
-  ) => IDeliveryPricingSheet;
+  pricingSheet: (orderDelivery: OrderDelivery, currency: string, unchainedAPI) => IDeliveryPricingSheet;
 
   // Mutations
   create: (doc: OrderDelivery) => Promise<OrderDelivery>;
@@ -37,15 +29,12 @@ export type OrderDeliveriesModule = {
 
   markAsDelivered: (orderDelivery: OrderDelivery) => Promise<void>;
 
-  activePickUpLocation: (
-    orderDelivery: OrderDelivery,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<DeliveryLocation | null>;
+  activePickUpLocation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<DeliveryLocation | null>;
 
   send: (
     orderDelivery: OrderDelivery,
     params: { order: Order; deliveryContext?: any },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderDelivery>;
 
   updateContext: (orderDeliveryId: string, context: any) => Promise<OrderDelivery | null>;
@@ -55,10 +44,7 @@ export type OrderDeliveriesModule = {
     params: { status: OrderDeliveryStatus; info?: string },
   ) => Promise<OrderDelivery>;
 
-  updateCalculation: (
-    orderDelivery: OrderDelivery,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<OrderDelivery>;
+  updateCalculation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<OrderDelivery>;
 };
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];

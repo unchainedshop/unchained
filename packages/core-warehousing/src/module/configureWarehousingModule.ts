@@ -1,6 +1,3 @@
-import { User } from '@unchainedshop/core-users';
-
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   WarehousingContext,
   WarehousingProvider,
@@ -14,9 +11,9 @@ import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
 import { WarehousingError } from '../warehousing-index.js';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
+import type { Product } from '@unchainedshop/core-products';
+import type { User } from '@unchainedshop/core-users';
 
 export type WarehousingModule = {
   // Queries
@@ -38,26 +35,23 @@ export type WarehousingModule = {
 
   findSupported: (
     warehousingContext: WarehousingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
   findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
-  configurationError: (
-    provider: WarehousingProvider,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<WarehousingError>;
-  isActive: (provider: WarehousingProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  configurationError: (provider: WarehousingProvider, unchainedAPI) => Promise<WarehousingError>;
+  isActive: (provider: WarehousingProvider, unchainedAPI) => Promise<boolean>;
 
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<EstimatedDispatch>;
 
   estimatedStock: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<EstimatedStock>;
 
   updateTokenOwnership: (input: {
@@ -78,19 +72,19 @@ export type WarehousingModule = {
         product: Product;
       }>;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<void>;
 
   tokenMetadata: (
     chainTokenId: string,
     params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Intl.Locale },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<any>;
 
   isInvalidateable: (
     chainTokenId: string,
     params: { product: Product; token: TokenSurrogate; referenceDate: Date },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<boolean>;
 
   // Mutations

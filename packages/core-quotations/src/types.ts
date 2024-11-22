@@ -1,6 +1,5 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { TimestampFields, LogFields } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',
@@ -62,13 +61,10 @@ export interface QuotationAdapterActions {
 
 export type IQuotationAdapter = IBaseAdapter & {
   orderIndex: number;
-  isActivatedFor: (quotationContext: QuotationContext, unchainedAPI: UnchainedCore) => boolean;
-  actions: (params: QuotationContext & UnchainedCore) => QuotationAdapterActions;
+  isActivatedFor: (quotationContext: QuotationContext, unchainedAPI) => boolean;
+  actions: (params: QuotationContext) => QuotationAdapterActions;
 };
 
 export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
-  actions: (
-    quotationContext: QuotationContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<QuotationAdapterActions>;
+  actions: (quotationContext: QuotationContext, unchainedAPI) => Promise<QuotationAdapterActions>;
 };

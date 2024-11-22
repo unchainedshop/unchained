@@ -2,7 +2,6 @@ import { Assortment } from '@unchainedshop/core-assortments';
 import { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { Product } from '@unchainedshop/core-products';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export enum FilterType {
   SWITCH = 'SWITCH',
@@ -106,12 +105,12 @@ export interface FilterAdapterActions {
   ) => Promise<mongodb.FindOptions['sort']>;
 }
 
-export type IFilterAdapter = IBaseAdapter & {
+export type IFilterAdapter<UnchainedAPI = any> = IBaseAdapter & {
   orderIndex: number;
 
-  actions: (params: FilterContext & UnchainedCore) => FilterAdapterActions;
+  actions: (params: FilterContext & UnchainedAPI) => FilterAdapterActions;
 };
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
-  actions: (filterContext: FilterContext, unchainedAPI: UnchainedCore) => Promise<FilterAdapterActions>;
+  actions: (filterContext: FilterContext, unchainedAPI) => Promise<FilterAdapterActions>;
 };

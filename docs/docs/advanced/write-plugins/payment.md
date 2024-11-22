@@ -22,7 +22,7 @@ import {
   PaymentError,
 } from '@unchainedshop/core-payment';
 
-const ShopPayment: IPaymentAdapter = {
+const ShopPayment: IPaymentAdapter<UnchainedCore> = {
   key: 'ch.Shop.payment',
   label: 'Shop Payment',
   version: '1.0.0',

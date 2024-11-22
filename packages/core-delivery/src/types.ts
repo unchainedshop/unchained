@@ -74,12 +74,15 @@ export interface DeliveryAdapterActions {
   pickUpLocations: () => Promise<Array<DeliveryLocation>>;
   send: () => Promise<boolean | Work>;
 }
-export type IDeliveryAdapter = IBaseAdapter & {
+export type IDeliveryAdapter<UnchainedAPI = any> = IBaseAdapter & {
   initialConfiguration: DeliveryConfiguration;
 
   typeSupported: (type: DeliveryProviderType) => boolean;
 
-  actions: (config: DeliveryConfiguration, context: DeliveryContext) => DeliveryAdapterActions;
+  actions: (
+    config: DeliveryConfiguration,
+    context: DeliveryContext & UnchainedAPI,
+  ) => DeliveryAdapterActions;
 };
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {

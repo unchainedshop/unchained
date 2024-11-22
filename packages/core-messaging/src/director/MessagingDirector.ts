@@ -1,5 +1,4 @@
 import { log } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export type EmailTemplateType = {
   type: 'EMAIL';
@@ -39,7 +38,7 @@ export type ArbitraryTemplateType = {
 
 export type TemplateResolver = (
   params: { template: string; [x: string]: any },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
 
 export type IMessagingDirector = {

@@ -1,6 +1,5 @@
 import { generateRandomHash } from '@unchainedshop/utils';
 import { Order } from './types.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { Product } from '@unchainedshop/core-products';
 
 export interface OrderSettingsOrderPositionValidation {
@@ -15,7 +14,7 @@ export interface OrdersSettingsOptions {
   orderNumberHashFn?: (order: Order, index: number) => string;
   validateOrderPosition?: (
     validationParams: OrderSettingsOrderPositionValidation,
-    context: UnchainedCore,
+    context,
   ) => Promise<void>;
   lockOrderDuringCheckout?: boolean;
 }

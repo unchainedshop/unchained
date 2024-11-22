@@ -1,10 +1,8 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { TimestampFields } from '@unchainedshop/mongodb';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Product } from '@unchainedshop/core-products';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { Product } from '@unchainedshop/core-products';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
@@ -87,17 +85,14 @@ export type IWarehousingAdapter = IBaseAdapter & {
   initialConfiguration: WarehousingConfiguration;
   typeSupported: (type: WarehousingProviderType) => boolean;
 
-  actions: (
-    config: WarehousingConfiguration,
-    context: WarehousingContext & UnchainedCore,
-  ) => WarehousingAdapterActions;
+  actions: (config: WarehousingConfiguration, context: WarehousingContext) => WarehousingAdapterActions;
 };
 
 export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   actions: (
     warehousingProvider: WarehousingProvider,
     warehousingContext: WarehousingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<{
     configurationError: () => WarehousingError;
     isActive: () => boolean;

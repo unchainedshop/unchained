@@ -1,3 +1,4 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
@@ -28,7 +29,7 @@ const environment = () => {
     : new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret);
 };
 
-const PaypalCheckout: IPaymentAdapter = {
+const PaypalCheckout: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'com.paypal.checkout',
@@ -41,9 +42,9 @@ const PaypalCheckout: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
+  actions: (config, context) => {
     const adapter = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       configurationError: () => {
         const publicCredentialsValid = PAYPAL_CLIENT_ID && PAYPAL_SECRET;
@@ -68,8 +69,7 @@ const PaypalCheckout: IPaymentAdapter = {
       },
 
       charge: async ({ orderID }) => {
-        const { modules } = params.context;
-        const { order } = params.paymentContext;
+        const { modules, order } = context;
 
         if (!orderID) {
           logger.warn('Paypal Native Plugin: PRICE MATCH');

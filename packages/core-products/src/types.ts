@@ -4,7 +4,6 @@ import { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 import { OrderDiscount } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/core-orders';
 import { OrderPrice } from '@unchainedshop/core-orders';
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -235,7 +234,7 @@ export interface ProductPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface ProductPricingAdapterContext extends BasePricingAdapterContext, UnchainedCore {
+export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
   currency: string;
   product: Product;
@@ -284,8 +283,11 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
   };
 }
 
-export type IProductPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
-  ProductPricingAdapterContext,
+export type IProductPricingAdapter<
+  UnchainedAPI = any,
+  DiscountConfiguration = unknown,
+> = IPricingAdapter<
+  ProductPricingAdapterContext & UnchainedAPI,
   ProductPricingCalculation,
   IProductPricingSheet,
   DiscountConfiguration
@@ -296,8 +298,7 @@ export type IProductPricingDirector<DiscountConfiguration = unknown> = IPricingD
   ProductPricingCalculation,
   ProductPricingAdapterContext,
   IProductPricingSheet,
-  IProductPricingAdapter<DiscountConfiguration>,
-  UnchainedCore
+  IProductPricingAdapter<any, DiscountConfiguration>
 >;
 
 export type ProductPriceRate = {

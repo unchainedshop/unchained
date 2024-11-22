@@ -1,6 +1,5 @@
 import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from './types.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { PaymentCredentials } from './db/PaymentCredentialsCollection.js';
 
 export type FilterProviders = (
@@ -8,7 +7,7 @@ export type FilterProviders = (
     providers: Array<PaymentProvider>;
     order: Order;
   },
-  context: UnchainedCore,
+  unchainedAPI,
 ) => Promise<Array<PaymentProvider>>;
 
 export type DetermineDefaultProvider = (
@@ -17,7 +16,7 @@ export type DetermineDefaultProvider = (
     order: Order;
     paymentCredentials?: Array<PaymentCredentials>;
   },
-  context: UnchainedCore,
+  unchainedAPI,
 ) => Promise<PaymentProvider>;
 export interface PaymentSettingsOptions {
   sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;

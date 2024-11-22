@@ -6,7 +6,6 @@ import {
   OrderPricingRowCategory,
   OrderPricingSheet,
 } from '../director/OrderPricingSheet.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import { ProductPricingRowCategory } from '@unchainedshop/core-products';
 import { DeliveryPricingRowCategory } from '@unchainedshop/core-delivery';
 import { OrderPrice, OrderPricingDiscount } from '../director/OrderPricingDirector.js';
@@ -15,13 +14,9 @@ export interface OrderTransformations {
   discounted: (
     order: Order,
     orderDiscount: OrderDiscount,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Array<OrderPricingDiscount>>;
-  discountTotal: (
-    order: Order,
-    orderDiscount: OrderDiscount,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<OrderPrice>;
+  discountTotal: (order: Order, orderDiscount: OrderDiscount, unchainedAPI) => Promise<OrderPrice>;
 
   isCart: (order: Order) => boolean;
   cart: (order: { countryContext?: string; orderNumber?: string; userId: string }) => Promise<Order>;

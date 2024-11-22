@@ -20,6 +20,7 @@ import {
 } from './api.js';
 import { orderIsPaid } from './utils.js';
 import { CompletionModes, IntegrationModes, SignResponse } from './types.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export * from './middleware.js';
 
@@ -41,7 +42,7 @@ const newError = ({ code, message }: { code: string; message: string }) => {
   return error;
 };
 
-const PostfinanceCheckout: IPaymentAdapter = {
+const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.postfinance-checkout',
@@ -52,17 +53,17 @@ const PostfinanceCheckout: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const { modules } = params.context;
+  actions: (config, context) => {
+    const { modules } = context;
 
     const adapter: IPaymentActions & {
       getCompletionMode: () => CompletionModes;
     } = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       getCompletionMode() {
         return (
-          (params.config.find((item) => item.key === 'completionMode')?.value as CompletionModes) ||
+          (config.find((item) => item.key === 'completionMode')?.value as CompletionModes) ||
           CompletionModes.Deferred
         );
       },
@@ -99,7 +100,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       sign: async (transactionContext: any = {}) => {
-        const { orderPayment, order } = params.paymentContext;
+        const { orderPayment, order } = context;
 
         const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
           transactionContext;
@@ -107,7 +108,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const transaction = new PostFinanceCheckout.model.TransactionCreate();
-        const userId = order?.userId || params.paymentContext?.userId;
+        const userId = order?.userId || context?.userId;
         transaction.currency = order.currency;
         transaction.metaData = {
           orderPaymentId: orderPayment._id,
@@ -177,7 +178,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           });
         }
 
-        const isPaid = await orderIsPaid(params.paymentContext.order, transaction, modules.orders);
+        const isPaid = await orderIsPaid(context.order, transaction, modules.orders);
         if (!isPaid) {
           logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
           throw newError({
@@ -186,7 +187,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           });
         }
 
-        if (transaction.metaData.orderPaymentId !== params.paymentContext.orderPayment._id) {
+        if (transaction.metaData.orderPaymentId !== context.orderPayment._id) {
           logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
           throw newError({
             code: `TRANSACTION_ALREADY_USED`,
@@ -207,7 +208,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       cancel: async () => {
-        const { orderPayment, order } = params.paymentContext;
+        const { orderPayment, order } = context;
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;
@@ -224,7 +225,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       confirm: async () => {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment } = context;
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;

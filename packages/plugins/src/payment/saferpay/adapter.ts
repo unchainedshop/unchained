@@ -31,7 +31,11 @@ const addTransactionId = (urlString, saferpayTransactionId) => {
   return urlWithTransactionId.href;
 };
 
-export const WordlineSaferpay: IPaymentAdapter = {
+export const WordlineSaferpay: IPaymentAdapter<
+  UnchainedCore & {
+    modules: { saferpayTransactions: SaferpayTransactionsModule };
+  }
+> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.saferpay',
@@ -42,10 +46,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const { modules } = params.context as UnchainedCore & {
-      modules: { saferpayTransactions: SaferpayTransactionsModule };
-    };
+  actions: (config, context) => {
+    const { modules } = context;
 
     const createSaferPayClient = () => {
       if (!SAFERPAY_CUSTOMER_ID || !SAFERPAY_USER || !SAFERPAY_PW)
@@ -60,10 +62,10 @@ export const WordlineSaferpay: IPaymentAdapter = {
     };
 
     const adapter = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       getTerminalId() {
-        return params.config.find((item) => item.key === 'terminalId')?.value;
+        return config.find((item) => item.key === 'terminalId')?.value;
       },
 
       // eslint-disable-next-line
@@ -91,7 +93,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
       },
 
       sign: async (transactionContext: any = {}) => {
-        const { orderPayment, order } = params.paymentContext;
+        const { orderPayment, order } = context;
 
         if (!orderPayment || !order) {
           throw new Error('orderPayment or order not found');
@@ -148,7 +150,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
       },
 
       charge: async ({ transactionId }: { transactionId: string }) => {
-        const { orderPayment, order } = params.paymentContext;
+        const { orderPayment, order } = context;
 
         if (!orderPayment || !order) {
           throw new Error('orderPayment or order not found');
@@ -187,7 +189,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
       },
 
       async confirm() {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment } = context;
 
         if (!orderPayment) {
           throw new Error('orderPayment not found');
@@ -217,7 +219,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
       },
 
       cancel: async () => {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment } = context;
 
         if (!orderPayment) {
           throw new Error('orderPayment not found');

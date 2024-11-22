@@ -2,7 +2,6 @@ import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 import { Product, ProductPlan } from '@unchainedshop/core-products';
 import { OrderPosition } from '@unchainedshop/core-orders';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',
@@ -78,10 +77,10 @@ export type IEnrollmentAdapter = IBaseAdapter & {
 
   transformOrderItemToEnrollmentPlan: (
     orderPosition: OrderPosition,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<EnrollmentPlan>;
 
-  actions: (params: EnrollmentContext & UnchainedCore) => EnrollmentAdapterActions;
+  actions: (params: EnrollmentContext) => EnrollmentAdapterActions;
 };
 
 export interface EnrollmentData {
@@ -103,11 +102,8 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
     item: { orderPosition: OrderPosition; product: Product },
     doc: Omit<EnrollmentData, 'configuration' | 'productId' | 'quantity'>,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<EnrollmentData>;
 
-  actions: (
-    enrollmentContext: EnrollmentContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<EnrollmentAdapterActions>;
+  actions: (enrollmentContext: EnrollmentContext, unchainedAPI) => Promise<EnrollmentAdapterActions>;
 };

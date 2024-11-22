@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   PaymentCredentialsCollection,
   PaymentCredentials as PaymentCredentialsType,
@@ -23,7 +22,7 @@ export type PaymentModule = {
   registerCredentials: (
     paymentProviderId: string,
     paymentContext: PaymentContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<PaymentCredentialsType>;
 
   paymentProviders: PaymentProvidersModules;

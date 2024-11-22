@@ -1,6 +1,4 @@
 import { WorkData, WorkResult } from '../worker-index.js';
-import { UnchainedCore } from '@unchainedshop/core';
-
 import os from 'os';
 import { createLogger } from '@unchainedshop/logger';
 import {
@@ -67,9 +65,9 @@ export type WorkerModule = {
 
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
-  processNextWork: (unchainedAPI: UnchainedCore, workerId?: string) => Promise<Work>;
+  processNextWork: (unchainedAPI, workerId?: string) => Promise<Work>;
 
-  rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
+  rescheduleWork: (work: Work, scheduled: Date, unchainedAPI) => Promise<Work>;
 
   ensureOneWork: (work: WorkData) => Promise<Work>;
 

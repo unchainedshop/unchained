@@ -1,7 +1,8 @@
 import later from '@breejs/later';
-import { WorkerSchedule } from '@unchainedshop/core-worker';
 import { generateRandomHash } from '@unchainedshop/utils';
 import { Enrollment } from './types.js';
+
+import type { WorkerSchedule } from '@unchainedshop/core-worker';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');
 

@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { generateDbFilterById, ModuleInput } from '@unchainedshop/mongodb';
 import { createRequire } from 'node:module';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
@@ -31,9 +30,9 @@ export type OrdersModule = OrderQueries &
   OrderProcessing &
   OrderMutations & {
     // Order context recalculations
-    initProviders: (order: Order, unchainedAPI: UnchainedCore) => Promise<Order>;
-    updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
-    invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
+    initProviders: (order: Order, unchainedAPI) => Promise<Order>;
+    updateCalculation: (orderId: string, unchainedAPI) => Promise<Order>;
+    invalidateProviders: (unchainedAPI, maxAgeDays: number) => Promise<void>;
 
     // Sub entities
     deliveries: OrderDeliveriesModule;
@@ -82,7 +81,7 @@ export const configureOrdersModule = async ({
   const findOrderPayment = async (order: Order) =>
     OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
-  const updateDiscounts = async (order: Order, unchainedAPI: UnchainedCore) => {
+  const updateDiscounts = async (order: Order, unchainedAPI) => {
     const { modules } = unchainedAPI;
 
     // 1. go through existing order-discounts and check if discount still valid,
@@ -124,7 +123,7 @@ export const configureOrdersModule = async ({
     );
   };
 
-  const initProviders = async (order: Order, unchainedAPI: UnchainedCore) => {
+  const initProviders = async (order: Order, unchainedAPI) => {
     const { modules } = unchainedAPI;
 
     let updatedOrder = order;

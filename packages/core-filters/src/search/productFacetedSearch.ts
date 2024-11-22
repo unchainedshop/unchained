@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 import { intersectSet } from '../utils/intersectSet.js';
 import { FilterProductIds, SearchConfiguration } from './search.js';
@@ -8,7 +7,7 @@ export const productFacetedSearch = (
   Filters: mongodb.Collection<Filter>,
   filterProductIds: FilterProductIds,
   searchConfiguration: SearchConfiguration,
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => {
   const { query, filterSelector, forceLiveCollection } = searchConfiguration;
 

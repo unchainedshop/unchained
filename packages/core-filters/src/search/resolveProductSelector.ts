@@ -1,7 +1,6 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { FilterAdapterActions, SearchQuery } from '../types.js';
 
-const defaultSelector = ({ includeInactive }: SearchQuery, { modules }: UnchainedCore) => {
+const defaultSelector = ({ includeInactive }: SearchQuery, { modules }) => {
   const selector = !includeInactive
     ? modules.products.search.buildActiveStatusFilter()
     : modules.products.search.buildActiveDraftStatusFilter();
@@ -11,7 +10,7 @@ const defaultSelector = ({ includeInactive }: SearchQuery, { modules }: Unchaine
 export const resolveProductSelector = async (
   searchQuery: SearchQuery,
   filterActions: FilterAdapterActions,
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => {
   const selector = defaultSelector(searchQuery, unchainedAPI);
   return filterActions.transformProductSelector(selector, {});

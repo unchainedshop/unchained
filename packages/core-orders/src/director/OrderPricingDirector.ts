@@ -6,7 +6,6 @@ import {
   OrderPricingAdapterContext,
   OrderPricingContext,
 } from './OrderPricingAdapter.js';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export type OrderPrice = { _id?: string; amount: number; currency: string };
 
@@ -22,8 +21,7 @@ export type IOrderPricingDirector<DiscountConfiguration = unknown> = IPricingDir
   OrderPricingCalculation,
   OrderPricingAdapterContext,
   IOrderPricingSheet,
-  IOrderPricingAdapter<DiscountConfiguration>,
-  UnchainedCore
+  IOrderPricingAdapter<any, DiscountConfiguration>
 >;
 
 const baseDirector = BasePricingDirector<

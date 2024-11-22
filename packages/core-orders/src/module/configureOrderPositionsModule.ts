@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { IProductPricingSheet, Product } from '@unchainedshop/core-products';
 import { Order, OrderPosition, OrderDiscount, OrderDelivery } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -18,14 +17,10 @@ export type OrderPositionsModule = {
   discounts: (
     orderPosition: OrderPosition,
     params: { order: Order; orderDiscount: OrderDiscount },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Array<OrderPricingDiscount>;
 
-  pricingSheet: (
-    orderPosition: OrderPosition,
-    currency: string,
-    unchainedAPI: UnchainedCore,
-  ) => IProductPricingSheet;
+  pricingSheet: (orderPosition: OrderPosition, currency: string, unchainedAPI) => IProductPricingSheet;
 
   delete: (orderPositionId: string) => Promise<OrderPosition>;
 
@@ -39,7 +34,7 @@ export type OrderPositionsModule = {
       quantity?: number;
     },
     params: { order: Order; product: Product; orderPosition: OrderPosition },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderPosition>;
 
   updateScheduling: (
@@ -48,13 +43,10 @@ export type OrderPositionsModule = {
       orderDelivery: OrderDelivery;
       orderPosition: OrderPosition;
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderPosition>;
 
-  updateCalculation: (
-    orderPosition: OrderPosition,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<OrderPosition>;
+  updateCalculation: (orderPosition: OrderPosition, unchainedAPI) => Promise<OrderPosition>;
 
   addProductItem: (
     doc: {
@@ -67,7 +59,7 @@ export type OrderPositionsModule = {
       quotationId?: string;
     },
     params: { order: Order; product: Product },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderPosition>;
 };
 

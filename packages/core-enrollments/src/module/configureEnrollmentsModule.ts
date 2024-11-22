@@ -1,5 +1,4 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   Enrollment,
   EnrollmentData,
@@ -53,10 +52,7 @@ export interface EnrollmentTransformations {
 
 // Processing
 
-export type EnrollmentContextParams = (
-  enrollment: Enrollment,
-  unchainedAPI: UnchainedCore,
-) => Promise<Enrollment>;
+export type EnrollmentContextParams = (enrollment: Enrollment, unchainedAPI) => Promise<Enrollment>;
 
 export interface EnrollmentProcessing {
   terminateEnrollment: EnrollmentContextParams;
@@ -66,7 +62,7 @@ export interface EnrollmentProcessing {
 export interface EnrollmentMutations {
   addEnrollmentPeriod: (enrollmentId: string, period: EnrollmentPeriod) => Promise<Enrollment>;
 
-  create: (doc: EnrollmentData, unchainedAPI: UnchainedCore) => Promise<Enrollment>;
+  create: (doc: EnrollmentData, unchainedAPI) => Promise<Enrollment>;
 
   createFromCheckout: (
     order: Order,
@@ -80,7 +76,7 @@ export interface EnrollmentMutations {
         deliveryContext?: any;
       };
     },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<void>;
 
   delete: (enrollmentId: string) => Promise<number>;
@@ -97,16 +93,12 @@ export interface EnrollmentMutations {
 
   updatePayment: (enrollmentId: string, payment: Enrollment['payment']) => Promise<Enrollment>;
 
-  updatePlan: (
-    enrollmentId: string,
-    plan: EnrollmentPlan,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Enrollment>;
+  updatePlan: (enrollmentId: string, plan: EnrollmentPlan, unchainedAPI) => Promise<Enrollment>;
 
   updateStatus: (
     enrollmentId: string,
     params: { status: EnrollmentStatus; info?: string },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<Enrollment>;
 }
 
@@ -157,10 +149,7 @@ export const configureEnrollmentsModule = async ({
     return findNewEnrollmentNumber(enrollment, index + 1);
   };
 
-  const findNextStatus = async (
-    enrollment: Enrollment,
-    unchainedAPI: UnchainedCore,
-  ): Promise<EnrollmentStatus> => {
+  const findNextStatus = async (enrollment: Enrollment, unchainedAPI): Promise<EnrollmentStatus> => {
     let status = enrollment.status as EnrollmentStatus;
     const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
 
@@ -227,7 +216,7 @@ export const configureEnrollmentsModule = async ({
     return enrollment;
   };
 
-  const processEnrollment = async (enrollment: Enrollment, unchainedAPI: UnchainedCore) => {
+  const processEnrollment = async (enrollment: Enrollment, unchainedAPI) => {
     let status = await findNextStatus(enrollment, unchainedAPI);
 
     if (status === EnrollmentStatus.ACTIVE) {
@@ -241,7 +230,7 @@ export const configureEnrollmentsModule = async ({
   const initializeEnrollment = async (
     enrollment: Enrollment,
     params: { orderIdForFirstPeriod?: string; reason: string },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     const { modules } = unchainedAPI;
 
@@ -263,7 +252,7 @@ export const configureEnrollmentsModule = async ({
   const sendStatusToCustomer = async (
     enrollment: Enrollment,
     params: { locale?: Intl.Locale; reason?: string },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => {
     const { modules } = unchainedAPI;
 

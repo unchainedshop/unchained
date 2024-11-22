@@ -1,7 +1,8 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentDirector, PaymentAdapter, PaymentProviderType } from '@unchainedshop/core-payment';
 
-const Invoice: IPaymentAdapter = {
+const Invoice: IPaymentAdapter<UnchainedCore> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.invoice',
@@ -14,9 +15,9 @@ const Invoice: IPaymentAdapter = {
     return type === PaymentProviderType.INVOICE;
   },
 
-  actions: (params) => {
+  actions: (config, context) => {
     return {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       configurationError: () => {
         return null;

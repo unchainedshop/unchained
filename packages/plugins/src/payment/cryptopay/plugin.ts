@@ -44,7 +44,11 @@ const getDerivationPath = (currency: CryptopayCurrencies, index: number): string
   return `0/${address}`;
 };
 
-const Cryptopay: IPaymentAdapter = {
+const Cryptopay: IPaymentAdapter<
+  UnchainedCore & {
+    modules: { cryptopay: CryptopayModule };
+  }
+> = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.cryptopay',
@@ -55,8 +59,8 @@ const Cryptopay: IPaymentAdapter = {
     return type === 'GENERIC';
   },
 
-  actions: (params) => {
-    const modules = params.context.modules as UnchainedCore['modules'] & { cryptopay: CryptopayModule };
+  actions: (config, context) => {
+    const { modules } = context;
 
     const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
       const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });
@@ -97,7 +101,7 @@ const Cryptopay: IPaymentAdapter = {
     };
 
     const adapterActions = {
-      ...PaymentAdapter.actions(params),
+      ...PaymentAdapter.actions(config, context),
 
       // eslint-disable-next-line
       configurationError() {
@@ -114,10 +118,10 @@ const Cryptopay: IPaymentAdapter = {
       isActive() {
         // Only support orders that have prices in BTC or ETH for the moment
         if (adapterActions.configurationError() !== null) return false;
-        if (!params.paymentContext.order) return true;
+        if (!context.order) return true;
         // if (
         //   !Object.values(CryptopayCurrencies).includes(
-        //     params.paymentContext.order.currency as CryptopayCurrencies,
+        //     context.order.currency as CryptopayCurrencies,
         //   )
         // )
         //   return false;
@@ -129,7 +133,7 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       sign: async () => {
-        const { orderPayment, order } = params.paymentContext;
+        const { orderPayment, order } = context;
 
         const existingAddresses = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
           orderPayment._id,
@@ -190,7 +194,7 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       charge: async () => {
-        const { order, orderPayment } = params.paymentContext;
+        const { order, orderPayment } = context;
 
         const foundWalletsWithBalances = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
           orderPayment._id,

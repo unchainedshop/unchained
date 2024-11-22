@@ -1,7 +1,8 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IDeliveryAdapter } from '@unchainedshop/core-delivery';
 import { DeliveryAdapter, DeliveryDirector, DeliveryProviderType } from '@unchainedshop/core-delivery';
 
-const SendMessage: IDeliveryAdapter = {
+const SendMessage: IDeliveryAdapter<UnchainedCore> = {
   ...DeliveryAdapter,
 
   key: 'shop.unchained.delivery.send-message',

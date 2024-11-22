@@ -1,4 +1,4 @@
-import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { EnrollmentStatus } from '../types.js';
 import { buildFindSelector } from './configureEnrollmentsModule.js';
 
 describe('buildFindSelector', () => {

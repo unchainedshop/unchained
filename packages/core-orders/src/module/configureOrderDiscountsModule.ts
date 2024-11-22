@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
@@ -20,30 +19,27 @@ export type OrderDiscountsModule = {
   findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
 
   // Transformations
-  interface: (
-    orderDiscount: OrderDiscount,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<DiscountAdapterActions<any>>;
+  interface: (orderDiscount: OrderDiscount, unchainedAPI) => Promise<DiscountAdapterActions<any>>;
 
-  isValid: (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  isValid: (orderDiscount: OrderDiscount, unchainedAPI) => Promise<boolean>;
 
   // Adapter
   configurationForPricingAdapterKey: (
     orderDiscount: OrderDiscount,
     adapterKey: string,
     calculationSheet: IPricingSheet<PricingCalculation>,
-    pricingContext: DiscountContext & UnchainedCore,
+    pricingContext: DiscountContext,
   ) => Promise<any>;
 
   // Mutations
   createManualOrderDiscount: (
     params: { code: string; order: Order },
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<OrderDiscount>;
 
   create: (doc: OrderDiscount) => Promise<OrderDiscount>;
   update: (orderDiscountId: string, doc: OrderDiscount) => Promise<OrderDiscount>;
-  delete: (orderDiscountId: string, unchainedAPI: UnchainedCore) => Promise<OrderDiscount>;
+  delete: (orderDiscountId: string, unchainedAPI) => Promise<OrderDiscount>;
 };
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
@@ -68,7 +64,7 @@ export const configureOrderDiscountsModule = ({
 }): OrderDiscountsModule => {
   registerEvents(ORDER_DISCOUNT_EVENTS);
 
-  const getAdapter = async (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => {
+  const getAdapter = async (orderDiscount: OrderDiscount, unchainedAPI) => {
     const order = await unchainedAPI.modules.orders.findOrder({
       orderId: orderDiscount.orderId,
     });
@@ -121,7 +117,7 @@ export const configureOrderDiscountsModule = ({
     return discount;
   };
 
-  const reserveDiscount = async (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => {
+  const reserveDiscount = async (orderDiscount: OrderDiscount, unchainedAPI) => {
     const adapter = await getAdapter(orderDiscount, unchainedAPI);
     if (!adapter) return null;
 
@@ -132,10 +128,7 @@ export const configureOrderDiscountsModule = ({
     return updateDiscount(orderDiscount._id, { orderId: orderDiscount.orderId, reservation });
   };
 
-  const grabDiscount = async (
-    { code, orderId }: { code: string; orderId: string },
-    unchainedAPI: UnchainedCore,
-  ) => {
+  const grabDiscount = async ({ code, orderId }: { code: string; orderId: string }, unchainedAPI) => {
     const existingDiscount = await OrderDiscounts.findOne({ code, orderId });
     if (existingDiscount) throw new Error(OrderDiscountErrorCode.CODE_ALREADY_PRESENT);
     const discount = await OrderDiscounts.findOne({ code, orderId: null });

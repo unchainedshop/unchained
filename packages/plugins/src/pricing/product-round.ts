@@ -1,3 +1,4 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import { IProductPricingAdapter } from '@unchainedshop/core-products';
 import { ProductPricingAdapter, ProductPricingDirector } from '@unchainedshop/core-products';
 
@@ -6,7 +7,7 @@ interface PriceRoundSettings {
   roundTo: (value: number, precision: number, currency: string) => number;
 }
 
-export const ProductRound: IProductPricingAdapter & {
+export const ProductRound: IProductPricingAdapter<UnchainedCore> & {
   configure: (params: PriceRoundSettings) => void;
   settings: PriceRoundSettings;
 } = {
