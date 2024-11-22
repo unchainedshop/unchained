@@ -8,6 +8,7 @@ import { WorkerDirector } from '@unchainedshop/core-worker';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
+import { setupUploadHandlers } from './setup/setupUploadHandlers.js';
 import { SetupCartsOptions, setupCarts } from './setup/setupCarts.js';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, setupWorkqueue } from './setup/setupWorkqueue.js';
@@ -98,6 +99,9 @@ export const startPlatform = async ({
 
   // Setup email templates
   setupTemplates(unchainedAPI);
+
+  // Setup file upload handlers
+  setupUploadHandlers();
 
   // Start the graphQL server
   const graphqlHandler = await startAPIServer({

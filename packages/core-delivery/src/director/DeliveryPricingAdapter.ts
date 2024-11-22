@@ -9,6 +9,7 @@ import {
 import { DeliveryProvider } from '../types.js';
 import { OrderDelivery, OrderDiscount, Order } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export interface DeliveryPricingCalculation extends PricingCalculation {
   discountId?: string;
@@ -35,7 +36,7 @@ export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & 
   }) => void;
 };
 
-export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext {
+export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext, UnchainedCore {
   country?: string;
   currency?: string;
   provider: DeliveryProvider;

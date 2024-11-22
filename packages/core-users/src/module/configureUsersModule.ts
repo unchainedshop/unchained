@@ -8,17 +8,13 @@ import {
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { systemLocale } from '@unchainedshop/utils';
-import { FileDirector } from '@unchainedshop/file-upload';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { systemLocale, SortDirection, SortOption } from '@unchainedshop/utils';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
-import { UserServices } from '../services/userServices.js';
-import { FileServices, FilesModule } from '@unchainedshop/core-files';
 
 export type UsersModule = {
   // Submodules
@@ -125,20 +121,6 @@ export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQ
   }
   return selector;
 };
-
-FileDirector.registerFileUploadCallback<{
-  services: {
-    users: UserServices;
-    files: FileServices;
-  };
-  modules: {
-    users: UsersModule;
-    files: FilesModule;
-  };
-}>('user-avatars', async (file, context) => {
-  const { services } = context;
-  return services.users.updateUserAvatarAfterUpload({ file }, context);
-});
 
 export const configureUsersModule = async ({
   db,

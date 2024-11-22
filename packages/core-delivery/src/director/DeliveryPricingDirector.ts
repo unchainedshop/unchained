@@ -11,6 +11,7 @@ import {
   IDeliveryPricingAdapter,
   IDeliveryPricingSheet,
 } from './DeliveryPricingAdapter.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export type DeliveryPricingContext =
   | {
@@ -28,7 +29,8 @@ export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricing
   DeliveryPricingCalculation,
   DeliveryPricingAdapterContext,
   IDeliveryPricingSheet,
-  IDeliveryPricingAdapter<DiscountConfiguration>
+  IDeliveryPricingAdapter<DiscountConfiguration>,
+  UnchainedCore
 >;
 
 const baseDirector = BasePricingDirector<

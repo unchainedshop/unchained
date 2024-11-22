@@ -1,5 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { User } from '@unchainedshop/core-users';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { IPricingSheet, PricingCalculation } from './BasePricingSheet.js';
 import { IBaseAdapter } from './BaseAdapter.js';
@@ -13,16 +11,14 @@ interface IDiscountableItem {
   orderId?: string;
 }
 
-export interface BasePricingAdapterContext extends UnchainedCore {
+export interface BasePricingAdapterContext {
   order?: Order;
-  user: User;
   discounts: Array<OrderDiscount>;
 }
 
 export type BasePricingContext =
   | {
       order?: Order;
-      user?: User;
       discounts?: Array<OrderDiscount>;
     }
   | {

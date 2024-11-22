@@ -1,6 +1,5 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from './BaseDirector.js';
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
@@ -19,17 +18,18 @@ export type IPricingDirector<
   PricingAdapterContext extends BasePricingAdapterContext,
   PricingAdapterSheet extends IPricingSheet<Calculation>,
   Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
+  Context = any,
 > = IBaseDirector<Adapter> & {
   buildPricingContext: (
     context: PricingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI: Context,
   ) => Promise<PricingAdapterContext>;
   actions: (
     pricingContext: PricingContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI: Context,
     buildPricingContext?: (
       pricingCtx: PricingContext,
-      _unchainedAPI: UnchainedCore,
+      _unchainedAPI: Context,
     ) => Promise<PricingAdapterContext>,
   ) => Promise<
     IPricingAdapterActions<Calculation, PricingAdapterContext> & {
@@ -50,7 +50,8 @@ export const BasePricingDirector = <
   Calculation,
   AdapterContext,
   IPricingSheet<Calculation>,
-  PricingAdapter
+  PricingAdapter,
+  any
 > => {
   const baseDirector = BaseDirector<PricingAdapter>(directorName, {
     adapterSortKey: 'orderIndex',
@@ -61,7 +62,8 @@ export const BasePricingDirector = <
     Calculation,
     AdapterContext,
     IPricingSheet<Calculation>,
-    PricingAdapter
+    PricingAdapter,
+    { modules: any }
   > = {
     ...baseDirector,
     buildPricingContext: async () => {
@@ -87,12 +89,13 @@ export const BasePricingDirector = <
             const discounts: Array<Discount<any>> = await Promise.all(
               context.discounts.map(async (discount) => ({
                 discountId: discount._id,
-                configuration: await context.modules.orders.discounts.configurationForPricingAdapterKey(
-                  discount as any,
-                  Adapter.key,
-                  this.calculationSheet(),
-                  context as any,
-                ),
+                configuration:
+                  await unchainedAPI.modules.orders.discounts.configurationForPricingAdapterKey(
+                    discount as any,
+                    Adapter.key,
+                    this.calculationSheet(),
+                    context as any,
+                  ),
               })),
             );
 

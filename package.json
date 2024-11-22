@@ -72,7 +72,7 @@
     "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "npm run clean --workspaces",
-    "build": "npm run build --workspaces",
+    "build": "npm run prepublishOnly --workspaces --if-present",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --ci --forceExit --config ./packages/unit-jest.config.js",
     "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --watch --config ./packages/unit-jest.config.js"
   },

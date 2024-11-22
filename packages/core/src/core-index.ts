@@ -61,16 +61,12 @@ import {
   QuotationsModule,
   QuotationsSettingsOptions,
 } from '@unchainedshop/core-quotations';
-import {
-  configureUsersModule,
-  UserServices,
-  userServices,
-  UserSettingsOptions,
-  UsersModule,
-} from '@unchainedshop/core-users';
+import { configureUsersModule, UserSettingsOptions, UsersModule } from '@unchainedshop/core-users';
 import { configureWarehousingModule, WarehousingModule } from '@unchainedshop/core-warehousing';
 import { configureWorkerModule, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
 import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
+import { migrateUserDataService } from './services/migrateUserDataService.js';
+import { updateUserAvatarAfterUploadService } from './services/updateUserAvatarAfterUploadService.js';
 
 export * from './types.js';
 
@@ -121,6 +117,11 @@ export interface Modules {
   users: UsersModule;
   warehousing: WarehousingModule;
   worker: WorkerModule;
+}
+
+export interface UserServices {
+  updateUserAvatarAfterUpload: typeof updateUserAvatarAfterUploadService;
+  migrateUserData: typeof migrateUserDataService;
 }
 
 export interface Services {
@@ -270,7 +271,10 @@ export const initCore = async ({
       files: fileServices,
       orders: orderServices,
       products: productServices,
-      users: userServices,
+      users: {
+        migrateUserData: migrateUserDataService,
+        updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
+      },
       ...services,
     },
     bulkImporter,

@@ -11,6 +11,7 @@ import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from '../types.js';
 import { OrderPayment } from '@unchainedshop/core-orders';
 import { IPricingDirector } from '@unchainedshop/utils';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export type PaymentPricingContext =
   | {
@@ -30,7 +31,8 @@ export type IPaymentPricingDirector<DiscountConfiguration = unknown> = IPricingD
   PaymentPricingCalculation,
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
-  IPaymentPricingAdapter<DiscountConfiguration>
+  IPaymentPricingAdapter<DiscountConfiguration>,
+  UnchainedCore
 >;
 
 const baseDirector = BasePricingDirector<

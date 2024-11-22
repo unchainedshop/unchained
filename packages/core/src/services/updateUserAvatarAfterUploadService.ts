@@ -1,6 +1,6 @@
 import { File, FileServices, FilesModule } from '@unchainedshop/core-files';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { UsersModule } from '../users-index.js';
+import { UsersModule } from '@unchainedshop/core-users/lib/users-index.js';
 
 export type UpdateUserAvatarAfterUploadService = (
   params: { file: File },

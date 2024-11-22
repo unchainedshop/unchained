@@ -4,8 +4,9 @@ import {
   OrderDiscountAdapter,
   OrderDiscountConfiguration,
 } from '@unchainedshop/core-orders';
+import { UnchainedCore } from '@unchainedshop/core';
 
-export const HundredOff: IDiscountAdapter<OrderDiscountConfiguration> = {
+export const HundredOff: IDiscountAdapter<OrderDiscountConfiguration, UnchainedCore> = {
   ...OrderDiscountAdapter,
 
   key: 'shop.unchained.discount.100-off',

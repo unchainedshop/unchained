@@ -1,10 +1,21 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { userSettings } from '../users-settings.js';
+import { userSettings, UsersModule } from '@unchainedshop/core-users';
 
 export type MigrateUserDataService = (
   userIdBeforeLogin,
   userId,
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: {
+    modules: {
+      users: UsersModule;
+    };
+    services: {
+      orders: {
+        migrateOrderCarts: any;
+      };
+      bookmarks: {
+        migrateBookmarks: any;
+      };
+    };
+  },
 ) => Promise<void>;
 
 export const migrateUserDataService: MigrateUserDataService = async (

@@ -4,6 +4,7 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from '@unchainedshop/utils';
+import { UnchainedCore } from '@unchainedshop/core';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 import { User } from '@unchainedshop/core-users';
@@ -18,7 +19,7 @@ export interface PaymentPricingCalculation extends PricingCalculation {
   isNetPrice: boolean;
   rate?: number;
 }
-export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
+export interface PaymentPricingAdapterContext extends BasePricingAdapterContext, UnchainedCore {
   country?: string;
   currency?: string;
   user: User;
