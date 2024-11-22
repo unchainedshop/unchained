@@ -46,6 +46,7 @@
     "@unchainedshop/core-users": "^3.0.0-alpha4",
     "@unchainedshop/core-warehousing": "^3.0.0-alpha4",
     "@unchainedshop/core-worker": "^3.0.0-alpha4",
+    "@unchainedshop/utils": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4"
   },
   "devDependencies": {

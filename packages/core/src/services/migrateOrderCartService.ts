@@ -1,5 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Order } from '../types.js';
+import { Order, OrdersModule } from '@unchainedshop/core-orders';
 
 export type MigrateOrderCartsService = (
   params: {
@@ -8,7 +7,11 @@ export type MigrateOrderCartsService = (
     shouldMerge: boolean;
     countryContext: string;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: {
+    modules: {
+      orders: OrdersModule;
+    };
+  },
 ) => Promise<Order>;
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
@@ -32,7 +35,7 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
   if (!toCart || !shouldMerge) {
     // No destination cart, move whole cart
     unchainedAPI.modules.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
-    return unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI);
+    return unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI as any);
   }
 
   // Move positions
@@ -48,6 +51,6 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
     await unchainedAPI.modules.orders.updateContact(toCart._id, fromCart.contact);
   }
 
-  await unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI);
-  return unchainedAPI.modules.orders.updateCalculation(toCart._id, unchainedAPI);
+  await unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI as any);
+  return unchainedAPI.modules.orders.updateCalculation(toCart._id, unchainedAPI as any);
 };

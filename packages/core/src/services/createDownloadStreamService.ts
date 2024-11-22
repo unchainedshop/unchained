@@ -1,6 +1,5 @@
-import { getFileAdapter } from '../utils/getFileAdapter.js';
 import { Readable } from 'stream';
-import { FilesModule } from '../files-index.js';
+import { FilesModule, getFileAdapter } from '@unchainedshop/core-files';
 
 export type CreateDownloadStreamService = (
   params: {

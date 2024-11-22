@@ -1,6 +1,5 @@
 export * from './types.js';
 export * from './module/configureOrdersModule.js';
-export * from './service/orderServices.js';
 export * from './orders-settings.js';
 
 export * from './director/OrderDiscountConfiguration.js';

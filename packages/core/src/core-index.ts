@@ -4,12 +4,7 @@ import {
   AssortmentsSettingsOptions,
   configureAssortmentsModule,
 } from '@unchainedshop/core-assortments';
-import {
-  BookmarkServices,
-  bookmarkServices,
-  BookmarksModule,
-  configureBookmarksModule,
-} from '@unchainedshop/core-bookmarks';
+import { BookmarksModule, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
 import { configureCountriesModule, CountriesModule } from '@unchainedshop/core-countries';
 import { configureCurrenciesModule, CurrenciesModule } from '@unchainedshop/core-currencies';
 import {
@@ -23,13 +18,7 @@ import {
   EnrollmentsSettingsOptions,
 } from '@unchainedshop/core-enrollments';
 import { configureEventsModule, EventsModule } from '@unchainedshop/core-events';
-import {
-  configureFilesModule,
-  FileServices,
-  fileServices,
-  FilesModule,
-  FilesSettingsOptions,
-} from '@unchainedshop/core-files';
+import { configureFilesModule, FilesModule, FilesSettingsOptions } from '@unchainedshop/core-files';
 import {
   configureFiltersModule,
   FiltersModule,
@@ -37,13 +26,7 @@ import {
 } from '@unchainedshop/core-filters';
 import { configureLanguagesModule, LanguagesModule } from '@unchainedshop/core-languages';
 import { configureMessagingModule, MessagingModule } from '@unchainedshop/core-messaging';
-import {
-  configureOrdersModule,
-  OrderServices,
-  orderServices,
-  OrdersModule,
-  OrdersSettingsOptions,
-} from '@unchainedshop/core-orders';
+import { configureOrdersModule, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/core-orders';
 import {
   configurePaymentModule,
   PaymentModule,
@@ -51,8 +34,6 @@ import {
 } from '@unchainedshop/core-payment';
 import {
   configureProductsModule,
-  ProductServices,
-  productServices,
   ProductsModule,
   ProductsSettingsOptions,
 } from '@unchainedshop/core-products';
@@ -65,9 +46,9 @@ import { configureUsersModule, UserSettingsOptions, UsersModule } from '@unchain
 import { configureWarehousingModule, WarehousingModule } from '@unchainedshop/core-warehousing';
 import { configureWorkerModule, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
 import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
-import { migrateUserDataService } from './services/migrateUserDataService.js';
-import { updateUserAvatarAfterUploadService } from './services/updateUserAvatarAfterUploadService.js';
+import defaultServices, { Services } from './services/index.js';
 
+export * from './services/index.js';
 export * from './types.js';
 
 export interface ModuleOptions {
@@ -117,19 +98,6 @@ export interface Modules {
   users: UsersModule;
   warehousing: WarehousingModule;
   worker: WorkerModule;
-}
-
-export interface UserServices {
-  updateUserAvatarAfterUpload: typeof updateUserAvatarAfterUploadService;
-  migrateUserData: typeof migrateUserDataService;
-}
-
-export interface Services {
-  bookmarks: BookmarkServices;
-  files: FileServices;
-  orders: OrderServices;
-  products: ProductServices;
-  users: UserServices;
 }
 
 export interface UnchainedCore {
@@ -267,14 +235,7 @@ export const initCore = async ({
       ...customModules,
     },
     services: {
-      bookmarks: bookmarkServices,
-      files: fileServices,
-      orders: orderServices,
-      products: productServices,
-      users: {
-        migrateUserData: migrateUserDataService,
-        updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
-      },
+      ...defaultServices,
       ...services,
     },
     bulkImporter,

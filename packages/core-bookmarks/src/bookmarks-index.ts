@@ -1,2 +1,2 @@
 export * from './module/configureBookmarksModule.js';
-export * from './service/bookmarkServices.js';
+export * from './db/BookmarksCollection.js';

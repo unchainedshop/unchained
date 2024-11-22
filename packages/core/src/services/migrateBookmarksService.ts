@@ -1,4 +1,4 @@
-import { BookmarksModule } from '../bookmarks-index.js';
+import { BookmarksModule } from '@unchainedshop/core-bookmarks';
 
 export type MigrateBookmarksService = (
   params: {

@@ -1,7 +1,4 @@
-import { mongodb } from '@unchainedshop/mongodb';
-import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { File } from '../types.js';
-import { FilesModule } from '../files-index.js';
+import { FilesModule, getFileAdapter } from '@unchainedshop/core-files';
 
 export type RemoveFilesService = (
   params: { fileIds: Array<string> },
@@ -16,13 +13,11 @@ export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchai
   if (fileIds && typeof fileIds !== 'string' && !Array.isArray(fileIds))
     throw Error('Media id/s to be removed not provided as a string or array');
 
-  const selector: mongodb.Filter<File> = {
-    _id: { $in: fileIds },
-  };
-
   const fileUploadAdapter = getFileAdapter();
 
-  const fileObjects = await files.findFiles(selector);
+  const fileObjects = await files.findFiles({
+    _id: { $in: fileIds },
+  });
 
   try {
     await fileUploadAdapter.removeFiles(fileObjects, unchainedAPI);

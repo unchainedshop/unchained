@@ -1,6 +1,7 @@
 import { FileDirector } from '@unchainedshop/file-upload';
-import { File } from '../types.js';
-import { FilesModule } from '../files-index.js';
+import { FilesModule, File } from '@unchainedshop/core-files';
+
+// TODO: Find solution for FileDirector dependency
 
 export type LinkFileService = (
   params: { fileId: string; size: number; type?: string },

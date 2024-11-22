@@ -1,8 +1,8 @@
-import { User } from '@unchainedshop/core-users';
-import { ordersSettings } from '../orders-settings.js';
+import { User, UsersModule } from '@unchainedshop/core-users';
 import { resolveBestCurrency } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
-import { Order } from '../types.js';
+import { ordersSettings, Order, OrdersModule } from '@unchainedshop/core-orders';
+import { CountriesModule } from '@unchainedshop/core-countries';
+import { CurrenciesModule } from '@unchainedshop/core-currencies';
 
 export type NextUserCartService = (
   params: {
@@ -11,7 +11,14 @@ export type NextUserCartService = (
     countryCode?: string;
     forceCartCreation?: boolean;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: {
+    modules: {
+      orders: OrdersModule;
+      countries: CountriesModule;
+      currencies: CurrenciesModule;
+      users: UsersModule;
+    };
+  },
 ) => Promise<Order | null>;
 
 export const nextUserCartService: NextUserCartService = async (
@@ -50,5 +57,5 @@ export const nextUserCartService: NextUserCartService = async (
         : {}),
   });
 
-  return modules.orders.initProviders(order, unchainedAPI);
+  return modules.orders.initProviders(order, unchainedAPI as any);
 };

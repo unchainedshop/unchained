@@ -1,4 +1,6 @@
 import { userSettings, UsersModule } from '@unchainedshop/core-users';
+import { BookmarksModule } from '@unchainedshop/core-bookmarks';
+import { migrateBookmarksService } from './migrateBookmarksService.js';
 
 export type MigrateUserDataService = (
   userIdBeforeLogin,
@@ -6,13 +8,14 @@ export type MigrateUserDataService = (
   unchainedAPI: {
     modules: {
       users: UsersModule;
+      bookmarks: BookmarksModule;
     };
     services: {
       orders: {
         migrateOrderCarts: any;
       };
       bookmarks: {
-        migrateBookmarks: any;
+        migrateBookmarks: typeof migrateBookmarksService;
       };
     };
   },

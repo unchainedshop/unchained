@@ -1,12 +1,17 @@
-import { File, FileServices, FilesModule } from '@unchainedshop/core-files';
+import { File, FilesModule } from '@unchainedshop/core-files';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { UsersModule } from '@unchainedshop/core-users/lib/users-index.js';
+import { UsersModule } from '@unchainedshop/core-users';
+import { removeFilesService } from './removeFilesService.js';
 
 export type UpdateUserAvatarAfterUploadService = (
   params: { file: File },
   context: {
     modules: { files: FilesModule; users: UsersModule };
-    services: { files: FileServices };
+    services: {
+      files: {
+        removeFiles: typeof removeFilesService;
+      };
+    };
   },
 ) => Promise<void>;
 

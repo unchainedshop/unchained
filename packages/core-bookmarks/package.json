@@ -29,7 +29,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/events": "^3.0.0-alpha4",
-    "@unchainedshop/utils": "^3.0.0-alpha4"
+    "@unchainedshop/mongodb": "^3.0.0-alpha4"
   },
   "devDependencies": {
     "@types/node": "^22.9.1",

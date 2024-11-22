@@ -1,7 +1,9 @@
-import { getFileFromFileData } from '@unchainedshop/file-upload';
-import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { SignedFileUpload } from '../types.js';
-import { FilesModule } from '../files-index.js';
+import {
+  getFileFromFileData,
+  getFileAdapter,
+  SignedFileUpload,
+  FilesModule,
+} from '@unchainedshop/core-files';
 
 export type CreateSignedURLService = (
   params: { directoryName: string; fileName: string; meta?: any },
