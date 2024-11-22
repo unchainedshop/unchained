@@ -1,13 +1,12 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { DeliveryProvider, FilterProviders } from './types.js';
-import { Order } from '@unchainedshop/core-orders';
+import type { Order } from '@unchainedshop/core-orders';
 
 export type DetermineDefaultProvider = (
   params: {
     providers: Array<DeliveryProvider>;
     order: Order;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => Promise<DeliveryProvider>;
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;

@@ -30,6 +30,7 @@
   "dependencies": {
     "@unchainedshop/events": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
+    "@unchainedshop/mongodb": "^3.0.0-alpha4",
     "@unchainedshop/utils": "^3.0.0-alpha4"
   },
   "devDependencies": {

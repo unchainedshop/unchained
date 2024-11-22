@@ -1,9 +1,6 @@
 import { BasePricingDirector } from '@unchainedshop/utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
 import { DeliveryProvider } from '../types.js';
-import { Order } from '@unchainedshop/core-orders';
-import { User } from '@unchainedshop/core-users';
-import { OrderDelivery } from '@unchainedshop/core-orders';
 import { IPricingDirector } from '@unchainedshop/utils';
 import {
   DeliveryPricingAdapterContext,
@@ -11,7 +8,9 @@ import {
   IDeliveryPricingAdapter,
   IDeliveryPricingSheet,
 } from './DeliveryPricingAdapter.js';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { Order } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
+import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export type DeliveryPricingContext =
   | {
@@ -29,8 +28,7 @@ export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricing
   DeliveryPricingCalculation,
   DeliveryPricingAdapterContext,
   IDeliveryPricingSheet,
-  IDeliveryPricingAdapter<DiscountConfiguration>,
-  UnchainedCore
+  IDeliveryPricingAdapter<DiscountConfiguration>
 >;
 
 const baseDirector = BasePricingDirector<

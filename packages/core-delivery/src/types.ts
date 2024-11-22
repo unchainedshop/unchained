@@ -1,14 +1,10 @@
-import { Work } from '@unchainedshop/core-worker';
 import { TimestampFields } from '@unchainedshop/mongodb';
-import { User } from '@unchainedshop/core-users';
-
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
-import { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { Order, OrderPosition, OrderDelivery } from '@unchainedshop/core-orders';
+import type { Product } from '@unchainedshop/core-products';
+import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { Work } from '@unchainedshop/core-worker';
+import type { User } from '@unchainedshop/core-users';
 
 export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',
@@ -53,8 +49,6 @@ export interface DeliveryContext {
   warehousingThroughputTime?: number;
 }
 
-export type DeliveryAdapterContext = DeliveryContext & UnchainedCore;
-
 export interface DeliveryLocation {
   _id: string;
   name: string;
@@ -85,14 +79,14 @@ export type IDeliveryAdapter = IBaseAdapter & {
 
   typeSupported: (type: DeliveryProviderType) => boolean;
 
-  actions: (config: DeliveryConfiguration, context: DeliveryAdapterContext) => DeliveryAdapterActions;
+  actions: (config: DeliveryConfiguration, context: DeliveryContext) => DeliveryAdapterActions;
 };
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   actions: (
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
-    unchainedAPI: UnchainedCore,
+    unchainedAPI,
   ) => Promise<DeliveryAdapterActions>;
 };
 
@@ -111,5 +105,5 @@ export type FilterProviders = (
     providers: Array<DeliveryProvider>;
     order: Order;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI,
 ) => Promise<Array<DeliveryProvider>>;
