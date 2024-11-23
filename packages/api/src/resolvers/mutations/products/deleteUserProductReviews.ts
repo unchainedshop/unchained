@@ -1,6 +1,6 @@
-import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, UserNotFoundError } from '../../../errors.js';
+import { Context } from '../../../context.js';
 
 export default async function deleteUserProductReviews(
   root: never,

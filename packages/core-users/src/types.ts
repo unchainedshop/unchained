@@ -71,6 +71,7 @@ export type User = {
   pushSubscriptions: Array<PushSubscriptionObject>;
   username?: string;
   meta?: any;
+  deletedBy?: string;
 } & TimestampFields;
 
 export type UserQuery = mongodb.Filter<User> & {

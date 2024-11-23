@@ -15,42 +15,29 @@ import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
-import type { Address, Contact } from '@unchainedshop/mongodb';
 import crypto from 'crypto';
 import { UnchainedCore } from '@unchainedshop/core';
-import { UserServices } from '../users-index.js';
-import { FileServices, FilesModule } from '@unchainedshop/core-files';
+import { Context } from 'vm';
 
-const isDate = (value) => {
-  const date = new Date(value);
-  return !Number.isNaN(date.getTime());
-};
-
-function maskString(value) {
-  if (isDate(value)) return value;
-  return crypto
-    .createHash('sha256')
-    .update(JSON.stringify([value, new Date().getTime()]))
-    .digest('hex');
-}
-
-const maskUserPropertyValues = (user) => {
-  if (typeof user !== 'object' || user === null) {
-    return user;
+const maskUserPropertyValues = (user, deletedById: string): User => {
+  if (!user || typeof user !== 'object') {
+    throw new Error('Invalid user object');
   }
-  if (Array.isArray(user)) {
-    return user.map((item) => maskUserPropertyValues(item));
-  }
-  const maskedUser = {};
-  Object.keys(user).forEach((key) => {
-    if (typeof user[key] === 'string' || isDate(user[key])) {
-      maskedUser[key] = maskString(user[key]);
-    } else {
-      maskedUser[key] = maskUserPropertyValues(user[key]);
-    }
-  });
-
-  return maskedUser;
+  return {
+    ...user,
+    username: `deleted-${Date.now()}`,
+    deleted: new Date(),
+    deletedBy: deletedById,
+    emails: null,
+    roles: null,
+    profile: null,
+    lastBillingAddress: {},
+    services: {},
+    pushSubscriptions: [],
+    avatarId: null,
+    initialPassword: null,
+    lastContact: null,
+  };
 };
 
 export type UsersModule = {
@@ -147,6 +134,7 @@ const USER_EVENTS = [
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
   'USER_REMOVE',
+  'USER_PURGE',
 ];
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
@@ -851,11 +839,10 @@ export const configureUsersModule = async ({
         {},
       );
     },
-    deleteUser: async ({ userId }, context) => {
+    deleteUser: async ({ userId }, context: Context) => {
       const { modules } = context;
       const { _id, ...user } = await findUserById(userId);
-      delete user?.services;
-      const maskedUserData = maskUserPropertyValues({ ...user, meta: null });
+      const maskedUserData = maskUserPropertyValues(user, context.userId);
       await modules.bookmarks.deleteByUserId(userId);
       await updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
       return true;

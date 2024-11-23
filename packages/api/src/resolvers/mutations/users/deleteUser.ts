@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../types.js';
 import { InvalidIdError, UserNotFoundError } from '../../../errors.js';
+import { Context } from '../../../context.js';
 
 const deleteUser = async (_, { userId }, context: Context) => {
   const { modules, userAgent, userId: currentUserId } = context;
