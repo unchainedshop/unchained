@@ -226,4 +226,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.confirmMediaUpload, () => true);
+  role.allow(actions.downloadFile, () => true);
 };

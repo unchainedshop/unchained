@@ -47,7 +47,6 @@ export const gridfsHandler = async (
           res.end('File already linked');
           return;
         }
-
         // If the type is octet-stream, prefer mimetype lookup from the filename
         // Else prefer the content-type header
         const type =

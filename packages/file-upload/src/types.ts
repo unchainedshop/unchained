@@ -8,6 +8,7 @@ export interface UploadFileData {
   size?: number;
   type: string;
   url: string;
+  isPrivate?: boolean;
 }
 
 export interface UploadedFile {

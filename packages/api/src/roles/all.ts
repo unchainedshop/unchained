@@ -45,6 +45,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewWarehousingInterfaces, () => false);
   role.allow(actions.viewOrders, () => false);
   role.allow(actions.sendEmail, () => false);
+  role.allow(actions.removeUser, () => false);
   role.allow(actions.updateUser, () => false);
   role.allow(actions.updateUsername, () => false);
   role.allow(actions.manageLanguages, () => false);
@@ -140,4 +141,5 @@ export const all = (role, actions) => {
   role.allow(actions.resetPassword, () => true);
   role.allow(actions.changePassword, () => true);
   role.allow(actions.heartbeat, () => true);
+  role.allow(actions.downloadFile, () => true);
 };

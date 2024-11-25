@@ -29,7 +29,7 @@ export const GridFSAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
-  async createSignedURL(directoryName, fileName) {
+  async createSignedURL(directoryName, fileName, context, isPrivate) {
     const expiryDate = resolveExpirationDate();
     const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, hashedFilename, expiryDate.getTime());
@@ -37,7 +37,7 @@ export const GridFSAdapter: IFileAdapter = {
     const putURL = new URL(
       `/gridfs/${directoryName}/${encodeURIComponent(
         fileName,
-      )}?e=${expiryDate.getTime()}&s=${signature}`,
+      )}?e=${expiryDate.getTime()}&s=${signature}&isPrivate=${!!isPrivate}`,
       ROOT_URL,
     ).href;
     const url = `/gridfs/${directoryName}/${hashedFilename}`;
@@ -50,7 +50,8 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName),
       putURL,
       url,
-    } as UploadFileData & { putURL: string };
+      isPrivate: Boolean(isPrivate),
+    } as UploadFileData & { putURL: string; isPrivate: boolean };
   },
 
   async uploadFileFromStream(directoryName: string, rawFile: any, { modules }: any) {
