@@ -140,4 +140,5 @@ export const all = (role, actions) => {
   role.allow(actions.resetPassword, () => true);
   role.allow(actions.changePassword, () => true);
   role.allow(actions.heartbeat, () => true);
+  role.allow(actions.downloadFile, () => true);
 };
