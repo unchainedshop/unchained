@@ -1,6 +1,6 @@
 # Next
 ## Minor
-- API: Extend `Query.users` to accept additional filter options `verificationStatus` & `loginWithinDays` 
+- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
 
 ## Breaking
 - Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 

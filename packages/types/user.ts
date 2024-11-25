@@ -11,11 +11,6 @@ export enum UserOrderFilter {
   NO_ORDERS = 'NO_ORDERS',
 }
 
-export enum UserVerificationFilter {
-  VERIFIED = 'VERIFIED',
-  UNVERIFIED = 'UNVERIFIED',
-}
-
 export enum UserCartFilter {
   HAS_CART = 'HAS_CART',
   NO_CART = 'NO_CART',
@@ -102,8 +97,8 @@ export type User = {
 export type UserQuery = Filter<User> & {
   includeGuests?: boolean;
   queryString?: string;
-  verificationStatus?: UserVerificationFilter;
-  loginWithinDays?: DateFilterInput;
+  emailVerified?: boolean;
+  lastLogin?: DateFilterInput;
 };
 
 /*

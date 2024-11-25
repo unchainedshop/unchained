@@ -277,10 +277,5 @@ export default [
       start: DateTime
       end: DateTime
     }
-
-    enum UserVerificationFilter {
-      VERIFIED
-      UNVERIFIED
-    }
   `,
 ];

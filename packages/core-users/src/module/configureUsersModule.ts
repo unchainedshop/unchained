@@ -1,6 +1,6 @@
 import localePkg from 'locale';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { User, UserQuery, UsersModule, UserVerificationFilter } from '@unchainedshop/types/user.js';
+import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
@@ -33,26 +33,23 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 export const buildFindSelector = ({
   includeGuests,
   queryString,
-  verificationStatus = null,
-  loginWithinDays = {},
+  emailVerified = null,
+  lastLogin = {},
   ...rest
 }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
-  if (verificationStatus === UserVerificationFilter.VERIFIED) {
+  if (emailVerified === true) {
     selector['emails.verified'] = true;
   }
-  if (verificationStatus === UserVerificationFilter.UNVERIFIED) {
+  if (emailVerified === false) {
     selector['emails.verified'] = false;
   }
-  if (loginWithinDays?.end || loginWithinDays?.start) {
-    if (loginWithinDays?.end && loginWithinDays?.start)
-      selector['lastLogin.timestamp'] = {
-        $gte: loginWithinDays?.start,
-        $lte: loginWithinDays?.end,
-      };
-    else if (loginWithinDays?.end) selector['lastLogin.timestamp'] = { $lte: loginWithinDays?.end };
-    else if (loginWithinDays?.start) selector['lastLogin.timestamp'] = { $gte: loginWithinDays?.start };
+  if (lastLogin?.end) {
+    selector['lastLogin.timestamp'] = { $lte: lastLogin?.end };
+  }
+  if (lastLogin?.start) {
+    selector['lastLogin.timestamp'] = { $gte: lastLogin?.start };
   }
   if (queryString) {
     (selector as any).$text = { $search: queryString };

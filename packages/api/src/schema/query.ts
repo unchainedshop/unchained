@@ -19,8 +19,8 @@ export default [
         includeGuests: Boolean = false
         queryString: String
         sort: [SortOptionInput!]
-        verificationStatus: UserVerificationFilter
-        loginWithinDays: DateFilterInput
+        emailVerified: Boolean
+        lastLogin: DateFilterInput
       ): [User!]!
 
       """
@@ -29,8 +29,8 @@ export default [
       usersCount(
         includeGuests: Boolean = false
         queryString: String
-        verificationStatus: UserVerificationFilter
-        loginWithinDays: DateFilterInput
+        emailVerified: Boolean
+        lastLogin: DateFilterInput
       ): Int!
 
       """
