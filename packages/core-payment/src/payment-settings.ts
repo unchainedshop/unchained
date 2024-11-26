@@ -1,8 +1,7 @@
-import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from './types.js';
 import { PaymentCredentials } from './db/PaymentCredentialsCollection.js';
 
-export type FilterProviders = (
+export type FilterProviders<Order = unknown> = (
   params: {
     providers: Array<PaymentProvider>;
     order: Order;
@@ -10,7 +9,7 @@ export type FilterProviders = (
   unchainedAPI,
 ) => Promise<Array<PaymentProvider>>;
 
-export type DetermineDefaultProvider = (
+export type DetermineDefaultProvider<Order = unknown> = (
   params: {
     providers: Array<PaymentProvider>;
     order: Order;

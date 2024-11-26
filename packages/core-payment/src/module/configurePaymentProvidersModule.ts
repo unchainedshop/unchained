@@ -40,11 +40,6 @@ export type PaymentProvidersModules = {
 
   // Payment adapter
   findSupported: (query: { order: Order }, unchainedAPI) => Promise<Array<PaymentProvider>>;
-  determineDefault: (
-    paymentProviders: Array<PaymentProvider>,
-    params: { order: Order; paymentCredentials?: Array<PaymentCredentials> },
-    unchainedAPI,
-  ) => Promise<PaymentProvider>;
 
   findInterface: (query: PaymentProvider) => PaymentInterface;
   findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
@@ -181,16 +176,6 @@ export const configurePaymentProvidersModule = (
         {
           providers,
           order: paymentContext.order,
-        },
-        unchainedAPI,
-      );
-    },
-
-    determineDefault: async (paymentProviders, deliveryContext, unchainedAPI) => {
-      return paymentSettings.determineDefaultProvider(
-        {
-          providers: paymentProviders,
-          ...deliveryContext,
         },
         unchainedAPI,
       );

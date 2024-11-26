@@ -19,7 +19,7 @@ const generateOrder = async (
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;
 
-  const { modules } = unchainedAPI;
+  const { modules, services } = unchainedAPI;
   const { orderProducts, ...configuration } = params;
   let order = await modules.orders.create({
     userId: enrollment.userId,
@@ -62,7 +62,7 @@ const generateOrder = async (
     await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, unchainedAPI);
   }
 
-  await modules.orders.updateCalculation(orderId, unchainedAPI);
+  await services.orders.updateCalculation(orderId, unchainedAPI);
 
   order = await modules.orders.checkout(
     order._id,

@@ -8,7 +8,7 @@ export default async function addCartDiscount(
   { orderId, code }: { orderId?: string; code: string },
   context: Context,
 ) {
-  const { modules, user, userId } = context;
+  const { modules, services, user, userId } = context;
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
 
@@ -17,6 +17,6 @@ export default async function addCartDiscount(
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   const discount = await modules.orders.discounts.createManualOrderDiscount({ order, code }, context);
-  await modules.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id, context);
   return discount;
 }

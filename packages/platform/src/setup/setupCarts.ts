@@ -9,9 +9,13 @@ const { UNCHAINED_DISABLE_PROVIDER_INVALIDATION, UNCHAINED_ASSIGN_CART_FOR_USERS
 
 export const setupCarts = async (unchainedAPI: UnchainedCore, options: SetupCartsOptions = {}) => {
   if (options.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {
-    await unchainedAPI.modules.orders.invalidateProviders(
-      unchainedAPI,
+    const orders = await unchainedAPI.modules.orders.findCartsToInvalidate(
       options.providerInvalidationMaxAgeDays,
+    );
+    await Promise.allSettled(
+      orders.map(async (order) => {
+        await unchainedAPI.services.orders.updateCalculation(order._id, unchainedAPI);
+      }),
     );
   }
 

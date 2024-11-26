@@ -8,7 +8,7 @@ export default async function updateOrderDeliveryPickUp(
   params: { orderDeliveryId: string; orderPickUpLocationId: string; meta: any },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { orderDeliveryId, orderPickUpLocationId, meta } = params;
   log(`mutation updateOrderDeliveryPickUp ${orderDeliveryId} with location ${orderPickUpLocationId}`, {
     userId,
@@ -37,7 +37,7 @@ export default async function updateOrderDeliveryPickUp(
     orderPickUpLocationId,
     meta,
   });
-  await modules.orders.updateCalculation(orderDelivery.orderId, context);
+  await services.orders.updateCalculation(orderDelivery.orderId, context);
   return modules.orders.deliveries.findDelivery({
     orderDeliveryId,
   });

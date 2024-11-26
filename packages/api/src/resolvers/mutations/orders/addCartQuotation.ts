@@ -20,7 +20,7 @@ export default async function addCartQuotation(
   },
   context: Context,
 ) {
-  const { modules, userId, user } = context;
+  const { modules, services, userId, user } = context;
   const { orderId, quotationId, quantity, configuration } = params;
 
   log(
@@ -66,6 +66,6 @@ export default async function addCartQuotation(
     { order, product },
     context,
   );
-  await modules.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id, context);
   return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
 }

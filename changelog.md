@@ -1,5 +1,10 @@
 # Unchained Engine vNEXT
 
+- The order module function `initProviders` has been moved to order services renamed as `initCartProviders`
+- The order module function `updateCalculation` has been moved to order services
+- The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
+
+
 ## Removing the auth fat of unchained
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
 

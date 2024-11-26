@@ -2,6 +2,9 @@ import { AssortmentsModule } from '@unchainedshop/core-assortments';
 import { BookmarksModule } from '@unchainedshop/core-bookmarks';
 import { OrdersModule } from '@unchainedshop/core-orders';
 import { ProductsModule, ProductStatus } from '@unchainedshop/core-products';
+import { updateCalculationService } from './updateCalculationService.js';
+import { DeliveryModule } from '@unchainedshop/core-delivery';
+import { PaymentModule } from '@unchainedshop/core-payment';
 
 export type RemoveProductService = (
   params: { productId: string },
@@ -11,6 +14,8 @@ export type RemoveProductService = (
       bookmarks: BookmarksModule;
       assortments: AssortmentsModule;
       orders: OrdersModule;
+      delivery: DeliveryModule;
+      payment: PaymentModule;
     };
   },
 ) => Promise<boolean>;
@@ -31,7 +36,7 @@ export const removeProductService: RemoveProductService = async ({ productId }, 
           await modules.orders.positions.removeProductByIdFromAllOpenPositions(productId);
         await Promise.all(
           [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
-            await modules.orders.updateCalculation(orderIdToRecalculate, unchainedAPI as any);
+            await updateCalculationService(orderIdToRecalculate, unchainedAPI);
           }),
         );
         await modules.products.delete(productId);

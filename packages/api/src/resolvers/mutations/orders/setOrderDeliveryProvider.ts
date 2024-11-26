@@ -7,7 +7,7 @@ export default async function setOrderDeliveryProvider(
   params: { orderId: string; deliveryProviderId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { orderId, deliveryProviderId } = params;
 
   log(`mutation setOrderDeliveryProvider ${deliveryProviderId}`, {
@@ -21,5 +21,5 @@ export default async function setOrderDeliveryProvider(
   if (!(await modules.orders.orderExists({ orderId }))) throw new OrderNotFoundError({ orderId });
 
   await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, context);
-  return modules.orders.updateCalculation(orderId, context);
+  return services.orders.updateCalculation(orderId, context);
 }

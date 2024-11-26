@@ -10,6 +10,8 @@ import { migrateBookmarksService } from './migrateBookmarksService.js';
 import { migrateOrderCartsService } from './migrateOrderCartService.js';
 import { nextUserCartService } from './nextUserCartService.js';
 import { removeProductService } from './removeProductService.js';
+import { initCartProvidersService } from './initCartProviders.js';
+import { updateCalculationService } from './updateCalculationService.js';
 
 const services = {
   bookmarks: {
@@ -26,6 +28,8 @@ const services = {
   orders: {
     migrateOrderCarts: migrateOrderCartsService,
     nextUserCart: nextUserCartService,
+    initCartProviders: initCartProvidersService,
+    updateCalculation: updateCalculationService,
   },
   products: {
     removeProduct: removeProductService,

@@ -131,20 +131,6 @@ export const configureDeliveryModule = async ({
       );
     },
 
-    determineDefault: async (
-      deliveryProviders: Array<DeliveryProvider>,
-      params: { order: Order },
-      unchainedAPI,
-    ): Promise<DeliveryProvider> => {
-      return deliverySettings.determineDefaultProvider(
-        {
-          providers: deliveryProviders,
-          ...params,
-        },
-        unchainedAPI,
-      );
-    },
-
     configurationError: async (
       deliveryProvider: DeliveryProvider,
       unchainedAPI,

@@ -17,7 +17,7 @@ export default async function updateCartItem(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { itemId, configuration = null, quantity = null } = params;
 
   log(`mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(configuration)}`, { userId });
@@ -49,6 +49,6 @@ export default async function updateCartItem(
     },
     context,
   );
-  await modules.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id, context);
   return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
 }

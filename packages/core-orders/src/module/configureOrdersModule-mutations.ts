@@ -29,7 +29,8 @@ export interface OrderMutations {
 
   updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
   updateContact: (orderId: string, contact: Contact) => Promise<Order>;
-  updateContext: (orderId: string, context: any) => Promise<Order | null>;
+  updateContext: (orderId: string, context: any) => Promise<Order>;
+  updateCalculationSheet: (orderId: string, calculation) => Promise<Order>;
 }
 
 const ORDER_EVENTS: string[] = [
@@ -203,6 +204,23 @@ export const configureOrderModuleMutations = ({
       );
 
       await emit('ORDER_UPDATE', { order, field: 'contact' });
+      return order;
+    },
+
+    updateCalculationSheet: async (orderId, calculation) => {
+      const selector = generateDbFilterById(orderId);
+      const order = await Orders.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      await emit('ORDER_UPDATE', { order, field: 'calculation' });
       return order;
     },
 

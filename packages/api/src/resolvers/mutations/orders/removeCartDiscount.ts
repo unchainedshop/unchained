@@ -8,7 +8,7 @@ export default async function removeCartDiscount(
   { discountId }: { discountId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
 
   log(`mutation removeCartDiscount ${discountId}`, { userId });
 
@@ -27,6 +27,6 @@ export default async function removeCartDiscount(
   }
 
   const deletedDiscount = await modules.orders.discounts.delete(discountId, context);
-  await modules.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id, context);
   return deletedDiscount;
 }

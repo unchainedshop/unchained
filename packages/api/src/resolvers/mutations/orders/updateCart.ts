@@ -16,7 +16,7 @@ interface UpdateCartParams {
 export default async function updateCart(root: never, params: UpdateCartParams, context: Context) {
   const { orderId, billingAddress, contact, paymentProviderId, deliveryProviderId, meta } = params;
 
-  const { modules, userId, user } = context;
+  const { modules, services, userId, user } = context;
 
   log('mutation updateCart', { userId });
 
@@ -44,5 +44,5 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   }
 
   // Recalculate, then return
-  return modules.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id, context);
 }

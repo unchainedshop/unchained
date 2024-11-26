@@ -8,7 +8,7 @@ export default async function emptyCart(
   { orderId }: { orderId?: string },
   context: Context,
 ) {
-  const { modules, userId, user } = context;
+  const { modules, services, userId, user } = context;
 
   log('mutation emptyCart', { userId, orderId });
 
@@ -18,5 +18,5 @@ export default async function emptyCart(
   if (!order) return null;
 
   await modules.orders.positions.removePositions({ orderId: order._id });
-  return modules.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id, context);
 }

@@ -8,7 +8,7 @@ export default async function updateOrderDeliveryShipping(
   params: { orderDeliveryId: string; address: any; meta: any },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { orderDeliveryId, address, meta } = params;
 
   log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
@@ -36,7 +36,7 @@ export default async function updateOrderDeliveryShipping(
     address,
     meta,
   });
-  await modules.orders.updateCalculation(orderDelivery.orderId, context);
+  await services.orders.updateCalculation(orderDelivery.orderId, context);
   return modules.orders.deliveries.findDelivery({
     orderDeliveryId,
   });

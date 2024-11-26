@@ -7,7 +7,7 @@ export default async function removeCartItem(
   { itemId }: { itemId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
 
   log(`mutation removeCartItem ${itemId}`, { userId });
 
@@ -25,6 +25,6 @@ export default async function removeCartItem(
   }
 
   const removedOrderPosition = await modules.orders.positions.delete(itemId);
-  await modules.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id, context);
   return removedOrderPosition;
 }

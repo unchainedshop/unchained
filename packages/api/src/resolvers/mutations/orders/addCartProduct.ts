@@ -13,7 +13,7 @@ export default async function addCartProduct(
   { orderId, productId, quantity, configuration },
   context: Context,
 ) {
-  const { modules, userId, user } = context;
+  const { modules, services, userId, user } = context;
 
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
@@ -39,6 +39,6 @@ export default async function addCartProduct(
     { order, product },
     context,
   );
-  await modules.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id, context);
   return modules.orders.positions.findOrderPosition({ itemId: orderPosition._id });
 }

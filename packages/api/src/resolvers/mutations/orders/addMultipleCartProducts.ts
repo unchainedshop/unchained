@@ -19,7 +19,7 @@ export default async function addMultipleCartProducts(
   },
   context: Context,
 ) {
-  const { modules, userId, user } = context;
+  const { modules, services, userId, user } = context;
   const { orderId, items } = params;
 
   log(`mutation addMultipleCartProducts ${JSON.stringify(items)}`, {
@@ -64,5 +64,5 @@ export default async function addMultipleCartProducts(
     return positions;
   }, Promise.resolve([]));
 
-  return modules.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id, context);
 }

@@ -7,7 +7,7 @@ export default async function setOrderPaymentProvider(
   params: { orderId: string; paymentProviderId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { orderId, paymentProviderId } = params;
 
   log(`mutation setOrderPaymentProvider ${paymentProviderId}`, {
@@ -22,5 +22,5 @@ export default async function setOrderPaymentProvider(
   if (!order) throw new OrderNotFoundError({ orderId });
 
   await modules.orders.setPaymentProvider(orderId, paymentProviderId, context);
-  return modules.orders.updateCalculation(orderId, context);
+  return services.orders.updateCalculation(orderId, context);
 }

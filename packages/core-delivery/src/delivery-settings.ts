@@ -1,7 +1,6 @@
 import { DeliveryProvider, FilterProviders } from './types.js';
-import type { Order } from '@unchainedshop/core-orders';
 
-export type DetermineDefaultProvider = (
+export type DetermineDefaultProvider<Order = unknown> = (
   params: {
     providers: Array<DeliveryProvider>;
     order: Order;

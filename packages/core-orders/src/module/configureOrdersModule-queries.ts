@@ -58,6 +58,19 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       return Orders.findOne(selector, options);
     },
 
+    findCartsToInvalidate: async (maxAgeDays = 30) => {
+      const ONE_DAY_IN_MILLISECONDS = 86400000;
+
+      const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
+
+      const orders = await Orders.find({
+        status: { $eq: null },
+        updated: { $gte: minValidDate },
+      }).toArray();
+
+      return orders;
+    },
+
     findOrders: async (
       {
         limit,
