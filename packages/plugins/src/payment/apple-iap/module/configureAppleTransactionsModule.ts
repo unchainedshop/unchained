@@ -3,7 +3,7 @@ import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransa
 export interface AppleTransactionsModule {
   findTransactionById: (transactionIdentifier: string) => Promise<AppleTransaction>;
 
-  createTransaction: (doc: AppleTransaction, userId: string) => Promise<string | null>;
+  createTransaction: (doc: AppleTransaction) => Promise<string | null>;
 }
 
 export const configureAppleTransactionsModule = async ({ db }): Promise<AppleTransactionsModule> => {

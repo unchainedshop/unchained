@@ -344,15 +344,11 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
-        const userId = order?.userId || params.paymentContext?.userId;
-        await appleTransactions.createTransaction(
-          {
-            _id: transactionIdentifier,
-            matchedTransaction,
-            orderId: order._id,
-          },
-          userId,
-        );
+        await appleTransactions.createTransaction({
+          _id: transactionIdentifier,
+          matchedTransaction,
+          orderId: order._id,
+        });
 
         return {
           transactionIdentifier,

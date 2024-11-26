@@ -3,7 +3,6 @@ export default {
   type: 'SIMPLE_PRODUCT',
   status: 'ACTIVE',
   sequence: 10,
-  authorId: 'PKve0k9fLCUzn2EUi',
   tags: [],
   created: new Date('2022-10-28T10:41:13.346Z'),
   createdBy: 'PKve0k9fLCUzn2EUi',

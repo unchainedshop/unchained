@@ -84,7 +84,6 @@ Options:
 
 Set by Unchained:
 
-- authorId,
 - slug history
 - \_id, created & updated if not provided
 
@@ -235,7 +234,6 @@ Status:
 
 Set by Unchained:
 
-- authorId,
 - slug history
 - \_id, created & updated if not provided
 
@@ -324,7 +322,6 @@ Set by Unchained:
 
 Set by Unchained:
 
-- authorId,
 - \_id, created & updated if not provided
 
 ```json

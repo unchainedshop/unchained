@@ -213,7 +213,6 @@ export const JpegMedia = {
   name: 'Screenshot from 2021-09-07 21-20-22.png',
   meta: {
     mediaId: '4CZA6tzAuKuJx5WQc',
-    authorId: 'FhMH2xKuTGW20uO8k',
   },
   size: '779663',
   type: 'image/jpeg',
