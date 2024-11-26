@@ -3,7 +3,7 @@ import { log } from '@unchainedshop/logger';
 
 export default async function prepareProductMediaUpload(
   root: never,
-  { mediaName, productId }: { mediaName: string; productId: string },
+  { mediaName, productId, asPrivate }: { mediaName: string; productId: string; asPrivate?: boolean },
   context: Context,
 ) {
   const { services, userId } = context;
@@ -14,6 +14,7 @@ export default async function prepareProductMediaUpload(
       directoryName: 'product-media',
       fileName: mediaName,
       meta: { productId },
+      isPrivate: Boolean(asPrivate),
     },
     context,
   );

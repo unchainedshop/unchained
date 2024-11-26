@@ -3,7 +3,7 @@ import { log } from '@unchainedshop/logger';
 
 export default async function prepareUserAvatarUpload(
   root: never,
-  params: { mediaName: string; userId: string },
+  params: { mediaName: string; userId: string; asPrivate: boolean },
   context: Context,
 ) {
   const { services, userId } = context;
@@ -19,6 +19,7 @@ export default async function prepareUserAvatarUpload(
       directoryName: 'user-avatars',
       fileName: params.mediaName,
       meta: { userId: normalizedUserId },
+      isPrivate: Boolean(params?.asPrivate),
     },
     context,
   );
