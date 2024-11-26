@@ -33,8 +33,8 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 export const buildFindSelector = ({
   includeGuests,
   queryString,
-  emailVerified = null,
-  lastLogin = {},
+  emailVerified,
+  lastLogin,
   ...rest
 }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
@@ -43,13 +43,18 @@ export const buildFindSelector = ({
     selector['emails.verified'] = true;
   }
   if (emailVerified === false) {
-    selector['emails.verified'] = false;
-  }
-  if (lastLogin?.end) {
-    selector['lastLogin.timestamp'] = { $lte: lastLogin?.end };
+    // We need to use $ne here else we'd also find users with many emails where one is
+    // unverified
+    selector['emails.verified'] = { $ne: true };
   }
   if (lastLogin?.start) {
-    selector['lastLogin.timestamp'] = { $gte: lastLogin?.start };
+    selector['lastLogin.timestamp'] = { $exists: true };
+  }
+  if (lastLogin?.end) {
+    selector['lastLogin.timestamp'].$lte = new Date(lastLogin.end);
+  }
+  if (lastLogin?.start) {
+    selector['lastLogin.timestamp'].$gte = new Date(lastLogin.start);
   }
   if (queryString) {
     (selector as any).$text = { $search: queryString };
