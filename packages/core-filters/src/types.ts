@@ -1,7 +1,7 @@
-import { Assortment } from '@unchainedshop/core-assortments';
+import type { Assortment } from '@unchainedshop/core-assortments';
 import { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
-import { Product } from '@unchainedshop/core-products';
+import type { Product } from '@unchainedshop/core-products';
 
 export enum FilterType {
   SWITCH = 'SWITCH',

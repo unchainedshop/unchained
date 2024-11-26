@@ -1,8 +1,8 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
-import { DeliveryLocation, IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
-import { DeliveryDirector } from '@unchainedshop/core-delivery';
+import { type DeliveryLocation, type IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { DeliveryDirector } from '@unchainedshop/core-delivery'; // TODO: Important
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 
 export type OrderDeliveriesModule = {

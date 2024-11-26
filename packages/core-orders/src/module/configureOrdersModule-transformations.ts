@@ -1,13 +1,13 @@
 import { Order, OrderDiscount } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
-import { PaymentPricingRowCategory } from '@unchainedshop/core-payment';
 import {
   IOrderPricingSheet,
   OrderPricingRowCategory,
   OrderPricingSheet,
 } from '../director/OrderPricingSheet.js';
-import { ProductPricingRowCategory } from '@unchainedshop/core-products';
-import { DeliveryPricingRowCategory } from '@unchainedshop/core-delivery';
+import { PaymentPricingRowCategory } from '@unchainedshop/core-payment'; // TODO: Important!
+import { ProductPricingRowCategory } from '@unchainedshop/core-products'; // TODO: Important!
+import { DeliveryPricingRowCategory } from '@unchainedshop/core-delivery'; // TODO: Important!
 import { OrderPrice, OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 
 export interface OrderTransformations {

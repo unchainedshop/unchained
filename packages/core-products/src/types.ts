@@ -1,9 +1,4 @@
-import { Order } from '@unchainedshop/core-orders';
-import { User } from '@unchainedshop/core-users';
 import { TimestampFields, mongodb } from '@unchainedshop/mongodb';
-import { OrderDiscount } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -11,6 +6,8 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from '@unchainedshop/utils';
+import type { Order, OrderDiscount, OrderPosition, OrderPrice } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
 
 export type ProductMedia = {
   _id?: string;

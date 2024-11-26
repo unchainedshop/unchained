@@ -4,13 +4,11 @@ import {
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
 } from './PaymentPricingAdapter.js';
-import { BasePricingDirector } from '@unchainedshop/utils';
+import { BasePricingDirector, IPricingDirector } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
-import { User } from '@unchainedshop/core-users';
-import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from '../types.js';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { IPricingDirector } from '@unchainedshop/utils';
+import type { OrderPayment, Order } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
 
 export type PaymentPricingContext =
   | {

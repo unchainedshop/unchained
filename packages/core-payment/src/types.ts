@@ -1,7 +1,6 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { TimestampFields } from '@unchainedshop/mongodb';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
+import type { Order, OrderPayment } from '@unchainedshop/core-orders';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

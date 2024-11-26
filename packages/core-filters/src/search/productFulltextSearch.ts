@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { Product } from '@unchainedshop/core-products';
+import type { Product } from '@unchainedshop/core-products';
 import { Filter, FilterAdapterActions } from '../types.js';
 
 export const productFulltextSearch = (

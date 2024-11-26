@@ -21,9 +21,8 @@ import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
 import { EnrollmentDirector } from '../enrollments-index.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
+import type { Product } from '@unchainedshop/core-products';
 
 // Queries
 

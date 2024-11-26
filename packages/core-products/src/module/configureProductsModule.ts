@@ -40,8 +40,8 @@ import {
   ProductPricingCalculation,
   ProductPricingContext,
 } from '../types.js';
-import { Currency } from '@unchainedshop/core-currencies';
-import { OrderPosition } from '@unchainedshop/core-orders';
+import type { Currency } from '@unchainedshop/core-currencies';
+import type { OrderPosition } from '@unchainedshop/core-orders';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',

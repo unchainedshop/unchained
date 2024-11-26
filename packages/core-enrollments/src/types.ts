@@ -1,7 +1,7 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
-import { Product, ProductPlan } from '@unchainedshop/core-products';
-import { OrderPosition } from '@unchainedshop/core-orders';
+import type { Product, ProductPlan } from '@unchainedshop/core-products';
+import type { OrderPosition } from '@unchainedshop/core-orders';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',

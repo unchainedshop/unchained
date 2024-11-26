@@ -11,13 +11,12 @@ import { PaymentPricingContext, PaymentPricingDirector } from '../director/Payme
 import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 import { paymentSettings } from '../payment-settings.js';
-import { Order } from '@unchainedshop/core-orders';
+import type { Order } from '@unchainedshop/core-orders';
 import {
   IPaymentPricingSheet,
   PaymentPricingCalculation,
   PaymentProviderType,
 } from '../payment-index.js';
-import { PaymentCredentials } from '../db/PaymentCredentialsCollection.js';
 
 export type PaymentProvidersModules = {
   // Queries

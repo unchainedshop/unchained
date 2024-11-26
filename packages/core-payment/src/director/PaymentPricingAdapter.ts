@@ -6,11 +6,9 @@ import {
 } from '@unchainedshop/utils';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
-import { User } from '@unchainedshop/core-users';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from '../types.js';
-import { OrderDiscount } from '@unchainedshop/core-orders';
+import type { OrderDiscount, OrderPayment, Order } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
 
 export interface PaymentPricingCalculation extends PricingCalculation {
   discountId?: string;

@@ -296,6 +296,7 @@ export const configureOrderModuleProcessing = ({
         const user = await modules.users.findUserById(processedOrder.userId);
         const locale = modules.users.userLocale(user);
         await services.orders.nextUserCart(
+          // TODO: This means checkout belongs to services!
           {
             user,
             countryCode: locale.region,

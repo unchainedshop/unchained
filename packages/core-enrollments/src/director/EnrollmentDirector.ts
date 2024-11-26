@@ -1,5 +1,5 @@
 import { EnrollmentData, IEnrollmentAdapter, IEnrollmentDirector } from '../types.js';
-import { ProductPlan } from '@unchainedshop/core-products';
+import type { ProductPlan } from '@unchainedshop/core-products';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
 

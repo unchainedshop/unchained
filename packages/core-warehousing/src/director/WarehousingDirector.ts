@@ -2,7 +2,7 @@ import { IWarehousingAdapter, IWarehousingDirector, WarehousingContext } from '.
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
 import { WarehousingError } from './WarehousingError.js';
-import { DeliveryDirector } from '@unchainedshop/core-delivery';
+import { DeliveryDirector } from '@unchainedshop/core-delivery'; // TODO: Important smell!
 
 const getReferenceDate = (context: WarehousingContext) => {
   return context && context.referenceDate ? context.referenceDate : new Date();

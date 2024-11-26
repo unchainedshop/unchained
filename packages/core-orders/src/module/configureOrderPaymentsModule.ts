@@ -1,8 +1,8 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
-import { IPaymentPricingSheet } from '@unchainedshop/core-payment';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
+import type { IPaymentPricingSheet } from '@unchainedshop/core-payment';
 
 export type OrderPaymentsModule = {
   // Queries

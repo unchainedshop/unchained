@@ -31,7 +31,7 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
 
   try {
     if (fileIds?.length) {
-      await services.files.removeFiles(
+      await removeFilesService(
         {
           fileIds,
         },

@@ -1,4 +1,3 @@
-import { Product } from '@unchainedshop/core-products';
 import { mongodb } from '@unchainedshop/mongodb';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';
@@ -16,7 +15,8 @@ import {
   SearchProductConfiguration,
 } from '../search/search.js';
 import { SearchQuery, Filter } from '../types.js';
-import { Assortment } from '@unchainedshop/core-assortments';
+import type { Assortment } from '@unchainedshop/core-assortments';
+import type { Product } from '@unchainedshop/core-products';
 
 export type SearchProducts = {
   productsCount: () => Promise<number>;
