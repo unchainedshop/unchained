@@ -19,12 +19,19 @@ export default [
         includeGuests: Boolean = false
         queryString: String
         sort: [SortOptionInput!]
+        emailVerified: Boolean
+        lastLogin: DateFilterInput
       ): [User!]!
 
       """
       Get total number of users in the system that match query
       """
-      usersCount(includeGuests: Boolean = false, queryString: String): Int!
+      usersCount(
+        includeGuests: Boolean = false
+        queryString: String
+        emailVerified: Boolean
+        lastLogin: DateFilterInput
+      ): Int!
 
       """
       Specific user data if userId provided, else returns currently logged in
@@ -479,15 +486,15 @@ export default [
       """
       Returns aggregated report of all the events that occurred in the system
       """
-      eventStatistics(types: [String!], from: Timestamp, to: Timestamp): [EventStatistics!]!
+      eventStatistics(types: [String!], dateRange: DateFilterInput): [EventStatistics!]!
       """
       Returns aggregated report of all the orders that occurred in the system
       """
-      orderStatistics(from: Timestamp, to: Timestamp): OrderStatistics!
+      orderStatistics(dateRange: DateFilterInput): OrderStatistics!
       """
       Returns aggregated report of all the worker jobs that occurred in the system
       """
-      workStatistics(types: [String!], from: Timestamp, to: Timestamp): [WorkStatistics!]!
+      workStatistics(types: [String!], dateRange: DateFilterInput): [WorkStatistics!]!
     }
   `,
 ];

@@ -30,9 +30,32 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
   return user;
 };
 
-export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
+export const buildFindSelector = ({
+  includeGuests,
+  queryString,
+  emailVerified,
+  lastLogin,
+  ...rest
+}: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
+  if (emailVerified === true) {
+    selector['emails.verified'] = true;
+  }
+  if (emailVerified === false) {
+    // We need to use $ne here else we'd also find users with many emails where one is
+    // unverified
+    selector['emails.verified'] = { $ne: true };
+  }
+  if (lastLogin?.start) {
+    selector['lastLogin.timestamp'] = { $exists: true };
+  }
+  if (lastLogin?.end) {
+    selector['lastLogin.timestamp'].$lte = new Date(lastLogin.end);
+  }
+  if (lastLogin?.start) {
+    selector['lastLogin.timestamp'].$gte = new Date(lastLogin.start);
+  }
   if (queryString) {
     (selector as any).$text = { $search: queryString };
   }
@@ -100,7 +123,7 @@ export const configureUsersModule = async ({
 
     findUsers: async ({ limit, offset, ...query }) => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
-      const selector = buildFindSelector(query);
+      const selector = buildFindSelector({ ...query });
 
       if (query.queryString) {
         return Users.find(selector, {

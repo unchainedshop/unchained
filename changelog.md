@@ -1,3 +1,11 @@
+# Next
+## Minor
+- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
+
+## Breaking
+- Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
+`from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
+
 # Unchained Engine v2.14
 
 ## Minor

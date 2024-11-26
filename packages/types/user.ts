@@ -1,10 +1,20 @@
 import type { Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { Address, Contact, Locale, TimestampFields } from './common.js';
+import { Address, Contact, DateFilterInput, Locale, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { File } from './files.js';
 import { Language } from './languages.js';
+
+export enum UserOrderFilter {
+  HAS_ORDERS = 'HAS_ORDERS',
+  NO_ORDERS = 'NO_ORDERS',
+}
+
+export enum UserCartFilter {
+  HAS_CART = 'HAS_CART',
+  NO_CART = 'NO_CART',
+}
 
 export interface PushSubscription {
   _id: string;
@@ -87,6 +97,8 @@ export type User = {
 export type UserQuery = Filter<User> & {
   includeGuests?: boolean;
   queryString?: string;
+  emailVerified?: boolean;
+  lastLogin?: DateFilterInput;
 };
 
 /*

@@ -1,7 +1,7 @@
 import type { Filter, FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
 import { ModuleCreateMutation } from './core.js';
-import { TimestampFields } from './common.js';
+import { DateFilterInput, TimestampFields } from './common.js';
 
 export type Event = {
   _id?: string;
@@ -35,5 +35,5 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
-  getReport: (params?: { from?: Date; to?: Date; types?: string[] }) => Promise<EventReport[]>;
+  getReport: (params?: { dateRange?: DateFilterInput; types?: string[] }) => Promise<EventReport[]>;
 }

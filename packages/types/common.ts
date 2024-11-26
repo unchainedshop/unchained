@@ -8,6 +8,11 @@ export { Locale, Locales };
 
 export type Configuration = Array<{ key: string; value: string }>;
 
+export interface DateFilterInput {
+  start?: string;
+  end?: string;
+}
+
 export type LogFields = {
   log: Array<{
     date: Date;
