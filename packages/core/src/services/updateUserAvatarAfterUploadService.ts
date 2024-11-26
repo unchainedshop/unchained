@@ -19,7 +19,7 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
   { file },
   context,
 ) => {
-  const { modules, services } = context;
+  const { modules } = context;
   const { userId } = file.meta as { userId: string };
 
   const files = await modules.files.findFiles({

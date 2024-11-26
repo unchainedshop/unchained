@@ -165,6 +165,8 @@ export const configureAssortmentProductsModule = ({
       if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
+
+      return assortmentProduct;
     },
 
     delete: async (assortmentProductId, options) => {
