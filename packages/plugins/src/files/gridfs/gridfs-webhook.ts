@@ -6,6 +6,7 @@ import express from 'express';
 import sign from './sign.js';
 import { configureGridFSFileUploadModule } from './index.js';
 import { Context } from '@unchainedshop/api';
+import { getFileAdapter } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
 
@@ -76,8 +77,21 @@ export const gridfsHandler = async (
 
     if (req.method === 'GET') {
       const fileId = fileName;
+      const { s: signature, e: expiryTimestamp } = req.query;
 
       const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
+      if (signature && expiryTimestamp) {
+        const fileDocument = await modules.files.findFile({ fileId });
+        if (fileDocument.isPrivate) {
+          const fileAdapter = getFileAdapter();
+          const fileSignature = fileAdapter.signUrl(fileId, parseInt(expiryTimestamp));
+          if (fileSignature !== signature || parseInt(expiryTimestamp, 10) <= Date.now()) {
+            res.statusCode = 403;
+            res.end('Access restricted: Invalid or expired signature.');
+            return;
+          }
+        }
+      }
       if (file?.metadata?.['content-type']) {
         res.setHeader('Content-Type', file.metadata['content-type']);
       }
