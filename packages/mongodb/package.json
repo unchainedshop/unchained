@@ -32,14 +32,14 @@
   },
   "peerDependencies": {
     "@mongodb-js/zstd": "^1.2.2",
-    "mongodb": "^6.10.0"
+    "mongodb": "^6.11.0"
   },
   "optionalDependencies": {
     "mongodb-memory-server": "^10.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.9.1",
+    "@types/node": "^22.10.0",
     "jest": "^29.7.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }

@@ -32,6 +32,7 @@
     "@redis/client": "^1.5.8",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.6",
+    "bluebird": "^3.7.2",
     "ethers": "^6.13.4",
     "express": "^4.x",
     "memoizee": "^0.4.17",
@@ -44,7 +45,7 @@
   },
   "devDependencies": {
     "@redis/client": "^1.6.0",
-    "@types/node": "^22.9.1",
+    "@types/node": "^22.10.0",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-delivery": "^3.0.0-alpha4",
     "@unchainedshop/core-enrollments": "^3.0.0-alpha4",
@@ -60,7 +61,6 @@
     "@unchainedshop/file-upload": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
     "@unchainedshop/utils": "^3.0.0-alpha4",
-    "bluebird": "^3.7.2",
     "event-iterator": "^2.0.0",
     "express": "^4.21.1",
     "jest": "^29.7.0",
@@ -72,7 +72,7 @@
     "postfinancecheckout": "^4.5.0",
     "request": "^2.88.2",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.3",
+    "typescript": "^5.7.2",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   }
