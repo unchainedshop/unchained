@@ -31,6 +31,8 @@ const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
+  UNCHAINED_COOKIE_SAMESITE,
+  UNCHAINED_COOKIE_INSECURE,
 } = process.env;
 
 const addContext = async function middlewareWithContext(
@@ -119,6 +121,18 @@ export const connect = (
 ) => {
   const passport = setupPassport(unchainedAPI);
 
+  const name = UNCHAINED_COOKIE_NAME;
+  const domain = UNCHAINED_COOKIE_DOMAIN;
+  const path = UNCHAINED_COOKIE_PATH;
+  const secure = UNCHAINED_COOKIE_INSECURE ? false : true;
+  const sameSite = ({
+    none: 'none',
+    lax: 'lax',
+    strict: 'strict',
+    '1': true,
+    '0': false,
+  }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
+
   expressApp.use(
     session({
       secret: process.env.UNCHAINED_TOKEN_SECRET,
@@ -127,14 +141,14 @@ export const connect = (
         dbName: db.databaseName,
         collectionName: 'sessions',
       }),
-      name: UNCHAINED_COOKIE_NAME,
+      name,
       saveUninitialized: false,
       resave: false,
       cookie: {
-        domain: UNCHAINED_COOKIE_DOMAIN,
-        path: UNCHAINED_COOKIE_PATH,
-        sameSite: 'none',
-        secure: true,
+        domain,
+        path,
+        sameSite,
+        secure,
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },

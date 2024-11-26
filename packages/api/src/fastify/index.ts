@@ -28,7 +28,8 @@ const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
-  NODE_ENV,
+  UNCHAINED_COOKIE_SAMESITE,
+  UNCHAINED_COOKIE_INSECURE,
 } = process.env;
 
 const middlewareHook = async function middlewareHook(req: any, reply: any) {
@@ -84,20 +85,33 @@ export const connect = (
     db,
   }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
 ) => {
+  const cookieName = UNCHAINED_COOKIE_NAME;
+  const domain = UNCHAINED_COOKIE_DOMAIN;
+  const path = UNCHAINED_COOKIE_PATH;
+  const secure = UNCHAINED_COOKIE_INSECURE ? false : true;
+  const sameSite = ({
+    none: 'none',
+    lax: 'lax',
+    strict: 'strict',
+    '1': true,
+    '0': false,
+  }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
+
   fastify.register(fastifyCookie);
   fastify.register(fastifySession, {
     secret: process.env.UNCHAINED_TOKEN_SECRET,
-    cookieName: UNCHAINED_COOKIE_NAME,
+    cookieName,
     store: MongoStore.create({
       client: (db as any).client,
       dbName: db.databaseName,
       collectionName: 'sessions',
     }),
     cookie: {
-      domain: UNCHAINED_COOKIE_DOMAIN,
-      httpOnly: Boolean(NODE_ENV === 'production'),
-      path: UNCHAINED_COOKIE_PATH,
-      secure: NODE_ENV === 'production',
+      domain,
+      httpOnly: true,
+      path,
+      secure,
+      sameSite,
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   });

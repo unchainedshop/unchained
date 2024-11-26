@@ -158,13 +158,13 @@ export const configureAssortmentProductsModule = ({
         { upsert: true, returnDocument: 'after' },
       );
 
+      if (!assortmentProduct) return null;
+
       await emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
       if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
-
-      return assortmentProduct;
     },
 
     delete: async (assortmentProductId, options) => {

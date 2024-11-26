@@ -683,9 +683,12 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      await emit('USER_UPDATE_BILLING_ADDRESS', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      if (updatedUser) {
+        await emit('USER_UPDATE_BILLING_ADDRESS', {
+          user: removeConfidentialServiceHashes(updatedUser),
+        });
+      }
+
       return updatedUser;
     },
 
