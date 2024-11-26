@@ -10,7 +10,12 @@ export interface MediaHelperTypes {
 export const Media: MediaHelperTypes = {
   url: async (root, params, context) => {
     const { modules } = context;
-    await checkAction(context, actions.downloadFile, [root, params]);
-    return modules.files.getUrl(root, params);
+    try {
+      await checkAction(context, actions.downloadFile, [root, params]);
+      return modules.files.getUrl(root, params);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   },
 };

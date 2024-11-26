@@ -7,7 +7,7 @@ import {
 
 export type CreateSignedURLService = (
   params: { directoryName: string; fileName: string; meta?: any },
-  unchainedAPI: { modules: { files: FilesModule } },
+  unchainedAPI: { userId?: string; modules: { files: FilesModule } },
 ) => Promise<SignedFileUpload>;
 
 export const createSignedURLService: CreateSignedURLService = async (
@@ -18,12 +18,16 @@ export const createSignedURLService: CreateSignedURLService = async (
     modules: { files },
   } = unchainedContext;
   const fileUploadAdapter = getFileAdapter();
+
   const preparedFileData = await fileUploadAdapter.createSignedURL(
     directoryName,
     fileName,
     unchainedContext,
   );
-  const fileData = getFileFromFileData(preparedFileData, meta);
+  const fileData = getFileFromFileData(preparedFileData, {
+    ...meta,
+    authorId: unchainedContext?.userId,
+  });
   const fileId = await files.create(fileData);
   const file = await files.findFile({ fileId });
 
