@@ -6,12 +6,12 @@ import {
 } from '@unchainedshop/core-files';
 
 export type CreateSignedURLService = (
-  params: { directoryName: string; fileName: string; meta?: any },
+  params: { directoryName: string; fileName: string; meta?: any; isPrivate?: boolean },
   unchainedAPI: { userId?: string; modules: { files: FilesModule } },
 ) => Promise<SignedFileUpload>;
 
 export const createSignedURLService: CreateSignedURLService = async (
-  { directoryName, fileName, meta },
+  { directoryName, fileName, meta, isPrivate },
   unchainedContext,
 ) => {
   const {
@@ -23,6 +23,7 @@ export const createSignedURLService: CreateSignedURLService = async (
     directoryName,
     fileName,
     unchainedContext,
+    Boolean(isPrivate),
   );
   const fileData = getFileFromFileData(preparedFileData, {
     ...meta,
