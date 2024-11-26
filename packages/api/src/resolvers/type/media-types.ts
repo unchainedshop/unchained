@@ -1,4 +1,4 @@
-import { File as FileType } from '@unchainedshop/core-files';
+import { filesSettings, File as FileType, getFileAdapter } from '@unchainedshop/core-files';
 import { Context } from '../../context.js';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
@@ -8,11 +8,22 @@ export interface MediaHelperTypes {
 }
 
 export const Media: MediaHelperTypes = {
-  url: async (root, params, context) => {
+  url: async (file, params, context) => {
     const { modules } = context;
     try {
-      await checkAction(context, actions.downloadFile, [root, params]);
-      return modules.files.getUrl(root, params);
+      await checkAction(context, actions.downloadFile, [file, params]);
+      const fileUploadAdapter = getFileAdapter();
+      const mediaUrl = modules.files.getUrl(file, params);
+      if (file.isPrivate) {
+        const expiryTimestamp = new Date(
+          new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0),
+        ).getTime();
+
+        const mediaSignature = fileUploadAdapter.signUrl(file?._id, expiryTimestamp);
+        return `${mediaUrl}?s=${mediaSignature}&e=${expiryTimestamp}`;
+      } else {
+        return mediaUrl;
+      }
     } catch (e) {
       console.error(e);
       return null;
