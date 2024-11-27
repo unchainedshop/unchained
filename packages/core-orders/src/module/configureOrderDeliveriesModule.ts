@@ -2,13 +2,13 @@ import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedsho
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
 import {
-  DeliveryPricingCalculation,
   DeliveryPricingDirector,
   DeliveryPricingSheet,
   DeliveryDirector,
   type DeliveryLocation,
   type IDeliveryPricingSheet,
 } from '@unchainedshop/core-delivery';
+import { OrderPricingDiscount } from '../orders-index.js';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
@@ -66,12 +66,13 @@ export const configureOrderDeliveriesModule = ({
     discounts: (
       orderDelivery: OrderDelivery,
       { order, orderDiscount }: { order: Order; orderDiscount: OrderDiscount },
-      unchainedAPI,
-    ): Array<DeliveryPricingCalculation> => {
-      const { modules } = unchainedAPI;
+    ): Array<OrderPricingDiscount> => {
       if (!orderDelivery) return [];
 
-      const pricingSheet = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
+      const pricingSheet = DeliveryPricingSheet({
+        calculation: orderDelivery.calculation,
+        currency: order.currency,
+      });
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         delivery: orderDelivery,

@@ -48,12 +48,12 @@ export const configureOrderPositionsModule = ({
     discounts: (
       orderPosition: OrderPosition,
       { orderDiscount, order }: { order: Order; orderDiscount: OrderDiscount },
-      unchainedAPI,
     ): Array<OrderPricingDiscount> => {
-      const pricingSheet = unchainedAPI.modules.orders.positions.pricingSheet(
-        orderPosition,
-        order.currency,
-      );
+      const pricingSheet = ProductPricingSheet({
+        calculation: orderPosition.calculation,
+        currency: order.currency,
+        quantity: orderPosition.quantity,
+      });
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         item: orderPosition,

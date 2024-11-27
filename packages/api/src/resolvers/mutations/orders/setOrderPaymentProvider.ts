@@ -21,6 +21,6 @@ export default async function setOrderPaymentProvider(
   const order = await modules.orders.findOrder({ orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
 
-  await modules.orders.setPaymentProvider(orderId, paymentProviderId, context);
+  await modules.orders.setPaymentProvider(orderId, paymentProviderId);
   return services.orders.updateCalculation(orderId, context);
 }

@@ -47,7 +47,6 @@ export const initCartProvidersService = async (
       updatedOrder = await modules.orders.setDeliveryProvider(
         updatedOrder._id,
         defaultOrderDeliveryProvider._id,
-        unchainedAPI,
       );
     }
   }
@@ -92,7 +91,6 @@ export const initCartProvidersService = async (
       updatedOrder = await modules.orders.setPaymentProvider(
         updatedOrder._id,
         defaultOrderPaymentProvider._id,
-        unchainedAPI,
       );
     }
   }

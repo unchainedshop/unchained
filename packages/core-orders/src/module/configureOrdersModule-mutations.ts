@@ -1,4 +1,4 @@
-import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
+import { Order, OrderStatus, OrderPosition } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   Address,
@@ -24,9 +24,6 @@ export interface OrderMutations {
   setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
   moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
 
-  setDeliveryProvider: (orderId: string, deliveryProviderId: string, unchainedAPI) => Promise<Order>;
-  setPaymentProvider: (orderId: string, paymentProviderId: string, unchainedAPI) => Promise<Order>;
-
   updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
   updateContact: (orderId: string, contact: Contact) => Promise<Order>;
   updateContext: (orderId: string, context: any) => Promise<Order>;
@@ -43,13 +40,9 @@ const ORDER_EVENTS: string[] = [
 
 export const configureOrderModuleMutations = ({
   Orders,
-  OrderDeliveries,
-  OrderPayments,
   OrderPositions,
 }: {
   Orders: mongodb.Collection<Order>;
-  OrderDeliveries: mongodb.Collection<OrderDelivery>;
-  OrderPayments: mongodb.Collection<OrderPayment>;
   OrderPositions: mongodb.Collection<OrderPosition>;
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
@@ -99,78 +92,6 @@ export const configureOrderModuleMutations = ({
           },
         },
       );
-    },
-
-    setDeliveryProvider: async (orderId, deliveryProviderId, { modules }) => {
-      const delivery = await OrderDeliveries.findOne({
-        orderId,
-        deliveryProviderId,
-      });
-      const deliveryId =
-        delivery?._id ||
-        (
-          await modules.orders.deliveries.create({
-            calculation: [],
-            deliveryProviderId,
-            log: [],
-            orderId,
-            status: null,
-          })
-        )._id;
-
-      const selector = generateDbFilterById(orderId);
-      const order = await Orders.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            deliveryId,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-
-      await emit('ORDER_SET_DELIVERY_PROVIDER', {
-        order,
-        deliveryProviderId,
-      });
-
-      return order;
-    },
-
-    setPaymentProvider: async (orderId, paymentProviderId, unchainedAPI) => {
-      const { modules } = unchainedAPI;
-      const payment = await OrderPayments.findOne({
-        orderId,
-        paymentProviderId,
-      });
-
-      const paymentId =
-        payment?._id ||
-        (
-          await modules.orders.payments.create({
-            calculation: [],
-            paymentProviderId,
-            log: [],
-            orderId,
-            status: null,
-          })
-        )._id;
-      const selector = generateDbFilterById(orderId);
-      const order = await Orders.findOneAndUpdate(
-        selector,
-        {
-          $set: { paymentId, updated: new Date() },
-        },
-        { returnDocument: 'after' },
-      );
-
-      await emit('ORDER_SET_PAYMENT_PROVIDER', {
-        order,
-        paymentProviderId,
-      });
-
-      return order;
     },
 
     updateBillingAddress: async (orderId, billingAddress) => {

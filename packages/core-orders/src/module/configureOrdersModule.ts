@@ -20,6 +20,8 @@ import {
   configureOrderModuleTransformations,
   OrderTransformations,
 } from './configureOrdersModule-transformations.js';
+import { emit } from '@unchainedshop/events';
+import { Order } from '../types.js';
 
 export type OrdersModule = OrderQueries &
   OrderTransformations &
@@ -29,6 +31,9 @@ export type OrdersModule = OrderQueries &
     discounts: OrderDiscountsModule;
     positions: OrderPositionsModule;
     payments: OrderPaymentsModule;
+
+    setDeliveryProvider: (orderId: string, deliveryProviderId: string) => Promise<Order>;
+    setPaymentProvider: (orderId: string, paymentProviderId: string) => Promise<Order>;
   };
 
 const require = createRequire(import.meta.url);
@@ -69,8 +74,6 @@ export const configureOrdersModule = async ({
   });
   const orderMutations = configureOrderModuleMutations({
     Orders,
-    OrderDeliveries,
-    OrderPayments,
     OrderPositions,
   });
 
@@ -101,5 +104,74 @@ export const configureOrdersModule = async ({
     discounts: orderDiscountsModule,
     positions: orderPositionsModule,
     payments: orderPaymentsModule,
+
+    setDeliveryProvider: async (orderId, deliveryProviderId) => {
+      const delivery = await OrderDeliveries.findOne({
+        orderId,
+        deliveryProviderId,
+      });
+      const deliveryId =
+        delivery?._id ||
+        (
+          await orderDeliveriesModule.create({
+            calculation: [],
+            deliveryProviderId,
+            log: [],
+            orderId,
+            status: null,
+          })
+        )._id;
+
+      const order = await Orders.findOneAndUpdate(
+        { _id: orderId },
+        {
+          $set: {
+            deliveryId,
+            updated: new Date(),
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      await emit('ORDER_SET_DELIVERY_PROVIDER', {
+        order,
+        deliveryProviderId,
+      });
+
+      return order;
+    },
+
+    setPaymentProvider: async (orderId, paymentProviderId) => {
+      const payment = await OrderPayments.findOne({
+        orderId,
+        paymentProviderId,
+      });
+
+      const paymentId =
+        payment?._id ||
+        (
+          await orderPaymentsModule.create({
+            calculation: [],
+            paymentProviderId,
+            log: [],
+            orderId,
+            status: null,
+          })
+        )._id;
+      const order = await Orders.findOneAndUpdate(
+        { _id: orderId },
+        {
+          $set: { paymentId, updated: new Date() },
+        },
+        { returnDocument: 'after' },
+      );
+
+      await emit('ORDER_SET_PAYMENT_PROVIDER', {
+        order,
+        paymentProviderId,
+      });
+
+      return order;
+    },
   };
 };

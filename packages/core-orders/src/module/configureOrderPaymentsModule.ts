@@ -131,11 +131,13 @@ export const configureOrderPaymentsModule = ({
     discounts: (
       orderPayment: OrderPayment,
       { order, orderDiscount }: { order: Order; orderDiscount: OrderDiscount },
-      unchainedAPI,
     ): Array<OrderPricingDiscount> => {
-      const { modules } = unchainedAPI;
       if (!orderPayment) return [];
-      const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency);
+
+      const pricingSheet = PaymentPricingSheet({
+        calculation: orderPayment.calculation,
+        currency: order.currency,
+      });
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         payment: orderPayment,
         ...discount,
