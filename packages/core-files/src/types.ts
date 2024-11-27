@@ -9,6 +9,7 @@ export type File = {
   size?: number;
   type?: string;
   url?: string;
+  isPrivate?: boolean;
 } & TimestampFields;
 
 export type SignedFileUpload = File & {

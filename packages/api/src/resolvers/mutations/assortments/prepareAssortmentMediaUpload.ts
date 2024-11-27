@@ -3,7 +3,11 @@ import { Context } from '../../../context.js';
 
 export default async function prepareAssortmentMediaUpload(
   root: never,
-  { mediaName, assortmentId }: { mediaName: string; assortmentId: string },
+  {
+    mediaName,
+    assortmentId,
+    asPrivate,
+  }: { mediaName: string; assortmentId: string; asPrivate?: boolean },
   context: Context,
 ) {
   const { services, userId } = context;
@@ -14,6 +18,7 @@ export default async function prepareAssortmentMediaUpload(
       directoryName: 'assortment-media',
       fileName: mediaName,
       meta: { assortmentId },
+      isPrivate: Boolean(asPrivate),
     },
     context,
   );
