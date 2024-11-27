@@ -637,26 +637,26 @@ export const configureUsersModule = async ({
       });
       if (!existingUser) return null;
       const maskedUserData = maskUserPropertyValues(existingUser, context?.userId);
-      await context.modules.bookmarks.deleteByUserId(userId);
       await updateUser({ _id: userId }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
-      modules.orders.deleteUserCart(userId);
+
+      await modules.bookmarks.deleteByUserId(userId);
+      await modules.orders.deleteUserCart(userId);
       await modules.quotations.deleteRequestedUserQuotations(userId);
       await modules.enrollments.deleteOpenUserEnrollments(userId);
       if (removeUserReviews) await modules.products.reviews.deleteMany({ authorId: userId });
-      const user = await Users.findOneAndDelete(userFilter);
 
-      const ordersCount = modules.orders.count({ userId, includeCarts: true });
-      const quotationsCount = modules.quotations.count({ userId });
-      const reviewsCount = modules.products.reviews.count({ authorId: userId });
-      const enrollmentsCount = modules.enrollments.count({ userId });
+      const ordersCount = await modules.orders.count({ userId, includeCarts: true });
+      const quotationsCount = await modules.quotations.count({ userId });
+      const reviewsCount = await modules.products.reviews.count({ authorId: userId });
+      const enrollmentsCount = await modules.enrollments.count({ userId });
       if (!ordersCount && !reviewsCount && !enrollmentsCount && !quotationsCount) {
         await Users.deleteOne({ _id: userId });
       }
 
       await emit('USER_REMOVE', {
-        user: removeConfidentialServiceHashes(user),
+        user: removeConfidentialServiceHashes(existingUser),
       });
-      return user;
+      return existingUser;
     },
 
     updateProfile: async (
