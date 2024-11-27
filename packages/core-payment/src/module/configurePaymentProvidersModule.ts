@@ -7,16 +7,10 @@ import {
 } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { PaymentPricingContext, PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
-import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 import { paymentSettings } from '../payment-settings.js';
 import type { Order } from '@unchainedshop/core-orders';
-import {
-  IPaymentPricingSheet,
-  PaymentPricingCalculation,
-  PaymentProviderType,
-} from '../payment-index.js';
+import { PaymentProviderType } from '../payment-index.js';
 
 export type PaymentProvidersModules = {
   // Queries
@@ -43,21 +37,11 @@ export type PaymentProvidersModules = {
   findInterface: (query: PaymentProvider) => PaymentInterface;
   findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
 
-  pricingSheet: (params: {
-    calculation: Array<PaymentPricingCalculation>;
-    currency: string;
-  }) => IPaymentPricingSheet;
-
   configurationError: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<PaymentError>;
 
   isActive: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<boolean>;
 
   isPayLaterAllowed: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<boolean>;
-
-  calculate: (
-    pricingContext: PaymentPricingContext,
-    unchainedAPI,
-  ) => Promise<Array<PaymentPricingCalculation>>;
 
   charge: (
     paymentProviderId: string,
@@ -143,10 +127,6 @@ export const configurePaymentProvidersModule = (
       };
     },
 
-    pricingSheet: (params) => {
-      return PaymentPricingSheet(params);
-    },
-
     findInterfaces: ({ type }) => {
       return PaymentDirector.getAdapters()
         .filter((Adapter) => Adapter.typeSupported(type))
@@ -185,11 +165,6 @@ export const configurePaymentProvidersModule = (
     configurationError: async (paymentProvider, unchainedAPI) => {
       const actions = await PaymentDirector.actions(paymentProvider, {}, unchainedAPI);
       return actions.configurationError();
-    },
-
-    calculate: async (pricingContext, unchainedAPI) => {
-      const pricing = await PaymentPricingDirector.actions(pricingContext, unchainedAPI);
-      return pricing.calculate();
     },
 
     isActive: async (paymentProvider, unchainedAPI) => {

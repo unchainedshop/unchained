@@ -2,7 +2,11 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import type { IPaymentPricingSheet } from '@unchainedshop/core-payment';
+import {
+  PaymentPricingDirector,
+  PaymentPricingSheet,
+  type IPaymentPricingSheet,
+} from '@unchainedshop/core-payment';
 
 export type OrderPaymentsModule = {
   // Queries
@@ -36,7 +40,7 @@ export type OrderPaymentsModule = {
   isBlockingOrderConfirmation: (orderPayment: OrderPayment, unchainedAPI) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
   normalizedStatus: (orderPayment: OrderPayment) => string;
-  pricingSheet: (orderPayment: OrderPayment, currency: string, unchainedAPI) => IPaymentPricingSheet;
+  pricingSheet: (orderPayment: OrderPayment, currency: string) => IPaymentPricingSheet;
 
   // Mutations
   create: (doc: OrderPayment) => Promise<OrderPayment>;
@@ -180,7 +184,7 @@ export const configureOrderPaymentsModule = ({
     discounts: (orderPayment, { order, orderDiscount }, context) => {
       const { modules } = context;
       if (!orderPayment) return [];
-      const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency, context);
+      const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency);
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         payment: orderPayment,
         ...discount,
@@ -208,8 +212,8 @@ export const configureOrderPaymentsModule = ({
 
     normalizedStatus,
 
-    pricingSheet: (orderPayment, currency, { modules }) => {
-      return modules.payment.paymentProviders.pricingSheet({
+    pricingSheet: (orderPayment, currency) => {
+      return PaymentPricingSheet({
         calculation: orderPayment.calculation,
         currency,
       });
@@ -389,12 +393,13 @@ export const configureOrderPaymentsModule = ({
     updateStatus,
 
     updateCalculation: async (orderPayment, unchainedAPI) => {
-      const calculation = await unchainedAPI.modules.payment.paymentProviders.calculate(
+      const pricing = await PaymentPricingDirector.actions(
         {
           item: orderPayment,
         },
         unchainedAPI,
       );
+      const calculation = await pricing.calculate();
 
       return OrderPayments.findOneAndUpdate(
         buildFindByIdSelector(orderPayment._id),

@@ -24,11 +24,7 @@ export const OrderDelivery: IOrderPricingAdapter<UnchainedCore> = {
       calculate: async () => {
         // just add tax + net price to order pricing
         if (!orderDelivery) return null;
-        const pricing = modules.orders.deliveries.pricingSheet(
-          orderDelivery,
-          order.currency,
-          params.context,
-        );
+        const pricing = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
         const tax = pricing.taxSum();
         const shipping = pricing.gross();
 

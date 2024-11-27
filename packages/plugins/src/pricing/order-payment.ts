@@ -25,11 +25,7 @@ const OrderPayment: IOrderPricingAdapter<UnchainedCore> = {
         // just add tax + net price to order pricing
         if (!orderPayment) return null;
 
-        const pricing = modules.orders.payments.pricingSheet(
-          orderPayment,
-          order.currency,
-          params.context,
-        );
+        const pricing = modules.orders.payments.pricingSheet(orderPayment, order.currency);
         const tax = pricing.taxSum();
         const paymentFees = pricing.gross();
 

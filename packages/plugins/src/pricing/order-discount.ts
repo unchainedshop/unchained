@@ -47,13 +47,11 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
           ),
         );
         const deliveryShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-          orderDelivery &&
-            modules.orders.deliveries.pricingSheet(orderDelivery, order.currency, params.context),
+          orderDelivery && modules.orders.deliveries.pricingSheet(orderDelivery, order.currency),
           totalAmountOfPaymentAndDelivery,
         );
         const paymentShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-          orderPayment &&
-            modules.orders.payments.pricingSheet(orderPayment, order.currency, params.context),
+          orderPayment && modules.orders.payments.pricingSheet(orderPayment, order.currency),
           totalAmountOfPaymentAndDelivery,
         );
         let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;

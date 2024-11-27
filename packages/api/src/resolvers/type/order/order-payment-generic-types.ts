@@ -24,7 +24,7 @@ export const OrderPaymentGeneric: OrderPaymentGenericHelperTypes = {
   discounts: async (obj, _, context) => {
     const { modules } = context;
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
-    const pricingSheet = modules.orders.payments.pricingSheet(obj, order.currency, context);
+    const pricingSheet = modules.orders.payments.pricingSheet(obj, order.currency);
     if (pricingSheet.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
       return pricingSheet.discountPrices().map((discount) => ({

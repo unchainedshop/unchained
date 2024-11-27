@@ -1,51 +1,14 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
-import { type DeliveryLocation, type IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
-import { DeliveryDirector } from '@unchainedshop/core-delivery'; // TODO: Important
-import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-
-export type OrderDeliveriesModule = {
-  // Queries
-  findDelivery: (
-    params: { orderDeliveryId: string },
-    options?: mongodb.FindOptions,
-  ) => Promise<OrderDelivery>;
-
-  // Transformations
-  discounts: (
-    orderDelivery: OrderDelivery,
-    params: { order: Order; orderDiscount: OrderDiscount },
-    unchainedAPI,
-  ) => Array<OrderPricingDiscount>;
-  isBlockingOrderConfirmation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<boolean>;
-  isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
-  normalizedStatus: (orderDelivery: OrderDelivery) => string;
-  pricingSheet: (orderDelivery: OrderDelivery, currency: string, unchainedAPI) => IDeliveryPricingSheet;
-
-  // Mutations
-  create: (doc: OrderDelivery) => Promise<OrderDelivery>;
-  delete: (orderDeliveryId: string) => Promise<number>;
-
-  markAsDelivered: (orderDelivery: OrderDelivery) => Promise<void>;
-
-  activePickUpLocation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<DeliveryLocation | null>;
-
-  send: (
-    orderDelivery: OrderDelivery,
-    params: { order: Order; deliveryContext?: any },
-    unchainedAPI,
-  ) => Promise<OrderDelivery>;
-
-  updateContext: (orderDeliveryId: string, context: any) => Promise<OrderDelivery | null>;
-
-  updateStatus: (
-    orderDeliveryId: string,
-    params: { status: OrderDeliveryStatus; info?: string },
-  ) => Promise<OrderDelivery>;
-
-  updateCalculation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<OrderDelivery>;
-};
+import {
+  DeliveryPricingCalculation,
+  DeliveryPricingDirector,
+  DeliveryPricingSheet,
+  DeliveryDirector,
+  type DeliveryLocation,
+  type IDeliveryPricingSheet,
+} from '@unchainedshop/core-delivery';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
@@ -56,19 +19,19 @@ export const configureOrderDeliveriesModule = ({
   OrderDeliveries,
 }: {
   OrderDeliveries: mongodb.Collection<OrderDelivery>;
-}): OrderDeliveriesModule => {
+}) => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 
-  const normalizedStatus: OrderDeliveriesModule['normalizedStatus'] = (orderDelivery) => {
+  const normalizedStatus = (orderDelivery: OrderDelivery) => {
     return orderDelivery.status === null
       ? OrderDeliveryStatus.OPEN
       : (orderDelivery.status as OrderDeliveryStatus);
   };
 
-  const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
-    orderDeliveryId,
-    { status, info },
-  ) => {
+  const updateStatus = async (
+    orderDeliveryId: string,
+    { status, info }: { status: OrderDeliveryStatus; info?: string },
+  ): Promise<OrderDelivery> => {
     const date = new Date();
     const modifier: mongodb.UpdateFilter<OrderDelivery> = {
       $set: { status, updated: new Date() },
@@ -92,20 +55,23 @@ export const configureOrderDeliveriesModule = ({
 
   return {
     // Queries
-    findDelivery: async ({ orderDeliveryId }, options) => {
+    findDelivery: async (
+      { orderDeliveryId }: { orderDeliveryId: string },
+      options?: mongodb.FindOptions,
+    ): Promise<OrderDelivery> => {
       return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
     },
 
     // Transformations
-    discounts: (orderDelivery, { order, orderDiscount }, context) => {
-      const { modules } = context;
+    discounts: (
+      orderDelivery: OrderDelivery,
+      { order, orderDiscount }: { order: Order; orderDiscount: OrderDiscount },
+      unchainedAPI,
+    ): Array<DeliveryPricingCalculation> => {
+      const { modules } = unchainedAPI;
       if (!orderDelivery) return [];
 
-      const pricingSheet = modules.orders.deliveries.pricingSheet(
-        orderDelivery,
-        order.currency,
-        context,
-      );
+      const pricingSheet = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         delivery: orderDelivery,
@@ -113,7 +79,7 @@ export const configureOrderDeliveriesModule = ({
       }));
     },
 
-    isBlockingOrderConfirmation: async (orderDelivery, unchainedAPI) => {
+    isBlockingOrderConfirmation: async (orderDelivery: OrderDelivery, unchainedAPI) => {
       const provider = await unchainedAPI.modules.delivery.findProvider({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
@@ -126,7 +92,10 @@ export const configureOrderDeliveriesModule = ({
       return !isAutoReleaseAllowed;
     },
 
-    activePickUpLocation: async (orderDelivery, unchainedAPI) => {
+    activePickUpLocation: async (
+      orderDelivery: OrderDelivery,
+      unchainedAPI,
+    ): Promise<DeliveryLocation> => {
       const { orderPickUpLocationId } = orderDelivery.context || {};
 
       const provider = await unchainedAPI.modules.delivery.findProvider({
@@ -141,15 +110,15 @@ export const configureOrderDeliveriesModule = ({
       return director.pickUpLocationById(orderPickUpLocationId);
     },
 
-    isBlockingOrderFullfillment: (orderDelivery) => {
+    isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
       return true;
     },
 
     normalizedStatus,
 
-    pricingSheet: (orderDelivery, currency, { modules }) => {
-      return modules.delivery.pricingSheet({
+    pricingSheet: (orderDelivery: OrderDelivery, currency: string): IDeliveryPricingSheet => {
+      return DeliveryPricingSheet({
         calculation: orderDelivery.calculation,
         currency,
       });
@@ -157,7 +126,7 @@ export const configureOrderDeliveriesModule = ({
 
     // Mutations
 
-    create: async (doc) => {
+    create: async (doc: OrderDelivery): Promise<OrderDelivery> => {
       const { insertedId: orderDeliveryId } = await OrderDeliveries.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -170,21 +139,26 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    delete: async (orderDeliveryId) => {
+    delete: async (orderDeliveryId: string) => {
       const { deletedCount } = await OrderDeliveries.deleteOne({ _id: orderDeliveryId });
       return deletedCount;
     },
 
-    markAsDelivered: async (orderDelivery) => {
+    markAsDelivered: async (orderDelivery: OrderDelivery) => {
       if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return;
       const updatedOrderDelivery = await updateStatus(orderDelivery._id, {
         status: OrderDeliveryStatus.DELIVERED,
         info: 'mark delivered manually',
       });
       await emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
+      return updatedOrderDelivery;
     },
 
-    send: async (orderDelivery, { order, deliveryContext }, unchainedAPI) => {
+    send: async (
+      orderDelivery: OrderDelivery,
+      { order, deliveryContext }: { order: Order; deliveryContext?: any },
+      unchainedAPI,
+    ): Promise<OrderDelivery> => {
       if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return orderDelivery;
 
       const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
@@ -219,7 +193,7 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    updateContext: async (orderDeliveryId, context) => {
+    updateContext: async (orderDeliveryId: string, context: any): Promise<OrderDelivery> => {
       const selector = buildFindByIdSelector(orderDeliveryId);
       if (!context || Object.keys(context).length === 0) return OrderDeliveries.findOne(selector, {});
       const contextSetters = Object.fromEntries(
@@ -249,13 +223,15 @@ export const configureOrderDeliveriesModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderDelivery, unchainedAPI) => {
-      const calculation = await unchainedAPI.modules.delivery.calculate(
+    updateCalculation: async (orderDelivery: OrderDelivery, unchainedAPI): Promise<OrderDelivery> => {
+      const pricing = await DeliveryPricingDirector.actions(
         {
           item: orderDelivery,
         },
         unchainedAPI,
       );
+
+      const calculation = await pricing.calculate();
 
       return OrderDeliveries.findOneAndUpdate(
         buildFindByIdSelector(orderDelivery._id),
@@ -272,3 +248,5 @@ export const configureOrderDeliveriesModule = ({
     },
   };
 };
+
+export type OrderDeliveriesModule = ReturnType<typeof configureOrderDeliveriesModule>;

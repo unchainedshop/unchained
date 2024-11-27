@@ -86,11 +86,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
     > => {
       const { order, orderPayment } = context;
 
-      const pricingForOrderPayment = modules.orders.payments.pricingSheet(
-        orderPayment,
-        order.currency,
-        context,
-      );
+      const pricingForOrderPayment = modules.orders.payments.pricingSheet(orderPayment, order.currency);
       const pricing = modules.orders.pricingSheet(order);
       const { amount: total } = pricing.total({ useNetPrice: false });
 

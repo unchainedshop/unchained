@@ -1,16 +1,10 @@
 import { DeliveryContext, DeliveryInterface, DeliveryProvider, DeliveryProviderType } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { mongodb, generateDbFilterById, generateDbObjectId, ModuleInput } from '@unchainedshop/mongodb';
-import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
 import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
 import { DeliveryDirector } from '../director/DeliveryDirector.js';
-import { DeliveryPricingContext, DeliveryPricingDirector } from '../director/DeliveryPricingDirector.js';
 import { DeliveryError } from '../delivery-index.js';
-import {
-  DeliveryPricingCalculation,
-  IDeliveryPricingSheet,
-} from '../director/DeliveryPricingAdapter.js';
 import type { Order } from '@unchainedshop/core-orders';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
@@ -149,14 +143,6 @@ export const configureDeliveryModule = async ({
       return Boolean(director.isAutoReleaseAllowed());
     },
 
-    calculate: async (
-      pricingContext: DeliveryPricingContext,
-      unchainedAPI,
-    ): Promise<Array<DeliveryPricingCalculation>> => {
-      const pricing = await DeliveryPricingDirector.actions(pricingContext, unchainedAPI);
-      return pricing.calculate();
-    },
-
     send: async (
       deliveryProviderId: string,
       deliveryContext: DeliveryContext,
@@ -164,13 +150,6 @@ export const configureDeliveryModule = async ({
     ): Promise<any> => {
       const adapter = await getDeliveryAdapter(deliveryProviderId, deliveryContext, unchainedAPI);
       return adapter.send();
-    },
-
-    pricingSheet: (params: {
-      calculation: Array<DeliveryPricingCalculation>;
-      currency: string;
-    }): IDeliveryPricingSheet => {
-      return DeliveryPricingSheet(params);
     },
 
     // Mutations
