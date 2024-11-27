@@ -59,7 +59,7 @@ export interface IPaymentActions {
   confirm: (transactionContext?: any) => Promise<boolean>;
 }
 
-export type IPaymentAdapter<UnchainedAPI = any> = IBaseAdapter & {
+export type IPaymentAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
   initialConfiguration: PaymentConfiguration;
 
   typeSupported: (type: PaymentProviderType) => boolean;
