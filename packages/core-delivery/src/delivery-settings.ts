@@ -1,4 +1,12 @@
-import { DeliveryProvider, FilterProviders } from './types.js';
+import { DeliveryProvider } from './types.js';
+
+export type FilterProviders<Order = unknown> = (
+  params: {
+    providers: Array<DeliveryProvider>;
+    order: Order;
+  },
+  unchainedAPI,
+) => Promise<Array<DeliveryProvider>>;
 
 export type DetermineDefaultProvider<Order = unknown> = (
   params: {

@@ -1,6 +1,10 @@
 import crypto from 'crypto';
 import { Context } from '../../context.js';
-import { DeliveryError, DeliveryProvider as DeliveryProviderType } from '@unchainedshop/core-delivery';
+import {
+  DeliveryDirector,
+  DeliveryError,
+  DeliveryProvider as DeliveryProviderType,
+} from '@unchainedshop/core-delivery';
 import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 
 export type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
@@ -35,20 +39,24 @@ export interface DeliveryProviderHelperTypes {
 }
 
 export const DeliveryProvider: DeliveryProviderHelperTypes = {
-  interface(obj, _, { modules }) {
-    const Interface = modules.delivery.findInterface(obj);
-    if (!Interface) return null;
-    return Interface;
+  interface(deliveryProvider) {
+    const Adapter = DeliveryDirector.getAdapter(deliveryProvider.adapterKey);
+    if (!Adapter) return null;
+    return {
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    };
   },
 
   async isActive(deliveryProvider, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.delivery.isActive(deliveryProvider, requestContext);
+    const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    return Boolean(director.isActive());
   },
 
   async configurationError(deliveryProvider, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.delivery.configurationError(deliveryProvider, requestContext);
+    const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    return director.configurationError();
   },
 
   async simulatedPrice(

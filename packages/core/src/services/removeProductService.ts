@@ -6,8 +6,8 @@ import { updateCalculationService } from './updateCalculationService.js';
 import { DeliveryModule } from '@unchainedshop/core-delivery';
 import { PaymentModule } from '@unchainedshop/core-payment';
 
-export type RemoveProductService = (
-  params: { productId: string },
+export const removeProductService = async (
+  { productId }: { productId: string },
   unchainedAPI: {
     modules: {
       products: ProductsModule;
@@ -18,9 +18,7 @@ export type RemoveProductService = (
       payment: PaymentModule;
     };
   },
-) => Promise<boolean>;
-
-export const removeProductService: RemoveProductService = async ({ productId }, unchainedAPI) => {
+): Promise<boolean> => {
   const { modules } = unchainedAPI;
   const product = await modules.products.findProduct({ productId });
   switch (product.status) {

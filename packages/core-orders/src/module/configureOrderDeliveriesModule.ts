@@ -80,14 +80,12 @@ export const configureOrderDeliveriesModule = ({
     },
 
     isBlockingOrderConfirmation: async (orderDelivery: OrderDelivery, unchainedAPI) => {
-      const provider = await unchainedAPI.modules.delivery.findProvider({
+      const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
-      const isAutoReleaseAllowed = await unchainedAPI.modules.delivery.isAutoReleaseAllowed(
-        provider,
-        unchainedAPI,
-      );
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
+      const isAutoReleaseAllowed = Boolean(director.isAutoReleaseAllowed());
 
       return !isAutoReleaseAllowed;
     },
@@ -169,8 +167,10 @@ export const configureOrderDeliveriesModule = ({
 
       const address = orderDelivery.context?.address || order || order.billingAddress;
 
-      const arbitraryResponseData = await unchainedAPI.modules.delivery.send(
-        deliveryProviderId,
+      const provider = await await unchainedAPI.modules.delivery.findProvider({ deliveryProviderId });
+
+      const adapter = await DeliveryDirector.actions(
+        provider,
         {
           order,
           orderDelivery,
@@ -182,6 +182,8 @@ export const configureOrderDeliveriesModule = ({
         },
         unchainedAPI,
       );
+
+      const arbitraryResponseData = await adapter.send();
 
       if (arbitraryResponseData) {
         return updateStatus(orderDelivery._id, {

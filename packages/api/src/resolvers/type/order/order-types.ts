@@ -18,7 +18,7 @@ export const Order = {
     _,
     context: Context,
   ): Promise<Array<DeliveryProvider>> {
-    return context.modules.delivery.findSupported(
+    return context.services.orders.supportedDeliveryProviders(
       {
         order,
       },

@@ -1,6 +1,7 @@
 import { Order, OrdersModule } from '@unchainedshop/core-orders';
 import { DeliveryModule, deliverySettings } from '@unchainedshop/core-delivery';
 import { PaymentModule, paymentSettings } from '@unchainedshop/core-payment';
+import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
 
 export const initCartProvidersService = async (
   order: Order,
@@ -17,7 +18,7 @@ export const initCartProvidersService = async (
   let updatedOrder = order;
 
   // Init delivery provider
-  const supportedDeliveryProviders = await modules.delivery.findSupported(
+  const supportedDeliveryProviders = await supportedDeliveryProvidersService(
     { order: updatedOrder },
     unchainedAPI,
   );

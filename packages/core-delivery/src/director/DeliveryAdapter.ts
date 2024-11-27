@@ -1,6 +1,52 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { DeliveryError } from './DeliveryError.js';
-import { IDeliveryAdapter } from '../types.js';
+import { IBaseAdapter } from '@unchainedshop/utils';
+import type { Order, OrderPosition, OrderDelivery } from '@unchainedshop/core-orders';
+import type { Product } from '@unchainedshop/core-products';
+import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { Work } from '@unchainedshop/core-worker';
+import type { User } from '@unchainedshop/core-users';
+import {
+  DeliveryConfiguration,
+  DeliveryError,
+  DeliveryLocation,
+  DeliveryProvider,
+  DeliveryProviderType,
+} from '../types.js';
+export interface DeliveryAdapterActions {
+  configurationError: (transactionContext?: any) => DeliveryError;
+  estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
+  isActive: () => boolean;
+  isAutoReleaseAllowed: () => boolean;
+  pickUpLocationById: (locationId: string) => Promise<DeliveryLocation>;
+  pickUpLocations: () => Promise<Array<DeliveryLocation>>;
+  send: () => Promise<boolean | Work>;
+}
+
+export interface DeliveryContext {
+  country?: string;
+  deliveryProvider?: DeliveryProvider;
+  order?: Order;
+  orderDelivery?: OrderDelivery;
+  orderPosition?: OrderPosition;
+  product?: Product;
+  quantity?: number;
+  referenceDate?: Date;
+  transactionContext?: any;
+  user?: User;
+  warehousingProvider?: WarehousingProvider;
+  warehousingThroughputTime?: number;
+}
+
+export type IDeliveryAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
+  initialConfiguration: DeliveryConfiguration;
+
+  typeSupported: (type: DeliveryProviderType) => boolean;
+
+  actions: (
+    config: DeliveryConfiguration,
+    context: DeliveryContext & UnchainedAPI,
+  ) => DeliveryAdapterActions;
+};
 
 export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'> = {
   initialConfiguration: [],

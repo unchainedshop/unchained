@@ -1,7 +1,15 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from '@unchainedshop/utils';
-import { DeliveryError } from './DeliveryError.js';
-import { IDeliveryAdapter, IDeliveryDirector } from '../types.js';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { DeliveryProvider, DeliveryError } from '../types.js';
+import { DeliveryAdapterActions, DeliveryContext, IDeliveryAdapter } from './DeliveryAdapter.js';
+
+export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
+  actions: (
+    deliveryProvider: DeliveryProvider,
+    deliveryContext: DeliveryContext,
+    unchainedAPI,
+  ) => Promise<DeliveryAdapterActions>;
+};
 
 const baseDirector = BaseDirector<IDeliveryAdapter>('DeliveryDirector');
 
@@ -12,7 +20,7 @@ export const DeliveryDirector: IDeliveryDirector = {
     const Adapter = baseDirector.getAdapter(deliveryProvider.adapterKey);
 
     const context = { ...deliveryContext, ...unchainedAPI };
-    const adapter = Adapter.actions(deliveryProvider.configuration, context);
+    const adapter = Adapter?.actions(deliveryProvider.configuration, context);
 
     return {
       configurationError: () => {
