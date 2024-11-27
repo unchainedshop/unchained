@@ -172,7 +172,7 @@ export const configureUsersModule = async ({
           'services.email.verificationTokens': {
             $elemMatch: {
               token,
-              when: { $gt: new Date().getTime() },
+              when: { $gt: new Date(new Date().getTime() + 1000 * 60 * 60) },
             },
           },
         },
@@ -218,7 +218,7 @@ export const configureUsersModule = async ({
           'services.password.reset': {
             $elemMatch: {
               token,
-              when: { $gt: new Date().getTime() },
+              when: { $gt: new Date(new Date().getTime() + 1000 * 60 * 60) },
             },
           },
         },
@@ -434,7 +434,7 @@ export const configureUsersModule = async ({
       const resetToken = {
         token: await sha256.hash(plainToken),
         address: email,
-        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+        when: new Date(),
       };
 
       await Users.updateOne(
@@ -459,7 +459,7 @@ export const configureUsersModule = async ({
       const verificationToken = {
         token: await sha256.hash(plainToken),
         address: email,
-        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+        when: new Date(),
       };
 
       await Users.updateOne(
