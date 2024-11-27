@@ -628,7 +628,7 @@ export const configureUsersModule = async ({
       params: { userId: string; removeUserReviews?: boolean },
       context: Context,
     ): Promise<User> => {
-      const { modules } = context as UnchainedCore;
+      const { services, modules } = context as UnchainedCore;
       const { userId, removeUserReviews = false } = params;
       const userFilter = generateDbFilterById(userId);
 
@@ -640,7 +640,7 @@ export const configureUsersModule = async ({
       await updateUser({ _id: userId }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
 
       await modules.bookmarks.deleteByUserId(userId);
-      await modules.orders.deleteUserCart(userId);
+      await services.orders.deleteUserCart(userId, context as UnchainedCore);
       await modules.quotations.deleteRequestedUserQuotations(userId);
       await modules.enrollments.deleteOpenUserEnrollments(userId);
       if (removeUserReviews) await modules.products.reviews.deleteMany({ authorId: userId });
