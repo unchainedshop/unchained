@@ -2,6 +2,7 @@ import { Order, OrdersModule } from '@unchainedshop/core-orders';
 import { DeliveryModule, deliverySettings } from '@unchainedshop/core-delivery';
 import { PaymentModule, paymentSettings } from '@unchainedshop/core-payment';
 import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
+import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
 
 export const initCartProvidersService = async (
   order: Order,
@@ -52,7 +53,7 @@ export const initCartProvidersService = async (
   }
 
   // Init payment provider
-  const supportedPaymentProviders = await modules.payment.paymentProviders.findSupported(
+  const supportedPaymentProviders = await supportedPaymentProvidersService(
     { order: updatedOrder },
     unchainedAPI,
   );

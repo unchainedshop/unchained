@@ -27,7 +27,7 @@ export const Order = {
   },
 
   async supportedPaymentProviders(order: OrderType, _, context: Context) {
-    return context.modules.payment.paymentProviders.findSupported(
+    return context.services.orders.supportedPaymentProviders(
       {
         order,
       },

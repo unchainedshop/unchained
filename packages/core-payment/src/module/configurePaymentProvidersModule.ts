@@ -8,8 +8,6 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { PaymentDirector } from '../director/PaymentDirector.js';
-import { paymentSettings } from '../payment-settings.js';
-import type { Order } from '@unchainedshop/core-orders';
 import { PaymentProviderType } from '../payment-index.js';
 
 export type PaymentProvidersModules = {
@@ -30,9 +28,6 @@ export type PaymentProvidersModules = {
   ) => Promise<Array<PaymentProvider>>;
 
   providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
-
-  // Payment adapter
-  findSupported: (query: { order: Order }, unchainedAPI) => Promise<Array<PaymentProvider>>;
 
   findInterface: (query: PaymentProvider) => PaymentInterface;
   findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
@@ -67,12 +62,6 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
 
 export const buildFindSelector = ({ type }: mongodb.Filter<PaymentProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
-};
-
-const asyncFilter = async (arr, predicate) => {
-  const results = await Promise.all(arr.map(predicate));
-
-  return arr.filter((_v, index) => results[index]);
 };
 
 export const configurePaymentProvidersModule = (
@@ -136,31 +125,6 @@ export const configurePaymentProvidersModule = (
           version: Adapter.version,
         }));
     },
-
-    findSupported: async (paymentContext, unchainedAPI) => {
-      const allProviders = await PaymentProviders.find({ deleted: null }).toArray();
-      const providers: PaymentProvider[] = await asyncFilter(
-        allProviders,
-        async (provider: PaymentProvider) => {
-          try {
-            const director = await PaymentDirector.actions(provider, paymentContext, unchainedAPI);
-            return director.isActive();
-          } catch {
-            return false;
-          }
-        },
-      );
-
-      return paymentSettings.filterSupportedProviders(
-        {
-          providers,
-          order: paymentContext.order,
-        },
-        unchainedAPI,
-      );
-    },
-
-    // Payment Adapter
 
     configurationError: async (paymentProvider, unchainedAPI) => {
       const actions = await PaymentDirector.actions(paymentProvider, {}, unchainedAPI);

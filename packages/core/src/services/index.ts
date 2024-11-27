@@ -13,6 +13,7 @@ import { removeProductService } from './removeProductService.js';
 import { initCartProvidersService } from './initCartProviders.js';
 import { updateCalculationService } from './updateCalculationService.js';
 import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
+import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
 
 const services = {
   bookmarks: {
@@ -32,6 +33,7 @@ const services = {
     initCartProviders: initCartProvidersService,
     updateCalculation: updateCalculationService,
     supportedDeliveryProviders: supportedDeliveryProvidersService,
+    supportedPaymentProviders: supportedPaymentProvidersService,
   },
   products: {
     removeProduct: removeProductService,

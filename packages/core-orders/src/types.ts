@@ -1,6 +1,15 @@
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 import { OrderPrice } from './director/OrderPricingDirector.js';
-import type { ProductPricingCalculation } from '@unchainedshop/core-products';
+import { PricingCalculation } from '@unchainedshop/utils';
+
+// TODO: Propably, all this calculation interfaces should be
+// part of this package and used by the core when directors are there
+export interface OrderPositionPricingCalculation extends PricingCalculation {
+  discountId?: string;
+  isTaxable: boolean;
+  isNetPrice: boolean;
+  rate?: number;
+}
 
 export type OrderReport = {
   newCount: number;
@@ -19,7 +28,7 @@ export enum OrderStatus {
 
 export type OrderPosition = {
   _id?: string;
-  calculation: Array<ProductPricingCalculation>;
+  calculation: Array<OrderPositionPricingCalculation>;
   configuration: Array<{ key: string; value: string }>;
   context?: any;
   orderId: string;
