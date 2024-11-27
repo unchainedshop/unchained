@@ -97,15 +97,6 @@ export const connect = (
     '0': false,
   }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
 
-  console.log({
-    domain,
-    httpOnly: true,
-    path,
-    secure,
-    sameSite,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  });
-
   fastify.register(fastifyCookie);
   fastify.register(fastifySession, {
     secret: process.env.UNCHAINED_TOKEN_SECRET,

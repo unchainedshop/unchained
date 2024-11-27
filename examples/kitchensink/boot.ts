@@ -23,7 +23,7 @@ const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 const start = async () => {
   const app = express();
 
-  // Workaround Express Secure Proxy
+  // Workaround: Allow to use sandbox with localhost
   app.set('trust proxy', 1);
   app.use((req, res, next) => {
     req.headers['x-forwarded-proto'] = 'https';

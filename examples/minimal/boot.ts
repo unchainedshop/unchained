@@ -9,6 +9,18 @@ import Fastify from 'fastify';
 const start = async () => {
   const fastify = Fastify({
     logger: true,
+    trustProxy: true,
+  });
+
+  // Workaround: Allow to use sandbox with localhost
+  fastify.addHook('preHandler', async function (request) {
+    request.headers['x-forwarded-proto'] = 'https';
+  });
+
+  fastify.addHook('onSend', async function (_, reply) {
+    reply.headers({
+      'Access-Control-Allow-Private-Network': 'true',
+    });
   });
 
   const engine = await startPlatform({
