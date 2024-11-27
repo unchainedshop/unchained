@@ -22,7 +22,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
     const { modules } = unchainedAPI;
 
     if ('item' in context) {
-      const { item } = context;
+      const { item, quantity, currency } = context;
       const product = await modules.products.findProduct({
         productId: item.productId,
       });
@@ -37,11 +37,11 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
       return {
         ...unchainedAPI,
         country: order.countryCode,
-        currency: order.currency,
+        currency,
         discounts,
         order,
         product,
-        quantity: item.quantity,
+        quantity,
         configuration: item.configuration,
         user,
       };
@@ -61,7 +61,6 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
   },
 
   calculationSheet(pricingContext, calculation) {
-    // TODO: quantity?!
     return ProductPricingSheet({
       calculation,
       currency: pricingContext.currency,

@@ -44,7 +44,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
 
   buildPricingContext: async (context, unchainedAPI) => {
     const { modules } = unchainedAPI;
-    const { order } = context;
+    const { order, currency } = context;
 
     const user = await modules.users.findUserById(order.userId);
     const discounts = await modules.orders.discounts.findOrderDiscounts({
@@ -54,7 +54,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
     return {
       ...unchainedAPI,
       country: order.countryCode,
-      currency: order.currency,
+      currency,
       discounts,
       order,
       orderDelivery: context.orderDelivery,

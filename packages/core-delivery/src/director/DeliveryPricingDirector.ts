@@ -49,7 +49,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
     const { modules } = unchainedAPI;
 
     if ('item' in context) {
-      const { item } = context;
+      const { item, currency } = context;
       const order = await modules.orders.findOrder({
         orderId: item.orderId,
       });
@@ -64,7 +64,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
       return {
         ...unchainedAPI,
         country: order.countryCode,
-        currency: order.currency,
+        currency,
         order,
         provider,
         user,

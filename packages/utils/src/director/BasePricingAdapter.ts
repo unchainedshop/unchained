@@ -27,11 +27,10 @@ export type BasePricingContext =
 
 export interface IPricingAdapterActions<
   Calculation extends PricingCalculation,
-  PricingAdapterContext extends BasePricingAdapterContext,
+  Sheet extends IPricingSheet<Calculation>,
 > {
   calculate: () => Promise<Array<Calculation>>;
-  getCalculation: () => Array<Calculation>;
-  getContext: () => PricingAdapterContext;
+  resultSheet: () => Sheet;
 }
 
 export type IPricingAdapter<
@@ -48,7 +47,7 @@ export type IPricingAdapter<
     context: PricingAdapterContext;
     calculationSheet: Sheet;
     discounts: Array<Discount<DiscountConfiguration>>;
-  }) => IPricingAdapterActions<Calculation, PricingAdapterContext> & { resultSheet: () => Sheet };
+  }) => IPricingAdapterActions<Calculation, Sheet>;
 };
 
 export const BasePricingAdapter = <
@@ -64,15 +63,11 @@ export const BasePricingAdapter = <
     return false;
   },
 
-  actions: (params) => {
-    const calculation = [];
-
+  actions: () => {
     return {
       calculate: async () => {
-        return [];
+        throw new Error('Method not implemented.');
       },
-      getCalculation: () => calculation,
-      getContext: () => params.context,
       resultSheet: () => {
         throw new Error('Method not implemented.');
       }, // abstract

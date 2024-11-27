@@ -72,7 +72,7 @@ export const updateCalculationService = async (
   });
   orderPositions = await Promise.all(
     orderPositions.map(async (orderPosition) =>
-      modules.orders.positions.updateCalculation(orderPosition, unchainedAPI),
+      modules.orders.positions.updateCalculation(orderPosition, order.currency, unchainedAPI),
     ),
   );
 
@@ -80,13 +80,21 @@ export const updateCalculationService = async (
     orderDeliveryId: order.deliveryId,
   });
   if (orderDelivery) {
-    orderDelivery = await modules.orders.deliveries.updateCalculation(orderDelivery, unchainedAPI);
+    orderDelivery = await modules.orders.deliveries.updateCalculation(
+      orderDelivery,
+      order.currency,
+      unchainedAPI,
+    );
   }
   let orderPayment = await modules.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
   });
   if (orderPayment) {
-    orderPayment = await modules.orders.payments.updateCalculation(orderPayment, unchainedAPI);
+    orderPayment = await modules.orders.payments.updateCalculation(
+      orderPayment,
+      order.currency,
+      unchainedAPI,
+    );
   }
 
   orderPositions = await Promise.all(
