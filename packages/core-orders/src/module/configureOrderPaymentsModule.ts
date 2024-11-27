@@ -8,84 +8,6 @@ import {
   type IPaymentPricingSheet,
 } from '@unchainedshop/core-payment';
 
-export type OrderPaymentsModule = {
-  // Queries
-  findOrderPayment: (
-    params: {
-      orderPaymentId: string;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<OrderPayment>;
-
-  findOrderPaymentByContextData: (
-    params: {
-      context: any;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<OrderPayment>;
-
-  countOrderPaymentsByContextData: (
-    params: {
-      context: any;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<number>;
-
-  // Transformations
-  discounts: (
-    orderPayment: OrderPayment,
-    params: { order: Order; orderDiscount: OrderDiscount },
-    unchainedAPI,
-  ) => Array<OrderPricingDiscount>;
-  isBlockingOrderConfirmation: (orderPayment: OrderPayment, unchainedAPI) => Promise<boolean>;
-  isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
-  normalizedStatus: (orderPayment: OrderPayment) => string;
-  pricingSheet: (orderPayment: OrderPayment, currency: string) => IPaymentPricingSheet;
-
-  // Mutations
-  create: (doc: OrderPayment) => Promise<OrderPayment>;
-
-  cancel: (
-    orderPayment: OrderPayment,
-    paymentContext: {
-      transactionContext: any;
-      userId: string;
-    },
-    unchainedAPI,
-  ) => Promise<OrderPayment>;
-
-  confirm: (
-    orderPayment: OrderPayment,
-    paymentContext: {
-      transactionContext: any;
-      userId: string;
-    },
-    unchainedAPI,
-  ) => Promise<OrderPayment>;
-
-  charge: (
-    orderPayment: OrderPayment,
-    paymentContext: {
-      transactionContext: any;
-      userId: string;
-    },
-    unchainedAPI,
-  ) => Promise<OrderPayment>;
-
-  logEvent: (orderPaymentId: string, event: any) => Promise<boolean>;
-
-  markAsPaid: (payment: OrderPayment, meta: any) => Promise<void>;
-
-  updateContext: (orderPaymentId: string, context: any) => Promise<OrderPayment | null>;
-
-  updateStatus: (
-    orderPaymentId: string,
-    params: { transactionId?: string; status: OrderPaymentStatus; info?: string },
-  ) => Promise<OrderPayment>;
-
-  updateCalculation: (orderPayment: OrderPayment, unchainedAPI) => Promise<OrderPayment>;
-};
-
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
 export const buildFindByIdSelector = (orderPaymentId: string) =>
@@ -113,10 +35,10 @@ export const configureOrderPaymentsModule = ({
   OrderPayments,
 }: {
   OrderPayments: mongodb.Collection<OrderPayment>;
-}): OrderPaymentsModule => {
+}) => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 
-  const normalizedStatus: OrderPaymentsModule['normalizedStatus'] = (orderPayment) => {
+  const normalizedStatus = (orderPayment: OrderPayment) => {
     return orderPayment.status === null
       ? OrderPaymentStatus.OPEN
       : (orderPayment.status as OrderPaymentStatus);
@@ -135,10 +57,14 @@ export const configureOrderPaymentsModule = ({
     },
   });
 
-  const updateStatus: OrderPaymentsModule['updateStatus'] = async (
-    orderPaymentId,
-    { status, transactionId, info },
-  ) => {
+  const updateStatus = async (
+    orderPaymentId: string,
+    {
+      transactionId,
+      status,
+      info,
+    }: { transactionId?: string; status: OrderPaymentStatus; info?: string },
+  ): Promise<OrderPayment> => {
     const date = new Date();
     const modifier: mongodb.UpdateFilter<OrderPayment> = {
       $set: { status, updated: new Date() },
@@ -167,22 +93,47 @@ export const configureOrderPaymentsModule = ({
 
   return {
     // Queries
-    findOrderPayment: async ({ orderPaymentId }, options) => {
+    findOrderPayment: async (
+      {
+        orderPaymentId,
+      }: {
+        orderPaymentId: string;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<OrderPayment> => {
       return OrderPayments.findOne(buildFindByIdSelector(orderPaymentId), options);
     },
-    findOrderPaymentByContextData: async ({ context }, options) => {
+    findOrderPaymentByContextData: async (
+      {
+        context,
+      }: {
+        context: any;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<OrderPayment> => {
       const selector = buildFindByContextDataSelector(context);
 
       return OrderPayments.findOne(selector, options);
     },
-    countOrderPaymentsByContextData: async ({ context }, options) => {
+    countOrderPaymentsByContextData: async (
+      {
+        context,
+      }: {
+        context: any;
+      },
+      options?: mongodb.FindOptions,
+    ) => {
       const selector = buildFindByContextDataSelector(context);
 
       return OrderPayments.countDocuments(selector, options);
     },
     // Transformations
-    discounts: (orderPayment, { order, orderDiscount }, context) => {
-      const { modules } = context;
+    discounts: (
+      orderPayment: OrderPayment,
+      { order, orderDiscount }: { order: Order; orderDiscount: OrderDiscount },
+      unchainedAPI,
+    ): Array<OrderPricingDiscount> => {
+      const { modules } = unchainedAPI;
       if (!orderPayment) return [];
       const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency);
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
@@ -191,7 +142,7 @@ export const configureOrderPaymentsModule = ({
       }));
     },
 
-    isBlockingOrderConfirmation: async (orderPayment, unchainedAPI) => {
+    isBlockingOrderConfirmation: async (orderPayment: OrderPayment, unchainedAPI) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
       const provider = await unchainedAPI.modules.payment.paymentProviders.findProvider({
@@ -205,14 +156,14 @@ export const configureOrderPaymentsModule = ({
 
       return !isPayLaterAllowed;
     },
-    isBlockingOrderFullfillment: (orderPayment) => {
+    isBlockingOrderFullfillment: (orderPayment: OrderPayment) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
       return true;
     },
 
     normalizedStatus,
 
-    pricingSheet: (orderPayment, currency) => {
+    pricingSheet: (orderPayment: OrderPayment, currency: string): IPaymentPricingSheet => {
       return PaymentPricingSheet({
         calculation: orderPayment.calculation,
         currency,
@@ -221,7 +172,7 @@ export const configureOrderPaymentsModule = ({
 
     // Mutations
 
-    create: async (doc) => {
+    create: async (doc: OrderPayment): Promise<OrderPayment> => {
       const { insertedId: orderPaymentId } = await OrderPayments.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -235,7 +186,14 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    confirm: async (orderPayment, paymentContext, unchainedAPI) => {
+    confirm: async (
+      orderPayment: OrderPayment,
+      paymentContext: {
+        transactionContext: any;
+        userId: string;
+      },
+      unchainedAPI,
+    ): Promise<OrderPayment> => {
       const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
@@ -258,7 +216,14 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    cancel: async (orderPayment, paymentContext, unchainedAPI) => {
+    cancel: async (
+      orderPayment: OrderPayment,
+      paymentContext: {
+        transactionContext: any;
+        userId: string;
+      },
+      unchainedAPI,
+    ): Promise<OrderPayment> => {
       const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
@@ -281,7 +246,14 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    charge: async (orderPayment, context, unchainedAPI) => {
+    charge: async (
+      orderPayment: OrderPayment,
+      context: {
+        transactionContext: any;
+        userId: string;
+      },
+      unchainedAPI,
+    ): Promise<OrderPayment> => {
       const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
@@ -336,7 +308,7 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    logEvent: async (orderPaymentId, event) => {
+    logEvent: async (orderPaymentId: string, event: any): Promise<boolean> => {
       const date = new Date();
       const modifier = {
         $push: {
@@ -352,7 +324,7 @@ export const configureOrderPaymentsModule = ({
       return true;
     },
 
-    markAsPaid: async (orderPayment, meta) => {
+    markAsPaid: async (orderPayment: OrderPayment, meta: any) => {
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) return;
 
       await updateStatus(orderPayment._id, {
@@ -362,7 +334,7 @@ export const configureOrderPaymentsModule = ({
       await emit('ORDER_PAY', { orderPayment });
     },
 
-    updateContext: async (orderPaymentId, context) => {
+    updateContext: async (orderPaymentId: string, context: any): Promise<OrderPayment> => {
       const selector = buildFindByIdSelector(orderPaymentId);
       if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
 
@@ -392,14 +364,14 @@ export const configureOrderPaymentsModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderPayment, unchainedAPI) => {
-      const pricing = await PaymentPricingDirector.actions(
+    updateCalculation: async (orderPayment: OrderPayment, currency: string, unchainedAPI) => {
+      const calculation = await PaymentPricingDirector.rebuildCalculation(
         {
+          currency,
           item: orderPayment,
         },
         unchainedAPI,
       );
-      const calculation = await pricing.calculate();
 
       return OrderPayments.findOneAndUpdate(
         buildFindByIdSelector(orderPayment._id),
@@ -416,3 +388,5 @@ export const configureOrderPaymentsModule = ({
     },
   };
 };
+
+export type OrderPaymentsModule = ReturnType<typeof configureOrderPaymentsModule>;

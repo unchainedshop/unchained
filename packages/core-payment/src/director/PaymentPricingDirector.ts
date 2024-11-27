@@ -20,6 +20,7 @@ export type PaymentPricingContext =
       providerContext?: any;
     }
   | {
+      currency: string;
       item: OrderPayment;
     };
 
@@ -31,7 +32,7 @@ export type IPaymentPricingDirector<
   PaymentPricingCalculation,
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
-  IPaymentPricingAdapter<DiscountConfiguration>,
+  IPaymentPricingAdapter<UnchainedAPI, DiscountConfiguration>,
   UnchainedAPI
 >;
 
@@ -87,17 +88,10 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
     };
   },
 
-  async actions(pricingContext, unchainedAPI) {
-    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
-    return {
-      ...actions,
-      calculationSheet() {
-        const context = actions.getContext();
-        return PaymentPricingSheet({
-          calculation: actions.getCalculation(),
-          currency: context.currency,
-        });
-      },
-    };
+  calculationSheet(pricingContext, calculation) {
+    return PaymentPricingSheet({
+      calculation,
+      currency: pricingContext.currency,
+    });
   },
 };

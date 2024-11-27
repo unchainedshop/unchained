@@ -44,8 +44,11 @@ export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
   }) => void;
 };
 
-export type IPaymentPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
-  PaymentPricingAdapterContext,
+export type IPaymentPricingAdapter<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingAdapter<
+  PaymentPricingAdapterContext & UnchainedAPI,
   PaymentPricingCalculation,
   IPaymentPricingSheet,
   DiscountConfiguration

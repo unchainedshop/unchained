@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { Product, ProductConfiguration, IProductPricingSheet, ProductPriceRate } from '../types.js';
+import { Product, ProductConfiguration, ProductPriceRate } from '../types.js';
 import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
@@ -86,22 +86,21 @@ export const configureProductPricesModule = ({
     unchainedAPI,
   ) => {
     const user = await unchainedAPI.modules.users.findUserById(userId);
-    const pricingDirector = await ProductPricingDirector.actions(
-      {
-        product,
-        user,
-        country,
-        currency,
-        quantity,
-        configuration,
-      },
-      unchainedAPI,
-    );
 
-    const calculated = await pricingDirector.calculate();
+    const pricingContext = {
+      product,
+      user,
+      country,
+      currency,
+      quantity,
+      configuration,
+    };
+
+    const calculated = await ProductPricingDirector.rebuildCalculation(pricingContext, unchainedAPI);
+
     if (!calculated || !calculated.length) return null;
 
-    const pricing = pricingDirector.calculationSheet() as IProductPricingSheet;
+    const pricing = ProductPricingDirector.calculationSheet(pricingContext, calculated);
     const unitPrice = pricing.unitPrice({ useNetPrice });
 
     return {

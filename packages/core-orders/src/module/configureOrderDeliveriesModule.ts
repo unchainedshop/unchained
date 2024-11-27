@@ -223,15 +223,18 @@ export const configureOrderDeliveriesModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderDelivery: OrderDelivery, unchainedAPI): Promise<OrderDelivery> => {
-      const pricing = await DeliveryPricingDirector.actions(
+    updateCalculation: async (
+      orderDelivery: OrderDelivery,
+      currency: string,
+      unchainedAPI,
+    ): Promise<OrderDelivery> => {
+      const calculation = await DeliveryPricingDirector.rebuildCalculation(
         {
+          currency,
           item: orderDelivery,
         },
         unchainedAPI,
       );
-
-      const calculation = await pricing.calculate();
 
       return OrderDeliveries.findOneAndUpdate(
         buildFindByIdSelector(orderDelivery._id),

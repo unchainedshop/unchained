@@ -59,23 +59,20 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     const { modules, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
     const currency = currencyCode || requestContext.currencyContext;
+    const pricingContext = {
+      country,
+      currency,
+      provider: deliveryProvider,
+      order,
+      providerContext,
+      user,
+    };
 
-    const pricingDirector = await DeliveryPricingDirector.actions(
-      {
-        country,
-        currency,
-        provider: deliveryProvider,
-        order,
-        providerContext,
-        user,
-      },
-      requestContext,
-    );
+    const calculated = await DeliveryPricingDirector.rebuildCalculation(pricingContext, requestContext);
 
-    const calculated = await pricingDirector.calculate();
     if (!calculated || !calculated.length) return null;
 
-    const pricing = pricingDirector.calculationSheet();
+    const pricing = DeliveryPricingDirector.calculationSheet(pricingContext, calculated);
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;

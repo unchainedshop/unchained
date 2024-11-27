@@ -62,24 +62,22 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
     const { modules, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
 
-    const currency = currencyCode || requestContext.currencyContext;
+    const currency = currencyCode || order?.currency || requestContext.currencyContext;
 
-    const pricingDirector = await PaymentPricingDirector.actions(
-      {
-        country,
-        currency,
-        provider: paymentProvider,
-        order,
-        providerContext,
-        user,
-      },
-      requestContext,
-    );
+    const pricingContext = {
+      country,
+      currency,
+      provider: paymentProvider,
+      order,
+      providerContext,
+      user,
+    };
 
-    const calculated = await pricingDirector.calculate();
+    const calculated = await PaymentPricingDirector.rebuildCalculation(pricingContext, requestContext);
+
     if (!calculated || !calculated.length) return null;
 
-    const pricing = pricingDirector.calculationSheet();
+    const pricing = PaymentPricingDirector.calculationSheet(pricingContext, calculated);
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;

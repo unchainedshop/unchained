@@ -60,18 +60,12 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
     };
   },
 
-  async actions(pricingContext, unchainedAPI) {
-    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
-    return {
-      ...actions,
-      calculationSheet() {
-        const context = actions.getContext();
-        return ProductPricingSheet({
-          calculation: actions.getCalculation(),
-          currency: context.currency,
-          quantity: context.quantity,
-        });
-      },
-    };
+  calculationSheet(pricingContext, calculation) {
+    // TODO: quantity?!
+    return ProductPricingSheet({
+      calculation,
+      currency: pricingContext.currency,
+      quantity: pricingContext.quantity,
+    });
   },
 };

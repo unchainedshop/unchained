@@ -1,11 +1,15 @@
 import { BasePricingDirector, PricingDiscount, IPricingDirector } from '@unchainedshop/utils';
 import { IOrderPricingSheet, OrderPricingCalculation, OrderPricingSheet } from './OrderPricingSheet.js';
 import { Order, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
-import {
-  IOrderPricingAdapter,
-  OrderPricingAdapterContext,
-  OrderPricingContext,
-} from './OrderPricingAdapter.js';
+import { IOrderPricingAdapter, OrderPricingAdapterContext } from './OrderPricingAdapter.js';
+
+export interface OrderPricingContext {
+  currency: string;
+  order: Order;
+  orderDelivery: OrderDelivery;
+  orderPositions: Array<OrderPosition>;
+  orderPayment: OrderPayment;
+}
 
 export type OrderPrice = { _id?: string; amount: number; currency: string };
 
@@ -60,17 +64,10 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
     };
   },
 
-  async actions(pricingContext, unchainedAPI) {
-    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
-    return {
-      ...actions,
-      calculationSheet() {
-        const context = actions.getContext();
-        return OrderPricingSheet({
-          calculation: actions.getCalculation(),
-          currency: context.currency,
-        });
-      },
-    };
+  calculationSheet(pricingContext, calculation) {
+    return OrderPricingSheet({
+      calculation,
+      currency: pricingContext.currency,
+    });
   },
 };

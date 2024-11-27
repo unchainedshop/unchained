@@ -10,64 +10,6 @@ import {
   type Product,
 } from '@unchainedshop/core-products';
 
-export type OrderPositionsModule = {
-  // Queries
-  findOrderPosition: (
-    params: { itemId: string },
-    options?: mongodb.FindOptions,
-  ) => Promise<OrderPosition>;
-  findOrderPositions: (params: { orderId: string }) => Promise<Array<OrderPosition>>;
-
-  // Transformations
-  discounts: (
-    orderPosition: OrderPosition,
-    params: { order: Order; orderDiscount: OrderDiscount },
-    unchainedAPI,
-  ) => Array<OrderPricingDiscount>;
-
-  pricingSheet: (orderPosition: OrderPosition, currency: string) => IProductPricingSheet;
-
-  delete: (orderPositionId: string) => Promise<OrderPosition>;
-
-  removePositions: ({ orderId }: { orderId: string }) => Promise<number>;
-  removeProductByIdFromAllOpenPositions: (productId: string) => Promise<Array<string>>;
-
-  updateProductItem: (
-    doc: {
-      context?: any;
-      configuration?: Array<{ key: string; value: string }>;
-      quantity?: number;
-    },
-    params: { order: Order; product: Product; orderPosition: OrderPosition },
-    unchainedAPI,
-  ) => Promise<OrderPosition>;
-
-  updateScheduling: (
-    params: {
-      order: Order;
-      orderDelivery: OrderDelivery;
-      orderPosition: OrderPosition;
-    },
-    unchainedAPI,
-  ) => Promise<OrderPosition>;
-
-  updateCalculation: (orderPosition: OrderPosition, unchainedAPI) => Promise<OrderPosition>;
-
-  addProductItem: (
-    doc: {
-      context?: any;
-      configuration?: Array<{ key: string; value: string }>;
-      orderId?: string;
-      originalProductId?: string;
-      productId?: string;
-      quantity: number;
-      quotationId?: string;
-    },
-    params: { order: Order; product: Product },
-    unchainedAPI,
-  ) => Promise<OrderPosition>;
-};
-
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
   'ORDER_REMOVE_CART_ITEM',
@@ -85,22 +27,29 @@ export const configureOrderPositionsModule = ({
   OrderPositions,
 }: {
   OrderPositions: mongodb.Collection<OrderPosition>;
-}): OrderPositionsModule => {
+}) => {
   registerEvents(ORDER_POSITION_EVENTS);
 
   return {
     // Queries
-    findOrderPosition: async ({ itemId }, options) => {
+    findOrderPosition: async (
+      { itemId }: { itemId: string },
+      options?: mongodb.FindOptions,
+    ): Promise<OrderPosition> => {
       return OrderPositions.findOne(buildFindByIdSelector(itemId), options);
     },
 
-    findOrderPositions: async ({ orderId }) => {
+    findOrderPositions: async ({ orderId }: { orderId: string }): Promise<OrderPosition[]> => {
       const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });
       return positions.toArray();
     },
 
     // Transformations
-    discounts: (orderPosition, { order, orderDiscount }, unchainedAPI) => {
+    discounts: (
+      orderPosition: OrderPosition,
+      { orderDiscount, order }: { order: Order; orderDiscount: OrderDiscount },
+      unchainedAPI,
+    ): Array<OrderPricingDiscount> => {
       const pricingSheet = unchainedAPI.modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
@@ -112,7 +61,7 @@ export const configureOrderPositionsModule = ({
       }));
     },
 
-    pricingSheet: (orderPosition, currency) => {
+    pricingSheet: (orderPosition: OrderPosition, currency: string): IProductPricingSheet => {
       return ProductPricingSheet({
         calculation: orderPosition.calculation,
         currency,
@@ -120,7 +69,7 @@ export const configureOrderPositionsModule = ({
       });
     },
 
-    delete: async (orderPositionId) => {
+    delete: async (orderPositionId: string): Promise<OrderPosition> => {
       const selector = buildFindByIdSelector(orderPositionId);
       const orderPosition = await OrderPositions.findOneAndDelete(selector, {});
       await emit('ORDER_REMOVE_CART_ITEM', {
@@ -129,17 +78,28 @@ export const configureOrderPositionsModule = ({
       return { ...orderPosition, calculation: [] };
     },
 
-    removePositions: async ({ orderId }) => {
+    removePositions: async ({ orderId }: { orderId: string }): Promise<number> => {
       const result = await OrderPositions.deleteMany({ orderId });
       await emit('ORDER_EMPTY_CART', { orderId, count: result.deletedCount });
       return result.deletedCount;
     },
 
     updateProductItem: async (
-      { quantity, configuration },
-      { order, product, orderPosition },
+      {
+        quantity,
+        configuration,
+      }: {
+        context?: any;
+        configuration?: Array<{ key: string; value: string }>;
+        quantity?: number;
+      },
+      {
+        orderPosition,
+        order,
+        product,
+      }: { order: Order; product: Product; orderPosition: OrderPosition },
       unchainedAPI,
-    ) => {
+    ): Promise<OrderPosition> => {
       const selector = buildFindByIdSelector(orderPosition._id, order._id);
       const modifier: any = {
         $set: {
@@ -182,7 +142,7 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    removeProductByIdFromAllOpenPositions: async (productId) => {
+    removeProductByIdFromAllOpenPositions: async (productId: string): Promise<Array<string>> => {
       const positions = await OrderPositions.aggregate([
         {
           $match: {
@@ -218,7 +178,18 @@ export const configureOrderPositionsModule = ({
       return orderIdsToRecalculate;
     },
 
-    updateScheduling: async ({ order, orderDelivery, orderPosition }, unchainedAPI) => {
+    updateScheduling: async (
+      {
+        order,
+        orderPosition,
+        orderDelivery,
+      }: {
+        order: Order;
+        orderDelivery: OrderDelivery;
+        orderPosition: OrderPosition;
+      },
+      unchainedAPI,
+    ): Promise<OrderPosition> => {
       const { modules } = unchainedAPI;
       // scheduling (store in db for auditing)
       const product = await modules.products.findProduct({
@@ -277,13 +248,20 @@ export const configureOrderPositionsModule = ({
       );
     },
 
-    updateCalculation: async (orderPosition, unchainedAPI) => {
-      const director = await ProductPricingDirector.actions(
-        { item: orderPosition, configuration: orderPosition.configuration },
+    updateCalculation: async (
+      orderPosition: OrderPosition,
+      currency: string,
+      unchainedAPI,
+    ): Promise<OrderPosition> => {
+      const calculation = await ProductPricingDirector.rebuildCalculation(
+        {
+          currency,
+          quantity: orderPosition.quantity,
+          item: orderPosition,
+          configuration: orderPosition.configuration,
+        },
         unchainedAPI,
       );
-
-      const calculation = await director.calculate();
 
       return OrderPositions.findOneAndUpdate(
         buildFindByIdSelector(orderPosition._id),
@@ -296,7 +274,19 @@ export const configureOrderPositionsModule = ({
       );
     },
 
-    addProductItem: async (orderPosition: OrderPosition, { order, product }, unchainedAPI) => {
+    addProductItem: async (
+      orderPosition: {
+        context?: any;
+        configuration?: Array<{ key: string; value: string }>;
+        orderId?: string;
+        originalProductId?: string;
+        productId?: string;
+        quantity: number;
+        quotationId?: string;
+      },
+      { order, product }: { order: Order; product: Product },
+      unchainedAPI,
+    ): Promise<OrderPosition> => {
       const { modules } = unchainedAPI;
       const { configuration, orderId: positionOrderId, quantity, ...scope } = orderPosition;
       const orderId = order._id || positionOrderId;
@@ -358,3 +348,5 @@ export const configureOrderPositionsModule = ({
     },
   };
 };
+
+export type OrderPositionsModule = ReturnType<typeof configureOrderPositionsModule>;

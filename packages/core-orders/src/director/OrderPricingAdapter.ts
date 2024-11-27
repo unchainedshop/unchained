@@ -13,13 +13,6 @@ export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   user: User;
 }
 
-export interface OrderPricingContext {
-  order: Order;
-  orderDelivery: OrderDelivery;
-  orderPositions: Array<OrderPosition>;
-  orderPayment: OrderPayment;
-}
-
 export type IOrderPricingAdapter<
   UnchainedAPI = unknown,
   DiscountConfiguration = unknown,

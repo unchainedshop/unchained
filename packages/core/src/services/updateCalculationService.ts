@@ -95,12 +95,10 @@ export const updateCalculationService = async (
     ),
   );
 
-  const pricing = await OrderPricingDirector.actions(
-    { order, orderPositions, orderDelivery, orderPayment },
+  const calculation = await OrderPricingDirector.rebuildCalculation(
+    { currency: order.currency, order, orderPositions, orderDelivery, orderPayment },
     unchainedAPI,
   );
-
-  const calculation = await pricing.calculate();
 
   const updatedOrder = await modules.orders.updateCalculationSheet(orderId, calculation);
 

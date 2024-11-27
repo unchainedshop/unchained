@@ -46,8 +46,11 @@ export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext
   discounts: Array<OrderDiscount>;
 }
 
-export type IDeliveryPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
-  DeliveryPricingAdapterContext,
+export type IDeliveryPricingAdapter<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingAdapter<
+  DeliveryPricingAdapterContext & UnchainedAPI,
   DeliveryPricingCalculation,
   IDeliveryPricingSheet,
   DiscountConfiguration

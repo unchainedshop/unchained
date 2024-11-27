@@ -14,14 +14,14 @@ import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export type DeliveryPricingContext =
   | {
+      currency: string;
       country?: string;
-      currency?: string;
       provider: DeliveryProvider;
       providerContext?: any;
       order: Order;
       user: User;
     }
-  | { item: OrderDelivery };
+  | { currency: string; item: OrderDelivery };
 
 export type IDeliveryPricingDirector<
   UnchainedAPI = unknown,
@@ -31,7 +31,7 @@ export type IDeliveryPricingDirector<
   DeliveryPricingCalculation,
   DeliveryPricingAdapterContext,
   IDeliveryPricingSheet,
-  IDeliveryPricingAdapter<DiscountConfiguration>,
+  IDeliveryPricingAdapter<UnchainedAPI, DiscountConfiguration>,
   UnchainedAPI
 >;
 
@@ -87,17 +87,10 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
     };
   },
 
-  async actions(pricingContext, unchainedAPI) {
-    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
-    return {
-      ...actions,
-      calculationSheet() {
-        const context = actions.getContext();
-        return DeliveryPricingSheet({
-          calculation: actions.getCalculation(),
-          currency: context.currency,
-        });
-      },
-    };
+  calculationSheet(pricingContext, calculation) {
+    return DeliveryPricingSheet({
+      calculation,
+      currency: pricingContext.currency,
+    });
   },
 };

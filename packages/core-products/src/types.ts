@@ -242,16 +242,18 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
 
 export type ProductPricingContext =
   | {
+      currency: string;
+      quantity: number;
       country?: string;
-      currency?: string;
       discounts?: Array<OrderDiscount>;
       order?: Order;
       product?: Product;
-      quantity?: number;
       configuration: Array<ProductConfiguration>;
       user?: User;
     }
   | {
+      currency: string;
+      quantity: number;
       item: OrderPosition;
     };
 
