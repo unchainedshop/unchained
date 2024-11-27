@@ -172,7 +172,7 @@ export const configureUsersModule = async ({
           'services.email.verificationTokens': {
             $elemMatch: {
               token,
-              when: { $gt: new Date(new Date().getTime() + 1000 * 60 * 60) },
+              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
             },
           },
         },
@@ -218,7 +218,7 @@ export const configureUsersModule = async ({
           'services.password.reset': {
             $elemMatch: {
               token,
-              when: { $gt: new Date(new Date().getTime() + 1000 * 60 * 60) },
+              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
             },
           },
         },
