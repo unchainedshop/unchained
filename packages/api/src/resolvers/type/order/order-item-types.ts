@@ -14,7 +14,7 @@ const getPricingSheet = async (orderPosition: OrderPosition, context: Context) =
   const order = await modules.orders.findOrder({
     orderId: orderPosition.orderId,
   });
-  const pricingSheet = modules.orders.positions.pricingSheet(orderPosition, order.currency, context);
+  const pricingSheet = modules.orders.positions.pricingSheet(orderPosition, order.currency);
 
   return pricingSheet;
 };

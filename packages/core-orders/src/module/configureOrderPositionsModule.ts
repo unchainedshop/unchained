@@ -3,7 +3,12 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { ordersSettings } from '../orders-settings.js';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import type { IProductPricingSheet, Product } from '@unchainedshop/core-products';
+import {
+  ProductPricingDirector,
+  ProductPricingSheet,
+  type IProductPricingSheet,
+  type Product,
+} from '@unchainedshop/core-products';
 
 export type OrderPositionsModule = {
   // Queries
@@ -20,7 +25,7 @@ export type OrderPositionsModule = {
     unchainedAPI,
   ) => Array<OrderPricingDiscount>;
 
-  pricingSheet: (orderPosition: OrderPosition, currency: string, unchainedAPI) => IProductPricingSheet;
+  pricingSheet: (orderPosition: OrderPosition, currency: string) => IProductPricingSheet;
 
   delete: (orderPositionId: string) => Promise<OrderPosition>;
 
@@ -99,7 +104,6 @@ export const configureOrderPositionsModule = ({
       const pricingSheet = unchainedAPI.modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
-        unchainedAPI,
       );
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
@@ -108,8 +112,8 @@ export const configureOrderPositionsModule = ({
       }));
     },
 
-    pricingSheet: (orderPosition, currency, { modules }) => {
-      return modules.products.pricingSheet({
+    pricingSheet: (orderPosition, currency) => {
+      return ProductPricingSheet({
         calculation: orderPosition.calculation,
         currency,
         quantity: orderPosition.quantity,
@@ -274,10 +278,13 @@ export const configureOrderPositionsModule = ({
     },
 
     updateCalculation: async (orderPosition, unchainedAPI) => {
-      const calculation = await unchainedAPI.modules.products.calculate(
+      const director = await ProductPricingDirector.actions(
         { item: orderPosition, configuration: orderPosition.configuration },
         unchainedAPI,
       );
+
+      const calculation = await director.calculate();
+
       return OrderPositions.findOneAndUpdate(
         buildFindByIdSelector(orderPosition._id),
         {

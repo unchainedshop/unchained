@@ -16,12 +16,16 @@ export type OrderPricingDiscount = PricingDiscount & {
   payment?: OrderPayment;
 };
 
-export type IOrderPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
+export type IOrderPricingDirector<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingDirector<
   OrderPricingContext,
   OrderPricingCalculation,
   OrderPricingAdapterContext,
   IOrderPricingSheet,
-  IOrderPricingAdapter<any, DiscountConfiguration>
+  IOrderPricingAdapter<any, DiscountConfiguration>,
+  UnchainedAPI
 >;
 
 const baseDirector = BasePricingDirector<
@@ -31,7 +35,7 @@ const baseDirector = BasePricingDirector<
   IOrderPricingAdapter
 >('OrderPricingDirector');
 
-export const OrderPricingDirector: IOrderPricingDirector = {
+export const OrderPricingDirector: IOrderPricingDirector<any> = {
   ...baseDirector,
 
   buildPricingContext: async (context, unchainedAPI) => {

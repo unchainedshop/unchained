@@ -18,7 +18,7 @@ export type IPricingDirector<
   PricingAdapterContext extends BasePricingAdapterContext,
   PricingAdapterSheet extends IPricingSheet<Calculation>,
   Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
-  Context = any,
+  Context = unknown,
 > = IBaseDirector<Adapter> & {
   buildPricingContext: (
     context: PricingContext,
@@ -63,7 +63,7 @@ export const BasePricingDirector = <
     AdapterContext,
     IPricingSheet<Calculation>,
     PricingAdapter,
-    { modules: any }
+    any
   > = {
     ...baseDirector,
     buildPricingContext: async () => {

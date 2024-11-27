@@ -42,7 +42,7 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
           }).amount;
         const itemShares = orderPositions.map((orderPosition) =>
           calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-            modules.orders.positions.pricingSheet(orderPosition, order.currency, params.context),
+            modules.orders.positions.pricingSheet(orderPosition, order.currency),
             totalAmountOfItems,
           ),
         );

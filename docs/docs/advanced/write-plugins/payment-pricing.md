@@ -64,7 +64,6 @@ export const ShopCommission: IPaymentPricingAdapter = {
             const pricing = context.modules.orders.positions.pricingSheet(
               orderPosition,
               context.order.currency,
-              params.context,
             );
             const items = pricing.gross();
             return current + items;

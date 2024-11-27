@@ -26,11 +26,7 @@ export const getOrderPositionsData = async (
         locale: params.locale?.baseName,
       });
 
-      const positionPricing = modules.orders.positions.pricingSheet(
-        orderPosition,
-        order.currency,
-        context,
-      );
+      const positionPricing = modules.orders.positions.pricingSheet(orderPosition, order.currency);
       const total = positionPricing.total({ useNetPrice });
       const unitPrice = positionPricing.unitPrice({ useNetPrice });
 

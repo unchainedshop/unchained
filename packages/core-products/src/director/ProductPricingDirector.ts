@@ -15,7 +15,7 @@ const baseDirector = BasePricingDirector<
   IProductPricingAdapter
 >('ProductPricingDirector');
 
-export const ProductPricingDirector: IProductPricingDirector = {
+export const ProductPricingDirector: IProductPricingDirector<any> = {
   ...baseDirector,
 
   async buildPricingContext(context, unchainedAPI) {

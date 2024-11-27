@@ -281,7 +281,7 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
 }
 
 export type IProductPricingAdapter<
-  UnchainedAPI = any,
+  UnchainedAPI = unknown,
   DiscountConfiguration = unknown,
 > = IPricingAdapter<
   ProductPricingAdapterContext & UnchainedAPI,
@@ -290,12 +290,16 @@ export type IProductPricingAdapter<
   DiscountConfiguration
 >;
 
-export type IProductPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
+export type IProductPricingDirector<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingDirector<
   ProductPricingContext,
   ProductPricingCalculation,
   ProductPricingAdapterContext,
   IProductPricingSheet,
-  IProductPricingAdapter<any, DiscountConfiguration>
+  IProductPricingAdapter<any, DiscountConfiguration>,
+  UnchainedAPI
 >;
 
 export type ProductPriceRate = {

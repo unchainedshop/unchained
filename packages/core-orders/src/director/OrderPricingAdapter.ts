@@ -20,7 +20,10 @@ export interface OrderPricingContext {
   orderPayment: OrderPayment;
 }
 
-export type IOrderPricingAdapter<UnchainedAPI = any, DiscountConfiguration = unknown> = IPricingAdapter<
+export type IOrderPricingAdapter<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingAdapter<
   OrderPricingAdapterContext & UnchainedAPI,
   OrderPricingCalculation,
   IOrderPricingSheet,

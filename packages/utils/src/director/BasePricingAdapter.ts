@@ -66,16 +66,16 @@ export const BasePricingAdapter = <
 
   actions: (params) => {
     const calculation = [];
-    const actions: IPricingAdapterActions<Calculation, PricingAdapterContext> = {
+
+    return {
       calculate: async () => {
         return [];
       },
       getCalculation: () => calculation,
       getContext: () => params.context,
-    };
-
-    return actions as IPricingAdapterActions<Calculation, PricingAdapterContext> & {
-      resultSheet: () => IPricingSheet<Calculation>;
+      resultSheet: () => {
+        throw new Error('Method not implemented.');
+      }, // abstract
     };
   },
 

@@ -22,8 +22,7 @@ import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/util
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';
 import { ProductStatus } from '../db/ProductStatus.js';
-import { ProductPricingSheet } from '../director/ProductPricingSheet.js';
-import { ProductPricingDirector, ProductTypes } from '../products-index.js';
+import { ProductTypes } from '../products-index.js';
 import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
 import { configureProductReviewsModule, ProductReviewsModule } from './configureProductReviewsModule.js';
@@ -34,14 +33,8 @@ import {
 } from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
-import {
-  IProductPricingSheet,
-  ProductPriceRate,
-  ProductPricingCalculation,
-  ProductPricingContext,
-} from '../types.js';
+import { ProductPriceRate } from '../types.js';
 import type { Currency } from '@unchainedshop/core-currencies';
-import type { OrderPosition } from '@unchainedshop/core-orders';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -127,12 +120,6 @@ export type ProductsModule = {
   isDraft: (product: Product) => boolean;
 
   normalizedStatus: (product: Product) => ProductStatus;
-
-  pricingSheet: (params: {
-    calculation: Array<ProductPricingCalculation>;
-    currency: string;
-    quantity: number;
-  }) => IProductPricingSheet;
 
   proxyAssignments: (
     product: Product,
@@ -222,11 +209,6 @@ export type ProductsModule = {
   };
 
   // Product adapter
-
-  calculate: (
-    pricingContext: ProductPricingContext & { item: OrderPosition },
-    unchainedAPI,
-  ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
   create: (doc: Product, options?: { autopublish?: boolean }) => Promise<Product>;
@@ -495,10 +477,6 @@ export const configureProductsModule = async ({
       return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
     },
 
-    pricingSheet: (params) => {
-      return ProductPricingSheet(params);
-    },
-
     proxyAssignments: async (product, { includeInactive = false } = {}) => {
       const assignments = product.proxy?.assignments || [];
 
@@ -558,13 +536,6 @@ export const configureProductsModule = async ({
     },
 
     prices: configureProductPricesModule({ proxyProducts, db }),
-
-    // Product adapter
-    calculate: async (pricingContext, unchainedAPI) => {
-      const director = await ProductPricingDirector.actions(pricingContext, unchainedAPI);
-
-      return director.calculate();
-    },
 
     // Mutations
     create: async ({ type, sequence, ...productData }) => {

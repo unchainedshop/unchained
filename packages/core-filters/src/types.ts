@@ -105,7 +105,7 @@ export interface FilterAdapterActions {
   ) => Promise<mongodb.FindOptions['sort']>;
 }
 
-export type IFilterAdapter<UnchainedAPI = any> = IBaseAdapter & {
+export type IFilterAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
   orderIndex: number;
 
   actions: (params: FilterContext & UnchainedAPI) => FilterAdapterActions;

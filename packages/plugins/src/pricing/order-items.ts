@@ -25,11 +25,7 @@ const OrderItems: IOrderPricingAdapter<UnchainedCore> = {
         // just sum up all products items prices, taxes & fees
         const totalAndTaxesOfAllItems = orderPositions.reduce(
           (current, orderPosition) => {
-            const pricing = modules.orders.positions.pricingSheet(
-              orderPosition,
-              order.currency,
-              params.context,
-            );
+            const pricing = modules.orders.positions.pricingSheet(orderPosition, order.currency);
             const tax = pricing.taxSum();
             const items = pricing.gross();
             return {
