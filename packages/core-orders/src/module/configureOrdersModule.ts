@@ -25,6 +25,13 @@ export type OrdersModule = OrderQueries &
   OrderTransformations &
   OrderProcessing &
   OrderMutations & {
+    // Order context recalculations
+    initProviders: (order: Order, unchainedAPI) => Promise<Order>;
+    updateCalculation: (orderId: string, unchainedAPI) => Promise<Order>;
+    invalidateProviders: (unchainedAPI, maxAgeDays: number) => Promise<void>;
+    deleteUserCart: (userId: string) => Promise<boolean>;
+
+    // Sub entities
     deliveries: OrderDeliveriesModule;
     discounts: OrderDiscountsModule;
     positions: OrderPositionsModule;
@@ -89,6 +96,20 @@ export const configureOrdersModule = async ({
   const orderDeliveriesModule = configureOrderDeliveriesModule({
     OrderDeliveries,
   });
+
+  const deleteUserCart = async (userId: string) => {
+    try {
+      const userCart = await Orders.findOne({ status: null, userId });
+      await orderMutations.delete(userCart?._id);
+      await orderPaymentsModule.deleteOrderPayment(userCart?._id);
+      await orderDeliveriesModule.deleteOrderDelivery(userCart?._id);
+      await orderDiscountsModule.deleteOrderDiscounts(userCart?._id);
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
 
   return {
     ...orderQueries,

@@ -4,7 +4,6 @@ import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../typ
 import { type DeliveryLocation, type IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
 import { DeliveryDirector } from '@unchainedshop/core-delivery'; // TODO: Important
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export type OrderDeliveriesModule = {
   // Queries
@@ -46,6 +45,7 @@ export type OrderDeliveriesModule = {
   ) => Promise<OrderDelivery>;
 
   updateCalculation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<OrderDelivery>;
+  deleteOrderDelivery: (orderId: string) => Promise<number>;
 };
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
@@ -270,6 +270,10 @@ export const configureOrderDeliveriesModule = ({
           returnDocument: 'after',
         },
       );
+    },
+    deleteOrderDelivery: async (orderId: string) => {
+      const { deletedCount } = await OrderDeliveries.deleteMany({ orderId });
+      return deletedCount;
     },
   };
 };

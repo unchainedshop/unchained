@@ -95,7 +95,7 @@ export type UsersModule = {
     _id: string,
     { profile, meta }: { profile?: UserProfile; meta?: any },
   ) => Promise<User>;
-  delete: (userId: string) => Promise<User>;
+  delete: (params: { userId: string; removeUserReviews?: boolean }, context: Context) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (
@@ -112,7 +112,6 @@ export type UsersModule = {
     },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
-  deleteUser: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
   hashPassword(password: string): Promise<{
     pbkdf2: string;
   }>;
@@ -625,34 +624,25 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    delete: async (userId: string): Promise<User> => {
+    delete: async (
+      params: { userId: string; removeUserReviews?: boolean },
+      context: Context,
+    ): Promise<User> => {
+      const { userId, removeUserReviews = false } = params;
       const userFilter = generateDbFilterById(userId);
 
       const existingUser = await Users.findOne(userFilter, {
         projection: { emails: true, username: true },
       });
       if (!existingUser) return null;
-
-      const uuid = crypto.randomUUID();
-      const obfuscatedEmails = existingUser.emails?.flatMap(({ address, verified }) => {
-        if (!verified) return [];
-        return [
-          {
-            address: `${address}@${uuid}.unchained.local`,
-            verified: true,
-          },
-        ];
-      });
-
-      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuid}` : null;
-
-      Users.updateOne(userFilter, {
-        $set: {
-          emails: obfuscatedEmails,
-          username: obfuscatedUsername,
-          services: {},
-        },
-      });
+      const maskedUserData = maskUserPropertyValues(existingUser, context?.userId);
+      await context.modules.bookmarks.deleteByUserId(userId);
+      await updateUser({ _id: userId }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
+      (context as UnchainedCore).modules.orders.deleteUserCart(userId);
+      await (context as UnchainedCore).modules.quotations.deleteRequestedUserQuotations(userId);
+      await (context as UnchainedCore).modules.enrollments.deleteOpenUserEnrollments(userId);
+      if (removeUserReviews)
+        await (context as UnchainedCore).modules.products.reviews.deleteMany({ authorId: userId });
 
       const user = await Users.findOneAndDelete(userFilter);
       await emit('USER_REMOVE', {
@@ -838,14 +828,6 @@ export const configureUsersModule = async ({
         } as mongodb.UpdateFilter<User>,
         {},
       );
-    },
-    deleteUser: async ({ userId }, context: Context) => {
-      const { modules } = context;
-      const { _id, ...user } = await findUserById(userId);
-      const maskedUserData = maskUserPropertyValues(user, context.userId);
-      await modules.bookmarks.deleteByUserId(userId);
-      await updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
-      return true;
     },
   };
 };

@@ -150,7 +150,6 @@ import prepareUserAvatarUpload from './users/prepareUserAvatarUpload.js';
 import rejectOrder from './orders/rejectOrder.js';
 import removePushSubscription from './users/removePushSubscription.js';
 import addPushSubscription from './users/addPushSubscription.js';
-import deleteUser from './users/deleteUser.js';
 import deleteUserProductReviews from './products/deleteUserProductReviews.js';
 
 export default {
@@ -314,6 +313,5 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout,
   ),
-  deleteUser: acl(actions.deleteUser)(deleteUser),
   deleteUserProductReviews,
 };

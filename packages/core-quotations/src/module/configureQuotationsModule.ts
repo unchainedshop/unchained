@@ -30,6 +30,7 @@ export interface QuotationQueries {
   ) => Promise<Array<Quotation>>;
   count: (query: QuotationQuery) => Promise<number>;
   openQuotationWithProduct: (param: { productId: string }) => Promise<Quotation | null>;
+  deleteRequestedUserQuotations: (userId: string) => Promise<number>;
 }
 
 // Transformations
@@ -398,7 +399,13 @@ export const configureQuotationsModule = async ({
 
       return quotation;
     },
-
+    deleteRequestedUserQuotations: async (userId: string) => {
+      const { deletedCount } = await Quotations.deleteMany({
+        userId,
+        status: QuotationStatus.REQUESTED,
+      });
+      return deletedCount;
+    },
     updateContext: updateQuotationFields(['context']),
     updateProposal: updateQuotationFields(['price', 'expires', 'meta']),
 
