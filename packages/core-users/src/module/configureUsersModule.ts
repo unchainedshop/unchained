@@ -649,7 +649,8 @@ export const configureUsersModule = async ({
       const quotationsCount = await modules.quotations.count({ userId });
       const reviewsCount = await modules.products.reviews.count({ authorId: userId });
       const enrollmentsCount = await modules.enrollments.count({ userId });
-      if (!ordersCount && !reviewsCount && !enrollmentsCount && !quotationsCount) {
+      const tokens = await modules.warehousing.findTokensForUser(existingUser);
+      if (!ordersCount && !reviewsCount && !enrollmentsCount && !quotationsCount && !tokens?.length) {
         await Users.deleteOne({ _id: userId });
       }
 
