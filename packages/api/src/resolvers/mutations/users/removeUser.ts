@@ -14,7 +14,7 @@ export default async function removeUser(
   log(`mutation removeUser ${normalizedUserId}`, { userId });
 
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
-    throw UserNotFoundError({ id: normalizedUserId });
+    throw new UserNotFoundError({ id: normalizedUserId });
 
   return modules.users.delete({ userId: normalizedUserId, removeUserReviews }, unchainedApi);
 }

@@ -1,8 +1,15 @@
 import { UnchainedCore } from '../core-index.js';
 
-const deleteUserCartService = async (userId: string, unchainedAPI: UnchainedCore) => {
+const deleteUserCartService = async (
+    userId: string,
+    unchainedAPI: UnchainedCore & { countryContext?: string },
+) => {
     try {
-        const userCart = await unchainedAPI.modules.orders.cart({ userId });
+        const user = await unchainedAPI.modules.users.findUserById(userId);
+        const userCart = await unchainedAPI.modules.orders.cart({
+            userId,
+            countryContext: unchainedAPI?.countryContext || user?.lastLogin?.countryCode,
+        });
         await unchainedAPI.modules.orders.delete(userCart?._id);
         await unchainedAPI.modules.orders.payments.deleteOrderPayment(userCart?._id);
         await unchainedAPI.modules.orders.deliveries.deleteOrderDelivery(userCart?._id);
