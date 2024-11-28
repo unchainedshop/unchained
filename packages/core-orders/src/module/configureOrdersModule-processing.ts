@@ -1,7 +1,7 @@
+import { Locker } from '@kontsedal/locco';
 import { mongodb, generateDbFilterById } from '@unchainedshop/mongodb';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { Locker } from '@kontsedal/locco';
 import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
 import { ordersSettings } from '../orders-settings.js';
 import { PaymentDirector } from '@unchainedshop/core-payment';

@@ -22,7 +22,7 @@ export const SimpleProduct = {
     }>
   > {
     const { deliveryProviderType, referenceDate, quantity } = params;
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
 
     const deliveryProviders = await modules.delivery.findProviders({
       type: deliveryProviderType,
@@ -31,7 +31,7 @@ export const SimpleProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported(
+      const warehousingProviders = await services.orders.supportedWarehousingProviders(
         {
           product: obj,
           deliveryProvider,
@@ -81,7 +81,7 @@ export const SimpleProduct = {
       quantity?: number;
     }>
   > {
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
     const { referenceDate, deliveryProviderType } = params;
 
     const deliveryProviders = await modules.delivery.findProviders({
@@ -91,7 +91,7 @@ export const SimpleProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported(
+      const warehousingProviders = await services.orders.supportedWarehousingProviders(
         {
           product: obj,
           deliveryProvider,

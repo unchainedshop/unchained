@@ -1,13 +1,19 @@
 import { log } from '@unchainedshop/logger';
-import { PaymentProviderType } from '@unchainedshop/core-payment';
+import { PaymentDirector, PaymentProviderType } from '@unchainedshop/core-payment';
 import { Context } from '../../../context.js';
 
 export default async function paymentInterfaces(
   root: never,
   { type }: { type: PaymentProviderType },
-  { modules, userId }: Context,
+  { userId }: Context,
 ) {
   log(`query paymentInterfaces ${type}`, { userId });
 
-  return modules.payment.paymentProviders.findInterfaces({ type });
+  return PaymentDirector.getAdapters()
+    .filter((Adapter) => Adapter.typeSupported(type))
+    .map((Adapter) => ({
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    }));
 }

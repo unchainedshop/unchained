@@ -1,19 +1,24 @@
-import {
-  WarehousingContext,
-  WarehousingProvider,
-  WarehousingProviderQuery,
-  WarehousingProviderType,
-} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb, ModuleInput } from '@unchainedshop/mongodb';
-import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
-import { WarehousingDirector } from '../director/WarehousingDirector.js';
-import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
-import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
-import { WarehousingError } from '../warehousing-index.js';
+import {
+  WarehousingProvider,
+  WarehousingProvidersCollection,
+  WarehousingProviderType,
+} from '../db/WarehousingProvidersCollection.js';
+import {
+  EstimatedDispatch,
+  EstimatedStock,
+  WarehousingDirector,
+} from '../director/WarehousingDirector.js';
+import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
+import { WarehousingContext, WarehousingError } from '../director/WarehousingAdapter.js';
 import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { User } from '@unchainedshop/core-users';
+
+type WarehousingProviderQuery = {
+  type?: WarehousingProviderType;
+};
 
 export type WarehousingModule = {
   // Queries
@@ -32,13 +37,6 @@ export type WarehousingModule = {
   providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
 
   // Adapter
-
-  findSupported: (
-    warehousingContext: WarehousingContext,
-    unchainedAPI,
-  ) => Promise<Array<WarehousingProvider>>;
-  findInterface: (query: WarehousingProvider) => WarehousingInterface;
-  findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
   configurationError: (provider: WarehousingProvider, unchainedAPI) => Promise<WarehousingError>;
   isActive: (provider: WarehousingProvider, unchainedAPI) => Promise<boolean>;
 
@@ -170,39 +168,6 @@ export const configureWarehousingModule = async ({
         { limit: 1 },
       );
       return !!providerCount;
-    },
-
-    // Adapter
-
-    findInterface: (warehousingProvider) => {
-      const Adapter = WarehousingDirector.getAdapter(warehousingProvider.adapterKey);
-      if (!Adapter) return null;
-      return {
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      };
-    },
-
-    findInterfaces: ({ type }) => {
-      return WarehousingDirector.getAdapters({
-        adapterFilter: (Adapter) => Adapter.typeSupported(type),
-      }).map((Adapter) => ({
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      }));
-    },
-
-    findSupported: async (warehousingContext, unchainedAPI) => {
-      const allProviders = await WarehousingProviders.find(buildFindSelector({})).toArray();
-
-      const providers = asyncFilter(allProviders, async (provider) => {
-        const director = await WarehousingDirector.actions(provider, warehousingContext, unchainedAPI);
-        return director.isActive();
-      });
-
-      return providers;
     },
 
     configurationError: async (warehousingProvider, unchainedAPI) => {

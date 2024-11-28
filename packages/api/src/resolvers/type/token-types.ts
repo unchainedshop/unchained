@@ -1,5 +1,5 @@
 import { Context } from '../../context.js';
-import { TokenStatus, TokenSurrogate } from '@unchainedshop/core-warehousing';
+import { TokenSurrogate, TokenStatus } from '@unchainedshop/core-warehousing';
 import { WorkStatus } from '@unchainedshop/core-worker';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';

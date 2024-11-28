@@ -44,7 +44,7 @@ export const TokenizedProduct = {
       quantity?: number;
     }>
   > {
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
     const { referenceDate } = params;
 
     const deliveryProviders = await modules.delivery.findProviders({});
@@ -52,7 +52,7 @@ export const TokenizedProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported(
+      const warehousingProviders = await services.orders.supportedWarehousingProviders(
         {
           product: obj,
           deliveryProvider,

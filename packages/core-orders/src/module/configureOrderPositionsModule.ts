@@ -190,7 +190,7 @@ export const configureOrderPositionsModule = ({
       },
       unchainedAPI,
     ): Promise<OrderPosition> => {
-      const { modules } = unchainedAPI;
+      const { modules, services } = unchainedAPI;
       // scheduling (store in db for auditing)
       const product = await modules.products.findProduct({
         productId: orderPosition.productId,
@@ -204,7 +204,7 @@ export const configureOrderPositionsModule = ({
 
       const scheduling = await Promise.all(
         (
-          await modules.warehousing.findSupported(
+          await services.orders.supportedWarehousingProviders(
             {
               product,
               deliveryProvider,

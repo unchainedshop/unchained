@@ -55,4 +55,4 @@ export const configurePaymentModule = async ({
   };
 };
 
-export type PaymentModule = ReturnType<typeof configurePaymentModule>;
+export type PaymentModule = Awaited<ReturnType<typeof configurePaymentModule>>;

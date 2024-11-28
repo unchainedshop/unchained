@@ -1,4 +1,5 @@
 import {
+  WarehousingDirector,
   WarehousingError,
   WarehousingInterface,
   WarehousingProvider as WarehousingProviderType,
@@ -14,10 +15,14 @@ export interface WarehousingProviderHelperTypes {
 }
 
 export const WarehousingProvider: WarehousingProviderHelperTypes = {
-  interface(obj, _, context) {
-    const Interface = context.modules.warehousing.findInterface(obj);
-    if (!Interface) return null;
-    return Interface;
+  interface(obj) {
+    const Adapter = WarehousingDirector.getAdapter(obj.adapterKey);
+    if (!Adapter) return null;
+    return {
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    };
   },
 
   async configurationError(obj, _, context) {

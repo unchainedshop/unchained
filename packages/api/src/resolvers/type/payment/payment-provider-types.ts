@@ -42,10 +42,14 @@ export interface PaymentProviderHelperTypes {
   }>;
 }
 export const PaymentProvider: PaymentProviderHelperTypes = {
-  interface(obj, _, { modules }) {
-    const Interface = modules.payment.paymentProviders.findInterface(obj);
-    if (!Interface) return null;
-    return Interface;
+  interface(obj) {
+    const Adapter = PaymentDirector.getAdapter(obj.adapterKey);
+    if (!Adapter) return null;
+    return {
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    };
   },
 
   async configurationError(paymentProvider, _, requestContext) {

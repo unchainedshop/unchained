@@ -1,7 +1,51 @@
-import { IWarehousingAdapter } from '../types.js';
 import { log, LogLevel } from '@unchainedshop/logger';
+import { IBaseAdapter } from '@unchainedshop/utils';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { Product } from '@unchainedshop/core-products';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
+import { TokenSurrogate } from '../db/TokenSurrogateCollection.js';
+import {
+  WarehousingConfiguration,
+  WarehousingProviderType,
+} from '../db/WarehousingProvidersCollection.js';
 
-import { WarehousingError } from './WarehousingError.js';
+export enum WarehousingError {
+  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
+}
+
+export type WarehousingAdapterActions = {
+  configurationError: () => WarehousingError;
+  isActive: () => boolean;
+  stock: (referenceDate: Date) => Promise<number>;
+  productionTime: (quantityToProduce: number) => Promise<number>;
+  commissioningTime: (quantity: number) => Promise<number>;
+  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId' | 'orderPositionId'>>>;
+  tokenMetadata: (chainTokenId: string, referenceDate: Date) => Promise<any>;
+  isInvalidateable: (chainTokenId: string, referenceDate: Date) => Promise<boolean>;
+};
+
+export interface WarehousingContext {
+  deliveryProvider?: DeliveryProvider;
+  product?: Product;
+  token?: TokenSurrogate;
+  quantity?: number;
+  referenceDate?: Date;
+  locale?: Intl.Locale;
+  order?: Order;
+  warehousingProviderId?: string;
+  orderPosition?: OrderPosition;
+}
+
+export type IWarehousingAdapter = IBaseAdapter & {
+  orderIndex: number;
+  initialConfiguration: WarehousingConfiguration;
+  typeSupported: (type: WarehousingProviderType) => boolean;
+
+  actions: (config: WarehousingConfiguration, context: WarehousingContext) => WarehousingAdapterActions;
+};
 
 export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 'version'> = {
   orderIndex: 0,

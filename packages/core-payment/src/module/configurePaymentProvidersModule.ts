@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { PaymentProvider, PaymentProviderType } from '../db/PaymentProvidersCollection.js';
+import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 
 export interface PaymentInterface {
@@ -60,26 +60,6 @@ export const configurePaymentProvidersModule = (
         { limit: 1 },
       );
       return !!providerCount;
-    },
-
-    findInterface: (paymentProvider: PaymentProvider): PaymentInterface => {
-      const Adapter = PaymentDirector.getAdapter(paymentProvider.adapterKey);
-      if (!Adapter) return null;
-      return {
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      };
-    },
-
-    findInterfaces: ({ type }: { type: PaymentProviderType }): Array<PaymentInterface> => {
-      return PaymentDirector.getAdapters()
-        .filter((Adapter) => Adapter.typeSupported(type))
-        .map((Adapter) => ({
-          _id: Adapter.key,
-          label: Adapter.label,
-          version: Adapter.version,
-        }));
     },
 
     // Mutations
