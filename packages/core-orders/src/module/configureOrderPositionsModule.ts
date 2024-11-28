@@ -9,6 +9,7 @@ import {
   type IProductPricingSheet,
   type Product,
 } from '@unchainedshop/core-products';
+import { WarehousingDirector } from '@unchainedshop/core-warehousing';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
@@ -224,11 +225,9 @@ export const configureOrderPositionsModule = ({
             referenceDate: order.ordered,
             quantity: orderPosition.quantity,
           };
-          const dispatch = await unchainedAPI.modules.warehousing.estimatedDispatch(
-            warehousingProvider,
-            context,
-            unchainedAPI,
-          );
+
+          const director = await WarehousingDirector.actions(warehousingProvider, context, unchainedAPI);
+          const dispatch = await director.estimatedDispatch();
 
           return {
             warehousingProviderId: warehousingProvider._id,

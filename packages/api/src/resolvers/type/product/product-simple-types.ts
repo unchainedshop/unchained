@@ -1,5 +1,9 @@
 import { Product, ProductSupply } from '@unchainedshop/core-products';
-import { WarehousingContext, WarehousingProvider } from '@unchainedshop/core-warehousing';
+import {
+  WarehousingContext,
+  WarehousingDirector,
+  WarehousingProvider,
+} from '@unchainedshop/core-warehousing';
 import { Context } from '../../../context.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
@@ -48,11 +52,12 @@ export const SimpleProduct = {
             referenceDate,
           };
 
-          const dispatch = await modules.warehousing.estimatedDispatch(
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
+          const dispatch = await director.estimatedDispatch();
 
           return {
             warehousingProvider,

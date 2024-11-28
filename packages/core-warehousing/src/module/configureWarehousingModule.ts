@@ -5,11 +5,7 @@ import {
   WarehousingProvidersCollection,
   WarehousingProviderType,
 } from '../db/WarehousingProvidersCollection.js';
-import {
-  EstimatedDispatch,
-  EstimatedStock,
-  WarehousingDirector,
-} from '../director/WarehousingDirector.js';
+import { EstimatedStock, WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import { WarehousingContext } from '../director/WarehousingAdapter.js';
 import type { Product } from '@unchainedshop/core-products';
@@ -34,12 +30,6 @@ export type WarehousingModule = {
   ) => Promise<Array<WarehousingProvider>>;
   count: (query: WarehousingProviderQuery) => Promise<number>;
   providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
-
-  estimatedDispatch: (
-    provider: WarehousingProvider,
-    context: WarehousingContext,
-    unchainedAPI,
-  ) => Promise<EstimatedDispatch>;
 
   estimatedStock: (
     provider: WarehousingProvider,
@@ -146,15 +136,6 @@ export const configureWarehousingModule = async ({
         { limit: 1 },
       );
       return !!providerCount;
-    },
-
-    estimatedDispatch: async (warehousingProvider, warehousingContext, unchainedAPI) => {
-      const director = await WarehousingDirector.actions(
-        warehousingProvider,
-        warehousingContext,
-        unchainedAPI,
-      );
-      return director.estimatedDispatch();
     },
 
     estimatedStock: async (warehousingProvider, warehousingContext, unchainedAPI) => {
