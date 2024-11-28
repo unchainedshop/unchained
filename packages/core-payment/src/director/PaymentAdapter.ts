@@ -1,6 +1,64 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { PaymentError } from './PaymentError.js';
-import { IPaymentAdapter } from '../types.js';
+import { IBaseAdapter } from '@unchainedshop/utils';
+import type { Order, OrderPayment } from '@unchainedshop/core-orders';
+
+import {
+  PaymentConfiguration,
+  PaymentProvider,
+  PaymentProviderType,
+} from '../db/PaymentProvidersCollection.js';
+
+export enum PaymentError {
+  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
+}
+
+export type ChargeResult = {
+  transactionId?: string;
+  [key: string]: any;
+};
+
+export type PaymentChargeActionResult = ChargeResult & {
+  credentials?: {
+    token: string;
+    [key: string]: any;
+  };
+};
+export interface IPaymentActions {
+  charge: (transactionContext?: any) => Promise<PaymentChargeActionResult | false>;
+  configurationError: (transactionContext?: any) => PaymentError;
+  isActive: (transactionContext?: any) => boolean;
+  isPayLaterAllowed: (transactionContext?: any) => boolean;
+  register: (transactionContext?: any) => Promise<any>;
+  sign: (transactionContext?: any) => Promise<string>;
+  validate: (token?: any) => Promise<boolean>;
+  cancel: (transactionContext?: any) => Promise<boolean>;
+  confirm: (transactionContext?: any) => Promise<boolean>;
+}
+export interface PaymentContext {
+  userId?: string;
+  order?: Order;
+  orderPayment?: OrderPayment;
+  transactionContext?: any; // User for singing and charging a payment
+  token?: any; // Used for validation
+  meta?: any;
+}
+
+export type IPaymentAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
+  initialConfiguration: PaymentConfiguration;
+
+  typeSupported: (type: PaymentProviderType) => boolean;
+
+  actions: (
+    config: PaymentConfiguration,
+    context: PaymentContext & {
+      paymentProviderId: string;
+      paymentProvider: PaymentProvider;
+    } & UnchainedAPI,
+  ) => IPaymentActions;
+};
 
 export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> = {
   initialConfiguration: [],

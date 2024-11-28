@@ -7,11 +7,18 @@ import type { Work } from '@unchainedshop/core-worker';
 import type { User } from '@unchainedshop/core-users';
 import {
   DeliveryConfiguration,
-  DeliveryError,
   DeliveryLocation,
   DeliveryProvider,
   DeliveryProviderType,
-} from '../types.js';
+} from '../db/DeliveryProvidersCollection.js';
+
+export enum DeliveryError {
+  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
+}
+
 export interface DeliveryAdapterActions {
   configurationError: (transactionContext?: any) => DeliveryError;
   estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;

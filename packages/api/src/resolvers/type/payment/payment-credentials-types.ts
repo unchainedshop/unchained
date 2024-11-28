@@ -1,6 +1,7 @@
 import { Context } from '../../../context.js';
 import {
   PaymentCredentials as PaymentCredentialsType,
+  PaymentDirector,
   PaymentProvider,
 } from '@unchainedshop/core-payment';
 import { User } from '@unchainedshop/core-users';
@@ -23,13 +24,17 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
     });
   },
 
-  async isValid(obj, _, context) {
-    const { modules, userId } = context;
+  async isValid(obj, _, requestContext) {
+    const { modules, userId } = requestContext;
 
-    return modules.payment.paymentProviders.validate(
-      obj.paymentProviderId,
+    const paymentProvider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: obj.paymentProviderId,
+    });
+    const actions = await PaymentDirector.actions(
+      paymentProvider,
       { userId, token: obj },
-      context,
+      requestContext,
     );
+    return actions.validate();
   },
 };

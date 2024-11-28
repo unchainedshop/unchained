@@ -3,41 +3,17 @@ import {
   PaymentCredentials as PaymentCredentialsType,
 } from '../db/PaymentCredentialsCollection.js';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
-import {
-  configurePaymentCredentialsModule,
-  PaymentCredentialsModules,
-} from './configurePaymentCredentialsModule.js';
-import {
-  configurePaymentProvidersModule,
-  PaymentProvidersModules,
-} from './configurePaymentProvidersModule.js';
+import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.js';
+import { configurePaymentProvidersModule } from './configurePaymentProvidersModule.js';
 import { paymentSettings, PaymentSettingsOptions } from '../payment-settings.js';
-import { PaymentContext } from '../types.js';
 import { ModuleInput } from '@unchainedshop/mongodb';
-export type PaymentModule = {
-  /*
-   * Payment Providers Module
-   */
-
-  registerCredentials: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI,
-  ) => Promise<PaymentCredentialsType>;
-
-  paymentProviders: PaymentProvidersModules;
-
-  /*
-   * Payment Credentials Module
-   */
-
-  paymentCredentials: PaymentCredentialsModules;
-};
+import { PaymentContext } from '../director/PaymentAdapter.js';
+import { PaymentDirector } from '../director/PaymentDirector.js';
 
 export const configurePaymentModule = async ({
   db,
   options: paymentOptions = {},
-}: ModuleInput<PaymentSettingsOptions>): Promise<PaymentModule> => {
+}: ModuleInput<PaymentSettingsOptions>) => {
   const PaymentProviders = await PaymentProvidersCollection(db);
   const PaymentCredentials = await PaymentCredentialsCollection(db);
 
@@ -46,16 +22,16 @@ export const configurePaymentModule = async ({
   const paymentProviders = configurePaymentProvidersModule(PaymentProviders);
   const paymentCredentials = configurePaymentCredentialsModule(PaymentCredentials);
 
-  const registerCredentials: PaymentModule['registerCredentials'] = async (
-    paymentProviderId,
-    paymentContext,
+  const registerCredentials = async (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
     unchainedAPI,
-  ) => {
-    const registration = await paymentProviders.register(
+  ): Promise<PaymentCredentialsType> => {
+    const paymentProvider = await paymentProviders.findProvider({
       paymentProviderId,
-      paymentContext,
-      unchainedAPI,
-    );
+    });
+    const actions = await PaymentDirector.actions(paymentProvider, paymentContext, unchainedAPI);
+    const registration = await actions.register();
 
     if (!registration) return null;
 
@@ -78,3 +54,5 @@ export const configurePaymentModule = async ({
     registerCredentials,
   };
 };
+
+export type PaymentModule = ReturnType<typeof configurePaymentModule>;

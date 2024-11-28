@@ -1,7 +1,6 @@
-import { DeliveryProvider } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { mongodb, generateDbFilterById, generateDbObjectId, ModuleInput } from '@unchainedshop/mongodb';
-import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
+import { DeliveryProvidersCollection, DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
 import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [

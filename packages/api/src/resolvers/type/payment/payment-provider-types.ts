@@ -1,6 +1,10 @@
 import crypto from 'crypto';
 import { Context } from '../../../context.js';
-import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
+import {
+  PaymentDirector,
+  PaymentError,
+  PaymentProvider as PaymentProviderType,
+} from '@unchainedshop/core-payment';
 import { PaymentPricingDirector } from '@unchainedshop/core-payment';
 
 export interface PaymentProviderHelperTypes {
@@ -44,14 +48,14 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
     return Interface;
   },
 
-  configurationError(obj, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.payment.paymentProviders.configurationError(obj, requestContext);
+  async configurationError(paymentProvider, _, requestContext) {
+    const adapter = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+    return adapter.configurationError();
   },
 
-  isActive(obj, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.payment.paymentProviders.isActive(obj, requestContext);
+  async isActive(paymentProvider, _, requestContext) {
+    const adapter = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+    return adapter.isActive();
   },
 
   async simulatedPrice(

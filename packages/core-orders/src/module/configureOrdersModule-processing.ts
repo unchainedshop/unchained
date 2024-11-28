@@ -4,6 +4,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { Locker } from '@kontsedal/locco';
 import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
 import { ordersSettings } from '../orders-settings.js';
+import { PaymentDirector } from '@unchainedshop/core-payment';
 
 export type OrderContextParams<P> = (order: Order, params: P, unchainedAPI) => Promise<Order>;
 
@@ -370,11 +371,15 @@ export const configureOrderModuleProcessing = ({
           orderPaymentId: order.paymentId,
         });
 
-        await modules.orders.payments.charge(
-          orderPayment,
+        const paymentProvider = await modules.payment.paymentProviders.findProvider({
+          paymentProviderId: orderPayment.paymentProviderId,
+        });
+        const actions = await PaymentDirector.actions(
+          paymentProvider,
           { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
+        await actions.charge();
 
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }

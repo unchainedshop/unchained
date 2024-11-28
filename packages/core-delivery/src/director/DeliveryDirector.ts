@@ -1,7 +1,12 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
-import { DeliveryProvider, DeliveryError } from '../types.js';
-import { DeliveryAdapterActions, DeliveryContext, IDeliveryAdapter } from './DeliveryAdapter.js';
+import {
+  DeliveryAdapterActions,
+  DeliveryContext,
+  IDeliveryAdapter,
+  DeliveryError,
+} from './DeliveryAdapter.js';
+import { DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   actions: (

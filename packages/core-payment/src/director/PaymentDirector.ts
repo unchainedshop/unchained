@@ -1,8 +1,15 @@
-import { BaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
-import { PaymentError } from './PaymentError.js';
-import { IPaymentAdapter, IPaymentDirector, PaymentContext } from '../types.js';
+import { PaymentError, IPaymentActions, IPaymentAdapter, PaymentContext } from './PaymentAdapter.js';
+import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
 
+export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
+  actions: (
+    paymentProvider: PaymentProvider,
+    paymentContext: PaymentContext,
+    unchainedAPI,
+  ) => Promise<IPaymentActions>;
+};
 const logger = createLogger('unchained:core-payment');
 const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 

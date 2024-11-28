@@ -6,7 +6,8 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from '@unchainedshop/utils';
-import { DeliveryProvider } from '../types.js';
+import { DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
+
 import type { OrderDelivery, OrderDiscount, Order } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';
 

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
-import { PaymentProviderType } from '@unchainedshop/core-payment';
+import { PaymentDirector, PaymentProviderType } from '@unchainedshop/core-payment';
 import { OrderPaymentStatus } from '@unchainedshop/core-orders';
 import {
   OrderPaymentConfigurationError,
@@ -60,8 +60,8 @@ export default async function signPaymentProviderForCheckout(
   }
 
   try {
-    const sign = await modules.payment.paymentProviders.sign(
-      provider._id,
+    const actions = await PaymentDirector.actions(
+      provider,
       {
         userId,
         orderPayment,
@@ -69,6 +69,8 @@ export default async function signPaymentProviderForCheckout(
       },
       context,
     );
+    const sign = await actions.sign();
+
     return sign;
   } catch (error) {
     throw new OrderPaymentConfigurationError(error);

@@ -1,42 +1,16 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { PaymentCredentials as PaymentCredentialsType } from '../db/PaymentCredentialsCollection.js';
 
-export type PaymentCredentialsModules = {
-  // Queries
-
-  credentialsExists: (query: { paymentCredentialsId: string }) => Promise<boolean>;
-
-  findPaymentCredential: (
-    query: {
-      paymentCredentialsId?: string;
-      userId?: string;
-      paymentProviderId?: string;
-      isPreferred?: boolean;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<PaymentCredentialsType>;
-
-  findPaymentCredentials: (
-    query: mongodb.Filter<PaymentCredentialsType>,
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<PaymentCredentialsType>>;
-
-  // Mutations
-  markPreferred: (query: { userId: string; paymentCredentialsId: string }) => Promise<void>;
-
-  upsertCredentials: (
-    doc: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> & {
-      [x: string]: any;
-    },
-  ) => Promise<string | null>;
-
-  removeCredentials: (paymentCredentialsId: string) => Promise<PaymentCredentialsType>;
-};
-
 export const configurePaymentCredentialsModule = (
   PaymentCredentials: mongodb.Collection<PaymentCredentialsType>,
-): PaymentCredentialsModules => {
-  const markPreferred = async ({ userId, paymentCredentialsId }) => {
+) => {
+  const markPreferred = async ({
+    userId,
+    paymentCredentialsId,
+  }: {
+    userId: string;
+    paymentCredentialsId: string;
+  }): Promise<void> => {
     await PaymentCredentials.updateOne(
       {
         _id: paymentCredentialsId,
@@ -63,7 +37,11 @@ export const configurePaymentCredentialsModule = (
   return {
     markPreferred,
 
-    credentialsExists: async ({ paymentCredentialsId }) => {
+    credentialsExists: async ({
+      paymentCredentialsId,
+    }: {
+      paymentCredentialsId: string;
+    }): Promise<boolean> => {
       const credentialsCount = await PaymentCredentials.countDocuments(
         generateDbFilterById(paymentCredentialsId),
         { limit: 1 },
@@ -71,7 +49,18 @@ export const configurePaymentCredentialsModule = (
       return !!credentialsCount;
     },
 
-    findPaymentCredential: async ({ paymentCredentialsId, userId, paymentProviderId }, options) => {
+    findPaymentCredential: async (
+      {
+        paymentCredentialsId,
+        userId,
+        paymentProviderId,
+      }: {
+        paymentCredentialsId?: string;
+        userId?: string;
+        paymentProviderId?: string;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<PaymentCredentialsType> => {
       return PaymentCredentials.findOne(
         paymentCredentialsId
           ? generateDbFilterById(paymentCredentialsId)
@@ -80,12 +69,23 @@ export const configurePaymentCredentialsModule = (
       );
     },
 
-    findPaymentCredentials: async (query, options) => {
+    findPaymentCredentials: async (
+      query: mongodb.Filter<PaymentCredentialsType>,
+      options?: mongodb.FindOptions,
+    ): Promise<Array<PaymentCredentialsType>> => {
       const credentials = await PaymentCredentials.find(query, options).toArray();
       return credentials;
     },
 
-    upsertCredentials: async ({ userId, paymentProviderId, _id, token, ...meta }) => {
+    upsertCredentials: async ({
+      userId,
+      paymentProviderId,
+      _id,
+      token,
+      ...meta
+    }: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> & {
+      [x: string]: any;
+    }): Promise<string> => {
       const insertedId = _id || generateDbObjectId();
       const result = await PaymentCredentials.updateOne(
         _id
@@ -123,10 +123,12 @@ export const configurePaymentCredentialsModule = (
       return null;
     },
 
-    removeCredentials: async (paymentCredentialsId) => {
+    removeCredentials: async (paymentCredentialsId: string): Promise<PaymentCredentialsType> => {
       const selector = generateDbFilterById(paymentCredentialsId);
       const paymentCredentials = await PaymentCredentials.findOneAndDelete(selector, {});
       return paymentCredentials;
     },
   };
 };
+
+export type PaymentCredentialsModule = ReturnType<typeof configurePaymentCredentialsModule>;

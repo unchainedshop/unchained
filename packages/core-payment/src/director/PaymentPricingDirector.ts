@@ -6,7 +6,7 @@ import {
 } from './PaymentPricingAdapter.js';
 import { BasePricingDirector, IPricingDirector } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
-import { PaymentProvider } from '../types.js';
+import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
 import type { OrderPayment, Order } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';
 

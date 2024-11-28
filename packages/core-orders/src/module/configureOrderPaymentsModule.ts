@@ -3,6 +3,7 @@ import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedsho
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 import {
+  PaymentDirector,
   PaymentPricingDirector,
   PaymentPricingSheet,
   type IPaymentPricingSheet,
@@ -151,12 +152,8 @@ export const configureOrderPaymentsModule = ({
         paymentProviderId: orderPayment.paymentProviderId,
       });
 
-      const isPayLaterAllowed = await unchainedAPI.modules.payment.paymentProviders.isPayLaterAllowed(
-        provider,
-        unchainedAPI,
-      );
-
-      return !isPayLaterAllowed;
+      const actions = await PaymentDirector.actions(provider, {}, unchainedAPI);
+      return !actions.isPayLaterAllowed();
     },
     isBlockingOrderFullfillment: (orderPayment: OrderPayment) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
@@ -202,11 +199,16 @@ export const configureOrderPaymentsModule = ({
         return orderPayment;
       }
 
-      const arbitraryResponseData = await modules.payment.paymentProviders.confirm(
-        orderPayment.paymentProviderId,
+      const paymentProvider = await modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
+      const actions = await PaymentDirector.actions(
+        paymentProvider,
         buildPaymentProviderActionsContext(orderPayment, paymentContext),
         unchainedAPI,
       );
+
+      const arbitraryResponseData = await actions.confirm();
 
       if (arbitraryResponseData) {
         return updateStatus(orderPayment._id, {
@@ -232,11 +234,15 @@ export const configureOrderPaymentsModule = ({
         return orderPayment;
       }
 
-      const arbitraryResponseData = await modules.payment.paymentProviders.cancel(
-        orderPayment.paymentProviderId,
+      const paymentProvider = await modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
+      const actions = await PaymentDirector.actions(
+        paymentProvider,
         buildPaymentProviderActionsContext(orderPayment, paymentContext),
         unchainedAPI,
       );
+      const arbitraryResponseData = await actions.cancel();
 
       if (arbitraryResponseData) {
         return updateStatus(orderPayment._id, {
@@ -278,11 +284,11 @@ export const configureOrderPaymentsModule = ({
         },
       });
 
-      const result = await modules.payment.paymentProviders.charge(
-        orderPayment.paymentProviderId,
-        paymentContext,
-        unchainedAPI,
-      );
+      const paymentProvider = await modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
+      const actions = await PaymentDirector.actions(paymentProvider, paymentContext, unchainedAPI);
+      const result = await actions.charge();
 
       if (!result) return orderPayment;
 

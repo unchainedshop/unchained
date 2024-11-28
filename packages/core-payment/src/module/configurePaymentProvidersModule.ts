@@ -1,58 +1,13 @@
-import {
-  PaymentChargeActionResult,
-  PaymentContext,
-  PaymentError,
-  PaymentInterface,
-  PaymentProvider,
-} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { PaymentProvider, PaymentProviderType } from '../db/PaymentProvidersCollection.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
-import { PaymentProviderType } from '../payment-index.js';
 
-export type PaymentProvidersModules = {
-  // Queries
-  create: (doc: PaymentProvider) => Promise<PaymentProvider>;
-  update: (_id: string, doc: PaymentProvider) => Promise<PaymentProvider>;
-  delete: (_id: string) => Promise<PaymentProvider>;
-  count: (query: mongodb.Filter<PaymentProvider>) => Promise<number>;
-  findProvider: (
-    query: mongodb.Filter<PaymentProvider> & {
-      paymentProviderId: string;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<PaymentProvider>;
-  findProviders: (
-    query: mongodb.Filter<PaymentProvider>,
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<PaymentProvider>>;
-
-  providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
-
-  findInterface: (query: PaymentProvider) => PaymentInterface;
-  findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
-
-  configurationError: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<PaymentError>;
-
-  isActive: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<boolean>;
-
-  isPayLaterAllowed: (paymentProvider: PaymentProvider, unchainedAPI) => Promise<boolean>;
-
-  charge: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI,
-  ) => Promise<PaymentChargeActionResult | false>;
-  register: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<any>;
-  sign: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<string>;
-  validate: (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI,
-  ) => Promise<boolean>;
-  cancel: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<boolean>;
-  confirm: (paymentProviderId: string, paymentContext: PaymentContext, unchainedAPI) => Promise<boolean>;
-};
+export interface PaymentInterface {
+  _id: string;
+  label: string;
+  version: string;
+}
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_CREATE',
@@ -66,39 +21,40 @@ export const buildFindSelector = ({ type }: mongodb.Filter<PaymentProvider> = {}
 
 export const configurePaymentProvidersModule = (
   PaymentProviders: mongodb.Collection<PaymentProvider>,
-): PaymentProvidersModules => {
+) => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
-
-  const getPaymentAdapter = async (
-    paymentProviderId: string,
-    paymentContext: PaymentContext,
-    unchainedAPI,
-  ) => {
-    const provider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId), {});
-
-    return PaymentDirector.actions(provider, paymentContext, unchainedAPI);
-  };
 
   return {
     // Queries
-    count: async (query) => {
+    count: async (query: mongodb.Filter<PaymentProvider>): Promise<number> => {
       const providerCount = await PaymentProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
 
-    findProvider: async ({ paymentProviderId, ...query }, options) => {
+    findProvider: async (
+      {
+        paymentProviderId,
+        ...query
+      }: mongodb.Filter<PaymentProvider> & {
+        paymentProviderId: string;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<PaymentProvider> => {
       return PaymentProviders.findOne(
         paymentProviderId ? generateDbFilterById(paymentProviderId) : query,
         options,
       );
     },
 
-    findProviders: async (query, options = { sort: { created: 1 } }) => {
+    findProviders: async (
+      query: mongodb.Filter<PaymentProvider>,
+      options: mongodb.FindOptions = { sort: { created: 1 } },
+    ): Promise<Array<PaymentProvider>> => {
       const providers = PaymentProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },
 
-    providerExists: async ({ paymentProviderId }) => {
+    providerExists: async ({ paymentProviderId }: { paymentProviderId: string }): Promise<boolean> => {
       const providerCount = await PaymentProviders.countDocuments(
         generateDbFilterById(paymentProviderId, { deleted: null }),
         { limit: 1 },
@@ -106,7 +62,7 @@ export const configurePaymentProvidersModule = (
       return !!providerCount;
     },
 
-    findInterface: (paymentProvider) => {
+    findInterface: (paymentProvider: PaymentProvider): PaymentInterface => {
       const Adapter = PaymentDirector.getAdapter(paymentProvider.adapterKey);
       if (!Adapter) return null;
       return {
@@ -116,7 +72,7 @@ export const configurePaymentProvidersModule = (
       };
     },
 
-    findInterfaces: ({ type }) => {
+    findInterfaces: ({ type }: { type: PaymentProviderType }): Array<PaymentInterface> => {
       return PaymentDirector.getAdapters()
         .filter((Adapter) => Adapter.typeSupported(type))
         .map((Adapter) => ({
@@ -126,53 +82,8 @@ export const configurePaymentProvidersModule = (
         }));
     },
 
-    configurationError: async (paymentProvider, unchainedAPI) => {
-      const actions = await PaymentDirector.actions(paymentProvider, {}, unchainedAPI);
-      return actions.configurationError();
-    },
-
-    isActive: async (paymentProvider, unchainedAPI) => {
-      const actions = await PaymentDirector.actions(paymentProvider, {}, unchainedAPI);
-      return actions.isActive();
-    },
-
-    isPayLaterAllowed: async (paymentProvider, unchainedAPI) => {
-      const actions = await PaymentDirector.actions(paymentProvider, {}, unchainedAPI);
-      return actions.isPayLaterAllowed();
-    },
-
-    charge: async (paymentProviderId, paymentContext, unchainedAPI) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, unchainedAPI);
-      return adapter.charge();
-    },
-
-    register: async (paymentProviderId, paymentContext, unchainedAPI) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, unchainedAPI);
-      return adapter.register();
-    },
-
-    sign: async (paymentProviderId, paymentContext, unchainedAPI) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, unchainedAPI);
-      return adapter.sign();
-    },
-
-    validate: async (paymentProviderId, paymentContext, unchainedAPI) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, unchainedAPI);
-      return adapter.validate();
-    },
-
-    cancel: async (paymentProviderId, paymentContext, unchainedAPI) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, unchainedAPI);
-      return adapter.cancel();
-    },
-
-    confirm: async (paymentProviderId, paymentContext, unchainedAPI) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, unchainedAPI);
-      return adapter.confirm();
-    },
-
     // Mutations
-    create: async (doc) => {
+    create: async (doc: PaymentProvider): Promise<PaymentProvider> => {
       const Adapter = PaymentDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
@@ -191,7 +102,7 @@ export const configurePaymentProvidersModule = (
       return paymentProvider;
     },
 
-    update: async (_id: string, doc: PaymentProvider) => {
+    update: async (_id: string, doc: PaymentProvider): Promise<PaymentProvider> => {
       const paymentProvider = await PaymentProviders.findOneAndUpdate(
         generateDbFilterById(_id),
         {
@@ -206,7 +117,7 @@ export const configurePaymentProvidersModule = (
       return paymentProvider;
     },
 
-    delete: async (_id) => {
+    delete: async (_id: string): Promise<PaymentProvider> => {
       const paymentProvider = await PaymentProviders.findOneAndUpdate(
         generateDbFilterById(_id),
         {
@@ -221,3 +132,5 @@ export const configurePaymentProvidersModule = (
     },
   };
 };
+
+export type PaymentProvidersModule = ReturnType<typeof configurePaymentProvidersModule>;

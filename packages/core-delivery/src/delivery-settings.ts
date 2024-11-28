@@ -1,4 +1,4 @@
-import { DeliveryProvider } from './types.js';
+import { DeliveryProvider } from './db/DeliveryProvidersCollection.js';
 
 export type FilterProviders<Order = unknown> = (
   params: {
