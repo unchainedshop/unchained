@@ -25,6 +25,7 @@ export type OrdersModule = OrderQueries &
   OrderTransformations &
   OrderProcessing &
   OrderMutations & {
+    // Sub entities
     deliveries: OrderDeliveriesModule;
     discounts: OrderDiscountsModule;
     positions: OrderPositionsModule;

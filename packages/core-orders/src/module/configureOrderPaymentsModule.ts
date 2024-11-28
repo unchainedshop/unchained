@@ -80,6 +80,7 @@ export type OrderPaymentsModule = {
   ) => Promise<OrderPayment>;
 
   updateCalculation: (orderPayment: OrderPayment, unchainedAPI) => Promise<OrderPayment>;
+  deleteOrderPayment: (orderId: string) => Promise<number>;
 };
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
@@ -408,6 +409,10 @@ export const configureOrderPaymentsModule = ({
           returnDocument: 'after',
         },
       );
+    },
+    deleteOrderPayment: async (orderId: string) => {
+      const { deletedCount } = await OrderPayments.deleteMany({ orderId });
+      return deletedCount;
     },
   };
 };
