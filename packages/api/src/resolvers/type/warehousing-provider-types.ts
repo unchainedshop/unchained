@@ -26,10 +26,12 @@ export const WarehousingProvider: WarehousingProviderHelperTypes = {
   },
 
   async configurationError(obj, _, context) {
-    return context.modules.warehousing.configurationError(obj, context);
+    const actions = await WarehousingDirector.actions(obj, {}, context);
+    return actions.configurationError();
   },
 
   async isActive(obj, _, context) {
-    return context.modules.warehousing.isActive(obj, context);
+    const actions = await WarehousingDirector.actions(obj, {}, context);
+    return actions.isActive();
   },
 };

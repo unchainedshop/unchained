@@ -11,8 +11,7 @@ import {
   WarehousingDirector,
 } from '../director/WarehousingDirector.js';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
-import { WarehousingContext, WarehousingError } from '../director/WarehousingAdapter.js';
-import type { Order, OrderPosition } from '@unchainedshop/core-orders';
+import { WarehousingContext } from '../director/WarehousingAdapter.js';
 import type { Product } from '@unchainedshop/core-products';
 import type { User } from '@unchainedshop/core-users';
 
@@ -36,10 +35,6 @@ export type WarehousingModule = {
   count: (query: WarehousingProviderQuery) => Promise<number>;
   providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
 
-  // Adapter
-  configurationError: (provider: WarehousingProvider, unchainedAPI) => Promise<WarehousingError>;
-  isActive: (provider: WarehousingProvider, unchainedAPI) => Promise<boolean>;
-
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,
@@ -62,23 +57,6 @@ export type WarehousingModule = {
 
   buildAccessKeyForToken: (tokenId: string) => Promise<string>;
 
-  tokenizeItems: (
-    order: Order,
-    params: {
-      items: Array<{
-        orderPosition: OrderPosition;
-        product: Product;
-      }>;
-    },
-    unchainedAPI,
-  ) => Promise<void>;
-
-  tokenMetadata: (
-    chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Intl.Locale },
-    unchainedAPI,
-  ) => Promise<any>;
-
   isInvalidateable: (
     chainTokenId: string,
     params: { product: Product; token: TokenSurrogate; referenceDate: Date },
@@ -89,6 +67,8 @@ export type WarehousingModule = {
   delete: (providerId: string) => Promise<WarehousingProvider>;
   update: (_id: string, doc: WarehousingProvider) => Promise<string>;
   create: (doc: WarehousingProvider) => Promise<string | null>;
+
+  createTokens: (tokens: TokenSurrogate[]) => Promise<void>;
 };
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
@@ -104,12 +84,6 @@ export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   return query;
 };
 
-const asyncFilter = async (arr, predicate) => {
-  const results = await Promise.all(arr.map(predicate));
-
-  return arr.filter((_v, index) => results[index]);
-};
-
 export const configureWarehousingModule = async ({
   db,
 }: ModuleInput<Record<string, never>>): Promise<WarehousingModule> => {
@@ -123,6 +97,10 @@ export const configureWarehousingModule = async ({
     count: async (query) => {
       const providerCount = await WarehousingProviders.countDocuments(buildFindSelector(query));
       return providerCount;
+    },
+
+    createTokens: async (tokens: TokenSurrogate[]) => {
+      await TokenSurrogates.insertMany(tokens);
     },
 
     findProvider: async ({ warehousingProviderId }, options) => {
@@ -170,11 +148,6 @@ export const configureWarehousingModule = async ({
       return !!providerCount;
     },
 
-    configurationError: async (warehousingProvider, unchainedAPI) => {
-      const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
-      return actions.configurationError();
-    },
-
     estimatedDispatch: async (warehousingProvider, warehousingContext, unchainedAPI) => {
       const director = await WarehousingDirector.actions(
         warehousingProvider,
@@ -205,70 +178,6 @@ export const configureWarehousingModule = async ({
         { returnDocument: 'after' },
       );
       await emit('TOKEN_OWNERSHIP_CHANGED', { token });
-    },
-
-    tokenizeItems: async (order, { items }, unchainedAPI) => {
-      const virtualProviders = await WarehousingProviders.find(
-        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
-      ).toArray();
-
-      const tokenizers = await Promise.all(
-        items.flatMap(({ orderPosition, product }) => {
-          const warehousingContext: WarehousingContext = {
-            order,
-            orderPosition,
-            product,
-            quantity: orderPosition.quantity,
-            referenceDate: order.ordered,
-          };
-          return virtualProviders.map(async (provider) => {
-            const director = await WarehousingDirector.actions(
-              provider,
-              warehousingContext,
-              unchainedAPI,
-            );
-            const isActive = await director.isActive();
-            if (isActive) return director.tokenize;
-            return (async () => []) as typeof director.tokenize;
-          });
-        }),
-      );
-
-      // Tokenize linearly so that after every tokenized item, the db is updated
-      await tokenizers.reduce(async (lastPromise, tokenizer) => {
-        await lastPromise;
-        const tokenSurrogates = await tokenizer();
-        await TokenSurrogates.insertMany(tokenSurrogates);
-        return true;
-      }, Promise.resolve(false));
-    },
-
-    tokenMetadata: async (chainTokenId, { token, product, locale, referenceDate }, unchainedAPI) => {
-      const virtualProviders = await WarehousingProviders.find(
-        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
-      ).toArray();
-
-      const warehousingContext: WarehousingContext = {
-        product,
-        token,
-        locale,
-        quantity: token?.quantity || 1,
-        referenceDate,
-      };
-      return virtualProviders.reduce(async (lastPromise, provider) => {
-        const last = await lastPromise;
-        if (last) return last;
-        const currentDirector = await WarehousingDirector.actions(
-          provider,
-          warehousingContext,
-          unchainedAPI,
-        );
-        const isActive = await currentDirector.isActive();
-        if (isActive) {
-          return currentDirector.tokenMetadata(chainTokenId);
-        }
-        return null;
-      }, Promise.resolve(null));
     },
 
     isInvalidateable: async (chainTokenId, { token, product, referenceDate }, unchainedAPI) => {
@@ -328,11 +237,6 @@ export const configureWarehousingModule = async ({
       const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
       return hashHex;
-    },
-
-    isActive: async (warehousingProvider, unchainedAPI) => {
-      const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
-      return actions.isActive();
     },
 
     // Mutations

@@ -20,6 +20,12 @@ export interface WarehousingInterface {
 }
 
 export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
+  tokenMetadata: (
+    virtualProviders: WarehousingProvider[],
+    warehousingContext: WarehousingContext & { token: { chainTokenId: string } },
+    unchainedAPI,
+  ) => Promise<any>;
+
   actions: (
     warehousingProvider: WarehousingProvider,
     warehousingContext: WarehousingContext,
@@ -180,5 +186,22 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
     };
+  },
+
+  async tokenMetadata(virtualProviders, warehousingContext, unchainedAPI) {
+    return virtualProviders.reduce(async (lastPromise, provider) => {
+      const last = await lastPromise;
+      if (last) return last;
+      const currentDirector = await WarehousingDirector.actions(
+        provider,
+        warehousingContext,
+        unchainedAPI,
+      );
+      const isActive = await currentDirector.isActive();
+      if (isActive) {
+        return currentDirector.tokenMetadata(warehousingContext.token.chainTokenId);
+      }
+      return null;
+    }, Promise.resolve(null));
   },
 };

@@ -5,6 +5,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderStatus, OrderDelivery, OrderPayment, OrderPosition } from '../types.js';
 import { ordersSettings } from '../orders-settings.js';
 import { PaymentDirector } from '@unchainedshop/core-payment';
+import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
 export type OrderContextParams<P> = (order: Order, params: P, unchainedAPI) => Promise<Order>;
 
@@ -415,7 +416,7 @@ export const configureOrderModuleProcessing = ({
             info: comment,
           });
 
-          const orderDelivery = await modules.orders.deliveries.findDelivery({
+          const orderDelivery: OrderDelivery = await modules.orders.deliveries.findDelivery({
             orderDeliveryId: order.deliveryId,
           });
           await modules.orders.deliveries.send(
@@ -444,13 +445,32 @@ export const configureOrderModuleProcessing = ({
           );
           if (tokenizedItems.length > 0) {
             // Give virtual warehouse a chance to instantiate new virtual objects
-            await modules.warehousing.tokenizeItems(
-              order,
-              {
-                items: tokenizedItems,
-              },
-              unchainedAPI,
-            );
+            const virtualProviders = await modules.warehousing.findProviders({
+              type: WarehousingProviderType.VIRTUAL,
+            });
+            // It's very important to do this in a series and not in Promise.all
+            // TODO: Actually, only createTokens should decide on the unique chainTokenId
+            // and the tokens should be created with a distributed Lock to not assign the same id multiple times!
+            for (const { orderPosition, product } of tokenizedItems) {
+              for (const virtualProvider of virtualProviders) {
+                const adapterActions = await WarehousingDirector.actions(
+                  virtualProvider,
+                  {
+                    order,
+                    orderPosition,
+                    product,
+                    quantity: orderPosition.quantity,
+                    referenceDate: order.ordered,
+                  },
+                  unchainedAPI,
+                );
+                const isActive = await adapterActions.isActive();
+                if (isActive) {
+                  const tokens = await adapterActions.tokenize();
+                  await modules.warehousing.createTokens(tokens);
+                }
+              }
+            }
           }
 
           // Enrollments: Generate enrollments for plan products

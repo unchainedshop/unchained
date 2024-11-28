@@ -1,5 +1,10 @@
 import { Context } from '../../context.js';
-import { TokenSurrogate, TokenStatus } from '@unchainedshop/core-warehousing';
+import {
+  TokenSurrogate,
+  TokenStatus,
+  WarehousingProviderType,
+  WarehousingDirector,
+} from '@unchainedshop/core-warehousing';
 import { WorkStatus } from '@unchainedshop/core-worker';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
@@ -33,18 +38,22 @@ export const Token = {
   ) => {
     const { modules } = context;
     const product = await modules.products.findProduct({ productId: token.productId });
-    const ercMetadata = await modules.warehousing.tokenMetadata(
-      token.chainTokenId,
+
+    const virtualProviders = await context.modules.warehousing.findProviders({
+      type: WarehousingProviderType.VIRTUAL,
+    });
+
+    return WarehousingDirector.tokenMetadata(
+      virtualProviders,
       {
-        token,
         product,
-        locale: new Intl.Locale(forceLocale),
+        token,
+        locale: forceLocale ? new Intl.Locale(forceLocale) : context.localeContext,
+        quantity: token?.quantity || 1,
         referenceDate: new Date(),
       },
       context,
     );
-
-    return ercMetadata;
   },
 
   isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {

@@ -3,6 +3,7 @@ import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { systemLocale } from '@unchainedshop/utils';
 import { Context } from '../context.js';
+import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
 const logger = createLogger('unchained:erc-metadata');
 
@@ -48,12 +49,17 @@ export default async function ercMetadataMiddleware(
       contractAddress: product?.tokenization?.contractAddress,
     });
 
-    const ercMetadata = await context.modules.warehousing.tokenMetadata(
-      chainTokenId,
+    const virtualProviders = await context.modules.warehousing.findProviders({
+      type: WarehousingProviderType.VIRTUAL,
+    });
+
+    const ercMetadata = await WarehousingDirector.tokenMetadata(
+      virtualProviders,
       {
-        token,
         product,
+        token,
         locale: new Intl.Locale(locale),
+        quantity: token?.quantity || 1,
         referenceDate: new Date(),
       },
       context,
