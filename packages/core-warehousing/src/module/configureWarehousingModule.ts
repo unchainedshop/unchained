@@ -5,7 +5,7 @@ import {
   WarehousingProvidersCollection,
   WarehousingProviderType,
 } from '../db/WarehousingProvidersCollection.js';
-import { EstimatedStock, WarehousingDirector } from '../director/WarehousingDirector.js';
+import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import { WarehousingContext } from '../director/WarehousingAdapter.js';
 import type { Product } from '@unchainedshop/core-products';
