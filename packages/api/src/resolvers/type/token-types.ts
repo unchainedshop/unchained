@@ -59,11 +59,17 @@ export const Token = {
   isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
     const { modules } = context;
     const product = await modules.products.findProduct({ productId: token.productId });
-    const isInvalidateable = await modules.warehousing.isInvalidateable(
-      token.chainTokenId,
+
+    const virtualProviders = await context.modules.warehousing.findProviders({
+      type: WarehousingProviderType.VIRTUAL,
+    });
+
+    const isInvalidateable = await WarehousingDirector.isInvalidateable(
+      virtualProviders,
       {
         token,
         product,
+        quantity: token?.quantity || 1,
         referenceDate: new Date(),
       },
       context,

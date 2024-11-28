@@ -22,7 +22,5 @@ export default async function updateWarehousingProvider(
   if (!(await modules.warehousing.providerExists({ warehousingProviderId })))
     throw new WarehousingProviderNotFoundError({ warehousingProviderId });
 
-  await modules.warehousing.update(warehousingProviderId, warehousingProvider);
-
-  return modules.warehousing.findProvider({ warehousingProviderId });
+  return modules.warehousing.update(warehousingProviderId, warehousingProvider);
 }

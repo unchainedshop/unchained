@@ -168,7 +168,14 @@ export const User: UserHelperTypes = {
 
   async tokens(user, params, context) {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.modules.warehousing.findTokensForUser(user);
+    const walletAddresses =
+      user.services?.web3?.flatMap((service) => {
+        return service.verified ? [service.address] : [];
+      }) || [];
+    return context.modules.warehousing.findTokensForUser({
+      userId: user._id,
+      walletAddresses,
+    });
   },
 
   async country(user, params, context) {

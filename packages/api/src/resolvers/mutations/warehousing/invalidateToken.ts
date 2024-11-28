@@ -6,6 +6,7 @@ import {
   ProductNotFoundError,
   TokenWrongStatusError,
 } from '../../../errors.js';
+import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
 export default async function invalidateToken(
   root: never,
@@ -25,11 +26,16 @@ export default async function invalidateToken(
   const product = await modules.products.findProduct({ productId: token.productId });
   if (!product) throw new ProductNotFoundError({ productId: token.productId });
 
-  const isInvalidateable = await modules.warehousing.isInvalidateable(
-    token.chainTokenId,
+  const virtualProviders = await context.modules.warehousing.findProviders({
+    type: WarehousingProviderType.VIRTUAL,
+  });
+
+  const isInvalidateable = await WarehousingDirector.isInvalidateable(
+    virtualProviders,
     {
       token,
       product,
+      quantity: token?.quantity || 1,
       referenceDate: new Date(),
     },
     context,
@@ -37,6 +43,5 @@ export default async function invalidateToken(
 
   if (!isInvalidateable) throw new TokenWrongStatusError({ tokenId });
 
-  await modules.warehousing.invalidateToken(tokenId);
-  return modules.warehousing.findToken({ tokenId });
+  return modules.warehousing.invalidateToken(tokenId);
 }
