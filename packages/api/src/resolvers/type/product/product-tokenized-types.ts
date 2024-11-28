@@ -3,7 +3,11 @@ import {
   ProductContractConfiguration,
   ProductContractStandard,
 } from '@unchainedshop/core-products';
-import { WarehousingContext, WarehousingProvider } from '@unchainedshop/core-warehousing';
+import {
+  WarehousingContext,
+  WarehousingDirector,
+  WarehousingProvider,
+} from '@unchainedshop/core-warehousing';
 import { Context } from '../../../context.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { PlanProduct } from './product-plan-types.js';
@@ -68,11 +72,12 @@ export const TokenizedProduct = {
             referenceDate,
           };
 
-          const stock = await modules.warehousing.estimatedStock(
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
+          const stock = await director.estimatedStock();
 
           return {
             warehousingProvider,

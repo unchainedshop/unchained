@@ -31,12 +31,6 @@ export type WarehousingModule = {
   count: (query: WarehousingProviderQuery) => Promise<number>;
   providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
 
-  estimatedStock: (
-    provider: WarehousingProvider,
-    context: WarehousingContext,
-    unchainedAPI,
-  ) => Promise<EstimatedStock>;
-
   updateTokenOwnership: (input: {
     tokenId: string;
     userId: string;
@@ -136,15 +130,6 @@ export const configureWarehousingModule = async ({
         { limit: 1 },
       );
       return !!providerCount;
-    },
-
-    estimatedStock: async (warehousingProvider, warehousingContext, unchainedAPI) => {
-      const director = await WarehousingDirector.actions(
-        warehousingProvider,
-        warehousingContext,
-        unchainedAPI,
-      );
-      return director.estimatedStock();
     },
 
     updateTokenOwnership: async ({ tokenId, userId, walletAddress }) => {

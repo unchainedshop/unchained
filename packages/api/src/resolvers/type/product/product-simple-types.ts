@@ -112,11 +112,12 @@ export const SimpleProduct = {
             referenceDate,
           };
 
-          const stock = await modules.warehousing.estimatedStock(
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
+          const stock = await director.estimatedStock();
 
           return {
             warehousingProvider,
