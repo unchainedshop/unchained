@@ -34,7 +34,6 @@ import {
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
 import { ProductPriceRate } from '../types.js';
-import type { Currency } from '@unchainedshop/core-currencies';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -195,13 +194,25 @@ export type ProductsModule = {
 
     rates: {
       getRate(
-        baseCurrency: Currency,
-        quoteCurrency: Currency,
+        baseCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        quoteCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
         referenceDate?: Date,
       ): Promise<{ rate: number; expiresAt: Date } | null>;
       getRateRange(
-        baseCurrency: Currency,
-        quoteCurrency: Currency,
+        baseCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        quoteCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
         referenceDate?: Date,
       ): Promise<{ min: number; max: number } | null>;
       updateRates(rates: Array<ProductPriceRate>): Promise<boolean>;

@@ -5,7 +5,6 @@ import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRates } from '../db/ProductPriceRates.js';
 import { ProductsModule } from '../products-index.js';
-import type { Currency } from '@unchainedshop/core-currencies';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
@@ -20,8 +19,14 @@ export const getDecimals = (originDecimals) => {
 };
 
 export const normalizeRate = (
-  baseCurrency: Currency,
-  quoteCurrency: Currency,
+  baseCurrency: {
+    decimals?: number;
+    isoCode: string;
+  },
+  quoteCurrency: {
+    decimals?: number;
+    isoCode: string;
+  },
   rateRecord: ProductPriceRate,
 ) => {
   let rate = null;
