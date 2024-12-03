@@ -1,16 +1,16 @@
+import { UnchainedCore } from '@unchainedshop/core';
 import {
   EventListenerWorker,
   FailedRescheduler,
   IntervalWorker,
-  WorkerSchedule,
+  IntervalWorkerParams,
   WorkData,
 } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export interface SetupWorkqueueOptions {
   batchCount?: number;
   disableWorker?: boolean;
-  schedule?: WorkerSchedule;
+  schedule?: IntervalWorkerParams['schedule'];
   workerId?: string;
   retryInput?: (
     workData: WorkData,

@@ -62,9 +62,7 @@ export const configureOrdersModule = async ({
   });
 
   const orderQueries = configureOrdersModuleQueries({ Orders });
-  const orderTransformations = configureOrderModuleTransformations({
-    Orders,
-  });
+  const orderTransformations = configureOrderModuleTransformations();
   const orderProcessing = configureOrderModuleProcessing({
     Orders,
     OrderDeliveries,

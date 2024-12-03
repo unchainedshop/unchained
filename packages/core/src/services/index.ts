@@ -15,6 +15,7 @@ import { updateCalculationService } from './updateCalculationService.js';
 import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
 import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
+import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckoutService.js';
 
 const services = {
   bookmarks: {
@@ -43,6 +44,9 @@ const services = {
   users: {
     migrateUserData: migrateUserDataService,
     updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
+  },
+  enrollments: {
+    createEnrollmentFromCheckout: createEnrollmentFromCheckoutService,
   },
 };
 

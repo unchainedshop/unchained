@@ -353,7 +353,7 @@ export const configureOrderModuleProcessing = ({
     },
 
     processOrder: async (initialOrder, orderTransactionContext, unchainedAPI) => {
-      const { modules } = unchainedAPI;
+      const { modules, services } = unchainedAPI;
       const {
         paymentContext,
         deliveryContext,
@@ -478,7 +478,7 @@ export const configureOrderModuleProcessing = ({
             (item) => item.product?.type === ProductTypes.PlanProduct && !order.originEnrollmentId,
           );
           if (planItems.length > 0) {
-            await modules.enrollments.createFromCheckout(
+            await services.enrollments.createEnrollmentFromCheckout(
               order,
               {
                 items: planItems,

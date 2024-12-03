@@ -1,6 +1,7 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
+import { IOrderPricingSheet, OrderPricingSheet } from '../director/OrderPricingSheet.js';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: mongodb.Filter<Order> = {};
@@ -39,6 +40,44 @@ const normalizeOrderAggregateResult = (data = {}): OrderReport => {
 
 export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Collection<Order> }) => {
   return {
+    pricingSheet: (order: Order): IOrderPricingSheet => {
+      return OrderPricingSheet({
+        calculation: order.calculation,
+        currency: order.currency,
+      });
+    },
+
+    isCart: (order: Order) => {
+      return order.status === null;
+    },
+
+    cart: async ({
+      orderNumber,
+      countryContext,
+      userId,
+    }: {
+      countryContext?: string;
+      orderNumber?: string;
+      userId: string;
+    }): Promise<Order> => {
+      const selector: mongodb.Filter<Order> = {
+        countryCode: countryContext,
+        status: { $eq: null },
+        userId,
+      };
+
+      if (orderNumber) {
+        selector.orderNumber = orderNumber;
+      }
+
+      const options: mongodb.FindOptions = {
+        sort: {
+          updated: -1,
+        },
+      };
+      return Orders.findOne(selector, options);
+    },
+
     count: async (query: OrderQuery): Promise<number> => {
       const orderCount = await Orders.countDocuments(buildFindSelector(query));
       return orderCount;

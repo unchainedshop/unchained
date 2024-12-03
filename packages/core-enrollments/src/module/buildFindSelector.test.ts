@@ -1,5 +1,5 @@
-import { EnrollmentStatus } from '../types.js';
 import { buildFindSelector } from './configureEnrollmentsModule.js';
+import { EnrollmentStatus } from '../db/EnrollmentsCollection.js';
 
 describe('buildFindSelector', () => {
   it('Should correct filter when passed status, userId and queryString', () => {

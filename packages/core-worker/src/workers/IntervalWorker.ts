@@ -1,23 +1,21 @@
-import later from '@breejs/later';
+import later, { ScheduleData } from '@breejs/later';
 import { BaseWorker, IWorker } from './BaseWorker.js';
-import { WorkerSchedule } from '../worker-index.js';
 
 const { NODE_ENV } = process.env;
 
 export interface IntervalWorkerParams {
   workerId?: string;
   batchCount?: number;
-  schedule?: WorkerSchedule | string;
+  schedule?: ScheduleData;
 }
 
 const defaultSchedule = later.parse.text(
   NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds',
-) as WorkerSchedule;
+);
 
-export const scheduleToInterval = (scheduleRaw: WorkerSchedule | string) => {
+export const scheduleToInterval = (schedule: ScheduleData) => {
   const referenceDate = new Date(1000);
-  const schedule = typeof scheduleRaw === 'string' ? later.parse.text(scheduleRaw) : scheduleRaw;
-  const [one, two] = later.schedule(schedule).next(2, referenceDate);
+  const [one, two] = later.schedule(schedule).next(2, referenceDate) as Date[];
   const diff = new Date(two).getTime() - new Date(one).getTime();
   return Math.min(1000 * 60 * 60, diff); // at least once every hour!
 };

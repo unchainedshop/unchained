@@ -1,7 +1,34 @@
+import { IBaseAdapter } from '@unchainedshop/utils';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { add } from 'date-fns/add';
-import { IEnrollmentAdapter } from '../types.js';
+import { Enrollment, EnrollmentPeriod, EnrollmentPlan } from '../db/EnrollmentsCollection.js';
+import type { Product, ProductPlan } from '@unchainedshop/core-products';
+import type { OrderPosition } from '@unchainedshop/core-orders';
 
+export type EnrollmentContext = {
+  enrollment: Enrollment;
+};
+
+export interface EnrollmentAdapterActions {
+  configurationForOrder: (params: {
+    period: EnrollmentPeriod;
+    products: Array<Product>;
+  }) => Promise<any>;
+  isOverdue: () => Promise<boolean>;
+  isValidForActivation: () => Promise<boolean>;
+  nextPeriod: () => Promise<EnrollmentPeriod>;
+}
+
+export type IEnrollmentAdapter = IBaseAdapter & {
+  isActivatedFor: (productPlan?: ProductPlan) => boolean;
+
+  transformOrderItemToEnrollmentPlan: (
+    orderPosition: OrderPosition,
+    unchainedAPI,
+  ) => Promise<EnrollmentPlan>;
+
+  actions: (params: EnrollmentContext) => EnrollmentAdapterActions;
+};
 export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
   const lowerCaseInterval = interval.toLowerCase();
 

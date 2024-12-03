@@ -1,7 +1,19 @@
-import { EnrollmentData, IEnrollmentAdapter, IEnrollmentDirector } from '../types.js';
-import type { ProductPlan } from '@unchainedshop/core-products';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { EnrollmentAdapterActions, EnrollmentContext, IEnrollmentAdapter } from './EnrollmentAdapter.js';
+import type { OrderPosition } from '@unchainedshop/core-orders';
+import type { Product, ProductPlan } from '@unchainedshop/core-products';
+import { Enrollment } from '../db/EnrollmentsCollection.js';
+
+export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
+  transformOrderItemToEnrollment: (
+    item: { orderPosition: OrderPosition; product: Product },
+    doc: Omit<Enrollment, 'configuration' | 'productId' | 'quantity' | 'status' | 'periods' | 'log'>,
+    unchainedAPI,
+  ) => Promise<Omit<Enrollment, 'status' | 'periods' | 'log'>>;
+
+  actions: (enrollmentContext: EnrollmentContext, unchainedAPI) => Promise<EnrollmentAdapterActions>;
+};
 
 const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {
   adapterSortKey: 'orderIndex',
@@ -31,13 +43,11 @@ export const EnrollmentDirector: IEnrollmentDirector = {
 
     const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(orderPosition, unchainedAPI);
 
-    const enrollmentData: EnrollmentData = {
+    return {
       ...doc,
       ...enrollmentPlan,
       configuration: [],
     };
-
-    return enrollmentData;
   },
 
   actions: async (enrollmentContext, unchainedAPI) => {

@@ -2,13 +2,9 @@ import { WorkData, IWorkerAdapter, WorkResult } from '../worker-index.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { Work } from '../types.js';
+import { ScheduleData } from '@breejs/later';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
-
-export interface WorkerSchedule {
-  schedules: Array<Record<string, any>>;
-  exceptions: Array<Record<string, any>>;
-}
 
 export type WorkScheduleConfiguration = Pick<
   WorkData,
@@ -16,7 +12,7 @@ export type WorkScheduleConfiguration = Pick<
 > & {
   type: string;
   input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
-  schedule: WorkerSchedule;
+  schedule: ScheduleData;
   scheduleId?: string;
 };
 

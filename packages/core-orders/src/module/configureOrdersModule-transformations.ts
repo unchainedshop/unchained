@@ -1,10 +1,5 @@
 import { Order, OrderDiscount } from '../types.js';
-import { mongodb } from '@unchainedshop/mongodb';
-import {
-  IOrderPricingSheet,
-  OrderPricingRowCategory,
-  OrderPricingSheet,
-} from '../director/OrderPricingSheet.js';
+import { OrderPricingRowCategory, OrderPricingSheet } from '../director/OrderPricingSheet.js';
 import { PaymentPricingRowCategory } from '@unchainedshop/core-payment'; // TODO: Important!
 import { ProductPricingRowCategory } from '@unchainedshop/core-products'; // TODO: Important!
 import { DeliveryPricingRowCategory } from '@unchainedshop/core-delivery'; // TODO: Important!
@@ -17,17 +12,9 @@ export interface OrderTransformations {
     unchainedAPI,
   ) => Promise<Array<OrderPricingDiscount>>;
   discountTotal: (order: Order, orderDiscount: OrderDiscount, unchainedAPI) => Promise<OrderPrice>;
-
-  isCart: (order: Order) => boolean;
-  cart: (order: { countryContext?: string; orderNumber?: string; userId: string }) => Promise<Order>;
-  pricingSheet: (order: Order) => IOrderPricingSheet;
 }
 
-export const configureOrderModuleTransformations = ({
-  Orders,
-}: {
-  Orders: mongodb.Collection<Order>;
-}): OrderTransformations => {
+export const configureOrderModuleTransformations = (): OrderTransformations => {
   return {
     discounted: async (order, orderDiscount, unchainedAPI) => {
       const { modules } = unchainedAPI;
@@ -132,35 +119,6 @@ export const configureOrderModuleTransformations = ({
         amount,
         currency: order.currency,
       };
-    },
-
-    isCart: (order) => {
-      return order.status === null;
-    },
-    cart: async ({ orderNumber, countryContext, userId }) => {
-      const selector: mongodb.Filter<Order> = {
-        countryCode: countryContext,
-        status: { $eq: null },
-        userId,
-      };
-
-      if (orderNumber) {
-        selector.orderNumber = orderNumber;
-      }
-
-      const options: mongodb.FindOptions = {
-        sort: {
-          updated: -1,
-        },
-      };
-      return Orders.findOne(selector, options);
-    },
-
-    pricingSheet: (order) => {
-      return OrderPricingSheet({
-        calculation: order.calculation,
-        currency: order.currency,
-      });
     },
   };
 };
