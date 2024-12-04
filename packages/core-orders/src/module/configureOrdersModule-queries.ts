@@ -3,7 +3,7 @@ import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 import { IOrderPricingSheet, OrderPricingSheet } from '../director/OrderPricingSheet.js';
 
-export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
+const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: mongodb.Filter<Order> = {};
 
   if (userId) {

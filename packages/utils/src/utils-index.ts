@@ -23,6 +23,8 @@ export type SortOption = {
   value: SortDirection;
 };
 
+export type Price = { _id?: string; amount: number; currency: string };
+
 export type NodeOrTree<T> = string | Tree<T>; // eslint-disable-line
 export type Tree<T> = Array<NodeOrTree<T>>;
 /*

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ProductPrice } from '../../types.js';
+import { ProductPrice } from '../../db/ProductsCollection.js';
 
 export const getPriceRange = (params: {
   productId: string;

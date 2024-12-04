@@ -1,9 +1,10 @@
+import { Price } from '@unchainedshop/utils';
 import { Order, OrderDiscount } from '../types.js';
 import { OrderPricingRowCategory, OrderPricingSheet } from '../director/OrderPricingSheet.js';
 import { PaymentPricingRowCategory } from '@unchainedshop/core-payment'; // TODO: Important!
 import { ProductPricingRowCategory } from '@unchainedshop/core-products'; // TODO: Important!
 import { DeliveryPricingRowCategory } from '@unchainedshop/core-delivery'; // TODO: Important!
-import { OrderPrice, OrderPricingDiscount } from '../director/OrderPricingDirector.js';
+import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 
 export interface OrderTransformations {
   discounted: (
@@ -11,7 +12,7 @@ export interface OrderTransformations {
     orderDiscount: OrderDiscount,
     unchainedAPI,
   ) => Promise<Array<OrderPricingDiscount>>;
-  discountTotal: (order: Order, orderDiscount: OrderDiscount, unchainedAPI) => Promise<OrderPrice>;
+  discountTotal: (order: Order, orderDiscount: OrderDiscount, unchainedAPI) => Promise<Price>;
 }
 
 export const configureOrderModuleTransformations = (): OrderTransformations => {

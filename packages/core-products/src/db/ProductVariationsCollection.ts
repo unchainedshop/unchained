@@ -1,6 +1,33 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { ProductVariation, ProductVariationText } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
 
+export enum ProductVariationType {
+  COLOR = 'COLOR',
+  TEXT = 'TEXT',
+}
+
+export type ProductVariation = {
+  _id?: string;
+  key?: string;
+  tags?: string[];
+  options: Array<string>;
+  productId: string;
+  type?: string;
+} & TimestampFields;
+
+export type ProductVariationText = {
+  _id?: string;
+  locale: string;
+  productVariationId: string;
+  productVariationOptionValue?: string;
+  subtitle?: string;
+  title?: string;
+} & TimestampFields;
+
+export type ProductVariationOption = {
+  _id: string;
+  texts: ProductVariationText;
+  value: string;
+};
 export const ProductVariationsCollection = async (db: mongodb.Db) => {
   const ProductVariations = db.collection<ProductVariation>('product_variations');
   const ProductVariationTexts = db.collection<ProductVariationText>('product_variation_texts');

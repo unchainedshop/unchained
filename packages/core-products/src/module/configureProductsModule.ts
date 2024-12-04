@@ -1,14 +1,3 @@
-import {
-  Product,
-  ProductAssignment,
-  ProductBundleItem,
-  ProductConfiguration,
-  ProductDiscount,
-  ProductPrice,
-  ProductPriceRange,
-  ProductQuery,
-  ProductText,
-} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,
@@ -18,11 +7,20 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/utils';
+import { SortDirection, SortOption, IDiscountAdapter, Price } from '@unchainedshop/utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
-import { ProductsCollection } from '../db/ProductsCollection.js';
-import { ProductStatus } from '../db/ProductStatus.js';
-import { ProductTypes } from '../products-index.js';
+import {
+  Product,
+  ProductAssignment,
+  ProductBundleItem,
+  ProductConfiguration,
+  ProductPrice,
+  ProductPriceRange,
+  ProductsCollection,
+  ProductStatus,
+  ProductText,
+  ProductTypes,
+} from '../db/ProductsCollection.js';
 import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
 import { configureProductReviewsModule, ProductReviewsModule } from './configureProductReviewsModule.js';
@@ -33,7 +31,25 @@ import {
 } from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
-import { ProductPriceRate } from '../types.js';
+import { ProductPriceRate } from '../db/ProductPriceRates.js';
+
+export type ProductQuery = {
+  queryString?: string;
+  includeDrafts?: boolean;
+  productIds?: Array<string>;
+  productSelector?: mongodb.Filter<Product>;
+  slugs?: Array<string>;
+  tags?: Array<string>;
+};
+
+export type ProductDiscount = {
+  _id?: string;
+  productId: string;
+  code: string;
+  total?: Price;
+  discountKey?: string;
+  context?: any;
+};
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -52,7 +68,7 @@ const InternalProductStatus = {
   DRAFT: null,
 };
 
-export const buildFindSelector = ({
+const buildFindSelector = ({
   slugs,
   tags,
   includeDrafts = false,

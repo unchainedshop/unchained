@@ -1,8 +1,7 @@
 import { generateRandomHash } from '@unchainedshop/utils';
 import { Order } from './types.js';
-import type { Product } from '@unchainedshop/core-products';
 
-export interface OrderSettingsOrderPositionValidation {
+export interface OrderSettingsOrderPositionValidation<Product = unknown> {
   order: Order;
   product: Product;
   quantityDiff?: number;

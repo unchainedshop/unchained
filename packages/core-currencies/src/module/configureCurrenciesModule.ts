@@ -26,7 +26,7 @@ export type CurrenciesModule = {
   create: (doc: Currency) => Promise<string | null>;
 };
 
-export const buildFindSelector = ({
+const buildFindSelector = ({
   includeInactive = false,
   contractAddress,
   queryString,

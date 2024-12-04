@@ -87,7 +87,7 @@ export type QuotationsModule = QuotationQueries &
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
-export const buildFindSelector = (query: QuotationQuery = {}) => {
+const buildFindSelector = (query: QuotationQuery = {}) => {
   const selector: { userId?: string; $text?: any } = {};
   if (query.userId) {
     selector.userId = query.userId;

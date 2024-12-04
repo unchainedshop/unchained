@@ -1,5 +1,28 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { ProductReview } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export enum ProductReviewVoteType {
+  UPVOTE = 'UPVOTE',
+  DOWNVOTE = 'DOWNVOTE',
+  REPORT = 'REPORT',
+}
+
+export interface ProductVote {
+  meta?: any;
+  timestamp?: Date;
+  type: ProductReviewVoteType;
+  userId?: string;
+}
+
+export type ProductReview = {
+  _id?: string;
+  productId: string;
+  authorId: string;
+  rating: number;
+  title?: string;
+  review?: string;
+  meta?: any;
+  votes: Array<ProductVote>;
+} & TimestampFields;
 
 export const ProductReviewsCollection = async (db: mongodb.Db) => {
   const ProductReviews = db.collection<ProductReview>('product_reviews');

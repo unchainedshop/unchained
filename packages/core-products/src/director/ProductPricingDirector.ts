@@ -1,12 +1,30 @@
+import { BasePricingDirector, IPricingDirector } from '@unchainedshop/utils';
 import {
-  IProductPricingAdapter,
-  IProductPricingDirector,
-  ProductPricingAdapterContext,
+  IProductPricingSheet,
   ProductPricingCalculation,
-  ProductPricingContext,
-} from '../types.js';
-import { BasePricingDirector } from '@unchainedshop/utils';
-import { ProductPricingSheet } from './ProductPricingSheet.js';
+  ProductPricingSheet,
+} from './ProductPricingSheet.js';
+import { IProductPricingAdapter, ProductPricingAdapterContext } from './ProductPricingAdapter.js';
+import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
+import type { User } from '@unchainedshop/core-users';
+import type { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
+
+export type ProductPricingContext =
+  | {
+      currency: string;
+      quantity: number;
+      country?: string;
+      discounts?: Array<OrderDiscount>;
+      order?: Order;
+      product?: Product;
+      configuration: Array<ProductConfiguration>;
+      user?: User;
+    }
+  | {
+      currency: string;
+      quantity: number;
+      item: OrderPosition;
+    };
 
 const baseDirector = BasePricingDirector<
   ProductPricingContext,
@@ -14,6 +32,18 @@ const baseDirector = BasePricingDirector<
   ProductPricingCalculation,
   IProductPricingAdapter
 >('ProductPricingDirector');
+
+export type IProductPricingDirector<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingDirector<
+  ProductPricingContext,
+  ProductPricingCalculation,
+  ProductPricingAdapterContext,
+  IProductPricingSheet,
+  IProductPricingAdapter<any, DiscountConfiguration>,
+  UnchainedAPI
+>;
 
 export const ProductPricingDirector: IProductPricingDirector<any> = {
   ...baseDirector,

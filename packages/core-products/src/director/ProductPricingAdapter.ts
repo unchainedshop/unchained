@@ -1,10 +1,30 @@
+import { BasePricingAdapter, BasePricingAdapterContext, IPricingAdapter } from '@unchainedshop/utils';
 import {
-  ProductPricingAdapterContext,
+  IProductPricingSheet,
   ProductPricingCalculation,
-  IProductPricingAdapter,
-} from '../types.js';
-import { BasePricingAdapter } from '@unchainedshop/utils';
-import { ProductPricingSheet } from './ProductPricingSheet.js';
+  ProductPricingSheet,
+} from './ProductPricingSheet.js';
+import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
+import type { Order } from '@unchainedshop/core-orders';
+
+export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
+  country: string;
+  currency: string;
+  product: Product;
+  quantity: number;
+  configuration: Array<ProductConfiguration>;
+  order?: Order;
+}
+
+export type IProductPricingAdapter<
+  UnchainedAPI = unknown,
+  DiscountConfiguration = unknown,
+> = IPricingAdapter<
+  ProductPricingAdapterContext & UnchainedAPI,
+  ProductPricingCalculation,
+  IProductPricingSheet,
+  DiscountConfiguration
+>;
 
 const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation>();
 

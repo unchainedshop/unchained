@@ -11,8 +11,6 @@ export interface OrderPricingContext {
   orderPayment: OrderPayment;
 }
 
-export type OrderPrice = { _id?: string; amount: number; currency: string };
-
 export type OrderPricingDiscount = PricingDiscount & {
   delivery?: OrderDelivery;
   item?: OrderPosition;

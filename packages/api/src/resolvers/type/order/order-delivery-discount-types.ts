@@ -2,16 +2,16 @@ import crypto from 'crypto';
 import { Context } from '../../../context.js';
 import {
   OrderDiscount,
-  OrderPrice,
   OrderDeliveryDiscount as OrderDeliveryDiscountType,
 } from '@unchainedshop/core-orders';
+import { Price } from '@unchainedshop/utils';
 
 type HelperType<P, T> = (orderDelivery: OrderDeliveryDiscountType, params: P, context: Context) => T;
 
 export interface OrderDeliveryDiscountHelperTypes {
   _id: HelperType<never, string>;
   orderDiscount: HelperType<never, Promise<OrderDiscount>>;
-  total: HelperType<never, OrderPrice>;
+  total: HelperType<never, Price>;
 }
 
 export const OrderDeliveryDiscount: OrderDeliveryDiscountHelperTypes = {

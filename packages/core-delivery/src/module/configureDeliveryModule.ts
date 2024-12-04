@@ -15,7 +15,7 @@ export interface DeliveryInterface {
   version: string;
 }
 
-export const buildFindSelector = ({ type }: mongodb.Filter<DeliveryProvider> = {}) => {
+const buildFindSelector = ({ type }: mongodb.Filter<DeliveryProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 

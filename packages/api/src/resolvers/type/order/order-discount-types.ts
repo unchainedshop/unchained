@@ -1,7 +1,7 @@
+import { Price } from '@unchainedshop/utils';
 import { Context } from '../../../context.js';
 import {
   Order,
-  OrderPrice,
   OrderPricingDiscount,
   OrderDiscount as OrderDiscountType,
   OrderDiscountDirector,
@@ -23,7 +23,7 @@ export interface OrderDiscountHelperTypes {
 
   discounted: HelperType<never, Promise<Array<OrderPricingDiscount>>>;
   order: HelperType<never, Promise<Order>>;
-  total: HelperType<never, Promise<OrderPrice>>;
+  total: HelperType<never, Promise<Price>>;
 }
 
 export const OrderDiscount: OrderDiscountHelperTypes = {

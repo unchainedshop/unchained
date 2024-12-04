@@ -1,10 +1,10 @@
 import crypto from 'crypto';
-import { Product, ProductConfiguration, ProductPriceRate } from '../types.js';
 import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
-import { ProductPriceRates } from '../db/ProductPriceRates.js';
+import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
 import { ProductsModule } from '../products-index.js';
+import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {

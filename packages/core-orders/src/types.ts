@@ -1,6 +1,5 @@
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
-import { OrderPrice } from './director/OrderPricingDirector.js';
-import { PricingCalculation } from '@unchainedshop/utils';
+import { PricingCalculation, Price } from '@unchainedshop/utils';
 
 // TODO: Propably, all this calculation interfaces should be
 // part of this package and used by the core when directors are there
@@ -69,7 +68,7 @@ export type OrderDiscount = {
   _id?: string;
   orderId: string;
   code?: string;
-  total?: OrderPrice;
+  total?: Price;
   trigger?: OrderDiscountTrigger;
   discountKey?: string;
   reservation?: any;
@@ -108,7 +107,7 @@ export type OrderPayment = {
 } & LogFields &
   TimestampFields;
 
-export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {
+export type OrderPaymentDiscount = Omit<Price, '_id'> & {
   _id?: string;
   discountId: string;
   item: OrderPayment;
@@ -125,13 +124,13 @@ export type OrderDelivery = {
 } & LogFields &
   TimestampFields;
 
-export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {
+export type OrderDeliveryDiscount = Omit<Price, '_id'> & {
   _id?: string;
   discountId: string;
   item: OrderDelivery;
 };
 
-export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {
+export type OrderPositionDiscount = Omit<Price, '_id'> & {
   _id?: string;
   discountId: string;
   item: OrderPosition;

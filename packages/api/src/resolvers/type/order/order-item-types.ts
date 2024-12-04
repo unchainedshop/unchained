@@ -3,10 +3,10 @@ import { Context } from '../../../context.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
 import { Product } from '@unchainedshop/core-products';
 import { Quotation } from '@unchainedshop/core-quotations';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
+import { Price } from '@unchainedshop/utils';
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
   const { modules } = context;
@@ -114,7 +114,7 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: { category: string; useNetPrice: boolean },
     context: Context,
-  ): Promise<OrderPrice> {
+  ): Promise<Price> {
     const pricingSheet = await getPricingSheet(orderPosition, context);
 
     if (pricingSheet.isValid()) {
@@ -134,7 +134,7 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: { useNetPrice: boolean },
     context: Context,
-  ): Promise<OrderPrice> {
+  ): Promise<Price> {
     const pricingSheet = await getPricingSheet(orderPosition, context);
 
     if (pricingSheet.isValid()) {

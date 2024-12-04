@@ -1,4 +1,4 @@
-import { Product, ProductConfiguration } from '../types.js';
+import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
 
 type ResolvedConfiguration = {
   fixedRate?: number;

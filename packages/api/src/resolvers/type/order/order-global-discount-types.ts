@@ -1,11 +1,10 @@
 import crypto from 'crypto';
-import { OrderPrice } from '@unchainedshop/core-orders';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderDiscount } from '@unchainedshop/core-orders';
+import { Order, OrderDiscount } from '@unchainedshop/core-orders';
 import { Context } from '../../../context.js';
+import { Price } from '@unchainedshop/utils';
 
 type HelperType<P, T> = (
-  orderGlobalDiscount: OrderPrice & {
+  orderGlobalDiscount: Price & {
     order: Order;
     discountId: string;
   },
@@ -16,7 +15,7 @@ type HelperType<P, T> = (
 export interface OrderGlobalDiscountHelperTypes {
   _id: HelperType<never, string>;
   orderDiscount: HelperType<never, Promise<OrderDiscount>>;
-  total: HelperType<never, OrderPrice>;
+  total: HelperType<never, Price>;
 }
 
 export const OrderGlobalDiscount: OrderGlobalDiscountHelperTypes = {

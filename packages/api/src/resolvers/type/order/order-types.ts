@@ -4,13 +4,15 @@ import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Enrollment } from '@unchainedshop/core-enrollments';
-import { Order as OrderType } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderDiscount } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
+import {
+  Order as OrderType,
+  OrderPosition,
+  OrderPayment,
+  OrderDiscount,
+  OrderDelivery,
+} from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
+import { Price } from '@unchainedshop/utils';
 
 export const Order = {
   async supportedDeliveryProviders(
@@ -82,7 +84,7 @@ export const Order = {
     order: OrderType,
     params: { category: string; useNetPrice: boolean },
     { modules }: Context,
-  ): Promise<OrderPrice> {
+  ): Promise<Price> {
     const pricingSheet = modules.orders.pricingSheet(order);
 
     if (pricingSheet.isValid()) {

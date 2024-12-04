@@ -15,7 +15,7 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_REMOVE',
 ];
 
-export const buildFindSelector = ({ type }: mongodb.Filter<PaymentProvider> = {}) => {
+const buildFindSelector = ({ type }: mongodb.Filter<PaymentProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 

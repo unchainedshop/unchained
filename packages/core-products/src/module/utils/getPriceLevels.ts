@@ -1,4 +1,4 @@
-import { Product } from '../../types.js';
+import { Product } from '../../db/ProductsCollection.js';
 
 export const getPriceLevels = (params: {
   product?: Product;

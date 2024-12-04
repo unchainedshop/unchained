@@ -23,7 +23,7 @@ export type FilterOption = Filter & {
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
-export const buildFindSelector = ({
+const buildFindSelector = ({
   includeInactive = false,
   queryString,
   filterIds,
