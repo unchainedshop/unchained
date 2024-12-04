@@ -20,78 +20,11 @@ import { EnrollmentDirector } from '../enrollments-index.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
-// Queries
-
 export type EnrollmentQuery = {
   status?: Array<EnrollmentStatus>;
   userId?: string;
   queryString?: string;
 };
-
-export interface EnrollmentQueries {
-  findEnrollment: (
-    params: { enrollmentId?: string; orderId?: string },
-    options?: mongodb.FindOptions,
-  ) => Promise<Enrollment>;
-  findEnrollments: (
-    params: EnrollmentQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-  ) => Promise<Array<Enrollment>>;
-  openEnrollmentWithProduct(params: { productId: string }): Promise<Enrollment | null>;
-  count: (params: EnrollmentQuery) => Promise<number>;
-}
-
-// Transformations
-
-export interface EnrollmentTransformations {
-  normalizedStatus: (enrollment: Enrollment) => string;
-  isExpired: (enrollment: Enrollment, params: { referenceDate?: Date }) => boolean;
-}
-
-// Processing
-
-export type EnrollmentContextParams = (enrollment: Enrollment, unchainedAPI) => Promise<Enrollment>;
-
-export interface EnrollmentProcessing {
-  terminateEnrollment: EnrollmentContextParams;
-  activateEnrollment: EnrollmentContextParams;
-}
-
-export interface EnrollmentMutations {
-  addEnrollmentPeriod: (enrollmentId: string, period: EnrollmentPeriod) => Promise<Enrollment>;
-
-  create: (doc: Omit<Enrollment, 'status' | 'periods' | 'log'>, unchainedAPI) => Promise<Enrollment>;
-
-  delete: (enrollmentId: string) => Promise<number>;
-
-  removeEnrollmentPeriodByOrderId: (enrollmentId: string, orderId: string) => Promise<Enrollment>;
-
-  updateBillingAddress: (enrollmentId: string, billingAddress: Address) => Promise<Enrollment>;
-
-  updateContact: (enrollmentId: string, contact: Contact) => Promise<Enrollment>;
-
-  updateContext: (enrollmentId: string, context: any) => Promise<Enrollment | null>;
-
-  updateDelivery: (enrollmentId: string, delivery: Enrollment['delivery']) => Promise<Enrollment>;
-
-  updatePayment: (enrollmentId: string, payment: Enrollment['payment']) => Promise<Enrollment>;
-
-  updatePlan: (enrollmentId: string, plan: EnrollmentPlan, unchainedAPI) => Promise<Enrollment>;
-
-  updateStatus: (
-    enrollmentId: string,
-    params: { status: EnrollmentStatus; info?: string },
-    unchainedAPI,
-  ) => Promise<Enrollment>;
-}
-
-export type EnrollmentsModule = EnrollmentQueries &
-  EnrollmentTransformations &
-  EnrollmentProcessing &
-  EnrollmentMutations;
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',
@@ -120,7 +53,7 @@ export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQue
 export const configureEnrollmentsModule = async ({
   db,
   options: enrollmentOptions = {},
-}: ModuleInput<EnrollmentsSettingsOptions>): Promise<EnrollmentsModule> => {
+}: ModuleInput<EnrollmentsSettingsOptions>) => {
   registerEvents(ENROLLMENT_EVENTS);
 
   enrollmentsSettings.configureSettings(enrollmentOptions);
@@ -135,10 +68,10 @@ export const configureEnrollmentsModule = async ({
     return findNewEnrollmentNumber(enrollment, index + 1);
   };
 
-  const updateStatus: EnrollmentsModule['updateStatus'] = async (
-    enrollmentId,
-    { status, info = '' },
-  ) => {
+  const updateStatus = async (
+    enrollmentId: string,
+    { status, info = '' }: { status: EnrollmentStatus; info?: string },
+  ): Promise<Enrollment> => {
     const selector = generateDbFilterById(enrollmentId);
     const enrollment = await Enrollments.findOne(selector, {});
 
@@ -182,8 +115,7 @@ export const configureEnrollmentsModule = async ({
   const reactivateEnrollment = async (enrollment: Enrollment) => {
     return enrollment;
   };
-
-  const isExpired = (enrollment, { referenceDate }: { referenceDate?: Date }) => {
+  const isExpired = (enrollment: Enrollment, { referenceDate }: { referenceDate?: Date }) => {
     const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
     const expiryDate = new Date(enrollment.expires);
     return relevantDate.getTime() > expiryDate.getTime();
@@ -216,7 +148,7 @@ export const configureEnrollmentsModule = async ({
       status = await findNextStatus(nextEnrollment, unchainedAPI);
     }
 
-    return updateStatus(enrollment._id, { status, info: 'enrollment processed' }, unchainedAPI);
+    return updateStatus(enrollment._id, { status, info: 'enrollment processed' });
   };
 
   const initializeEnrollment = async (
@@ -268,20 +200,22 @@ export const configureEnrollmentsModule = async ({
     return enrollment;
   };
 
-  const updateEnrollmentField = (fieldKey: string) => async (enrollmentId: string, fieldValue: any) => {
-    const enrollment = await Enrollments.findOneAndUpdate(
-      generateDbFilterById(enrollmentId),
-      {
-        $set: {
-          updated: new Date(),
-          [fieldKey]: fieldValue,
+  const updateEnrollmentField =
+    <T>(fieldKey: string) =>
+    async (enrollmentId: string, fieldValue: T) => {
+      const enrollment = await Enrollments.findOneAndUpdate(
+        generateDbFilterById(enrollmentId),
+        {
+          $set: {
+            updated: new Date(),
+            [fieldKey]: fieldValue,
+          },
         },
-      },
-      { returnDocument: 'after' },
-    );
-    await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
-    return enrollment;
-  };
+        { returnDocument: 'after' },
+      );
+      await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
+      return enrollment;
+    };
 
   return {
     // Queries
@@ -289,13 +223,16 @@ export const configureEnrollmentsModule = async ({
       const enrollmentCount = await Enrollments.countDocuments(buildFindSelector(query));
       return enrollmentCount;
     },
-    openEnrollmentWithProduct: async ({ productId }) => {
+    openEnrollmentWithProduct: async ({ productId }: { productId: string }): Promise<Enrollment> => {
       const selector: mongodb.Filter<Enrollment> = { productId };
       selector.status = { $in: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED] };
       return Enrollments.findOne(selector);
     },
 
-    findEnrollment: async ({ enrollmentId, orderId }, options) => {
+    findEnrollment: async (
+      { enrollmentId, orderId }: { enrollmentId?: string; orderId?: string },
+      options?: mongodb.FindOptions,
+    ): Promise<Enrollment> => {
       const selector = enrollmentId
         ? generateDbFilterById(enrollmentId)
         : { 'periods.orderId': orderId };
@@ -308,7 +245,11 @@ export const configureEnrollmentsModule = async ({
       offset,
       sort,
       ...query
-    }: EnrollmentQuery & { limit?: number; offset?: number; sort?: Array<SortOption> }) => {
+    }: EnrollmentQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    }): Promise<Array<Enrollment>> => {
       const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.ASC }];
       const enrollments = Enrollments.find(buildFindSelector(query), {
         skip: offset,
@@ -320,7 +261,7 @@ export const configureEnrollmentsModule = async ({
     },
 
     // Transformations
-    normalizedStatus: (enrollment) => {
+    normalizedStatus: (enrollment: Enrollment): EnrollmentStatus => {
       return enrollment.status === null
         ? EnrollmentStatus.INITIAL
         : (enrollment.status as EnrollmentStatus);
@@ -329,34 +270,26 @@ export const configureEnrollmentsModule = async ({
     isExpired,
 
     // Processing
-    terminateEnrollment: async (enrollment, unchainedAPI) => {
+    terminateEnrollment: async (enrollment: Enrollment, unchainedAPI) => {
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
-      let updatedEnrollment = await updateStatus(
-        enrollment._id,
-        {
-          status: EnrollmentStatus.TERMINATED,
-          info: 'terminated manually',
-        },
-        unchainedAPI,
-      );
+      let updatedEnrollment = await updateStatus(enrollment._id, {
+        status: EnrollmentStatus.TERMINATED,
+        info: 'terminated manually',
+      });
 
       updatedEnrollment = await processEnrollment(updatedEnrollment, unchainedAPI);
 
       return sendStatusToCustomer(updatedEnrollment, {}, unchainedAPI);
     },
 
-    activateEnrollment: async (enrollment, unchainedAPI) => {
+    activateEnrollment: async (enrollment: Enrollment, unchainedAPI) => {
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
-      let updatedEnrollment = await updateStatus(
-        enrollment._id,
-        {
-          status: EnrollmentStatus.ACTIVE,
-          info: 'activated manually',
-        },
-        unchainedAPI,
-      );
+      let updatedEnrollment = await updateStatus(enrollment._id, {
+        status: EnrollmentStatus.ACTIVE,
+        info: 'activated manually',
+      });
 
       updatedEnrollment = await processEnrollment(updatedEnrollment, unchainedAPI);
 
@@ -364,7 +297,7 @@ export const configureEnrollmentsModule = async ({
     },
 
     // Mutations
-    addEnrollmentPeriod: async (enrollmentId, period) => {
+    addEnrollmentPeriod: async (enrollmentId: string, period: EnrollmentPeriod): Promise<Enrollment> => {
       const { start, end, orderId, isTrial } = period;
       const selector = generateDbFilterById(enrollmentId);
       const enrollment = await Enrollments.findOneAndUpdate(
@@ -393,9 +326,14 @@ export const configureEnrollmentsModule = async ({
     },
 
     create: async (
-      { countryCode, currencyCode, orderIdForFirstPeriod, ...enrollmentData },
+      {
+        countryCode,
+        currencyCode,
+        orderIdForFirstPeriod,
+        ...enrollmentData
+      }: Omit<Enrollment, 'status' | 'periods' | 'log'>,
       unchainedAPI,
-    ) => {
+    ): Promise<Enrollment> => {
       const { modules } = unchainedAPI;
 
       const countryObject = await modules.countries.findCountry({ isoCode: countryCode });
@@ -441,7 +379,7 @@ export const configureEnrollmentsModule = async ({
       return enrollment;
     },
 
-    delete: async (enrollmentId) => {
+    delete: async (enrollmentId: string) => {
       const { modifiedCount: deletedCount } = await Enrollments.updateOne(
         generateDbFilterById(enrollmentId),
         {
@@ -454,7 +392,10 @@ export const configureEnrollmentsModule = async ({
       return deletedCount;
     },
 
-    removeEnrollmentPeriodByOrderId: async (enrollmentId, orderId) => {
+    removeEnrollmentPeriodByOrderId: async (
+      enrollmentId: string,
+      orderId: string,
+    ): Promise<Enrollment> => {
       const selector = generateDbFilterById(enrollmentId);
       return Enrollments.findOneAndUpdate(
         selector,
@@ -470,13 +411,17 @@ export const configureEnrollmentsModule = async ({
       );
     },
 
-    updateBillingAddress: updateEnrollmentField('billingAddress'),
-    updateContact: updateEnrollmentField('contact'),
-    updateContext: updateEnrollmentField('meta'),
-    updateDelivery: updateEnrollmentField('delivery'),
-    updatePayment: updateEnrollmentField('payment'),
+    updateBillingAddress: updateEnrollmentField<Address>('billingAddress'),
+    updateContact: updateEnrollmentField<Contact>('contact'),
+    updateContext: updateEnrollmentField<any>('meta'),
+    updateDelivery: updateEnrollmentField<Enrollment['delivery']>('delivery'),
+    updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),
 
-    updatePlan: async (enrollmentId, plan, unchainedAPI) => {
+    updatePlan: async (
+      enrollmentId: string,
+      plan: EnrollmentPlan,
+      unchainedAPI,
+    ): Promise<Enrollment> => {
       const enrollment = await Enrollments.findOneAndUpdate(
         generateDbFilterById(enrollmentId),
         {
@@ -501,3 +446,5 @@ export const configureEnrollmentsModule = async ({
     updateStatus,
   };
 };
+
+export type EnrollmentsModule = Awaited<ReturnType<typeof configureEnrollmentsModule>>;
