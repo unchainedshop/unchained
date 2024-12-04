@@ -13,7 +13,7 @@ export type SearchQuery = {
   queryString?: string;
 };
 
-export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {
+export type CleanedSearchQuery = Omit<SearchQuery, 'query' | 'filterQuery'> & {
   filterQuery: Record<string, Array<string>>;
 };
 

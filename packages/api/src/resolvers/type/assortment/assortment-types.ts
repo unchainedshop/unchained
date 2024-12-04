@@ -1,66 +1,30 @@
 import { Context } from '../../../context.js';
-import {
-  Assortment as AssortmentType,
-  AssortmentFilter,
-  AssortmentLink,
-  AssortmentPathLink,
-  AssortmentProduct,
-  AssortmentText,
-} from '@unchainedshop/core-assortments';
-import { AssortmentMediaType } from '@unchainedshop/core-assortments';
-import { SearchFilterQuery, SearchProducts } from '@unchainedshop/core-filters';
+import { Assortment } from '@unchainedshop/core-assortments';
+import { SearchFilterQuery } from '@unchainedshop/core-filters';
 
-type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
-
-export interface AssortmentHelperTypes {
-  assortmentPaths: HelperType<never, Promise<Array<{ links: Array<AssortmentPathLink> }>>>;
-
-  children: HelperType<{ includeInactive: boolean }, Promise<Array<AssortmentType>>>;
-  childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
-
-  filterAssignments: HelperType<never, Promise<Array<AssortmentFilter>>>;
-  linkedAssortments: HelperType<never, Promise<Array<AssortmentLink>>>;
-
-  media: HelperType<
-    {
-      limit: number;
-      offset: number;
-      tags?: Array<string>;
-    },
-    Promise<Array<AssortmentMediaType>>
-  >;
-
-  productAssignments: HelperType<never, Promise<Array<AssortmentProduct>>>;
-
-  searchProducts: HelperType<
-    {
-      queryString?: string;
-      filterQuery?: SearchFilterQuery;
-      includeInactive: boolean;
-      ignoreChildAssortments: boolean;
-      orderBy?: string;
-    },
-    Promise<SearchProducts>
-  >;
-
-  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
-}
-
-export const Assortment: AssortmentHelperTypes = {
-  assortmentPaths: (obj, _, { modules }) => {
+export const AssortmentTypes = {
+  assortmentPaths: (obj: Assortment, _, { modules }: Context) => {
     return modules.assortments.breadcrumbs({
       assortmentId: obj._id,
     });
   },
 
-  children: async (obj, { includeInactive }, { modules }) => {
+  children: async (
+    obj: Assortment,
+    { includeInactive }: { includeInactive: boolean },
+    { modules }: Context,
+  ) => {
     return modules.assortments.children({
       assortmentId: obj._id,
       includeInactive,
     });
   },
 
-  childrenCount: async (assortment, { includeInactive = false }, { modules, loaders }) => {
+  childrenCount: async (
+    assortment: Assortment,
+    { includeInactive = false }: { includeInactive: boolean },
+    { modules, loaders }: Context,
+  ) => {
     const assortmentChildLinks = await loaders.assortmentLinksLoader.load({
       parentAssortmentId: assortment._id,
     });
@@ -74,7 +38,7 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  filterAssignments: async (obj, _, { modules }) => {
+  filterAssignments: async (obj: Assortment, _, { modules }: Context) => {
     // TODO: Loader & move default sort to module
     return modules.assortments.filters.findFilters(
       {
@@ -86,13 +50,21 @@ export const Assortment: AssortmentHelperTypes = {
     );
   },
 
-  async linkedAssortments(assortment, _, { loaders }) {
+  async linkedAssortments(assortment: Assortment, _, { loaders }: Context) {
     return loaders.assortmentLinksLoader.load({
       assortmentId: assortment._id,
     });
   },
 
-  async media(obj, params, { modules, loaders }) {
+  async media(
+    obj: Assortment,
+    params: {
+      limit: number;
+      offset: number;
+      tags?: Array<string>;
+    },
+    { modules, loaders }: Context,
+  ) {
     if (params.offset || params.tags) {
       return modules.assortments.media.findAssortmentMedias({
         assortmentId: obj._id,
@@ -105,7 +77,7 @@ export const Assortment: AssortmentHelperTypes = {
     );
   },
 
-  async productAssignments(obj, _, { modules }) {
+  async productAssignments(obj: Assortment, _, { modules }: Context) {
     // TODO: Loader & move default sort to core module
     return modules.assortments.products.findProducts(
       {
@@ -117,7 +89,7 @@ export const Assortment: AssortmentHelperTypes = {
     );
   },
 
-  async texts(obj, { forceLocale }, requestContext) {
+  async texts(obj: Assortment, { forceLocale }: { forceLocale?: string }, requestContext: Context) {
     const { localeContext, loaders } = requestContext;
     return loaders.assortmentTextLoader.load({
       assortmentId: obj._id,
@@ -125,19 +97,26 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  searchProducts: async (obj, query, context) => {
-    const productIds = await context.modules.assortments.findProductIds({
+  searchProducts: async (
+    obj: Assortment,
+    query: {
+      queryString?: string;
+      filterQuery?: SearchFilterQuery;
+      includeInactive: boolean;
+      ignoreChildAssortments: boolean;
+      orderBy?: string;
+    },
+    requestContext: Context,
+  ) => {
+    const { modules, services } = requestContext;
+    const productIds = await modules.assortments.findProductIds({
       assortmentId: obj._id,
       ignoreChildAssortments: query.ignoreChildAssortments,
     });
 
-    const filterIds = await context.modules.assortments.filters.findFilterIds({
+    const filterIds = await modules.assortments.filters.findFilterIds({
       assortmentId: obj._id,
     });
-    return context.modules.filters.search.searchProducts(
-      { ...query, productIds, filterIds },
-      {},
-      context,
-    );
+    return services.filters.searchProducts({ ...query, productIds, filterIds }, {}, requestContext);
   },
 };

@@ -1,4 +1,4 @@
-import { Assortment } from './assortment/assortment-types.js';
+import { AssortmentTypes as Assortment } from './assortment/assortment-types.js';
 import { AssortmentFilter } from './assortment/assortment-filter-types.js';
 import { AssortmentLink } from './assortment/assortment-link-types.js';
 import { AssortmentMedia } from './assortment/assortment-media-types.js';

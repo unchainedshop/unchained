@@ -11,88 +11,25 @@ import {
 } from '@unchainedshop/mongodb';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.js';
-import {
-  configureFilterSearchModule,
-  FilterSearchModule,
-  SearchAssortments,
-  SearchProducts,
-} from './configureFilterSearchModule.js';
-import { configureFilterTextsModule, FilterTextsModule } from './configureFilterTextsModule.js';
+import { configureFilterTextsModule } from './configureFilterTextsModule.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';
 import { filtersSettings, FiltersSettingsOptions } from '../filters-settings.js';
-import { FilterQuery } from '../search/search.js';
+import { CleanedSearchQuery, FilterQuery, SearchQuery } from '../search/search.js';
+import { parseQueryArray } from '../utils/parseQueryArray.js';
 
 export type FilterOption = Filter & {
   filterOption: string;
-};
-
-export { SearchAssortments, SearchProducts };
-
-export type FiltersModule = {
-  // Queries
-  count: (query: FilterQuery) => Promise<number>;
-
-  findFilter: (params: { filterId?: string; key?: string }) => Promise<Filter>;
-
-  findFilters: (
-    params: FilterQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-    options?: mongodb.FindOptions<Filter>,
-  ) => Promise<Array<Filter>>;
-
-  filterExists: (params: { filterId: string }) => Promise<boolean>;
-
-  invalidateCache: (query: mongodb.Filter<Filter>, unchainedAPI) => Promise<void>;
-
-  // Mutations
-  create: (
-    doc: Filter & { title: string; locale: string },
-    unchainedAPI,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<Filter>;
-
-  createFilterOption: (filterId: string, option: { value: string }, unchainedAPI) => Promise<Filter>;
-
-  update: (
-    filterId: string,
-    doc: Filter,
-    unchainedAPI,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<Filter>;
-
-  delete: (filterId: string) => Promise<number>;
-
-  removeFilterOption: (
-    params: {
-      filterId: string;
-      filterOptionValue?: string;
-    },
-    unchainedAPI,
-  ) => Promise<Filter>;
-
-  /*
-   * Search
-   */
-  search: FilterSearchModule;
-
-  /*
-   * Filter texts
-   */
-
-  texts: FilterTextsModule;
 };
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
 export const buildFindSelector = ({
   includeInactive = false,
-  queryString = '',
+  queryString,
   filterIds,
+  ...query
 }: FilterQuery) => {
-  const selector: mongodb.Filter<Filter> = {};
+  const selector: mongodb.Filter<Filter> = { ...query };
   if (!includeInactive) selector.isActive = true;
   if (filterIds) {
     selector._id = { $in: filterIds };
@@ -104,7 +41,7 @@ export const buildFindSelector = ({
 export const configureFiltersModule = async ({
   db,
   options: filtersOptions = {},
-}: ModuleInput<FiltersSettingsOptions>): Promise<FiltersModule> => {
+}: ModuleInput<FiltersSettingsOptions>) => {
   registerEvents(FILTER_EVENTS);
 
   // Settings
@@ -193,7 +130,7 @@ export const configureFiltersModule = async ({
     await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   };
 
-  const invalidateCache = async (selector: mongodb.Filter<Filter>, unchainedAPI) => {
+  const invalidateCache = async (selector: mongodb.Filter<Filter>, unchainedAPI): Promise<void> => {
     log('Filters: Start invalidating filter caches', {
       level: LogLevel.Verbose,
     });
@@ -206,11 +143,6 @@ export const configureFiltersModule = async ({
     filterProductIds.clear();
   };
 
-  const filterSearch = configureFilterSearchModule({
-    Filters,
-    filterProductIds,
-  });
-
   const filterTexts = configureFilterTextsModule({
     FilterTexts,
   });
@@ -221,7 +153,7 @@ export const configureFiltersModule = async ({
 
   return {
     // Queries
-    findFilter: async ({ filterId, key }) => {
+    findFilter: async ({ filterId, key }: { filterId?: string; key?: string }): Promise<Filter> => {
       if (key) {
         return Filters.findOne({ key }, {});
       }
@@ -234,9 +166,13 @@ export const configureFiltersModule = async ({
         offset,
         sort,
         ...query
-      }: FilterQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
-      options?: mongodb.FindOptions<mongodb.Document>,
-    ) => {
+      }: FilterQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: Array<SortOption>;
+      } & mongodb.Filter<Filter>,
+      options?: mongodb.FindOptions<Filter>,
+    ): Promise<Array<Filter>> => {
       const defaultSortOption = [{ key: 'created', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {
         ...options,
@@ -247,12 +183,12 @@ export const configureFiltersModule = async ({
       return filters.toArray();
     },
 
-    count: async (query: FilterQuery) => {
+    count: async (query: FilterQuery): Promise<number> => {
       const count = await Filters.countDocuments(buildFindSelector(query));
       return count;
     },
 
-    filterExists: async ({ filterId }) => {
+    filterExists: async ({ filterId }: { filterId: string }) => {
       const filterCount = await Filters.countDocuments(generateDbFilterById(filterId), {
         limit: 1,
       });
@@ -262,7 +198,11 @@ export const configureFiltersModule = async ({
     invalidateCache,
 
     // Mutations
-    create: async ({ type, isActive = false, ...filterData }, unchainedAPI, options) => {
+    create: async (
+      { type, isActive = false, ...filterData }: Filter & { title: string; locale: string },
+      unchainedAPI,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<Filter> => {
       const { insertedId: filterId } = await Filters.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -281,7 +221,11 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    createFilterOption: async (filterId, { value }, unchainedAPI) => {
+    createFilterOption: async (
+      filterId: string,
+      { value }: { value: string },
+      unchainedAPI,
+    ): Promise<Filter> => {
       const selector = generateDbFilterById(filterId);
       const filter = await Filters.findOneAndUpdate(
         selector,
@@ -304,14 +248,23 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    delete: async (filterId) => {
+    delete: async (filterId: string) => {
       await filterTexts.deleteMany({ filterId });
       const { deletedCount } = await Filters.deleteOne({ _id: filterId });
       await emit('FILTER_REMOVE', { filterId });
       return deletedCount;
     },
 
-    removeFilterOption: async ({ filterId, filterOptionValue }, unchainedAPI) => {
+    removeFilterOption: async (
+      {
+        filterId,
+        filterOptionValue,
+      }: {
+        filterId: string;
+        filterOptionValue?: string;
+      },
+      unchainedAPI,
+    ): Promise<Filter> => {
       const selector = generateDbFilterById(filterId);
       const filter = await Filters.findOneAndUpdate(
         selector,
@@ -334,7 +287,12 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    update: async (filterId, doc, unchainedAPI, options) => {
+    update: async (
+      filterId: string,
+      doc: Filter,
+      unchainedAPI,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<Filter> => {
       const filter = await Filters.findOneAndUpdate(
         generateDbFilterById(filterId),
         {
@@ -357,8 +315,16 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    // Sub entities
-    search: filterSearch,
+    cleanQuery: ({ filterQuery, ...query }: SearchQuery) =>
+      ({
+        filterQuery: parseQueryArray(filterQuery),
+        ...query,
+      }) as CleanedSearchQuery,
+
+    filterProductIds,
+
     texts: filterTexts,
   };
 };
+
+export type FiltersModule = Awaited<ReturnType<typeof configureFiltersModule>>;

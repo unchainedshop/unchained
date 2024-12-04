@@ -4,33 +4,11 @@ import { FilterText } from '../db/FiltersCollection.js';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
 
-export type FilterTextsModule = {
-  // Queries
-  findTexts: (
-    query: mongodb.Filter<FilterText>,
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<FilterText>>;
-
-  findLocalizedText: (params: {
-    filterId: string;
-    filterOptionValue?: string;
-    locale?: string;
-  }) => Promise<FilterText>;
-
-  // Mutations
-  updateTexts: (
-    query: { filterId: string; filterOptionValue?: string },
-    texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
-  ) => Promise<Array<FilterText>>;
-
-  deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;
-};
-
 export const configureFilterTextsModule = ({
   FilterTexts,
 }: {
   FilterTexts: mongodb.Collection<FilterText>;
-}): FilterTextsModule => {
+}) => {
   registerEvents(FILTER_TEXT_EVENTS);
 
   const upsertLocalizedText = async (
@@ -79,12 +57,23 @@ export const configureFilterTextsModule = ({
 
   return {
     // Queries
-    findTexts: async (selector, options) => {
+    findTexts: async (
+      selector: mongodb.Filter<FilterText>,
+      options?: mongodb.FindOptions,
+    ): Promise<Array<FilterText>> => {
       const texts = FilterTexts.find(selector, options);
       return texts.toArray();
     },
 
-    findLocalizedText: async ({ filterId, filterOptionValue, locale }) => {
+    findLocalizedText: async ({
+      filterId,
+      filterOptionValue,
+      locale,
+    }: {
+      filterId: string;
+      filterOptionValue?: string;
+      locale?: string;
+    }): Promise<FilterText> => {
       const parsedLocale = new Intl.Locale(locale);
 
       const text = await findLocalizedText(
@@ -100,7 +89,10 @@ export const configureFilterTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (params, texts) => {
+    updateTexts: async (
+      params: { filterId: string; filterOptionValue?: string },
+      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
+    ): Promise<Array<FilterText>> => {
       const filterTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
       );
@@ -108,7 +100,13 @@ export const configureFilterTextsModule = ({
       return filterTexts;
     },
 
-    deleteMany: async ({ filterId, excludedFilterIds }) => {
+    deleteMany: async ({
+      filterId,
+      excludedFilterIds,
+    }: {
+      filterId?: string;
+      excludedFilterIds?: string[];
+    }): Promise<number> => {
       const selector: mongodb.Filter<FilterText> = {};
       if (filterId) {
         selector.filterId = filterId;
