@@ -16,6 +16,8 @@ import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.
 import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckoutService.js';
+import { searchAssortmentsService } from './searchAssortments.js';
+import { searchProductsService } from './searchProducts.js';
 
 const services = {
   bookmarks: {
@@ -47,6 +49,10 @@ const services = {
   },
   enrollments: {
     createEnrollmentFromCheckout: createEnrollmentFromCheckoutService,
+  },
+  filters: {
+    searchAssortments: searchAssortmentsService,
+    searchProducts: searchProductsService,
   },
 };
 
