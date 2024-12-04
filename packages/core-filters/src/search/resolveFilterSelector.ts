@@ -1,5 +1,6 @@
-import { Filter, FilterAdapterActions, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
+import { SearchQuery } from './search.js';
+import { Filter } from '../db/FiltersCollection.js';
 
 const defaultSelector = (searchQuery: SearchQuery) => {
   const { filterIds, filterQuery, includeInactive } = searchQuery;
@@ -24,7 +25,12 @@ const defaultSelector = (searchQuery: SearchQuery) => {
 
 export const resolveFilterSelector = async (
   searchQuery: SearchQuery,
-  filterActions: FilterAdapterActions,
+  filterActions: {
+    transformFilterSelector: (
+      query: mongodb.Filter<Filter>,
+      options?: any,
+    ) => Promise<mongodb.Filter<Filter>>;
+  },
 ) => {
   const selector = defaultSelector(searchQuery);
   return filterActions.transformFilterSelector(selector);

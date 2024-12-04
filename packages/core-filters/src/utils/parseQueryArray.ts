@@ -1,4 +1,4 @@
-import { SearchFilterQuery } from '../types.js';
+import { SearchFilterQuery } from '../search/search.js';
 
 // maps each key value pair into a single string
 export const parseQueryArray = (query: SearchFilterQuery): Record<string, Array<string>> =>

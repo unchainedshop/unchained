@@ -1,5 +1,5 @@
-import { FilterAdapterActions, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
+import { SearchQuery } from './search.js';
 
 const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
@@ -45,7 +45,12 @@ const defaultStage = ({ orderBy }: { orderBy?: string }): mongodb.FindOptions['s
 
 export const resolveSortStage = async (
   searchQuery: SearchQuery,
-  filterActions: FilterAdapterActions,
+  filterActions: {
+    transformSortStage: (
+      sort: mongodb.FindOptions['sort'],
+      options?: { key: string; value?: any },
+    ) => Promise<mongodb.FindOptions['sort']>;
+  },
 ) => {
   const stage = defaultStage(searchQuery);
 

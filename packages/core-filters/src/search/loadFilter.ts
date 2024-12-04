@@ -1,8 +1,7 @@
-import { FilterType } from '../db/FilterType.js';
 import { intersectSet } from '../utils/intersectSet.js';
 import { FilterProductIds } from './search.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';
-import { Filter, FilterAdapterActions } from '../types.js';
+import { Filter, FilterType } from '../db/FiltersCollection.js';
 
 const findLoadedOptions = async (
   filter: Filter,
@@ -12,7 +11,9 @@ const findLoadedOptions = async (
     values: Array<string>;
   },
   filterProductIds: FilterProductIds,
-  filterActions: FilterAdapterActions,
+  filterActions: {
+    aggregateProductIds: (aggregationParams: { productIds: Array<string> }) => Array<string>;
+  },
   unchainedAPI,
 ) => {
   const { values, forceLiveCollection, productIdSet } = params;
@@ -60,7 +61,9 @@ export const loadFilter = async (
     otherFilters: Array<Filter>;
   },
   filterProductIds: FilterProductIds,
-  filterActions: FilterAdapterActions,
+  filterActions: {
+    aggregateProductIds: (aggregationParams: { productIds: Array<string> }) => Array<string>;
+  },
   unchainedAPI,
 ) => {
   const { allProductIds, filterQuery, forceLiveCollection, otherFilters } = params;

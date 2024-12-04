@@ -1,7 +1,6 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';
-import { cleanQuery } from '../search/cleanQuery.js';
 import { loadFilter } from '../search/loadFilter.js';
 import { productFacetedSearch } from '../search/productFacetedSearch.js';
 import { productFulltextSearch } from '../search/productFulltextSearch.js';
@@ -10,13 +9,29 @@ import { resolveFilterSelector } from '../search/resolveFilterSelector.js';
 import { resolveProductSelector } from '../search/resolveProductSelector.js';
 import { resolveSortStage } from '../search/resolveSortStage.js';
 import {
+  CleanedSearchQuery,
   FilterProductIds,
-  SearchAssortmentConfiguration,
-  SearchProductConfiguration,
+  SearchConfiguration,
+  SearchQuery,
 } from '../search/search.js';
-import { SearchQuery, Filter } from '../types.js';
 import type { Assortment } from '@unchainedshop/core-assortments';
 import type { Product } from '@unchainedshop/core-products';
+import { Filter } from '../db/FiltersCollection.js';
+import { parseQueryArray } from '../utils/parseQueryArray.js';
+
+export const cleanQuery = ({ filterQuery, ...query }: SearchQuery) =>
+  ({
+    filterQuery: parseQueryArray(filterQuery),
+    ...query,
+  }) as CleanedSearchQuery;
+
+export interface SearchProductConfiguration extends SearchConfiguration {
+  productSelector: mongodb.Filter<Product>;
+}
+
+export interface SearchAssortmentConfiguration extends SearchConfiguration {
+  assortmentSelector: mongodb.Filter<Assortment>;
+}
 
 export type SearchProducts = {
   productsCount: () => Promise<number>;

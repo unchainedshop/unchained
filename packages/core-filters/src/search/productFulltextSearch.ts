@@ -1,14 +1,24 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import type { Product } from '@unchainedshop/core-products';
-import { Filter, FilterAdapterActions } from '../types.js';
+import { Filter } from '../db/FiltersCollection.js';
 
-export const productFulltextSearch = (
+export const productFulltextSearch = <Product = unknown>(
   params: {
     filterSelector: mongodb.Filter<Filter>;
     productSelector: mongodb.Filter<Product>;
     sortStage: mongodb.FindOptions['sort'];
   },
-  filterActions: FilterAdapterActions,
+  filterActions: {
+    searchProducts: (
+      searchParams: {
+        productIds: Array<string>;
+      },
+      options?: {
+        filterSelector: mongodb.Filter<Filter>;
+        productSelector: mongodb.Filter<Product>;
+        sortStage: mongodb.FindOptions['sort'];
+      },
+    ) => Promise<Array<string>>;
+  },
 ) => {
   return async (productIds: Array<string>) => {
     const foundProductIds = await filterActions.searchProducts({ productIds }, params);

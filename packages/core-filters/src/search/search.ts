@@ -1,7 +1,17 @@
-import { Filter, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
-import type { Product } from '@unchainedshop/core-products';
-import type { Assortment } from '@unchainedshop/core-assortments';
+import { Filter } from '../db/FiltersCollection.js';
+
+export type SearchFilterQuery = Array<{ key: string; value?: string }>;
+
+export type SearchQuery = {
+  assortmentIds?: Array<string>;
+  filterIds?: Array<string>;
+  filterQuery?: SearchFilterQuery;
+  includeInactive?: boolean;
+  orderBy?: string;
+  productIds?: Array<string>;
+  queryString?: string;
+};
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {
   filterQuery: Record<string, Array<string>>;
@@ -14,16 +24,14 @@ export interface SearchConfiguration {
   forceLiveCollection: boolean;
 }
 
-export interface SearchProductConfiguration extends SearchConfiguration {
-  productSelector: mongodb.Filter<Product>;
-}
-
-export interface SearchAssortmentConfiguration extends SearchConfiguration {
-  assortmentSelector: mongodb.Filter<Assortment>;
-}
-
 export type FilterProductIds = (
   filter: Filter,
   params: { values: Array<string>; forceLiveCollection?: boolean },
   unchainedAPI,
 ) => Promise<Array<string>>;
+
+export type FilterQuery = {
+  filterIds?: Array<string>;
+  queryString?: string;
+  includeInactive?: boolean;
+};

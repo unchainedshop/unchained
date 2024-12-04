@@ -1,4 +1,5 @@
-import { FilterAdapterActions, SearchQuery } from '../types.js';
+import { mongodb } from '@unchainedshop/mongodb';
+import { SearchQuery } from './search.js';
 
 const defaultSelector = ({ includeInactive }: SearchQuery, { modules }) => {
   const selector = !includeInactive
@@ -7,9 +8,14 @@ const defaultSelector = ({ includeInactive }: SearchQuery, { modules }) => {
   return selector;
 };
 
-export const resolveProductSelector = async (
+export const resolveProductSelector = async <Product = any>(
   searchQuery: SearchQuery,
-  filterActions: FilterAdapterActions,
+  filterActions: {
+    transformProductSelector: (
+      query: mongodb.Filter<Product>,
+      options?: { key?: string; value?: any },
+    ) => Promise<mongodb.Filter<Product>>;
+  },
   unchainedAPI,
 ) => {
   const selector = defaultSelector(searchQuery, unchainedAPI);

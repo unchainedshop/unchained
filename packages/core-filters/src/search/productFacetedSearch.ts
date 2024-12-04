@@ -1,7 +1,7 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { intersectSet } from '../utils/intersectSet.js';
 import { FilterProductIds, SearchConfiguration } from './search.js';
-import { Filter } from '../types.js';
+import { Filter } from '../db/FiltersCollection.js';
 
 export const productFacetedSearch = (
   Filters: mongodb.Collection<Filter>,

@@ -1,7 +1,12 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { Filter, FilterAdapterActions, IFilterAdapter, IFilterDirector } from '../types.js';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.js';
+import { Filter } from '../db/FiltersCollection.js';
 import type { Product } from '@unchainedshop/core-products';
-import { BaseDirector } from '@unchainedshop/utils';
+
+export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
+  actions: (filterContext: FilterContext, unchainedAPI) => Promise<FilterAdapterActions>;
+};
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
   adapterSortKey: 'orderIndex',

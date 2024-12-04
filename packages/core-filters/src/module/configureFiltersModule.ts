@@ -9,9 +9,8 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
-import { FiltersCollection } from '../db/FiltersCollection.js';
+import { Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.js';
 import {
   configureFilterSearchModule,
   FilterSearchModule,
@@ -21,7 +20,11 @@ import {
 import { configureFilterTextsModule, FilterTextsModule } from './configureFilterTextsModule.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';
 import { filtersSettings, FiltersSettingsOptions } from '../filters-settings.js';
-import { FilterQuery, Filter } from '../types.js';
+import { FilterQuery } from '../search/search.js';
+
+export type FilterOption = Filter & {
+  filterOption: string;
+};
 
 export { SearchAssortments, SearchProducts };
 
