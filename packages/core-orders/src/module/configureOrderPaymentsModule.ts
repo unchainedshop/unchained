@@ -2,12 +2,8 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import {
-  PaymentDirector,
-  PaymentPricingDirector,
-  PaymentPricingSheet,
-  type IPaymentPricingSheet,
-} from '@unchainedshop/core';
+import { PaymentDirector, PaymentPricingSheet, type IPaymentPricingSheet } from '@unchainedshop/core';
+import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
@@ -357,17 +353,9 @@ export const configureOrderPaymentsModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderPayment: OrderPayment, currency: string, unchainedAPI) => {
-      const calculation = await PaymentPricingDirector.rebuildCalculation(
-        {
-          currency,
-          item: orderPayment,
-        },
-        unchainedAPI,
-      );
-
+    updateCalculation: async (orderPaymentId: string, calculation: Array<PricingCalculation>) => {
       return OrderPayments.findOneAndUpdate(
-        buildFindByIdSelector(orderPayment._id),
+        buildFindByIdSelector(orderPaymentId),
         {
           $set: {
             calculation,

@@ -2,12 +2,9 @@ import { Order, OrderPosition, OrderDiscount, OrderDelivery } from '../types.js'
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import {
-  ProductPricingDirector,
-  ProductPricingSheet,
-  type IProductPricingSheet,
-} from '@unchainedshop/core-products';
+import { ProductPricingSheet, type IProductPricingSheet } from '@unchainedshop/core-products';
 import { WarehousingDirector } from '@unchainedshop/core-warehousing';
+import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
@@ -228,22 +225,11 @@ export const configureOrderPositionsModule = ({
     },
 
     updateCalculation: async (
-      orderPosition: OrderPosition,
-      currency: string,
-      unchainedAPI,
+      orderPositionId: string,
+      calculation: Array<PricingCalculation>,
     ): Promise<OrderPosition> => {
-      const calculation = await ProductPricingDirector.rebuildCalculation(
-        {
-          currency,
-          quantity: orderPosition.quantity,
-          item: orderPosition,
-          configuration: orderPosition.configuration,
-        },
-        unchainedAPI,
-      );
-
       return OrderPositions.findOneAndUpdate(
-        buildFindByIdSelector(orderPosition._id),
+        { _id: orderPositionId },
         {
           $set: { calculation },
         },

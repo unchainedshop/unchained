@@ -2,13 +2,13 @@ import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedsho
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
 import {
-  DeliveryPricingDirector,
   DeliveryPricingSheet,
   DeliveryDirector,
   type DeliveryLocation,
   type IDeliveryPricingSheet,
 } from '@unchainedshop/core-delivery';
 import { OrderPricingDiscount } from '../orders-index.js';
+import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
@@ -211,20 +211,11 @@ export const configureOrderDeliveriesModule = ({
     updateStatus,
 
     updateCalculation: async (
-      orderDelivery: OrderDelivery,
-      currency: string,
-      unchainedAPI,
+      orderDeliveryId: string,
+      calculation: Array<PricingCalculation>,
     ): Promise<OrderDelivery> => {
-      const calculation = await DeliveryPricingDirector.rebuildCalculation(
-        {
-          currency,
-          item: orderDelivery,
-        },
-        unchainedAPI,
-      );
-
       return OrderDeliveries.findOneAndUpdate(
-        buildFindByIdSelector(orderDelivery._id),
+        { _id: orderDeliveryId },
         {
           $set: {
             calculation,

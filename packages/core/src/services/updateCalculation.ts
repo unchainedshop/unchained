@@ -5,6 +5,9 @@ import {
 } from '@unchainedshop/core-orders';
 import { initCartProvidersService } from './initCartProviders.js';
 import { Modules } from '../modules.js';
+import { ProductPricingDirector } from '@unchainedshop/core-products';
+import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
+import { PaymentPricingDirector } from '../directors/PaymentPricingDirector.js';
 
 export const updateCalculationService = async (orderId: string, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;
@@ -54,30 +57,48 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
     orderId,
   });
   orderPositions = await Promise.all(
-    orderPositions.map(async (orderPosition) =>
-      modules.orders.positions.updateCalculation(orderPosition, order.currency, unchainedAPI),
-    ),
+    orderPositions.map(async (orderPosition) => {
+      const positionCalculation = await ProductPricingDirector.rebuildCalculation(
+        {
+          currency: order.currency,
+          quantity: orderPosition.quantity,
+          item: orderPosition,
+          configuration: orderPosition.configuration,
+        },
+        unchainedAPI,
+      );
+      return modules.orders.positions.updateCalculation(orderPosition._id, positionCalculation);
+    }),
   );
 
   let orderDelivery = await modules.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
   if (orderDelivery) {
-    orderDelivery = await modules.orders.deliveries.updateCalculation(
-      orderDelivery,
-      order.currency,
+    const deliveryCalculation = await DeliveryPricingDirector.rebuildCalculation(
+      {
+        currency: order.currency,
+        item: orderDelivery,
+      },
       unchainedAPI,
+    );
+    orderDelivery = await modules.orders.deliveries.updateCalculation(
+      orderDelivery._id,
+      deliveryCalculation,
     );
   }
   let orderPayment = await modules.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
   });
   if (orderPayment) {
-    orderPayment = await modules.orders.payments.updateCalculation(
-      orderPayment,
-      order.currency,
+    const paymentCalculation = await PaymentPricingDirector.rebuildCalculation(
+      {
+        currency: order.currency,
+        item: orderPayment,
+      },
       unchainedAPI,
     );
+    orderPayment = await modules.orders.payments.updateCalculation(orderPayment._id, paymentCalculation);
   }
 
   orderPositions = await Promise.all(
