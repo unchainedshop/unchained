@@ -1,13 +1,9 @@
 import { Enrollment } from '@unchainedshop/core-enrollments';
 import { OrderPosition } from '@unchainedshop/core-orders';
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
-import {
-  EnrollmentDirector,
-  enrollmentsSettings,
-  EnrollmentStatus,
-} from '@unchainedshop/core-enrollments';
+import { enrollmentsSettings, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/core';
+import { EnrollmentDirector, UnchainedCore } from '@unchainedshop/core';
 
 const generateOrder = async (
   enrollment: Enrollment,

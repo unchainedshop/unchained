@@ -1,7 +1,7 @@
 import { IBaseAdapter } from '@unchainedshop/utils';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { add } from 'date-fns/add';
-import { Enrollment, EnrollmentPeriod, EnrollmentPlan } from '../db/EnrollmentsCollection.js';
+import { Enrollment, EnrollmentPeriod, EnrollmentPlan } from '@unchainedshop/core-enrollments';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 

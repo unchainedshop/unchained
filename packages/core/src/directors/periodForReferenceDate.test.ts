@@ -1,4 +1,4 @@
-import { periodForReferenceDate } from '../director/EnrollmentAdapter.js';
+import { periodForReferenceDate } from './EnrollmentAdapter.js';
 
 describe('periodForReferenceDate', () => {
   it('Should return 1 week interval from When passed a given date', () => {

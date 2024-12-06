@@ -3,7 +3,7 @@ import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { EnrollmentAdapterActions, EnrollmentContext, IEnrollmentAdapter } from './EnrollmentAdapter.js';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
-import { Enrollment } from '../db/EnrollmentsCollection.js';
+import { Enrollment } from '@unchainedshop/core-enrollments';
 
 export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (

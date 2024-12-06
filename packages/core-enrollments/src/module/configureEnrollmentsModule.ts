@@ -16,7 +16,7 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
-import { EnrollmentDirector } from '../enrollments-index.js';
+import { EnrollmentDirector } from '@unchainedshop/core';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 

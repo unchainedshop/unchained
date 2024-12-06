@@ -1,7 +1,8 @@
-import { Enrollment, EnrollmentDirector } from '@unchainedshop/core-enrollments';
 import { Order, OrderPosition } from '@unchainedshop/core-orders';
 import { Product } from '@unchainedshop/core-products';
+import { Enrollment } from '@unchainedshop/core-enrollments';
 import { Modules } from '../modules.js';
+import { EnrollmentDirector } from '../directors/index.js';
 
 export const createEnrollmentFromCheckoutService = async (
   order: Order,
