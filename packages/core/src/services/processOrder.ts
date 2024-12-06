@@ -115,15 +115,11 @@ export const processOrderService = async (
       orderPaymentId: order.paymentId,
     });
 
-    const paymentProvider = await modules.payment.paymentProviders.findProvider({
-      paymentProviderId: orderPayment.paymentProviderId,
-    });
-    const actions = await PaymentDirector.actions(
-      paymentProvider,
+    await PaymentDirector.chargeOrderPayment(
+      orderPayment,
       { userId: order.userId, transactionContext: paymentContext },
       unchainedAPI,
     );
-    await actions.charge();
 
     nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
   }
@@ -133,7 +129,7 @@ export const processOrderService = async (
     const orderPayment = await modules.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });
-    await modules.orders.payments.cancel(
+    await PaymentDirector.cancelOrderPayment(
       orderPayment,
       { userId: order.userId, transactionContext: paymentContext },
       unchainedAPI,
@@ -145,7 +141,7 @@ export const processOrderService = async (
     const orderPayment = await modules.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });
-    await modules.orders.payments.confirm(
+    await PaymentDirector.confirmOrderPayment(
       orderPayment,
       { userId: order.userId, transactionContext: paymentContext },
       unchainedAPI,
@@ -162,14 +158,8 @@ export const processOrderService = async (
       const orderDelivery = await modules.orders.deliveries.findDelivery({
         orderDeliveryId: order.deliveryId,
       });
-      await modules.orders.deliveries.send(
-        orderDelivery,
-        {
-          order,
-          deliveryContext,
-        },
-        unchainedAPI,
-      );
+
+      await DeliveryDirector.sendOrderDelivery(orderDelivery, deliveryContext, unchainedAPI);
 
       const orderPositions = await modules.orders.positions.findOrderPositions({ orderId });
       const mappedProductOrderPositions = await Promise.all(

@@ -7,8 +7,14 @@ import {
   DeliveryError,
 } from './DeliveryAdapter.js';
 import { DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
+import { OrderDelivery, OrderDeliveryStatus } from '@unchainedshop/core-orders';
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
+  sendOrderDelivery: (
+    orderDelivery: OrderDelivery,
+    transactionContext: Record<string, any>,
+    unchainedAPI,
+  ) => Promise<OrderDelivery>;
   actions: (
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
@@ -85,5 +91,43 @@ export const DeliveryDirector: IDeliveryDirector = {
         return adapter.pickUpLocations();
       },
     };
+  },
+
+  sendOrderDelivery: async (orderDelivery, transactionContext, unchainedAPI) => {
+    if (unchainedAPI.modules.delivery.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN)
+      return orderDelivery;
+
+    const order = await unchainedAPI.modules.orders.findOrder({ orderId: orderDelivery.orderId });
+    const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
+      deliveryProviderId: orderDelivery.deliveryProviderId,
+    });
+    const deliveryProviderId = deliveryProvider._id;
+    const address = orderDelivery.context?.address || order || order.billingAddress;
+    const provider = await await unchainedAPI.modules.delivery.findProvider({ deliveryProviderId });
+
+    const adapter = await DeliveryDirector.actions(
+      provider,
+      {
+        order,
+        orderDelivery,
+        transactionContext: {
+          ...(transactionContext || {}),
+          ...(orderDelivery.context || {}),
+          ...(address || {}),
+        },
+      },
+      unchainedAPI,
+    );
+
+    const arbitraryResponseData = await adapter.send();
+
+    if (arbitraryResponseData) {
+      return await unchainedAPI.modules.delivery.updateStatus(orderDelivery._id, {
+        status: OrderDeliveryStatus.DELIVERED,
+        info: JSON.stringify(arbitraryResponseData),
+      });
+    }
+
+    return orderDelivery;
   },
 };

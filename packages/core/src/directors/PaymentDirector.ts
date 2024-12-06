@@ -2,8 +2,49 @@ import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
 import { PaymentError, IPaymentActions, IPaymentAdapter, PaymentContext } from './PaymentAdapter.js';
 import { PaymentProvider } from '@unchainedshop/core-payment';
+import { OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
+
+const buildPaymentProviderActionsContext = (
+  orderPayment: OrderPayment,
+  { transactionContext, ...rest }: { transactionContext: any; userId: string },
+) => ({
+  ...rest,
+  orderPayment,
+  paymentProviderId: orderPayment.paymentProviderId,
+  transactionContext: {
+    ...(transactionContext || {}),
+    ...(orderPayment.context || {}),
+  },
+});
 
 export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
+  confirmOrderPayment: (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI,
+  ) => Promise<OrderPayment>;
+
+  cancelOrderPayment: (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI,
+  ) => Promise<OrderPayment>;
+
+  chargeOrderPayment: (
+    orderPayment: OrderPayment,
+    context: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI,
+  ) => Promise<OrderPayment>;
+
   actions: (
     paymentProvider: PaymentProvider,
     paymentContext: PaymentContext,
@@ -99,5 +140,136 @@ export const PaymentDirector: IPaymentDirector = {
         return adapter.confirm(paymentContext.transactionContext);
       },
     };
+  },
+
+  confirmOrderPayment: async (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI,
+  ): Promise<OrderPayment> => {
+    const { modules } = unchainedAPI;
+
+    if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
+      return orderPayment;
+    }
+
+    const paymentProvider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: orderPayment.paymentProviderId,
+    });
+    const actions = await PaymentDirector.actions(
+      paymentProvider,
+      buildPaymentProviderActionsContext(orderPayment, paymentContext),
+      unchainedAPI,
+    );
+
+    const arbitraryResponseData = await actions.confirm();
+
+    if (arbitraryResponseData) {
+      return modules.orders.payments.updateStatus(orderPayment._id, {
+        status: OrderPaymentStatus.PAID,
+        info: JSON.stringify(arbitraryResponseData),
+      });
+    }
+
+    return orderPayment;
+  },
+
+  cancelOrderPayment: async (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI,
+  ): Promise<OrderPayment> => {
+    const { modules } = unchainedAPI;
+
+    if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
+      return orderPayment;
+    }
+
+    const paymentProvider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: orderPayment.paymentProviderId,
+    });
+    const actions = await PaymentDirector.actions(
+      paymentProvider,
+      buildPaymentProviderActionsContext(orderPayment, paymentContext),
+      unchainedAPI,
+    );
+    const arbitraryResponseData = await actions.cancel();
+
+    if (arbitraryResponseData) {
+      return modules.orders.payments.updateStatus(orderPayment._id, {
+        status: OrderPaymentStatus.REFUNDED,
+        info: JSON.stringify(arbitraryResponseData),
+      });
+    }
+
+    return orderPayment;
+  },
+
+  chargeOrderPayment: async (
+    orderPayment: OrderPayment,
+    context: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI,
+  ): Promise<OrderPayment> => {
+    const { modules } = unchainedAPI;
+
+    if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
+      return orderPayment;
+    }
+
+    const paymentCredentials =
+      context.transactionContext?.paymentCredentials ||
+      (await modules.payment.paymentCredentials.findPaymentCredential({
+        userId: context.userId,
+        paymentProviderId: orderPayment.paymentProviderId,
+        isPreferred: true,
+      }));
+
+    const paymentContext = buildPaymentProviderActionsContext(orderPayment, {
+      ...context,
+      transactionContext: {
+        ...context.transactionContext,
+        paymentCredentials,
+      },
+    });
+
+    const paymentProvider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: orderPayment.paymentProviderId,
+    });
+    const actions = await PaymentDirector.actions(paymentProvider, paymentContext, unchainedAPI);
+    const result = await actions.charge();
+
+    if (!result) return orderPayment;
+
+    const { credentials, ...arbitraryResponseData } = result;
+
+    if (credentials) {
+      const { token, ...meta } = credentials;
+      await modules.payment.paymentCredentials.upsertCredentials({
+        userId: paymentContext.userId,
+        paymentProviderId: orderPayment.paymentProviderId,
+        token,
+        ...meta,
+      });
+    }
+
+    if (arbitraryResponseData) {
+      const { transactionId, ...info } = arbitraryResponseData;
+      return modules.orders.payments.updateStatus(orderPayment._id, {
+        transactionId,
+        status: OrderPaymentStatus.PAID,
+        info: JSON.stringify(info),
+      });
+    }
+
+    return orderPayment;
   },
 };

@@ -1,7 +1,6 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { Order, OrderDelivery, OrderDeliveryStatus } from '../types.js';
-import { DeliveryDirector, type DeliveryLocation } from '@unchainedshop/core-delivery';
+import { OrderDelivery, OrderDeliveryStatus } from '../types.js';
 import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
@@ -56,24 +55,6 @@ export const configureOrderDeliveriesModule = ({
       return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
     },
 
-    activePickUpLocation: async (
-      orderDelivery: OrderDelivery,
-      unchainedAPI,
-    ): Promise<DeliveryLocation> => {
-      const { orderPickUpLocationId } = orderDelivery.context || {};
-
-      const provider = await unchainedAPI.modules.delivery.findProvider({
-        deliveryProviderId: orderDelivery.deliveryProviderId,
-      });
-      const director = await DeliveryDirector.actions(
-        provider,
-        { orderDelivery: orderDelivery },
-        unchainedAPI,
-      );
-
-      return director.pickUpLocationById(orderPickUpLocationId);
-    },
-
     normalizedStatus,
 
     // Mutations
@@ -104,49 +85,6 @@ export const configureOrderDeliveriesModule = ({
       });
       await emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
       return updatedOrderDelivery;
-    },
-
-    send: async (
-      orderDelivery: OrderDelivery,
-      { order, deliveryContext }: { order: Order; deliveryContext?: any },
-      unchainedAPI,
-    ): Promise<OrderDelivery> => {
-      if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return orderDelivery;
-
-      const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
-        deliveryProviderId: orderDelivery.deliveryProviderId,
-      });
-
-      const deliveryProviderId = deliveryProvider._id;
-
-      const address = orderDelivery.context?.address || order || order.billingAddress;
-
-      const provider = await await unchainedAPI.modules.delivery.findProvider({ deliveryProviderId });
-
-      const adapter = await DeliveryDirector.actions(
-        provider,
-        {
-          order,
-          orderDelivery,
-          transactionContext: {
-            ...(deliveryContext || {}),
-            ...(orderDelivery.context || {}),
-            ...(address || {}),
-          },
-        },
-        unchainedAPI,
-      );
-
-      const arbitraryResponseData = await adapter.send();
-
-      if (arbitraryResponseData) {
-        return updateStatus(orderDelivery._id, {
-          status: OrderDeliveryStatus.DELIVERED,
-          info: JSON.stringify(arbitraryResponseData),
-        });
-      }
-
-      return orderDelivery;
     },
 
     updateContext: async (orderDeliveryId: string, context: any): Promise<OrderDelivery> => {
