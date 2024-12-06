@@ -1,10 +1,6 @@
-import { Order, OrdersModule } from '@unchainedshop/core-orders';
-import { updateCalculationService } from './updateCalculationService.js';
-import { ProductsModule } from '@unchainedshop/core-products';
-import { BookmarksModule } from '@unchainedshop/core-bookmarks';
-import { AssortmentsModule } from '@unchainedshop/core-assortments';
-import { DeliveryModule } from '@unchainedshop/core-delivery';
-import { PaymentModule } from '@unchainedshop/core-payment';
+import { Order } from '@unchainedshop/core-orders';
+import { updateCalculationService } from './updateCalculation.js';
+import { Modules } from '../modules.js';
 
 export type MigrateOrderCartsService = (
   params: {
@@ -13,16 +9,7 @@ export type MigrateOrderCartsService = (
     shouldMerge: boolean;
     countryContext: string;
   },
-  unchainedAPI: {
-    modules: {
-      products: ProductsModule;
-      bookmarks: BookmarksModule;
-      assortments: AssortmentsModule;
-      orders: OrdersModule;
-      delivery: DeliveryModule;
-      payment: PaymentModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => Promise<Order>;
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (

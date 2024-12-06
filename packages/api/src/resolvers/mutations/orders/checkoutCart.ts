@@ -12,7 +12,7 @@ export default async function checkoutCart(
   },
   context: Context,
 ) {
-  const { modules, user, userId } = context;
+  const { services, user, userId } = context;
   const { orderId: forceOrderId, ...transactionContext } = params;
 
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
@@ -21,7 +21,7 @@ export default async function checkoutCart(
   let order = await getOrderCart({ orderId: forceOrderId, user }, context);
 
   try {
-    order = await modules.orders.checkout(order._id, transactionContext, context);
+    order = await services.orders.checkoutOrder(order._id, transactionContext, context);
     return order;
   } catch (error) {
     log(error.message, { userId, orderId: order._id, level: LogLevel.Error });

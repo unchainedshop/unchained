@@ -1,11 +1,7 @@
 import crypto from 'crypto';
 import { Context } from '../../../context.js';
-import {
-  PaymentDirector,
-  PaymentError,
-  PaymentProvider as PaymentProviderType,
-} from '@unchainedshop/core-payment';
-import { PaymentPricingDirector } from '@unchainedshop/core-payment';
+import { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
+import { PaymentDirector, PaymentError, PaymentPricingDirector } from '@unchainedshop/core';
 
 export interface PaymentProviderHelperTypes {
   interface: (

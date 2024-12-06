@@ -1,7 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
-import { PaymentDirector } from '../director/PaymentDirector.js';
 
 export interface PaymentInterface {
   _id: string;
@@ -64,13 +63,9 @@ export const configurePaymentProvidersModule = (
 
     // Mutations
     create: async (doc: PaymentProvider): Promise<PaymentProvider> => {
-      const Adapter = PaymentDirector.getAdapter(doc.adapterKey);
-      if (!Adapter) return null;
-
       const { insertedId: paymentProviderId } = await PaymentProviders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
-        configuration: Adapter.initialConfiguration,
         ...doc,
       });
 

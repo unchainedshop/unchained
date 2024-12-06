@@ -1,6 +1,10 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
+import {
+  UnchainedCore,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 
 let checkoutNodeJssdk;

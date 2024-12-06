@@ -1,8 +1,7 @@
-import { Assortment, AssortmentsModule } from '@unchainedshop/core-assortments';
+import { Assortment } from '@unchainedshop/core-assortments';
 import {
   assortmentFulltextSearch,
   FilterDirector,
-  FiltersModule,
   resolveAssortmentSelector,
   resolveFilterSelector,
   resolveSortStage,
@@ -10,6 +9,7 @@ import {
   SearchQuery,
 } from '@unchainedshop/core-filters';
 import { mongodb } from '@unchainedshop/mongodb';
+import { Modules } from '../modules.js';
 
 export interface SearchAssortmentConfiguration extends SearchConfiguration {
   assortmentSelector: mongodb.Filter<Assortment>;
@@ -18,12 +18,7 @@ export interface SearchAssortmentConfiguration extends SearchConfiguration {
 export const searchAssortmentsService = async (
   searchQuery: SearchQuery,
   { forceLiveCollection }: { forceLiveCollection?: boolean },
-  unchainedAPI: {
-    modules: {
-      filters: FiltersModule;
-      assortments: AssortmentsModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => {
   const { modules } = unchainedAPI;
   const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);

@@ -1,7 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentError, PaymentDirector } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
-import { PaymentPricingRowCategory } from '@unchainedshop/core-payment';
 import createDatatransAPI from './api/index.js';
 import {
   AuthorizeAuthenticatedResponseSuccess,
@@ -13,7 +10,14 @@ import {
 } from './api/types.js';
 import parseRegistrationData from './parseRegistrationData.js';
 import roundedAmountFromOrder from './roundedAmountFromOrder.js';
-import { UnchainedCore } from '@unchainedshop/core';
+import {
+  UnchainedCore,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+  PaymentPricingRowCategory,
+} from '@unchainedshop/core';
 
 export * from './middleware.js';
 

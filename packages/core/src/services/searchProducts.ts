@@ -1,6 +1,5 @@
 import {
   FilterDirector,
-  FiltersModule,
   loadFilter,
   productFacetedSearch,
   productFulltextSearch,
@@ -10,8 +9,9 @@ import {
   SearchConfiguration,
   SearchQuery,
 } from '@unchainedshop/core-filters';
-import { Product, ProductsModule } from '@unchainedshop/core-products';
+import { Product } from '@unchainedshop/core-products';
 import { mongodb } from '@unchainedshop/mongodb';
+import { Modules } from '../modules.js';
 
 export interface SearchProductConfiguration extends SearchConfiguration {
   productSelector: mongodb.Filter<Product>;
@@ -20,12 +20,7 @@ export interface SearchProductConfiguration extends SearchConfiguration {
 export const searchProductsService = async (
   searchQuery: SearchQuery,
   { forceLiveCollection }: { forceLiveCollection?: boolean },
-  unchainedAPI: {
-    modules: {
-      filters: FiltersModule;
-      products: ProductsModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => {
   const { modules } = unchainedAPI;
   const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);

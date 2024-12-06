@@ -1,8 +1,12 @@
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import stripeClient, { createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
-import { UnchainedCore } from '@unchainedshop/core';
+import {
+  UnchainedCore,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 
 export * from './middleware.js';
 

@@ -1,8 +1,9 @@
-import { FilesModule, getFileAdapter } from '@unchainedshop/core-files';
+import { getFileAdapter } from '@unchainedshop/core-files';
+import { Modules } from '../modules.js';
 
 export type RemoveFilesService = (
   params: { fileIds: Array<string> },
-  unchainedAPI: { modules: { files: FilesModule } },
+  unchainedAPI: { modules: Modules },
 ) => Promise<number>;
 
 export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchainedAPI) => {

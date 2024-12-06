@@ -1,7 +1,6 @@
 import { Context } from '@unchainedshop/api';
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
+import { IPaymentAdapter, PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
 import { AppleTransactionsModule } from './module/configureAppleTransactionsModule.js';
@@ -81,7 +80,7 @@ export const appleIAPHandler = async (req, res) => {
   if (req.method === 'POST') {
     try {
       const resolvedContext = req.unchainedContext as Context;
-      const { modules } = resolvedContext;
+      const { modules, services } = resolvedContext;
       const responseBody = req.body || {};
       if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
         throw new Error('shared secret not valid');
@@ -100,7 +99,7 @@ export const appleIAPHandler = async (req, res) => {
 
         if (!orderPayment) throw new Error('Could not find any matching order payment');
 
-        const order = await modules.orders.checkout(
+        const order = await services.orders.checkoutOrder(
           orderPayment.orderId,
           {
             paymentContext: {
@@ -142,7 +141,7 @@ export const appleIAPHandler = async (req, res) => {
           orderId: originalOrder._id,
         });
 
-        await modules.payment.registerCredentials(
+        await services.orders.registerPaymentCredentials(
           enrollment.payment.paymentProviderId,
           {
             transactionContext: {

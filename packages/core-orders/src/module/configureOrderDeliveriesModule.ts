@@ -80,17 +80,6 @@ export const configureOrderDeliveriesModule = ({
       }));
     },
 
-    isBlockingOrderConfirmation: async (orderDelivery: OrderDelivery, unchainedAPI) => {
-      const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
-        deliveryProviderId: orderDelivery.deliveryProviderId,
-      });
-
-      const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
-      const isAutoReleaseAllowed = Boolean(director.isAutoReleaseAllowed());
-
-      return !isAutoReleaseAllowed;
-    },
-
     activePickUpLocation: async (
       orderDelivery: OrderDelivery,
       unchainedAPI,
@@ -107,11 +96,6 @@ export const configureOrderDeliveriesModule = ({
       );
 
       return director.pickUpLocationById(orderPickUpLocationId);
-    },
-
-    isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => {
-      if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
-      return true;
     },
 
     normalizedStatus,

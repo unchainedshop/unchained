@@ -1,18 +1,14 @@
 import {
   DeliveryContext,
   DeliveryDirector,
-  DeliveryModule,
   DeliveryProvider,
   deliverySettings,
 } from '@unchainedshop/core-delivery';
+import { Modules } from '../modules.js';
 
 export const supportedDeliveryProvidersService = async (
   params: DeliveryContext,
-  unchainedAPI: {
-    modules: {
-      delivery: DeliveryModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => {
   const allProviders = await unchainedAPI.modules.delivery.findProviders({});
 

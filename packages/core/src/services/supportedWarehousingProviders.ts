@@ -1,17 +1,13 @@
 import {
   WarehousingContext,
   WarehousingDirector,
-  WarehousingModule,
   WarehousingProvider,
 } from '@unchainedshop/core-warehousing';
+import { Modules } from '../modules.js';
 
 export const supportedWarehousingProvidersService = async (
   params: WarehousingContext,
-  unchainedAPI: {
-    modules: {
-      warehousing: WarehousingModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => {
   const allProviders = await unchainedAPI.modules.warehousing.findProviders({});
 

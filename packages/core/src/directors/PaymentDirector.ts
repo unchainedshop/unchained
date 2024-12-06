@@ -1,7 +1,7 @@
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
 import { PaymentError, IPaymentActions, IPaymentAdapter, PaymentContext } from './PaymentAdapter.js';
-import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
+import { PaymentProvider } from '@unchainedshop/core-payment';
 
 export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   actions: (

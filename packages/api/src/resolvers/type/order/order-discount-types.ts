@@ -48,7 +48,7 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
     const order = await context.modules.orders.findOrder({
       orderId: obj.orderId,
     });
-    return context.modules.orders.discountTotal(order, obj, context);
+    return context.services.orders.calculateDiscountTotal(order, obj, context);
   },
 
   discounted: async (obj, _, context) => {

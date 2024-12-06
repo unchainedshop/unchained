@@ -1,29 +1,12 @@
-import { AssortmentsModule } from '@unchainedshop/core-assortments';
-import { BookmarksModule } from '@unchainedshop/core-bookmarks';
 import {
   OrderDiscountDirector,
   OrderDiscountTrigger,
   OrderPricingDirector,
-  OrdersModule,
 } from '@unchainedshop/core-orders';
-import { ProductsModule } from '@unchainedshop/core-products';
 import { initCartProvidersService } from './initCartProviders.js';
-import { DeliveryModule } from '@unchainedshop/core-delivery';
-import { PaymentModule } from '@unchainedshop/core-payment';
+import { Modules } from '../modules.js';
 
-export const updateCalculationService = async (
-  orderId: string,
-  unchainedAPI: {
-    modules: {
-      products: ProductsModule;
-      bookmarks: BookmarksModule;
-      assortments: AssortmentsModule;
-      orders: OrdersModule;
-      delivery: DeliveryModule;
-      payment: PaymentModule;
-    };
-  },
-) => {
+export const updateCalculationService = async (orderId: string, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;
 
   const order = await modules.orders.findOrder({ orderId });

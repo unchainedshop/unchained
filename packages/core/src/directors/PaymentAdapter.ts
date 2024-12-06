@@ -1,12 +1,7 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
-import type { Order, OrderPayment } from '@unchainedshop/core-orders';
-
-import {
-  PaymentConfiguration,
-  PaymentProvider,
-  PaymentProviderType,
-} from '../db/PaymentProvidersCollection.js';
+import { Order, OrderPayment } from '@unchainedshop/core-orders';
+import { PaymentConfiguration, PaymentProvider, PaymentProviderType } from '@unchainedshop/core-payment';
 
 export enum PaymentError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',

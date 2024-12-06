@@ -1,18 +1,11 @@
-import {
-  PaymentContext,
-  PaymentDirector,
-  PaymentModule,
-  PaymentProvider,
-  paymentSettings,
-} from '@unchainedshop/core-payment';
+import { PaymentProvider, paymentSettings } from '@unchainedshop/core-payment';
+import { PaymentDirector } from '../directors/PaymentDirector.js';
+import { PaymentContext } from '../directors/PaymentAdapter.js';
+import { Modules } from '../modules.js';
 
 export const supportedPaymentProvidersService = async (
   params: PaymentContext,
-  unchainedAPI: {
-    modules: {
-      payment: PaymentModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => {
   const allProviders = await unchainedAPI.modules.payment.paymentProviders.findProviders({});
 

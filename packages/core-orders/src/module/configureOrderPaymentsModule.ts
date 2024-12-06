@@ -7,7 +7,7 @@ import {
   PaymentPricingDirector,
   PaymentPricingSheet,
   type IPaymentPricingSheet,
-} from '@unchainedshop/core-payment';
+} from '@unchainedshop/core';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
@@ -143,21 +143,6 @@ export const configureOrderPaymentsModule = ({
         payment: orderPayment,
         ...discount,
       }));
-    },
-
-    isBlockingOrderConfirmation: async (orderPayment: OrderPayment, unchainedAPI) => {
-      if (orderPayment.status === OrderPaymentStatus.PAID) return false;
-
-      const provider = await unchainedAPI.modules.payment.paymentProviders.findProvider({
-        paymentProviderId: orderPayment.paymentProviderId,
-      });
-
-      const actions = await PaymentDirector.actions(provider, {}, unchainedAPI);
-      return !actions.isPayLaterAllowed();
-    },
-    isBlockingOrderFullfillment: (orderPayment: OrderPayment) => {
-      if (orderPayment.status === OrderPaymentStatus.PAID) return false;
-      return true;
     },
 
     normalizedStatus,

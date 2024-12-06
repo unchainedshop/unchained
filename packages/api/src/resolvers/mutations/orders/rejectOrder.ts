@@ -13,7 +13,7 @@ export default async function rejectOrder(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { orderId, ...transactionContext } = params;
 
   log('mutation rejectOrder', { orderId, userId });
@@ -26,5 +26,5 @@ export default async function rejectOrder(
   if (order.status !== OrderStatus.PENDING) {
     throw new OrderWrongStatusError({ status: order.status });
   }
-  return modules.orders.reject(order, transactionContext, context);
+  return services.orders.rejectOrder(order, transactionContext, context);
 }

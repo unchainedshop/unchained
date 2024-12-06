@@ -1,25 +1,13 @@
-import { File, FilesModule } from '@unchainedshop/core-files';
+import { File } from '@unchainedshop/core-files';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { UsersModule } from '@unchainedshop/core-users';
-import { removeFilesService } from './removeFilesService.js';
+import { removeFilesService } from './removeFiles.js';
+import { Modules } from '../modules.js';
 
-export type UpdateUserAvatarAfterUploadService = (
-  params: { file: File },
-  context: {
-    modules: { files: FilesModule; users: UsersModule };
-    services: {
-      files: {
-        removeFiles: typeof removeFilesService;
-      };
-    };
-  },
-) => Promise<void>;
-
-export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadService = async (
-  { file },
-  context,
-) => {
-  const { modules } = context;
+export const updateUserAvatarAfterUploadService = async (
+  { file }: { file: File },
+  unchainedAPI: { modules: Modules },
+): Promise<void> => {
+  const { modules } = unchainedAPI;
   const { userId } = file.meta as { userId: string };
 
   const files = await modules.files.findFiles({
@@ -35,7 +23,7 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
         {
           fileIds,
         },
-        context,
+        unchainedAPI,
       );
     }
   } catch (e: unknown) {

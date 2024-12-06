@@ -1,19 +1,11 @@
-import { Order, OrdersModule } from '@unchainedshop/core-orders';
-import { DeliveryModule, deliverySettings } from '@unchainedshop/core-delivery';
-import { PaymentModule, paymentSettings } from '@unchainedshop/core-payment';
+import { Order } from '@unchainedshop/core-orders';
+import { deliverySettings } from '@unchainedshop/core-delivery';
+import { paymentSettings } from '@unchainedshop/core-payment';
 import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
 import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
+import { Modules } from '../modules.js';
 
-export const initCartProvidersService = async (
-  order: Order,
-  unchainedAPI: {
-    modules: {
-      delivery: DeliveryModule;
-      orders: OrdersModule;
-      payment: PaymentModule;
-    };
-  },
-) => {
+export const initCartProvidersService = async (order: Order, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;
 
   let updatedOrder = order;

@@ -1,10 +1,12 @@
+import { createLogger } from '@unchainedshop/logger';
 import {
   IPaymentActions,
   IPaymentAdapter,
+  PaymentAdapter,
   PaymentChargeActionResult,
-} from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { createLogger } from '@unchainedshop/logger';
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 
 import * as pf from 'postfinancecheckout';
 import {

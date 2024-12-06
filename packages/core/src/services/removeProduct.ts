@@ -1,23 +1,10 @@
-import { AssortmentsModule } from '@unchainedshop/core-assortments';
-import { BookmarksModule } from '@unchainedshop/core-bookmarks';
-import { OrdersModule } from '@unchainedshop/core-orders';
-import { ProductsModule, ProductStatus } from '@unchainedshop/core-products';
-import { updateCalculationService } from './updateCalculationService.js';
-import { DeliveryModule } from '@unchainedshop/core-delivery';
-import { PaymentModule } from '@unchainedshop/core-payment';
+import { ProductStatus } from '@unchainedshop/core-products';
+import { updateCalculationService } from './updateCalculation.js';
+import { Modules } from '../modules.js';
 
 export const removeProductService = async (
   { productId }: { productId: string },
-  unchainedAPI: {
-    modules: {
-      products: ProductsModule;
-      bookmarks: BookmarksModule;
-      assortments: AssortmentsModule;
-      orders: OrdersModule;
-      delivery: DeliveryModule;
-      payment: PaymentModule;
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ): Promise<boolean> => {
   const { modules } = unchainedAPI;
   const product = await modules.products.findProduct({ productId });

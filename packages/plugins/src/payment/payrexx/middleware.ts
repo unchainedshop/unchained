@@ -5,7 +5,7 @@ const logger = createLogger('unchained:core-payment:payrexx:webhook');
 
 export const payrexxHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context;
-  const { modules } = resolvedContext;
+  const { modules, services } = resolvedContext;
 
   const { transaction } = request.body;
 
@@ -45,7 +45,7 @@ export const payrexxHandler = async (request, response) => {
       const { referenceId: paymentProviderId, invoice } = transaction;
       const userId = '';
       logger.verbose(`register credentials for: ${userId}`);
-      await modules.payment.registerCredentials(
+      await services.orders.registerPaymentCredentials(
         paymentProviderId,
         { userId, transactionContext: { gatewayId: invoice.paymentRequestId } },
         resolvedContext,
@@ -75,7 +75,7 @@ export const payrexxHandler = async (request, response) => {
         throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
       }
 
-      const order = await modules.orders.checkout(
+      const order = await services.orders.checkoutOrder(
         orderPayment.orderId,
         {
           paymentContext: {

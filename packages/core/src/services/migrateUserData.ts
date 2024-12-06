@@ -1,24 +1,12 @@
-import { userSettings, UsersModule } from '@unchainedshop/core-users';
-import { BookmarksModule } from '@unchainedshop/core-bookmarks';
-import { migrateBookmarksService } from './migrateBookmarksService.js';
+import { userSettings } from '@unchainedshop/core-users';
+import { migrateBookmarksService } from './migrateBookmarks.js';
+import { migrateOrderCartsService } from './migrateOrderCart.js';
+import { Modules } from '../modules.js';
 
 export type MigrateUserDataService = (
   userIdBeforeLogin,
   userId,
-  unchainedAPI: {
-    modules: {
-      users: UsersModule;
-      bookmarks: BookmarksModule;
-    };
-    services: {
-      orders: {
-        migrateOrderCarts: any;
-      };
-      bookmarks: {
-        migrateBookmarks: typeof migrateBookmarksService;
-      };
-    };
-  },
+  unchainedAPI: { modules: Modules },
 ) => Promise<void>;
 
 export const migrateUserDataService: MigrateUserDataService = async (
@@ -29,7 +17,7 @@ export const migrateUserDataService: MigrateUserDataService = async (
   const user = await unchainedAPI.modules.users.findUserById(userId);
   const userBeforeLogin = await unchainedAPI.modules.users.findUserById(userIdBeforeLogin);
 
-  await unchainedAPI.services.orders.migrateOrderCarts(
+  await migrateOrderCartsService(
     {
       fromUserId: userIdBeforeLogin,
       toUserId: userId,
@@ -39,7 +27,7 @@ export const migrateUserDataService: MigrateUserDataService = async (
     unchainedAPI,
   );
 
-  await unchainedAPI.services.bookmarks.migrateBookmarks(
+  await migrateBookmarksService(
     {
       fromUserId: userIdBeforeLogin,
       toUserId: userId,

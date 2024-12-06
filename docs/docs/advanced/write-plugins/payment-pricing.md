@@ -22,7 +22,7 @@ import {
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
   PaymentPricingCalculation,
-} from '@unchainedshop/core-payment';
+} from '@unchainedshop/core';
 
 const TRANSACTION_FEE = 29;
 

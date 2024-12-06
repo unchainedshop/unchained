@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
-import { PaymentDirector, PaymentProviderType } from '@unchainedshop/core-payment';
+import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { OrderPaymentStatus } from '@unchainedshop/core-orders';
 import {
   OrderPaymentConfigurationError,
@@ -9,6 +9,7 @@ import {
   OrderWrongPaymentStatusError,
   UserNoCartError,
 } from '../../../errors.js';
+import { PaymentDirector } from '@unchainedshop/core';
 
 export default async function signPaymentProviderForCheckout(
   root: never,

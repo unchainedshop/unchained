@@ -11,7 +11,7 @@ export const WebhookEventTypes = {
 
 export const stripeHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context;
-  const { modules } = resolvedContext;
+  const { modules, services } = resolvedContext;
 
   let event;
 
@@ -78,7 +78,7 @@ export const stripeHandler = async (request, response) => {
         throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
       }
 
-      const order = await modules.orders.checkout(
+      const order = await services.orders.checkoutOrder(
         orderPayment.orderId,
         {
           paymentContext: {
@@ -109,7 +109,7 @@ export const stripeHandler = async (request, response) => {
         userId,
       });
 
-      const paymentCredentials = await modules.payment.registerCredentials(
+      const paymentCredentials = await services.orders.registerPaymentCredentials(
         paymentProviderId,
         {
           transactionContext: {

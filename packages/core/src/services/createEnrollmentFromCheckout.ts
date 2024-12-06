@@ -1,6 +1,7 @@
-import { Enrollment, EnrollmentDirector, EnrollmentsModule } from '@unchainedshop/core-enrollments';
-import { Order, OrderPosition, OrdersModule } from '@unchainedshop/core-orders';
+import { Enrollment, EnrollmentDirector } from '@unchainedshop/core-enrollments';
+import { Order, OrderPosition } from '@unchainedshop/core-orders';
 import { Product } from '@unchainedshop/core-products';
+import { Modules } from '../modules.js';
 
 export const createEnrollmentFromCheckoutService = async (
   order: Order,
@@ -17,7 +18,7 @@ export const createEnrollmentFromCheckoutService = async (
       deliveryContext?: any;
     };
   },
-  unchainedAPI: { modules: { orders: OrdersModule; enrollments: EnrollmentsModule } },
+  unchainedAPI: { modules: Modules },
 ): Promise<Array<Enrollment>> => {
   const { modules } = unchainedAPI;
   const orderId = order._id;

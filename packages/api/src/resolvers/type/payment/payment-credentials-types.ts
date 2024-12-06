@@ -1,7 +1,7 @@
+import { PaymentDirector } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
 import {
   PaymentCredentials as PaymentCredentialsType,
-  PaymentDirector,
   PaymentProvider,
 } from '@unchainedshop/core-payment';
 import { User } from '@unchainedshop/core-users';

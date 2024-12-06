@@ -64,7 +64,7 @@ const generateOrder = async (
 
   await services.orders.updateCalculation(orderId, unchainedAPI);
 
-  order = await modules.orders.checkout(
+  order = await services.orders.checkoutOrder(
     order._id,
     {
       paymentContext,

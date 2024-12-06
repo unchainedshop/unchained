@@ -13,7 +13,7 @@ export default async function deliverOrder(
   { orderId }: { orderId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log('mutation deliverOrder', { orderId, userId });
 
   if (!orderId) throw new InvalidIdError({ orderId });
@@ -39,5 +39,5 @@ export default async function deliverOrder(
   }
 
   await modules.orders.deliveries.markAsDelivered(orderDelivery);
-  return modules.orders.processOrder(order, {}, context);
+  return services.orders.processOrder(order, {}, context);
 }

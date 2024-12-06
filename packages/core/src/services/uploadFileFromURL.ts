@@ -1,7 +1,12 @@
-import { getFileFromFileData, getFileAdapter, FilesModule, File } from '@unchainedshop/core-files';
+import { getFileFromFileData, getFileAdapter, File } from '@unchainedshop/core-files';
+import { Modules } from '../modules.js';
 
-export type UploadFileFromURLService = (
-  params: {
+export const uploadFileFromURLService = async (
+  {
+    directoryName,
+    fileInput,
+    meta,
+  }: {
     directoryName: string;
     fileInput: {
       fileLink: string;
@@ -11,22 +16,17 @@ export type UploadFileFromURLService = (
     };
     meta?: any;
   },
-  unchainedAPI: { modules: { files: FilesModule } },
-) => Promise<File>;
-
-export const uploadFileFromURLService: UploadFileFromURLService = async (
-  { directoryName, fileInput, meta },
-  unchainedContext,
-) => {
+  unchainedAPI: { modules: Modules },
+): Promise<File> => {
   const {
     modules: { files },
-  } = unchainedContext;
+  } = unchainedAPI;
   const fileUploadAdapter = getFileAdapter();
 
   const uploadFileData = await fileUploadAdapter.uploadFileFromURL(
     directoryName,
     fileInput,
-    unchainedContext,
+    unchainedAPI,
   );
   const fileData = getFileFromFileData(uploadFileData, meta);
   const fileId = await files.create(fileData);
