@@ -10,6 +10,7 @@ import {
   OrderPayment,
   OrderDiscount,
   OrderDelivery,
+  OrderPricingSheet,
 } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
 import { Price } from '@unchainedshop/utils';
@@ -80,15 +81,14 @@ export const Order = {
     return order.status;
   },
 
-  async total(
-    order: OrderType,
-    params: { category: string; useNetPrice: boolean },
-    { modules }: Context,
-  ): Promise<Price> {
-    const pricingSheet = modules.orders.pricingSheet(order);
+  async total(order: OrderType, params: { category: string; useNetPrice: boolean }): Promise<Price> {
+    const pricing = OrderPricingSheet({
+      calculation: order.calculation,
+      currency: order.currency,
+    });
 
-    if (pricingSheet.isValid()) {
-      const price = pricingSheet.total(params);
+    if (pricing.isValid()) {
+      const price = pricing.total(params);
       return {
         _id: crypto
           .createHash('sha256')

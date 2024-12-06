@@ -61,10 +61,11 @@ export const ShopCommission: IPaymentPricingAdapter = {
           });
 
           const totalValueOfGoods = orderPositions.reduce((current, orderPosition) => {
-            const pricing = context.modules.orders.positions.pricingSheet(
-              orderPosition,
-              context.order.currency,
-            );
+            const pricing = ProductPricingSheet({
+              calculation: orderPosition.calculation,
+              currency: context.order.currency,
+              quantity: orderPosition.quantity,
+            });
             const items = pricing.gross();
             return current + items;
           }, 0);

@@ -1,4 +1,4 @@
-import { Order, OrdersModule } from '@unchainedshop/core-orders';
+import { Order, OrderPricingSheet } from '@unchainedshop/core-orders';
 import * as pf from 'postfinancecheckout';
 
 const { PostFinanceCheckout } = pf;
@@ -28,9 +28,11 @@ export const transactionIsPaid = async (
 export const orderIsPaid = async (
   order: Order,
   transaction: pf.PostFinanceCheckout.model.Transaction,
-  orderModule: OrdersModule,
 ): Promise<boolean> => {
-  const pricing = orderModule.pricingSheet(order);
+  const pricing = OrderPricingSheet({
+    calculation: order.calculation,
+    currency: order.currency,
+  });
   const totalAmount = pricing.total({ useNetPrice: false }).amount / 100;
   return transactionIsPaid(transaction, order.currency, totalAmount);
 };

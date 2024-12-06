@@ -1,13 +1,7 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
-import {
-  DeliveryPricingSheet,
-  DeliveryDirector,
-  type DeliveryLocation,
-  type IDeliveryPricingSheet,
-} from '@unchainedshop/core-delivery';
-import { OrderPricingDiscount } from '../orders-index.js';
+import { Order, OrderDelivery, OrderDeliveryStatus } from '../types.js';
+import { DeliveryDirector, type DeliveryLocation } from '@unchainedshop/core-delivery';
 import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
@@ -62,24 +56,6 @@ export const configureOrderDeliveriesModule = ({
       return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
     },
 
-    // Transformations
-    discounts: (
-      orderDelivery: OrderDelivery,
-      { order, orderDiscount }: { order: Order; orderDiscount: OrderDiscount },
-    ): Array<OrderPricingDiscount> => {
-      if (!orderDelivery) return [];
-
-      const pricingSheet = DeliveryPricingSheet({
-        calculation: orderDelivery.calculation,
-        currency: order.currency,
-      });
-
-      return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
-        delivery: orderDelivery,
-        ...discount,
-      }));
-    },
-
     activePickUpLocation: async (
       orderDelivery: OrderDelivery,
       unchainedAPI,
@@ -99,13 +75,6 @@ export const configureOrderDeliveriesModule = ({
     },
 
     normalizedStatus,
-
-    pricingSheet: (orderDelivery: OrderDelivery, currency: string): IDeliveryPricingSheet => {
-      return DeliveryPricingSheet({
-        calculation: orderDelivery.calculation,
-        currency,
-      });
-    },
 
     // Mutations
 
@@ -210,9 +179,9 @@ export const configureOrderDeliveriesModule = ({
 
     updateStatus,
 
-    updateCalculation: async (
+    updateCalculation: async <T extends PricingCalculation>(
       orderDeliveryId: string,
-      calculation: Array<PricingCalculation>,
+      calculation: Array<T>,
     ): Promise<OrderDelivery> => {
       return OrderDeliveries.findOneAndUpdate(
         { _id: orderDeliveryId },

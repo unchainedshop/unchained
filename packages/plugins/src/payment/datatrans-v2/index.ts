@@ -17,7 +17,9 @@ import {
   PaymentDirector,
   PaymentError,
   PaymentPricingRowCategory,
+  PaymentPricingSheet,
 } from '@unchainedshop/core';
+import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 
@@ -63,8 +65,6 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
   },
 
   actions: (config, context) => {
-    const { modules } = context;
-
     const getMerchantId = (): string | undefined => {
       return config.find((item) => item.key === 'merchantId')?.value || DATATRANS_MERCHANT_ID;
     };
@@ -90,8 +90,15 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
     > => {
       const { order, orderPayment } = context;
 
-      const pricingForOrderPayment = modules.orders.payments.pricingSheet(orderPayment, order.currency);
-      const pricing = modules.orders.pricingSheet(order);
+      const pricingForOrderPayment = PaymentPricingSheet({
+        calculation: orderPayment.calculation,
+        currency: order.currency,
+      });
+      const pricing = OrderPricingSheet({
+        calculation: order.calculation,
+        currency: order.currency,
+      });
+
       const { amount: total } = pricing.total({ useNetPrice: false });
 
       return Promise.all(
@@ -124,7 +131,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
       const userId = order?.userId || context?.userId;
       const refno2 = userId;
-      const { currency, amount } = roundedAmountFromOrder(order, context);
+      const { currency, amount } = roundedAmountFromOrder(order);
       const splits = await getMarketplaceSplits();
       const result = await api().authorize({
         ...arbitraryFields,
@@ -154,7 +161,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
       ...arbitraryFields
     }): Promise<string> => {
       const { order } = context;
-      const { currency, amount } = roundedAmountFromOrder(order, context);
+      const { currency, amount } = roundedAmountFromOrder(order);
       const result = await api().authorizeAuthenticated({
         ...arbitraryFields,
         transactionId,
@@ -170,7 +177,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
 
     const isTransactionAmountValid = (transaction: StatusResponseSuccess): boolean => {
       const { order } = context;
-      const { currency, amount } = roundedAmountFromOrder(order, context);
+      const { currency, amount } = roundedAmountFromOrder(order);
       if (
         transaction.currency !== currency ||
         (transaction.detail.authorize as any)?.amount !== amount
@@ -204,7 +211,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
 
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
       const { order } = context;
-      const { currency, amount } = roundedAmountFromOrder(order, context);
+      const { currency, amount } = roundedAmountFromOrder(order);
       const splits = await getMarketplaceSplits();
       const result = await api().settle({
         transactionId,
@@ -259,9 +266,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
         );
         const userId = order?.userId || context?.userId;
         const refno2 = userId;
-        const price: { amount?: number; currency?: string } = order
-          ? roundedAmountFromOrder(order, context)
-          : {};
+        const price: { amount?: number; currency?: string } = order ? roundedAmountFromOrder(order) : {};
 
         if (useSecureFields) {
           const result = await api().secureFields({

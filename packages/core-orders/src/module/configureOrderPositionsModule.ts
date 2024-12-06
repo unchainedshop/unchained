@@ -1,8 +1,6 @@
-import { Order, OrderPosition, OrderDiscount, OrderDelivery } from '../types.js';
+import { Order, OrderPosition, OrderDelivery } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import { ProductPricingSheet, type IProductPricingSheet } from '@unchainedshop/core-products';
 import { WarehousingDirector } from '@unchainedshop/core-warehousing';
 import { PricingCalculation } from '@unchainedshop/utils';
 
@@ -38,31 +36,6 @@ export const configureOrderPositionsModule = ({
     findOrderPositions: async ({ orderId }: { orderId: string }): Promise<OrderPosition[]> => {
       const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });
       return positions.toArray();
-    },
-
-    // Transformations
-    discounts: (
-      orderPosition: OrderPosition,
-      { orderDiscount, order }: { order: Order; orderDiscount: OrderDiscount },
-    ): Array<OrderPricingDiscount> => {
-      const pricingSheet = ProductPricingSheet({
-        calculation: orderPosition.calculation,
-        currency: order.currency,
-        quantity: orderPosition.quantity,
-      });
-
-      return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
-        item: orderPosition,
-        ...discount,
-      }));
-    },
-
-    pricingSheet: (orderPosition: OrderPosition, currency: string): IProductPricingSheet => {
-      return ProductPricingSheet({
-        calculation: orderPosition.calculation,
-        currency,
-        quantity: orderPosition.quantity,
-      });
     },
 
     delete: async (orderPositionId: string): Promise<OrderPosition> => {
@@ -224,9 +197,9 @@ export const configureOrderPositionsModule = ({
       );
     },
 
-    updateCalculation: async (
+    updateCalculation: async <T extends PricingCalculation>(
       orderPositionId: string,
-      calculation: Array<PricingCalculation>,
+      calculation: Array<T>,
     ): Promise<OrderPosition> => {
       return OrderPositions.findOneAndUpdate(
         { _id: orderPositionId },

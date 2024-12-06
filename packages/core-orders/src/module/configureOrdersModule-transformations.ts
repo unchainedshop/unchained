@@ -1,6 +1,9 @@
 import { Order, OrderDiscount } from '../types.js';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
+import { ProductPricingSheet } from '@unchainedshop/core-products';
+import { DeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { PaymentPricingSheet } from '@unchainedshop/core';
 
 export interface OrderTransformations {
   discounted: (
@@ -19,37 +22,55 @@ export const configureOrderModuleTransformations = (): OrderTransformations => {
       const orderDelivery = await modules.orders.deliveries.findDelivery({
         orderDeliveryId: order.deliveryId,
       });
-      const orderDeliveryDiscounts = modules.orders.deliveries.discounts(
-        orderDelivery,
-        { order, orderDiscount },
-        unchainedAPI,
-      );
+
+      const deliveryPricingSheet = DeliveryPricingSheet({
+        calculation: orderDelivery.calculation || [],
+        currency: order.currency,
+      });
+      const orderDeliveryDiscounts = deliveryPricingSheet
+        .discountPrices(orderDiscount._id)
+        .map((discount) => ({
+          delivery: orderDelivery,
+          ...discount,
+        }));
 
       // Payment discounts
       const orderPayment = await modules.orders.payments.findOrderPayment({
         orderPaymentId: order.paymentId,
       });
-      const orderPaymentDiscounts = modules.orders.payments.discounts(
-        orderPayment,
-        { order, orderDiscount },
-        unchainedAPI,
-      );
+      const paymentPricingSheet = PaymentPricingSheet({
+        calculation: orderPayment.calculation || [],
+        currency: order.currency,
+      });
+      const orderPaymentDiscounts = paymentPricingSheet
+        .discountPrices(orderDiscount._id)
+        .map((discount) => ({
+          payment: orderPayment,
+          ...discount,
+        }));
 
       // Position discounts
       const orderPositions = await modules.orders.positions.findOrderPositions({
         orderId: order._id,
       });
       const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
-        modules.orders.positions.discounts(orderPosition, { order, orderDiscount }, unchainedAPI),
+        ProductPricingSheet({
+          calculation: orderPosition.calculation,
+          currency: order.currency,
+          quantity: orderPosition.quantity,
+        })
+          .discountPrices(orderDiscount._id)
+          .map((discount) => ({
+            item: orderPosition,
+            ...discount,
+          })),
       );
 
       // order discounts
-      const pricingSheet = OrderPricingSheet({
-        calculation: order.calculation,
+      const orderDiscounts = OrderPricingSheet({
+        calculation: order.calculation || [],
         currency: order.currency,
-      });
-
-      const orderDiscounts = pricingSheet
+      })
         .discountPrices(orderDiscount._id)
         .map((discount) => ({ order, ...discount }));
 

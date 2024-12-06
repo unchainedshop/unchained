@@ -1,7 +1,6 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
-import { IOrderPricingSheet, OrderPricingSheet } from '../director/OrderPricingSheet.js';
 
 const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: mongodb.Filter<Order> = {};
@@ -40,13 +39,6 @@ const normalizeOrderAggregateResult = (data = {}): OrderReport => {
 
 export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Collection<Order> }) => {
   return {
-    pricingSheet: (order: Order): IOrderPricingSheet => {
-      return OrderPricingSheet({
-        calculation: order.calculation,
-        currency: order.currency,
-      });
-    },
-
     isCart: (order: Order) => {
       return order.status === null;
     },

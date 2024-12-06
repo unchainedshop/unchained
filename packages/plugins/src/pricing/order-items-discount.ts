@@ -5,6 +5,7 @@ import {
   OrderPricingAdapter,
   OrderDiscountConfiguration,
 } from '@unchainedshop/core-orders';
+import { ProductPricingSheet } from '@unchainedshop/core-products';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
 const OrderItemsDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfiguration> = {
@@ -21,7 +22,7 @@ const OrderItemsDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfi
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
-    const { order, orderPositions, modules } = params.context;
+    const { order, orderPositions } = params.context;
 
     return {
       ...pricingAdapter,
@@ -38,7 +39,11 @@ const OrderItemsDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfi
 
         const itemShares = orderPositions.map((orderPosition) =>
           calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-            modules.orders.positions.pricingSheet(orderPosition, order.currency),
+            ProductPricingSheet({
+              calculation: orderPosition.calculation,
+              currency: order.currency,
+              quantity: orderPosition.quantity,
+            }),
             totalAmountOfItems,
           ),
         );

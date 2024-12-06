@@ -9,6 +9,7 @@ import {
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
+import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 
@@ -102,7 +103,10 @@ export const WordlineSaferpay: IPaymentAdapter<
         if (!orderPayment || !order) {
           throw new Error('orderPayment or order not found');
         }
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
 
         const saferpayTransactionId = await modules.saferpayTransactions.createTransaction(
@@ -159,7 +163,10 @@ export const WordlineSaferpay: IPaymentAdapter<
         if (!orderPayment || !order) {
           throw new Error('orderPayment or order not found');
         }
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const totalAmount = pricing.total({ useNetPrice: false }).amount;
 
         const saferpayTransaction = await modules.saferpayTransactions.findTransactionById(

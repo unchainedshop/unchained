@@ -1,6 +1,7 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import formatPrice from './formatPrice.js';
+import { ProductPricingSheet } from '@unchainedshop/core-products';
 
 type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
 
@@ -22,7 +23,12 @@ export const getOrderPositionsData = async (
         locale: params.locale?.baseName,
       });
 
-      const positionPricing = modules.orders.positions.pricingSheet(orderPosition, order.currency);
+      const positionPricing = ProductPricingSheet({
+        calculation: orderPosition.calculation,
+        currency: order.currency,
+        quantity: orderPosition.quantity,
+      });
+
       const total = positionPricing.total({ useNetPrice });
       const unitPrice = positionPricing.unitPrice({ useNetPrice });
 

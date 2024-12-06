@@ -1,8 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
-import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
-import { PaymentDirector, PaymentPricingSheet, type IPaymentPricingSheet } from '@unchainedshop/core';
+import { OrderPayment, OrderPaymentStatus } from '../types.js';
+import { PaymentDirector } from '@unchainedshop/core';
 import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
@@ -124,31 +123,8 @@ export const configureOrderPaymentsModule = ({
 
       return OrderPayments.countDocuments(selector, options);
     },
-    // Transformations
-    discounts: (
-      orderPayment: OrderPayment,
-      { order, orderDiscount }: { order: Order; orderDiscount: OrderDiscount },
-    ): Array<OrderPricingDiscount> => {
-      if (!orderPayment) return [];
-
-      const pricingSheet = PaymentPricingSheet({
-        calculation: orderPayment.calculation,
-        currency: order.currency,
-      });
-      return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
-        payment: orderPayment,
-        ...discount,
-      }));
-    },
 
     normalizedStatus,
-
-    pricingSheet: (orderPayment: OrderPayment, currency: string): IPaymentPricingSheet => {
-      return PaymentPricingSheet({
-        calculation: orderPayment.calculation,
-        currency,
-      });
-    },
 
     // Mutations
 
@@ -353,7 +329,10 @@ export const configureOrderPaymentsModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderPaymentId: string, calculation: Array<PricingCalculation>) => {
+    updateCalculation: async <T extends PricingCalculation>(
+      orderPaymentId: string,
+      calculation: Array<T>,
+    ) => {
       return OrderPayments.findOneAndUpdate(
         buildFindByIdSelector(orderPaymentId),
         {

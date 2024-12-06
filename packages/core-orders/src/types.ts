@@ -1,5 +1,5 @@
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
-import { PricingCalculation, Price } from '@unchainedshop/utils';
+import { Price } from '@unchainedshop/utils';
 
 export type OrderReport = {
   newCount: number;
@@ -18,7 +18,7 @@ export enum OrderStatus {
 
 export type OrderPosition = {
   _id?: string;
-  calculation: Array<PricingCalculation>;
+  calculation: Array<any>;
   configuration: Array<{ key: string; value: string }>;
   context?: any;
   orderId: string;

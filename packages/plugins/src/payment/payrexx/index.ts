@@ -8,6 +8,7 @@ import {
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
+import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 
@@ -59,7 +60,10 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
         const { orderPayment, userId, order } = context;
         if (orderPayment) {
           // Order Checkout signing (One-time payment)
-          const pricing = await modules.orders.pricingSheet(order);
+          const pricing = OrderPricingSheet({
+            calculation: order.calculation,
+            currency: order.currency,
+          });
           const gatewayObject = mapOrderDataToGatewayObject(
             { order, orderPayment, pricing },
             transactionContext,
@@ -180,7 +184,10 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
           throw new Error('Could not load gateway from the Payrexx API');
         }
 
-        const pricing = await modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const { currency, amount } = pricing.total({ useNetPrice: false });
 
         if (

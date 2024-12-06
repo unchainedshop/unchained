@@ -3,7 +3,7 @@ import { Context } from '../../../context.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
+import { Product, ProductPricingSheet } from '@unchainedshop/core-products';
 import { Quotation } from '@unchainedshop/core-quotations';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
 import { Price } from '@unchainedshop/utils';
@@ -14,9 +14,11 @@ const getPricingSheet = async (orderPosition: OrderPosition, context: Context) =
   const order = await modules.orders.findOrder({
     orderId: orderPosition.orderId,
   });
-  const pricingSheet = modules.orders.positions.pricingSheet(orderPosition, order.currency);
-
-  return pricingSheet;
+  return ProductPricingSheet({
+    calculation: orderPosition.calculation,
+    currency: order.currency,
+    quantity: orderPosition.quantity,
+  });
 };
 
 export const OrderItem = {
@@ -25,11 +27,11 @@ export const OrderItem = {
     _,
     context: Context,
   ): Promise<Array<OrderPositionDiscount>> {
-    const pricingSheet = await getPricingSheet(orderPosition, context);
+    const pricing = await getPricingSheet(orderPosition, context);
 
-    if (pricingSheet.isValid()) {
+    if (pricing.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
-      return pricingSheet.discountPrices().map((discount) => ({
+      return pricing.discountPrices().map((discount) => ({
         item: orderPosition,
         ...discount,
       }));
@@ -115,10 +117,10 @@ export const OrderItem = {
     params: { category: string; useNetPrice: boolean },
     context: Context,
   ): Promise<Price> {
-    const pricingSheet = await getPricingSheet(orderPosition, context);
+    const pricing = await getPricingSheet(orderPosition, context);
 
-    if (pricingSheet.isValid()) {
-      const price = pricingSheet.total(params);
+    if (pricing.isValid()) {
+      const price = pricing.total(params);
       return {
         _id: crypto
           .createHash('sha256')
@@ -135,10 +137,10 @@ export const OrderItem = {
     params: { useNetPrice: boolean },
     context: Context,
   ): Promise<Price> {
-    const pricingSheet = await getPricingSheet(orderPosition, context);
+    const pricing = await getPricingSheet(orderPosition, context);
 
-    if (pricingSheet.isValid()) {
-      const price = pricingSheet.unitPrice(params);
+    if (pricing.isValid()) {
+      const price = pricing.unitPrice(params);
       return {
         _id: crypto
           .createHash('sha256')

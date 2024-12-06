@@ -7,6 +7,7 @@ import {
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
+import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 
@@ -90,7 +91,10 @@ const Stripe: IPaymentAdapter<UnchainedCore> = {
         const { orderPayment, order, paymentProviderId } = context;
 
         if (orderPayment) {
-          const pricing = await modules.orders.pricingSheet(order);
+          const pricing = OrderPricingSheet({
+            calculation: order.calculation,
+            currency: order.currency,
+          });
           const { userId, name, email } = await getUserData(order?.userId);
           const paymentIntent = await createOrderPaymentIntent(
             { userId, name, email, order, orderPayment, pricing, descriptorPrefix },
@@ -118,7 +122,10 @@ const Stripe: IPaymentAdapter<UnchainedCore> = {
           orderPaymentId: order.paymentId,
         });
         const { userId, name, email } = await getUserData(order?.userId);
-        const pricing = await modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
 
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)

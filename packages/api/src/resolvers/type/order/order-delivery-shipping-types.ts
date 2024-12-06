@@ -1,5 +1,5 @@
 import { Context } from '../../../context.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { DeliveryPricingSheet, DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
 import { Address } from '@unchainedshop/mongodb';
 
@@ -30,10 +30,13 @@ export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
   discounts: async (obj, _, context) => {
     const { modules } = context;
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
-    const pricingSheet = modules.orders.deliveries.pricingSheet(obj, order.currency);
-    if (pricingSheet.isValid()) {
+    const pricing = DeliveryPricingSheet({
+      calculation: obj.calculation,
+      currency: order.currency,
+    });
+    if (pricing.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
-      return pricingSheet.discountPrices().map((discount) => ({
+      return pricing.discountPrices().map((discount) => ({
         item: obj,
         ...discount,
       }));

@@ -1,4 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/core';
+import { DeliveryPricingSheet } from '@unchainedshop/core-delivery';
 import { IOrderPricingAdapter } from '@unchainedshop/core-orders';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
 
@@ -16,7 +17,7 @@ export const OrderDelivery: IOrderPricingAdapter<UnchainedCore> = {
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
-    const { order, orderDelivery, modules } = params.context;
+    const { order, orderDelivery } = params.context;
 
     return {
       ...pricingAdapter,
@@ -24,7 +25,10 @@ export const OrderDelivery: IOrderPricingAdapter<UnchainedCore> = {
       calculate: async () => {
         // just add tax + net price to order pricing
         if (!orderDelivery) return null;
-        const pricing = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
+        const pricing = DeliveryPricingSheet({
+          calculation: orderDelivery.calculation,
+          currency: order.currency,
+        });
         const tax = pricing.taxSum();
         const shipping = pricing.gross();
 
