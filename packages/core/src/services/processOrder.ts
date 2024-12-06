@@ -10,8 +10,7 @@ import { Modules } from '../modules.js';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { PaymentDirector } from '../directors/PaymentDirector.js';
-import { DeliveryDirector } from '@unchainedshop/core-delivery';
+import { DeliveryDirector, PaymentDirector } from '../directors/index.js';
 
 const isAutoConfirmationEnabled = async (
   {

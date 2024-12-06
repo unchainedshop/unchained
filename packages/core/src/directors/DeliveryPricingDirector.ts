@@ -7,7 +7,7 @@ import {
   IDeliveryPricingAdapter,
   IDeliveryPricingSheet,
 } from './DeliveryPricingAdapter.js';
-import { DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 
 import type { Order } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';

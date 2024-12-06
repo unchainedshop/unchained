@@ -1,4 +1,4 @@
-import { DeliveryPricingRowCategory, DeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { DeliveryPricingRowCategory, DeliveryPricingSheet } from '../directors/index.js';
 import { ProductPricingRowCategory, ProductPricingSheet } from '@unchainedshop/core-products';
 import {
   Order,

@@ -6,7 +6,7 @@ import {
   IDeliveryAdapter,
   DeliveryError,
 } from './DeliveryAdapter.js';
-import { DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryStatus } from '@unchainedshop/core-orders';
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {

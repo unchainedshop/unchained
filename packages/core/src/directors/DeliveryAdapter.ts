@@ -10,7 +10,7 @@ import {
   DeliveryLocation,
   DeliveryProvider,
   DeliveryProviderType,
-} from '../db/DeliveryProvidersCollection.js';
+} from '@unchainedshop/core-delivery';
 
 export enum DeliveryError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',

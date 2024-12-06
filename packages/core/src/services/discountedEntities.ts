@@ -4,7 +4,7 @@ import {
   OrderPricingDiscount,
   OrderPricingSheet,
 } from '@unchainedshop/core-orders';
-import { DeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { DeliveryPricingSheet } from '../directors/index.js';
 import { ProductPricingSheet } from '@unchainedshop/core-products';
 import { PaymentPricingSheet } from '../directors/PaymentPricingSheet.js';
 import { Modules } from '../modules.js';

@@ -1,5 +1,5 @@
-import { IDeliveryAdapter } from '@unchainedshop/core-delivery';
-import { DeliveryAdapter, DeliveryDirector, DeliveryProviderType } from '@unchainedshop/core-delivery';
+import { DeliveryAdapter, DeliveryDirector, IDeliveryAdapter } from '@unchainedshop/core';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 
 const PickMup: IDeliveryAdapter = {
   ...DeliveryAdapter,

@@ -1,10 +1,6 @@
-import {
-  DeliveryContext,
-  DeliveryDirector,
-  DeliveryProvider,
-  deliverySettings,
-} from '@unchainedshop/core-delivery';
+import { DeliveryProvider, deliverySettings } from '@unchainedshop/core-delivery';
 import { Modules } from '../modules.js';
+import { DeliveryContext, DeliveryDirector } from '../directors/index.js';
 
 export const supportedDeliveryProvidersService = async (
   params: DeliveryContext,

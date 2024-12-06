@@ -6,9 +6,9 @@ import {
 import { initCartProvidersService } from './initCartProviders.js';
 import { Modules } from '../modules.js';
 import { ProductPricingDirector } from '@unchainedshop/core-products';
-import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 import { PaymentPricingDirector } from '../directors/PaymentPricingDirector.js';
 import { updateSchedulingService } from './updateScheduling.js';
+import { DeliveryPricingDirector } from '../directors/index.js';
 
 export const updateCalculationService = async (orderId: string, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;

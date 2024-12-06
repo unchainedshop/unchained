@@ -1,5 +1,6 @@
+import { DeliveryPricingSheet } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
-import { DeliveryPricingSheet, DeliveryProvider } from '@unchainedshop/core-delivery';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
 import { Address } from '@unchainedshop/mongodb';
 

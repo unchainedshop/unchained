@@ -1,7 +1,8 @@
 import { Context } from '../../../context.js';
-import { DeliveryDirector, DeliveryProvider } from '@unchainedshop/core-delivery';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
 import { ProviderConfigurationInvalid } from '../../../errors.js';
+import { DeliveryDirector } from '@unchainedshop/core';
 
 export default async function createDeliveryProvider(
   root: never,

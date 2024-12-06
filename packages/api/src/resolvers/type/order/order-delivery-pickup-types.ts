@@ -1,7 +1,7 @@
+import { DeliveryDirector, DeliveryPricingSheet } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
-import { DeliveryLocation, DeliveryPricingSheet, DeliveryProvider } from '@unchainedshop/core-delivery';
+import { DeliveryLocation, DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
-import { DeliveryDirector } from '@unchainedshop/core-delivery';
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
 

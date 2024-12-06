@@ -1,5 +1,4 @@
-import { PaymentPricingSheet, UnchainedCore } from '@unchainedshop/core';
-import { DeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { DeliveryPricingSheet, PaymentPricingSheet, UnchainedCore } from '@unchainedshop/core';
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
 import {
   OrderPricingDirector,
