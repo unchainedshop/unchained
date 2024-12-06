@@ -5,8 +5,8 @@ import {
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
+  OrderPricingSheet,
 } from '@unchainedshop/core';
-import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 const logger = createLogger('unchained:core-payment:braintree');
 

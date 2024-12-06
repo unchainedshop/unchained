@@ -1,11 +1,7 @@
 import { Price } from '@unchainedshop/utils';
 import { Context } from '../../../context.js';
-import {
-  Order,
-  OrderPricingDiscount,
-  OrderDiscount as OrderDiscountType,
-  OrderDiscountDirector,
-} from '@unchainedshop/core-orders';
+import { Order, OrderDiscount as OrderDiscountType } from '@unchainedshop/core-orders';
+import { OrderDiscountDirector, OrderPricingDiscount } from '@unchainedshop/core';
 
 type HelperType<P, T> = (orderDiscount: OrderDiscountType, params: P, context: Context) => T;
 

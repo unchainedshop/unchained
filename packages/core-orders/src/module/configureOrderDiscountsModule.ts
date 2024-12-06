@@ -1,7 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
-import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
+import { OrderDiscountDirector } from '@unchainedshop/core';
 import { Order, OrderDiscount } from '../types.js';
 import {
   IPricingSheet,

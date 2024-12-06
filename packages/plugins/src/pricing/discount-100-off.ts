@@ -3,8 +3,8 @@ import {
   OrderDiscountDirector,
   OrderDiscountAdapter,
   OrderDiscountConfiguration,
-} from '@unchainedshop/core-orders';
-import { UnchainedCore } from '@unchainedshop/core';
+  UnchainedCore,
+} from '@unchainedshop/core';
 
 export const HundredOff: IDiscountAdapter<OrderDiscountConfiguration, UnchainedCore> = {
   ...OrderDiscountAdapter,

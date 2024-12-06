@@ -18,8 +18,8 @@ import {
   PaymentError,
   PaymentPricingRowCategory,
   PaymentPricingSheet,
+  OrderPricingSheet,
 } from '@unchainedshop/core';
-import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 

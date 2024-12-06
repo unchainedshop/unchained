@@ -1,11 +1,8 @@
-import {
-  Order,
-  OrderDiscount,
-  OrderPricingRowCategory,
-  OrderPricingSheet,
-} from '@unchainedshop/core-orders';
+import { Order, OrderDiscount } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import {
+  OrderPricingRowCategory,
+  OrderPricingSheet,
   DeliveryPricingRowCategory,
   DeliveryPricingSheet,
   ProductPricingRowCategory,

@@ -4,12 +4,12 @@ import { buildSignature } from './buildSignature.js';
 import { SaferpayTransactionsModule } from './module/configureSaferpayTransactionsModule.js';
 import {
   UnchainedCore,
+  OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
-import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 

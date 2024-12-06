@@ -1,10 +1,11 @@
+import { Order, OrderDiscount } from '@unchainedshop/core-orders';
 import {
-  Order,
-  OrderDiscount,
+  DeliveryPricingSheet,
   OrderPricingDiscount,
   OrderPricingSheet,
-} from '@unchainedshop/core-orders';
-import { DeliveryPricingSheet, PaymentPricingSheet, ProductPricingSheet } from '../directors/index.js';
+  PaymentPricingSheet,
+  ProductPricingSheet,
+} from '../directors/index.js';
 import { Modules } from '../modules.js';
 
 export const discountedEntitiesService = async (

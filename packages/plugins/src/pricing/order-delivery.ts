@@ -1,9 +1,10 @@
-import { UnchainedCore, DeliveryPricingSheet } from '@unchainedshop/core';
 import {
+  UnchainedCore,
   IOrderPricingAdapter,
   OrderPricingDirector,
   OrderPricingAdapter,
-} from '@unchainedshop/core-orders';
+  DeliveryPricingSheet,
+} from '@unchainedshop/core';
 
 export const OrderDelivery: IOrderPricingAdapter<UnchainedCore> = {
   ...OrderPricingAdapter,

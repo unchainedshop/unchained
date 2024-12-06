@@ -1,12 +1,10 @@
-import {
-  OrderDiscountDirector,
-  OrderDiscountTrigger,
-  OrderPricingDirector,
-} from '@unchainedshop/core-orders';
+import { OrderDiscountTrigger } from '@unchainedshop/core-orders';
 import { initCartProvidersService } from './initCartProviders.js';
 import { Modules } from '../modules.js';
 import { updateSchedulingService } from './updateScheduling.js';
 import {
+  OrderDiscountDirector,
+  OrderPricingDirector,
   DeliveryPricingDirector,
   ProductPricingDirector,
   PaymentPricingDirector,

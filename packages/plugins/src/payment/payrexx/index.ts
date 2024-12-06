@@ -3,12 +3,12 @@ import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.j
 import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
 import {
   UnchainedCore,
+  OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
-import { OrderPricingSheet } from '@unchainedshop/core-orders';
 
 export * from './middleware.js';
 

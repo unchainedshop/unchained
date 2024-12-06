@@ -10,10 +10,10 @@ import {
   OrderPayment,
   OrderDiscount,
   OrderDelivery,
-  OrderPricingSheet,
 } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
 import { Price } from '@unchainedshop/utils';
+import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
   async supportedDeliveryProviders(

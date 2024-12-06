@@ -1,11 +1,11 @@
 import {
   UnchainedCore,
+  OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
-import { OrderPricingSheet } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
 
 let checkoutNodeJssdk;

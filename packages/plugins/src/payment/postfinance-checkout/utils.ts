@@ -1,4 +1,5 @@
-import { Order, OrderPricingSheet } from '@unchainedshop/core-orders';
+import { OrderPricingSheet } from '@unchainedshop/core';
+import { Order } from '@unchainedshop/core-orders';
 import * as pf from 'postfinancecheckout';
 
 const { PostFinanceCheckout } = pf;

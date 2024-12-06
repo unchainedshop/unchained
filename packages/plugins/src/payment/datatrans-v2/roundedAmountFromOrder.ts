@@ -1,4 +1,5 @@
-import { Order, OrderPricingSheet } from '@unchainedshop/core-orders';
+import { OrderPricingSheet } from '@unchainedshop/core';
+import { Order } from '@unchainedshop/core-orders';
 
 const roundedAmountFromOrder = (order: Order): { currency: string; amount: number } => {
   const pricing = OrderPricingSheet({
