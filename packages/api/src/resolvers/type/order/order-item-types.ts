@@ -144,7 +144,7 @@ export const OrderItem = {
       return {
         _id: crypto
           .createHash('sha256')
-          .update([`${orderPosition._id}-unit`, price.amount, pricingSheet.currency].join(''))
+          .update([`${orderPosition._id}-unit`, price.amount, pricing.currency].join(''))
           .digest('hex'),
         ...price,
       };
