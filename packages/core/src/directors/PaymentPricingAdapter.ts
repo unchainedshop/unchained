@@ -1,10 +1,10 @@
+import { PricingCalculation } from '@unchainedshop/utils';
 import {
+  BasePricingAdapter,
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingSheet,
-  PricingCalculation,
-} from '@unchainedshop/utils';
-import { BasePricingAdapter } from '@unchainedshop/utils';
+} from '../directors/index.js';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 import { PaymentProvider } from '@unchainedshop/core-payment';
 import { OrderDiscount, OrderPayment, Order } from '@unchainedshop/core-orders';

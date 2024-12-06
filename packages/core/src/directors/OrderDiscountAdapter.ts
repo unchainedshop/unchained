@@ -1,5 +1,8 @@
-import { BaseDiscountAdapter, IDiscountAdapter } from '@unchainedshop/utils';
-import { OrderDiscountConfiguration } from './OrderDiscountConfiguration.js';
+import {
+  BaseDiscountAdapter,
+  IDiscountAdapter,
+  OrderDiscountConfiguration,
+} from '../directors/index.js';
 
 export const OrderDiscountAdapter: Omit<
   IDiscountAdapter<OrderDiscountConfiguration, any>,

@@ -1,10 +1,11 @@
+import { PricingCalculation } from '@unchainedshop/utils';
+
 import {
   BasePricingSheet,
   IPricingSheet,
   IBasePricingSheet,
-  PricingCalculation,
   PricingSheetParams,
-} from '@unchainedshop/utils';
+} from '../directors/index.js';
 
 export interface OrderPricingCalculation extends PricingCalculation {
   discountId?: string;

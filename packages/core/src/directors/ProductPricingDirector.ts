@@ -1,4 +1,3 @@
-import { BasePricingDirector, IPricingDirector } from '@unchainedshop/utils';
 import { Product, ProductConfiguration } from '@unchainedshop/core-products';
 import { User } from '@unchainedshop/core-users';
 import { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
@@ -8,6 +7,8 @@ import {
   ProductPricingSheet,
   IProductPricingAdapter,
   ProductPricingAdapterContext,
+  BasePricingDirector,
+  IPricingDirector,
 } from '../directors/index.js';
 
 export type ProductPricingContext =

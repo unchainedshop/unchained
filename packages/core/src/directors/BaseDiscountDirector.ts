@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { BaseDirector, IBaseDirector } from './BaseDirector.js';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.js';
 
 export type IDiscountDirector<DiscountConfiguration, Context> = IBaseDirector<

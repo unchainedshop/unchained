@@ -8,6 +8,7 @@ import {
   PaymentPricingSheet,
   ProductPricingSheet,
   UnchainedCore,
+  resolveRatioAndTaxDivisorForPricingSheet,
 } from '@unchainedshop/core';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
@@ -45,7 +46,7 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
             useNetPrice: false,
           }).amount;
         const itemShares = orderPositions.map((orderPosition) =>
-          calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
+          resolveRatioAndTaxDivisorForPricingSheet(
             ProductPricingSheet({
               calculation: orderPosition.calculation,
               currency: order.currency,
@@ -55,7 +56,7 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
           ),
         );
 
-        const deliveryShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
+        const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
           DeliveryPricingSheet({
             calculation: orderDelivery.calculation || [],
             currency: order.currency,
@@ -63,7 +64,7 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
           totalAmountOfPaymentAndDelivery,
         );
 
-        const paymentShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
+        const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
           PaymentPricingSheet({
             calculation: orderPayment.calculation || [],
             currency: order.currency,

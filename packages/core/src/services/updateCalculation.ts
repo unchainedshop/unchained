@@ -25,11 +25,22 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
   });
 
   await Promise.all(
-    discounts.map(async (discount) => {
-      const isValid = await modules.orders.discounts.isValid(discount, unchainedAPI);
+    discounts.map(async (orderDiscount) => {
+      const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
+      if (!Adapter) return null;
+      const adapter = await Adapter.actions({
+        context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
+      });
+
+      const isValid =
+        orderDiscount.trigger === OrderDiscountTrigger.SYSTEM
+          ? await adapter.isValidForSystemTriggering()
+          : await adapter.isValidForCodeTriggering({
+              code: orderDiscount.code,
+            });
 
       if (!isValid) {
-        await modules.orders.discounts.delete(discount._id, unchainedAPI);
+        await modules.orders.discounts.delete(orderDiscount._id, unchainedAPI);
       }
     }),
   );

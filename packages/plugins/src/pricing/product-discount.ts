@@ -1,10 +1,11 @@
-import { Discount, calculation as calcUtils } from '@unchainedshop/utils';
+import { calculation as calcUtils } from '@unchainedshop/utils';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
   ProductDiscountConfiguration,
   IProductPricingAdapter,
   ProductPricingRowCategory,
+  Discount,
   UnchainedCore,
 } from '@unchainedshop/core';
 

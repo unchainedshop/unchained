@@ -1,5 +1,4 @@
-import { BasePricingSheet } from '@unchainedshop/utils';
-import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/utils';
+import { BasePricingSheet, IBasePricingSheet, PricingSheetParams } from '../directors/index.js';
 import { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.js';
 
 export enum DeliveryPricingRowCategory {

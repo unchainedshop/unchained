@@ -1,5 +1,11 @@
-import { BasePricingAdapter, IPricingAdapter, BasePricingAdapterContext } from '@unchainedshop/utils';
-import { IOrderPricingSheet, OrderPricingCalculation, OrderPricingSheet } from './OrderPricingSheet.js';
+import {
+  IOrderPricingSheet,
+  OrderPricingCalculation,
+  OrderPricingSheet,
+  BasePricingAdapter,
+  IPricingAdapter,
+  BasePricingAdapterContext,
+} from '../directors/index.js';
 import {
   Order,
   OrderDelivery,

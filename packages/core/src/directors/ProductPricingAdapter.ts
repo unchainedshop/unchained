@@ -1,10 +1,12 @@
-import { BasePricingAdapter, BasePricingAdapterContext, IPricingAdapter } from '@unchainedshop/utils';
 import { Product, ProductConfiguration } from '@unchainedshop/core-products';
 import { Order } from '@unchainedshop/core-orders';
 import {
   IProductPricingSheet,
   ProductPricingCalculation,
   ProductPricingSheet,
+  BasePricingAdapter,
+  BasePricingAdapterContext,
+  IPricingAdapter,
 } from '../directors/index.js';
 
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {

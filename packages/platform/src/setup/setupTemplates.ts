@@ -2,7 +2,7 @@ import { MessagingDirector } from '@unchainedshop/core-messaging';
 import { UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 import { Order, OrderStatus } from '@unchainedshop/core-orders';
-import { RawPayloadType } from '@unchainedshop/events/lib/EventDirector.js';
+import { RawPayloadType } from '@unchainedshop/events';
 import { resolveOrderRejectionTemplate } from '../templates/resolveOrderRejectionTemplate.js';
 import { resolveAccountActionTemplate } from '../templates/resolveAccountActionTemplate.js';
 import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliveryTemplate.js';

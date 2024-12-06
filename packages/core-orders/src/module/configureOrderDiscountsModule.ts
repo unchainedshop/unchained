@@ -3,12 +3,6 @@ import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedsho
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
 import { OrderDiscountDirector } from '@unchainedshop/core';
 import { Order, OrderDiscount } from '../types.js';
-import {
-  IPricingSheet,
-  PricingCalculation,
-  DiscountAdapterActions,
-  DiscountContext,
-} from '@unchainedshop/utils';
 
 export type OrderDiscountsModule = {
   // Queries
@@ -17,19 +11,6 @@ export type OrderDiscountsModule = {
     options?: mongodb.FindOptions,
   ) => Promise<OrderDiscount>;
   findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
-
-  // Transformations
-  interface: (orderDiscount: OrderDiscount, unchainedAPI) => Promise<DiscountAdapterActions<any>>;
-
-  isValid: (orderDiscount: OrderDiscount, unchainedAPI) => Promise<boolean>;
-
-  // Adapter
-  configurationForPricingAdapterKey: (
-    orderDiscount: OrderDiscount,
-    adapterKey: string,
-    calculationSheet: IPricingSheet<PricingCalculation>,
-    pricingContext: DiscountContext,
-  ) => Promise<any>;
 
   // Mutations
   createManualOrderDiscount: (
@@ -154,41 +135,6 @@ export const configureOrderDiscountsModule = ({
     findOrderDiscounts: async ({ orderId }) => {
       const discounts = OrderDiscounts.find({ orderId });
       return discounts.toArray();
-    },
-
-    // Transformations
-    interface: async (orderDiscount, unchainedAPI) => {
-      const adapter = await getAdapter(orderDiscount, unchainedAPI);
-      return adapter;
-    },
-
-    isValid: async (orderDiscount, unchainedAPI) => {
-      const adapter = await getAdapter(orderDiscount, unchainedAPI);
-      if (!adapter) return null;
-
-      if (orderDiscount.trigger === OrderDiscountTrigger.SYSTEM) {
-        return adapter.isValidForSystemTriggering();
-      }
-
-      return adapter.isValidForCodeTriggering({
-        code: orderDiscount.code,
-      });
-    },
-
-    // Adapter
-    configurationForPricingAdapterKey: async (
-      orderDiscount,
-      adapterKey,
-      calculationSheet,
-      unchainedAPI,
-    ) => {
-      const adapter = await getAdapter(orderDiscount, unchainedAPI);
-      if (!adapter) return null;
-
-      return adapter.discountForPricingAdapterKey({
-        pricingAdapterKey: adapterKey,
-        calculationSheet,
-      });
     },
 
     // Mutations

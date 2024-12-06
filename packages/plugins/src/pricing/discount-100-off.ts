@@ -1,9 +1,9 @@
-import { IDiscountAdapter } from '@unchainedshop/utils';
 import {
   OrderDiscountDirector,
   OrderDiscountAdapter,
   OrderDiscountConfiguration,
   UnchainedCore,
+  IDiscountAdapter,
 } from '@unchainedshop/core';
 
 export const HundredOff: IDiscountAdapter<OrderDiscountConfiguration, UnchainedCore> = {

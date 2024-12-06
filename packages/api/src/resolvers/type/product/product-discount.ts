@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { Context } from '../../../context.js';
 import { ProductDiscount as ProductDiscountType } from '@unchainedshop/core-products';
+import { ProductDiscountDirector } from '@unchainedshop/core';
 
 type HelperType<T> = (product: ProductDiscountType, _: never, context: Context) => T;
 
@@ -22,8 +23,8 @@ export interface ProductDiscountHelperTypes {
 }
 
 export const ProductDiscount: ProductDiscountHelperTypes = {
-  interface: async (obj, _, { modules }) => {
-    const Interface = modules.products.interface(obj);
+  interface: async (obj) => {
+    const Interface = ProductDiscountDirector.getAdapter(obj.discountKey);
     if (!Interface) return null;
     return {
       _id: Interface.key,

@@ -7,8 +7,7 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption, IDiscountAdapter, Price } from '@unchainedshop/utils';
-import { ProductDiscountDirector } from '@unchainedshop/core';
+import { SortDirection, SortOption, Price } from '@unchainedshop/utils';
 import {
   Product,
   ProductAssignment,
@@ -127,9 +126,6 @@ export type ProductsModule = {
 
   count: (query: ProductQuery) => Promise<number>;
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
-
-  // Transformations
-  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown, any>;
 
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
@@ -485,11 +481,6 @@ export const configureProductsModule = async ({
       const productCount = await Products.countDocuments(selector, { limit: 1 });
 
       return !!productCount;
-    },
-
-    // Transformations
-    interface: (productDiscount) => {
-      return ProductDiscountDirector.getAdapter(productDiscount.discountKey);
     },
 
     isActive: (product) => {

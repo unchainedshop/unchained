@@ -1,9 +1,4 @@
-export interface PricingCalculation {
-  category: string;
-  amount: number;
-  baseCategory?: string;
-  meta?: any;
-}
+import { PricingCalculation } from '@unchainedshop/utils';
 export interface PricingDiscount {
   discountId: string;
   amount: number;
@@ -118,4 +113,28 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
   };
 
   return pricingSheet;
+};
+
+export const resolveRatioAndTaxDivisorForPricingSheet = (
+  pricing: IBasePricingSheet<PricingCalculation>,
+  total: number,
+) => {
+  if (total === 0 || !pricing) {
+    return {
+      ratio: 1,
+      taxDivisor: 1,
+    };
+  }
+  const tax = pricing.taxSum();
+  const gross = pricing.gross();
+  if (gross - tax === 0) {
+    return {
+      ratio: 0,
+      taxDivisor: 0,
+    };
+  }
+  return {
+    ratio: gross / total,
+    taxDivisor: gross / (gross - tax),
+  };
 };

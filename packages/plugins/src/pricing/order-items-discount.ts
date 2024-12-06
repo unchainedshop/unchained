@@ -6,6 +6,7 @@ import {
   OrderDiscountConfiguration,
   IOrderPricingAdapter,
   OrderPricingRowCategory,
+  resolveRatioAndTaxDivisorForPricingSheet,
 } from '@unchainedshop/core';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
@@ -39,7 +40,7 @@ const OrderItemsDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfi
         }).amount;
 
         const itemShares = orderPositions.map((orderPosition) =>
-          calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
+          resolveRatioAndTaxDivisorForPricingSheet(
             ProductPricingSheet({
               calculation: orderPosition.calculation,
               currency: order.currency,

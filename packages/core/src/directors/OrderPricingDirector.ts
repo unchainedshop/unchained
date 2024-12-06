@@ -1,7 +1,14 @@
-import { BasePricingDirector, PricingDiscount, IPricingDirector } from '@unchainedshop/utils';
-import { IOrderPricingSheet, OrderPricingCalculation, OrderPricingSheet } from './OrderPricingSheet.js';
+import {
+  IOrderPricingSheet,
+  OrderPricingCalculation,
+  OrderPricingSheet,
+  IOrderPricingAdapter,
+  OrderPricingAdapterContext,
+  BasePricingDirector,
+  PricingDiscount,
+  IPricingDirector,
+} from '../directors/index.js';
 import { Order, OrderDelivery, OrderPayment, OrderPosition } from '@unchainedshop/core-orders';
-import { IOrderPricingAdapter, OrderPricingAdapterContext } from './OrderPricingAdapter.js';
 
 export interface OrderPricingContext {
   currency: string;

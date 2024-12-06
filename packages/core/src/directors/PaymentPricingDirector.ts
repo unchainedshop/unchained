@@ -1,10 +1,11 @@
 import {
+  BasePricingDirector,
+  IPricingDirector,
   IPaymentPricingAdapter,
   IPaymentPricingSheet,
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-} from './PaymentPricingAdapter.js';
-import { BasePricingDirector, IPricingDirector } from '@unchainedshop/utils';
+} from '../directors/index.js';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 import { PaymentProvider } from '@unchainedshop/core-payment';
 import { OrderPayment, Order } from '@unchainedshop/core-orders';

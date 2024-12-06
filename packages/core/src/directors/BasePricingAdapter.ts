@@ -1,6 +1,6 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { IPricingSheet, PricingCalculation } from './BasePricingSheet.js';
-import { IBaseAdapter } from './BaseAdapter.js';
+import { IPricingSheet } from './BasePricingSheet.js';
+import { IBaseAdapter, PricingCalculation } from '@unchainedshop/utils';
 import { Discount } from './BasePricingDirector.js';
 
 type Order = { _id?: string };

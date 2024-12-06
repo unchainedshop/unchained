@@ -1,7 +1,9 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector, IBaseDirector } from './BaseDirector.js';
+import { BaseDirector, IBaseDirector, PricingCalculation } from '@unchainedshop/utils';
 import { BasePricingAdapterContext, BasePricingContext, IPricingAdapter } from './BasePricingAdapter.js';
-import { IPricingSheet, PricingCalculation } from './BasePricingSheet.js';
+import { IPricingSheet } from './BasePricingSheet.js';
+import { OrderDiscountDirector } from './OrderDiscountDirector.js';
+
 export interface Discount<DiscountConfiguration> {
   discountId: string;
   configuration: DiscountConfiguration;
@@ -84,15 +86,26 @@ export const BasePricingDirector = <
         if (!resolvedCalculation) return null;
 
         const discounts: Array<Discount<any>> = await Promise.all(
-          context.discounts.map(async (discount) => ({
-            discountId: discount._id,
-            configuration: await unchainedAPI.modules.orders.discounts.configurationForPricingAdapterKey(
-              discount as any,
-              Adapter.key,
-              this.calculationSheet(pricingContext, calculation),
-              context as any,
-            ),
-          })),
+          context.discounts.map(async (orderDiscount) => {
+            const order = await unchainedAPI.modules.orders.findOrder({
+              orderId: orderDiscount.orderId,
+            });
+            const DiscountAdapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
+            if (!DiscountAdapter) return null;
+            const adapter = await DiscountAdapter.actions({
+              context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
+            });
+
+            const configuration = adapter.discountForPricingAdapterKey({
+              pricingAdapterKey: Adapter.key,
+              calculationSheet: this.calculationSheet(pricingContext, calculation),
+            });
+
+            return {
+              discountId: orderDiscount._id,
+              configuration,
+            };
+          }),
         );
 
         try {

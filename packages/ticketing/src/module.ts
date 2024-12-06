@@ -1,7 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import { buildDbIndexes, ModuleInput } from '@unchainedshop/mongodb';
-import { MediaObjectsCollection } from '@unchainedshop/core-files/lib/db/MediaObjectsCollection.js';
-import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing/lib/db/TokenSurrogateCollection.js';
+import { MediaObjectsCollection } from '@unchainedshop/core-files';
+import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing';
 import { UnchainedCore } from '@unchainedshop/core';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { File } from '@unchainedshop/core-files';

@@ -2,9 +2,9 @@ import {
   OrderDiscountDirector,
   OrderDiscountAdapter,
   ProductDiscountConfiguration,
+  IDiscountAdapter,
   UnchainedCore,
 } from '@unchainedshop/core';
-import { IDiscountAdapter } from '@unchainedshop/utils';
 
 export const HalfPrice: IDiscountAdapter<ProductDiscountConfiguration, UnchainedCore> = {
   ...OrderDiscountAdapter,

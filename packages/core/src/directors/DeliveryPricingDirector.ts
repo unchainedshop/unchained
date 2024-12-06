@@ -1,6 +1,5 @@
-import { BasePricingDirector } from '@unchainedshop/utils';
-import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
-import { IPricingDirector } from '@unchainedshop/utils';
+import { DeliveryPricingSheet, BasePricingDirector, IPricingDirector } from '../directors/index.js';
+
 import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,

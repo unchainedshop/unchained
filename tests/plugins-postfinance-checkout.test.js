@@ -3,7 +3,7 @@ import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout.js';
-import { orderIsPaid } from '../packages/plugins/lib/payment/postfinance-checkout/utils.js';
+import { orderIsPaid } from '@unchainedshop/plugins/lib/payment/postfinance-checkout/utils.js';
 
 let db;
 let graphqlFetch;
