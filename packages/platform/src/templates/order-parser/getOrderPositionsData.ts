@@ -21,10 +21,6 @@ export const getOrderPositionsData = async (
         productId: orderPosition.productId,
         locale: params.locale?.baseName,
       });
-      const originalProductTexts = await modules.products.texts.findLocalizedText({
-        productId: orderPosition.originalProductId,
-        locale: params.locale?.baseName,
-      });
 
       const positionPricing = modules.orders.positions.pricingSheet(orderPosition, order.currency);
       const total = positionPricing.total({ useNetPrice });
@@ -34,7 +30,6 @@ export const getOrderPositionsData = async (
       return {
         productId: orderPosition.productId,
         configuration: orderPosition.configuration,
-        originalProductTexts,
         productTexts,
         quantity,
         rawPrices: {

@@ -150,7 +150,6 @@ export type ProductsModule = {
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    unchainedAPI,
   ) => Promise<Product>;
 
   prices: {
@@ -532,12 +531,11 @@ export const configureProductsModule = async ({
 
     proxyProducts,
 
-    resolveOrderableProduct: async (product, { configuration }, unchainedAPI) => {
-      const { modules } = unchainedAPI;
+    resolveOrderableProduct: async (product, { configuration }) => {
       const productId = product._id as string;
 
       if (product.type === ProductTypes.ConfigurableProduct) {
-        const variations = await modules.products.variations.findProductVariations({
+        const variations = await productVariations.findProductVariations({
           productId,
         });
         const vectors = configuration?.filter(({ key: configurationKey }) => {
@@ -547,7 +545,7 @@ export const configureProductsModule = async ({
           return isKeyEqualsVariationKey;
         });
 
-        const variants = await modules.products.proxyProducts(product, vectors, {
+        const variants = await proxyProducts(product, vectors, {
           includeInactive: false,
         });
         if (variants.length !== 1) {

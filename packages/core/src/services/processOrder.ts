@@ -31,12 +31,13 @@ const isAutoConfirmationEnabled = async (
     if (!actions.isPayLaterAllowed()) return false;
   }
 
-  const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
-    deliveryProviderId: orderDelivery.deliveryProviderId,
-  });
-  const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
-  const isAutoReleaseAllowed = Boolean(director.isAutoReleaseAllowed());
-  if (!isAutoReleaseAllowed) return false;
+  if (orderDelivery.status !== OrderDeliveryStatus.DELIVERED) {
+    const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
+      deliveryProviderId: orderDelivery.deliveryProviderId,
+    });
+    const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
+    if (!director.isAutoReleaseAllowed()) return false;
+  }
 
   return true;
 };
@@ -77,7 +78,7 @@ const findNextStatus = async (
   if (status === OrderStatus.CONFIRMED) {
     const readyForFullfillment =
       orderDelivery.status === OrderDeliveryStatus.DELIVERED &&
-      orderPayment.status !== OrderPaymentStatus.PAID;
+      orderPayment.status === OrderPaymentStatus.PAID;
     if (readyForFullfillment) {
       return OrderStatus.FULLFILLED;
     }

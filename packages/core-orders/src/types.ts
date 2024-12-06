@@ -31,7 +31,7 @@ export type OrderPosition = {
   configuration: Array<{ key: string; value: string }>;
   context?: any;
   orderId: string;
-  originalProductId?: string;
+  originalProductId: string;
   productId: string;
   quantity: number;
   quotationId?: string;
