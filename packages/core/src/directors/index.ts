@@ -29,3 +29,6 @@ export * from './OrderDiscountDirector.js';
 export * from './OrderPricingAdapter.js';
 export * from './OrderPricingDirector.js';
 export * from './OrderPricingSheet.js';
+
+export * from './WarehousingDirector.js';
+export * from './WarehousingAdapter.js';

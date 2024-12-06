@@ -6,7 +6,8 @@ import {
   ProductNotFoundError,
   TokenWrongStatusError,
 } from '../../../errors.js';
-import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { WarehousingDirector } from '@unchainedshop/core';
 
 export default async function invalidateToken(
   root: never,

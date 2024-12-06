@@ -1,18 +1,15 @@
 import {
-  WarehousingDirector,
-  WarehousingAdapter,
-  WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
-import { ProductContractStandard } from '@unchainedshop/core-products';
-import {
+  UnchainedCore,
   IWarehousingAdapter,
   WarehousingContext,
   WarehousingError,
-} from '@unchainedshop/core-warehousing';
+  WarehousingDirector,
+  WarehousingAdapter,
+} from '@unchainedshop/core';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { ProductContractStandard, ProductTypes } from '@unchainedshop/core-products';
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/core';
-import { ProductTypes } from '@unchainedshop/core-products';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;
 

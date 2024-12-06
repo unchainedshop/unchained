@@ -3,7 +3,8 @@ import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { systemLocale } from '@unchainedshop/utils';
 import { Context } from '../context.js';
-import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { WarehousingDirector } from '@unchainedshop/core';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
 const logger = createLogger('unchained:erc-metadata');
 

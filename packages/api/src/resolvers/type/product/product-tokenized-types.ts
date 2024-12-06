@@ -1,15 +1,13 @@
+import { WarehousingContext, WarehousingDirector } from '@unchainedshop/core';
 import {
   Product,
   ProductContractConfiguration,
   ProductContractStandard,
 } from '@unchainedshop/core-products';
-import {
-  WarehousingContext,
-  WarehousingDirector,
-  WarehousingProvider,
-} from '@unchainedshop/core-warehousing';
-import { Context } from '../../../context.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
+
+import { Context } from '../../../context.js';
 import { PlanProduct } from './product-plan-types.js';
 import { checkAction } from '../../../acl.js';
 import { actions } from '../../../roles/index.js';

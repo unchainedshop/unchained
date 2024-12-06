@@ -1,10 +1,9 @@
-import { IBaseDirector } from '@unchainedshop/utils';
+import { IBaseDirector, BaseDirector } from '@unchainedshop/utils';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from '@unchainedshop/utils';
-import { DeliveryDirector } from '@unchainedshop/core'; // TODO: Important smell!
+import { WarehousingProvider, TokenSurrogate } from '@unchainedshop/core-warehousing';
+
 import { IWarehousingAdapter, WarehousingContext, WarehousingError } from './WarehousingAdapter.js';
-import { WarehousingProvider } from '../db/WarehousingProvidersCollection.js';
-import { TokenSurrogate } from '../db/TokenSurrogateCollection.js';
+import { DeliveryDirector } from './DeliveryDirector.js';
 
 export type EstimatedDispatch = {
   shipping?: Date;

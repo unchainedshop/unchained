@@ -1,8 +1,5 @@
-import {
-  WarehousingContext,
-  WarehousingDirector,
-  WarehousingProvider,
-} from '@unchainedshop/core-warehousing';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import { WarehousingContext, WarehousingDirector } from '../directors/index.js';
 import { Modules } from '../modules.js';
 
 export const supportedWarehousingProvidersService = async (

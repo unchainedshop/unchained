@@ -1,13 +1,9 @@
 import { Context } from '../../context.js';
-import {
-  TokenSurrogate,
-  TokenStatus,
-  WarehousingProviderType,
-  WarehousingDirector,
-} from '@unchainedshop/core-warehousing';
+import { TokenSurrogate, TokenStatus, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WorkStatus } from '@unchainedshop/core-worker';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
+import { WarehousingDirector } from '@unchainedshop/core';
 
 export const Token = {
   product: async (token: TokenSurrogate, params: never, { modules }: Context) => {

@@ -1,7 +1,7 @@
-import { WarehousingDirector } from '@unchainedshop/core-warehousing';
+import { OrderPosition } from '@unchainedshop/core-orders';
+import { WarehousingDirector } from '../directors/index.js';
 import { Modules } from '../modules.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
-import { OrderPosition } from '@unchainedshop/core-orders';
 
 export const updateSchedulingService = async (
   { orderPositions, order, orderDelivery },

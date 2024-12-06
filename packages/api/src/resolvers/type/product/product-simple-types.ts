@@ -1,13 +1,10 @@
 import { Product, ProductSupply } from '@unchainedshop/core-products';
-import {
-  WarehousingContext,
-  WarehousingDirector,
-  WarehousingProvider,
-} from '@unchainedshop/core-warehousing';
+import { WarehousingContext, WarehousingDirector } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { PlanProduct } from './product-plan-types.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export const SimpleProduct = {
   ...PlanProduct,

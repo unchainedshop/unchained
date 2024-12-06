@@ -1,5 +1,6 @@
+import { WarehousingDirector } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
-import { WarehousingDirector, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 
 export default async function warehousingInterfaces(

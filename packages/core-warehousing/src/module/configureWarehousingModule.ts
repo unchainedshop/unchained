@@ -5,7 +5,7 @@ import {
   WarehousingProvidersCollection,
   WarehousingProviderType,
 } from '../db/WarehousingProvidersCollection.js';
-import { WarehousingDirector } from '../director/WarehousingDirector.js';
+import { WarehousingDirector } from '@unchainedshop/core';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 
 type WarehousingProviderQuery = {

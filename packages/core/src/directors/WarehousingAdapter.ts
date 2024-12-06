@@ -1,13 +1,13 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
-import type { DeliveryProvider } from '@unchainedshop/core-delivery';
-import type { Product } from '@unchainedshop/core-products';
-import type { Order, OrderPosition } from '@unchainedshop/core-orders';
-import { TokenSurrogate } from '../db/TokenSurrogateCollection.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { Product } from '@unchainedshop/core-products';
+import { Order, OrderPosition } from '@unchainedshop/core-orders';
 import {
+  TokenSurrogate,
   WarehousingConfiguration,
   WarehousingProviderType,
-} from '../db/WarehousingProvidersCollection.js';
+} from '@unchainedshop/core-warehousing';
 
 export enum WarehousingError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
