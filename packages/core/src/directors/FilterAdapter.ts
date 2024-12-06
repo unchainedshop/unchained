@@ -1,10 +1,9 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import type { Assortment } from '@unchainedshop/core-assortments';
+import { Assortment } from '@unchainedshop/core-assortments';
 import { mongodb } from '@unchainedshop/mongodb';
 import { IBaseAdapter } from '@unchainedshop/utils';
-import type { Product } from '@unchainedshop/core-products';
-import { Filter } from '../db/FiltersCollection.js';
-import { SearchQuery } from '../search/search.js';
+import { Product } from '@unchainedshop/core-products';
+import { Filter, SearchQuery } from '@unchainedshop/core-filters';
 
 export type FilterInputText = { locale: string; title: string; subtitle?: string };
 

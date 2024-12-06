@@ -3,9 +3,10 @@ import {
   IProductPricingSheet,
   ProductPricingCalculation,
   ProductPricingSheet,
-} from './ProductPricingSheet.js';
+  Product,
+  ProductConfiguration,
+} from '@unchainedshop/core-products';
 import { IProductPricingAdapter, ProductPricingAdapterContext } from './ProductPricingAdapter.js';
-import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
 import type { User } from '@unchainedshop/core-users';
 import type { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
 

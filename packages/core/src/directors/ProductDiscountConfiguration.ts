@@ -1,4 +1,4 @@
-import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
+import { Product, ProductConfiguration } from '@unchainedshop/core-products';
 
 type ResolvedConfiguration = {
   fixedRate?: number;

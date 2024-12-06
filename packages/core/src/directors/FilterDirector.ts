@@ -1,8 +1,8 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.js';
-import { Filter } from '../db/FiltersCollection.js';
-import type { Product } from '@unchainedshop/core-products';
+import { Filter } from '@unchainedshop/core-filters';
+import { Product } from '@unchainedshop/core-products';
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   actions: (filterContext: FilterContext, unchainedAPI) => Promise<FilterAdapterActions>;
