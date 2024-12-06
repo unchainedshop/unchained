@@ -15,15 +15,11 @@ import { configureOrderPaymentsModule, OrderPaymentsModule } from './configureOr
 import { configureOrderPositionsModule, OrderPositionsModule } from './configureOrderPositionsModule.js';
 import { configureOrderModuleMutations, OrderMutations } from './configureOrdersModule-mutations.js';
 import { configureOrdersModuleQueries, OrderQueries } from './configureOrdersModule-queries.js';
-import {
-  configureOrderModuleTransformations,
-  OrderTransformations,
-} from './configureOrdersModule-transformations.js';
+
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderStatus } from '../types.js';
 
 export type OrdersModule = OrderQueries &
-  OrderTransformations &
   OrderMutations & {
     deliveries: OrderDeliveriesModule;
     discounts: OrderDiscountsModule;
@@ -75,7 +71,6 @@ export const configureOrdersModule = async ({
   });
 
   const orderQueries = configureOrdersModuleQueries({ Orders });
-  const orderTransformations = configureOrderModuleTransformations();
 
   const orderMutations = configureOrderModuleMutations({
     Orders,
@@ -108,7 +103,6 @@ export const configureOrdersModule = async ({
 
   return {
     ...orderQueries,
-    ...orderTransformations,
     ...orderMutations,
 
     // Subentities

@@ -24,6 +24,7 @@ import { processOrderService } from './processOrder.js';
 import { checkoutOrderService } from './checkoutOrder.js';
 import { confirmOrderService } from './confirmOrder.js';
 import { rejectOrderService } from './rejectOrder.js';
+import { discountedEntitiesService } from './discountedEntities.js';
 
 const services = {
   bookmarks: {
@@ -51,6 +52,7 @@ const services = {
     checkoutOrder: checkoutOrderService,
     confirmOrder: confirmOrderService,
     rejectOrder: rejectOrderService,
+    discountedEntities: discountedEntitiesService,
   },
   products: {
     removeProduct: removeProductService,
