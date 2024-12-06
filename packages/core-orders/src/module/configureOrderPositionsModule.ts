@@ -1,7 +1,6 @@
-import { Order, OrderPosition, OrderDelivery } from '../types.js';
+import { OrderPosition } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { WarehousingDirector } from '@unchainedshop/core-warehousing';
 import { PricingCalculation } from '@unchainedshop/utils';
 
 const ORDER_POSITION_EVENTS: string[] = [
@@ -129,65 +128,9 @@ export const configureOrderPositionsModule = ({
       return orderIdsToRecalculate;
     },
 
-    updateScheduling: async (
-      {
-        order,
-        orderPosition,
-        orderDelivery,
-      }: {
-        order: Order;
-        orderDelivery: OrderDelivery;
-        orderPosition: OrderPosition;
-      },
-      unchainedAPI,
-    ): Promise<OrderPosition> => {
-      const { modules, services } = unchainedAPI;
-      // scheduling (store in db for auditing)
-      const product = await modules.products.findProduct({
-        productId: orderPosition.productId,
-      });
-      const deliveryProvider =
-        orderDelivery &&
-        (await modules.delivery.findProvider({
-          deliveryProviderId: orderDelivery.deliveryProviderId,
-        }));
-      const { countryCode, userId } = order;
-
-      const scheduling = await Promise.all(
-        (
-          await services.orders.supportedWarehousingProviders(
-            {
-              product,
-              deliveryProvider,
-            },
-            unchainedAPI,
-          )
-        ).map(async (warehousingProvider) => {
-          const context = {
-            warehousingProvider,
-            deliveryProvider,
-            product,
-            item: orderPosition,
-            delivery: deliveryProvider,
-            order,
-            userId,
-            country: countryCode,
-            referenceDate: order.ordered,
-            quantity: orderPosition.quantity,
-          };
-
-          const director = await WarehousingDirector.actions(warehousingProvider, context, unchainedAPI);
-          const dispatch = await director.estimatedDispatch();
-
-          return {
-            warehousingProviderId: warehousingProvider._id,
-            ...dispatch,
-          };
-        }),
-      );
-
+    updateScheduling: async (orderPositionId, scheduling): Promise<OrderPosition> => {
       return OrderPositions.findOneAndUpdate(
-        generateDbFilterById(orderPosition._id),
+        generateDbFilterById(orderPositionId),
         {
           $set: { scheduling },
         },

@@ -8,6 +8,7 @@ import { Modules } from '../modules.js';
 import { ProductPricingDirector } from '@unchainedshop/core-products';
 import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 import { PaymentPricingDirector } from '../directors/PaymentPricingDirector.js';
+import { updateSchedulingService } from './updateScheduling.js';
 
 export const updateCalculationService = async (orderId: string, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;
@@ -101,10 +102,13 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
     orderPayment = await modules.orders.payments.updateCalculation(orderPayment._id, paymentCalculation);
   }
 
-  orderPositions = await Promise.all(
-    orderPositions.map(async (orderPosition) =>
-      modules.orders.positions.updateScheduling({ order, orderDelivery, orderPosition }, unchainedAPI),
-    ),
+  orderPositions = await updateSchedulingService(
+    {
+      order,
+      orderPositions,
+      orderDelivery,
+    },
+    unchainedAPI,
   );
 
   const calculation = await OrderPricingDirector.rebuildCalculation(
