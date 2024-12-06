@@ -9,7 +9,7 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { FilterDirector } from '../director/FilterDirector.js';
+import { FilterDirector } from '@unchainedshop/core';
 import { Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.js';
 import { configureFilterTextsModule } from './configureFilterTextsModule.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';

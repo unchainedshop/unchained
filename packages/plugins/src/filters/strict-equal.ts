@@ -1,6 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IFilterAdapter } from '@unchainedshop/core-filters';
-import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
+import { IFilterAdapter, FilterDirector, FilterAdapter, UnchainedCore } from '@unchainedshop/core';
 
 const StrictQualFilter: IFilterAdapter<UnchainedCore> = {
   ...FilterAdapter,

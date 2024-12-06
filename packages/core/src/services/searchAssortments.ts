@@ -1,7 +1,6 @@
 import { Assortment } from '@unchainedshop/core-assortments';
 import {
   assortmentFulltextSearch,
-  FilterDirector,
   resolveAssortmentSelector,
   resolveFilterSelector,
   resolveSortStage,
@@ -10,7 +9,7 @@ import {
 } from '@unchainedshop/core-filters';
 import { mongodb } from '@unchainedshop/mongodb';
 import { Modules } from '../modules.js';
-
+import { FilterDirector } from '../directors/index.js';
 export interface SearchAssortmentConfiguration extends SearchConfiguration {
   assortmentSelector: mongodb.Filter<Assortment>;
 }

@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Filter, FilterInputText } from '@unchainedshop/core-filters';
+import { Filter } from '@unchainedshop/core-filters';
 import { Context } from '../../../context.js';
+import { FilterInputText } from '@unchainedshop/core';
 
 export default async function createFilter(
   root: never,

@@ -1,7 +1,7 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import formatPrice from './formatPrice.js';
-import { ProductPricingSheet } from '@unchainedshop/core-products';
+import { ProductPricingSheet } from '@unchainedshop/core';
 
 type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
 

@@ -1,5 +1,4 @@
 import {
-  FilterDirector,
   loadFilter,
   productFacetedSearch,
   productFulltextSearch,
@@ -12,7 +11,7 @@ import {
 import { Product } from '@unchainedshop/core-products';
 import { mongodb } from '@unchainedshop/mongodb';
 import { Modules } from '../modules.js';
-
+import { FilterDirector } from '../directors/index.js';
 export interface SearchProductConfiguration extends SearchConfiguration {
   productSelector: mongodb.Filter<Product>;
 }

@@ -1,6 +1,6 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { FilterInputText } from '@unchainedshop/core-filters';
+import { FilterInputText } from '@unchainedshop/core';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function createFilterOption(

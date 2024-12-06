@@ -2,10 +2,11 @@ import {
   ProductPricingDirector,
   ProductPricingAdapter,
   ProductPricingAdapterContext,
-} from '@unchainedshop/core-products';
-import { IProductPricingAdapter, ProductPricingRowCategory } from '@unchainedshop/core-products';
+  IProductPricingAdapter,
+  ProductPricingRowCategory,
+  UnchainedCore,
+} from '@unchainedshop/core';
 import { SwissTaxCategories } from './tax/ch.js';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export const getTaxRate = (context: ProductPricingAdapterContext) => {
   const { product, order } = context;

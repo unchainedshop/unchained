@@ -8,7 +8,7 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption, IDiscountAdapter, Price } from '@unchainedshop/utils';
-import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
+import { ProductDiscountDirector } from '@unchainedshop/core';
 import {
   Product,
   ProductAssignment,

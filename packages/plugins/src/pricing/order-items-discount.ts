@@ -1,11 +1,11 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
+import { UnchainedCore, ProductPricingSheet } from '@unchainedshop/core';
 import {
   OrderPricingDirector,
   OrderPricingAdapter,
   OrderDiscountConfiguration,
+  IOrderPricingAdapter,
+  OrderPricingRowCategory,
 } from '@unchainedshop/core-orders';
-import { ProductPricingSheet } from '@unchainedshop/core-products';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
 const OrderItemsDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfiguration> = {

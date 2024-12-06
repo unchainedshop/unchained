@@ -7,14 +7,6 @@ export * from './db/ProductVariationsCollection.js';
 export * from './module/configureProductsModule.js';
 export * from './products-settings.js';
 
-export * from './director/ProductDiscountAdapter.js';
-export * from './director/ProductDiscountConfiguration.js';
-export * from './director/ProductDiscountDirector.js';
-
-export * from './director/ProductPricingAdapter.js';
-export * from './director/ProductPricingDirector.js';
-export * from './director/ProductPricingSheet.js';
-
 export * from './module/configureProductMediaModule.js';
 export * from './module/configureProductPrices.js';
 export * from './module/configureProductReviewsModule.js';

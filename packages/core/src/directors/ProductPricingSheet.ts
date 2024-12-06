@@ -1,5 +1,9 @@
-import { BasePricingSheet, IPricingSheet, PricingCalculation } from '@unchainedshop/utils';
-import { PricingSheetParams } from '@unchainedshop/utils';
+import {
+  PricingSheetParams,
+  BasePricingSheet,
+  IPricingSheet,
+  PricingCalculation,
+} from '@unchainedshop/utils';
 
 export interface ProductPricingCalculation extends PricingCalculation {
   discountId?: string;

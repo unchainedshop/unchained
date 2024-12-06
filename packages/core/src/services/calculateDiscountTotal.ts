@@ -1,13 +1,18 @@
-import { DeliveryPricingRowCategory, DeliveryPricingSheet } from '../directors/index.js';
-import { ProductPricingRowCategory, ProductPricingSheet } from '@unchainedshop/core-products';
 import {
   Order,
   OrderDiscount,
   OrderPricingRowCategory,
   OrderPricingSheet,
 } from '@unchainedshop/core-orders';
-import { PaymentPricingRowCategory, PaymentPricingSheet } from '../directors/PaymentPricingSheet.js';
 import { Modules } from '../modules.js';
+import {
+  DeliveryPricingRowCategory,
+  DeliveryPricingSheet,
+  ProductPricingRowCategory,
+  ProductPricingSheet,
+  PaymentPricingRowCategory,
+  PaymentPricingSheet,
+} from '../directors/index.js';
 
 export const calculateDiscountTotalService = async (
   order: Order,

@@ -1,14 +1,14 @@
 import { BasePricingDirector, IPricingDirector } from '@unchainedshop/utils';
+import { Product, ProductConfiguration } from '@unchainedshop/core-products';
+import { User } from '@unchainedshop/core-users';
+import { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
 import {
   IProductPricingSheet,
   ProductPricingCalculation,
   ProductPricingSheet,
-  Product,
-  ProductConfiguration,
-} from '@unchainedshop/core-products';
-import { IProductPricingAdapter, ProductPricingAdapterContext } from './ProductPricingAdapter.js';
-import type { User } from '@unchainedshop/core-users';
-import type { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
+  IProductPricingAdapter,
+  ProductPricingAdapterContext,
+} from '../directors/index.js';
 
 export type ProductPricingContext =
   | {

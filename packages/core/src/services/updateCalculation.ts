@@ -5,10 +5,12 @@ import {
 } from '@unchainedshop/core-orders';
 import { initCartProvidersService } from './initCartProviders.js';
 import { Modules } from '../modules.js';
-import { ProductPricingDirector } from '@unchainedshop/core-products';
-import { PaymentPricingDirector } from '../directors/PaymentPricingDirector.js';
 import { updateSchedulingService } from './updateScheduling.js';
-import { DeliveryPricingDirector } from '../directors/index.js';
+import {
+  DeliveryPricingDirector,
+  ProductPricingDirector,
+  PaymentPricingDirector,
+} from '../directors/index.js';
 
 export const updateCalculationService = async (orderId: string, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;

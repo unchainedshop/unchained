@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
+import { ProductPricingDirector } from '@unchainedshop/core';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';

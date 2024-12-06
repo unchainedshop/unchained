@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import {
+  UnchainedCore,
   PaymentPricingAdapter,
   PaymentPricingDirector,
   IPaymentPricingAdapter,

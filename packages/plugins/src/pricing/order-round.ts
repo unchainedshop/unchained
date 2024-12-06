@@ -1,6 +1,10 @@
 import { UnchainedCore } from '@unchainedshop/core';
-import { OrderPricingAdapter, OrderPricingDirector } from '@unchainedshop/core-orders';
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
+import {
+  OrderPricingAdapter,
+  OrderPricingDirector,
+  IOrderPricingAdapter,
+  OrderPricingRowCategory,
+} from '@unchainedshop/core-orders';
 
 interface PriceRoundSettings {
   defaultPrecision: number;

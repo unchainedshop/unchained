@@ -1,6 +1,9 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IProductPricingAdapter } from '@unchainedshop/core-products';
-import { ProductPricingAdapter, ProductPricingDirector } from '@unchainedshop/core-products';
+import {
+  UnchainedCore,
+  ProductPricingAdapter,
+  ProductPricingDirector,
+  IProductPricingAdapter,
+} from '@unchainedshop/core';
 
 interface PriceRoundSettings {
   defaultPrecision: number;
