@@ -98,7 +98,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
     return ProductPricingSheet({
       calculation,
       currency: pricingContext.currency,
-      quantity: pricingContext.quantity,
+      quantity: pricingContext.quantity ?? 1,
     });
   },
 };

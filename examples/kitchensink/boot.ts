@@ -44,6 +44,9 @@ const start = async () => {
           const cookies = cookie.parse(req.headers.get('cookie') || '');
           return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
         },
+        enabled(req) {
+          return process.env.NODE_ENV === 'production';
+        },
       }),
     ],
     options: {
