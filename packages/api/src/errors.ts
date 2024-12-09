@@ -101,10 +101,22 @@ export const OrderNumberAlreadyExistsError = createError(
   'OrderNumberAlreadyExistsError',
   'This orderNumber has already been used by another order',
 );
+
 export const OrderDiscountNotFoundError = createError(
   'OrderDiscountNotFoundError',
   'Order discount not found',
 );
+
+export const OrderDiscountCodeNotValidError = createError(
+  'OrderDiscountCodeNotValidError',
+  'Order discount code not valid',
+);
+
+export const OrderDiscountCodeAlreadyPresentError = createError(
+  'OrderDiscountCodeAlreadyPresentError',
+  'Order discount code already present',
+);
+
 export const OrderDeliveryNotFoundError = createError(
   'OrderDeliveryNotFoundError',
   'Order delivery not found',

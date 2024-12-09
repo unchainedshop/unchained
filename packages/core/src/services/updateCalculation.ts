@@ -40,7 +40,11 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
             });
 
       if (!isValid) {
-        await modules.orders.discounts.delete(orderDiscount._id, unchainedAPI);
+        if (orderDiscount.trigger === OrderDiscountTrigger.USER) {
+          // Release
+          await adapter.release();
+        }
+        await modules.orders.discounts.delete(orderDiscount._id);
       }
     }),
   );

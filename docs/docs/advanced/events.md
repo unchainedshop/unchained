@@ -84,7 +84,6 @@ Below are events tracked under each module under the box:
 | ORDER_SIGN_PAYMENT          | Order payment provider is signed               | `{ orderPayment: {}, transactionContext: {} }` |
 | ORDER_REMOVE                | Order is deleted                               | `{ orderId: string }`                          |
 | ORDER_ADD_PRODUCT           | Product is added to an order                   | `{ orderPosition : {} }`                       |
-| ORDER_ADD_DISCOUNT          | Discount is added to an order                  | `{ discount: {} }`                             |
 | ORDER_CONFIRMED             | Order is confirmed                             | `{ order: {} }`                                |
 | ORDER_FULLFILLED            | All requested items are fullfiled for an order | `{ order: {} }`                                |
 | ORDER_REJECTED              | Order is rejected                              | `{ order: {} }`                                |

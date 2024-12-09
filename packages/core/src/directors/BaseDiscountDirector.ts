@@ -1,4 +1,3 @@
-import { log } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.js';
 
@@ -9,7 +8,9 @@ export type IDiscountDirector<DiscountConfiguration, Context> = IBaseDirector<
     discountContext: DiscountContext,
     unchainedAPI: Context,
   ) => Promise<{
-    resolveDiscountKeyFromStaticCode: (params: { code: string }) => Promise<string | null>;
+    resolveDiscountAdapterFromStaticCode: (params: {
+      code: string;
+    }) => Promise<IDiscountAdapter<DiscountConfiguration, Context>>;
     findSystemDiscounts: () => Promise<Array<string>>;
   }>;
 };
@@ -28,10 +29,8 @@ export const BaseDiscountDirector = <DiscountConfigurationType, Context>(
       const context = { ...discountContext, ...unchainedAPI };
 
       return {
-        resolveDiscountKeyFromStaticCode: async (options) => {
+        resolveDiscountAdapterFromStaticCode: async (options) => {
           if (!context.order) return null;
-
-          log(`DiscountDirector -> Find user discount for static code ${options?.code}`);
 
           const discounts = await Promise.all(
             baseDirector
@@ -40,13 +39,13 @@ export const BaseDiscountDirector = <DiscountConfigurationType, Context>(
               .map(async (Adapter) => {
                 const adapter = await Adapter.actions({ context });
                 return {
-                  key: Adapter.key,
+                  Adapter,
                   isValid: await adapter.isValidForCodeTriggering(options),
                 };
               }),
           );
 
-          return discounts.find(({ isValid }) => isValid === true)?.key;
+          return discounts.find(({ isValid }) => isValid === true)?.Adapter;
         },
 
         async findSystemDiscounts() {
@@ -65,9 +64,6 @@ export const BaseDiscountDirector = <DiscountConfigurationType, Context>(
             .filter(({ isValid }) => isValid === true)
             .map(({ key }) => key);
 
-          if (validDiscounts.length > 0) {
-            log(`DiscountDirector -> Found ${validDiscounts.length} system discounts`);
-          }
           return validDiscounts;
         },
       };
