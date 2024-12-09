@@ -52,9 +52,11 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
 
   async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;
+    const { quantity = 1, currency } = context;
 
     if ('item' in context) {
-      const { item, quantity, currency } = context;
+      const { item } = context;
+
       const product = await modules.products.findProduct({
         productId: item.productId,
       });
@@ -82,11 +84,11 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
     return {
       ...unchainedAPI,
       country: context.country,
-      currency: context.currency,
+      currency,
       discounts: [],
       order: context.order,
       product: context.product,
-      quantity: context.quantity,
+      quantity,
       configuration: context.configuration,
       user: context.user,
     };
