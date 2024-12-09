@@ -50,7 +50,7 @@ export default async function addCartProduct(
     configuration,
     productId: product._id,
     originalProductId,
-    orderId,
+    orderId: order._id,
   });
 
   await services.orders.updateCalculation(order._id, context);

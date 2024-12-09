@@ -6,7 +6,7 @@ import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders
 import { Product } from '@unchainedshop/core-products';
 import { Quotation } from '@unchainedshop/core-quotations';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
-import { Price } from '@unchainedshop/utils';
+import { Price, sha256 } from '@unchainedshop/utils';
 import { ProductPricingSheet } from '@unchainedshop/core';
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
@@ -123,10 +123,7 @@ export const OrderItem = {
     if (pricing.isValid()) {
       const price = pricing.total(params);
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([orderPosition._id, JSON.stringify(params), JSON.stringify(price)].join(''))
-          .digest('hex'),
+        _id: await sha256([orderPosition._id, JSON.stringify(params), JSON.stringify(price)].join('')),
         ...price,
       };
     }
@@ -143,10 +140,7 @@ export const OrderItem = {
     if (pricing.isValid()) {
       const price = pricing.unitPrice(params);
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([`${orderPosition._id}-unit`, price.amount, pricing.currency].join(''))
-          .digest('hex'),
+        _id: await sha256([`${orderPosition._id}-unit`, price.amount, pricing.currency].join('')),
         ...price,
       };
     }

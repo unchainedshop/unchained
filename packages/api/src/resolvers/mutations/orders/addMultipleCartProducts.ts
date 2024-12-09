@@ -73,7 +73,7 @@ export default async function addMultipleCartProducts(
         configuration,
         originalProductId: originalProduct._id,
         productId: product._id,
-        orderId,
+        orderId: order._id,
       });
       positions.push(position);
       return positions;
