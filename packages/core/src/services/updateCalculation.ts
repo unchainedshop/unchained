@@ -41,7 +41,6 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
 
       if (!isValid) {
         if (orderDiscount.trigger === OrderDiscountTrigger.USER) {
-          // Release
           await adapter.release();
         }
         await modules.orders.discounts.delete(orderDiscount._id);

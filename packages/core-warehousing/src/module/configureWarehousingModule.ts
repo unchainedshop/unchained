@@ -5,7 +5,6 @@ import {
   WarehousingProvidersCollection,
   WarehousingProviderType,
 } from '../db/WarehousingProvidersCollection.js';
-import { WarehousingDirector } from '@unchainedshop/core';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 
 type WarehousingProviderQuery = {
@@ -157,13 +156,9 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
     // Mutations
     create: async (doc: WarehousingProvider): Promise<WarehousingProvider> => {
-      const Adapter = WarehousingDirector.getAdapter(doc.adapterKey);
-      if (!Adapter) return null;
-
       const { insertedId: warehousingProviderId } = await WarehousingProviders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
-        configuration: Adapter.initialConfiguration,
         ...doc,
       });
 
