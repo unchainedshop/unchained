@@ -8,17 +8,18 @@ import {
 } from './DeliveryAdapter.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryStatus } from '@unchainedshop/core-orders';
+import { Modules } from '../modules.js';
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   sendOrderDelivery: (
     orderDelivery: OrderDelivery,
     transactionContext: Record<string, any>,
-    unchainedAPI,
+    unchainedAPI: { modules: Modules },
   ) => Promise<OrderDelivery>;
   actions: (
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
-    unchainedAPI,
+    unchainedAPI: { modules: Modules },
   ) => Promise<DeliveryAdapterActions>;
 };
 
@@ -94,7 +95,9 @@ export const DeliveryDirector: IDeliveryDirector = {
   },
 
   sendOrderDelivery: async (orderDelivery, transactionContext, unchainedAPI) => {
-    if (unchainedAPI.modules.delivery.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN)
+    if (
+      unchainedAPI.modules.orders.deliveries.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN
+    )
       return orderDelivery;
 
     const order = await unchainedAPI.modules.orders.findOrder({ orderId: orderDelivery.orderId });
@@ -122,7 +125,7 @@ export const DeliveryDirector: IDeliveryDirector = {
     const arbitraryResponseData = await adapter.send();
 
     if (arbitraryResponseData) {
-      return await unchainedAPI.modules.delivery.updateStatus(orderDelivery._id, {
+      return await unchainedAPI.modules.orders.deliveries.updateStatus(orderDelivery._id, {
         status: OrderDeliveryStatus.DELIVERED,
         info: JSON.stringify(arbitraryResponseData),
       });

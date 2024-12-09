@@ -52,7 +52,7 @@ const findNextStatus = async (
     return OrderStatus.PENDING;
   }
 
-  if (status === OrderStatus.FULLFILLED || OrderStatus.REJECTED) {
+  if (status === OrderStatus.FULLFILLED || status === OrderStatus.REJECTED) {
     // Final!
     return status;
   }

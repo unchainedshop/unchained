@@ -660,6 +660,8 @@ export const configureUsersModule = async ({
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
 
+      if (!lastBillingAddress) return user;
+
       const modifier = {
         $set: {
           lastBillingAddress,
