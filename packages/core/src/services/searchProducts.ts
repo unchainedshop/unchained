@@ -43,8 +43,6 @@ export const searchProductsService = async (
     filterActions,
   )(productIds);
 
-  const filterProductIds = modules.filters.filterProductIds;
-
   const findFilters = async () => {
     if (!filterSelector) return [];
 
@@ -78,7 +76,7 @@ export const searchProductsService = async (
             forceLiveCollection,
             otherFilters,
           },
-          filterProductIds,
+          FilterDirector.filterProductIds,
           filterActions,
           unchainedAPI,
         );
@@ -98,7 +96,7 @@ export const searchProductsService = async (
   }
 
   const filteredProductIds = await productFacetedSearch(
-    filterProductIds,
+    FilterDirector.filterProductIds,
     searchConfiguration,
     unchainedAPI,
   )(totalProductIds);

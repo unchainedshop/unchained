@@ -1,6 +1,6 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { FilterInputText } from '@unchainedshop/core';
+import { FilterDirector, FilterInputText } from '@unchainedshop/core';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function createFilterOption(
@@ -17,7 +17,8 @@ export default async function createFilterOption(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  const filter = await modules.filters.createFilterOption(filterId, { value: option }, context);
+  const filter = await modules.filters.createFilterOption(filterId, { value: option });
+  await FilterDirector.invalidateProductIdCache(filter, context);
 
   if (texts) {
     await modules.filters.texts.updateTexts({ filterId, filterOptionValue: option }, texts);

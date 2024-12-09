@@ -29,6 +29,7 @@ import { createManualOrderDiscountService } from './createManualOrderDiscount.js
 import { initializeEnrollmentService } from './initializeEnrollment.js';
 import { activateEnrollmentService } from './activateEnrollment.js';
 import { terminateEnrollmentService } from './terminateEnrollment.js';
+import { invalidateFilterCacheService } from './invalidateFilterCache.js';
 
 const services = {
   bookmarks: {
@@ -76,6 +77,7 @@ const services = {
   filters: {
     searchAssortments: searchAssortmentsService,
     searchProducts: searchProductsService,
+    invalidateFilterCache: invalidateFilterCacheService,
   },
 };
 

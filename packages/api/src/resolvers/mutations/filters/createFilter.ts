@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { Filter } from '@unchainedshop/core-filters';
 import { Context } from '../../../context.js';
-import { FilterInputText } from '@unchainedshop/core';
+import { FilterDirector, FilterInputText } from '@unchainedshop/core';
 
 export default async function createFilter(
   root: never,
@@ -11,14 +11,14 @@ export default async function createFilter(
   const { modules, localeContext, userId } = context;
   log('mutation createFilter', { userId });
 
-  const newFilter = await modules.filters.create(
-    {
-      ...filter,
-      title: '',
-      locale: localeContext.language,
-    },
-    context,
-  );
+  const newFilter = await modules.filters.create({
+    ...filter,
+    title: '',
+    locale: localeContext.language,
+  });
+
+  await FilterDirector.invalidateProductIdCache(newFilter, context);
+
   if (texts) {
     await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);
   }
