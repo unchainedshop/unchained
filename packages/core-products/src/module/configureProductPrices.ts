@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import { ProductPricingDirector } from '@unchainedshop/core';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
@@ -85,44 +84,10 @@ export const configureProductPricesModule = ({
     return null;
   };
 
-  const userPrice: ProductsModule['prices']['userPrice'] = async (
-    product,
-    { quantity = 1, country, currency, useNetPrice, userId, configuration },
-    unchainedAPI,
-  ) => {
-    const user = await unchainedAPI.modules.users.findUserById(userId);
-
-    const pricingContext = {
-      product,
-      user,
-      country,
-      currency,
-      quantity,
-      configuration,
-    };
-
-    const calculated = await ProductPricingDirector.rebuildCalculation(pricingContext, unchainedAPI);
-
-    if (!calculated || !calculated.length) return null;
-
-    const pricing = ProductPricingDirector.calculationSheet(pricingContext, calculated);
-    const unitPrice = pricing.unitPrice({ useNetPrice });
-
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
-        .digest('hex'),
-      ...unitPrice,
-      isNetPrice: useNetPrice,
-      isTaxable: pricing.taxSum() > 0,
-      currencyCode: pricing.currency,
-    };
-  };
-
   return {
     price: catalogPrice,
-    userPrice,
+
+    priceRange: getPriceRange,
 
     catalogPrices: (product) => {
       const prices = (product.commerce && product.commerce.pricing) || [];
@@ -155,67 +120,6 @@ export const configureProductPricesModule = ({
               quantity,
               currency,
             }),
-          ),
-        )
-      ).filter(Boolean);
-
-      if (!filteredPrices.length) return null;
-
-      const { minPrice, maxPrice } = getPriceRange({
-        productId: product._id as string,
-        prices: filteredPrices,
-      });
-
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update(
-            [
-              product._id,
-              Math.random(),
-              minPrice.amount,
-              minPrice.currencyCode,
-              maxPrice.amount,
-              maxPrice.currencyCode,
-            ].join(''),
-          )
-          .digest('hex'),
-        minPrice,
-        maxPrice,
-      };
-    },
-
-    simulatedPriceRange: async (
-      product,
-      {
-        userId,
-        country,
-        currency,
-        includeInactive = false,
-        quantity,
-        useNetPrice = false,
-        vectors = [],
-      },
-      unchainedAPI,
-    ) => {
-      const products = await proxyProducts(product, vectors, {
-        includeInactive,
-      });
-
-      const filteredPrices = (
-        await Promise.all(
-          products.map((proxyProduct) =>
-            userPrice(
-              proxyProduct,
-              {
-                quantity,
-                currency,
-                country,
-                userId,
-                useNetPrice,
-              },
-              unchainedAPI,
-            ),
           ),
         )
       ).filter(Boolean);

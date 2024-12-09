@@ -5,6 +5,8 @@ import {
 } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
+import { ProductPricingDirector } from '@unchainedshop/core';
+import { sha256 } from '@unchainedshop/utils';
 
 export const PlanProduct = {
   ...Product,
@@ -38,21 +40,34 @@ export const PlanProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPrice> {
-    const { countryContext, modules } = requestContext;
+    const { countryContext, user } = requestContext;
     const currency = forcedCurrencyCode || requestContext.currencyContext;
 
-    return modules.products.prices.userPrice(
-      obj,
-      {
-        quantity,
-        userId: requestContext.userId,
-        currency,
-        country: countryContext,
-        useNetPrice,
-        configuration,
-      },
-      requestContext,
-    );
+    const pricingContext = {
+      product: obj,
+      user,
+      country: countryContext,
+      currency,
+      quantity,
+      configuration,
+    };
+
+    const calculated = await ProductPricingDirector.rebuildCalculation(pricingContext, requestContext);
+
+    if (!calculated || !calculated.length) return null;
+
+    const pricing = ProductPricingDirector.calculationSheet(pricingContext, calculated);
+    const unitPrice = pricing.unitPrice({ useNetPrice });
+
+    return {
+      _id: await sha256(
+        [obj._id, countryContext, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''),
+      ),
+      ...unitPrice,
+      isNetPrice: useNetPrice,
+      isTaxable: pricing.taxSum() > 0,
+      currencyCode: pricing.currency,
+    };
   },
 
   async leveledCatalogPrices(

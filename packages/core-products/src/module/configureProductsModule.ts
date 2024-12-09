@@ -149,22 +149,13 @@ export type ProductsModule = {
   ) => Promise<Product>;
 
   prices: {
+    priceRange: (params: { productId: string; prices: Array<ProductPrice> }) => {
+      minPrice: ProductPrice;
+      maxPrice: ProductPrice;
+    };
     price: (
       product: Product,
       params: { country: string; currency?: string; quantity?: number },
-    ) => Promise<ProductPrice>;
-
-    userPrice: (
-      prodct: Product,
-      params: {
-        userId: string;
-        country: string;
-        currency: string;
-        quantity?: number;
-        useNetPrice?: boolean;
-        configuration?: Array<ProductConfiguration>;
-      },
-      unchainedAPI,
     ) => Promise<ProductPrice>;
 
     catalogPrices: (prodct: Product) => Array<ProductPrice>;
@@ -187,20 +178,6 @@ export type ProductsModule = {
         quantity?: number;
         vectors: Array<ProductConfiguration>;
       },
-    ) => Promise<ProductPriceRange>;
-
-    simulatedPriceRange: (
-      prodct: Product,
-      params: {
-        userId: string;
-        country: string;
-        currency: string;
-        includeInactive?: boolean;
-        quantity?: number;
-        useNetPrice?: boolean;
-        vectors: Array<ProductConfiguration>;
-      },
-      unchainedAPI,
     ) => Promise<ProductPriceRange>;
 
     rates: {

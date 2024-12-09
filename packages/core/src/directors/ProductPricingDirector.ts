@@ -19,7 +19,7 @@ export type ProductPricingContext =
       discounts?: Array<OrderDiscount>;
       order?: Order;
       product?: Product;
-      configuration: Array<ProductConfiguration>;
+      configuration?: Array<ProductConfiguration>;
       user?: User;
     }
   | {
