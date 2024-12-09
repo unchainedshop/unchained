@@ -42,7 +42,7 @@
     "passport-strategy": "^1.0.0"
   },
   "dependencies": {
-    "@metamask/eth-sig-util": "^8.1.0",
+    "@metamask/eth-sig-util": "^8.1.1",
     "@unchainedshop/core": "^3.0.0-alpha4",
     "@unchainedshop/events": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
