@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from '@node-rs/bcrypt';
 import { ModuleInput, Address, Contact } from '@unchainedshop/mongodb';
 import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
