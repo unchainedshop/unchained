@@ -60,7 +60,7 @@ export const configureOrderDiscountsModule = ({
         (await OrderDiscounts.countDocuments({
           code,
           orderId,
-        })) >= 0
+        })) > 0
       );
     },
 

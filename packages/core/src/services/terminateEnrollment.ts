@@ -31,5 +31,5 @@ export const terminateEnrollmentService = async (
     },
   });
 
-  return enrollment;
+  return updatedEnrollment;
 };

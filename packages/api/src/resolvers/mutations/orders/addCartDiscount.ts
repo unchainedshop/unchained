@@ -21,8 +21,8 @@ export default async function addCartDiscount(
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   // 1. check if discount code is not already used
-  if (await modules.orders.discounts.isDiscountCodeUsed({ code, orderId }))
-    throw new OrderDiscountCodeAlreadyPresentError({ orderId, code });
+  if (await modules.orders.discounts.isDiscountCodeUsed({ code, orderId: order._id }))
+    throw new OrderDiscountCodeAlreadyPresentError({ orderId: order._id, code });
 
   const discount = await services.orders.createManualOrderDiscount({ order, code }, context);
   if (!discount) throw new OrderDiscountCodeNotValidError({ code });
