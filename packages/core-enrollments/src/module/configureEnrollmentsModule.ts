@@ -16,7 +16,6 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
-import { EnrollmentDirector } from '@unchainedshop/core';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
@@ -59,6 +58,12 @@ export const configureEnrollmentsModule = async ({
   enrollmentsSettings.configureSettings(enrollmentOptions);
 
   const Enrollments = await EnrollmentsCollection(db);
+
+  const isExpired = (enrollment: Enrollment, { referenceDate }: { referenceDate?: Date }) => {
+    const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
+    const expiryDate = new Date(enrollment.expires);
+    return relevantDate.getTime() > expiryDate.getTime();
+  };
 
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
@@ -110,94 +115,6 @@ export const configureEnrollmentsModule = async ({
     await emit('ENROLLMENT_UPDATE', { enrollment, field: 'status' });
 
     return updatedEnrollment;
-  };
-
-  const reactivateEnrollment = async (enrollment: Enrollment) => {
-    return enrollment;
-  };
-  const isExpired = (enrollment: Enrollment, { referenceDate }: { referenceDate?: Date }) => {
-    const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
-    const expiryDate = new Date(enrollment.expires);
-    return relevantDate.getTime() > expiryDate.getTime();
-  };
-
-  const findNextStatus = async (enrollment: Enrollment, unchainedAPI): Promise<EnrollmentStatus> => {
-    let status = enrollment.status;
-    const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
-
-    if (status === EnrollmentStatus.INITIAL || status === EnrollmentStatus.PAUSED) {
-      if (await director.isValidForActivation()) {
-        status = EnrollmentStatus.ACTIVE;
-      }
-    } else if (status === EnrollmentStatus.ACTIVE) {
-      if (await director.isOverdue()) {
-        status = EnrollmentStatus.PAUSED;
-      }
-    } else if (isExpired(enrollment, {})) {
-      status = EnrollmentStatus.TERMINATED;
-    }
-
-    return status;
-  };
-
-  const processEnrollment = async (enrollment: Enrollment, unchainedAPI) => {
-    let status = await findNextStatus(enrollment, unchainedAPI);
-
-    if (status === EnrollmentStatus.ACTIVE) {
-      const nextEnrollment = await reactivateEnrollment(enrollment);
-      status = await findNextStatus(nextEnrollment, unchainedAPI);
-    }
-
-    return updateStatus(enrollment._id, { status, info: 'enrollment processed' });
-  };
-
-  const initializeEnrollment = async (
-    enrollment: Enrollment,
-    params: { orderIdForFirstPeriod?: string; reason: string },
-    unchainedAPI,
-  ) => {
-    const { modules } = unchainedAPI;
-
-    const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
-    const period = await director.nextPeriod();
-
-    if (period && (params.orderIdForFirstPeriod || period.isTrial)) {
-      const intializedEnrollment = await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
-        ...period,
-        orderId: params.orderIdForFirstPeriod,
-      });
-
-      return processEnrollment(intializedEnrollment, unchainedAPI);
-    }
-
-    return processEnrollment(enrollment, unchainedAPI);
-  };
-
-  const sendStatusToCustomer = async (
-    enrollment: Enrollment,
-    params: { locale?: Intl.Locale; reason?: string },
-    unchainedAPI,
-  ) => {
-    const { modules } = unchainedAPI;
-
-    let { locale } = params;
-    if (!locale) {
-      const user = await modules.users.findUserById(enrollment.userId);
-      locale = modules.users.userLocale(user);
-    }
-
-    await modules.worker.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        reason: params.reason || 'status_change',
-        locale,
-        template: 'ENROLLMENT_STATUS',
-        enrollmentId: enrollment._id,
-      },
-    });
-
-    return enrollment;
   };
 
   const updateEnrollmentField =
@@ -269,33 +186,6 @@ export const configureEnrollmentsModule = async ({
 
     isExpired,
 
-    // Processing
-    terminateEnrollment: async (enrollment: Enrollment, unchainedAPI) => {
-      if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
-
-      let updatedEnrollment = await updateStatus(enrollment._id, {
-        status: EnrollmentStatus.TERMINATED,
-        info: 'terminated manually',
-      });
-
-      updatedEnrollment = await processEnrollment(updatedEnrollment, unchainedAPI);
-
-      return sendStatusToCustomer(updatedEnrollment, {}, unchainedAPI);
-    },
-
-    activateEnrollment: async (enrollment: Enrollment, unchainedAPI) => {
-      if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
-
-      let updatedEnrollment = await updateStatus(enrollment._id, {
-        status: EnrollmentStatus.ACTIVE,
-        info: 'activated manually',
-      });
-
-      updatedEnrollment = await processEnrollment(updatedEnrollment, unchainedAPI);
-
-      return sendStatusToCustomer(updatedEnrollment, {}, unchainedAPI);
-    },
-
     // Mutations
     addEnrollmentPeriod: async (enrollmentId: string, period: EnrollmentPeriod): Promise<Enrollment> => {
       const { start, end, orderId, isTrial } = period;
@@ -326,12 +216,7 @@ export const configureEnrollmentsModule = async ({
     },
 
     create: async (
-      {
-        countryCode,
-        currencyCode,
-        orderIdForFirstPeriod,
-        ...enrollmentData
-      }: Omit<Enrollment, 'status' | 'periods' | 'log'>,
+      { countryCode, currencyCode, ...enrollmentData }: Omit<Enrollment, 'status' | 'periods' | 'log'>,
       unchainedAPI,
     ): Promise<Enrollment> => {
       const { modules } = unchainedAPI;
@@ -353,29 +238,10 @@ export const configureEnrollmentsModule = async ({
         log: [],
       });
 
-      const newEnrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
-
-      const reason = 'new_enrollment';
-
-      const initializedEnrollment = await initializeEnrollment(
-        newEnrollment,
-        {
-          orderIdForFirstPeriod,
-          reason,
-        },
-        unchainedAPI,
-      );
-
-      const enrollment = await sendStatusToCustomer(
-        initializedEnrollment,
-        {
-          reason,
-        },
-        unchainedAPI,
-      );
-
+      const enrollment = await Enrollments.findOne({
+        _id: enrollmentId,
+      });
       await emit('ENROLLMENT_CREATE', { enrollment });
-
       return enrollment;
     },
 
@@ -417,11 +283,7 @@ export const configureEnrollmentsModule = async ({
     updateDelivery: updateEnrollmentField<Enrollment['delivery']>('delivery'),
     updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),
 
-    updatePlan: async (
-      enrollmentId: string,
-      plan: EnrollmentPlan,
-      unchainedAPI,
-    ): Promise<Enrollment> => {
+    updatePlan: async (enrollmentId: string, plan: EnrollmentPlan): Promise<Enrollment> => {
       const enrollment = await Enrollments.findOneAndUpdate(
         generateDbFilterById(enrollmentId),
         {
@@ -436,11 +298,7 @@ export const configureEnrollmentsModule = async ({
       );
 
       await emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
-
-      const reason = 'updated_plan';
-      const initializedEnrollment = await initializeEnrollment(enrollment, { reason }, unchainedAPI);
-
-      return sendStatusToCustomer(initializedEnrollment, { reason }, unchainedAPI);
+      return enrollment;
     },
 
     updateStatus,

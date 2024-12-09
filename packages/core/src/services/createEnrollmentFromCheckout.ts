@@ -3,6 +3,7 @@ import { Product } from '@unchainedshop/core-products';
 import { Enrollment } from '@unchainedshop/core-enrollments';
 import { Modules } from '../modules.js';
 import { EnrollmentDirector } from '../directors/index.js';
+import { initializeEnrollmentService } from './initializeEnrollment.js';
 
 export const createEnrollmentFromCheckoutService = async (
   order: Order,
@@ -58,7 +59,15 @@ export const createEnrollmentFromCheckoutService = async (
         unchainedAPI,
       );
 
-      return modules.enrollments.create(enrollmentData, unchainedAPI);
+      const enrollment = await modules.enrollments.create(enrollmentData, unchainedAPI);
+      return await initializeEnrollmentService(
+        enrollment,
+        {
+          orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
+          reason: 'new_enrollment',
+        },
+        unchainedAPI,
+      );
     }),
   );
 };

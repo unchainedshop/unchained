@@ -26,6 +26,9 @@ import { confirmOrderService } from './confirmOrder.js';
 import { rejectOrderService } from './rejectOrder.js';
 import { discountedEntitiesService } from './discountedEntities.js';
 import { createManualOrderDiscountService } from './createManualOrderDiscount.js';
+import { initializeEnrollmentService } from './initializeEnrollment.js';
+import { activateEnrollmentService } from './activateEnrollment.js';
+import { terminateEnrollmentService } from './terminateEnrollment.js';
 
 const services = {
   bookmarks: {
@@ -65,6 +68,10 @@ const services = {
   },
   enrollments: {
     createEnrollmentFromCheckout: createEnrollmentFromCheckoutService,
+    processEnrollment: processOrderService,
+    initializeEnrollment: initializeEnrollmentService,
+    activateEnrollment: activateEnrollmentService,
+    terminateEnrollment: terminateEnrollmentService,
   },
   filters: {
     searchAssortments: searchAssortmentsService,

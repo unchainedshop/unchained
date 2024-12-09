@@ -171,7 +171,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
+            await services.enrollments.terminateEnrollment(enrollment, resolvedContext);
           }
         }
 
@@ -180,7 +180,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
+            await services.enrollments.terminateEnrollment(enrollment, resolvedContext);
           }
         }
         logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
