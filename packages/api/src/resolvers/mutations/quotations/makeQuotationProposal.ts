@@ -8,7 +8,7 @@ export default async function makeQuotationProposal(
   params: { quotationId: string; quotationContext?: any },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { quotationId, ...transactionContext } = params;
 
   log('mutation makeQuotationProposal', { quotationId, userId });
@@ -22,5 +22,5 @@ export default async function makeQuotationProposal(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return modules.quotations.proposeQuotation(quotation, transactionContext, context);
+  return services.quotations.proposeQuotation(quotation, transactionContext, context);
 }

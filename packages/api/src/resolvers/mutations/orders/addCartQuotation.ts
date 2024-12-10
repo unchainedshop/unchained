@@ -10,6 +10,7 @@ import {
   ProductNotFoundError,
 } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { QuotationDirector } from '@unchainedshop/core';
 
 export default async function addCartQuotation(
   root: never,
@@ -52,14 +53,11 @@ export default async function addCartQuotation(
   )
     throw new ProductNotFoundError({ productId: quotation.productId });
 
-  const quotationConfiguration = await modules.quotations.transformItemConfiguration(
-    quotation,
-    {
-      quantity,
-      configuration,
-    },
-    context,
-  );
+  const director = await QuotationDirector.actions({ quotation }, context);
+  const quotationConfiguration = await director.transformItemConfiguration({
+    quantity,
+    configuration,
+  });
 
   const updatedOrderPosition = await modules.orders.positions.addProductItem({
     quantity: quotationConfiguration.quantity,

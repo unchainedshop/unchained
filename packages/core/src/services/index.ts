@@ -30,6 +30,11 @@ import { initializeEnrollmentService } from './initializeEnrollment.js';
 import { activateEnrollmentService } from './activateEnrollment.js';
 import { terminateEnrollmentService } from './terminateEnrollment.js';
 import { invalidateFilterCacheService } from './invalidateFilterCache.js';
+import { fullfillQuotationService } from './fullfillQuotation.js';
+import { processQuotationService } from './processQuotation.js';
+import { proposeQuotationService } from './proposeQuotation.js';
+import { rejectQuotationService } from './rejectQuotation.js';
+import { verifyQuotationService } from './verifyQuotation.js';
 
 const services = {
   bookmarks: {
@@ -73,6 +78,13 @@ const services = {
     initializeEnrollment: initializeEnrollmentService,
     activateEnrollment: activateEnrollmentService,
     terminateEnrollment: terminateEnrollmentService,
+  },
+  quotations: {
+    fullfillQuotation: fullfillQuotationService,
+    processQuotation: processQuotationService,
+    proposeQuotation: proposeQuotationService,
+    rejectQuotation: rejectQuotationService,
+    verifyQuotation: verifyQuotationService,
   },
   filters: {
     searchAssortments: searchAssortmentsService,

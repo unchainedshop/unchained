@@ -11,6 +11,7 @@ import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheck
 import { ProductTypes } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.js';
+import { fullfillQuotationService } from './fullfillQuotation.js';
 
 const isAutoConfirmationEnabled = async (
   {
@@ -229,8 +230,11 @@ export const processOrderService = async (
       );
       await Promise.all(
         quotationItems.map(async ({ orderPosition }) => {
-          await modules.quotations.fullfillQuotation(
-            orderPosition.quotationId,
+          const quotation = await modules.quotations.findQuotation({
+            quotationId: orderPosition.quotationId,
+          });
+          await fullfillQuotationService(
+            quotation,
             {
               orderId,
               orderPositionId: orderPosition._id,

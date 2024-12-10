@@ -8,7 +8,7 @@ export default async function rejectQuotation(
   params: { quotationId: string; quotationContext?: any },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { quotationId, ...transactionContext } = params;
 
   log('mutation rejectQuotation', { quotationId, userId });
@@ -22,5 +22,5 @@ export default async function rejectQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return modules.quotations.rejectQuotation(quotation, transactionContext, context);
+  return services.quotations.rejectQuotation(quotation, transactionContext, context);
 }
