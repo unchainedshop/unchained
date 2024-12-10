@@ -3,6 +3,10 @@
   "version": "3.0.0-alpha7",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
+  "exports": {
+    ".": "./lib/plugins-index.js",
+    "./*": "./lib/*"
+  },
   "type": "module",
   "scripts": {
     "clean": "tsc -b --clean",
@@ -41,7 +45,8 @@
     "stripe": "^17.4.0",
     "tiny-secp256k1": "^2.2.3",
     "twilio": "^5.3.7",
-    "web-push": "^3.6.3"
+    "web-push": "^3.6.3",
+    "@breejs/later": "^4.2.0"
   },
   "devDependencies": {
     "@redis/client": "^1.6.0",

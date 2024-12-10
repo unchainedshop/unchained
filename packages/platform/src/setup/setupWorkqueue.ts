@@ -1,11 +1,8 @@
 import { UnchainedCore } from '@unchainedshop/core';
-import {
-  EventListenerWorker,
-  IntervalWorker,
-  IntervalWorkerParams,
-  WorkData,
-} from '@unchainedshop/core-worker';
-import { FailedRescheduler } from '@unchainedshop/plugins';
+import { EventListenerWorker } from '@unchainedshop/plugins/worker/EventListenerWorker.js';
+import { IntervalWorker, IntervalWorkerParams } from '@unchainedshop/plugins/worker/IntervalWorker.js';
+import { FailedRescheduler } from '@unchainedshop/plugins/worker/FailedRescheduler.js';
+import { WorkData } from '@unchainedshop/core-worker';
 export interface SetupWorkqueueOptions {
   batchCount?: number;
   disableWorker?: boolean;

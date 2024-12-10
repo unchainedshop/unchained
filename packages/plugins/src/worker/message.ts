@@ -1,5 +1,6 @@
 import { MessagingDirector } from '@unchainedshop/core-messaging';
-import { WorkerAdapter, WorkerDirector, IWorkerAdapter, Work } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { Work } from '@unchainedshop/core-worker';
 
 export const MessageWorker: IWorkerAdapter<
   { template: string; _id?: string; [x: string]: any },

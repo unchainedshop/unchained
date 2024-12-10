@@ -1,11 +1,6 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
-
-export interface WorkResult<Result> {
-  success: boolean;
-  result?: Result;
-  error?: any;
-}
+import { WorkResult } from '@unchainedshop/core-worker';
 
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;

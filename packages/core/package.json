@@ -47,7 +47,8 @@
     "@unchainedshop/core-warehousing": "^3.0.0-alpha4",
     "@unchainedshop/core-worker": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
-    "@unchainedshop/utils": "^3.0.0-alpha4"
+    "@unchainedshop/utils": "^3.0.0-alpha4",
+    "@breejs/later": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

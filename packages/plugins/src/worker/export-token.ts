@@ -1,11 +1,5 @@
-import {
-  WorkerDirector,
-  WorkerAdapter,
-  WorkerEventTypes,
-  Work,
-  IWorkerAdapter,
-} from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/core';
+import { WorkerEventTypes, Work } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, UnchainedCore, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 
 export const ExportTokenWorker: IWorkerAdapter<void, void> = {

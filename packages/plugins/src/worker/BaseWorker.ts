@@ -1,12 +1,7 @@
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
-import { WorkerDirector } from '../../../core/src/directors/WorkerDirector.js';
-import { Work } from '../types.js';
-
-export type WorkData = Pick<
-  Partial<Work>,
-  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker' | 'scheduleId'
-> & { type: string };
+import { Work, WorkData } from '@unchainedshop/core-worker';
+import { WorkerDirector } from '@unchainedshop/core';
 
 export type IWorker<P extends { workerId?: string }> = {
   key: string;
@@ -108,7 +103,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
         const processRecursively = async (recursionCounter = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
-          const doneWork = await unchainedAPI.modules.worker.processNextWork(unchainedAPI, workerId);
+          const doneWork = WorkerDirector.processNextWork(unchainedAPI, workerId);
           if (doneWork) return processRecursively(recursionCounter + 1);
           return null;
         };

@@ -1,5 +1,4 @@
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
-import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import later from '@breejs/later';
 import { xml2json } from 'xml-js';
 import { ProductPriceRate } from '@unchainedshop/core-products';

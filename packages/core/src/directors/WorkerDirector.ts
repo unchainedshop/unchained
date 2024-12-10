@@ -1,10 +1,9 @@
-import { Work, WorkData } from '@unchainedshop/core-worker';
+import { Work, WorkData, WorkResult } from '@unchainedshop/core-worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { ScheduleData } from '@breejs/later';
-import { IWorkerAdapter, WorkResult } from './WorkerAdapter.js';
-
-export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
+import { IWorkerAdapter } from './WorkerAdapter.js';
+import { Modules } from '../modules.js';
 
 export type WorkScheduleConfiguration = Pick<
   WorkData,
@@ -23,6 +22,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
   doWork: (work: Work, unchainedAPI) => Promise<WorkResult<any>>;
+  processNextWork: (unchainedAPI: { modules: Modules }, workerId?: string) => Promise<Work>;
 };
 
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
@@ -110,5 +110,43 @@ export const WorkerDirector: IWorkerDirector = {
       const errorOutput = { error, success: false };
       return errorOutput;
     }
+  },
+
+  processNextWork: async (unchainedAPI: { modules: Modules }, workerId?: string): Promise<Work> => {
+    const adapters = WorkerDirector.getAdapters();
+
+    const allocationMap = await unchainedAPI.modules.worker.allocationMap();
+
+    const types = adapters
+      .filter((adapter) => {
+        // Filter out the external
+        if (adapter.external) return false;
+        if (
+          adapter.maxParallelAllocations &&
+          adapter.maxParallelAllocations <= allocationMap[adapter.type]
+        )
+          return false;
+        return true;
+      })
+      .map((adapter) => adapter.type);
+
+    const worker = workerId ?? unchainedAPI.modules.worker.workerId;
+    const work = await unchainedAPI.modules.worker.allocateWork({
+      types,
+      worker,
+    });
+
+    if (work) {
+      const output = await WorkerDirector.doWork(work, unchainedAPI);
+
+      return await unchainedAPI.modules.worker.finishWork(work._id, {
+        ...output,
+        finished: work.finished || new Date(),
+        started: work.started,
+        worker,
+      });
+    }
+
+    return null;
   },
 };

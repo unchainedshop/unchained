@@ -1,4 +1,3 @@
-import { WorkData, WorkResult } from '../worker-index.js';
 import os from 'os';
 import { createLogger } from '@unchainedshop/logger';
 import {
@@ -10,17 +9,25 @@ import {
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { buildObfuscatedFieldsFilter, SortDirection, SortOption } from '@unchainedshop/utils';
-import { WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.js';
-import {
-  DIRECTOR_MARKED_FAILED_ERROR,
-  WorkerDirector,
-} from '../../../core/src/directors/WorkerDirector.js';
-import { Work } from '../types.js';
+import { Work, WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.js';
 import addMigrations from './migrations/addMigrations.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
+export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
+
 const logger = createLogger('unchained:core-worker');
+
+export type WorkData = Pick<
+  Partial<Work>,
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker' | 'scheduleId'
+> & { type: string };
+
+export interface WorkResult<Result> {
+  success: boolean;
+  result?: Result;
+  error?: any;
+}
 
 export enum WorkerEventTypes {
   ADDED = 'WORK_ADDED',
@@ -49,57 +56,6 @@ export type WorkQueueQuery = {
   status: Array<WorkStatus>;
   queryString?: string;
   scheduled?: { end?: Date; start?: Date };
-};
-
-export type WorkerModule = {
-  activeWorkTypes: () => Promise<Array<string>>;
-  findWork: (query: { workId?: string; originalWorkId?: string }) => Promise<Work>;
-  findWorkQueue: (
-    query: WorkQueueQuery & {
-      sort?: Array<SortOption>;
-      limit?: number;
-      skip?: number;
-    },
-  ) => Promise<Array<Work>>;
-  count: (query: WorkQueueQuery) => Promise<number>;
-  workExists: (query: { workId?: string; originalWorkId?: string }) => Promise<boolean>;
-
-  // Transformations
-  status: (work: Work) => WorkStatus;
-
-  type: (work: Work) => string;
-
-  // Mutations
-  addWork: (data: WorkData) => Promise<Work>;
-
-  allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
-
-  processNextWork: (unchainedAPI, workerId?: string) => Promise<Work>;
-
-  rescheduleWork: (work: Work, scheduled: Date, unchainedAPI) => Promise<Work>;
-
-  ensureOneWork: (work: WorkData) => Promise<Work>;
-
-  ensureNoWork: (work: { priority: number; type: string; scheduleId: string }) => Promise<void>;
-
-  finishWork: (
-    _id: string,
-    data: WorkResult<any> & {
-      finished?: Date;
-      started?: Date;
-      worker?: string;
-    },
-  ) => Promise<Work | null>;
-
-  deleteWork: (_id: string) => Promise<Work | null>;
-
-  markOldWorkAsFailed: (params: {
-    types: Array<string>;
-    worker: string;
-    referenceDate: Date;
-  }) => Promise<Array<Work>>;
-
-  getReport: (params?: { types?: string[]; from?: Date; to?: Date }) => Promise<WorkerReport[]>;
 };
 
 const WORK_STATUS_FILTER_MAP = {
@@ -231,7 +187,7 @@ export const configureWorkerModule = async ({
   db,
   migrationRepository,
   options,
-}: ModuleInput<WorkerSettingsOptions>): Promise<WorkerModule> => {
+}: ModuleInput<WorkerSettingsOptions>) => {
   addMigrations(migrationRepository);
 
   registerEvents(Object.values(WorkerEventTypes));
@@ -240,7 +196,13 @@ export const configureWorkerModule = async ({
 
   const removePrivateFields = buildObfuscatedFieldsFilter(options?.blacklistedVariables);
 
-  const allocateWork: WorkerModule['allocateWork'] = async ({ types, worker = UNCHAINED_WORKER_ID }) => {
+  const allocateWork = async ({
+    types,
+    worker = UNCHAINED_WORKER_ID,
+  }: {
+    types: Array<string>;
+    worker: string;
+  }): Promise<Work> => {
     // Find a work item that is scheduled for now and is not started.
     // Also:
     // - Restrict by types and worker if provided
@@ -266,8 +228,8 @@ export const configureWorkerModule = async ({
     return result;
   };
 
-  const finishWork: WorkerModule['finishWork'] = async (
-    workId,
+  const finishWork = async (
+    workId: string,
     {
       error,
       finished = new Date(),
@@ -275,8 +237,12 @@ export const configureWorkerModule = async ({
       started = new Date(),
       success,
       worker = UNCHAINED_WORKER_ID,
+    }: WorkResult<any> & {
+      finished?: Date;
+      started?: Date;
+      worker?: string;
     },
-  ) => {
+  ): Promise<Work> => {
     const workBeforeUpdate = await WorkQueue.findOne(
       buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] }),
     );
@@ -317,88 +283,35 @@ export const configureWorkerModule = async ({
     return work;
   };
 
-  const processNextWork: WorkerModule['processNextWork'] = async (unchainedAPI, workerId) => {
-    const adapters = WorkerDirector.getAdapters();
-
-    const alreadyAllocatedWork = await WorkQueue.aggregate(
-      [
-        {
-          $match: {
-            started: {
-              $exists: true,
-            },
-            finished: {
-              $exists: false,
-            },
-            deleted: {
-              $exists: false,
-            },
-          },
-        },
-        {
-          $group: {
-            _id: '$type',
-            count: {
-              $sum: 1,
-            },
-          },
-        },
-      ],
-      {
-        allowDiskUse: false,
-      },
-    ).toArray();
-
-    const allocationMap = Object.fromEntries(alreadyAllocatedWork.map((w) => [w._id, w.count]));
-
-    const types = adapters
-      .filter((adapter) => {
-        // Filter out the external
-        if (adapter.external) return false;
-        if (
-          adapter.maxParallelAllocations &&
-          adapter.maxParallelAllocations <= allocationMap[adapter.type]
-        )
-          return false;
-        return true;
-      })
-      .map((adapter) => adapter.type);
-
-    const worker = workerId ?? UNCHAINED_WORKER_ID;
-    const work = await allocateWork({
-      types,
-      worker,
-    });
-
-    if (work) {
-      const output = await WorkerDirector.doWork(work, unchainedAPI);
-
-      return finishWork(work._id, {
-        ...output,
-        finished: work.finished || new Date(),
-        started: work.started,
-        worker,
-      });
-    }
-
-    return null;
-  };
-
   return {
     // Queries
-    activeWorkTypes: async () => {
+
+    workerId: UNCHAINED_WORKER_ID,
+
+    activeWorkTypes: async (): Promise<Array<string>> => {
       const typeList = await WorkQueue.aggregate([{ $group: { _id: '$type' } }]).toArray();
-      return typeList
-        .map((t) => t._id as string)
-        .filter((type) => {
-          return WorkerDirector.getActivePluginTypes().includes(type);
-        });
+      return typeList.map((t) => t._id as string);
     },
 
-    findWork: async ({ workId, originalWorkId }) =>
+    findWork: async ({
+      workId,
+      originalWorkId,
+    }: {
+      workId?: string;
+      originalWorkId?: string;
+    }): Promise<Work> =>
       WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {}),
 
-    findWorkQueue: async ({ limit, skip, sort, ...selectorOptions }) => {
+    findWorkQueue: async ({
+      limit,
+      skip,
+      sort,
+      ...selectorOptions
+    }: WorkQueueQuery & {
+      sort?: Array<SortOption>;
+      limit?: number;
+      skip?: number;
+    }): Promise<Array<Work>> => {
       const selector = buildQuerySelector(selectorOptions);
       return WorkQueue.find(selector, {
         skip,
@@ -407,11 +320,51 @@ export const configureWorkerModule = async ({
       }).toArray();
     },
 
-    count: async (query) => {
+    count: async (query: WorkQueueQuery) => {
       return WorkQueue.countDocuments(buildQuerySelector(query));
     },
 
-    workExists: async ({ workId, originalWorkId }) => {
+    allocationMap: async (): Promise<Record<string, number>> => {
+      const alreadyAllocatedWork = await WorkQueue.aggregate(
+        [
+          {
+            $match: {
+              started: {
+                $exists: true,
+              },
+              finished: {
+                $exists: false,
+              },
+              deleted: {
+                $exists: false,
+              },
+            },
+          },
+          {
+            $group: {
+              _id: '$type',
+              count: {
+                $sum: 1,
+              },
+            },
+          },
+        ],
+        {
+          allowDiskUse: false,
+        },
+      ).toArray();
+
+      const allocationMap = Object.fromEntries(alreadyAllocatedWork.map((w) => [w._id, w.count]));
+      return allocationMap;
+    },
+
+    workExists: async ({
+      workId,
+      originalWorkId,
+    }: {
+      workId?: string;
+      originalWorkId?: string;
+    }): Promise<boolean> => {
       const queueCount = await WorkQueue.countDocuments(
         workId ? generateDbFilterById(workId) : { originalWorkId },
         { limit: 1 },
@@ -419,16 +372,7 @@ export const configureWorkerModule = async ({
       return !!queueCount;
     },
 
-    // Transformations
-
-    type: (work) => {
-      if (WorkerDirector.getActivePluginTypes().includes(work.type)) {
-        return work.type;
-      }
-      return 'UNKNOWN';
-    },
-
-    status: (work) => {
+    status: (work: Work): WorkStatus => {
       if (work.deleted) {
         return WorkStatus.DELETED;
       }
@@ -459,11 +403,7 @@ export const configureWorkerModule = async ({
       originalWorkId,
       worker = null,
       retries = 20,
-    }) => {
-      if (!WorkerDirector.getAdapterByType(type)) {
-        throw new Error(`No plugin registered for type ${type}`);
-      }
-
+    }: WorkData): Promise<Work> => {
       const created = new Date();
       const { insertedId: workId } = await WorkQueue.insertOne({
         _id: generateDbObjectId(),
@@ -487,7 +427,7 @@ export const configureWorkerModule = async ({
       return work;
     },
 
-    rescheduleWork: async (currentWork, scheduled) => {
+    rescheduleWork: async (currentWork: Work, scheduled: Date): Promise<Work> => {
       const work = await WorkQueue.findOneAndUpdate(
         generateDbFilterById(currentWork._id),
         {
@@ -509,7 +449,15 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
-    ensureNoWork: async ({ type, priority = 0, scheduleId }) => {
+    ensureNoWork: async ({
+      type,
+      priority = 0,
+      scheduleId,
+    }: {
+      priority: number;
+      type: string;
+      scheduleId: string;
+    }): Promise<void> => {
       const query = buildQuerySelector({
         type,
         status: [WorkStatus.NEW],
@@ -534,7 +482,7 @@ export const configureWorkerModule = async ({
       originalWorkId,
       retries = 20,
       scheduleId,
-    }) => {
+    }: WorkData): Promise<Work> => {
       const workId = `${scheduleId}:${scheduled.getTime()}`;
 
       const created = new Date();
@@ -595,11 +543,9 @@ export const configureWorkerModule = async ({
       }
     },
 
-    processNextWork,
-
     finishWork,
 
-    deleteWork: async (workId) => {
+    deleteWork: async (workId: string): Promise<Work> => {
       const workBeforeRemoval = await WorkQueue.findOne(
         buildQuerySelector({
           workId,
@@ -623,7 +569,15 @@ export const configureWorkerModule = async ({
       return work;
     },
 
-    markOldWorkAsFailed: async ({ types, worker = UNCHAINED_WORKER_ID, referenceDate }) => {
+    markOldWorkAsFailed: async ({
+      types,
+      worker = UNCHAINED_WORKER_ID,
+      referenceDate,
+    }: {
+      types: Array<string>;
+      worker: string;
+      referenceDate: Date;
+    }): Promise<Array<Work>> => {
       const workQueue = await WorkQueue.find(
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],
@@ -651,7 +605,13 @@ export const configureWorkerModule = async ({
       );
     },
 
-    getReport: async ({ types, from, to } = { types: null, from: null, to: null }) => {
+    getReport: async (
+      { types, from, to }: { types?: string[]; from?: Date; to?: Date } = {
+        types: null,
+        from: null,
+        to: null,
+      },
+    ): Promise<WorkerReport[]> => {
       const pipeline = [];
       const matchConditions = [];
       // build date filter based on provided values it can be a range if both to and from is supplied
@@ -731,3 +691,5 @@ export const configureWorkerModule = async ({
     },
   };
 };
+
+export type WorkerModule = Awaited<ReturnType<typeof configureWorkerModule>>;

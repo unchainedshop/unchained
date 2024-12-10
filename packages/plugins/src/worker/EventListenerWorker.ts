@@ -1,6 +1,6 @@
 import { subscribe } from '@unchainedshop/events';
-import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { BaseWorker, IWorker } from './BaseWorker.js';
+import { WorkerEventTypes } from '@unchainedshop/core-worker';
 
 function debounce<T extends (...args: any) => any>(func: T, wait) {
   let timeout;
