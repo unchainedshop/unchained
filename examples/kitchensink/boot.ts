@@ -11,8 +11,8 @@ import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
 import { TicketingAPI } from '@unchainedshop/ticketing';
 
 import serveStatic from 'serve-static';
-import '@unchainedshop/plugins/lib/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/lib/pricing/discount-100-off.js';
+import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
+import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import seed from './seed.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';

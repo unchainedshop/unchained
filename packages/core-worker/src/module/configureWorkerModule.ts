@@ -23,7 +23,7 @@ export type WorkData = Pick<
   'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker' | 'scheduleId'
 > & { type: string };
 
-export interface WorkResult<Result> {
+export interface WorkResult<Result = unknown> {
   success: boolean;
   result?: Result;
   error?: any;

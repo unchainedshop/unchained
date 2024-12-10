@@ -21,7 +21,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   disableAutoscheduling: (scheduleId: string) => void;
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
-  doWork: (work: Work, unchainedAPI) => Promise<WorkResult<any>>;
+  doWork: (work: Work, unchainedAPI) => Promise<WorkResult>;
   processNextWork: (unchainedAPI: { modules: Modules }, workerId?: string) => Promise<Work>;
 };
 
