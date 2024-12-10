@@ -34,22 +34,19 @@ export default async function createEnrollment(
 
   if (product.type !== ProductTypes.PlanProduct) throw new ProductWrongTypeError({ type: product.type });
 
-  const enrollment = await modules.enrollments.create(
-    {
-      billingAddress,
-      configuration,
-      contact,
-      countryCode: countryContext,
-      currencyCode: currencyContext,
-      delivery,
-      meta,
-      payment,
-      productId,
-      quantity,
-      userId,
-    },
-    context,
-  );
+  const enrollment = await modules.enrollments.create({
+    billingAddress,
+    configuration,
+    contact,
+    countryCode: countryContext,
+    currencyCode: currencyContext,
+    delivery,
+    meta,
+    payment,
+    productId,
+    quantity,
+    userId,
+  });
 
   return await services.enrollments.initializeEnrollment(
     enrollment,

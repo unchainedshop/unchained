@@ -59,7 +59,7 @@ export const createEnrollmentFromCheckoutService = async (
         unchainedAPI,
       );
 
-      const enrollment = await modules.enrollments.create(enrollmentData, unchainedAPI);
+      const enrollment = await modules.enrollments.create(enrollmentData);
       return await initializeEnrollmentService(
         enrollment,
         {

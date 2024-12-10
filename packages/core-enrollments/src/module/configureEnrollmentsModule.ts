@@ -17,7 +17,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
-import { resolveBestCurrency } from '@unchainedshop/utils';
 
 export type EnrollmentQuery = {
   status?: Array<EnrollmentStatus>;
@@ -215,24 +214,18 @@ export const configureEnrollmentsModule = async ({
       return enrollment;
     },
 
-    create: async (
-      { countryCode, currencyCode, ...enrollmentData }: Omit<Enrollment, 'status' | 'periods' | 'log'>,
-      unchainedAPI,
-    ): Promise<Enrollment> => {
-      const { modules } = unchainedAPI;
-
-      const countryObject = await modules.countries.findCountry({ isoCode: countryCode });
-      const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
-      const currency =
-        currencyCode || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
-
+    create: async ({
+      countryCode,
+      currencyCode,
+      ...enrollmentData
+    }: Omit<Enrollment, 'status' | 'periods' | 'log'>): Promise<Enrollment> => {
       const { insertedId: enrollmentId } = await Enrollments.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
         ...enrollmentData,
         status: EnrollmentStatus.INITIAL,
         periods: [],
-        currencyCode: currency,
+        currencyCode,
         countryCode,
         configuration: enrollmentData.configuration || [],
         log: [],
