@@ -1,7 +1,34 @@
+import { TimestampFields } from '@unchainedshop/mongodb';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Work } from '../types.js';
 
 const ONE_DAY_IN_SECONDS = 86400;
+
+export enum WorkStatus {
+  NEW = 'NEW',
+  ALLOCATED = 'ALLOCATED',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+  DELETED = 'DELETED',
+}
+
+export type Work = {
+  _id?: string;
+  priority: number;
+  retries: number;
+  scheduled: Date;
+  type: string;
+  input: Record<string, any>;
+  error?: any;
+  finished?: Date;
+  originalWorkId?: string;
+  result?: any;
+  started?: Date;
+  success?: boolean;
+  timeout?: number;
+  worker?: string;
+  autoscheduled?: boolean;
+  scheduleId?: string;
+} & TimestampFields;
 
 export const WorkQueueCollection = async (db: mongodb.Db) => {
   const WorkQueue = db.collection<Work>('work_queue');

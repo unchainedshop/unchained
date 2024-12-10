@@ -39,3 +39,6 @@ export * from './OrderPricingSheet.js';
 
 export * from './WarehousingDirector.js';
 export * from './WarehousingAdapter.js';
+
+export * from './WorkerAdapter.js';
+export * from './WorkerDirector.js';

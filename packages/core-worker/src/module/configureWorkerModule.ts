@@ -10,16 +10,25 @@ import {
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { buildObfuscatedFieldsFilter, SortDirection, SortOption } from '@unchainedshop/utils';
-import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
-import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
-import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
-import { WorkStatus } from '../director/WorkStatus.js';
+import { WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.js';
+import {
+  DIRECTOR_MARKED_FAILED_ERROR,
+  WorkerDirector,
+} from '../../../core/src/directors/WorkerDirector.js';
 import { Work } from '../types.js';
 import addMigrations from './migrations/addMigrations.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
+
+export enum WorkerEventTypes {
+  ADDED = 'WORK_ADDED',
+  ALLOCATED = 'WORK_ALLOCATED',
+  FINISHED = 'WORK_FINISHED',
+  DELETED = 'WORK_DELETED',
+  RESCHEDULED = 'WORK_RESCHEDULED',
+}
 
 export interface WorkerSettingsOptions {
   blacklistedVariables?: string[];

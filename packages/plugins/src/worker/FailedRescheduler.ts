@@ -1,8 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { subscribe } from '@unchainedshop/events';
-import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
-import { WorkData } from '../worker-index.js';
-import { Work } from '../types.js';
+import { Work, WorkData, WorkerEventTypes } from '@unchainedshop/core-worker';
 
 export interface FailedReschedulerParams {
   retryInput?: (

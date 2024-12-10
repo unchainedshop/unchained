@@ -1,6 +1,6 @@
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
-import { WorkerDirector } from '../director/WorkerDirector.js';
+import { WorkerDirector } from '../../../core/src/directors/WorkerDirector.js';
 import { Work } from '../types.js';
 
 export type WorkData = Pick<

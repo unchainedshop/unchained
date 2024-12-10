@@ -1,8 +1,8 @@
-import { WorkData, IWorkerAdapter, WorkResult } from '../worker-index.js';
+import { Work, WorkData } from '@unchainedshop/core-worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
-import { Work } from '../types.js';
 import { ScheduleData } from '@breejs/later';
+import { IWorkerAdapter, WorkResult } from './WorkerAdapter.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
