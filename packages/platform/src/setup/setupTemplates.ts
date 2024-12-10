@@ -1,5 +1,4 @@
-import { MessagingDirector } from '@unchainedshop/core-messaging';
-import { UnchainedCore } from '@unchainedshop/core';
+import { MessagingDirector, UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 import { Order, OrderStatus } from '@unchainedshop/core-orders';
 import { RawPayloadType } from '@unchainedshop/events';

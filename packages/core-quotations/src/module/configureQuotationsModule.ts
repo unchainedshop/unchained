@@ -1,5 +1,10 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { Quotation, QuotationItemConfiguration, QuotationProposal } from '../types.js';
+import {
+  Quotation,
+  QuotationItemConfiguration,
+  QuotationProposal,
+  QuotationStatus,
+} from '../db/QuotationsCollection.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -9,8 +14,7 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
-import { QuotationStatus } from '../db/QuotationStatus.js';
-import { QuotationDirector } from '../quotations-index.js';
+import { QuotationDirector } from '@unchainedshop/core'; // TODO: Move!
 import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 

@@ -1,7 +1,15 @@
 import { LogLevel, log } from '@unchainedshop/logger';
-import { IQuotationAdapter, IQuotationDirector, QuotationContext } from '../types.js';
-import { BaseDirector } from '@unchainedshop/utils';
-import { QuotationError } from './QuotationError.js';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import {
+  QuotationError,
+  IQuotationAdapter,
+  QuotationAdapterActions,
+  QuotationContext,
+} from './QuotationAdapter.js';
+
+export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
+  actions: (quotationContext: QuotationContext, unchainedAPI) => Promise<QuotationAdapterActions>;
+};
 
 const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {
   adapterSortKey: 'orderIndex',

@@ -75,7 +75,7 @@ the only difference is push notification worker expects a input type that is sli
 Here is an example template resolver that will trigger a PUSH notification to a user if they are subscribed
 
 ```js
-import { MessagingDirector } from "@unchainedshop/core-messaging";
+import { MessagingDirector } from "@unchainedshop/core";
 export const helloThere: TemplateResolver = async (
   {  },
   context: UnchainedCore

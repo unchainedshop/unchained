@@ -1,5 +1,4 @@
-import { MessagingDirector } from '@unchainedshop/core-messaging';
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { MessagingDirector, IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import { Work } from '@unchainedshop/core-worker';
 
 export const MessageWorker: IWorkerAdapter<
