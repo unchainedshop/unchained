@@ -1,7 +1,6 @@
 import {
   loadFilter,
   productFacetedSearch,
-  productFulltextSearch,
   resolveFilterSelector,
   resolveProductSelector,
   resolveSortStage,
@@ -38,10 +37,8 @@ export const searchProductsService = async (
   };
 
   const productIds = await query.productIds;
-  const totalProductIds = await productFulltextSearch<Product>(
-    searchConfiguration,
-    filterActions,
-  )(productIds);
+  const totalProductIds =
+    (await filterActions.searchProducts({ productIds }, searchConfiguration)) || [];
 
   const findFilters = async () => {
     if (!filterSelector) return [];

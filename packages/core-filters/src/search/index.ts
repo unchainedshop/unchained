@@ -1,7 +1,5 @@
-export * from './assortmentFulltextSearch.js';
 export * from './loadFilter.js';
 export * from './productFacetedSearch.js';
-export * from './productFulltextSearch.js';
 export * from './resolveAssortmentSelector.js';
 export * from './resolveFilterSelector.js';
 export * from './resolveProductSelector.js';

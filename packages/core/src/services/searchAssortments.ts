@@ -1,6 +1,5 @@
 import { Assortment } from '@unchainedshop/core-assortments';
 import {
-  assortmentFulltextSearch,
   resolveAssortmentSelector,
   resolveFilterSelector,
   resolveSortStage,
@@ -36,10 +35,9 @@ export const searchAssortmentsService = async (
   };
 
   const assortmentIds = await query.assortmentIds;
-  const totalAssortmentIds = await assortmentFulltextSearch<Assortment>(
-    searchConfiguration,
-    filterActions,
-  )(assortmentIds);
+
+  const totalAssortmentIds =
+    (await filterActions.searchAssortments({ assortmentIds }, searchConfiguration)) || [];
 
   const assortmentsCount = async () =>
     modules.assortments.count({
