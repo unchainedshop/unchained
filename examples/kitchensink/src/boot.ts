@@ -77,8 +77,8 @@ const start = async () => {
     createGoogleWalletPass: console.log,
   });
 
+  const fileUrl = new URL(import.meta.resolve('../static/index.html'));
   app.use('/', async (req, res) => {
-    const fileUrl = new URL(import.meta.resolve('../static/index.html'));
     res.status(200).sendFile(fileUrl.pathname);
   });
 
