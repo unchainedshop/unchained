@@ -6,7 +6,6 @@
     "esm": true
   },
   "compilerOptions": {
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
@@ -19,7 +18,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "baseUrl": "." // This must be specified if "paths" is.
+    "declarationDir": "./lib",
+    "rootDir": "./src"
   },
   "exclude": ["node_modules", "lib"]
 }

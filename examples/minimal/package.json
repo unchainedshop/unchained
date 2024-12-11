@@ -38,6 +38,7 @@
     "@fastify/session": "^11.0.1",
     "@unchainedshop/platform": "^3.0.0-alpha4",
     "@unchainedshop/plugins": "^3.0.0-alpha4",
+    "connect-mongo": "^5.1.0",
     "fastify": "^5.1.0"
   },
   "devDependencies": {

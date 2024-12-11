@@ -29,8 +29,8 @@
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "node lib/boot.js",
-    "dev:run": "node --experimental-fetch --no-warnings --loader ts-node/esm boot.ts",
+    "start": "node --import ./load_env.js lib/boot.js",
+    "dev:run": "node --import ./load_env.js --no-warnings --loader ts-node/esm src/boot.ts",
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {

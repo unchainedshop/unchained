@@ -1,4 +1,3 @@
-import './load_env.js';
 import express from 'express';
 import http from 'http';
 import { useExecutionCancellation } from 'graphql-yoga';
@@ -79,7 +78,8 @@ const start = async () => {
   });
 
   app.use('/', async (req, res) => {
-    res.status(200).sendFile('./static/index.html', { root: import.meta.dirname });
+    const fileUrl = new URL(import.meta.resolve('../static/index.html'));
+    res.status(200).sendFile(fileUrl.pathname);
   });
 
   await httpServer.listen({ port: process.env.PORT || 3000 });
