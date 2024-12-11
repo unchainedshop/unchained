@@ -9,7 +9,7 @@ export { default as generateRandomHash } from './generate-random-hash.js';
 export { default as randomValueHex } from './random-value-hex.js';
 export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-fields-filter.js';
 export { default as sha256 } from './sha256.js';
-
+export { default as intersectSet } from './intersect-set.js';
 /*
  * Schemas
  */

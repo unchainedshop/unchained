@@ -35,6 +35,8 @@ import { processQuotationService } from './processQuotation.js';
 import { proposeQuotationService } from './proposeQuotation.js';
 import { rejectQuotationService } from './rejectQuotation.js';
 import { verifyQuotationService } from './verifyQuotation.js';
+import { loadFiltersService } from './loadFilters.js';
+import { loadFilterOptionsService } from './loadFilterOptions.js';
 
 const services = {
   bookmarks: {
@@ -90,6 +92,8 @@ const services = {
     searchAssortments: searchAssortmentsService,
     searchProducts: searchProductsService,
     invalidateFilterCache: invalidateFilterCacheService,
+    loadFilters: loadFiltersService,
+    loadFilterOptions: loadFilterOptionsService,
   },
 };
 

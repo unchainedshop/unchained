@@ -1,8 +1,8 @@
 import { Assortment } from '@unchainedshop/core-assortments';
 import {
-  resolveAssortmentSelector,
-  resolveFilterSelector,
-  resolveSortStage,
+  defaultAssortmentSelector,
+  defaultFilterSelector,
+  defaultSortStage,
   SearchConfiguration,
   SearchQuery,
 } from '@unchainedshop/core-filters';
@@ -21,32 +21,32 @@ export const searchAssortmentsService = async (
   const { modules } = unchainedAPI;
   const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
 
-  const query = modules.filters.cleanQuery(searchQuery);
-  const filterSelector = await resolveFilterSelector(searchQuery, filterActions);
-  const assortmentSelector = resolveAssortmentSelector(searchQuery);
-  const sortStage = await resolveSortStage(searchQuery, filterActions);
+  const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
+  const assortmentSelector = defaultAssortmentSelector(searchQuery);
+  const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery));
 
   const searchConfiguration: SearchAssortmentConfiguration = {
-    query,
+    searchQuery,
     filterSelector,
     assortmentSelector,
     sortStage,
     forceLiveCollection,
   };
 
-  const assortmentIds = await query.assortmentIds;
+  const assortmentIds = await searchQuery.assortmentIds;
 
   const totalAssortmentIds =
     (await filterActions.searchAssortments({ assortmentIds }, searchConfiguration)) || [];
 
-  const assortmentsCount = async () =>
-    modules.assortments.count({
-      assortmentSelector,
-      assortmentIds: totalAssortmentIds,
-    });
-
   return {
-    assortmentsCount,
+    searchConfiguration,
+    totalAssortmentIds,
+
+    assortmentsCount: async () =>
+      modules.assortments.count({
+        assortmentSelector,
+        assortmentIds: totalAssortmentIds,
+      }),
     assortments: async ({ offset, limit }) =>
       modules.assortments.search.findFilteredAssortments({
         limit,

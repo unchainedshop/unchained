@@ -1,9 +1,25 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, IBaseDirector, intersectSet } from '@unchainedshop/utils';
 import { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.js';
-import { Filter, filtersSettings, FilterType } from '@unchainedshop/core-filters';
+import {
+  Filter,
+  filtersSettings,
+  FilterType,
+  SearchConfiguration,
+  SearchFilterQuery,
+  SearchQuery,
+} from '@unchainedshop/core-filters';
 import { Product } from '@unchainedshop/core-products';
 import { Modules } from '../modules.js';
+
+export const parseQueryArray = (query: SearchFilterQuery): Record<string, Array<string>> =>
+  (query || []).reduce(
+    (accumulator, { key, value }) => ({
+      ...accumulator,
+      [key]: accumulator[key] ? accumulator[key].concat(value) : [value],
+    }),
+    {},
+  );
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   actions: (filterContext: FilterContext, unchainedAPI) => Promise<FilterAdapterActions>;
@@ -20,6 +36,27 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   filterProductIds: (
     filter: Filter,
     { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
+    unchainedAPI: { modules: Modules },
+  ) => Promise<Array<string>>;
+
+  filterFacets: (
+    filter: Filter,
+    params: {
+      searchQuery: SearchQuery;
+      forceLiveCollection?: boolean;
+      allProductIds: Array<string>;
+      otherFilters: Array<Filter>;
+    },
+    unchainedAPI: { modules: Modules },
+  ) => Promise<{
+    examinedProductIdSet: Set<string>;
+    filteredByOtherFiltersSet: Set<string>;
+    filteredByThisFilterSet: Set<string>;
+  }>;
+
+  productFacetedSearch: (
+    productIds: Array<string>,
+    searchConfiguration: SearchConfiguration,
     unchainedAPI: { modules: Modules },
   ) => Promise<Array<string>>;
 };
@@ -139,11 +176,128 @@ export const FilterDirector: IFilterDirector = {
     { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
   ) {
-    const productIdMapTuple =
+    const [allProductIds, keyToProductIdMap]: [Array<string>, Record<string, Array<string>>] =
       (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
       (await this.buildProductIdMap(filter, unchainedAPI));
 
-    return unchainedAPI.modules.filters.parse(filter, values, productIdMapTuple);
+    const filteredKeys = unchainedAPI.modules.filters.parse(
+      filter,
+      values,
+      Object.keys(keyToProductIdMap),
+    );
+    return filteredKeys.reduce((accumulator, key) => {
+      const additionalValues = key === undefined ? allProductIds : keyToProductIdMap[key];
+      return [...accumulator, ...(additionalValues || [])];
+    }, []);
+  },
+
+  async productFacetedSearch(
+    productIds: Array<string>,
+    searchConfiguration: SearchConfiguration,
+    unchainedAPI: { modules: Modules },
+  ): Promise<Array<string>> {
+    const { searchQuery, filterSelector, forceLiveCollection } = searchConfiguration;
+    const { modules } = unchainedAPI;
+    if (!searchQuery || !searchQuery.filterQuery) return productIds;
+
+    const parsedFilterQuery = parseQueryArray(searchQuery.filterQuery);
+
+    const filters = filterSelector
+      ? await modules.filters.findFilters({
+          ...filterSelector,
+          limit: 0,
+          includeInactive: true,
+        })
+      : [];
+
+    const intersectedProductIds = await filters.reduce(
+      async (productIdSetPromise: Promise<Set<string>>, filter) => {
+        const productIdSet = await productIdSetPromise;
+
+        if (!parsedFilterQuery[filter.key]) return productIdSet;
+
+        const values = parsedFilterQuery[filter.key];
+
+        const filterOptionProductIds = await this.filterProductIds(
+          filter,
+          {
+            values,
+            forceLiveCollection,
+          },
+          unchainedAPI,
+        );
+
+        return intersectSet(productIdSet, new Set(filterOptionProductIds));
+      },
+      Promise.resolve(new Set(productIds)),
+    );
+
+    return [...intersectedProductIds];
+  },
+
+  async filterFacets(filter, params, unchainedAPI) {
+    const { allProductIds, searchQuery, forceLiveCollection, otherFilters } = params;
+
+    const filterQueryParsed = parseQueryArray(searchQuery?.filterQuery);
+
+    // The examinedProductIdSet is a set of product id's that:
+    // - Fit this filter generally
+    // - Are part of the preselected product id array
+    const filteredProductIds = await this.filterProductIds(
+      filter,
+      {
+        values: [undefined],
+        forceLiveCollection,
+      },
+      unchainedAPI,
+    );
+
+    const examinedProductIdSet = intersectSet(new Set(allProductIds), new Set(filteredProductIds));
+    const values = filterQueryParsed[filter.key];
+
+    // The filteredProductIdSet is a set of product id's that:
+    // - Are filtered by all other filters
+    // - Are filtered by the currently selected value of this filter
+    // or if there is no currently selected value:
+    // - Is the same like examinedProductIdSet
+    const filteredByOtherFiltersSet = await otherFilters
+      .filter((otherFilter) => otherFilter.key !== filter.key)
+      .reduce(
+        async (productIdSetPromise, otherFilter) => {
+          if (otherFilter.key === filter.key) return productIdSetPromise;
+          if (!filterQueryParsed[otherFilter.key]) return productIdSetPromise;
+          const productIdSet = await productIdSetPromise;
+          const otherFilterProductIds = await this.filterProductIds(
+            otherFilter,
+            {
+              values: filterQueryParsed[otherFilter.key],
+              forceLiveCollection,
+            },
+            unchainedAPI,
+          );
+          return intersectSet(productIdSet, new Set(otherFilterProductIds));
+        },
+        Promise.resolve(new Set(examinedProductIdSet)),
+      );
+
+    const filterProductIdsForValues = values
+      ? await this.filterProductIds(
+          filter,
+          {
+            values,
+            forceLiveCollection,
+          },
+          unchainedAPI,
+        )
+      : filteredProductIds;
+
+    const filteredByThisFilterSet = new Set<string>(filterProductIdsForValues);
+
+    return {
+      examinedProductIdSet,
+      filteredByOtherFiltersSet,
+      filteredByThisFilterSet,
+    };
   },
 
   async invalidateProductIdCache(filter: Filter, unchainedAPI: { modules: Modules }) {

@@ -67,6 +67,7 @@ import { Media } from './media-types.js';
 import { Token } from './token-types.js';
 import { Web3Address } from './web3-address.js';
 import { LoginMethodResponse } from './login-method-response-types.js';
+import { ProductSearchResult } from './product-search-result-types.js';
 
 const types = {
   Assortment,
@@ -124,6 +125,7 @@ const types = {
   ProductVariationAssignment,
   ProductVariationAssignmentVector,
   ProductVariationOption,
+  ProductSearchResult,
   Quotation,
   Shop,
   SimpleProduct,

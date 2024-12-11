@@ -11,8 +11,7 @@ import { Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.j
 import { configureFilterTextsModule } from './configureFilterTextsModule.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';
 import { filtersSettings, FiltersSettingsOptions } from '../filters-settings.js';
-import { CleanedSearchQuery, FilterQuery, SearchQuery } from '../search/search.js';
-import { parseQueryArray } from '../utils/parseQueryArray.js';
+import { FilterQuery } from '../search.js';
 
 export type FilterOption = Filter & {
   filterOption: string;
@@ -118,17 +117,10 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    parse: async (
-      filter: Filter,
-      values: Array<any>,
-      [allProductIds, productIds]: [Array<string>, Array<string>],
-    ) => {
+    parse: (filter: Filter, values: Array<any>, allKeys: Array<string>) => {
       const parse = createFilterValueParser(filter.type);
-
-      return parse(values, Object.keys(productIds)).reduce((accumulator, value) => {
-        const additionalValues = value === undefined ? allProductIds : productIds[value];
-        return [...accumulator, ...(additionalValues || [])];
-      }, []);
+      // const keys = parse(values, Object.keys(productIds));
+      return parse(values, allKeys);
     },
 
     createFilterOption: async (filterId: string, { value }: { value: string }): Promise<Filter> => {
@@ -202,12 +194,6 @@ export const configureFiltersModule = async ({
 
       return filter;
     },
-
-    cleanQuery: ({ filterQuery, ...query }: SearchQuery) =>
-      ({
-        filterQuery: parseQueryArray(filterQuery),
-        ...query,
-      }) as CleanedSearchQuery,
 
     texts: filterTexts,
   };

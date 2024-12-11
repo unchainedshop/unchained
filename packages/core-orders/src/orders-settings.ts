@@ -13,7 +13,7 @@ export interface OrdersSettingsOptions {
   orderNumberHashFn?: (order: Order, index: number) => string;
   validateOrderPosition?: (
     validationParams: OrderSettingsOrderPositionValidation,
-    context,
+    unchainedAPI,
   ) => Promise<void>;
   lockOrderDuringCheckout?: boolean;
 }
