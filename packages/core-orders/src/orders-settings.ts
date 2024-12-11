@@ -11,14 +11,14 @@ export interface OrderSettingsOrderPositionValidation<Product = unknown> {
 export interface OrdersSettingsOptions {
   ensureUserHasCart?: boolean;
   orderNumberHashFn?: (order: Order, index: number) => string;
-  validateOrderPosition?: (
+  validateOrderPosition?: <UnchainedAPI = unknown>(
     validationParams: OrderSettingsOrderPositionValidation,
-    unchainedAPI,
+    unchainedAPI: UnchainedAPI,
   ) => Promise<void>;
   lockOrderDuringCheckout?: boolean;
 }
 
-export const defaultValidateOrderPosition = async ({ product }, { modules }) => {
+export const defaultValidateOrderPosition = async ({ product }, { modules }: any) => {
   if (!modules.products.isActive(product)) {
     throw new Error('This product is inactive');
   }

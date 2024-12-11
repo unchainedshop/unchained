@@ -1,21 +1,21 @@
 import { PaymentCredentials } from './db/PaymentCredentialsCollection.js';
 import { PaymentProvider } from './db/PaymentProvidersCollection.js';
 
-export type FilterProviders<Order = unknown> = (
+export type FilterProviders<Order = unknown, UnchainedAPI = unknown> = (
   params: {
     providers: Array<PaymentProvider>;
     order: Order;
   },
-  unchainedAPI,
+  unchainedAPI: UnchainedAPI,
 ) => Promise<Array<PaymentProvider>>;
 
-export type DetermineDefaultProvider<Order = unknown> = (
+export type DetermineDefaultProvider<Order = unknown, UnchainedAPI = unknown> = (
   params: {
     providers: Array<PaymentProvider>;
     order: Order;
     paymentCredentials?: Array<PaymentCredentials>;
   },
-  unchainedAPI,
+  unchainedAPI: UnchainedAPI,
 ) => Promise<PaymentProvider>;
 export interface PaymentSettingsOptions {
   sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;
