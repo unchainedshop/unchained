@@ -41,7 +41,7 @@
     "fastify": "^5.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.2",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.4.2",

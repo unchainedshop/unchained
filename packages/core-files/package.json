@@ -31,11 +31,10 @@
     "@unchainedshop/events": "^3.0.0-alpha4",
     "@unchainedshop/file-upload": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
-    "@unchainedshop/utils": "^3.0.0-alpha4",
-    "mime-types": "^2.1.35"
+    "@unchainedshop/utils": "^3.0.0-alpha4"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.2",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.2"

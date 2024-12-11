@@ -10,7 +10,6 @@ import { log } from '@unchainedshop/logger';
 import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
 import { TicketingAPI } from '@unchainedshop/ticketing';
 
-import serveStatic from 'serve-static';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
@@ -79,7 +78,9 @@ const start = async () => {
     createGoogleWalletPass: console.log,
   });
 
-  app.use(serveStatic('static', { index: ['index.html'] }));
+  app.use('/', async (req, res) => {
+    res.status(200).sendFile('./static/index.html', { root: import.meta.dirname });
+  });
 
   await httpServer.listen({ port: process.env.PORT || 3000 });
   log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
