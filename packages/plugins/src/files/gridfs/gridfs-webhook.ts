@@ -1,13 +1,15 @@
 import { pipeline, finished } from 'stream/promises';
 import { PassThrough } from 'stream';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
 import express from 'express';
 import sign from './sign.js';
 import { configureGridFSFileUploadModule } from './index.js';
 import { Context } from '@unchainedshop/api';
+import { createLogger } from '@unchainedshop/logger';
 
 const { ROOT_URL } = process.env;
+
+const logger = createLogger('unchained:plugins:gridfs');
 
 export const gridfsHandler = async (
   req: express.Request & {
@@ -97,11 +99,11 @@ export const gridfsHandler = async (
     res.end();
   } catch (e) {
     if (e.code === 'ENOENT') {
-      log(e.message, { level: LogLevel.Warning });
+      logger.warn(e);
       res.statusCode = 404;
       res.end(e.message);
     } else {
-      log(e.message, { level: LogLevel.Error });
+      logger.warn(e);
       res.statusCode = 503;
       res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
     }

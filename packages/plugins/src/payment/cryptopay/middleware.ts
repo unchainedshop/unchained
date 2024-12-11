@@ -67,7 +67,7 @@ export const cryptopayHandler = async (req, res) => {
           expiresAt,
           timestamp: timestampDate,
         };
-        logger.verbose(`update rate ${JSON.stringify(price)}, ${JSON.stringify(rateData)}`);
+        logger.info(`update rate ${JSON.stringify(price)}, ${JSON.stringify(rateData)}`);
         await resolvedContext.modules.products.prices.rates.updateRates([rateData]);
       }
 

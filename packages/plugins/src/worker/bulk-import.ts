@@ -1,5 +1,5 @@
 import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
-import { createLogger, LogLevel } from '@unchainedshop/logger';
+import { createLogger } from '@unchainedshop/logger';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
 import { UnchainedCore } from '@unchainedshop/core';
@@ -7,7 +7,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 const logger = createLogger('unchained:worker:bulk-import');
 
 const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
-  logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
+  logger.trace(`parseAsync start`);
 
   const readStream = await unchainedAPI.services.files.createDownloadStream(
     { fileId: payloadId },
@@ -47,7 +47,7 @@ const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI
     await bulkImporter.prepare(event, unchainedAPI);
   }
 
-  logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
+  logger.trace(`parseAsync done`);
 };
 
 export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
@@ -68,7 +68,6 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
       } = rawPayload;
 
       const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter({
-        logger,
         createShouldUpsertIfIDExists,
         updateShouldUpsertIfIDNotExists,
         skipCacheInvalidation,
@@ -102,7 +101,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         result,
       };
     } catch (err) {
-      logger.error(err.message, err);
+      logger.error(err);
       return {
         success: false,
         error: {

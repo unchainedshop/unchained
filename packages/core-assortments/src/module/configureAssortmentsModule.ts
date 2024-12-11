@@ -1,6 +1,5 @@
 import { Tree, SortOption, SortDirection } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log, LogLevel } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
   findPreservingIds,
@@ -40,6 +39,9 @@ import {
   AssortmentQuery,
   InvalidateCacheFn,
 } from '../types.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export type AssortmentsModule = {
   // Queries
@@ -308,9 +310,7 @@ export const configureAssortmentsModule = async ({
   };
 
   const invalidateCache: AssortmentsModule['invalidateCache'] = async (selector, options) => {
-    log('Invalidating productId cache for assortments', {
-      level: LogLevel.Verbose,
-    });
+    logger.debug('Invalidating productId cache for assortments');
 
     const assortments = await Assortments.find(
       buildFindSelector({ includeInactive: true, includeLeaves: true, ...selector }),
@@ -323,11 +323,8 @@ export const configureAssortmentsModule = async ({
       return total + invalidatedAssortments;
     }, Promise.resolve(0));
 
-    log(
+    logger.debug(
       `Invalidated productId cache for ${totalInvalidatedAssortments} of ${assortments.length} base assortments`,
-      {
-        level: LogLevel.Verbose,
-      },
     );
   };
 

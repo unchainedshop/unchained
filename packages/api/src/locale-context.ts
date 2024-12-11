@@ -1,4 +1,3 @@
-import { log, LogLevel } from '@unchainedshop/logger';
 import {
   resolveBestCountry,
   resolveBestSupported,
@@ -8,6 +7,9 @@ import {
 import { UnchainedCore } from '@unchainedshop/core';
 import memoizee from 'memoizee';
 import { UnchainedHTTPServerContext } from './context.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api');
 
 export interface UnchainedLocaleContext {
   countryContext: string;
@@ -52,9 +54,9 @@ export const resolveDefaultContext = memoizee(
     const countryObject = countries.find((country) => country.isoCode === countryContext);
     const currencyContext = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
-    log(`Locale Context: Resolved ${localeContext.baseName} ${countryContext} ${currencyContext}`, {
-      level: LogLevel.Debug,
-    });
+    logger.debug(
+      `Locale Context: Resolved ${localeContext.baseName} ${countryContext} ${currencyContext}`,
+    );
 
     const newContext: UnchainedLocaleContext = {
       localeContext,

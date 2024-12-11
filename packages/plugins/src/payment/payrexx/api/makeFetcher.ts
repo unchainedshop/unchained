@@ -60,7 +60,7 @@ export default (
   };
 
   return async (path: string, method: 'GET' | 'DELETE' | 'POST', data?: any): Promise<Response> => {
-    logger.verbose(`${method} ${path}`);
+    logger.info(`${method} ${path}`);
     if (method === 'POST') {
       const queryParams = { ...data };
       const signature = await buildSignature(new URLSearchParams(queryParams).toString());

@@ -1,9 +1,11 @@
-import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { EnrollmentAdapterActions, EnrollmentContext, IEnrollmentAdapter } from './EnrollmentAdapter.js';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import { Enrollment } from '@unchainedshop/core-enrollments';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
@@ -24,9 +26,7 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
     adapterFilter: (Adapter: IEnrollmentAdapter) => {
       const activated = Adapter.isActivatedFor(productPlan);
       if (!activated) {
-        log(`Enrollment Director -> ${Adapter.key} (${Adapter.version}) skipped`, {
-          level: LogLevel.Warning,
-        });
+        logger.warn(`Enrollment Director -> ${Adapter.key} (${Adapter.version}) skipped`);
       }
       return activated;
     },

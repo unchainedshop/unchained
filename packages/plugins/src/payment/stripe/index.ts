@@ -156,7 +156,7 @@ const Stripe: IPaymentAdapter<UnchainedCore> = {
           return paymentIntentObject;
         }
 
-        logger.verbose('Charge postponed because paymentIntent has wrong status', {
+        logger.info('Charge postponed because paymentIntent has wrong status', {
           orderPaymentId: paymentIntentObject.id,
         });
 

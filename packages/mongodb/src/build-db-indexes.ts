@@ -1,6 +1,7 @@
 import { Collection, Document, CreateIndexesOptions, IndexDirection } from 'mongodb';
+import { createLogger } from '@unchainedshop/logger';
 
-import { log, LogLevel } from '@unchainedshop/logger';
+const logger = createLogger('unchained:mongodb');
 
 export type Indexes<T extends Document> = Array<{
   index: { [key in keyof T]?: IndexDirection }; // TODO: Support key with object path (e.g. 'product.proxy.assignments')
@@ -17,7 +18,7 @@ const buildIndexes = <T>(
         await collection.createIndex(index, options);
         return false;
       } catch (e: any) {
-        log(e, { level: LogLevel.Error });
+        logger.error(e);
         return e as Error;
       }
     }),
@@ -41,10 +42,8 @@ export const buildDbIndexes = async <T extends Document>(
     const rebuildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
 
     if (rebuildErrors.length) {
-      log(`Error building some indexes for ${collection.collectionName}`, {
-        level: LogLevel.Error,
-        ...rebuildErrors,
-      });
+      logger.error(`Error building some indexes for ${collection.collectionName}`);
+      logger.debug(rebuildErrors);
       success = false;
     }
     // }

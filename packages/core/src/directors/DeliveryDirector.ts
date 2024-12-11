@@ -1,4 +1,3 @@
-import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import {
   DeliveryAdapterActions,
@@ -9,6 +8,9 @@ import {
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryStatus } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   sendOrderDelivery: (
@@ -48,8 +50,7 @@ export const DeliveryDirector: IDeliveryDirector = {
           const throughput = await adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
           return throughput;
         } catch (error) {
-          log('Delivery Director -> Error while estimating delivery throughput', {
-            level: LogLevel.Warning,
+          logger.warn('Delivery Director -> Error while estimating delivery throughput', {
             ...error,
           });
           return null;
@@ -60,8 +61,7 @@ export const DeliveryDirector: IDeliveryDirector = {
         try {
           return adapter.isActive();
         } catch (error) {
-          log('Delivery Director -> Error while checking if is active', {
-            level: LogLevel.Warning,
+          logger.warn('Delivery Director -> Error while checking if is active', {
             ...error,
           });
           return false;
@@ -72,8 +72,7 @@ export const DeliveryDirector: IDeliveryDirector = {
         try {
           return adapter.isAutoReleaseAllowed();
         } catch (error) {
-          log('Delivery Director -> Error while checking if auto release is allowed', {
-            level: LogLevel.Warning,
+          logger.warn('Delivery Director -> Error while checking if auto release is allowed', {
             ...error,
           });
           return false;

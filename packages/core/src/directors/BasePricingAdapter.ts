@@ -1,7 +1,9 @@
-import { log, LogLevel } from '@unchainedshop/logger';
+import { createLogger } from '@unchainedshop/logger';
 import { IPricingSheet } from './BasePricingSheet.js';
 import { IBaseAdapter, PricingCalculation } from '@unchainedshop/utils';
 import { Discount } from './BasePricingDirector.js';
+
+const logger = createLogger('unchained:core');
 
 type Order = { _id?: string };
 type OrderDiscount = { _id?: string };
@@ -74,7 +76,7 @@ export const BasePricingAdapter = <
     };
   },
 
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
+  log(message: string, options) {
+    return logger.debug(message, options);
   },
 });

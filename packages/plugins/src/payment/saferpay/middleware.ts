@@ -28,7 +28,7 @@ export const saferpayHandler = async (request, response) => {
   }
 
   try {
-    logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`);
+    logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
     const orderPayment = await modules.orders.payments.findOrderPayment({
       orderPaymentId,
     });

@@ -182,7 +182,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
         transaction.currency !== currency ||
         (transaction.detail.authorize as any)?.amount !== amount
       ) {
-        logger.verbose(
+        logger.info(
           `currency: ${transaction.currency} === ${currency} => ${
             transaction.currency === currency
           }, amount: ${(transaction.detail.authorize as any)?.amount} === ${amount} => ${

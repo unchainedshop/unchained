@@ -1,9 +1,11 @@
 import { Work, WorkData, WorkResult } from '@unchainedshop/core-worker';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { ScheduleData } from '@breejs/later';
 import { IWorkerAdapter } from './WorkerAdapter.js';
 import { Modules } from '../modules.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export type WorkScheduleConfiguration = Pick<
   WorkData,
@@ -76,7 +78,7 @@ export const WorkerDirector: IWorkerDirector = {
       workItemConfiguration.scheduleId || workItemConfiguration.type,
       workItemConfiguration,
     );
-    log(
+    logger.info(
       `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${JSON.stringify(workItemConfiguration.schedule?.schedules)}`,
     );
   },
@@ -96,7 +98,7 @@ export const WorkerDirector: IWorkerDirector = {
     const adapter = WorkerDirector.getAdapterByType(type);
 
     if (!adapter) {
-      log(`WorkerDirector: No registered adapter for type: ${type}`);
+      logger.info(`WorkerDirector: No registered adapter for type: ${type}`);
     }
 
     try {
@@ -104,8 +106,8 @@ export const WorkerDirector: IWorkerDirector = {
       return output;
     } catch (error) {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
-      log('DO not use this as flow control.', { level: LogLevel.Verbose });
-      log(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
+      logger.debug('DO not use this as flow control.');
+      logger.info(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
 
       const errorOutput = { error, success: false };
       return errorOutput;

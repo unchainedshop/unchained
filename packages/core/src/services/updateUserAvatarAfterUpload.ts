@@ -1,7 +1,9 @@
 import { File } from '@unchainedshop/core-files';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { removeFilesService } from './removeFiles.js';
 import { Modules } from '../modules.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export const updateUserAvatarAfterUploadService = async (
   { file }: { file: File },
@@ -28,7 +30,7 @@ export const updateUserAvatarAfterUploadService = async (
     }
   } catch (e: unknown) {
     // cleanup error, not critical
-    log(`could not clean up all old avatars: ${(e as Error).message}`, { level: LogLevel.Warning });
+    logger.warn(`could not clean up all old avatars: ${(e as Error).message}`);
   }
 
   await modules.users.updateAvatar(userId, file._id);

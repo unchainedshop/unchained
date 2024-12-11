@@ -10,7 +10,7 @@ export const payrexxHandler = async (request, response) => {
   const { transaction } = request.body;
 
   if (!transaction) {
-    logger.verbose(`unhandled event type`, {
+    logger.info(`unhandled event type`, {
       type: Object.keys(request.body).join(','),
     });
     response.writeHead(200);
@@ -25,7 +25,7 @@ export const payrexxHandler = async (request, response) => {
   if (transaction.referenceId === '__IGNORE_WEBHOOK__' || transaction.status === 'waiting') {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
     // method in the payment adapter and could lead to double bookings.
-    logger.verbose(`unhandled transaction state: ${transaction.status}`);
+    logger.info(`unhandled transaction state: ${transaction.status}`);
     response.writeHead(200);
     response.end(
       JSON.stringify({
@@ -36,7 +36,7 @@ export const payrexxHandler = async (request, response) => {
     return;
   }
 
-  logger.verbose(`Processing event`, {
+  logger.info(`Processing event`, {
     transactionId: transaction.id,
   });
   try {
@@ -44,7 +44,7 @@ export const payrexxHandler = async (request, response) => {
       // Pre-Authorization Flow, referenceId is a userId
       const { referenceId: paymentProviderId, invoice } = transaction;
       const userId = '';
-      logger.verbose(`register credentials for: ${userId}`);
+      logger.info(`register credentials for: ${userId}`);
       await services.orders.registerPaymentCredentials(
         paymentProviderId,
         { userId, transactionContext: { gatewayId: invoice.paymentRequestId } },
@@ -64,7 +64,7 @@ export const payrexxHandler = async (request, response) => {
       );
     } else {
       const { referenceId: orderPaymentId, invoice } = transaction;
-      logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`);
+      logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
       await modules.orders.payments.logEvent(orderPaymentId, {
         transactionId: transaction.id,
       });

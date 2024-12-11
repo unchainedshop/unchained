@@ -17,7 +17,7 @@ export const runMigrations = async ({
   const findCurrentId = async () => {
     const last = await LastMigration.findOne({ category: 'unchained' }, { sort: { _id: -1 } });
     const id = last ? last._id : 0;
-    logger.verbose(`Most recent migration id: ${id}`);
+    logger.info(`Most recent migration id: ${id}`);
     return id;
   };
 
@@ -36,7 +36,7 @@ export const runMigrations = async ({
         upsert: true,
       },
     );
-    logger.verbose(`Migrated '${action}' to ${id}`);
+    logger.info(`Migrated '${action}' to ${id}`);
     return id;
   };
 

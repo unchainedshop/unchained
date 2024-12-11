@@ -207,7 +207,7 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
             }
 
             // confirm will do the transition, to do a checkout those stati above are fine
-            logger.verbose(`Mark as charged, status is ${gatewayObject.status}`, {
+            logger.info(`Mark as charged, status is ${gatewayObject.status}`, {
               orderPaymentId: gatewayObject.referenceId,
             });
             return {
@@ -226,7 +226,7 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
           }
         }
 
-        logger.verbose('Charge not possible', {
+        logger.info('Charge not possible', {
           orderPaymentId: gatewayObject.referenceId,
           status: gatewayObject.status,
         });

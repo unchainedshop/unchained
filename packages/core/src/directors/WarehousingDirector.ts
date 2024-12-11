@@ -1,6 +1,8 @@
 import { IBaseDirector, BaseDirector } from '@unchainedshop/utils';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { WarehousingProvider, TokenSurrogate } from '@unchainedshop/core-warehousing';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 import {
   DeliveryDirector,
@@ -83,7 +85,7 @@ export const WarehousingDirector: IWarehousingDirector = {
         const commissioningTime = await adapter.commissioningTime(quantity);
         return Math.max(commissioningTime + productionTime, 0);
       } catch (error) {
-        log(error.message, { level: LogLevel.Error, ...error });
+        logger.error(error);
         return NaN;
       }
     };
@@ -102,7 +104,7 @@ export const WarehousingDirector: IWarehousingDirector = {
         try {
           return adapter.isActive();
         } catch (error) {
-          log(error.message, { level: LogLevel.Error });
+          logger.error(error);
           return false;
         }
       },
@@ -115,7 +117,7 @@ export const WarehousingDirector: IWarehousingDirector = {
             quantity,
           };
         } catch (error) {
-          log(error.message, { level: LogLevel.Error, ...error });
+          logger.error(error);
           return null;
         }
       },
@@ -150,7 +152,7 @@ export const WarehousingDirector: IWarehousingDirector = {
             earliestDelivery,
           };
         } catch (error) {
-          log(error.message, { level: LogLevel.Error, ...error });
+          logger.error(error);
           return {};
         }
       },
@@ -161,7 +163,7 @@ export const WarehousingDirector: IWarehousingDirector = {
           const tokenMetadata = await adapter.tokenMetadata(chainTokenId, referenceDate);
           return tokenMetadata;
         } catch (error) {
-          log(error.message, { level: LogLevel.Error, ...error });
+          logger.error(error);
           return {};
         }
       },
@@ -172,7 +174,7 @@ export const WarehousingDirector: IWarehousingDirector = {
           const isInvalidateable = await adapter.isInvalidateable(chainTokenId, referenceDate);
           return isInvalidateable;
         } catch (error) {
-          log(error.message, { level: LogLevel.Error, ...error });
+          logger.error(error);
           return false;
         }
       },
@@ -190,7 +192,7 @@ export const WarehousingDirector: IWarehousingDirector = {
             };
           });
         } catch (error) {
-          log(error.message, { level: LogLevel.Error, ...error });
+          logger.error(error);
           return [];
         }
       },

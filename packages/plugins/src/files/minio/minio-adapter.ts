@@ -10,12 +10,13 @@ import {
   resolveExpirationDate,
   IFileAdapter,
 } from '@unchainedshop/file-upload';
-
-import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import { Client } from 'minio';
 import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
 import { expiryOffsetInMs } from '@unchainedshop/file-upload/lib/put-expiration.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:plugins:minio');
 
 const {
   MINIO_ACCESS_KEY,
@@ -33,9 +34,8 @@ let client: Client;
 
 export async function connectToMinio() {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
-    log(
+    logger.error(
       'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
-      { level: LogLevel.Error },
     );
     return null;
   }
@@ -67,9 +67,7 @@ export async function connectToMinio() {
     }
     return minioClient;
   } catch (error) {
-    log(`Exception while creating Minio client: ${error.message}`, {
-      level: LogLevel.Error,
-    });
+    logger.error(`Exception while creating Minio client: ${error.message}`);
   }
   return null;
 }

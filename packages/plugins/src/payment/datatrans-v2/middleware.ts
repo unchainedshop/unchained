@@ -34,7 +34,7 @@ export const datatransHandler = async (req, res) => {
 
     const transaction: StatusResponseSuccess = JSON.parse(req.body) as StatusResponseSuccess;
 
-    logger.verbose(`received request`, {
+    logger.info(`received request`, {
       type: transaction.type,
     });
 

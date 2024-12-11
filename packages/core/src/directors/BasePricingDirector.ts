@@ -1,8 +1,10 @@
-import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector, PricingCalculation } from '@unchainedshop/utils';
 import { BasePricingAdapterContext, BasePricingContext, IPricingAdapter } from './BasePricingAdapter.js';
 import { IPricingSheet } from './BasePricingSheet.js';
 import { OrderDiscountDirector } from './OrderDiscountDirector.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export interface Discount<DiscountConfiguration> {
   discountId: string;
@@ -120,7 +122,7 @@ export const BasePricingDirector = <
           calculation = resolvedCalculation.concat(nextCalculationResult);
           return calculation;
         } catch (error) {
-          log(error, { level: LogLevel.Error });
+          logger.error(error);
         }
         return resolvedCalculation;
       }, Promise.resolve([]));

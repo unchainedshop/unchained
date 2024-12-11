@@ -1,4 +1,3 @@
-import { LogLevel, log } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import {
   QuotationError,
@@ -6,6 +5,9 @@ import {
   QuotationAdapterActions,
   QuotationContext,
 } from './QuotationAdapter.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
   actions: (quotationContext: QuotationContext, unchainedAPI) => Promise<QuotationAdapterActions>;
@@ -20,9 +22,7 @@ const findAppropriateAdapters = (quotationContext: QuotationContext, unchainedAP
     adapterFilter: (Adapter: IQuotationAdapter) => {
       const activated = Adapter.isActivatedFor(quotationContext, unchainedAPI);
       if (!activated) {
-        log(`Quotation Director -> ${Adapter.key} (${Adapter.version}) skipped`, {
-          level: LogLevel.Warning,
-        });
+        logger.warn(`Quotation Director -> ${Adapter.key} (${Adapter.version}) skipped`);
       }
       return activated;
     },
@@ -47,8 +47,7 @@ export const QuotationDirector: IQuotationDirector = {
         try {
           return adapter.configurationError();
         } catch (error) {
-          log('QuotationDirector -> Error while checking for configurationError', {
-            level: LogLevel.Warning,
+          logger.warn('QuotationDirector -> Error while checking for configurationError', {
             ...error,
           });
           return QuotationError.ADAPTER_NOT_FOUND;
@@ -60,10 +59,12 @@ export const QuotationDirector: IQuotationDirector = {
           const isRequired = await adapter.isManualRequestVerificationRequired();
           return isRequired;
         } catch (error) {
-          log('QuotationDirector -> Error while checking if is manual request verification required', {
-            level: LogLevel.Error,
-            ...error,
-          });
+          logger.error(
+            'QuotationDirector -> Error while checking if is manual request verification required',
+            {
+              ...error,
+            },
+          );
           return null;
         }
       },
@@ -73,8 +74,7 @@ export const QuotationDirector: IQuotationDirector = {
           const isRequired = await adapter.isManualProposalRequired();
           return isRequired;
         } catch (error) {
-          log('QuotationDirector -> Error while checking if is manual proposal required', {
-            level: LogLevel.Error,
+          logger.error('QuotationDirector -> Error while checking if is manual proposal required', {
             ...error,
           });
           return null;
@@ -94,8 +94,7 @@ export const QuotationDirector: IQuotationDirector = {
           });
           return itemConfiguration;
         } catch (error) {
-          log('QuotationDirector -> Error while transforming item configuration', {
-            level: LogLevel.Error,
+          logger.error('QuotationDirector -> Error while transforming item configuration', {
             ...error,
           });
           return null;

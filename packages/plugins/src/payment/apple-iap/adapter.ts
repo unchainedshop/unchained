@@ -258,9 +258,7 @@ const AppleIAP: IPaymentAdapter<UnchainedCore> = {
         const { status, latest_receipt_info: latestReceiptInfo } = response; // eslint-disable-line
 
         if (status === 0) {
-          logger.info('Apple IAP Plugin: Receipt validated and updated for the user', {
-            level: 'verbose',
-          });
+          logger.debug('Apple IAP Plugin: Receipt validated and updated for the user');
           const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1]; // eslint-disable-line
           return {
             token: latestTransaction.web_order_line_item_id, // eslint-disable-line
@@ -269,7 +267,6 @@ const AppleIAP: IPaymentAdapter<UnchainedCore> = {
         }
 
         logger.warn('Apple IAP Plugin: Receipt invalid', {
-          level: 'warn',
           status: response.status,
         });
         return null;

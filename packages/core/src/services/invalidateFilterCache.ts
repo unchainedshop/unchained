@@ -1,13 +1,13 @@
-import { log, LogLevel } from '@unchainedshop/logger';
 import { Modules } from '../modules.js';
 import { FilterDirector } from '../core-index.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:core');
 
 export const invalidateFilterCacheService = async (unchainedAPI: {
   modules: Modules;
 }): Promise<void> => {
-  log('Filters: Start invalidating filter caches', {
-    level: LogLevel.Verbose,
-  });
+  logger.debug('Filters: Start invalidating filter caches');
 
   const filters = await unchainedAPI.modules.filters.findFilters({ includeInactive: true });
 
