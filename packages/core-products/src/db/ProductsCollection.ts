@@ -1,5 +1,131 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Product, ProductText } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export enum ProductStatus {
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  DELETED = 'DELETED',
+}
+
+export enum ProductTypes {
+  SimpleProduct = 'SIMPLE_PRODUCT',
+  ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
+  BundleProduct = 'BUNDLE_PRODUCT',
+  PlanProduct = 'PLAN_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT',
+}
+export interface ProductContractConfiguration {
+  tokenId?: string;
+  supply?: number;
+  ercMetadataProperties?: Record<string, any>;
+}
+
+export interface ProductAssignment {
+  vector: any;
+  productId: string;
+}
+
+export interface ProductProxy {
+  assignments: Array<ProductAssignment>;
+}
+
+export interface ProductSupply {
+  weightInGram?: number;
+  heightInMillimeters?: number;
+  lengthInMillimeters?: number;
+  widthInMillimeters?: number;
+}
+
+export enum ProductContractStandard {
+  ERC721 = 'ERC721',
+  ERC1155 = 'ERC1155',
+}
+
+export interface ProductConfiguration {
+  key: string;
+  value: string;
+}
+
+export interface ProductBundleItem {
+  productId: string;
+  quantity: number;
+  configuration: Array<ProductConfiguration>;
+}
+
+export interface ProductPrice {
+  // TODO: Extends Price!
+  _id?: string;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
+  countryCode?: string;
+  currencyCode: string;
+  amount: number;
+  maxQuantity?: number;
+}
+
+export interface ProductPriceRange {
+  _id: string;
+  minPrice: ProductPrice;
+  maxPrice: ProductPrice;
+}
+
+export interface ProductCommerce {
+  salesUnit?: string;
+  salesQuantityPerUnit?: string;
+  defaultOrderQuantity?: number;
+  pricing: Array<ProductPrice>;
+}
+
+export interface ProductTokenization {
+  contractAddress: string;
+  contractStandard: ProductContractStandard;
+  tokenId: string;
+  supply: number;
+  ercMetadataProperties?: Record<string, any>;
+}
+
+export interface ProductPlan {
+  billingInterval?: string;
+  billingIntervalCount?: number;
+  usageCalculationType?: string;
+  trialInterval?: string;
+  trialIntervalCount?: number;
+}
+
+export interface ProductWarehousing {
+  baseUnit?: string;
+  sku?: string;
+}
+
+export type Product = {
+  _id?: string;
+  bundleItems: Array<ProductBundleItem>;
+  commerce?: ProductCommerce;
+  meta?: any;
+  plan: ProductPlan;
+  proxy: ProductProxy;
+  published?: Date;
+  sequence: number;
+  slugs: Array<string>;
+  status?: string;
+  supply: ProductSupply;
+  tags?: Array<string>;
+  type: string;
+  warehousing?: ProductWarehousing;
+  tokenization?: ProductTokenization;
+} & TimestampFields;
+
+export type ProductText = {
+  _id?: string;
+  productId: string;
+  description?: string;
+  locale: string;
+  slug?: string;
+  subtitle?: string;
+  title?: string;
+  brand?: string;
+  vendor?: string;
+  labels?: Array<string>;
+} & TimestampFields;
 
 export const ProductsCollection = async (db: mongodb.Db) => {
   const Products = db.collection<Product>('products');

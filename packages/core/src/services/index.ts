@@ -1,17 +1,42 @@
-import { migrateUserDataService } from './migrateUserDataService.js';
-import { updateUserAvatarAfterUploadService } from './updateUserAvatarAfterUploadService.js';
+import { migrateUserDataService } from './migrateUserData.js';
+import { updateUserAvatarAfterUploadService } from './updateUserAvatarAfterUpload.js';
 import { linkFileService } from './linkFileService.js';
-import { createSignedURLService } from './createSignedURLService.js';
-import { uploadFileFromURLService } from './uploadFileFromURLService.js';
-import { uploadFileFromStreamService } from './uploadFileFromStreamService.js';
-import { removeFilesService } from './removeFilesService.js';
-import { createDownloadStreamService } from './createDownloadStreamService.js';
-import { migrateBookmarksService } from './migrateBookmarksService.js';
-import { migrateOrderCartsService } from './migrateOrderCartService.js';
-import { nextUserCartService } from './nextUserCartService.js';
-import { removeProductService } from './removeProductService.js';
+import { createSignedURLService } from './createSignedURL.js';
+import { uploadFileFromURLService } from './uploadFileFromURL.js';
+import { uploadFileFromStreamService } from './uploadFileFromStream.js';
+import { removeFilesService } from './removeFiles.js';
+import { createDownloadStreamService } from './createDownloadStream.js';
+import { migrateBookmarksService } from './migrateBookmarks.js';
+import { migrateOrderCartsService } from './migrateOrderCart.js';
+import { nextUserCartService } from './nextUserCart.js';
+import { removeProductService } from './removeProduct.js';
 import { initCartProvidersService } from './initCartProviders.js';
-import { updateCalculationService } from './updateCalculationService.js';
+import { updateCalculationService } from './updateCalculation.js';
+import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
+import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
+import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
+import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.js';
+import { searchAssortmentsService } from './searchAssortments.js';
+import { searchProductsService } from './searchProducts.js';
+import { calculateDiscountTotalService } from './calculateDiscountTotal.js';
+import { registerPaymentCredentialsService } from './registerPaymentCredentials.js';
+import { processOrderService } from './processOrder.js';
+import { checkoutOrderService } from './checkoutOrder.js';
+import { confirmOrderService } from './confirmOrder.js';
+import { rejectOrderService } from './rejectOrder.js';
+import { discountedEntitiesService } from './discountedEntities.js';
+import { createManualOrderDiscountService } from './createManualOrderDiscount.js';
+import { initializeEnrollmentService } from './initializeEnrollment.js';
+import { activateEnrollmentService } from './activateEnrollment.js';
+import { terminateEnrollmentService } from './terminateEnrollment.js';
+import { invalidateFilterCacheService } from './invalidateFilterCache.js';
+import { fullfillQuotationService } from './fullfillQuotation.js';
+import { processQuotationService } from './processQuotation.js';
+import { proposeQuotationService } from './proposeQuotation.js';
+import { rejectQuotationService } from './rejectQuotation.js';
+import { verifyQuotationService } from './verifyQuotation.js';
+import { loadFiltersService } from './loadFilters.js';
+import { loadFilterOptionsService } from './loadFilterOptions.js';
 
 const services = {
   bookmarks: {
@@ -26,10 +51,21 @@ const services = {
     createDownloadStream: createDownloadStreamService,
   },
   orders: {
+    registerPaymentCredentials: registerPaymentCredentialsService,
+    calculateDiscountTotal: calculateDiscountTotalService,
     migrateOrderCarts: migrateOrderCartsService,
     nextUserCart: nextUserCartService,
     initCartProviders: initCartProvidersService,
     updateCalculation: updateCalculationService,
+    supportedDeliveryProviders: supportedDeliveryProvidersService,
+    supportedPaymentProviders: supportedPaymentProvidersService,
+    supportedWarehousingProviders: supportedWarehousingProvidersService,
+    processOrder: processOrderService,
+    checkoutOrder: checkoutOrderService,
+    confirmOrder: confirmOrderService,
+    rejectOrder: rejectOrderService,
+    discountedEntities: discountedEntitiesService,
+    createManualOrderDiscount: createManualOrderDiscountService,
   },
   products: {
     removeProduct: removeProductService,
@@ -37,6 +73,27 @@ const services = {
   users: {
     migrateUserData: migrateUserDataService,
     updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
+  },
+  enrollments: {
+    createEnrollmentFromCheckout: createEnrollmentFromCheckoutService,
+    processEnrollment: processOrderService,
+    initializeEnrollment: initializeEnrollmentService,
+    activateEnrollment: activateEnrollmentService,
+    terminateEnrollment: terminateEnrollmentService,
+  },
+  quotations: {
+    fullfillQuotation: fullfillQuotationService,
+    processQuotation: processQuotationService,
+    proposeQuotation: proposeQuotationService,
+    rejectQuotation: rejectQuotationService,
+    verifyQuotation: verifyQuotationService,
+  },
+  filters: {
+    searchAssortments: searchAssortmentsService,
+    searchProducts: searchProductsService,
+    invalidateFilterCache: invalidateFilterCacheService,
+    loadFilters: loadFiltersService,
+    loadFilterOptions: loadFilterOptionsService,
   },
 };
 

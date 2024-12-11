@@ -22,7 +22,7 @@ import {
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
   PaymentPricingCalculation,
-} from '@unchainedshop/core-payment';
+} from '@unchainedshop/core';
 
 const TRANSACTION_FEE = 29;
 
@@ -61,11 +61,11 @@ export const ShopCommission: IPaymentPricingAdapter = {
           });
 
           const totalValueOfGoods = orderPositions.reduce((current, orderPosition) => {
-            const pricing = context.modules.orders.positions.pricingSheet(
-              orderPosition,
-              context.order.currency,
-              params.context,
-            );
+            const pricing = ProductPricingSheet({
+              calculation: orderPosition.calculation,
+              currency: context.order.currency,
+              quantity: orderPosition.quantity,
+            });
             const items = pricing.gross();
             return current + items;
           }, 0);
@@ -91,9 +91,7 @@ export const ShopCommission: IPaymentPricingAdapter = {
         );
         return resultRaw;
       },
-      getContext: (): PaymentPricingAdapterContext => params.context,
       resultSheet: () => resultSheet,
-      getCalculation: (): PaymentPricingCalculation[] => calculation,
     };
   },
 };
@@ -102,7 +100,6 @@ export const ShopCommission: IPaymentPricingAdapter = {
 
 - **isActiveFor(context: [PaymentPricingAdapterContext](https://docs.unchained.shop/types/interfaces/payments_pricing.PaymentPricingAdapterContext.html))**: Used to activate or de-active a particular payment price plugin based on the current context of the order or any other business rule.
 - **calculate**: is where the actual calculation of the payment price is done based on the calculation items defined for the adapter.
-- **getContext**: returns the current payment price plugin context.
 - **resultSheet**: return the price sheet items that are  applied on the price adapter.
 
 ## Registering payment pricing adapters

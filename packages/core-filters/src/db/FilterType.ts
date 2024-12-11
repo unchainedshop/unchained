@@ -1,6 +1,0 @@
-export enum FilterType {
-  SWITCH = 'SWITCH',
-  SINGLE_CHOICE = 'SINGLE_CHOICE',
-  MULTI_CHOICE = 'MULTI_CHOICE',
-  RANGE = 'RANGE',
-}

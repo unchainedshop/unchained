@@ -1,11 +1,9 @@
 import crypto from 'crypto';
-import { Product, ProductConfiguration, IProductPricingSheet, ProductPriceRate } from '../types.js';
-import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
-import { ProductPriceRates } from '../db/ProductPriceRates.js';
+import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
 import { ProductsModule } from '../products-index.js';
-import type { Currency } from '@unchainedshop/core-currencies';
+import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
@@ -20,8 +18,14 @@ export const getDecimals = (originDecimals) => {
 };
 
 export const normalizeRate = (
-  baseCurrency: Currency,
-  quoteCurrency: Currency,
+  baseCurrency: {
+    decimals?: number;
+    isoCode: string;
+  },
+  quoteCurrency: {
+    decimals?: number;
+    isoCode: string;
+  },
   rateRecord: ProductPriceRate,
 ) => {
   let rate = null;
@@ -80,45 +84,10 @@ export const configureProductPricesModule = ({
     return null;
   };
 
-  const userPrice: ProductsModule['prices']['userPrice'] = async (
-    product,
-    { quantity = 1, country, currency, useNetPrice, userId, configuration },
-    unchainedAPI,
-  ) => {
-    const user = await unchainedAPI.modules.users.findUserById(userId);
-    const pricingDirector = await ProductPricingDirector.actions(
-      {
-        product,
-        user,
-        country,
-        currency,
-        quantity,
-        configuration,
-      },
-      unchainedAPI,
-    );
-
-    const calculated = await pricingDirector.calculate();
-    if (!calculated || !calculated.length) return null;
-
-    const pricing = pricingDirector.calculationSheet() as IProductPricingSheet;
-    const unitPrice = pricing.unitPrice({ useNetPrice });
-
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
-        .digest('hex'),
-      ...unitPrice,
-      isNetPrice: useNetPrice,
-      isTaxable: pricing.taxSum() > 0,
-      currencyCode: pricing.currency,
-    };
-  };
-
   return {
     price: catalogPrice,
-    userPrice,
+
+    priceRange: getPriceRange,
 
     catalogPrices: (product) => {
       const prices = (product.commerce && product.commerce.pricing) || [];
@@ -151,67 +120,6 @@ export const configureProductPricesModule = ({
               quantity,
               currency,
             }),
-          ),
-        )
-      ).filter(Boolean);
-
-      if (!filteredPrices.length) return null;
-
-      const { minPrice, maxPrice } = getPriceRange({
-        productId: product._id as string,
-        prices: filteredPrices,
-      });
-
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update(
-            [
-              product._id,
-              Math.random(),
-              minPrice.amount,
-              minPrice.currencyCode,
-              maxPrice.amount,
-              maxPrice.currencyCode,
-            ].join(''),
-          )
-          .digest('hex'),
-        minPrice,
-        maxPrice,
-      };
-    },
-
-    simulatedPriceRange: async (
-      product,
-      {
-        userId,
-        country,
-        currency,
-        includeInactive = false,
-        quantity,
-        useNetPrice = false,
-        vectors = [],
-      },
-      unchainedAPI,
-    ) => {
-      const products = await proxyProducts(product, vectors, {
-        includeInactive,
-      });
-
-      const filteredPrices = (
-        await Promise.all(
-          products.map((proxyProduct) =>
-            userPrice(
-              proxyProduct,
-              {
-                quantity,
-                currency,
-                country,
-                userId,
-                useNetPrice,
-              },
-              unchainedAPI,
-            ),
           ),
         )
       ).filter(Boolean);

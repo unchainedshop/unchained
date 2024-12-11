@@ -1,6 +1,9 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IProductPricingAdapter } from '@unchainedshop/core-products';
-import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import {
+  ProductPricingDirector,
+  ProductPricingAdapter,
+  UnchainedCore,
+  IProductPricingAdapter,
+} from '@unchainedshop/core';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 import memoizee from 'memoizee';
 

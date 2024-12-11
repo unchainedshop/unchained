@@ -26,11 +26,7 @@ export type CurrenciesModule = {
   create: (doc: Currency) => Promise<string | null>;
 };
 
-export const buildFindSelector = ({
-  includeInactive = false,
-  contractAddress,
-  queryString,
-}: CurrencyQuery) => {
+const buildFindSelector = ({ includeInactive = false, contractAddress, queryString }: CurrencyQuery) => {
   const selector: { isActive?: true; deleted: null; contractAddress?: string; $text?: any } = {
     deleted: null,
   };

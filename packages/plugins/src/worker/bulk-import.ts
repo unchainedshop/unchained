@@ -1,9 +1,8 @@
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
+import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
 import { UnchainedCore } from '@unchainedshop/core';
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
 
 const logger = createLogger('unchained:worker:bulk-import');
 

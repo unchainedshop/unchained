@@ -1,10 +1,12 @@
 import { Context } from '../../../context.js';
-import { WarehousingProviderQuery } from '@unchainedshop/core-warehousing';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 
 export default async function warehousingProvidersCount(
   root: never,
-  params: WarehousingProviderQuery,
+  params: {
+    type?: WarehousingProviderType;
+  },
   { modules, userId }: Context,
 ) {
   log(`query warehousingProvidersCount ${params.type}`, { userId });

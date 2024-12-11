@@ -1,7 +1,12 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
+import {
+  UnchainedCore,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+  OrderPricingSheet,
+} from '@unchainedshop/core';
 
 const logger = createLogger('unchained:core-payment:braintree');
 
@@ -104,7 +109,7 @@ const BraintreeDirect: IPaymentAdapter<UnchainedCore> = {
       },
 
       charge: async ({ paypalPaymentMethodNonce }) => {
-        const { modules, order } = context;
+        const { order } = context;
         if (!paypalPaymentMethodNonce)
           throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
 
@@ -113,7 +118,10 @@ const BraintreeDirect: IPaymentAdapter<UnchainedCore> = {
         const braintree = (await import('braintree')).default; // eslint-disable-line
         const gateway = getGateway(braintree);
         const address = order.billingAddress;
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const rounded = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
         const saleRequest = {
           amount: rounded / 100,

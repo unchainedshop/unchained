@@ -37,10 +37,10 @@
   },
   "peerDependencies": {
     "@hyperlink/node-apn": "^5.1.4",
-    "express": "^4.21.1"
+    "express": "^4.21.2"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.1",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-files": "^3.0.0-alpha4",
     "@unchainedshop/core-worker": "^3.0.0-alpha4",

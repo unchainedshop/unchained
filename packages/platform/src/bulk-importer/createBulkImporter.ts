@@ -130,7 +130,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
       invalidateCaches: async (unchainedAPI: UnchainedCore) => {
         if (skipCacheInvalidation) return;
         await unchainedAPI.modules.assortments.invalidateCache({}, { skipUpstreamTraversal: true });
-        await unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI);
+        await unchainedAPI.services.filters.invalidateFilterCache(unchainedAPI);
       },
     };
   };

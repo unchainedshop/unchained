@@ -1,10 +1,5 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  findLocalizedText,
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-} from '@unchainedshop/mongodb';
+import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
 import { Assortment, AssortmentText } from '../types.js';
@@ -103,15 +98,17 @@ export const configureAssortmentTextsModule = ({
     });
 
     if (updateResult.ok) {
-      const assortmentSelector = generateDbFilterById(assortmentId);
-      await Assortments.updateOne(assortmentSelector, {
-        $set: {
-          updated: new Date(),
+      await Assortments.updateOne(
+        { _id: assortmentId },
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $addToSet: {
+            slugs: slug,
+          },
         },
-        $addToSet: {
-          slugs: slug,
-        },
-      });
+      );
 
       await Assortments.updateMany(
         {

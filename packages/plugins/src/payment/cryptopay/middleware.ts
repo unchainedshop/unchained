@@ -1,6 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/api';
-import { UnchainedCore } from '@unchainedshop/core';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { CryptopayModule } from './module/configureCryptopayModule.js';
 import { ProductPriceRate } from '@unchainedshop/core-products';
@@ -10,8 +9,13 @@ const { CRYPTOPAY_SECRET, CRYPTOPAY_MAX_RATE_AGE = '360' } = process.env;
 const logger = createLogger('unchained:core-payment:cryptopay');
 
 export const cryptopayHandler = async (req, res) => {
-  const resolvedContext = req.unchainedContext as Context;
-  const modules = resolvedContext.modules as UnchainedCore['modules'] & { cryptopay: CryptopayModule };
+  const resolvedContext = req.unchainedContext as Context & {
+    modules: {
+      cryptopay: CryptopayModule;
+    };
+  };
+  const { modules, services } = resolvedContext;
+
   if (req.method === 'POST') {
     try {
       const { secret, price, wallet, ping } = req.body;
@@ -41,9 +45,9 @@ export const cryptopayHandler = async (req, res) => {
           // TODO: Not sure if it's correct to use processOrder here if status is PENDING!
           const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
           if (order.status === null) {
-            await modules.orders.checkout(order._id, {}, resolvedContext);
+            await services.orders.checkoutOrder(order._id, {}, resolvedContext);
           } else if (order.status === OrderStatus.PENDING) {
-            await modules.orders.processOrder(order, {}, resolvedContext);
+            await services.orders.processOrder(order, {}, resolvedContext);
           } else {
             throw new Error('Already processed');
           }

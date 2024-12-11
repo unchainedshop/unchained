@@ -41,7 +41,7 @@ export type CountriesModule = {
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
-export const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
+const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
   const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   if (queryString) selector.$text = { $search: queryString };

@@ -13,7 +13,7 @@ export default async function confirmOrder(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { services, modules, userId } = context;
   const { orderId, ...transactionContext } = params;
 
   log('mutation confirmOrder', { orderId, userId });
@@ -27,5 +27,5 @@ export default async function confirmOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return modules.orders.confirm(order, transactionContext, context);
+  return services.orders.confirmOrder(order, transactionContext, context);
 }

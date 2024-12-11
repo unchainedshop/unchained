@@ -4,13 +4,16 @@ import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Enrollment } from '@unchainedshop/core-enrollments';
-import { Order as OrderType } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderDiscount } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
+import {
+  Order as OrderType,
+  OrderPosition,
+  OrderPayment,
+  OrderDiscount,
+  OrderDelivery,
+} from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
+import { Price } from '@unchainedshop/utils';
+import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
   async supportedDeliveryProviders(
@@ -18,7 +21,7 @@ export const Order = {
     _,
     context: Context,
   ): Promise<Array<DeliveryProvider>> {
-    return context.modules.delivery.findSupported(
+    return context.services.orders.supportedDeliveryProviders(
       {
         order,
       },
@@ -27,7 +30,7 @@ export const Order = {
   },
 
   async supportedPaymentProviders(order: OrderType, _, context: Context) {
-    return context.modules.payment.paymentProviders.findSupported(
+    return context.services.orders.supportedPaymentProviders(
       {
         order,
       },
@@ -78,15 +81,14 @@ export const Order = {
     return order.status;
   },
 
-  async total(
-    order: OrderType,
-    params: { category: string; useNetPrice: boolean },
-    { modules }: Context,
-  ): Promise<OrderPrice> {
-    const pricingSheet = modules.orders.pricingSheet(order);
+  async total(order: OrderType, params: { category: string; useNetPrice: boolean }): Promise<Price> {
+    const pricing = OrderPricingSheet({
+      calculation: order.calculation,
+      currency: order.currency,
+    });
 
-    if (pricingSheet.isValid()) {
-      const price = pricingSheet.total(params);
+    if (pricing.isValid()) {
+      const price = pricing.total(params);
       return {
         _id: crypto
           .createHash('sha256')

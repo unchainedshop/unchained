@@ -1,5 +1,4 @@
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import Twilio from 'twilio';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;

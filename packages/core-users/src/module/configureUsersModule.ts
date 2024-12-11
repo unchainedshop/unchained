@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from '@node-rs/bcrypt';
 import { ModuleInput, Address, Contact } from '@unchainedshop/mongodb';
 import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -8,13 +8,12 @@ import {
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { systemLocale, SortDirection, SortOption } from '@unchainedshop/utils';
+import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
-import * as sha256 from './sha256.js';
 
 export type UsersModule = {
   // Submodules
@@ -113,7 +112,7 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
   return user;
 };
 
-export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
+const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
@@ -166,13 +165,13 @@ export const configureUsersModule = async ({
       when: Date;
     }> {
       if (!plainToken) return null;
-      const token = await sha256.hash(plainToken);
+      const token = await sha256(plainToken);
       const user = await Users.findOne(
         {
           'services.email.verificationTokens': {
             $elemMatch: {
               token,
-              when: { $gt: new Date().getTime() },
+              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
             },
           },
         },
@@ -212,13 +211,13 @@ export const configureUsersModule = async ({
     },
 
     async findUserByResetToken(plainToken: string): Promise<User> {
-      const token = await sha256.hash(plainToken);
+      const token = await sha256(plainToken);
       const user = await Users.findOne(
         {
           'services.password.reset': {
             $elemMatch: {
               token,
-              when: { $gt: new Date().getTime() },
+              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
             },
           },
         },
@@ -228,7 +227,7 @@ export const configureUsersModule = async ({
     },
 
     async findUserByToken(plainToken?: string): Promise<User> {
-      const token = await sha256.hash(plainToken);
+      const token = await sha256(plainToken);
 
       if (token) {
         return Users.findOne({
@@ -391,7 +390,7 @@ export const configureUsersModule = async ({
       plainPassword: string,
     ): Promise<boolean> {
       if (bcryptHash) {
-        const password = await sha256.hash(plainPassword);
+        const password = await sha256(plainPassword);
         return bcrypt.compare(password, bcryptHash);
       }
       if (pbkdf2SaltAndHash) {
@@ -432,9 +431,9 @@ export const configureUsersModule = async ({
     async sendResetPasswordEmail(userId: string, email: string, isEnrollment?: boolean): Promise<void> {
       const plainToken = crypto.randomUUID();
       const resetToken = {
-        token: await sha256.hash(plainToken),
+        token: await sha256(plainToken),
         address: email,
-        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+        when: new Date(),
       };
 
       await Users.updateOne(
@@ -457,9 +456,9 @@ export const configureUsersModule = async ({
     async sendVerificationEmail(userId: string, email: string): Promise<void> {
       const plainToken = crypto.randomUUID();
       const verificationToken = {
-        token: await sha256.hash(plainToken),
+        token: await sha256(plainToken),
         address: email,
-        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+        when: new Date(),
       };
 
       await Users.updateOne(
@@ -660,6 +659,8 @@ export const configureUsersModule = async ({
     updateLastBillingAddress: async (_id: string, lastBillingAddress: Address): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
+
+      if (!lastBillingAddress) return user;
 
       const modifier = {
         $set: {

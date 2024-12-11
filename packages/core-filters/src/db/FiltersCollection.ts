@@ -1,5 +1,34 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Filter, FilterText, FilterProductIdCacheRecord } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export enum FilterType {
+  SWITCH = 'SWITCH',
+  SINGLE_CHOICE = 'SINGLE_CHOICE',
+  MULTI_CHOICE = 'MULTI_CHOICE',
+  RANGE = 'RANGE',
+}
+
+export type Filter = {
+  _id?: string;
+  isActive?: boolean;
+  key: string;
+  meta?: any;
+  options: Array<string>;
+  type: FilterType;
+} & TimestampFields;
+
+export type FilterText = {
+  filterId: string;
+  filterOptionValue?: string;
+  locale?: string;
+  subtitle?: string;
+  title?: string;
+} & TimestampFields;
+
+export type FilterProductIdCacheRecord = {
+  filterId: string;
+  filterOptionValue?: string;
+  productIds: string[];
+};
 
 export const FiltersCollection = async (db: mongodb.Db) => {
   const Filters = db.collection<Filter>('filters');

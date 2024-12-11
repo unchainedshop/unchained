@@ -1,11 +1,10 @@
 import crypto from 'crypto';
 import { Context } from '../../../context.js';
-import { OrderDiscount } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
+import { OrderDiscount, OrderPayment } from '@unchainedshop/core-orders';
+import { Price } from '@unchainedshop/utils';
 
 type HelperType<P, T> = (
-  orderDelivery: OrderPrice & { discountId: string; item: OrderPayment },
+  orderDelivery: Price & { discountId: string; item: OrderPayment },
   params: P,
   context: Context,
 ) => T;
@@ -13,7 +12,7 @@ type HelperType<P, T> = (
 export interface OrderPaymentDiscountHelperTypes {
   _id: HelperType<never, string>;
   orderDiscount: HelperType<never, Promise<OrderDiscount>>;
-  total: HelperType<never, OrderPrice>;
+  total: HelperType<never, Price>;
 }
 
 export const OrderPaymentDiscount: OrderPaymentDiscountHelperTypes = {

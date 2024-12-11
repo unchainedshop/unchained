@@ -1,10 +1,15 @@
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { UnchainedCore } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 import { PaymentPageInitializeInput, SaferpayClient } from './api/index.js';
 import { buildSignature } from './buildSignature.js';
 import { SaferpayTransactionsModule } from './module/configureSaferpayTransactionsModule.js';
+import {
+  UnchainedCore,
+  OrderPricingSheet,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 
 export * from './middleware.js';
 
@@ -98,7 +103,10 @@ export const WordlineSaferpay: IPaymentAdapter<
         if (!orderPayment || !order) {
           throw new Error('orderPayment or order not found');
         }
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
 
         const saferpayTransactionId = await modules.saferpayTransactions.createTransaction(
@@ -155,7 +163,10 @@ export const WordlineSaferpay: IPaymentAdapter<
         if (!orderPayment || !order) {
           throw new Error('orderPayment or order not found');
         }
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const totalAmount = pricing.total({ useNetPrice: false }).amount;
 
         const saferpayTransaction = await modules.saferpayTransactions.findTransactionById(

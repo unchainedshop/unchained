@@ -1,11 +1,19 @@
-import { DeliveryProvider, FilterProviders } from './types.js';
+import { DeliveryProvider } from './db/DeliveryProvidersCollection.js';
 
-export type DetermineDefaultProvider<Order = unknown> = (
+export type FilterProviders<Order = unknown, UnchainedAPI = unknown> = (
   params: {
     providers: Array<DeliveryProvider>;
     order: Order;
   },
-  unchainedAPI,
+  unchainedAPI: UnchainedAPI,
+) => Promise<Array<DeliveryProvider>>;
+
+export type DetermineDefaultProvider<Order = unknown, UnchainedAPI = unknown> = (
+  params: {
+    providers: Array<DeliveryProvider>;
+    order: Order;
+  },
+  unchainedAPI: UnchainedAPI,
 ) => Promise<DeliveryProvider>;
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;

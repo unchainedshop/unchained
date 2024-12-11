@@ -1,5 +1,37 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Quotation } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields, LogFields } from '@unchainedshop/mongodb';
+
+export enum QuotationStatus {
+  REQUESTED = 'REQUESTED',
+  PROCESSING = 'PROCESSING',
+  PROPOSED = 'PROPOSED',
+  FULLFILLED = 'FULLFILLED',
+  REJECTED = 'REJECTED',
+}
+
+export type QuotationProposal = { price?: number; expires?: Date; meta?: any };
+
+export interface QuotationItemConfiguration {
+  quantity?: number;
+  configuration: Array<{ key: string; value: string }>;
+}
+
+export type Quotation = {
+  _id?: string;
+  configuration?: Array<{ key: string; value: string }>;
+  context?: any;
+  countryCode?: string;
+  currency?: string;
+  expires?: Date;
+  fullfilled?: Date;
+  meta?: any;
+  price?: number;
+  productId: string;
+  quotationNumber?: string;
+  rejected?: Date;
+  status: string;
+  userId: string;
+} & LogFields &
+  TimestampFields;
 
 export const QuotationsCollection = async (db: mongodb.Db) => {
   const Quotations = db.collection<Quotation>('quotations');

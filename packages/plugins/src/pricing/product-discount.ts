@@ -1,13 +1,13 @@
-import { Discount } from '@unchainedshop/utils';
+import { calculation as calcUtils } from '@unchainedshop/utils';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
   ProductDiscountConfiguration,
   IProductPricingAdapter,
   ProductPricingRowCategory,
-} from '@unchainedshop/core-products';
-import { calculation as calcUtils } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
+  Discount,
+  UnchainedCore,
+} from '@unchainedshop/core';
 
 const ProductDiscount: IProductPricingAdapter<UnchainedCore, ProductDiscountConfiguration> = {
   ...ProductPricingAdapter,

@@ -1,8 +1,7 @@
 import { generateRandomHash } from '@unchainedshop/utils';
 import { Order } from './types.js';
-import type { Product } from '@unchainedshop/core-products';
 
-export interface OrderSettingsOrderPositionValidation {
+export interface OrderSettingsOrderPositionValidation<Product = unknown> {
   order: Order;
   product: Product;
   quantityDiff?: number;
@@ -12,14 +11,14 @@ export interface OrderSettingsOrderPositionValidation {
 export interface OrdersSettingsOptions {
   ensureUserHasCart?: boolean;
   orderNumberHashFn?: (order: Order, index: number) => string;
-  validateOrderPosition?: (
+  validateOrderPosition?: <UnchainedAPI = unknown>(
     validationParams: OrderSettingsOrderPositionValidation,
-    context,
+    unchainedAPI: UnchainedAPI,
   ) => Promise<void>;
   lockOrderDuringCheckout?: boolean;
 }
 
-export const defaultValidateOrderPosition = async ({ product }, { modules }) => {
+export const defaultValidateOrderPosition = async ({ product }, { modules }: any) => {
   if (!modules.products.isActive(product)) {
     throw new Error('This product is inactive');
   }

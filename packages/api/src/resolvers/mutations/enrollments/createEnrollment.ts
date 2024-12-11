@@ -13,7 +13,7 @@ export default async function createEnrollment(
   { contact, plan, billingAddress, payment, delivery, meta },
   context: Context,
 ) {
-  const { countryContext, currencyContext, modules, userId } = context;
+  const { countryContext, currencyContext, modules, services, userId } = context;
 
   log('mutation createEnrollment', { userId });
 
@@ -34,19 +34,25 @@ export default async function createEnrollment(
 
   if (product.type !== ProductTypes.PlanProduct) throw new ProductWrongTypeError({ type: product.type });
 
-  return modules.enrollments.create(
+  const enrollment = await modules.enrollments.create({
+    billingAddress,
+    configuration,
+    contact,
+    countryCode: countryContext,
+    currencyCode: currencyContext,
+    delivery,
+    meta,
+    payment,
+    productId,
+    quantity,
+    userId,
+  });
+
+  return await services.enrollments.initializeEnrollment(
+    enrollment,
     {
-      billingAddress,
-      configuration,
-      contact,
-      countryCode: countryContext,
-      currencyCode: currencyContext,
-      delivery,
-      meta,
-      payment,
-      productId,
-      quantity,
-      userId,
+      orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
+      reason: 'new_enrollment',
     },
     context,
   );

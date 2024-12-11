@@ -491,12 +491,6 @@ sidebar_position: 6
 </td>
 </tr>
 <tr>
-<td>ORDER_ADD_DISCOUNT</td>
-<td>
-
-</td>
-</tr>
-<tr>
 <td>ORDER_UPDATE_CART_ITEM</td>
 <td>
 

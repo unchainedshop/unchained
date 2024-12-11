@@ -1,31 +1,5 @@
-import { IBasePricingSheet, PricingCalculation } from './director/BasePricingSheet.js';
-
 export const roundToNext = (value: number, precision: number) =>
   Math.ceil(value / precision) * precision;
-
-export const resolveRatioAndTaxDivisorForPricingSheet = (
-  pricing: IBasePricingSheet<PricingCalculation>,
-  total: number,
-) => {
-  if (total === 0 || !pricing) {
-    return {
-      ratio: 1,
-      taxDivisor: 1,
-    };
-  }
-  const tax = pricing.taxSum();
-  const gross = pricing.gross();
-  if (gross - tax === 0) {
-    return {
-      ratio: 0,
-      taxDivisor: 0,
-    };
-  }
-  return {
-    ratio: gross / total,
-    taxDivisor: gross / (gross - tax),
-  };
-};
 
 export const calculateAmountToSplit = (
   configuration: { rate?: number; fixedRate?: number },

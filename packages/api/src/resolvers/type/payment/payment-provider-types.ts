@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { Context } from '../../../context.js';
-import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
-import { PaymentPricingDirector } from '@unchainedshop/core-payment';
+import { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
+import { PaymentDirector, PaymentError, PaymentPricingDirector } from '@unchainedshop/core';
 
 export interface PaymentProviderHelperTypes {
   interface: (
@@ -38,20 +38,24 @@ export interface PaymentProviderHelperTypes {
   }>;
 }
 export const PaymentProvider: PaymentProviderHelperTypes = {
-  interface(obj, _, { modules }) {
-    const Interface = modules.payment.paymentProviders.findInterface(obj);
-    if (!Interface) return null;
-    return Interface;
+  interface(obj) {
+    const Adapter = PaymentDirector.getAdapter(obj.adapterKey);
+    if (!Adapter) return null;
+    return {
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    };
   },
 
-  configurationError(obj, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.payment.paymentProviders.configurationError(obj, requestContext);
+  async configurationError(paymentProvider, _, requestContext) {
+    const adapter = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+    return adapter.configurationError();
   },
 
-  isActive(obj, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.payment.paymentProviders.isActive(obj, requestContext);
+  async isActive(paymentProvider, _, requestContext) {
+    const adapter = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+    return adapter.isActive();
   },
 
   async simulatedPrice(
@@ -61,25 +65,21 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
   ) {
     const { modules, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
+    const currency = currencyCode || order?.currency || requestContext.currencyContext;
+    const pricingContext = {
+      country,
+      currency,
+      provider: paymentProvider,
+      order,
+      providerContext,
+      user,
+    };
 
-    const currency = currencyCode || requestContext.currencyContext;
+    const calculated = await PaymentPricingDirector.rebuildCalculation(pricingContext, requestContext);
 
-    const pricingDirector = await PaymentPricingDirector.actions(
-      {
-        country,
-        currency,
-        provider: paymentProvider,
-        order,
-        providerContext,
-        user,
-      },
-      requestContext,
-    );
-
-    const calculated = await pricingDirector.calculate();
     if (!calculated || !calculated.length) return null;
 
-    const pricing = pricingDirector.calculationSheet();
+    const pricing = PaymentPricingDirector.calculationSheet(pricingContext, calculated);
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;

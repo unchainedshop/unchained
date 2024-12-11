@@ -1,9 +1,10 @@
 import { Product, ProductSupply } from '@unchainedshop/core-products';
-import { WarehousingContext, WarehousingProvider } from '@unchainedshop/core-warehousing';
+import { WarehousingContext, WarehousingDirector } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { PlanProduct } from './product-plan-types.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export const SimpleProduct = {
   ...PlanProduct,
@@ -22,7 +23,7 @@ export const SimpleProduct = {
     }>
   > {
     const { deliveryProviderType, referenceDate, quantity } = params;
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
 
     const deliveryProviders = await modules.delivery.findProviders({
       type: deliveryProviderType,
@@ -31,7 +32,7 @@ export const SimpleProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported(
+      const warehousingProviders = await services.orders.supportedWarehousingProviders(
         {
           product: obj,
           deliveryProvider,
@@ -48,11 +49,12 @@ export const SimpleProduct = {
             referenceDate,
           };
 
-          const dispatch = await modules.warehousing.estimatedDispatch(
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
+          const dispatch = await director.estimatedDispatch();
 
           return {
             warehousingProvider,
@@ -81,7 +83,7 @@ export const SimpleProduct = {
       quantity?: number;
     }>
   > {
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
     const { referenceDate, deliveryProviderType } = params;
 
     const deliveryProviders = await modules.delivery.findProviders({
@@ -91,7 +93,7 @@ export const SimpleProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported(
+      const warehousingProviders = await services.orders.supportedWarehousingProviders(
         {
           product: obj,
           deliveryProvider,
@@ -107,11 +109,12 @@ export const SimpleProduct = {
             referenceDate,
           };
 
-          const stock = await modules.warehousing.estimatedStock(
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
+          const stock = await director.estimatedStock();
 
           return {
             warehousingProvider,

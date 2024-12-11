@@ -9,6 +9,7 @@ import {
   OrderWrongPaymentStatusError,
   UserNoCartError,
 } from '../../../errors.js';
+import { PaymentDirector } from '@unchainedshop/core';
 
 export default async function signPaymentProviderForCheckout(
   root: never,
@@ -60,8 +61,8 @@ export default async function signPaymentProviderForCheckout(
   }
 
   try {
-    const sign = await modules.payment.paymentProviders.sign(
-      provider._id,
+    const actions = await PaymentDirector.actions(
+      provider,
       {
         userId,
         orderPayment,
@@ -69,6 +70,8 @@ export default async function signPaymentProviderForCheckout(
       },
       context,
     );
+    const sign = await actions.sign();
+
     return sign;
   } catch (error) {
     throw new OrderPaymentConfigurationError(error);

@@ -61,7 +61,7 @@ const errorReported: TemplateResolver = async (
 
 
 ```typescript
-import { MessagingDirector } from "@unchainedshop/core-messaging";
+import { MessagingDirector } from "@unchainedshop/core";
 
 MessagingDirector.registerTemplate("ERROR_REPORT", errorReported);
 ```

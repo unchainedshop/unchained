@@ -8,7 +8,7 @@ export default async function terminateEnrollment(
   { enrollmentId }: { enrollmentId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
 
   log('mutation terminateEnrollment', { userId });
 
@@ -25,5 +25,5 @@ export default async function terminateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return modules.enrollments.terminateEnrollment(enrollment, context);
+  return services.enrollments.terminateEnrollment(enrollment, context);
 }

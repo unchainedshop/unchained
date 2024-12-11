@@ -1,4 +1,4 @@
-import { TemplateResolver } from '@unchainedshop/core-messaging';
+import { TemplateResolver } from '@unchainedshop/core';
 import util from 'util';
 
 const {

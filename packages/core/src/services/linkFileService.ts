@@ -1,11 +1,12 @@
 import { FileDirector } from '@unchainedshop/file-upload';
-import { FilesModule, File } from '@unchainedshop/core-files';
+import { File } from '@unchainedshop/core-files';
+import { Modules } from '../modules.js';
 
 // TODO: Find solution for FileDirector dependency
 
 export type LinkFileService = (
   params: { fileId: string; size: number; type?: string },
-  unchainedAPI: { modules: { files: FilesModule } },
+  unchainedAPI: { modules: Modules },
 ) => Promise<File>;
 
 export const linkFileService: LinkFileService = async ({ fileId, size, type }, unchainedAPI) => {

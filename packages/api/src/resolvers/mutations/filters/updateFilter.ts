@@ -2,6 +2,7 @@ import { log } from '@unchainedshop/logger';
 import { Filter } from '@unchainedshop/core-filters';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../context.js';
+import { FilterDirector } from '@unchainedshop/core';
 
 export default async function updateFilter(
   root: never,
@@ -16,5 +17,8 @@ export default async function updateFilter(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  return modules.filters.update(filterId, filter, context);
+  const updatedFilter = await modules.filters.update(filterId, filter);
+  await FilterDirector.invalidateProductIdCache(updatedFilter, context);
+
+  return updatedFilter;
 }

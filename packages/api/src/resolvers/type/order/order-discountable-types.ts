@@ -1,8 +1,11 @@
-import { Order, OrderPosition } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderDiscount } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
+import {
+  Order,
+  OrderPosition,
+  OrderDelivery,
+  OrderDiscount,
+  OrderPayment,
+} from '@unchainedshop/core-orders';
+import { Price } from '@unchainedshop/utils';
 
 export const OrderDiscountableType = {
   OrderItemDiscount: 'OrderItemDiscount',
@@ -19,7 +22,7 @@ export const OrderDiscountable = {
     order?: Order;
     orderDiscount: OrderDiscount;
     payment?: OrderPayment;
-    total: OrderPrice;
+    total: Price;
   }) {
     if (obj.delivery) {
       return OrderDiscountableType.OrderDeliveryDiscount;

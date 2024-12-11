@@ -1,9 +1,14 @@
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.js';
 import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
-import { UnchainedCore } from '@unchainedshop/core';
+import {
+  UnchainedCore,
+  OrderPricingSheet,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 
 export * from './middleware.js';
 
@@ -55,7 +60,10 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
         const { orderPayment, userId, order } = context;
         if (orderPayment) {
           // Order Checkout signing (One-time payment)
-          const pricing = await modules.orders.pricingSheet(order);
+          const pricing = OrderPricingSheet({
+            calculation: order.calculation,
+            currency: order.currency,
+          });
           const gatewayObject = mapOrderDataToGatewayObject(
             { order, orderPayment, pricing },
             transactionContext,
@@ -176,7 +184,10 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
           throw new Error('Could not load gateway from the Payrexx API');
         }
 
-        const pricing = await modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
         const { currency, amount } = pricing.total({ useNetPrice: false });
 
         if (

@@ -43,9 +43,7 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
         );
         return resultRaw;
       },
-      getContext: () => params.context,
       resultSheet: () => resultSheet,
-      getCalculation: () => calculation,
     };
   },
 };
@@ -54,7 +52,6 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
 
 - **isActiveFor(context: [OrderPricingAdapterContext](https://docs.unchained.shop/types/interfaces/orders_pricing.OrderPricingAdapterContext.html))**: Used to activate or de-active a particular order price plugin based on the current context of the order or any other business rule.
 - **calculate**: is where the actual calculation of the order price is done based on the calculation items defined for the adapter.
-- **getContext**: returns the current order payment price plugin context.
 - **resultSheet**: return the price sheet items that are  applied on the price adapter.
 
 

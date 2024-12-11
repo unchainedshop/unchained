@@ -8,7 +8,7 @@ export default async function verifyQuotation(
   params: { quotationId: string; quotationContext?: any },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { quotationId, ...transactionContext } = params;
 
   log('mutation verifyQuotation', { quotationId, userId });
@@ -22,5 +22,5 @@ export default async function verifyQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return modules.quotations.verifyQuotation(quotation, transactionContext, context);
+  return services.quotations.verifyQuotation(quotation, transactionContext, context);
 }

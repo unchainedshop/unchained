@@ -20,15 +20,10 @@ export default async function updateFilter(
 
   if (specification) {
     logger.debug('update filter object', specification);
-    await modules.filters.update(
-      _id,
-      {
-        ...filterData,
-        options: options?.map((option) => option.value) || [],
-      },
-      unchainedAPI,
-      { skipInvalidation: true },
-    );
+    await modules.filters.update(_id, {
+      ...filterData,
+      options: options?.map((option) => option.value) || [],
+    });
   }
 
   if (content) {

@@ -1,4 +1,3 @@
-import { ProductMedia, ProductMediaText } from '../types.js';
 import { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -8,7 +7,7 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
+import { ProductMedia, ProductMediaCollection, ProductMediaText } from '../db/ProductMediaCollection.js';
 
 export type ProductMediaModule = {
   // Queries

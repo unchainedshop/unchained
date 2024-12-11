@@ -1,5 +1,21 @@
-import { ProductMedia, ProductMediaText } from '../types.js';
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export type ProductMedia = {
+  _id?: string;
+  mediaId: string;
+  productId: string;
+  sortKey: number;
+  tags: Array<string>;
+  meta?: any;
+} & TimestampFields;
+
+export type ProductMediaText = {
+  _id?: string;
+  productMediaId: string;
+  locale?: string;
+  title?: string;
+  subtitle?: string;
+} & TimestampFields;
 
 export const ProductMediaCollection = async (db: mongodb.Db) => {
   const ProductMedias = db.collection<ProductMedia>('product_media');

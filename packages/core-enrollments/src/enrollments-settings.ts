@@ -1,13 +1,11 @@
 import later from '@breejs/later';
 import { generateRandomHash } from '@unchainedshop/utils';
-import { Enrollment } from './types.js';
-
-import type { WorkerSchedule } from '@unchainedshop/core-worker';
+import { Enrollment } from './db/EnrollmentsCollection.js';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');
 
 export interface EnrollmentsSettingsOptions {
-  autoSchedulingSchedule?: WorkerSchedule;
+  autoSchedulingSchedule?: later.ScheduleData;
   enrollmentNumberHashFn?: (enrollment: Enrollment, index: number) => string;
 }
 

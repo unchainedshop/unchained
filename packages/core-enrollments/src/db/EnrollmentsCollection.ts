@@ -1,5 +1,53 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Enrollment } from '../types.js';
+import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
+
+export interface EnrollmentPeriod {
+  start: Date;
+  end: Date;
+  orderId?: string;
+  isTrial?: boolean;
+}
+
+export interface EnrollmentPlan {
+  configuration: Array<{ key: string; value: string }>;
+  productId: string;
+  quantity: number;
+}
+
+export enum EnrollmentStatus {
+  INITIAL = 'INITIAL',
+  ACTIVE = 'ACTIVE',
+  PAUSED = 'PAUSED',
+  TERMINATED = 'TERMINATED',
+}
+
+export type Enrollment = {
+  _id?: string;
+  billingAddress: Address;
+  configuration?: Array<{ key: string; value: string }>;
+  contact: Contact;
+  context?: any;
+  countryCode?: string;
+  currencyCode?: string;
+  delivery: {
+    deliveryProviderId?: string;
+    context?: any;
+  };
+  enrollmentNumber?: string;
+  orderIdForFirstPeriod?: string;
+  expires?: Date;
+  meta?: any;
+  payment: {
+    paymentProviderId?: string;
+    context?: any;
+  };
+  periods: Array<EnrollmentPeriod>;
+  productId: string;
+  quantity?: number;
+  status: EnrollmentStatus;
+  userId: string;
+} & LogFields &
+  TimestampFields;
 
 export const EnrollmentsCollection = async (db: mongodb.Db) => {
   const Enrollments = db.collection<Enrollment>('enrollments');

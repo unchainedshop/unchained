@@ -1,4 +1,4 @@
-export default (values: Array<string>) => {
+export default (values: Array<string>): Array<string | undefined> => {
   const [stringifiedBoolean] = values; // drop all non index 0 values
   if (stringifiedBoolean !== undefined) {
     if (!stringifiedBoolean || stringifiedBoolean === 'false' || stringifiedBoolean === '0') {

@@ -16,28 +16,19 @@ export default async function createFilter(
 
   logger.debug('create filter object', specification);
   try {
-    await unchainedAPI.modules.filters.create(
-      {
-        ...filterData,
-        _id,
-        options: options?.map((option) => option.value) || [],
-      },
-      unchainedAPI,
-      { skipInvalidation: true },
-    );
+    await unchainedAPI.modules.filters.create({
+      ...filterData,
+      _id,
+      options: options?.map((option) => option.value) || [],
+    });
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
 
     logger.debug('entity already exists, falling back to update', specification);
-    await modules.filters.update(
-      _id,
-      {
-        ...filterData,
-        options: options?.map((option) => option.value) || [],
-      },
-      unchainedAPI,
-      { skipInvalidation: true },
-    );
+    await modules.filters.update(_id, {
+      ...filterData,
+      options: options?.map((option) => option.value) || [],
+    });
   }
 
   if (!(await modules.filters.filterExists({ filterId: _id }))) {

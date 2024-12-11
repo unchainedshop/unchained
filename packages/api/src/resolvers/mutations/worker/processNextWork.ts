@@ -1,3 +1,4 @@
+import { WorkerDirector } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
@@ -14,7 +15,7 @@ export default async function processNextWork(
     userId: context.userId,
   });
 
-  const work = await context.modules.worker.processNextWork(context, worker);
+  const work = WorkerDirector.processNextWork(context, worker);
 
   return work;
 }

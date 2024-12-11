@@ -1,4 +1,3 @@
-import { Product, ProductText } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
 import { ProductsModule } from '../products-index.js';
+import { Product, ProductText } from '../db/ProductsCollection.js';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 
