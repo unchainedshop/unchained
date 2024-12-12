@@ -33,7 +33,7 @@ const ercMetadataHandler: RouteHandlerMethod = async (
       {
         productId,
         locale,
-        chainTokenId: parsedPath.name,
+        chainTokenId: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
       },
       req.unchainedContext,
     );
