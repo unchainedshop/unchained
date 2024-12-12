@@ -1,9 +1,9 @@
-import crypto from 'crypto';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
 import { ProductsModule } from '../products-index.js';
 import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
+import { sha256 } from '@unchainedshop/utils';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
@@ -74,10 +74,9 @@ export const configureProductPricesModule = ({
 
     if (normalizedPrice.amount !== undefined && normalizedPrice.amount !== null) {
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([product._id, normalizedPrice.countryCode, normalizedPrice.currencyCode].join(''))
-          .digest('hex'),
+        _id: await sha256(
+          [product._id, normalizedPrice.countryCode, normalizedPrice.currencyCode].join(''),
+        ),
         ...normalizedPrice,
       };
     }
@@ -89,19 +88,18 @@ export const configureProductPricesModule = ({
 
     priceRange: getPriceRange,
 
-    catalogPrices: (product) => {
+    async catalogPrices(product) {
       const prices = (product.commerce && product.commerce.pricing) || [];
-      return prices.map((price) => ({
-        _id: crypto
-          .createHash('sha256')
-          .update(
+      return await Promise.all(
+        prices.map(async (price) => ({
+          _id: await sha256(
             [product._id, price.countryCode, price.currencyCode, price.maxQuantity, price.amount].join(
               '',
             ),
-          )
-          .digest('hex'),
-        ...price,
-      }));
+          ),
+          ...price,
+        })),
+      );
     },
 
     catalogPriceRange: async (
@@ -132,21 +130,40 @@ export const configureProductPricesModule = ({
       });
 
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update(
+        _id: await sha256(
+          [
+            product._id,
+            Math.random(),
+            minPrice.amount,
+            minPrice.currencyCode,
+            maxPrice.amount,
+            maxPrice.currencyCode,
+          ].join(''),
+        ),
+        minPrice: {
+          _id: await sha256(
             [
               product._id,
-              Math.random(),
-              minPrice.amount,
-              minPrice.currencyCode,
-              maxPrice.amount,
-              maxPrice.currencyCode,
+              minPrice?.isTaxable,
+              minPrice?.isNetPrice,
+              minPrice?.amount,
+              minPrice?.currencyCode,
             ].join(''),
-          )
-          .digest('hex'),
-        minPrice,
-        maxPrice,
+          ),
+          ...minPrice,
+        },
+        maxPrice: {
+          _id: await sha256(
+            [
+              product._id,
+              maxPrice?.isTaxable,
+              maxPrice?.isNetPrice,
+              maxPrice?.amount,
+              maxPrice?.currencyCode,
+            ].join(''),
+          ),
+          ...maxPrice,
+        },
       };
     },
 
@@ -159,26 +176,25 @@ export const configureProductPricesModule = ({
         countryCode,
       });
 
-      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-        const max = priceLevel.maxQuantity || null;
-        const min = previousMax ? previousMax + 1 : 0;
-        previousMax = priceLevel.maxQuantity;
+      return Promise.all(
+        filteredAndSortedPriceLevels.map(async (priceLevel, i) => {
+          const max = priceLevel.maxQuantity || null;
+          const min = previousMax ? previousMax + 1 : 0;
+          previousMax = priceLevel.maxQuantity;
 
-        return {
-          minQuantity: min,
-          maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
-          price: {
-            _id: crypto
-              .createHash('sha256')
-              .update([product._id, priceLevel.amount, currencyCode].join(''))
-              .digest('hex'),
-            isTaxable: !!priceLevel.isTaxable,
-            isNetPrice: !!priceLevel.isNetPrice,
-            amount: priceLevel.amount,
-            currencyCode,
-          },
-        };
-      });
+          return {
+            minQuantity: min,
+            maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
+            price: {
+              _id: await sha256([product._id, priceLevel.amount, currencyCode].join('')),
+              isTaxable: !!priceLevel.isTaxable,
+              isNetPrice: !!priceLevel.isNetPrice,
+              amount: priceLevel.amount,
+              currencyCode,
+            },
+          };
+        }),
+      );
     },
 
     rates: {

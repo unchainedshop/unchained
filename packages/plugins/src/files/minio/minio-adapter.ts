@@ -128,7 +128,7 @@ export const MinioAdapter: IFileAdapter = {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const expiryDate = resolveExpirationDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const _id = await buildHashedFilename(directoryName, fileName, expiryDate);
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
@@ -171,7 +171,7 @@ export const MinioAdapter: IFileAdapter = {
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
-    const _id = buildHashedFilename(directoryName, fileName, new Date());
+    const _id = await buildHashedFilename(directoryName, fileName, new Date());
     const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const metaData = {
@@ -204,7 +204,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
-    const hashedFilename = buildHashedFilename(directoryName, fileName, new Date());
+    const hashedFilename = await buildHashedFilename(directoryName, fileName, new Date());
 
     const stream = await createHttpDownloadStream(fileLink, headers);
     const type = mimeType.lookup(fileName) || stream.headers['content-type'];

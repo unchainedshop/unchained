@@ -41,8 +41,8 @@ export const gridfsHandler = async (
     if (req.method === 'PUT') {
       const { s: signature, e: expiryTimestamp } = req.query;
       const expiryDate = new Date(parseInt(expiryTimestamp as string, 10));
-      const fileId = buildHashedFilename(directoryName, fileName, expiryDate);
-      if (sign(directoryName, fileId, expiryDate.getTime()) === signature) {
+      const fileId = await buildHashedFilename(directoryName, fileName, expiryDate);
+      if ((await sign(directoryName, fileId, expiryDate.getTime())) === signature) {
         const file = await modules.files.findFile({ fileId });
         if (file.expires === null) {
           res.statusCode = 400;

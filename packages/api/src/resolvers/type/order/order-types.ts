@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { Context } from '../../../context.js';
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
@@ -12,7 +11,7 @@ import {
   OrderDelivery,
 } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
-import { Price } from '@unchainedshop/utils';
+import { Price, sha256 } from '@unchainedshop/utils';
 import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
@@ -90,10 +89,7 @@ export const Order = {
     if (pricing.isValid()) {
       const price = pricing.total(params);
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([order._id, JSON.stringify(params), JSON.stringify(price)].join(''))
-          .digest('hex'),
+        _id: await sha256([order._id, JSON.stringify(params), JSON.stringify(price)].join('')),
         ...price,
       };
     }

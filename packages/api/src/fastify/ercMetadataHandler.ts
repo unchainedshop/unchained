@@ -1,4 +1,3 @@
-import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '../context.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
@@ -24,9 +23,8 @@ const ercMetadataHandler: RouteHandlerMethod = async (
   try {
     const { services, localeContext } = req.unchainedContext;
     const url = new URL(req.url, process.env.ROOT_URL);
-    const parsedPath = path.parse(url.pathname);
 
-    if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
+    if (!url.pathname.toLowerCase().endsWith('.json')) throw new Error('Invalid ERC Metadata URI');
 
     const { productId, localeOrTokenFilename, tokenFileName } = req.params as any;
     const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;

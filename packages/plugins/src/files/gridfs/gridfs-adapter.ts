@@ -31,7 +31,7 @@ export const GridFSAdapter: IFileAdapter = {
 
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();
-    const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
+    const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, hashedFilename, expiryDate.getTime());
 
     const putURL = new URL(
@@ -66,7 +66,7 @@ export const GridFSAdapter: IFileAdapter = {
     }
 
     const expiryDate = resolveExpirationDate();
-    const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
+    const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);
     const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(
@@ -99,7 +99,7 @@ export const GridFSAdapter: IFileAdapter = {
     const fileName = decodeURIComponent(fname || href.split('/').pop());
 
     const expiryDate = resolveExpirationDate();
-    const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
+    const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);
 
     const response = await fetch(href, { headers });
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);

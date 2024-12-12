@@ -158,7 +158,7 @@ export type ProductsModule = {
       params: { country: string; currency?: string; quantity?: number },
     ) => Promise<ProductPrice>;
 
-    catalogPrices: (prodct: Product) => Array<ProductPrice>;
+    catalogPrices: (product: Product) => Promise<Array<ProductPrice>>;
     catalogPricesLeveled: (
       product: Product,
       params: { currency: string; country: string },

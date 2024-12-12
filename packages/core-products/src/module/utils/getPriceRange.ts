@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { ProductPrice } from '../../db/ProductsCollection.js';
 
 export const getPriceRange = (params: {
@@ -20,24 +19,12 @@ export const getPriceRange = (params: {
 
   return {
     minPrice: {
-      _id: crypto
-        .createHash('sha256')
-        .update(
-          [params.productId, min?.isTaxable, min?.isNetPrice, min?.amount, min?.currencyCode].join(''),
-        )
-        .digest('hex'),
       isTaxable: !!min?.isTaxable,
       isNetPrice: !!min?.isNetPrice,
       amount: Math.round(min?.amount),
       currencyCode: min?.currencyCode,
     },
     maxPrice: {
-      _id: crypto
-        .createHash('sha256')
-        .update(
-          [params.productId, max?.isTaxable, max?.isNetPrice, max?.amount, max?.currencyCode].join(''),
-        )
-        .digest('hex'),
       isTaxable: !!max?.isTaxable,
       isNetPrice: !!max?.isNetPrice,
       amount: Math.round(max?.amount),

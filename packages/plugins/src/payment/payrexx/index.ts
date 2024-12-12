@@ -103,7 +103,7 @@ const Payrexx: IPaymentAdapter<UnchainedCore> = {
         //   transactionId,
         // })) as StatusResponseSuccess;
         // if (result.transactionId) {
-        //   return parseRegistrationData(result);
+        //   return await parseRegistrationData(result);
         // }
         return null;
       },

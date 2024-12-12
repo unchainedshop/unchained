@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import crypto from 'crypto';
+import { sha256 } from '@unchainedshop/utils';
 import memoizee from 'memoizee';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 import { FiltersSettingsOptions } from '../filters-settings.js';
@@ -7,7 +7,7 @@ import { FiltersSettingsOptions } from '../filters-settings.js';
 const updateIfHashChanged = async (Collection, selector, doc) => {
   const _id = Object.values(selector).join(':');
   try {
-    const hash = crypto.createHash('sha256').update(JSON.stringify(doc)).digest('hex');
+    const hash = await sha256(JSON.stringify(doc));
     await Collection.updateOne(
       {
         ...selector,

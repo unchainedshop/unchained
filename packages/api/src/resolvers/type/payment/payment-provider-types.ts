@@ -1,45 +1,11 @@
-import crypto from 'crypto';
 import { Context } from '../../../context.js';
 import { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
-import { PaymentDirector, PaymentError, PaymentPricingDirector } from '@unchainedshop/core';
+import { PaymentDirector, PaymentPricingDirector } from '@unchainedshop/core';
+import { sha256 } from '@unchainedshop/utils';
 
-export interface PaymentProviderHelperTypes {
-  interface: (
-    provider: PaymentProviderType,
-    _: never,
-    context: Context,
-  ) => {
-    _id: string;
-    label: string;
-    version: string;
-  };
-  isActive: (provider: PaymentProviderType, _: never, context: Context) => Promise<boolean>;
-  configurationError: (
-    provider: PaymentProviderType,
-    _: never,
-    context: Context,
-  ) => Promise<PaymentError>;
-  simulatedPrice: (
-    provider: PaymentProviderType,
-    params: {
-      currency?: string;
-      orderId: string;
-      useNetPrice?: boolean;
-      context: any;
-    },
-    context: Context,
-  ) => Promise<{
-    _id: string;
-    amount: number;
-    currencyCode: string;
-    countryCode: string;
-    isTaxable: boolean;
-    isNetPrice: boolean;
-  }>;
-}
-export const PaymentProvider: PaymentProviderHelperTypes = {
-  interface(obj) {
-    const Adapter = PaymentDirector.getAdapter(obj.adapterKey);
+export const PaymentProvider = {
+  interface(provider: PaymentProviderType) {
+    const Adapter = PaymentDirector.getAdapter(provider.adapterKey);
     if (!Adapter) return null;
     return {
       _id: Adapter.key,
@@ -48,20 +14,20 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
     };
   },
 
-  async configurationError(paymentProvider, _, requestContext) {
+  async configurationError(paymentProvider: PaymentProviderType, _, requestContext: Context) {
     const adapter = await PaymentDirector.actions(paymentProvider, {}, requestContext);
     return adapter.configurationError();
   },
 
-  async isActive(paymentProvider, _, requestContext) {
+  async isActive(paymentProvider: PaymentProviderType, _, requestContext: Context) {
     const adapter = await PaymentDirector.actions(paymentProvider, {}, requestContext);
     return adapter.isActive();
   },
 
   async simulatedPrice(
-    paymentProvider,
+    paymentProvider: PaymentProviderType,
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },
-    requestContext,
+    requestContext: Context,
   ) {
     const { modules, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
@@ -87,10 +53,7 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
     };
 
     return {
-      _id: crypto
-        .createHash('sha256')
-        .update([paymentProvider._id, country, useNetPrice, order ? order._id : ''].join(''))
-        .digest('hex'),
+      _id: await sha256([paymentProvider._id, country, useNetPrice, order ? order._id : ''].join('')),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,
       countryCode: country,

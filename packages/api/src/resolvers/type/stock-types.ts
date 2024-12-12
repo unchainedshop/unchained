@@ -1,10 +1,10 @@
-import crypto from 'crypto';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/core-products';
 import { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import { sha256 } from '@unchainedshop/utils';
 
 export const Stock = {
-  _id: (params: {
+  _id: async (params: {
     product: Product;
     deliveryProvider: DeliveryProvider;
     warehousingProvider: WarehousingProvider;
@@ -12,17 +12,14 @@ export const Stock = {
     country: string;
     userId?: string;
   }) =>
-    crypto
-      .createHash('sha256')
-      .update(
-        [
-          params.product._id,
-          params.deliveryProvider._id,
-          params.warehousingProvider._id,
-          params.referenceDate,
-          params.country,
-          params.userId || 'ANONYMOUS',
-        ].join(''),
-      )
-      .digest('hex'),
+    await sha256(
+      [
+        params.product._id,
+        params.deliveryProvider._id,
+        params.warehousingProvider._id,
+        params.referenceDate,
+        params.country,
+        params.userId || 'ANONYMOUS',
+      ].join(''),
+    ),
 };

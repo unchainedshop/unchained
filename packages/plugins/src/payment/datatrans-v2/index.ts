@@ -443,7 +443,7 @@ const Datatrans: IPaymentAdapter<UnchainedCore> = {
           // at the dumbest possible moment
           try {
             checkIfTransactionAmountValid(transactionId, settledTransaction);
-            credentials = parseRegistrationData(settledTransaction);
+            credentials = await parseRegistrationData(settledTransaction);
             const result = await api().status({
               transactionId,
             });
