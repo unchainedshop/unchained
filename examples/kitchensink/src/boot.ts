@@ -42,7 +42,7 @@ const start = async () => {
           const cookies = cookie.parse(req.headers.get('cookie') || '');
           return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
         },
-        enabled(req) {
+        enabled() {
           return process.env.NODE_ENV === 'production';
         },
       }),

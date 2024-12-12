@@ -37,8 +37,7 @@
     "express": "~4",
     "express-session": "~1",
     "fastify": "^5.1.0",
-    "passport": "^0.7.0",
-    "passport-strategy": "^1.0.0"
+    "passport": "^0.7.0"
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^8.1.1",
@@ -57,7 +56,6 @@
     "@types/node": "^22.10.2",
     "jest": "^29.7.0",
     "passport": "^0.7.0",
-    "passport-strategy": "^1.0.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.2"
   }

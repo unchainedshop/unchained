@@ -1,6 +1,6 @@
 import { getCurrentContextResolver } from '../context.js';
-// import createBulkImportMiddleware from './createBulkImportMiddleware.js';
-import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
+import bulkImportHandler from './bulkImportHandler.js';
+import ercMetadataHandler from './ercMetadataHandler.js';
 import MongoStore from 'connect-mongo';
 import { YogaServerInstance } from 'graphql-yoga';
 import { mongodb } from '@unchainedshop/mongodb';
@@ -44,13 +44,13 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
   async function login(user: User) {
     req.session.user = user;
-    req.session.userId = user._id;
     const tokenObject = {
       _id: req.session.sessionId,
+      userId: user._id,
       /* eslint-disable-next-line */
       tokenExpires: new Date((req as any).session?.cookie._expires),
     };
-    await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, { userId: user._id, ...tokenObject });
+    await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
     /* eslint-disable-next-line */
     (user as any)._inLoginMethodResponse = true;
     return { user, ...tokenObject };
@@ -58,16 +58,17 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
   async function logout() {
     /* eslint-disable-line */
-    if (!req.session?.userId) return false;
+    if (!req.session?.user?._id) return false;
     const tokenObject = {
       _id: (req as any).session.sessionId,
-      userId: req.session?.userId,
+      userId: req.session?.user?._id,
     };
     req.session.user = null;
-    req.session.userId = null;
     await emit(API_EVENTS.API_LOGOUT, tokenObject);
     return true;
   }
+
+  const [, accessToken] = req.headers.authorization?.split(' ') || [];
 
   (req as any).unchainedContext = await context({
     setHeader,
@@ -76,8 +77,8 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     remotePort,
     login,
     logout,
-    user: req.session.user,
-    userId: req.session.userId,
+    accessToken,
+    userId: req.session.user?._id,
   });
 };
 
@@ -142,8 +143,13 @@ export const connect = (
 
   fastify.route({
     url: ERC_METADATA_API_PATH,
-    method: ['GET', 'POST', 'OPTIONS'],
-    handler: createERCMetadataMiddleware,
+    method: ['GET'],
+    handler: ercMetadataHandler,
   });
-  //   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
+
+  fastify.route({
+    url: BULK_IMPORT_API_PATH,
+    method: ['POST'],
+    handler: bulkImportHandler,
+  });
 };

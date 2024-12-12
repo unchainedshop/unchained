@@ -55,7 +55,7 @@ export interface PushSubscriptionObject {
 }
 
 export type User = {
-  _id?: string;
+  _id: string;
   deleted?: Date;
   avatarId?: string;
   emails: Array<Email>;

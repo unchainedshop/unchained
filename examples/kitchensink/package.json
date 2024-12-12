@@ -52,7 +52,6 @@
     "nodemailer": "^6.9.16",
     "open": "^10.1.0",
     "passport": "^0.7.0",
-    "passport-strategy": "^1.0.0",
     "postfinancecheckout": "^4.5.0",
     "stripe": "^17.4.0",
     "tiny-secp256k1": "^2.2.3",

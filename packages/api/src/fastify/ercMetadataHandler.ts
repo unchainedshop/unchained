@@ -1,6 +1,5 @@
 import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
-import { systemLocale } from '@unchainedshop/utils';
 import { Context } from '../context.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
@@ -12,29 +11,25 @@ const errorHandler = (res) => (e) => {
   return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
 };
 
-const methodWrongHandler = (res) => {
+const notFoundHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.status(404);
   return res.send();
 };
 
-const ercMetadataMiddleware: RouteHandlerMethod = async (
+const ercMetadataHandler: RouteHandlerMethod = async (
   req: FastifyRequest & { unchainedContext: Context },
   res,
 ) => {
   try {
-    if (req.method !== 'GET') {
-      return methodWrongHandler(res);
-    }
-
-    const { services } = req.unchainedContext;
+    const { services, localeContext } = req.unchainedContext;
     const url = new URL(req.url, process.env.ROOT_URL);
     const parsedPath = path.parse(url.pathname);
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
 
     const { productId, localeOrTokenFilename, tokenFileName } = req.params as any;
-    const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : systemLocale;
+    const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;
 
     const ercMetadata = await services.warehousing.ercMetadata(
       {
@@ -45,16 +40,16 @@ const ercMetadataMiddleware: RouteHandlerMethod = async (
       req.unchainedContext,
     );
 
-    if (!ercMetadata) return methodWrongHandler(res);
+    if (!ercMetadata) return notFoundHandler(res);
 
     const body = JSON.stringify(ercMetadata);
     res.status(200);
     res.header('Content-Length', Buffer.byteLength(body));
-    res.header('Content-Type', 'text/plain');
+    res.header('Content-Type', 'application/json');
     return res.send(body);
   } catch (e) {
     return errorHandler(res)(e);
   }
 };
 
-export default ercMetadataMiddleware;
+export default ercMetadataHandler;
