@@ -1,6 +1,6 @@
 import { getCurrentContextResolver } from '../context.js';
 // import createBulkImportMiddleware from './createBulkImportMiddleware.js';
-// import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
+import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import MongoStore from 'connect-mongo';
 import { YogaServerInstance } from 'graphql-yoga';
 import { mongodb } from '@unchainedshop/mongodb';
@@ -11,6 +11,7 @@ import { User } from '@unchainedshop/core-users';
 import { IncomingMessage } from 'http';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
+import { FastifyInstance } from 'fastify';
 
 const resolveUserRemoteAddress = (req: IncomingMessage) => {
   const remoteAddress =
@@ -25,6 +26,8 @@ const resolveUserRemoteAddress = (req: IncomingMessage) => {
 
 const {
   GRAPHQL_API_PATH = '/graphql',
+  BULK_IMPORT_API_PATH = '/bulk-import',
+  ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
@@ -79,7 +82,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 };
 
 export const connect = (
-  fastify: any,
+  fastify: FastifyInstance,
   {
     graphqlHandler,
     db,
@@ -137,6 +140,10 @@ export const connect = (
     },
   });
 
-  //   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
+  fastify.route({
+    url: ERC_METADATA_API_PATH,
+    method: ['GET', 'POST', 'OPTIONS'],
+    handler: createERCMetadataMiddleware,
+  });
   //   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
 };

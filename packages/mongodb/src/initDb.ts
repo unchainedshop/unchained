@@ -20,7 +20,9 @@ export const startDb = async () => {
     });
     return `${mongod.getUri()}unchained`;
   } catch {
-    throw new Error("Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set");
+    throw new Error(
+      "Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set",
+    );
   }
 };
 

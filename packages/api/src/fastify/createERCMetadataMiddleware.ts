@@ -1,31 +1,30 @@
-import { IncomingMessage } from 'http';
 import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { systemLocale } from '@unchainedshop/utils';
 import { Context } from '../context.js';
+import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:erc-metadata');
 
 const errorHandler = (res) => (e) => {
   logger.error(e.message);
-  res.writeHead(503);
-  res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+  res.status(503);
+  return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
 };
 
-const methodWrongHandler = (res) => () => {
+const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
-  res.writeHead(404);
-  res.end();
+  res.status(404);
+  return res.send();
 };
 
-export default async function ercMetadataMiddleware(
-  req: IncomingMessage & { unchainedContext: Context },
+const ercMetadataMiddleware: RouteHandlerMethod = async (
+  req: FastifyRequest & { unchainedContext: Context },
   res,
-) {
+) => {
   try {
     if (req.method !== 'GET') {
-      methodWrongHandler(res)();
-      return;
+      return methodWrongHandler(res);
     }
 
     const { services } = req.unchainedContext;
@@ -34,7 +33,7 @@ export default async function ercMetadataMiddleware(
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
 
-    const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
+    const { productId, localeOrTokenFilename, tokenFileName } = req.params as any;
     const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : systemLocale;
 
     const ercMetadata = await services.warehousing.ercMetadata(
@@ -49,12 +48,13 @@ export default async function ercMetadataMiddleware(
     if (!ercMetadata) return methodWrongHandler(res);
 
     const body = JSON.stringify(ercMetadata);
-    res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(body),
-      'Content-Type': 'text/plain',
-    });
-    res.end(body);
+    res.status(200);
+    res.header('Content-Length', Buffer.byteLength(body));
+    res.header('Content-Type', 'text/plain');
+    return res.send(body);
   } catch (e) {
-    errorHandler(res)(e);
+    return errorHandler(res)(e);
   }
-}
+};
+
+export default ercMetadataMiddleware;

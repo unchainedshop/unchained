@@ -37,6 +37,7 @@ import { rejectQuotationService } from './rejectQuotation.js';
 import { verifyQuotationService } from './verifyQuotation.js';
 import { loadFiltersService } from './loadFilters.js';
 import { loadFilterOptionsService } from './loadFilterOptions.js';
+import { ercMetadataService } from './ercMetadata.js';
 
 const services = {
   bookmarks: {
@@ -94,6 +95,9 @@ const services = {
     invalidateFilterCache: invalidateFilterCacheService,
     loadFilters: loadFiltersService,
     loadFilterOptions: loadFilterOptionsService,
+  },
+  warehousing: {
+    ercMetadata: ercMetadataService,
   },
 };
 
