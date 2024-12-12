@@ -82,13 +82,13 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
         logger.debug(`${operation} ${entity} ${payloadId} [PREPARE]`);
 
         try {
-          await handler(event.payload, { bulk, ...options }, unchainedAPI);
+          await handler(event.payload, { bulk, logger, ...options }, unchainedAPI);
           if (!processedOperations[entity]) processedOperations[entity] = {};
           if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
           processedOperations[entity][operation].push(payloadId);
           logger.debug(`${operation} ${entity} ${payloadId} [SUCCESS]`);
         } catch (e) {
-          logger.debug(`${operation} ${entity} ${payloadId} [FAILED]: ${e.message}`);
+          logger.debug(`${operation} ${entity} ${payloadId} [FAILED]`, e);
           preparationIssues.push({
             operation,
             entity,
