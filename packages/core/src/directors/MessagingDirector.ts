@@ -36,8 +36,8 @@ export type ArbitraryTemplateType = {
   input: any;
 };
 
-export type TemplateResolver = (
-  params: { template: string; [x: string]: any },
+export type TemplateResolver<T = { [x: string]: any }> = (
+  params: { template: string } & T,
   unchainedAPI,
 ) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
 

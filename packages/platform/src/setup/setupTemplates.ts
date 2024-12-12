@@ -40,7 +40,7 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
         type: 'MESSAGE',
         retries: 0,
         input: {
-          locale,
+          locale: locale.baseName,
           template: MessageTypes.ORDER_CONFIRMATION,
           orderId: order._id,
         },
@@ -57,7 +57,7 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
       type: 'MESSAGE',
       retries: 0,
       input: {
-        locale,
+        locale: locale.baseName,
         template: MessageTypes.ORDER_CONFIRMATION,
         orderId: order._id,
       },

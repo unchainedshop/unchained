@@ -11,10 +11,10 @@ Thank you very much for your order.
 {{shopName}}: {{shopUrl}}
 `;
 
-export const resolveOrderConfirmationTemplate: TemplateResolver = async (
-  { orderId, locale },
-  context,
-) => {
+export const resolveOrderConfirmationTemplate: TemplateResolver<{
+  orderId: string;
+  locale: string;
+}> = async ({ orderId, locale }, context) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
 

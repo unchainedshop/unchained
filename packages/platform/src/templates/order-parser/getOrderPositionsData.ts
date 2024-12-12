@@ -7,7 +7,7 @@ type PriceFormatter = ({ amount, currency }: { amount: number; currency: string 
 
 export const getOrderPositionsData = async (
   order: Order,
-  params: { locale?: Intl.Locale; useNetPrice?: boolean; format?: PriceFormatter },
+  params: { locale?: string; useNetPrice?: boolean; format?: PriceFormatter },
   context: UnchainedCore,
 ) => {
   const { modules } = context;
@@ -20,7 +20,7 @@ export const getOrderPositionsData = async (
     orderPositions.map(async (orderPosition) => {
       const productTexts = await modules.products.texts.findLocalizedText({
         productId: orderPosition.productId,
-        locale: params.locale?.baseName,
+        locale: params.locale,
       });
 
       const positionPricing = ProductPricingSheet({
