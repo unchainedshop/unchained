@@ -159,19 +159,36 @@ export const ConfigurableProduct = {
       prices: filteredPrices,
     });
 
+    const minPriceHash = await sha256(
+      [
+        product._id,
+        minPrice?.isTaxable,
+        minPrice?.isNetPrice,
+        minPrice?.amount,
+        minPrice?.currencyCode,
+      ].join(''),
+    );
+
+    const maxPriceHash = await sha256(
+      [
+        product._id,
+        maxPrice?.isTaxable,
+        maxPrice?.isNetPrice,
+        maxPrice?.amount,
+        maxPrice?.currencyCode,
+      ].join(''),
+    );
+
     return {
-      _id: await sha256(
-        [
-          product._id,
-          Math.random(),
-          minPrice.amount,
-          minPrice.currencyCode,
-          maxPrice.amount,
-          maxPrice.currencyCode,
-        ].join(''),
-      ),
-      minPrice,
-      maxPrice,
+      _id: await sha256([product._id, minPriceHash, maxPriceHash].join('')),
+      minPrice: {
+        _id: minPriceHash,
+        ...minPrice,
+      },
+      maxPrice: {
+        _id: maxPriceHash,
+        ...maxPrice,
+      },
     };
   },
 };

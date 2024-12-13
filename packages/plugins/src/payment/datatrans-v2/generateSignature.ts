@@ -12,17 +12,25 @@ const generateSignature =
     if (security.toLowerCase() === Security.NONE) return '';
 
     const resultString = parts.filter(Boolean).join('');
+
     const signKeyInBytes = Buffer.from(signKey, 'hex');
 
     const key = await crypto.subtle.importKey(
       'raw',
-      signKeyInBytes,
+      Uint8Array.from(signKeyInBytes),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['sign', 'verify'],
+      ['sign'],
     );
-    const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(resultString));
-    return btoa(String.fromCharCode(...new Uint8Array(signature)));
+    const signatureBinary = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      new TextEncoder().encode(resultString),
+    );
+    const hmacSubtle = Array.from(new Uint8Array(signatureBinary))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('');
+    return hmacSubtle;
   };
 
 export default generateSignature;
