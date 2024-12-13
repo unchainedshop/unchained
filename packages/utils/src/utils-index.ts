@@ -10,9 +10,6 @@ export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-field
 export { default as sha256 } from './sha256.js';
 export { default as sha1 } from './sha1.js';
 export { default as intersectSet } from './intersect-set.js';
-/*
- * Schemas
- */
 
 export enum SortDirection {
   ASC = 'ASC',
@@ -33,11 +30,14 @@ export interface PricingCalculation {
   meta?: any;
 }
 
-export type NodeOrTree<T> = string | Tree<T>; // eslint-disable-line
+export type NodeOrTree<T> = string | Tree<T>;
+
 export type Tree<T> = Array<NodeOrTree<T>>;
-/*
- * Director
- */
+
+export interface DateFilterInput {
+  start?: string;
+  end?: string;
+}
 
 export * from './director/BaseAdapter.js';
 export * from './director/BaseDirector.js';

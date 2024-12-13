@@ -1,13 +1,15 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
+import { DateFilterInput } from '@unchainedshop/utils';
 
 export default async function orderStatistics(
   root: never,
-  params: { from?: Date; to?: Date },
+  params: { dateRange?: DateFilterInput },
   { modules, userId }: Context,
 ) {
-  log(`query orderStatistics ${params.from || ''} ${params.to || ''}`, {
+  log(`query orderStatistics `, {
     userId,
+    ...(params?.dateRange || {}),
   });
 
   return modules.orders.getReport(params);

@@ -85,7 +85,6 @@ unchainedAPI.modules.worker.addWork(
         wait: 1000,
       },
     },
-    userId: '1234567',
   );
 }
 

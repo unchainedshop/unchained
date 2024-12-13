@@ -11,6 +11,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Access Tokens
 
 ## Major
+- `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
 - Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
 - Auth: Remove logoutAllSessions and remove support for loging out a specific session
 - Auth: Introduce default password rules (min. 8 chars)
@@ -26,6 +27,8 @@ We will keep supporting the following auth-strategies out of the box that we con
 
 ## Minor
 - API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
+- API: Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
+- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
 
 
 # Unchained Engine v2.14
