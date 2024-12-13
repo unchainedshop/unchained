@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption } from '@unchainedshop/utils';
+import { SortOption, DateFilterInput } from '@unchainedshop/utils';
 import { UserQuery } from '@unchainedshop/core-users';
 import { Context } from '../../../context.js';
 
@@ -9,6 +9,9 @@ export default async function users(
     limit?: number;
     offset?: number;
     sort?: Array<SortOption>;
+    includeGuests?: boolean;
+    emailVerified?: boolean;
+    lastLogin?: DateFilterInput;
   },
   { modules, userId }: Context,
 ) {
@@ -18,6 +21,7 @@ export default async function users(
     }`,
     {
       userId,
+      ...(params || {}),
     },
   );
 

@@ -86,7 +86,6 @@ const someResolver =  async (root, params, context: AppContext) => {
         ...params,
       },
     },
-    userId
   );
   return true;
 };

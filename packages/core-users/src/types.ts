@@ -1,4 +1,5 @@
 import { TimestampFields, Address, Contact, mongodb } from '@unchainedshop/mongodb';
+import { DateFilterInput } from '@unchainedshop/utils';
 
 export interface PushSubscription {
   _id: string;
@@ -76,6 +77,8 @@ export type User = {
 export type UserQuery = mongodb.Filter<User> & {
   includeGuests?: boolean;
   queryString?: string;
+  emailVerified?: boolean;
+  lastLogin?: DateFilterInput;
 };
 
 export interface WebAuthnCredentialsCreationRequest {

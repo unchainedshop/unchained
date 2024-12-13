@@ -38,3 +38,8 @@ export * from './director/BasePricingSheet.js';
 
 export * from './director/BaseDiscountAdapter.js';
 export * from './director/BaseDiscountDirector.js';
+
+export interface DateFilterInput {
+  start?: string;
+  end?: string;
+}

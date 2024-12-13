@@ -1,5 +1,9 @@
 # Unchained Engine vNEXT
+## Minor
+- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
 
+## Breaking
+- Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
 - The order module function `initProviders` has been moved to order services renamed as `initCartProviders`
 - The order module function `updateCalculation` has been moved to order services
 - The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
@@ -16,6 +20,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Access Tokens
 
 ## Major
+- `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
 - Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
 - Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
 - LoginMethodResponse has a new breaking GraphQL type

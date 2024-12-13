@@ -76,7 +76,7 @@ const ShopPickUp: IDeliveryAdapter = {
         ];
       },
       send: async (): Promise<boolean | Work> => {
-        const { modules, order, userId } = context as typeof context;
+        const { modules, order } = context as typeof context;
         await modules.worker.addWork(
           {
             type: 'MARK_ORDER_DELIVERED',
@@ -86,7 +86,6 @@ const ShopPickUp: IDeliveryAdapter = {
               orderDeliveryId: order.deliveryId,
             },
           },
-          userId,
         );
 
         return false;

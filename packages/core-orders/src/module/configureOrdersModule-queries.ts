@@ -1,4 +1,4 @@
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
 import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 
@@ -103,16 +103,16 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       return Orders.find(selector, findOptions).toArray();
     },
 
-    getReport: async (params?: { from?: Date; to?: Date }): Promise<OrderReport> => {
-      const { from, to } = params || {};
+    getReport: async (params: { dateRange?: DateFilterInput }): Promise<OrderReport> => {
+      const { dateRange } = params || {};
       const selector: any = { $exists: true };
-      if (from || to) {
-        if (from) {
-          const fromDate = new Date(from);
+      if (dateRange?.end || dateRange?.start) {
+        if (dateRange?.start) {
+          const fromDate = new Date(dateRange?.start);
           selector.$gte = fromDate;
         }
-        if (to) {
-          const toDate = new Date(to);
+        if (dateRange?.end) {
+          const toDate = new Date(dateRange?.end);
           selector.$lte = toDate;
         }
       }
