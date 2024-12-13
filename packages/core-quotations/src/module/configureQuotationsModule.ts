@@ -402,7 +402,7 @@ export const configureQuotationsModule = async ({
     deleteRequestedUserQuotations: async (userId: string) => {
       const { deletedCount } = await Quotations.deleteMany({
         userId,
-        status: QuotationStatus.REQUESTED,
+        status: { $in: [QuotationStatus.REQUESTED, null] },
       });
       return deletedCount;
     },

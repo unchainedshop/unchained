@@ -45,7 +45,7 @@ export type OrderDeliveriesModule = {
   ) => Promise<OrderDelivery>;
 
   updateCalculation: (orderDelivery: OrderDelivery, unchainedAPI) => Promise<OrderDelivery>;
-  deleteOrderDelivery: (orderId: string) => Promise<number>;
+  deleteOrderDeliveries: (orderId: string) => Promise<number>;
 };
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
@@ -271,7 +271,7 @@ export const configureOrderDeliveriesModule = ({
         },
       );
     },
-    deleteOrderDelivery: async (orderId: string) => {
+    deleteOrderDeliveries: async (orderId: string) => {
       const { deletedCount } = await OrderDeliveries.deleteMany({ orderId });
       return deletedCount;
     },

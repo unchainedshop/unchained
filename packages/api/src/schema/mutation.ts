@@ -307,6 +307,11 @@ export default [
       removeUser(userId: ID, removeUserReviews: Boolean): User!
 
       """
+      Remove product reviews of a user
+      """
+      removeUserProductReviews(userId: ID!): Boolean!
+
+      """
       Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
       """
       enrollUser(profile: UserProfileInput!, email: String!, password: String): User!
@@ -867,7 +872,6 @@ export default [
       Remove user W3C push subscription object
       """
       removePushSubscription(p256dh: String!): User!
-      deleteUserProductReviews(userId: ID): Boolean
     }
   `,
 ];

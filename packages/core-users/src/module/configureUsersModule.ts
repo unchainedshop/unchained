@@ -17,28 +17,6 @@ import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import crypto from 'crypto';
 import { UnchainedCore } from '@unchainedshop/core';
-import { Context } from 'vm';
-
-const maskUserPropertyValues = (user, deletedById: string): User => {
-  if (!user || typeof user !== 'object') {
-    throw new Error('Invalid user object');
-  }
-  return {
-    ...user,
-    username: `deleted-${Date.now()}`,
-    deleted: new Date(),
-    deletedBy: deletedById,
-    emails: null,
-    roles: null,
-    profile: null,
-    lastBillingAddress: {},
-    services: {},
-    pushSubscriptions: [],
-    avatarId: null,
-    initialPassword: null,
-    lastContact: null,
-  };
-};
 
 export type UsersModule = {
   // Submodules
@@ -95,7 +73,7 @@ export type UsersModule = {
     _id: string,
     { profile, meta }: { profile?: UserProfile; meta?: any },
   ) => Promise<User>;
-  delete: (params: { userId: string; removeUserReviews?: boolean }, context: Context) => Promise<User>;
+  delete: (params: { userId: string }, context: UnchainedCore) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (
@@ -133,7 +111,6 @@ const USER_EVENTS = [
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
   'USER_REMOVE',
-  'USER_PURGE',
 ];
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
@@ -164,25 +141,6 @@ export const configureUsersModule = async ({
 
   const webAuthn = await configureUsersWebAuthnModule({ db, options });
 
-  const findUserById = async (userId: string): Promise<User> => {
-    if (!userId) return null;
-    return Users.findOne(generateDbFilterById(userId), {});
-  };
-  const updateUser = async (
-    selector: mongodb.Filter<User>,
-    modifier: mongodb.UpdateFilter<User>,
-    updateOptions?: mongodb.FindOneAndUpdateOptions,
-  ): Promise<User> => {
-    const user = await Users.findOneAndUpdate(selector, modifier, {
-      ...updateOptions,
-      returnDocument: 'after',
-    });
-    await emit('USER_UPDATE', {
-      user: removeConfidentialServiceHashes(user),
-    });
-    return user;
-  };
-
   return {
     // Queries
     webAuthn,
@@ -190,7 +148,12 @@ export const configureUsersModule = async ({
       const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
     },
-    findUserById,
+
+    findUserById: async (userId: string): Promise<User> => {
+      if (!userId) return null;
+      return Users.findOne(generateDbFilterById(userId), {});
+    },
+
     async findUserByUsername(username: string): Promise<User> {
       if (!username) return null;
       return Users.findOne({ username }, {});
@@ -317,9 +280,7 @@ export const configureUsersModule = async ({
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {
-      const selector = generateDbFilterById<User>(userId);
-      selector.deleted = null; // skip deleted users when checked for existance!
-      const userCount = await Users.countDocuments(selector, { limit: 1 });
+      const userCount = await Users.countDocuments({ _id: userId, deleted: null }, { limit: 1 });
       return userCount === 1;
     },
 
@@ -624,40 +585,50 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    delete: async (
-      params: { userId: string; removeUserReviews?: boolean },
-      context: Context,
-    ): Promise<User> => {
+    delete: async ({ userId }: { userId: string }, context: UnchainedCore): Promise<User> => {
       const { services, modules } = context as UnchainedCore;
-      const { userId, removeUserReviews = false } = params;
-      const userFilter = generateDbFilterById(userId);
 
-      const existingUser = await Users.findOne(userFilter, {
-        projection: { emails: true, username: true },
-      });
-      if (!existingUser) return null;
-      const maskedUserData = maskUserPropertyValues(existingUser, context?.userId);
-      await updateUser({ _id: userId }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
+      const user = await Users.findOneAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            username: `deleted-${Date.now()}`,
+            deleted: new Date(),
+            emails: [],
+            roles: [],
+            profile: null,
+            lastBillingAddress: null,
+            services: {},
+            pushSubscriptions: [],
+            avatarId: null,
+            initialPassword: false,
+            lastContact: null,
+            lastLogin: null,
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      if (!user) return null;
 
       await modules.bookmarks.deleteByUserId(userId);
-      await services.orders.deleteUserCart(userId, context as UnchainedCore);
+      await services.orders.deleteUserCarts(userId, context as UnchainedCore);
       await modules.quotations.deleteRequestedUserQuotations(userId);
-      await modules.enrollments.deleteOpenUserEnrollments(userId);
-      if (removeUserReviews) await modules.products.reviews.deleteMany({ authorId: userId });
+      await modules.enrollments.deleteInactiveUserEnrollments(userId);
 
       const ordersCount = await modules.orders.count({ userId, includeCarts: true });
       const quotationsCount = await modules.quotations.count({ userId });
       const reviewsCount = await modules.products.reviews.count({ authorId: userId });
       const enrollmentsCount = await modules.enrollments.count({ userId });
-      const tokens = await modules.warehousing.findTokensForUser(existingUser);
+      const tokens = await modules.warehousing.findTokensForUser(user);
       if (!ordersCount && !reviewsCount && !enrollmentsCount && !quotationsCount && !tokens?.length) {
         await Users.deleteOne({ _id: userId });
       }
 
       await emit('USER_REMOVE', {
-        user: removeConfidentialServiceHashes(existingUser),
+        user,
       });
-      return existingUser;
+      return user;
     },
 
     updateProfile: async (
@@ -794,7 +765,22 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-    updateUser,
+
+    updateUser: async (
+      selector: mongodb.Filter<User>,
+      modifier: mongodb.UpdateFilter<User>,
+      updateOptions?: mongodb.FindOneAndUpdateOptions,
+    ): Promise<User> => {
+      const user = await Users.findOneAndUpdate(selector, modifier, {
+        ...updateOptions,
+        returnDocument: 'after',
+      });
+      await emit('USER_UPDATE', {
+        user: removeConfidentialServiceHashes(user),
+      });
+      return user;
+    },
+
     addPushSubscription: async (
       userId: string,
       subscription: any,

@@ -99,7 +99,7 @@ export interface EnrollmentMutations {
     params: { status: EnrollmentStatus; info?: string },
     unchainedAPI,
   ) => Promise<Enrollment>;
-  deleteOpenUserEnrollments: (userId: string) => Promise<number>;
+  deleteInactiveUserEnrollments: (userId: string) => Promise<number>;
 }
 
 export type EnrollmentsModule = EnrollmentQueries &
@@ -555,8 +555,11 @@ export const configureEnrollmentsModule = async ({
     },
 
     updateStatus,
-    deleteOpenUserEnrollments: async (userId: string) => {
-      const { deletedCount } = await Enrollments.deleteMany({ userId });
+    deleteInactiveUserEnrollments: async (userId: string) => {
+      const { deletedCount } = await Enrollments.deleteMany({
+        userId,
+        status: { $in: [null, EnrollmentStatus.INITIAL, EnrollmentStatus.TERMINATED] },
+      });
       return deletedCount;
     },
   };

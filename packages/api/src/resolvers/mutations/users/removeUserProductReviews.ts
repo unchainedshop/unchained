@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, UserNotFoundError } from '../../../errors.js';
+import { InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../context.js';
 
-export default async function deleteUserProductReviews(
+export default async function removeUserProductReviews(
   root: never,
   params: {
     userId?: string;
@@ -10,12 +10,13 @@ export default async function deleteUserProductReviews(
   { modules, userId: currentUserId }: Context,
 ) {
   const normalizedUserId = params?.userId || currentUserId;
-  log(`mutation deleteUserProductReviews ${normalizedUserId}`, {
+  log(`mutation removeUserProductReviews ${normalizedUserId}`, {
     userId: currentUserId,
   });
   if (!normalizedUserId) throw new InvalidIdError({ userId: normalizedUserId });
-  if (!(await modules.users.userExists({ userId: normalizedUserId })))
-    throw new UserNotFoundError({ userId: normalizedUserId });
+
+  // Do not check for existance of user as the existance check would return false if the user is in status
+  // 'deleted' and we still want to remove the reviews in that case
   await modules.products.reviews.deleteMany({ authorId: normalizedUserId });
 
   return true;
