@@ -10,7 +10,7 @@ export default [
     type AssortmentMedia @cacheControl(maxAge: 180) {
       _id: ID!
       tags: [LowerCaseString!]
-      file: Media!
+      file: Media
       sortKey: Int!
       texts(forceLocale: String): AssortmentMediaTexts
     }

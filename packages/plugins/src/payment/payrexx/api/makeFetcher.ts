@@ -47,7 +47,7 @@ export default (
       new TextEncoder().encode(secret),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['sign', 'verify'],
+      ['sign'],
     );
     const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(query));
     return btoa(String.fromCharCode(...new Uint8Array(signature)));

@@ -6,7 +6,7 @@ import {
   buildFindByContextDataSelector,
 } from './configureOrderPaymentsModule.js';
 import { buildFindByIdSelector as buildFindByIdSelectorForPosition } from './configureOrderPositionsModule.js';
-import { buildFindSelector as buildFindSelectorForOrder } from './configureOrdersModule-queries.js';
+import buildFindSelectorForOrder from './buildFindSelector.js';
 
 describe('OrderPosition', () => {
   describe('buildFindSelector', () => {

@@ -24,7 +24,7 @@ export interface QuotationData {
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
-const buildFindSelector = (query: QuotationQuery = {}) => {
+export const buildFindSelector = (query: QuotationQuery = {}) => {
   const selector: { userId?: string; $text?: any } = {};
   if (query.userId) {
     selector.userId = query.userId;

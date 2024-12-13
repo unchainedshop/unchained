@@ -32,7 +32,7 @@ export const GridFSAdapter: IFileAdapter = {
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();
     const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);
-    const signature = sign(directoryName, hashedFilename, expiryDate.getTime());
+    const signature = await sign(directoryName, hashedFilename, expiryDate.getTime());
 
     const putURL = new URL(
       `/gridfs/${directoryName}/${encodeURIComponent(

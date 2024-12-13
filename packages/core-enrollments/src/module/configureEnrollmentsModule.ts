@@ -31,7 +31,7 @@ const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_UPDATE',
 ];
 
-const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
+export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
   const selector: {
     deleted: Date;
     status?: any;

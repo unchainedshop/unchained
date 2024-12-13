@@ -67,7 +67,7 @@ const InternalProductStatus = {
   DRAFT: null,
 };
 
-const buildFindSelector = ({
+export const buildFindSelector = ({
   slugs,
   tags,
   includeDrafts = false,

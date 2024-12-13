@@ -112,7 +112,7 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
   return user;
 };
 
-const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
+export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {

@@ -138,7 +138,7 @@ const ASSORTMENT_EVENTS = [
   'ASSORTMENT_UPDATE',
 ];
 
-const buildFindSelector = ({
+export const buildFindSelector = ({
   assortmentIds,
   assortmentSelector,
   slugs,

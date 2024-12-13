@@ -19,7 +19,7 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'TOKEN_INVALIDATED',
 ];
 
-const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
+export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   const query = type ? { type, deleted: null } : { deleted: null };
   return query;
 };

@@ -20,18 +20,11 @@ export const datatransHandler = async (req, res) => {
     const [, hash] = rawHash.split('=');
     const [, timestamp] = rawTimestamp.split('=');
 
-    console.log({
-      security: DATATRANS_SECURITY as any,
-      signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
-      timestamp,
-      body: req.body,
-    });
     const comparableSignature = await generateSignature({
       security: DATATRANS_SECURITY as any,
       signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
     })(timestamp, req.body);
 
-    logger.info('WTF');
     if (hash !== comparableSignature) {
       logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body);
       res.writeHead(403);

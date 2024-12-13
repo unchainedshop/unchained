@@ -1,7 +1,7 @@
 import generateSignature from './generateSignature';
 
 describe('Datatrans Signature', () => {
-  it.only('Correct hashing applies', async () => {
+  it('Correct hashing applies', async () => {
     const { security, signKey, timestamp, body } = {
       security: 'dynamic-sign' as any,
       signKey: '1337',

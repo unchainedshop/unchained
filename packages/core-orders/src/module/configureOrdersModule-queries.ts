@@ -1,26 +1,7 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
-
-const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
-  const selector: mongodb.Filter<Order> = {};
-
-  if (userId) {
-    selector.userId = userId;
-  }
-
-  if (Array.isArray(status) && status?.length) {
-    selector.status = { $in: status };
-  } else if (!includeCarts) {
-    selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
-  }
-
-  if (queryString) {
-    (selector as any).$text = { $search: queryString };
-  }
-
-  return selector;
-};
+import buildFindSelector from './buildFindSelector.js';
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {

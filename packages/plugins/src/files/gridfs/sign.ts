@@ -11,14 +11,18 @@ const sign = async (directoryName, hash, expiryTimestamp) => {
     new TextEncoder().encode(UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign', 'verify'],
+    ['sign'],
   );
-  const signature = await crypto.subtle.sign(
+  const signatureBinary = await crypto.subtle.sign(
     'HMAC',
     key,
     new TextEncoder().encode([directoryName, hash, expiryTimestamp].join(':')),
   );
-  return btoa(String.fromCharCode(...new Uint8Array(signature)));
+
+  const hmacSubtle = Array.from(new Uint8Array(signatureBinary))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+  return hmacSubtle;
 };
 
 export default sign;
