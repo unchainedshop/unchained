@@ -304,7 +304,12 @@ export default [
       """
       Remove any user or logged in user if userId is not provided
       """
-      removeUser(userId: ID): User!
+      removeUser(userId: ID, removeUserReviews: Boolean): User!
+
+      """
+      Remove product reviews of a user
+      """
+      removeUserProductReviews(userId: ID!): Boolean!
 
       """
       Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)

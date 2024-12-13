@@ -4,16 +4,20 @@ import { UserNotFoundError } from '../../../errors.js';
 
 export default async function removeUser(
   root: never,
-  params: { userId: string },
-  { modules, userId }: Context,
+  params: { userId: string; removeUserReviews?: boolean },
+  unchainedAPI: Context,
 ) {
-  const { userId: paramUserId } = params;
+  const { modules, userId } = unchainedAPI;
+  const { userId: paramUserId, removeUserReviews = false } = params;
   const normalizedUserId = paramUserId || userId;
 
   log(`mutation removeUser ${normalizedUserId}`, { userId });
 
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
-    throw UserNotFoundError({ id: normalizedUserId });
+    throw new UserNotFoundError({ userId: normalizedUserId });
 
-  return modules.users.delete(normalizedUserId);
+  if (removeUserReviews) {
+    await modules.products.reviews.deleteMany({ authorId: userId });
+  }
+  return modules.users.delete({ userId: normalizedUserId }, unchainedAPI);
 }

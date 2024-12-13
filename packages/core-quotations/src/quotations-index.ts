@@ -8,3 +8,5 @@ export { QuotationAdapter } from './director/QuotationAdapter.js';
 export { QuotationDirector } from './director/QuotationDirector.js';
 
 export { QuotationError } from './director/QuotationError.js';
+
+export { configureQuotationsModule } from './module/configureQuotationsModule.js';
