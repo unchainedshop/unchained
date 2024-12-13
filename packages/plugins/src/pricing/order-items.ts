@@ -31,7 +31,7 @@ const OrderItems: IOrderPricingAdapter<UnchainedCore> = {
               params.context,
             );
             const tax = pricing.taxSum();
-            const items = pricing.gross();
+            const items = pricing.net();
             return {
               taxes: current.taxes + tax,
               items: current.items + items,
