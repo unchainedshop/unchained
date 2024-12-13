@@ -5,11 +5,14 @@ import {
   IProductPricingAdapter,
 } from '@unchainedshop/core';
 import { resolveBestCurrency } from '@unchainedshop/utils';
-import memoizee from 'memoizee';
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
 
 const { NODE_ENV } = process.env;
 
-export const resolveCurrency = memoizee(
+const memoizeCache = new ExpiryMap(NODE_ENV === 'production' ? 1000 * 60 : 100); // Cached values expire after 10 seconds
+
+export const resolveCurrency = pMemoize(
   async (context) => {
     const { country, currency: forcedCurrency, modules } = context;
     const countryObject = await modules.countries.findCountry({ isoCode: country });
@@ -19,9 +22,8 @@ export const resolveCurrency = memoizee(
     return currency;
   },
   {
-    maxAge: NODE_ENV === 'production' ? 1000 * 60 : 100, // minute or 100ms
-    promise: true,
-    normalizer(args) {
+    cache: memoizeCache,
+    cacheKey(args) {
       return `${args[0].currency}-${args[0].country}`;
     },
   },

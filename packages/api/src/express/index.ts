@@ -42,7 +42,7 @@ const addContext = async function middlewareWithContext(
 ) {
   try {
     const setHeader = (key, value) => res.setHeader(key, value);
-    const getHeader = (key) => req.headers[key];
+    const getHeader = (key) => req.headers[key] as string;
     const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
 
     const context = getCurrentContextResolver();

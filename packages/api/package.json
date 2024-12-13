@@ -48,9 +48,10 @@
     "@unchainedshop/utils": "^3.0.0-alpha4",
     "accounting": "0.4.1",
     "dataloader": "^2.2.3",
+    "expiry-map": "^2.0.0",
     "graphql-scalars": "^1.24.0",
-    "memoizee": "^0.4.17",
-    "moniker": "0.1.2"
+    "moniker": "0.1.2",
+    "p-memoize": "^7.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

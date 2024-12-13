@@ -5,10 +5,10 @@ import {
   systemLocale,
 } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
-import memoizee from 'memoizee';
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
 import { UnchainedHTTPServerContext } from './context.js';
 import { createLogger } from '@unchainedshop/logger';
-
 const logger = createLogger('unchained:api');
 
 export interface UnchainedLocaleContext {
@@ -23,7 +23,9 @@ const { NODE_ENV } = process.env;
 
 export type GetHeaderFn = (key: string) => string | string[];
 
-export const resolveDefaultContext = memoizee(
+const memoizeCache = new ExpiryMap(NODE_ENV === 'production' ? 1000 * 60 : 100); // Cached values expire after 10 seconds
+
+export const resolveDefaultContext = pMemoize(
   async ({ acceptLang, acceptCountry }, unchainedAPI) => {
     const languages = await unchainedAPI.modules.languages.findLanguages(
       { includeInactive: false },
@@ -67,11 +69,8 @@ export const resolveDefaultContext = memoizee(
     return newContext;
   },
   {
-    maxAge: NODE_ENV === 'production' ? 1000 * 60 : 100, // minute or 100ms
-    promise: true,
-    normalizer(args) {
-      return `${args[0].acceptLang}-${args[0].acceptCountry}`;
-    },
+    cache: memoizeCache,
+    cacheKey: (p: any) => [p.acceptLang, p.acceptCountry].join('-'),
   },
 );
 
@@ -82,8 +81,9 @@ export const getLocaleContext = async (
     getHeader,
   }: {
     remoteAddress: string;
-    remotePort: number;
-  } & UnchainedHTTPServerContext,
+    remotePort: number | string;
+    getHeader: UnchainedHTTPServerContext['getHeader'];
+  },
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLocaleContext> => {
   const userAgent = getHeader('user-agent');
@@ -91,5 +91,5 @@ export const getLocaleContext = async (
     { acceptLang: getHeader('accept-language'), acceptCountry: getHeader('x-shop-country') },
     unchainedAPI,
   );
-  return { remoteAddress, remotePort, userAgent, ...context };
+  return { remoteAddress, remotePort: String(remotePort), userAgent, ...context };
 };

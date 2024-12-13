@@ -27,7 +27,7 @@ export interface AdminUiConfig {
 
 export type UnchainedHTTPServerContext = {
   setHeader: (key: string, value: string) => void;
-  getHeader: (key: string) => string | string[];
+  getHeader: (key: string) => string;
 };
 
 export type Context = UnchainedCore & {
