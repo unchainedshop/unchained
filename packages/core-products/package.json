@@ -33,7 +33,7 @@
     "@unchainedshop/utils": "^3.0.0-alpha4"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.2",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.2"

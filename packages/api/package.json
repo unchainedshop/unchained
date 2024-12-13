@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "graphql-yoga": "^5.10.3"
+    "graphql-yoga": "^5.10.5"
   },
   "optionalDependencies": {
     "@fastify/cookie": "^11.0.1",
@@ -42,21 +42,21 @@
     "passport-strategy": "^1.0.0"
   },
   "dependencies": {
-    "@metamask/eth-sig-util": "^8.0.0",
+    "@metamask/eth-sig-util": "^8.1.1",
     "@unchainedshop/core": "^3.0.0-alpha4",
     "@unchainedshop/events": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
     "@unchainedshop/roles": "^3.0.0-alpha4",
     "@unchainedshop/utils": "^3.0.0-alpha4",
     "accounting": "0.4.1",
-    "dataloader": "^2.2.2",
-    "graphql-scalars": "^1.23.0",
+    "dataloader": "^2.2.3",
+    "graphql-scalars": "^1.24.0",
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.2",
     "connect-mongo": "^5.1.0",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "express-session": "^1.18.1",
     "jest": "^29.7.0",
     "passport": "^0.7.0",
