@@ -134,6 +134,11 @@ export const configureOrderDeliveriesModule = ({
         },
       );
     },
+
+    deleteOrderDeliveries: async (orderId: string) => {
+      const { deletedCount } = await OrderDeliveries.deleteMany({ orderId });
+      return deletedCount;
+    },
   };
 };
 

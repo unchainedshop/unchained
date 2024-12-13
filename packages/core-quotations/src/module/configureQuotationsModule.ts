@@ -210,7 +210,13 @@ export const configureQuotationsModule = async ({
 
       return quotation;
     },
-
+    deleteRequestedUserQuotations: async (userId: string) => {
+      const { deletedCount } = await Quotations.deleteMany({
+        userId,
+        status: { $in: [QuotationStatus.REQUESTED, null] },
+      });
+      return deletedCount;
+    },
     updateContext: updateQuotationFields(['context']),
     updateProposal: updateQuotationFields(['price', 'expires', 'meta']),
 

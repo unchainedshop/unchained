@@ -203,6 +203,10 @@ export const configureOrderPositionsModule = ({
 
       return upsertedOrderPosition;
     },
+    deleteOrderPositions: async (orderId: string) => {
+      const { deletedCount } = await OrderPositions.deleteMany({ orderId });
+      return deletedCount;
+    },
   };
 };
 

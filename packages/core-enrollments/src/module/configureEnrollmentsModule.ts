@@ -247,7 +247,7 @@ export const configureEnrollmentsModule = async ({
           },
         },
       );
-      await emit('ORDER_REMOVE', { enrollmentId });
+      await emit('ENROLLMENT_REMOVE', { enrollmentId });
       return deletedCount;
     },
 
@@ -295,6 +295,13 @@ export const configureEnrollmentsModule = async ({
     },
 
     updateStatus,
+    deleteInactiveUserEnrollments: async (userId: string) => {
+      const { deletedCount } = await Enrollments.deleteMany({
+        userId,
+        status: { $in: [null, EnrollmentStatus.INITIAL, EnrollmentStatus.TERMINATED] },
+      });
+      return deletedCount;
+    },
   };
 };
 

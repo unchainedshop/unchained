@@ -201,6 +201,10 @@ export const configureOrderPaymentsModule = ({
         },
       );
     },
+    deleteOrderPayments: async (orderId: string) => {
+      const { deletedCount } = await OrderPayments.deleteMany({ orderId });
+      return deletedCount;
+    },
   };
 };
 

@@ -21,6 +21,7 @@ import { Order, OrderStatus } from '../types.js';
 
 export type OrdersModule = OrderQueries &
   OrderMutations & {
+    // Sub entities
     deliveries: OrderDeliveriesModule;
     discounts: OrderDiscountsModule;
     positions: OrderPositionsModule;

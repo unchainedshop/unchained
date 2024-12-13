@@ -70,7 +70,8 @@ export type UsersModule = {
     _id: string,
     { profile, meta }: { profile?: UserProfile; meta?: any },
   ) => Promise<User>;
-  delete: (userId: string) => Promise<User>;
+  markDeleted: (userId: string) => Promise<User>;
+  deletePermanently: (params: { userId: string }) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (
@@ -87,6 +88,9 @@ export type UsersModule = {
     },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
+  hashPassword(password: string): Promise<{
+    pbkdf2: string;
+  }>;
 };
 
 const USER_EVENTS = [
@@ -125,9 +129,8 @@ export const configureUsersModule = async ({
   db,
   options,
   migrationRepository,
-}: ModuleInput<UserSettingsOptions>) => {
+}: ModuleInput<UserSettingsOptions>): Promise<UsersModule> => {
   userSettings.configureSettings(options || {}, db);
-
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
@@ -275,9 +278,7 @@ export const configureUsersModule = async ({
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {
-      const selector = generateDbFilterById<User>(userId);
-      selector.deleted = null; // skip deleted users when checked for existance!
-      const userCount = await Users.countDocuments(selector, { limit: 1 });
+      const userCount = await Users.countDocuments({ _id: userId, deleted: null }, { limit: 1 });
       return userCount === 1;
     },
 
@@ -582,40 +583,36 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    delete: async (userId: string): Promise<User> => {
-      const userFilter = generateDbFilterById(userId);
-
-      const existingUser = await Users.findOne(userFilter, {
-        projection: { emails: true, username: true },
-      });
-      if (!existingUser) return null;
-
-      const uuid = crypto.randomUUID();
-      const obfuscatedEmails = existingUser.emails?.flatMap(({ address, verified }) => {
-        if (!verified) return [];
-        return [
-          {
-            address: `${address}@${uuid}.unchained.local`,
-            verified: true,
+    markDeleted: async (userId: string): Promise<User> => {
+      const user = await Users.findOneAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            username: `deleted-${Date.now()}`,
+            deleted: new Date(),
+            emails: [],
+            roles: [],
+            profile: null,
+            lastBillingAddress: null,
+            services: {},
+            pushSubscriptions: [],
+            avatarId: null,
+            initialPassword: false,
+            lastContact: null,
+            lastLogin: null,
           },
-        ];
-      });
-
-      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuid}` : null;
-
-      Users.updateOne(userFilter, {
-        $set: {
-          emails: obfuscatedEmails,
-          username: obfuscatedUsername,
-          services: {},
         },
-      });
+        { returnDocument: 'after' },
+      );
 
-      const user = await Users.findOneAndDelete(userFilter);
       await emit('USER_REMOVE', {
-        user: removeConfidentialServiceHashes(user),
+        user,
       });
       return user;
+    },
+
+    deletePermanently: async ({ userId }: { userId: string }): Promise<User> => {
+      return Users.findOneAndDelete({ _id: userId });
     },
 
     updateProfile: async (

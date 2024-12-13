@@ -55,7 +55,6 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       const orderCount = await Orders.countDocuments(buildFindSelector(query));
       return orderCount;
     },
-
     findOrder: async (
       {
         orderId,

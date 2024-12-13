@@ -6,10 +6,8 @@ export default {
   authorId: 'PKve0k9fLCUzn2EUi',
   tags: [],
   created: new Date('2022-10-28T10:41:13.346Z'),
-  createdBy: 'PKve0k9fLCUzn2EUi',
   slugs: ['test'],
   updated: new Date('2022-12-04T13:50:24.245Z'),
-  updatedBy: 'PKve0k9fLCUzn2EUi',
   commerce: {
     pricing: [
       {

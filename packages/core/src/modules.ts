@@ -160,6 +160,7 @@ const initModules = async ({
   });
   const users = await configureUsersModule({
     db,
+    options: options.users,
     migrationRepository,
   });
   const warehousing = await configureWarehousingModule({

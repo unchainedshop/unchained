@@ -13,6 +13,7 @@ import { removeProductService } from './removeProduct.js';
 import { initCartProvidersService } from './initCartProviders.js';
 import { updateCalculationService } from './updateCalculation.js';
 import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
+import { deleteUserService } from './deleteUser.js';
 import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.js';
@@ -74,6 +75,7 @@ const services = {
   users: {
     migrateUserData: migrateUserDataService,
     updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
+    deleteUser: deleteUserService,
   },
   enrollments: {
     createEnrollmentFromCheckout: createEnrollmentFromCheckoutService,

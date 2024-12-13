@@ -60,18 +60,21 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     findTokensForUser: async (
-      { userId, walletAddresses }: { userId: string; walletAddresses: string[] },
+      params: { userId: string } | { walletAddresses: string[] },
       options?: mongodb.FindOptions,
     ): Promise<Array<TokenSurrogate>> => {
+      const { userId, walletAddresses } = params as any;
+      if (!userId && !walletAddresses)
+        throw new Error('userId or walletAddresses must be provided for findTokensForUser');
       const selector = {
         $or: [
-          {
+          walletAddresses && {
             walletAddress: { $in: walletAddresses || [] },
           },
-          {
+          userId && {
             userId,
           },
-        ],
+        ].filter(Boolean),
       };
 
       const userTokens = await TokenSurrogates.find(selector, options).toArray();

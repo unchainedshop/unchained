@@ -2,7 +2,7 @@ export default {
   _id: 'PKve0k9fLCUzn2EUi',
   guest: false,
   initialPassword: false,
-  lastBillingAddress: {},
+  lastBillingAddress: null,
   profile: {
     address: {
       firstName: null,
@@ -69,5 +69,4 @@ export default {
     countryCode: 'CH',
   },
   updated: new Date('2022-11-30T11:02:19.624Z'),
-  updatedBy: 'PKve0k9fLCUzn2EUi',
 };

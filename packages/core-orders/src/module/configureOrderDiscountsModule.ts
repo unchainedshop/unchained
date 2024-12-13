@@ -86,6 +86,10 @@ export const configureOrderDiscountsModule = ({
       await emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
     },
+    deleteOrderDiscounts: async (orderId: string) => {
+      const { deletedCount } = await OrderDiscounts.deleteMany({ orderId });
+      return deletedCount;
+    },
   };
 };
 

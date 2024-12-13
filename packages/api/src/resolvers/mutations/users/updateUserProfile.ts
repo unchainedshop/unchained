@@ -14,7 +14,7 @@ export default async function updateUserProfile(
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
 
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
-    throw UserNotFoundError({ id: normalizedUserId });
+    throw UserNotFoundError({ userId: normalizedUserId });
 
   return modules.users.updateProfile(normalizedUserId, profile);
 }
