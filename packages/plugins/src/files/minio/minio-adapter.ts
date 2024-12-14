@@ -126,7 +126,7 @@ export const MinioAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
-  async createSignedURL(directoryName, fileName, context, isPrivate) {
+  async createSignedURL(directoryName, fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const expiryDate = resolveExpirationDate();
@@ -146,7 +146,6 @@ export const MinioAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName),
       putURL: url,
       url: generateMinioUrl(directoryName, _id),
-      isPrivate: Boolean(isPrivate),
     } as UploadFileData & { putURL: string; isPrivate: boolean };
   },
 

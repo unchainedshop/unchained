@@ -80,16 +80,14 @@ export const gridfsHandler = async (
       const { s: signature, e: expiryTimestamp } = req.query;
 
       const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
-      if (signature && expiryTimestamp) {
-        const fileDocument = await modules.files.findFile({ fileId });
-        if (fileDocument.isPrivate) {
-          const fileAdapter = getFileAdapter();
-          const fileSignature = fileAdapter.signUrl(fileId, parseInt(expiryTimestamp));
-          if (fileSignature !== signature || parseInt(expiryTimestamp, 10) <= Date.now()) {
-            res.statusCode = 403;
-            res.end('Access restricted: Invalid or expired signature.');
-            return;
-          }
+      const fileDocument = await modules.files.findFile({ fileId });
+      if (fileDocument.isPrivate) {
+        const fileAdapter = getFileAdapter();
+        const fileSignature = await fileAdapter.signUrl(fileId, parseInt(expiryTimestamp || 0));
+        if (fileSignature !== signature || parseInt(expiryTimestamp, 10) <= Date.now()) {
+          res.statusCode = 403;
+          res.end('Access restricted: Invalid or expired signature.');
+          return;
         }
       }
       if (file?.metadata?.['content-type']) {

@@ -852,16 +852,8 @@ export default [
       """
       signPaymentProviderForCheckout(orderPaymentId: ID, transactionContext: JSON): String!
 
-      prepareProductMediaUpload(
-        mediaName: String!
-        productId: ID!
-        asPrivate: Boolean
-      ): MediaUploadTicket!
-      prepareAssortmentMediaUpload(
-        mediaName: String!
-        assortmentId: ID!
-        asPrivate: Boolean
-      ): MediaUploadTicket!
+      prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
+      prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!, userId: ID, asPrivate: Boolean): MediaUploadTicket!
       confirmMediaUpload(mediaUploadTicketId: ID!, size: Int!, type: String!): Media!
 

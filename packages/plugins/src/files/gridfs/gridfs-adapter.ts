@@ -11,6 +11,7 @@ import {
 } from '@unchainedshop/file-upload';
 import { UploadFileData } from '@unchainedshop/file-upload';
 import sign from './sign.js';
+import crypto from 'crypto';
 
 const { ROOT_URL } = process.env;
 
@@ -28,8 +29,16 @@ export const GridFSAdapter: IFileAdapter = {
   version: '1.0.0',
 
   ...FileAdapter,
+  async signUrl(fileUrl: string, expiry: number) {
+    const secretKey = process.env.UNCHAINED_SECRET;
+    if (!secretKey) {
+      throw new Error('UNCHAINED_SECRET is not set in environment variables');
+    }
 
-  async createSignedURL(directoryName, fileName, context, isPrivate) {
+    const data = `${fileUrl}:${expiry}`;
+    return crypto.createHmac('sha256', secretKey).update(data).digest('hex');
+  },
+  async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();
     const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, hashedFilename, expiryDate.getTime());
@@ -37,7 +46,7 @@ export const GridFSAdapter: IFileAdapter = {
     const putURL = new URL(
       `/gridfs/${directoryName}/${encodeURIComponent(
         fileName,
-      )}?e=${expiryDate.getTime()}&s=${signature}&isPrivate=${!!isPrivate}`,
+      )}?e=${expiryDate.getTime()}&s=${signature}`,
       ROOT_URL,
     ).href;
     const url = `/gridfs/${directoryName}/${hashedFilename}`;
@@ -50,7 +59,6 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName),
       putURL,
       url,
-      isPrivate: Boolean(isPrivate),
     } as UploadFileData & { putURL: string; isPrivate: boolean };
   },
 

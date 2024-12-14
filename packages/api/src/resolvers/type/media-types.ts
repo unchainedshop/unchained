@@ -19,7 +19,7 @@ export const Media: MediaHelperTypes = {
           new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0),
         ).getTime();
 
-        const mediaSignature = fileUploadAdapter.signUrl(file?._id, expiryTimestamp);
+        const mediaSignature = await fileUploadAdapter.signUrl(file?._id, expiryTimestamp);
         return `${mediaUrl}?s=${mediaSignature}&e=${expiryTimestamp}`;
       } else {
         return mediaUrl;

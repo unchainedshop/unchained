@@ -19,15 +19,11 @@ export const createSignedURLService: CreateSignedURLService = async (
   } = unchainedContext;
   const fileUploadAdapter = getFileAdapter();
 
-  const preparedFileData = await fileUploadAdapter.createSignedURL(
-    directoryName,
-    fileName,
-    unchainedContext,
-    Boolean(isPrivate),
-  );
+  const preparedFileData = await fileUploadAdapter.createSignedURL(directoryName, fileName);
   const fileData = getFileFromFileData(preparedFileData, {
     ...meta,
-    authorId: unchainedContext?.userId,
+    userId: unchainedContext?.userId,
+    isPrivate,
   });
   const fileId = await files.create(fileData);
   const file = await files.findFile({ fileId });
