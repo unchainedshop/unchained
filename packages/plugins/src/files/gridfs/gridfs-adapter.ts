@@ -29,14 +29,15 @@ export const GridFSAdapter: IFileAdapter = {
   version: '1.0.0',
 
   ...FileAdapter,
-  async signUrl(fileUrl: string, expiry: number) {
+  async signUrl(fileUrl: string, mediaId: string, expiry: number) {
     const secretKey = process.env.UNCHAINED_SECRET;
     if (!secretKey) {
       throw new Error('UNCHAINED_SECRET is not set in environment variables');
     }
 
-    const data = `${fileUrl}:${expiry}`;
-    return crypto.createHmac('sha256', secretKey).update(data).digest('hex');
+    const data = `${mediaId}:${expiry}`;
+    const signature = crypto.createHmac('sha256', secretKey).update(data).digest('hex');
+    return `${fileUrl}?s=${signature}&e=${expiry}`;
   },
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();

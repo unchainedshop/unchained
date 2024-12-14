@@ -2,7 +2,6 @@ import { filesSettings, File as FileType, getFileAdapter } from '@unchainedshop/
 import { Context } from '../../context.js';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
-
 export interface MediaHelperTypes {
   url: (language: FileType, params: Record<string, any>, context: Context) => Promise<string>;
 }
@@ -18,9 +17,7 @@ export const Media: MediaHelperTypes = {
         const expiryTimestamp = new Date(
           new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0),
         ).getTime();
-
-        const mediaSignature = await fileUploadAdapter.signUrl(file?._id, expiryTimestamp);
-        return `${mediaUrl}?s=${mediaSignature}&e=${expiryTimestamp}`;
+        return fileUploadAdapter.signUrl(mediaUrl, file._id, expiryTimestamp);
       } else {
         return mediaUrl;
       }

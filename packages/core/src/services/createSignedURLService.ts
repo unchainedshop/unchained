@@ -27,7 +27,6 @@ export const createSignedURLService: CreateSignedURLService = async (
   });
   const fileId = await files.create(fileData);
   const file = await files.findFile({ fileId });
-
   return {
     ...file,
     putURL: preparedFileData.putURL as string,

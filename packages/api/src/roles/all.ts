@@ -30,7 +30,7 @@ export const all = (role, actions) => {
     return false;
   };
 
-  const isFileAccessible = (file, _, context) => {
+  const isFileAccessible = async (file, _, context) => {
     if (!file?.isPrivate || file?.meta?.userId === context?.userId) return true;
     return false;
   };
