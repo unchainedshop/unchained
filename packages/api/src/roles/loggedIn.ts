@@ -193,6 +193,14 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
+  const isFileAccessible = async (file, _, context) => {
+    const user = context?.user;
+    if (!user || user?.isGuest) return false;
+    if (!file?.isPrivate || file?.meta?.userId === user.userId) return true;
+
+    return false;
+  };
+
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
@@ -226,4 +234,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.confirmMediaUpload, () => true);
+  role.allow(actions.downloadFile, isFileAccessible);
 };

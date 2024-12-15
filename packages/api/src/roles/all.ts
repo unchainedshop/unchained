@@ -30,11 +30,6 @@ export const all = (role, actions) => {
     return false;
   };
 
-  const isFileAccessible = async (file, _, context) => {
-    if (!file?.isPrivate || file?.meta?.userId === context?.userId) return true;
-    return false;
-  };
-
   role.allow(actions.viewEvent, () => false);
   role.allow(actions.viewEvents, () => false);
   role.allow(actions.viewUser, () => false);
@@ -145,5 +140,5 @@ export const all = (role, actions) => {
   role.allow(actions.resetPassword, () => true);
   role.allow(actions.changePassword, () => true);
   role.allow(actions.heartbeat, () => true);
-  role.allow(actions.downloadFile, isFileAccessible);
+  role.allow(actions.downloadFile, () => false);
 };
