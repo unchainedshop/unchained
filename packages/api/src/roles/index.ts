@@ -115,6 +115,7 @@ const actions: Record<string, string> = [
   'viewStatistics',
   'removeUser',
   'downloadFile',
+  'uploadUserAvatar',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

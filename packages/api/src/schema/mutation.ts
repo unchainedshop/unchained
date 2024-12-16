@@ -854,7 +854,7 @@ export default [
 
       prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
-      prepareUserAvatarUpload(mediaName: String!, userId: ID, asPrivate: Boolean): MediaUploadTicket!
+      prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!
       confirmMediaUpload(mediaUploadTicketId: ID!, size: Int!, type: String!): Media!
 
       """

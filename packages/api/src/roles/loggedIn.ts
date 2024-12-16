@@ -15,6 +15,14 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     // user wants to access himself
     return true;
   };
+  const canUpdateAvatar = (_, params: { userId?: string } = {}, context: Context) => {
+    const isVerified = context?.user?.emails.some(({ verified }) => verified);
+    if (!isVerified) return false;
+    if (params?.userId) {
+      return params?.userId === context?.userId;
+    }
+    return true;
+  };
 
   const isOwnedEmailAddress = (obj: any, params: { email?: string }, { user }: Context) => {
     return user?.emails?.some(
@@ -235,4 +243,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.confirmMediaUpload, () => true);
   role.allow(actions.downloadFile, isFileAccessible);
+  role.allow(actions.uploadUserAvatar, canUpdateAvatar);
 };
