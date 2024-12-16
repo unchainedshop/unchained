@@ -18,9 +18,6 @@ export const createSignedURLService: CreateSignedURLService = async (
     modules: { files },
   } = unchainedContext;
   const fileUploadAdapter = getFileAdapter();
-  if (isPrivate && fileUploadAdapter.key !== 'shop.unchained.file-upload-plugin.gridfs')
-    throw new Error(`private media upload not supported by ${fileUploadAdapter.key} adapter`);
-
   const preparedFileData = await fileUploadAdapter.createSignedURL(directoryName, fileName);
   const fileData = getFileFromFileData(preparedFileData, {
     ...meta,

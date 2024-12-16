@@ -30,6 +30,8 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
   signUrl() {
+    if (this.key !== 'shop.unchained.file-upload-plugin.gridfs')
+      throw new Error(`private media upload not supported by ${this.key} adapter`);
     return new Promise<string | null>((resolve) => {
       resolve(null);
     });
