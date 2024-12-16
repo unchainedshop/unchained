@@ -1,4 +1,4 @@
-import { filesSettings, File as FileType, getFileAdapter } from '@unchainedshop/core-files';
+import { File as FileType, getFileAdapter } from '@unchainedshop/core-files';
 import { Context } from '../../context.js';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
@@ -14,10 +14,7 @@ export const Media: MediaHelperTypes = {
       const fileUploadAdapter = getFileAdapter();
       const mediaUrl = modules.files.getUrl(file, params);
       if (file.isPrivate) {
-        const expiryTimestamp = new Date(
-          new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0),
-        ).getTime();
-        return fileUploadAdapter.signUrl(mediaUrl, file._id, expiryTimestamp);
+        return fileUploadAdapter.signUrl(mediaUrl, file._id);
       } else {
         return mediaUrl;
       }

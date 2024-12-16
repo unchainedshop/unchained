@@ -12,6 +12,7 @@ import {
 import { UploadFileData } from '@unchainedshop/file-upload';
 import sign from './sign.js';
 import crypto from 'crypto';
+import { filesSettings } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
 
@@ -29,15 +30,21 @@ export const GridFSAdapter: IFileAdapter = {
   version: '1.0.0',
 
   ...FileAdapter,
-  async signUrl(fileUrl: string, mediaId: string, expiry: number) {
+  async signUrl(fileUrl: string, mediaId: string, expiry?: number) {
     const secretKey = process.env.UNCHAINED_SECRET;
     if (!secretKey) {
       throw new Error('UNCHAINED_SECRET is not set in environment variables');
     }
 
-    const data = `${mediaId}:${expiry}`;
+    const expiryTimestamp = new Date(
+      new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0),
+    ).getTime();
+
+    const normalizedTimestamp = expiry || expiryTimestamp;
+    const data = `${mediaId}:${normalizedTimestamp}`;
+
     const signature = crypto.createHmac('sha256', secretKey).update(data).digest('hex');
-    return `${fileUrl}?s=${signature}&e=${expiry}`;
+    return `${fileUrl}?s=${signature}&e=${normalizedTimestamp}`;
   },
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();

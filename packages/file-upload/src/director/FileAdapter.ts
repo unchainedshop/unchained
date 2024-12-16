@@ -4,7 +4,7 @@ import { IBaseAdapter } from '@unchainedshop/utils';
 import { UploadedFile, UploadFileData } from '../types.js';
 
 export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
-  signUrl: (fileUrl: string, mediaId: string, expiry: number) => Promise<string | null>;
+  signUrl: (fileUrl: string, mediaId: string, expiry?: number) => Promise<string | null>;
   createSignedURL: (
     directoryName: string,
     fileName: string,
