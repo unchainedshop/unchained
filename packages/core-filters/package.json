@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "3.0.0-alpha7",
+  "version": "3.0.0-rc1",
   "main": "lib/filters-index.js",
   "types": "lib/filters-index.d.ts",
   "type": "module",
@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-alpha4",
-    "@unchainedshop/logger": "^3.0.0-alpha4",
-    "@unchainedshop/mongodb": "^3.0.0-alpha4",
-    "@unchainedshop/utils": "^3.0.0-alpha4",
+    "@unchainedshop/events": "^3.0.0-rc1",
+    "@unchainedshop/logger": "^3.0.0-rc1",
+    "@unchainedshop/mongodb": "^3.0.0-rc1",
+    "@unchainedshop/utils": "^3.0.0-rc1",
     "expiry-map": "^2.0.0",
     "p-memoize": "^7.1.1"
   },
