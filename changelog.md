@@ -29,6 +29,9 @@ When we first started with the module approach, cross-module functions like the 
 
 We got rid of about 1'000 lines of code doing that and dramatically reduced complexity across the platform. `context.services` now houses all those methods and the core modules are cleanly separated mainly doing DB abstraction work.
 
+## Changed the GraphQL Server
+
+We switched over from Apollo Server to GraphQL Yoga. It's just better in all ways possible. Okay, thanks, bye. Checkout the kitchensink or example projects to see how you can switch over.
 
 ## Massive Performance Improvements & Experimental Fastify Support
 Queries involving catalog and products are now approximately **3 times faster** due to improved usage of caching, dataloader techniques and less db roundtrips in general.
