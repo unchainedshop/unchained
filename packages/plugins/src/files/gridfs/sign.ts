@@ -3,7 +3,7 @@ const { UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET } = process.env;
 const sign = async (directoryName, hash, expiryTimestamp) => {
   if (!UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET)
     throw new Error(
-      'To enable PUT based uploads you have to provide a random UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET environment variable',
+      'To enable PUT based uploads or signed downloads you have to provide a random UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET environment variable',
     );
 
   const key = await crypto.subtle.importKey(

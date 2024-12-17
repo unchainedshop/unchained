@@ -181,7 +181,7 @@ export default {
   heartbeat: acl(actions.heartbeat)(heartbeat),
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
-  prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
+  prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(prepareUserAvatarUpload),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   removeUser: acl(actions.updateUser)(removeUser),
   setUserTags: acl(actions.manageUsers)(setUserTags),

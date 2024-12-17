@@ -19,9 +19,8 @@ export const configureFilesModule = async ({
   const Files = await MediaObjectsCollection(db);
 
   return {
-    getUrl: (file: File, params: Record<string, any>): string | null => {
-      if (!file?.url) return null;
-      const transformedURLString = filesSettings.transformUrl(file.url, params);
+    normalizeUrl: (url: string, params: Record<string, any>): string => {
+      const transformedURLString = filesSettings.transformUrl(url, params);
       if (URL.canParse(transformedURLString)) {
         const finalURL = new URL(transformedURLString);
         return finalURL.href;

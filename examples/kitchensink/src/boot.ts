@@ -48,6 +48,9 @@ const start = async () => {
       }),
     ],
     options: {
+      files: {
+        privateFileSharingMaxAge: 86400000,
+      },
       payment: {
         filterSupportedProviders: async ({ providers }) => {
           return providers.sort((left, right) => {

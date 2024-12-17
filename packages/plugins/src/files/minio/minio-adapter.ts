@@ -124,6 +124,11 @@ export const MinioAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
+  async createDownloadURL(file) {
+    if (file.meta?.isPrivate) throw new Error("Minio Plugin doesn't support private files yet");
+    return generateMinioUrl(file.name, file._id);
+  },
+
   async createSignedURL(directoryName, fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 

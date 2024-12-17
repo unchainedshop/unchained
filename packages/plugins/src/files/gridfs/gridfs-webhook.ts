@@ -6,6 +6,7 @@ import sign from './sign.js';
 import { configureGridFSFileUploadModule } from './index.js';
 import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
+import { getFileAdapter } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
 
@@ -49,7 +50,6 @@ export const gridfsHandler = async (
           res.end('File already linked');
           return;
         }
-
         // If the type is octet-stream, prefer mimetype lookup from the filename
         // Else prefer the content-type header
         const type =
@@ -79,8 +79,26 @@ export const gridfsHandler = async (
 
     if (req.method === 'GET') {
       const fileId = fileName;
-
+      const { s: signature, e: expiryTimestamp } = req.query;
       const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
+      const fileDocument = await modules.files.findFile({ fileId });
+      if (fileDocument?.meta?.isPrivate) {
+        const expiry = parseInt(expiryTimestamp as string, 10);
+        if (expiry <= Date.now()) {
+          res.statusCode = 403;
+          res.end('Access restricted: Expired.');
+          return;
+        }
+
+        const fileUploadAdapter = getFileAdapter();
+        const signedUrl = await fileUploadAdapter.createDownloadURL(fileDocument, expiry);
+
+        if (new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
+          res.statusCode = 403;
+          res.end('Access restricted: Invalid signature.');
+          return;
+        }
+      }
       if (file?.metadata?.['content-type']) {
         res.setHeader('Content-Type', file.metadata['content-type']);
       }

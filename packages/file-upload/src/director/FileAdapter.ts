@@ -4,6 +4,7 @@ import { IBaseAdapter } from '@unchainedshop/utils';
 import { UploadedFile, UploadFileData } from '../types.js';
 
 export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
+  createDownloadURL: (file: UploadedFile, expiry?: number) => Promise<string | null>;
   createSignedURL: (
     directoryName: string,
     fileName: string,
@@ -28,6 +29,9 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
   createDownloadStream: (file: UploadedFile, unchainedAPI: Context) => Promise<Readable>;
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
+  async createDownloadURL() {
+    throw new Error('Method not implemented');
+  },
   createSignedURL() {
     return new Promise<null>((resolve) => {
       resolve(null);

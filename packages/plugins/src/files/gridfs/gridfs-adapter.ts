@@ -11,6 +11,7 @@ import {
 } from '@unchainedshop/file-upload';
 import { UploadFileData } from '@unchainedshop/file-upload';
 import sign from './sign.js';
+import { filesSettings } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
 
@@ -28,7 +29,17 @@ export const GridFSAdapter: IFileAdapter = {
   version: '1.0.0',
 
   ...FileAdapter,
+  async createDownloadURL(file, expiry) {
+    // If public, just return the stored path from the db
+    if (!file.meta?.isPrivate) return file?.url;
 
+    const expiryTimestamp =
+      expiry ||
+      new Date(new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0)).getTime();
+
+    const signature = await sign(file.path, file._id, expiryTimestamp);
+    return `${file.url}?s=${signature}&e=${expiryTimestamp}`;
+  },
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();
     const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);

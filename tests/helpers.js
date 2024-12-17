@@ -113,7 +113,7 @@ export const putFile = async (file, { url, type }) => {
       : undefined,
   });
   if (response.ok) {
-    return Promise.resolve({});
+    return response.text();
   }
   return Promise.reject(new Error('error'));
 };

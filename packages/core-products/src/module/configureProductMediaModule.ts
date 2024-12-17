@@ -6,7 +6,6 @@ import {
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductMedia, ProductMediaCollection, ProductMediaText } from '../db/ProductMediaCollection.js';
 
 export type ProductMediaModule = {
@@ -279,16 +278,3 @@ export const configureProductMediaModule = async ({
     },
   };
 };
-
-FileDirector.registerFileUploadCallback<{
-  modules: {
-    products: {
-      media: ProductMediaModule;
-    };
-  };
-}>('product-media', async (file, { modules }) => {
-  await modules.products.media.create({
-    productId: file.meta?.productId as string,
-    mediaId: file._id,
-  });
-});

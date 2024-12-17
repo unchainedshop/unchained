@@ -101,7 +101,7 @@ export const startPlatform = async ({
   setupTemplates(unchainedAPI);
 
   // Setup file upload handlers
-  setupUploadHandlers();
+  setupUploadHandlers(unchainedAPI);
 
   // Start the graphQL server
   const graphqlHandler = await startAPIServer({
