@@ -1,12 +1,15 @@
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { ethers } from 'ethers';
 import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import { networks, payments } from 'bitcoinjs-lib';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/core';
-import { OrderPricingSheet } from '@unchainedshop/core-orders';
+import {
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+  OrderPricingSheet,
+} from '@unchainedshop/core';
 import { CryptopayModule } from './module/configureCryptopayModule.js';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
@@ -44,11 +47,7 @@ const getDerivationPath = (currency: CryptopayCurrencies, index: number): string
   return `0/${address}`;
 };
 
-const Cryptopay: IPaymentAdapter<
-  UnchainedCore & {
-    modules: { cryptopay: CryptopayModule };
-  }
-> = {
+const Cryptopay: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.cryptopay',
@@ -60,7 +59,7 @@ const Cryptopay: IPaymentAdapter<
   },
 
   actions: (config, context) => {
-    const { modules } = context;
+    const { modules } = context as typeof context & { modules: { cryptopay: CryptopayModule } };
 
     const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
       const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });

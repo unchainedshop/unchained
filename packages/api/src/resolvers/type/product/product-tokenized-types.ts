@@ -1,11 +1,13 @@
+import { WarehousingContext, WarehousingDirector } from '@unchainedshop/core';
 import {
   Product,
   ProductContractConfiguration,
   ProductContractStandard,
 } from '@unchainedshop/core-products';
-import { WarehousingContext, WarehousingProvider } from '@unchainedshop/core-warehousing';
-import { Context } from '../../../context.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
+
+import { Context } from '../../../context.js';
 import { PlanProduct } from './product-plan-types.js';
 import { checkAction } from '../../../acl.js';
 import { actions } from '../../../roles/index.js';
@@ -44,7 +46,7 @@ export const TokenizedProduct = {
       quantity?: number;
     }>
   > {
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
     const { referenceDate } = params;
 
     const deliveryProviders = await modules.delivery.findProviders({});
@@ -52,13 +54,10 @@ export const TokenizedProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported(
-        {
-          product: obj,
-          deliveryProvider,
-        },
-        requestContext,
-      );
+      const warehousingProviders = await services.orders.supportedWarehousingProviders({
+        product: obj,
+        deliveryProvider,
+      });
 
       const mappedWarehousingProviders = await Promise.all(
         warehousingProviders.map(async (warehousingProvider) => {
@@ -68,11 +67,12 @@ export const TokenizedProduct = {
             referenceDate,
           };
 
-          const stock = await modules.warehousing.estimatedStock(
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
+          const stock = await director.estimatedStock();
 
           return {
             warehousingProvider,

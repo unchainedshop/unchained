@@ -17,5 +17,5 @@ export default async function confirmMediaUpload(
   if (file.expires && new Date(file.expires).getTime() < new Date().getTime())
     throw new FileUploadExpiredError({ fileId });
 
-  return services.files.linkFile({ fileId, size, type }, context);
+  return services.files.linkFile({ fileId, size, type });
 }

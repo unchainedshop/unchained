@@ -1,9 +1,7 @@
-import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
-import { IFilterAdapter } from '@unchainedshop/core-filters';
 import { mongodb } from '@unchainedshop/mongodb';
 import { ProductText } from '@unchainedshop/core-products';
 import { AssortmentText } from '@unchainedshop/core-assortments';
-import { UnchainedCore } from '@unchainedshop/core';
+import { FilterDirector, FilterAdapter, IFilterAdapter } from '@unchainedshop/core';
 
 function escapeStringRegexp(string) {
   if (typeof string !== 'string') {
@@ -16,7 +14,7 @@ function escapeStringRegexp(string) {
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
-const LocalSearch: IFilterAdapter<UnchainedCore> = {
+const LocalSearch: IFilterAdapter = {
   ...FilterAdapter,
 
   key: 'shop.unchained.filters.local-search',

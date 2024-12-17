@@ -36,7 +36,7 @@ export default async function removeProduct(
   if (openEnrollment)
     throw new ProductLinkedToEnrollmentError({ productId, enrollmentId: openEnrollment?._id });
 
-  await services.products.removeProduct({ productId }, context);
+  await services.products.removeProduct({ productId });
 
   return modules.products.findProduct({ productId });
 }

@@ -3,6 +3,9 @@ import { BulkImporter, UnchainedCore } from '@unchainedshop/core';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
 import * as ProductHandlers from './handlers/product/index.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:bulk-import');
 
 export type BulkImportOperationResult = {
   entity: string;
@@ -16,7 +19,6 @@ export type BulkImportOperation = (
     createShouldUpsertIfIDExists?: boolean;
     updateShouldUpsertIfIDNotExists?: boolean;
     skipCacheInvalidation?: boolean;
-    logger?: any;
   },
   unchainedAPI: UnchainedCore,
 ) => Promise<BulkImportOperationResult>;
@@ -54,12 +56,8 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     const bulkOperations = {};
     const preparationIssues = [];
     const processedOperations = {};
-    const {
-      logger,
-      createShouldUpsertIfIDExists,
-      skipCacheInvalidation,
-      updateShouldUpsertIfIDNotExists,
-    } = options;
+    const { createShouldUpsertIfIDExists, skipCacheInvalidation, updateShouldUpsertIfIDNotExists } =
+      options;
 
     const bulk = (collectionName: string) => {
       const Collection = db.collection(collectionName);
@@ -68,7 +66,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
       return bulkOperations[collectionName];
     };
 
-    logger.info(
+    logger.debug(
       `Configure event import with options: createShouldUpsertIfIDExists=${createShouldUpsertIfIDExists} updateShouldUpsertIfIDNotExists=${updateShouldUpsertIfIDNotExists} skipCacheInvalidation=${skipCacheInvalidation}`,
     );
 
@@ -81,19 +79,16 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
 
         const payloadId = event.payload?._id || 'global';
 
-        logger.verbose(`${operation} ${entity} ${payloadId} [PREPARE]`);
-        logger.profile(`${operation} ${entity} ${payloadId} [DONE]`, {
-          level: 'verbose',
-        });
+        logger.debug(`${operation} ${entity} ${payloadId} [PREPARE]`);
 
         try {
-          await handler(event.payload, { bulk, ...options }, unchainedAPI);
+          await handler(event.payload, { bulk, logger, ...options }, unchainedAPI);
           if (!processedOperations[entity]) processedOperations[entity] = {};
           if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
           processedOperations[entity][operation].push(payloadId);
-          logger.verbose(`${operation} ${entity} ${payloadId} [SUCCESS]`);
+          logger.debug(`${operation} ${entity} ${payloadId} [SUCCESS]`);
         } catch (e) {
-          logger.verbose(`${operation} ${entity} ${payloadId} [FAILED]: ${e.message}`);
+          logger.debug(`${operation} ${entity} ${payloadId} [FAILED]`, e);
           preparationIssues.push({
             operation,
             entity,
@@ -102,13 +97,11 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
             errorMessage: e.message,
           });
         } finally {
-          logger.profile(`${operation} ${entity} ${payloadId} [DONE]`, {
-            level: 'verbose',
-          });
+          logger.debug(`${operation} ${entity} ${payloadId} [DONE]`);
         }
       },
       execute: async () => {
-        logger.info(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
+        logger.debug(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
 
         const processedBulkOperations = await Promise.allSettled(
           Object.values(bulkOperations).map(async (o: any) => o.execute()),
@@ -124,13 +117,13 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
           const errors = { preparationIssues };
           return [operationResults, errors];
         }
-        logger.info(`Import finished without errors`);
+        logger.debug(`Import finished without errors`);
         return [operationResults, null];
       },
       invalidateCaches: async (unchainedAPI: UnchainedCore) => {
         if (skipCacheInvalidation) return;
         await unchainedAPI.modules.assortments.invalidateCache({}, { skipUpstreamTraversal: true });
-        await unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI);
+        await unchainedAPI.services.filters.invalidateFilterCache();
       },
     };
   };

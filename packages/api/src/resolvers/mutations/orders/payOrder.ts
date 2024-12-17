@@ -9,7 +9,7 @@ import {
 } from '../../../errors.js';
 
 export default async function payOrder(root: never, { orderId }: { orderId: string }, context: Context) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
 
   log('mutation payOrder', { orderId, userId });
 
@@ -33,5 +33,5 @@ export default async function payOrder(root: never, { orderId }: { orderId: stri
   }
 
   await modules.orders.payments.markAsPaid(payment, null);
-  return modules.orders.processOrder(order, {}, context);
+  return services.orders.processOrder(order, {});
 }

@@ -42,8 +42,6 @@ export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
     const { currency } = context;
     const resultSheet = DeliveryPricingSheet({ currency });
     return {
-      getCalculation: () => calculation,
-      getContext: () => context,
       calculate: async () => {
         resultSheet.addFee({
           amount: 50,
@@ -61,6 +59,4 @@ export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
 ```
 
 - **isActivatedFor: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: defines to which delivery adapters this delivery price adapter calculations should take place.
-- **getCalculation: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: returns all the fees that will are included for calculation through the adapter.
-- **getContext: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: returns the pricing adapter context
 - **calculate: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: calculated the delivery price based on the logic provided and returns the calculation breakdown (result sheet)

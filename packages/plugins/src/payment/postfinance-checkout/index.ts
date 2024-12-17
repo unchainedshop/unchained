@@ -1,12 +1,15 @@
+import { createLogger } from '@unchainedshop/logger';
 import {
+  OrderPricingSheet,
   IPaymentActions,
   IPaymentAdapter,
+  PaymentAdapter,
   PaymentChargeActionResult,
-} from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { createLogger } from '@unchainedshop/logger';
-
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 import * as pf from 'postfinancecheckout';
+
 import {
   confirmDeferredTransaction,
   createTransaction,
@@ -20,7 +23,6 @@ import {
 } from './api.js';
 import { orderIsPaid } from './utils.js';
 import { CompletionModes, IntegrationModes, SignResponse } from './types.js';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export * from './middleware.js';
 
@@ -42,7 +44,7 @@ const newError = ({ code, message }: { code: string; message: string }) => {
   return error;
 };
 
-const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
+const PostfinanceCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.postfinance-checkout',
@@ -54,8 +56,6 @@ const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
   },
 
   actions: (config, context) => {
-    const { modules } = context;
-
     const adapter: IPaymentActions & {
       getCompletionMode: () => CompletionModes;
     } = {
@@ -105,7 +105,11 @@ const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
         const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
           transactionContext;
         const completionMode = adapter.getCompletionMode();
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
+
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const transaction = new PostFinanceCheckout.model.TransactionCreate();
         const userId = order?.userId || context?.userId;
@@ -178,7 +182,7 @@ const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
           });
         }
 
-        const isPaid = await orderIsPaid(context.order, transaction, modules.orders);
+        const isPaid = await orderIsPaid(context.order, transaction);
         if (!isPaid) {
           logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
           throw newError({
@@ -215,7 +219,11 @@ const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
         }
         const transaction = await getTransaction(transactionId);
         const refund = transaction.state === PostFinanceCheckout.model.TransactionState.FULFILL;
-        const pricing = modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
+
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         // For immediate settlements, try refunding. For deferred settlements, void the transaction.
         return (

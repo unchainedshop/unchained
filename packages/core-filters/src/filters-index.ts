@@ -1,7 +1,4 @@
-export * from './types.js';
-export { FilterType } from './db/FilterType.js';
-
+export * from './db/FiltersCollection.js';
 export * from './module/configureFiltersModule.js';
+export * from './search.js';
 export * from './filters-settings.js';
-export * from './director/FilterAdapter.js';
-export * from './director/FilterDirector.js';

@@ -1,8 +1,7 @@
-import { MessagingDirector } from '@unchainedshop/core-messaging';
-import { UnchainedCore } from '@unchainedshop/core';
+import { MessagingDirector, UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 import { Order, OrderStatus } from '@unchainedshop/core-orders';
-import { RawPayloadType } from '@unchainedshop/events/lib/EventDirector.js';
+import { RawPayloadType } from '@unchainedshop/events';
 import { resolveOrderRejectionTemplate } from '../templates/resolveOrderRejectionTemplate.js';
 import { resolveAccountActionTemplate } from '../templates/resolveAccountActionTemplate.js';
 import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliveryTemplate.js';
@@ -41,7 +40,7 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
         type: 'MESSAGE',
         retries: 0,
         input: {
-          locale,
+          locale: locale.baseName,
           template: MessageTypes.ORDER_CONFIRMATION,
           orderId: order._id,
         },
@@ -58,7 +57,7 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
       type: 'MESSAGE',
       retries: 0,
       input: {
-        locale,
+        locale: locale.baseName,
         template: MessageTypes.ORDER_CONFIRMATION,
         orderId: order._id,
       },

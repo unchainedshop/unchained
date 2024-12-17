@@ -1,5 +1,4 @@
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 
 export const ZombieKillerWorker: IWorkerAdapter<
   { bulkImportMaxAgeInDays: number },
@@ -95,12 +94,9 @@ export const ZombieKillerWorker: IWorkerAdapter<
 
       const deletedFilesCount =
         fileIdsToRemove.length > 0
-          ? await services.files.removeFiles(
-              {
-                fileIds: fileIdsToRemove,
-              },
-              unchainedAPI,
-            )
+          ? await services.files.removeFiles({
+              fileIds: fileIdsToRemove,
+            })
           : 0;
 
       // Return delete count

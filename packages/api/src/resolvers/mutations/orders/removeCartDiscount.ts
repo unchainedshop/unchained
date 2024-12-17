@@ -2,13 +2,15 @@ import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
 
 import { OrderDiscountNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.js';
+import { OrderDiscountTrigger } from '@unchainedshop/core-orders';
+import { OrderDiscountDirector } from '@unchainedshop/core';
 
 export default async function removeCartDiscount(
   root: never,
   { discountId }: { discountId: string },
-  context: Context,
+  requestContext: Context,
 ) {
-  const { modules, services, userId } = context;
+  const { modules, services, userId } = requestContext;
 
   log(`mutation removeCartDiscount ${discountId}`, { userId });
 
@@ -26,7 +28,18 @@ export default async function removeCartDiscount(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const deletedDiscount = await modules.orders.discounts.delete(discountId, context);
-  await services.orders.updateCalculation(order._id, context);
+  if (orderDiscount.trigger === OrderDiscountTrigger.USER) {
+    // Release
+    const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
+    if (Adapter) {
+      const adapter = await Adapter.actions({
+        context: { order, orderDiscount, code: orderDiscount.code, ...requestContext },
+      });
+      await adapter.release();
+    }
+  }
+
+  const deletedDiscount = await modules.orders.discounts.delete(discountId);
+  await services.orders.updateCalculation(order._id);
   return deletedDiscount;
 }

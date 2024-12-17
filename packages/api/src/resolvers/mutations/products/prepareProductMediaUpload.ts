@@ -9,12 +9,9 @@ export default async function prepareProductMediaUpload(
   const { services, userId } = context;
   log('mutation prepareProductMediaUpload', { mediaName, userId });
 
-  return services.files.createSignedURL(
-    {
-      directoryName: 'product-media',
-      fileName: mediaName,
-      meta: { productId },
-    },
-    context,
-  );
+  return services.files.createSignedURL({
+    directoryName: 'product-media',
+    fileName: mediaName,
+    meta: { productId },
+  });
 }

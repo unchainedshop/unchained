@@ -1,4 +1,6 @@
-import { log, LogLevel } from '@unchainedshop/logger';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:plugins:minio');
 
 const { MINIO_WEBHOOK_AUTH_TOKEN } = process.env;
 
@@ -18,7 +20,7 @@ export const minioHandler = async (req, res) => {
         const { size, contentType: type } = object;
         const [fileId] = object.key.split('.');
         const { services } = req.unchainedContext;
-        await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
+        await services.files.linkFile({ fileId, type, size });
         res.writeHead(200);
         res.end();
         return;
@@ -27,7 +29,7 @@ export const minioHandler = async (req, res) => {
     res.writeHead(404);
     res.end();
   } catch (e) {
-    log(e.message, { level: LogLevel.Error });
+    logger.error(e);
     res.writeHead(503);
     res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
   }

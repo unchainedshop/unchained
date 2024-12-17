@@ -1,13 +1,17 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
 import {
+  IOrderPricingAdapter,
+  OrderPricingRowCategory,
   OrderPricingDirector,
   OrderPricingAdapter,
   OrderDiscountConfiguration,
-} from '@unchainedshop/core-orders';
+  DeliveryPricingSheet,
+  PaymentPricingSheet,
+  ProductPricingSheet,
+  resolveRatioAndTaxDivisorForPricingSheet,
+} from '@unchainedshop/core';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
-export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfiguration> = {
+export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-discount',
@@ -21,7 +25,7 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
-    const { order, orderDelivery, orderPositions, orderPayment, modules } = params.context;
+    const { order, orderDelivery, orderPositions, orderPayment } = params.context;
 
     return {
       ...pricingAdapter,
@@ -41,19 +45,29 @@ export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountCon
             useNetPrice: false,
           }).amount;
         const itemShares = orderPositions.map((orderPosition) =>
-          calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-            modules.orders.positions.pricingSheet(orderPosition, order.currency, params.context),
+          resolveRatioAndTaxDivisorForPricingSheet(
+            ProductPricingSheet({
+              calculation: orderPosition.calculation,
+              currency: order.currency,
+              quantity: orderPosition.quantity,
+            }),
             totalAmountOfItems,
           ),
         );
-        const deliveryShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-          orderDelivery &&
-            modules.orders.deliveries.pricingSheet(orderDelivery, order.currency, params.context),
+
+        const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
+          DeliveryPricingSheet({
+            calculation: orderDelivery.calculation || [],
+            currency: order.currency,
+          }),
           totalAmountOfPaymentAndDelivery,
         );
-        const paymentShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
-          orderPayment &&
-            modules.orders.payments.pricingSheet(orderPayment, order.currency, params.context),
+
+        const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
+          PaymentPricingSheet({
+            calculation: orderPayment.calculation || [],
+            currency: order.currency,
+          }),
           totalAmountOfPaymentAndDelivery,
         );
         let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;

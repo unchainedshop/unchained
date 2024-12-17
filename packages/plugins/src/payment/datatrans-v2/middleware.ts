@@ -13,14 +13,14 @@ const logger = createLogger('unchained:core-payment:datatrans:webhook');
 
 export const datatransHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context;
-  const { modules } = resolvedContext;
+  const { modules, services } = resolvedContext;
   const signature = req.headers['datatrans-signature'];
   if (req.method === 'POST' && signature) {
     const [rawTimestamp, rawHash] = signature.split(',');
     const [, hash] = rawHash.split('=');
     const [, timestamp] = rawTimestamp.split('=');
 
-    const comparableSignature = generateSignature({
+    const comparableSignature = await generateSignature({
       security: DATATRANS_SECURITY as any,
       signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
     })(timestamp, req.body);
@@ -34,7 +34,7 @@ export const datatransHandler = async (req, res) => {
 
     const transaction: StatusResponseSuccess = JSON.parse(req.body) as StatusResponseSuccess;
 
-    logger.verbose(`received request`, {
+    logger.info(`received request`, {
       type: transaction.type,
     });
 
@@ -45,10 +45,9 @@ export const datatransHandler = async (req, res) => {
       try {
         if (transaction.type === 'card_check') {
           const paymentProviderId = referenceId;
-          const paymentCredentials = await modules.payment.registerCredentials(
+          const paymentCredentials = await services.orders.registerPaymentCredentials(
             paymentProviderId,
             { userId, transactionContext: { transactionId: transaction.transactionId } },
-            resolvedContext,
           );
           logger.info(`registered payment credentials for ${userId}`, {
             userId,
@@ -64,11 +63,9 @@ export const datatransHandler = async (req, res) => {
           });
           if (!orderPayment) throw new Error(`Order Payment with id ${orderPaymentId} not found`);
 
-          const order = await modules.orders.checkout(
-            orderPayment.orderId,
-            { paymentContext: { userId, transactionId: transaction.transactionId } },
-            resolvedContext,
-          );
+          const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+            paymentContext: { userId, transactionId: transaction.transactionId },
+          });
           res.writeHead(200);
           logger.info(`confirmed checkout for order ${order.orderNumber}`, {
             orderId: order._id,

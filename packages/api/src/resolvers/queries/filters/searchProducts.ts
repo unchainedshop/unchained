@@ -15,7 +15,7 @@ export default async function searchProducts(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const forceLiveCollection = false;
   const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
     query;
@@ -31,18 +31,16 @@ export default async function searchProducts(
     const filterIds = await modules.assortments.filters.findFilterIds({
       assortmentId,
     });
-    return modules.filters.search.searchProducts(
+    return services.filters.searchProducts(
       { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
       { forceLiveCollection },
-      context,
     );
   }
 
   if (!queryString) throw new QueryStringRequiredError({});
 
-  return modules.filters.search.searchProducts(
+  return services.filters.searchProducts(
     { queryString, includeInactive, filterQuery, ...rest },
     { forceLiveCollection },
-    context,
   );
 }

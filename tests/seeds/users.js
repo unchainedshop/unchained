@@ -51,6 +51,32 @@ export const User = {
   },
 };
 
+export const UnverifiedUser = {
+  _id: 'user-unverified',
+  username: 'user',
+  emails: [
+    {
+      address: 'user-unverfied@unchained.local',
+      verified: false,
+    },
+  ],
+  profile: {
+    gender: 'm',
+  },
+  guest: false,
+  created: new Date(),
+  updated: new Date(),
+  roles: [],
+  services: {
+    password: {
+      bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
+    },
+    token: {
+      secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913',
+    },
+  },
+};
+
 export const Guest = {
   _id: 'guest',
   username: 'guest',
@@ -79,4 +105,5 @@ export default async function seedUsers(db) {
   await Users.findOrInsertOne(Admin);
   await Users.findOrInsertOne(User);
   await Users.findOrInsertOne(Guest);
+  await Users.findOrInsertOne(UnverifiedUser);
 }

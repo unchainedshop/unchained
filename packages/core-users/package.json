@@ -28,17 +28,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "@node-rs/bcrypt": "^1.10.7",
     "@unchainedshop/events": "^3.0.0-alpha4",
     "@unchainedshop/file-upload": "^3.0.0-alpha4",
     "@unchainedshop/logger": "^3.0.0-alpha4",
     "@unchainedshop/mongodb": "^3.0.0-alpha4",
     "@unchainedshop/roles": "^3.0.0-alpha4",
     "@unchainedshop/utils": "^3.0.0-alpha4",
-    "bcryptjs": "^2.4.3",
     "fido2-lib": "^3.5.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.2",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.2"

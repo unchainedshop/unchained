@@ -1,96 +1,14 @@
-import {
-  WarehousingContext,
-  WarehousingProvider,
-  WarehousingProviderQuery,
-  WarehousingProviderType,
-} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb, ModuleInput } from '@unchainedshop/mongodb';
-import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
-import { WarehousingDirector } from '../director/WarehousingDirector.js';
-import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
-import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
-import { WarehousingError } from '../warehousing-index.js';
-import type { Order, OrderPosition } from '@unchainedshop/core-orders';
-import type { Product } from '@unchainedshop/core-products';
-import type { User } from '@unchainedshop/core-users';
+import {
+  WarehousingProvider,
+  WarehousingProvidersCollection,
+  WarehousingProviderType,
+} from '../db/WarehousingProvidersCollection.js';
+import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 
-export type WarehousingModule = {
-  // Queries
-  findProvider: (
-    query: { warehousingProviderId: string },
-    options?: mongodb.FindOptions,
-  ) => Promise<WarehousingProvider>;
-  findToken: (query: { tokenId: string }, options?: mongodb.FindOptions) => Promise<TokenSurrogate>;
-  findTokensForUser: (user: User, options?: mongodb.FindOptions) => Promise<Array<TokenSurrogate>>;
-  findTokens: (query: any, options?: mongodb.FindOptions) => Promise<Array<TokenSurrogate>>;
-  findProviders: (
-    query: WarehousingProviderQuery,
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<WarehousingProvider>>;
-  count: (query: WarehousingProviderQuery) => Promise<number>;
-  providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
-
-  // Adapter
-
-  findSupported: (
-    warehousingContext: WarehousingContext,
-    unchainedAPI,
-  ) => Promise<Array<WarehousingProvider>>;
-  findInterface: (query: WarehousingProvider) => WarehousingInterface;
-  findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
-  configurationError: (provider: WarehousingProvider, unchainedAPI) => Promise<WarehousingError>;
-  isActive: (provider: WarehousingProvider, unchainedAPI) => Promise<boolean>;
-
-  estimatedDispatch: (
-    provider: WarehousingProvider,
-    context: WarehousingContext,
-    unchainedAPI,
-  ) => Promise<EstimatedDispatch>;
-
-  estimatedStock: (
-    provider: WarehousingProvider,
-    context: WarehousingContext,
-    unchainedAPI,
-  ) => Promise<EstimatedStock>;
-
-  updateTokenOwnership: (input: {
-    tokenId: string;
-    userId: string;
-    walletAddress: string;
-  }) => Promise<void>;
-
-  invalidateToken: (tokenId: string) => Promise<void>;
-
-  buildAccessKeyForToken: (tokenId: string) => Promise<string>;
-
-  tokenizeItems: (
-    order: Order,
-    params: {
-      items: Array<{
-        orderPosition: OrderPosition;
-        product: Product;
-      }>;
-    },
-    unchainedAPI,
-  ) => Promise<void>;
-
-  tokenMetadata: (
-    chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Intl.Locale },
-    unchainedAPI,
-  ) => Promise<any>;
-
-  isInvalidateable: (
-    chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date },
-    unchainedAPI,
-  ) => Promise<boolean>;
-
-  // Mutations
-  delete: (providerId: string) => Promise<WarehousingProvider>;
-  update: (_id: string, doc: WarehousingProvider) => Promise<string>;
-  create: (doc: WarehousingProvider) => Promise<string | null>;
+type WarehousingProviderQuery = {
+  type?: WarehousingProviderType;
 };
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
@@ -106,15 +24,7 @@ export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   return query;
 };
 
-const asyncFilter = async (arr, predicate) => {
-  const results = await Promise.all(arr.map(predicate));
-
-  return arr.filter((_v, index) => results[index]);
-};
-
-export const configureWarehousingModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<WarehousingModule> => {
+export const configureWarehousingModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);
@@ -122,49 +32,68 @@ export const configureWarehousingModule = async ({
 
   return {
     // Queries
-    count: async (query) => {
+    count: async (query: WarehousingProviderQuery): Promise<number> => {
       const providerCount = await WarehousingProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
 
-    findProvider: async ({ warehousingProviderId }, options) => {
+    createTokens: async (tokens: TokenSurrogate[]): Promise<void> => {
+      await TokenSurrogates.insertMany(tokens);
+    },
+
+    findProvider: async (
+      { warehousingProviderId }: { warehousingProviderId: string },
+      options?: mongodb.FindOptions,
+    ): Promise<WarehousingProvider> => {
       return WarehousingProviders.findOne(generateDbFilterById(warehousingProviderId), options);
     },
 
-    findToken: async ({ tokenId }, options) => {
-      return TokenSurrogates.findOne(generateDbFilterById(tokenId), options);
+    findToken: async (
+      { tokenId }: { tokenId: string },
+      options?: mongodb.FindOptions,
+    ): Promise<TokenSurrogate> => {
+      return TokenSurrogates.findOne({ _id: tokenId }, options);
     },
 
-    findTokens: async (selector, options) => {
+    findTokens: async (selector: any, options?: mongodb.FindOptions): Promise<Array<TokenSurrogate>> => {
       return TokenSurrogates.find(selector, options).toArray();
     },
 
-    findTokensForUser: async (user, options) => {
-      const addresses =
-        user.services?.web3?.flatMap((service) => {
-          return service.verified ? [service.address] : [];
-        }) || [];
+    findTokensForUser: async (
+      params: { userId: string } | { walletAddresses: string[] },
+      options?: mongodb.FindOptions,
+    ): Promise<Array<TokenSurrogate>> => {
+      const { userId, walletAddresses } = params as any;
+      if (!userId && !walletAddresses)
+        throw new Error('userId or walletAddresses must be provided for findTokensForUser');
       const selector = {
         $or: [
-          {
-            walletAddress: { $in: addresses || [] },
+          walletAddresses && {
+            walletAddress: { $in: walletAddresses || [] },
           },
-          {
-            userId: user._id,
+          userId && {
+            userId,
           },
-        ],
+        ].filter(Boolean),
       };
 
       const userTokens = await TokenSurrogates.find(selector, options).toArray();
       return userTokens;
     },
 
-    findProviders: async (query, options = { sort: { created: 1 } }) => {
+    findProviders: async (
+      query: WarehousingProviderQuery,
+      options: mongodb.FindOptions = { sort: { created: 1 } },
+    ): Promise<Array<WarehousingProvider>> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },
 
-    providerExists: async ({ warehousingProviderId }) => {
+    providerExists: async ({
+      warehousingProviderId,
+    }: {
+      warehousingProviderId: string;
+    }): Promise<boolean> => {
       const providerCount = await WarehousingProviders.countDocuments(
         generateDbFilterById(warehousingProviderId, { deleted: null }),
         { limit: 1 },
@@ -172,63 +101,15 @@ export const configureWarehousingModule = async ({
       return !!providerCount;
     },
 
-    // Adapter
-
-    findInterface: (warehousingProvider) => {
-      const Adapter = WarehousingDirector.getAdapter(warehousingProvider.adapterKey);
-      if (!Adapter) return null;
-      return {
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      };
-    },
-
-    findInterfaces: ({ type }) => {
-      return WarehousingDirector.getAdapters({
-        adapterFilter: (Adapter) => Adapter.typeSupported(type),
-      }).map((Adapter) => ({
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      }));
-    },
-
-    findSupported: async (warehousingContext, unchainedAPI) => {
-      const allProviders = await WarehousingProviders.find(buildFindSelector({})).toArray();
-
-      const providers = asyncFilter(allProviders, async (provider) => {
-        const director = await WarehousingDirector.actions(provider, warehousingContext, unchainedAPI);
-        return director.isActive();
-      });
-
-      return providers;
-    },
-
-    configurationError: async (warehousingProvider, unchainedAPI) => {
-      const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
-      return actions.configurationError();
-    },
-
-    estimatedDispatch: async (warehousingProvider, warehousingContext, unchainedAPI) => {
-      const director = await WarehousingDirector.actions(
-        warehousingProvider,
-        warehousingContext,
-        unchainedAPI,
-      );
-      return director.estimatedDispatch();
-    },
-
-    estimatedStock: async (warehousingProvider, warehousingContext, unchainedAPI) => {
-      const director = await WarehousingDirector.actions(
-        warehousingProvider,
-        warehousingContext,
-        unchainedAPI,
-      );
-      return director.estimatedStock();
-    },
-
-    updateTokenOwnership: async ({ tokenId, userId, walletAddress }) => {
+    updateTokenOwnership: async ({
+      tokenId,
+      userId,
+      walletAddress,
+    }: {
+      tokenId: string;
+      userId: string;
+      walletAddress: string;
+    }): Promise<TokenSurrogate> => {
       const token = await TokenSurrogates.findOneAndUpdate(
         { _id: tokenId },
         {
@@ -240,100 +121,10 @@ export const configureWarehousingModule = async ({
         { returnDocument: 'after' },
       );
       await emit('TOKEN_OWNERSHIP_CHANGED', { token });
+      return token;
     },
 
-    tokenizeItems: async (order, { items }, unchainedAPI) => {
-      const virtualProviders = await WarehousingProviders.find(
-        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
-      ).toArray();
-
-      const tokenizers = await Promise.all(
-        items.flatMap(({ orderPosition, product }) => {
-          const warehousingContext: WarehousingContext = {
-            order,
-            orderPosition,
-            product,
-            quantity: orderPosition.quantity,
-            referenceDate: order.ordered,
-          };
-          return virtualProviders.map(async (provider) => {
-            const director = await WarehousingDirector.actions(
-              provider,
-              warehousingContext,
-              unchainedAPI,
-            );
-            const isActive = await director.isActive();
-            if (isActive) return director.tokenize;
-            return (async () => []) as typeof director.tokenize;
-          });
-        }),
-      );
-
-      // Tokenize linearly so that after every tokenized item, the db is updated
-      await tokenizers.reduce(async (lastPromise, tokenizer) => {
-        await lastPromise;
-        const tokenSurrogates = await tokenizer();
-        await TokenSurrogates.insertMany(tokenSurrogates);
-        return true;
-      }, Promise.resolve(false));
-    },
-
-    tokenMetadata: async (chainTokenId, { token, product, locale, referenceDate }, unchainedAPI) => {
-      const virtualProviders = await WarehousingProviders.find(
-        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
-      ).toArray();
-
-      const warehousingContext: WarehousingContext = {
-        product,
-        token,
-        locale,
-        quantity: token?.quantity || 1,
-        referenceDate,
-      };
-      return virtualProviders.reduce(async (lastPromise, provider) => {
-        const last = await lastPromise;
-        if (last) return last;
-        const currentDirector = await WarehousingDirector.actions(
-          provider,
-          warehousingContext,
-          unchainedAPI,
-        );
-        const isActive = await currentDirector.isActive();
-        if (isActive) {
-          return currentDirector.tokenMetadata(chainTokenId);
-        }
-        return null;
-      }, Promise.resolve(null));
-    },
-
-    isInvalidateable: async (chainTokenId, { token, product, referenceDate }, unchainedAPI) => {
-      const virtualProviders = await WarehousingProviders.find(
-        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
-      ).toArray();
-
-      const warehousingContext: WarehousingContext = {
-        product,
-        token,
-        quantity: token?.quantity || 1,
-        referenceDate,
-      };
-      return virtualProviders.reduce(async (lastPromise, provider) => {
-        const last = await lastPromise;
-        if (last) return last;
-        const currentDirector = await WarehousingDirector.actions(
-          provider,
-          warehousingContext,
-          unchainedAPI,
-        );
-        const isActive = await currentDirector.isActive();
-        if (isActive) {
-          return currentDirector.isInvalidateable(chainTokenId);
-        }
-        return null;
-      }, Promise.resolve(null));
-    },
-
-    invalidateToken: async (tokenId) => {
+    invalidateToken: async (tokenId: string): Promise<TokenSurrogate> => {
       const token = await TokenSurrogates.findOneAndUpdate(
         { _id: tokenId, invalidatedDate: null },
         {
@@ -348,9 +139,10 @@ export const configureWarehousingModule = async ({
       if (token) {
         await emit('TOKEN_INVALIDATED', { token });
       }
+      return token;
     },
 
-    buildAccessKeyForToken: async (tokenId) => {
+    buildAccessKeyForToken: async (tokenId: string): Promise<string> => {
       const token = await TokenSurrogates.findOne(generateDbFilterById(tokenId));
       const payload = [
         token._id,
@@ -365,33 +157,22 @@ export const configureWarehousingModule = async ({
       return hashHex;
     },
 
-    isActive: async (warehousingProvider, unchainedAPI) => {
-      const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
-      return actions.isActive();
-    },
-
     // Mutations
-    create: async (doc) => {
-      const Adapter = WarehousingDirector.getAdapter(doc.adapterKey);
-      if (!Adapter) return null;
-
+    create: async (doc: WarehousingProvider): Promise<WarehousingProvider> => {
       const { insertedId: warehousingProviderId } = await WarehousingProviders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
-        configuration: Adapter.initialConfiguration,
         ...doc,
       });
 
-      const warehousingProvider = await WarehousingProviders.findOne(
-        generateDbFilterById(warehousingProviderId),
-      );
+      const warehousingProvider = await WarehousingProviders.findOne({ _id: warehousingProviderId });
       await emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
-      return warehousingProviderId;
+      return warehousingProvider;
     },
 
     update: async (warehousingProviderId: string, doc: WarehousingProvider) => {
       const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
-        generateDbFilterById(warehousingProviderId),
+        { _id: warehousingProviderId },
         {
           $set: {
             updated: new Date(),
@@ -404,10 +185,10 @@ export const configureWarehousingModule = async ({
       if (!warehousingProvider) return null;
 
       await emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
-      return warehousingProviderId;
+      return warehousingProvider;
     },
 
-    delete: async (providerId) => {
+    delete: async (providerId: string): Promise<WarehousingProvider> => {
       const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
         generateDbFilterById(providerId),
         {
@@ -419,8 +200,9 @@ export const configureWarehousingModule = async ({
       );
 
       await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
-
       return warehousingProvider;
     },
   };
 };
+
+export type WarehousingModule = Awaited<ReturnType<typeof configureWarehousingModule>>;

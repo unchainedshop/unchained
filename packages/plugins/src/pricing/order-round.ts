@@ -1,13 +1,16 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { OrderPricingAdapter, OrderPricingDirector } from '@unchainedshop/core-orders';
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
+import {
+  OrderPricingAdapter,
+  OrderPricingDirector,
+  IOrderPricingAdapter,
+  OrderPricingRowCategory,
+} from '@unchainedshop/core';
 
 interface PriceRoundSettings {
   defaultPrecision: number;
   roundTo: (value: number, precision: number, currency: string) => number;
 }
 
-export const OrderPriceRound: IOrderPricingAdapter<UnchainedCore> & {
+export const OrderPriceRound: IOrderPricingAdapter & {
   configure: (params: PriceRoundSettings) => void;
   settings: PriceRoundSettings;
 } = {

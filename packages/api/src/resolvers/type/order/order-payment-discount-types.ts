@@ -1,35 +1,31 @@
-import crypto from 'crypto';
 import { Context } from '../../../context.js';
-import { OrderDiscount } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
+import { Price, sha256 } from '@unchainedshop/utils';
 
-type HelperType<P, T> = (
-  orderDelivery: OrderPrice & { discountId: string; item: OrderPayment },
-  params: P,
-  context: Context,
-) => T;
+export const OrderPaymentDiscount = {
+  _id: (orderDelivery: Price & { discountId: string; item: OrderPayment }) =>
+    `${orderDelivery.item._id}:${orderDelivery.discountId}`,
 
-export interface OrderPaymentDiscountHelperTypes {
-  _id: HelperType<never, string>;
-  orderDiscount: HelperType<never, Promise<OrderDiscount>>;
-  total: HelperType<never, OrderPrice>;
-}
-
-export const OrderPaymentDiscount: OrderPaymentDiscountHelperTypes = {
-  _id: (obj) => `${obj.item._id}:${obj.discountId}`,
-
-  orderDiscount: (obj, _, { modules }) =>
+  orderDiscount: (
+    orderDelivery: Price & { discountId: string; item: OrderPayment },
+    _,
+    { modules }: Context,
+  ) =>
     modules.orders.discounts.findOrderDiscount({
-      discountId: obj.discountId,
+      discountId: orderDelivery.discountId,
     }),
 
-  total: (obj) => ({
-    _id: crypto
-      .createHash('sha256')
-      .update([`${obj.item._id}-${obj.discountId}`, obj.amount, obj.currency].join(''))
-      .digest('hex'),
-    amount: obj.amount,
-    currency: obj.currency,
-  }),
+  async total(orderDelivery: Price & { discountId: string; item: OrderPayment }) {
+    return {
+      _id: await sha256(
+        [
+          `${orderDelivery.item._id}-${orderDelivery.discountId}`,
+          orderDelivery.amount,
+          orderDelivery.currency,
+        ].join(''),
+      ),
+      amount: orderDelivery.amount,
+      currency: orderDelivery.currency,
+    };
+  },
 };

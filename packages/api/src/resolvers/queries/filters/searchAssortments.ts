@@ -4,18 +4,14 @@ import { log } from '@unchainedshop/logger';
 import { QueryStringRequiredError } from '../../../errors.js';
 
 export default async function searchAssortments(root: never, query: SearchQuery, context: Context) {
-  const { modules, userId } = context;
+  const { services, userId } = context;
   const forceLiveCollection = false;
 
   log(`query search assortments ${JSON.stringify(query)}`, { userId });
 
   if (!query.queryString && !query.assortmentIds?.length) throw new QueryStringRequiredError({});
 
-  return modules.filters.search.searchAssortments(
-    query,
-    {
-      forceLiveCollection,
-    },
-    context,
-  );
+  return services.filters.searchAssortments(query, {
+    forceLiveCollection,
+  });
 }

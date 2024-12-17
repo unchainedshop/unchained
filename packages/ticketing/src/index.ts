@@ -1,6 +1,6 @@
 import express from 'express';
 import { subscribe } from '@unchainedshop/events';
-import { RawPayloadType } from '@unchainedshop/events/lib/EventDirector.js';
+import { RawPayloadType } from '@unchainedshop/events';
 import { WorkerEventTypes, Work } from '@unchainedshop/core-worker';
 import { RendererTypes, registerRenderer } from './template-registry.js';
 import loadAppleWalletHandler from './mobile-tickets/apple-webservice.js';

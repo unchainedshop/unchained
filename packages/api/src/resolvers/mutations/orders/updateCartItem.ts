@@ -7,6 +7,7 @@ import {
   ProductNotFoundError,
   InvalidIdError,
 } from '../../../errors.js';
+import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function updateCartItem(
   root: never,
@@ -32,23 +33,28 @@ export default async function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const productId = item.originalProductId || item.productId;
   const product = await modules.products.findProduct({
-    productId,
+    productId: item.productId,
   });
-  if (!product) throw new ProductNotFoundError({ productId });
+  if (!product) throw new ProductNotFoundError({ productId: item.productId });
 
   if (quantity !== null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
-  const updatedOrderPosition = await modules.orders.positions.updateProductItem(
-    { quantity, configuration },
+  await ordersSettings.validateOrderPosition(
     {
       order,
       product,
-      orderPosition: item,
+      configuration,
+      quantityDiff: quantity - item.quantity,
     },
     context,
   );
-  await services.orders.updateCalculation(order._id, context);
+
+  const updatedOrderPosition = await modules.orders.positions.updateProductItem({
+    orderPositionId: item._id,
+    quantity,
+    configuration,
+  });
+  await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
 }

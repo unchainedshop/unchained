@@ -1,26 +1,7 @@
 import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
 import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
-
-export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
-  const selector: mongodb.Filter<Order> = {};
-
-  if (userId) {
-    selector.userId = userId;
-  }
-
-  if (Array.isArray(status) && status?.length) {
-    selector.status = { $in: status };
-  } else if (!includeCarts) {
-    selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
-  }
-
-  if (queryString) {
-    (selector as any).$text = { $search: queryString };
-  }
-
-  return selector;
-};
+import buildFindSelector from './buildFindSelector.js';
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {
@@ -39,6 +20,37 @@ const normalizeOrderAggregateResult = (data = {}): OrderReport => {
 
 export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Collection<Order> }) => {
   return {
+    isCart: (order: Order) => {
+      return order.status === null;
+    },
+
+    cart: async ({
+      orderNumber,
+      countryContext,
+      userId,
+    }: {
+      countryContext?: string;
+      orderNumber?: string;
+      userId: string;
+    }): Promise<Order> => {
+      const selector: mongodb.Filter<Order> = {
+        countryCode: countryContext,
+        status: { $eq: null },
+        userId,
+      };
+
+      if (orderNumber) {
+        selector.orderNumber = orderNumber;
+      }
+
+      const options: mongodb.FindOptions = {
+        sort: {
+          updated: -1,
+        },
+      };
+      return Orders.findOne(selector, options);
+    },
+
     count: async (query: OrderQuery): Promise<number> => {
       const orderCount = await Orders.countDocuments(buildFindSelector(query));
       return orderCount;

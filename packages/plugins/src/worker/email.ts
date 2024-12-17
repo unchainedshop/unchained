@@ -1,8 +1,7 @@
 import { mkdtemp, writeFile } from 'fs/promises';
 import { join, isAbsolute } from 'path';
 import { tmpdir } from 'os';
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
+import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
 import open from 'open';
 import nodemailer from 'nodemailer';
 

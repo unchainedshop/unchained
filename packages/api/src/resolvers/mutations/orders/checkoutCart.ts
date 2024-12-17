@@ -1,7 +1,9 @@
 import { Context } from '../../../context.js';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { OrderCheckoutError } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { createLogger, log } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api');
 
 export default async function checkoutCart(
   root: never,
@@ -12,7 +14,7 @@ export default async function checkoutCart(
   },
   context: Context,
 ) {
-  const { modules, user, userId } = context;
+  const { services, user, userId } = context;
   const { orderId: forceOrderId, ...transactionContext } = params;
 
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
@@ -21,10 +23,10 @@ export default async function checkoutCart(
   let order = await getOrderCart({ orderId: forceOrderId, user }, context);
 
   try {
-    order = await modules.orders.checkout(order._id, transactionContext, context);
+    order = await services.orders.checkoutOrder(order._id, transactionContext);
     return order;
   } catch (error) {
-    log(error.message, { userId, orderId: order._id, level: LogLevel.Error });
+    logger.error(error.message, { userId, orderId: order._id });
     throw new OrderCheckoutError({
       userId,
       orderId: order._id,

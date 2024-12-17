@@ -1,14 +1,10 @@
-import { createRequire } from 'module';
-import { createLogger as createWinstonLogger, format, transports } from 'winston';
-import TransportStream from 'winston-transport';
+import { stringify } from 'safe-stable-stringify';
+import { default as log } from 'loglevel';
 import { LogLevel } from './logger.types.js';
-
-const require = createRequire(import.meta.url);
-const { stringify } = require('safe-stable-stringify');
+import { default as prefix } from 'loglevel-plugin-prefix';
+import chalk from 'chalk';
 
 const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
-
-const { combine, colorize, json } = format;
 
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
   if (!debugString) return false;
@@ -28,47 +24,62 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
   return loggingMatched || false;
 };
 
-const myFormat = format.printf(({ level, message, label, timestamp, stack, ...rest }) => {
-  const otherPropsString: string = stringify(rest);
-  return [
-    `${timestamp} [${label}] ${level}:`,
-    `${message}`,
-    `${otherPropsString}`,
-    stack ? `\n${stack}` : null,
-  ]
-    .filter(Boolean)
-    .join(' ');
-});
-
-const UnchainedLogFormats = {
-  unchained: combine(colorize(), myFormat),
-  json: json(),
+const colors = {
+  TRACE: chalk.magenta,
+  DEBUG: chalk.cyan,
+  INFO: chalk.blue,
+  WARN: chalk.yellow,
+  ERROR: chalk.red,
 };
 
-if (!UnchainedLogFormats[UNCHAINED_LOG_FORMAT.toLowerCase()]) {
-  throw new Error(
-    `UNCHAINED_LOG_FORMAT is invalid, use one of ${Object.keys(UnchainedLogFormats).join(',')}`,
-  );
+const invertedLevels = Object.fromEntries(
+  Object.entries(log.levels).map(([key, value]) => [value, key]),
+);
+
+const SUPPORTED_LOG_FORMATS = ['json', 'unchained'];
+if (!SUPPORTED_LOG_FORMATS.includes(UNCHAINED_LOG_FORMAT.toLowerCase())) {
+  throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of ${SUPPORTED_LOG_FORMATS.join(',')}`);
 }
 
-export { transports, format };
-
-export const createLogger = (moduleName: string, moreTransports: Array<TransportStream> = []) => {
-  const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
-  return createWinstonLogger({
-    format: format.combine(
-      format.errors({ stack: process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test' }),
-      format.timestamp(),
-      format.label({ label: moduleName }),
-    ),
-    transports: [
-      new transports.Console({
-        format: UnchainedLogFormats[UNCHAINED_LOG_FORMAT],
-        stderrLevels: [LogLevel.Error],
-        consoleWarnLevels: [LogLevel.Warning],
-        level: loggingMatched ? LogLevel.Debug : LOG_LEVEL,
-      }),
-      ...moreTransports,
-    ],
+if (UNCHAINED_LOG_FORMAT.toLowerCase() === 'unchained') {
+  prefix.reg(log);
+  prefix.apply(log, {
+    format: (level, name, timestamp) =>
+      `${chalk.gray(`${timestamp}`)} [${chalk.green(`${name}] ${colors[level.toUpperCase()](level)}:`)}`,
   });
+} else if (UNCHAINED_LOG_FORMAT.toLowerCase() === 'json') {
+  const originalFactory = log.methodFactory;
+  log.methodFactory = function (methodName, logLevel, loggerName) {
+    const rawMethod = originalFactory(methodName, logLevel, loggerName);
+    const level = invertedLevels[logLevel];
+    const name = loggerName || 'unchained';
+
+    return function (message, meta) {
+      rawMethod(
+        stringify({
+          timestamp: new Date(),
+          level,
+          name,
+          message,
+          ...meta,
+        }),
+      );
+    };
+  };
+  log.rebuild();
+}
+
+export const createLogger = (moduleName: string) => {
+  const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
+  const logger = log.getLogger(moduleName);
+
+  const logLevelMap = {
+    [LogLevel.Debug]: log.levels.DEBUG,
+    [LogLevel.Info]: log.levels.INFO,
+    [LogLevel.Warning]: log.levels.WARN,
+    [LogLevel.Error]: log.levels.ERROR,
+  };
+
+  logger.setDefaultLevel(loggingMatched ? log.levels.DEBUG : logLevelMap[LOG_LEVEL.toLowerCase()]);
+  return logger;
 };

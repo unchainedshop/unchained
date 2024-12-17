@@ -6,6 +6,7 @@ import {
   OrderWrongStatusError,
 } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addMultipleCartProducts(
   root: never,
@@ -30,12 +31,12 @@ export default async function addMultipleCartProducts(
   /* verify existence of products */
   const itemsWithProducts = await Promise.all(
     items.map(async ({ productId, ...item }) => {
-      const product = await modules.products.findProduct({ productId });
-      if (!product) throw new ProductNotFoundError({ productId });
+      const originalProduct = await modules.products.findProduct({ productId });
+      if (!originalProduct) throw new ProductNotFoundError({ productId });
 
       return {
         ...item,
-        product,
+        originalProduct,
       };
     }),
   );
@@ -44,25 +45,41 @@ export default async function addMultipleCartProducts(
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   // Reduce is used to wait for each product to be added before processing the next (sequential processing)
-  await itemsWithProducts.reduce(async (positionsPromise, { product, quantity, configuration }) => {
-    const positions = await positionsPromise;
-    if (quantity < 1)
-      throw new OrderQuantityTooLowError({
-        quantity,
-        productId: product._id,
+  await itemsWithProducts.reduce(
+    async (positionsPromise, { originalProduct, quantity, configuration }) => {
+      const positions = await positionsPromise;
+      if (quantity < 1)
+        throw new OrderQuantityTooLowError({
+          quantity,
+          productId: originalProduct._id,
+        });
+
+      const product = await modules.products.resolveOrderableProduct(originalProduct, {
+        configuration,
       });
 
-    const position = await modules.orders.positions.addProductItem(
-      {
+      await ordersSettings.validateOrderPosition(
+        {
+          order,
+          product,
+          configuration,
+          quantityDiff: quantity,
+        },
+        context,
+      );
+
+      const position = await modules.orders.positions.addProductItem({
         quantity,
         configuration,
-      },
-      { order, product },
-      context,
-    );
-    positions.push(position);
-    return positions;
-  }, Promise.resolve([]));
+        originalProductId: originalProduct._id,
+        productId: product._id,
+        orderId: order._id,
+      });
+      positions.push(position);
+      return positions;
+    },
+    Promise.resolve([]),
+  );
 
-  return services.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id);
 }

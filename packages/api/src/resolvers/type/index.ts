@@ -1,4 +1,4 @@
-import { Assortment } from './assortment/assortment-types.js';
+import { AssortmentTypes as Assortment } from './assortment/assortment-types.js';
 import { AssortmentFilter } from './assortment/assortment-filter-types.js';
 import { AssortmentLink } from './assortment/assortment-link-types.js';
 import { AssortmentMedia } from './assortment/assortment-media-types.js';
@@ -67,6 +67,7 @@ import { Media } from './media-types.js';
 import { Token } from './token-types.js';
 import { Web3Address } from './web3-address.js';
 import { LoginMethodResponse } from './login-method-response-types.js';
+import { ProductSearchResult } from './product-search-result-types.js';
 
 const types = {
   Assortment,
@@ -124,6 +125,7 @@ const types = {
   ProductVariationAssignment,
   ProductVariationAssignmentVector,
   ProductVariationOption,
+  ProductSearchResult,
   Quotation,
   Shop,
   SimpleProduct,

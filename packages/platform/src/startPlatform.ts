@@ -4,7 +4,7 @@ import { initDb, mongodb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
 import { getRegisteredEvents } from '@unchainedshop/events';
-import { WorkerDirector } from '@unchainedshop/core-worker';
+import { WorkerDirector } from '@unchainedshop/core';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
@@ -101,7 +101,7 @@ export const startPlatform = async ({
   setupTemplates(unchainedAPI);
 
   // Setup file upload handlers
-  setupUploadHandlers();
+  setupUploadHandlers(unchainedAPI);
 
   // Start the graphQL server
   const graphqlHandler = await startAPIServer({
@@ -121,7 +121,7 @@ export const startPlatform = async ({
 
   // Setup filter cache
   if (!workQueueOptions?.skipInvalidationOnStartup) {
-    setImmediate(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
+    setImmediate(() => unchainedAPI.services.filters.invalidateFilterCache());
   }
 
   return { unchainedAPI, graphqlHandler, db };

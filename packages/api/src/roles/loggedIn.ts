@@ -15,6 +15,14 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     // user wants to access himself
     return true;
   };
+  const canUpdateAvatar = (_, params: { userId?: string } = {}, context: Context) => {
+    const isVerified = context?.user?.emails.some(({ verified }) => verified);
+    if (!isVerified) return false;
+    if (params?.userId) {
+      return params?.userId === context?.userId;
+    }
+    return true;
+  };
 
   const isOwnedEmailAddress = (obj: any, params: { email?: string }, { user }: Context) => {
     return user?.emails?.some(
@@ -193,6 +201,18 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
+  const isFileAccessible = async (file, _, context) => {
+    const user = context?.user;
+
+    // Non private files or no files always resolve to true
+    if (!file?.meta?.isPrivate) return true;
+
+    // If private file, only return true if owned
+    if (file?.meta?.userId === user?._id) return true;
+
+    return false;
+  };
+
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
@@ -226,4 +246,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.confirmMediaUpload, () => true);
+  role.allow(actions.downloadFile, isFileAccessible);
+  role.allow(actions.uploadUserAvatar, canUpdateAvatar);
 };

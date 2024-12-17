@@ -1,13 +1,16 @@
 import { pipeline, finished } from 'stream/promises';
 import { PassThrough } from 'stream';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
 import express from 'express';
 import sign from './sign.js';
 import { configureGridFSFileUploadModule } from './index.js';
 import { Context } from '@unchainedshop/api';
+import { createLogger } from '@unchainedshop/logger';
+import { getFileAdapter } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
+
+const logger = createLogger('unchained:plugins:gridfs');
 
 export const gridfsHandler = async (
   req: express.Request & {
@@ -39,15 +42,14 @@ export const gridfsHandler = async (
     if (req.method === 'PUT') {
       const { s: signature, e: expiryTimestamp } = req.query;
       const expiryDate = new Date(parseInt(expiryTimestamp as string, 10));
-      const fileId = buildHashedFilename(directoryName, fileName, expiryDate);
-      if (sign(directoryName, fileId, expiryDate.getTime()) === signature) {
+      const fileId = await buildHashedFilename(directoryName, fileName, expiryDate);
+      if ((await sign(directoryName, fileId, expiryDate.getTime())) === signature) {
         const file = await modules.files.findFile({ fileId });
         if (file.expires === null) {
           res.statusCode = 400;
           res.end('File already linked');
           return;
         }
-
         // If the type is octet-stream, prefer mimetype lookup from the filename
         // Else prefer the content-type header
         const type =
@@ -64,7 +66,7 @@ export const gridfsHandler = async (
         await pipeline(req, new PassThrough(), writeStream);
 
         const { length } = writeStream;
-        await services.files.linkFile({ fileId, size: length, type }, req.unchainedContext);
+        await services.files.linkFile({ fileId, size: length, type });
 
         res.statusCode = 200;
         res.end();
@@ -77,8 +79,26 @@ export const gridfsHandler = async (
 
     if (req.method === 'GET') {
       const fileId = fileName;
-
+      const { s: signature, e: expiryTimestamp } = req.query;
       const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
+      const fileDocument = await modules.files.findFile({ fileId });
+      if (fileDocument?.meta?.isPrivate) {
+        const expiry = parseInt(expiryTimestamp as string, 10);
+        if (expiry <= Date.now()) {
+          res.statusCode = 403;
+          res.end('Access restricted: Expired.');
+          return;
+        }
+
+        const fileUploadAdapter = getFileAdapter();
+        const signedUrl = await fileUploadAdapter.createDownloadURL(fileDocument, expiry);
+
+        if (new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
+          res.statusCode = 403;
+          res.end('Access restricted: Invalid signature.');
+          return;
+        }
+      }
       if (file?.metadata?.['content-type']) {
         res.setHeader('Content-Type', file.metadata['content-type']);
       }
@@ -97,11 +117,11 @@ export const gridfsHandler = async (
     res.end();
   } catch (e) {
     if (e.code === 'ENOENT') {
-      log(e.message, { level: LogLevel.Warning });
+      logger.warn(e);
       res.statusCode = 404;
       res.end(e.message);
     } else {
-      log(e.message, { level: LogLevel.Error });
+      logger.warn(e);
       res.statusCode = 503;
       res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
     }

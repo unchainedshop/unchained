@@ -1,4 +1,3 @@
-import { ProductMedia, ProductMediaText } from '../types.js';
 import { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -7,8 +6,7 @@ import {
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { FileDirector } from '@unchainedshop/file-upload';
-import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
+import { ProductMedia, ProductMediaCollection, ProductMediaText } from '../db/ProductMediaCollection.js';
 
 export type ProductMediaModule = {
   // Queries
@@ -280,16 +278,3 @@ export const configureProductMediaModule = async ({
     },
   };
 };
-
-FileDirector.registerFileUploadCallback<{
-  modules: {
-    products: {
-      media: ProductMediaModule;
-    };
-  };
-}>('product-media', async (file, { modules }) => {
-  await modules.products.media.create({
-    productId: file.meta?.productId as string,
-    mediaId: file._id,
-  });
-});

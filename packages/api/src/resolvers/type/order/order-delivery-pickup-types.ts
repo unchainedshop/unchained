@@ -1,7 +1,7 @@
+import { DeliveryDirector, DeliveryPricingSheet } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
 import { DeliveryLocation, DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
-import { DeliveryDirector } from '@unchainedshop/core-delivery';
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
 
@@ -14,9 +14,19 @@ export interface OrderDeliveryPickupHelperTypes {
 }
 
 export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
-  activePickUpLocation: async (obj, _, context) => {
-    const { modules } = context;
-    return modules.orders.deliveries.activePickUpLocation(obj, context);
+  activePickUpLocation: async (orderDelivery, _, requestContext) => {
+    const { orderPickUpLocationId } = orderDelivery.context || {};
+
+    const provider = await requestContext.modules.delivery.findProvider({
+      deliveryProviderId: orderDelivery.deliveryProviderId,
+    });
+    const director = await DeliveryDirector.actions(
+      provider,
+      { orderDelivery: orderDelivery },
+      requestContext,
+    );
+
+    return director.pickUpLocationById(orderPickUpLocationId);
   },
 
   pickUpLocations: async (obj, _, context) => {
@@ -41,10 +51,15 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
   discounts: async (obj, _, context) => {
     const { modules } = context;
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
-    const pricingSheet = modules.orders.deliveries.pricingSheet(obj, order.currency, context);
-    if (pricingSheet.isValid()) {
+
+    const pricing = DeliveryPricingSheet({
+      calculation: obj.calculation,
+      currency: order.currency,
+    });
+
+    if (pricing.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
-      return pricingSheet.discountPrices().map((discount) => ({
+      return pricing.discountPrices().map((discount) => ({
         item: obj,
         ...discount,
       }));

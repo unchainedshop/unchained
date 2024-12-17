@@ -19,7 +19,7 @@ export default async function updateEnrollment(
   params: UpdateEnrollmentParams,
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan } = params;
 
   log('mutation updateEnrollment', { userId });
@@ -64,7 +64,8 @@ export default async function updateEnrollment(
         'TODO: Unchained currently does not support order splitting for enrollments, therefore updates to quantity, product and configuration of a enrollment is forbidden for non initial enrollments',
       );
     }
-    enrollment = await modules.enrollments.updatePlan(enrollmentId, plan, context);
+    enrollment = await modules.enrollments.updatePlan(enrollmentId, plan);
+    enrollment = await services.enrollments.initializeEnrollment(enrollment, { reason: 'updated_plan' });
   }
 
   return enrollment;

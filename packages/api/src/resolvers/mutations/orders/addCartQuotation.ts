@@ -7,8 +7,10 @@ import {
   OrderQuantityTooLowError,
   InvalidIdError,
   OrderWrongStatusError,
+  ProductNotFoundError,
 } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { QuotationDirector } from '@unchainedshop/core';
 
 export default async function addCartQuotation(
   root: never,
@@ -44,28 +46,27 @@ export default async function addCartQuotation(
   const order = await getOrderCart({ orderId, user }, context);
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const product = await modules.products.findProduct({
-    productId: quotation.productId,
+  if (
+    !(await modules.products.productExists({
+      productId: quotation.productId,
+    }))
+  )
+    throw new ProductNotFoundError({ productId: quotation.productId });
+
+  const director = await QuotationDirector.actions({ quotation }, context);
+  const quotationConfiguration = await director.transformItemConfiguration({
+    quantity,
+    configuration,
   });
 
-  const quotationConfiguration = await modules.quotations.transformItemConfiguration(
-    quotation,
-    {
-      quantity,
-      configuration,
-    },
-    context,
-  );
-
-  const updatedOrderPosition = await modules.orders.positions.addProductItem(
-    {
-      quantity: quotationConfiguration.quantity,
-      configuration: quotationConfiguration.configuration,
-      quotationId,
-    },
-    { order, product },
-    context,
-  );
-  await services.orders.updateCalculation(order._id, context);
+  const updatedOrderPosition = await modules.orders.positions.addProductItem({
+    quantity: quotationConfiguration.quantity,
+    configuration: quotationConfiguration.configuration,
+    quotationId,
+    productId: quotation.productId,
+    originalProductId: quotation.productId,
+    orderId: order._id,
+  });
+  await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
 }

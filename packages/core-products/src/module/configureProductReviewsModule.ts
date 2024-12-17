@@ -1,5 +1,4 @@
 import { ModuleInput } from '@unchainedshop/mongodb';
-import { ProductReview, ProductReviewQuery, ProductReviewVoteType, ProductVote } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -8,13 +7,27 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
+import {
+  ProductReview,
+  ProductReviewsCollection,
+  ProductReviewVoteType,
+  ProductVote,
+} from '../db/ProductReviewsCollection.js';
 
 export const ProductReviewVoteTypes = {
   UPVOTE: 'UPVOTE',
   DOWNVOTE: 'DOWNVOTE',
   REPORT: 'REPORT',
 };
+
+export type ProductReviewQuery = {
+  productId?: string;
+  authorId?: string;
+  queryString?: string;
+  created?: { end?: Date; start?: Date };
+  updated?: { end?: Date; start?: Date };
+};
+
 export type ProductReviewsModule = {
   // Queries
   findProductReview: (query: { productReviewId: string }) => Promise<ProductReview>;
@@ -67,7 +80,7 @@ const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REMOVE_REVIEW_VOTE',
 ];
 
-export const buildFindSelector = ({
+const buildFindSelector = ({
   productId,
   authorId,
   queryString,

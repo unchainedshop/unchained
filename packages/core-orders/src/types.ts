@@ -1,6 +1,5 @@
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
-import { OrderPrice } from './director/OrderPricingDirector.js';
-import type { ProductPricingCalculation } from '@unchainedshop/core-products';
+import { Price } from '@unchainedshop/utils';
 
 export type OrderReport = {
   newCount: number;
@@ -19,11 +18,11 @@ export enum OrderStatus {
 
 export type OrderPosition = {
   _id?: string;
-  calculation: Array<ProductPricingCalculation>;
+  calculation: Array<any>;
   configuration: Array<{ key: string; value: string }>;
   context?: any;
   orderId: string;
-  originalProductId?: string;
+  originalProductId: string;
   productId: string;
   quantity: number;
   quotationId?: string;
@@ -60,7 +59,7 @@ export type OrderDiscount = {
   _id?: string;
   orderId: string;
   code?: string;
-  total?: OrderPrice;
+  total?: Price;
   trigger?: OrderDiscountTrigger;
   discountKey?: string;
   reservation?: any;
@@ -99,7 +98,7 @@ export type OrderPayment = {
 } & LogFields &
   TimestampFields;
 
-export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {
+export type OrderPaymentDiscount = Omit<Price, '_id'> & {
   _id?: string;
   discountId: string;
   item: OrderPayment;
@@ -116,13 +115,13 @@ export type OrderDelivery = {
 } & LogFields &
   TimestampFields;
 
-export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {
+export type OrderDeliveryDiscount = Omit<Price, '_id'> & {
   _id?: string;
   discountId: string;
   item: OrderDelivery;
 };
 
-export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {
+export type OrderPositionDiscount = Omit<Price, '_id'> & {
   _id?: string;
   discountId: string;
   item: OrderPosition;

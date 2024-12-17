@@ -7,6 +7,7 @@ const logger = createLogger('unchained:core-payment:postfinance-checkout');
 
 export const postfinanceCheckoutHandler = async (req, res) => {
   const context = req.unchainedContext as Context;
+  const { services, modules } = context;
   const data = req.body as WebhookData;
   if (data.listenerEntityTechnicalName === 'TransactionCompletion') {
     try {
@@ -15,20 +16,16 @@ export const postfinanceCheckoutHandler = async (req, res) => {
         transactionCompletion.linkedTransaction as unknown as string,
       );
       const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
-      const orderPayment = await context.modules.orders.payments.findOrderPayment({
+      const orderPayment = await modules.orders.payments.findOrderPayment({
         orderPaymentId,
       });
       if (!orderPayment) throw new Error('Order Payment not found');
 
-      const order = await context.modules.orders.checkout(
-        orderPayment.orderId,
-        {
-          paymentContext: {
-            transactionId: transactionCompletion.linkedTransaction,
-          },
+      const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+        paymentContext: {
+          transactionId: transactionCompletion.linkedTransaction,
         },
-        context,
-      );
+      });
       logger.info(
         `PostFinance Checkout Webhook: Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
       );

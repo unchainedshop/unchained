@@ -1,26 +1,25 @@
 import { Enrollment } from '@unchainedshop/core-enrollments';
 import { OrderPosition } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
+import { enrollmentsSettings, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import {
   EnrollmentDirector,
-  enrollmentsSettings,
-  EnrollmentStatus,
-} from '@unchainedshop/core-enrollments';
-import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/core';
+  UnchainedCore,
+  WorkerDirector,
+  WorkerAdapter,
+  IWorkerAdapter,
+} from '@unchainedshop/core';
 
 const generateOrder = async (
   enrollment: Enrollment,
   params: {
-    orderProducts: Array<{ orderPosition: OrderPosition; product: Product }>;
+    orderPositions: Array<OrderPosition>;
   } & { [x: string]: any },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: Pick<UnchainedCore, 'modules' | 'services'>,
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;
 
   const { modules, services } = unchainedAPI;
-  const { orderProducts, ...configuration } = params;
+  const { orderPositions, ...configuration } = params;
   let order = await modules.orders.create({
     userId: enrollment.userId,
     currency: enrollment.currencyCode,
@@ -32,46 +31,38 @@ const generateOrder = async (
   });
   const orderId = order._id;
 
-  if (orderProducts) {
+  if (orderPositions) {
     await Promise.all(
-      orderProducts.map(({ orderPosition, product }) =>
-        modules.orders.positions.addProductItem(orderPosition, { order, product }, unchainedAPI),
-      ),
+      orderPositions.map((orderPosition) => modules.orders.positions.addProductItem(orderPosition)),
     );
   } else {
     const product = await modules.products.findProduct({
       productId: enrollment.productId,
     });
-    await modules.orders.positions.addProductItem(
-      { quantity: 1 },
-      {
-        order,
-        product,
-      },
-      unchainedAPI,
-    );
+    await modules.orders.positions.addProductItem({
+      quantity: 1,
+      productId: product._id,
+      originalProductId: product._id,
+      orderId: order._id,
+    });
   }
 
   const { paymentProviderId, context: paymentContext } = enrollment.payment;
   if (paymentProviderId) {
-    await modules.orders.setPaymentProvider(orderId, paymentProviderId, unchainedAPI);
+    await modules.orders.setPaymentProvider(orderId, paymentProviderId);
   }
 
   const { deliveryProviderId, context: deliveryContext } = enrollment.delivery;
   if (deliveryProviderId) {
-    await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, unchainedAPI);
+    await modules.orders.setDeliveryProvider(orderId, deliveryProviderId);
   }
 
-  await services.orders.updateCalculation(orderId, unchainedAPI);
+  await services.orders.updateCalculation(orderId);
 
-  order = await modules.orders.checkout(
-    order._id,
-    {
-      paymentContext,
-      deliveryContext,
-    },
-    unchainedAPI,
-  );
+  order = await services.orders.checkoutOrder(order._id, {
+    paymentContext,
+    deliveryContext,
+  });
 
   return order;
 };

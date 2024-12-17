@@ -1,14 +1,18 @@
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import stripeClient, { createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
-import { UnchainedCore } from '@unchainedshop/core';
+import {
+  OrderPricingSheet,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 
 export * from './middleware.js';
 
 const logger = createLogger('unchained:core-payment:stripe');
 
-const Stripe: IPaymentAdapter<UnchainedCore> = {
+const Stripe: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.stripe',
@@ -86,7 +90,10 @@ const Stripe: IPaymentAdapter<UnchainedCore> = {
         const { orderPayment, order, paymentProviderId } = context;
 
         if (orderPayment) {
-          const pricing = await modules.orders.pricingSheet(order);
+          const pricing = OrderPricingSheet({
+            calculation: order.calculation,
+            currency: order.currency,
+          });
           const { userId, name, email } = await getUserData(order?.userId);
           const paymentIntent = await createOrderPaymentIntent(
             { userId, name, email, order, orderPayment, pricing, descriptorPrefix },
@@ -114,7 +121,10 @@ const Stripe: IPaymentAdapter<UnchainedCore> = {
           orderPaymentId: order.paymentId,
         });
         const { userId, name, email } = await getUserData(order?.userId);
-        const pricing = await modules.orders.pricingSheet(order);
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
 
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
@@ -145,7 +155,7 @@ const Stripe: IPaymentAdapter<UnchainedCore> = {
           return paymentIntentObject;
         }
 
-        logger.verbose('Charge postponed because paymentIntent has wrong status', {
+        logger.info('Charge postponed because paymentIntent has wrong status', {
           orderPaymentId: paymentIntentObject.id,
         });
 

@@ -1,0 +1,34 @@
+import { ProductStatus } from '@unchainedshop/core-products';
+import { updateCalculationService } from './updateCalculation.js';
+import { Modules } from '../modules.js';
+
+export async function removeProductService(
+  this: Modules,
+  { productId }: { productId: string },
+): Promise<boolean> {
+  const product = await this.products.findProduct({ productId });
+  switch (product.status) {
+    case ProductStatus.ACTIVE:
+      await this.products.unpublish(product);
+    // falls through
+    case null:
+    case ProductStatus.DRAFT:
+      {
+        await this.bookmarks.deleteByProductId(productId);
+        await this.assortments.products.delete(productId);
+        const orderIdsToRecalculate =
+          await this.orders.positions.removeProductByIdFromAllOpenPositions(productId);
+        await Promise.all(
+          [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
+            await updateCalculationService.bind(this)(orderIdToRecalculate);
+          }),
+        );
+        await this.products.delete(productId);
+      }
+      break;
+    default:
+      throw new Error(`Invalid status', ${product.status}`);
+  }
+
+  return true;
+}

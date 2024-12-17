@@ -1,7 +1,6 @@
 import { Context } from '@unchainedshop/api';
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
+import { IPaymentAdapter, PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
 import { AppleTransactionsModule } from './module/configureAppleTransactionsModule.js';
@@ -81,7 +80,7 @@ export const appleIAPHandler = async (req, res) => {
   if (req.method === 'POST') {
     try {
       const resolvedContext = req.unchainedContext as Context;
-      const { modules } = resolvedContext;
+      const { modules, services } = resolvedContext;
       const responseBody = req.body || {};
       if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
         throw new Error('shared secret not valid');
@@ -100,15 +99,11 @@ export const appleIAPHandler = async (req, res) => {
 
         if (!orderPayment) throw new Error('Could not find any matching order payment');
 
-        const order = await modules.orders.checkout(
-          orderPayment.orderId,
-          {
-            paymentContext: {
+        const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+          paymentContext: {
                 receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-            },
           },
-          resolvedContext,
-        );
+        });
         const orderId = order._id;
         const enrollment = await modules.enrollments.findEnrollment({
           orderId,
@@ -142,16 +137,12 @@ export const appleIAPHandler = async (req, res) => {
           orderId: originalOrder._id,
         });
 
-        await modules.payment.registerCredentials(
-          enrollment.payment.paymentProviderId,
-          {
-            transactionContext: {
+        await services.orders.registerPaymentCredentials(enrollment.payment.paymentProviderId, {
+          transactionContext: {
               receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-            },
-            userId: enrollment.userId,
           },
-          resolvedContext,
-        );
+          userId: enrollment.userId,
+        });
 
         await fixPeriods(
           {
@@ -172,7 +163,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
+            await services.enrollments.terminateEnrollment(enrollment);
           }
         }
 
@@ -181,7 +172,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
+            await services.enrollments.terminateEnrollment(enrollment);
           }
         }
         logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
@@ -201,7 +192,7 @@ export const appleIAPHandler = async (req, res) => {
   res.end();
 };
 
-const AppleIAP: IPaymentAdapter<UnchainedCore> = {
+const AppleIAP: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.apple-iap',
@@ -259,9 +250,7 @@ const AppleIAP: IPaymentAdapter<UnchainedCore> = {
         const { status, latest_receipt_info: latestReceiptInfo } = response; // eslint-disable-line
 
         if (status === 0) {
-          logger.info('Apple IAP Plugin: Receipt validated and updated for the user', {
-            level: 'verbose',
-          });
+          logger.debug('Apple IAP Plugin: Receipt validated and updated for the user');
           const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1]; // eslint-disable-line
           return {
             token: latestTransaction.web_order_line_item_id, // eslint-disable-line
@@ -270,7 +259,6 @@ const AppleIAP: IPaymentAdapter<UnchainedCore> = {
         }
 
         logger.warn('Apple IAP Plugin: Receipt invalid', {
-          level: 'warn',
           status: response.status,
         });
         return null;

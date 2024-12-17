@@ -1,3 +1,4 @@
+import { WorkerDirector } from '@unchainedshop/core';
 import { Context } from '../../context.js';
 import { Work as WorkType } from '@unchainedshop/core-worker';
 import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
@@ -18,8 +19,11 @@ export const Work: WorkHelperTypes = {
     return modules.worker.status(obj);
   },
 
-  type: (obj, _, { modules }) => {
-    return modules.worker.type(obj);
+  type: (obj) => {
+    if (WorkerDirector.getActivePluginTypes().includes(obj.type)) {
+      return obj.type;
+    }
+    return 'UNKNOWN';
   },
 
   original: async (obj, _, { modules }) => {

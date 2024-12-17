@@ -1,8 +1,11 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IOrderPricingAdapter } from '@unchainedshop/core-orders';
-import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
+import {
+  IOrderPricingAdapter,
+  OrderPricingDirector,
+  OrderPricingAdapter,
+  ProductPricingSheet,
+} from '@unchainedshop/core';
 
-const OrderItems: IOrderPricingAdapter<UnchainedCore> = {
+const OrderItems: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-items',
@@ -16,7 +19,7 @@ const OrderItems: IOrderPricingAdapter<UnchainedCore> = {
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
-    const { order, orderPositions, modules } = params.context;
+    const { order, orderPositions } = params.context;
 
     return {
       ...pricingAdapter,
@@ -25,11 +28,11 @@ const OrderItems: IOrderPricingAdapter<UnchainedCore> = {
         // just sum up all products items prices, taxes & fees
         const totalAndTaxesOfAllItems = orderPositions.reduce(
           (current, orderPosition) => {
-            const pricing = modules.orders.positions.pricingSheet(
-              orderPosition,
-              order.currency,
-              params.context,
-            );
+            const pricing = ProductPricingSheet({
+              calculation: orderPosition.calculation,
+              currency: order.currency,
+              quantity: orderPosition.quantity,
+            });
             const tax = pricing.taxSum();
             const items = pricing.gross();
             return {

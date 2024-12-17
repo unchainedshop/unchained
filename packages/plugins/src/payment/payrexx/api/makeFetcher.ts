@@ -47,7 +47,7 @@ export default (
       new TextEncoder().encode(secret),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['sign', 'verify'],
+      ['sign'],
     );
     const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(query));
     return btoa(String.fromCharCode(...new Uint8Array(signature)));
@@ -60,7 +60,7 @@ export default (
   };
 
   return async (path: string, method: 'GET' | 'DELETE' | 'POST', data?: any): Promise<Response> => {
-    logger.verbose(`${method} ${path}`);
+    logger.info(`${method} ${path}`);
     if (method === 'POST') {
       const queryParams = { ...data };
       const signature = await buildSignature(new URLSearchParams(queryParams).toString());

@@ -27,7 +27,7 @@ export interface AdminUiConfig {
 
 export type UnchainedHTTPServerContext = {
   setHeader: (key: string, value: string) => void;
-  getHeader: (key: string) => string | string[];
+  getHeader: (key: string) => string;
 };
 
 export type Context = UnchainedCore & {
@@ -51,9 +51,9 @@ export type UnchainedContextResolver = (
   params: UnchainedHTTPServerContext & {
     remoteAddress?: string;
     remotePort?: number;
-    user?: any;
     userId?: string;
     login: (user: any) => Promise<{ _id: string; user: any; tokenExpires: Date }>;
+    accessToken?: string;
     logout: () => Promise<boolean>;
   },
 ) => Promise<Context>;
@@ -82,11 +82,23 @@ export const createContextResolver =
     unchainedAPI: UnchainedCore,
     unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
   ): UnchainedContextResolver =>
-  async ({ getHeader, setHeader, remoteAddress, remotePort, user, userId, login, logout }) => {
+  async ({ getHeader, setHeader, remoteAddress, remotePort, userId, accessToken, login, logout }) => {
     const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
     const loaders = await instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
-    const userContext = { user, userId, login, logout };
+    const userContext: UnchainedUserContext = { login, logout };
+
+    if (accessToken) {
+      const accessTokenUser = await unchainedAPI.modules.users.findUserByToken(accessToken);
+      if (accessTokenUser) {
+        userContext.user = accessTokenUser;
+        userContext.userId = accessTokenUser._id;
+      }
+    }
+    if (userId && !userContext.userId) {
+      userContext.user = await unchainedAPI.modules.users.findUserById(userId);
+      userContext.userId = userId;
+    }
 
     return {
       ...unchainedAPI,

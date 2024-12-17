@@ -1,5 +1,4 @@
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import later from '@breejs/later';
 
 const everyMinute = later.parse.cron('* * * * *');

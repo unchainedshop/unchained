@@ -1,8 +1,9 @@
 import { Context } from '../../context.js';
-import { TokenStatus, TokenSurrogate } from '@unchainedshop/core-warehousing';
+import { TokenSurrogate, TokenStatus, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WorkStatus } from '@unchainedshop/core-worker';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
+import { WarehousingDirector } from '@unchainedshop/core';
 
 export const Token = {
   product: async (token: TokenSurrogate, params: never, { modules }: Context) => {
@@ -33,28 +34,38 @@ export const Token = {
   ) => {
     const { modules } = context;
     const product = await modules.products.findProduct({ productId: token.productId });
-    const ercMetadata = await modules.warehousing.tokenMetadata(
-      token.chainTokenId,
+
+    const virtualProviders = await context.modules.warehousing.findProviders({
+      type: WarehousingProviderType.VIRTUAL,
+    });
+
+    return WarehousingDirector.tokenMetadata(
+      virtualProviders,
       {
-        token,
         product,
-        locale: new Intl.Locale(forceLocale),
+        token,
+        locale: forceLocale ? new Intl.Locale(forceLocale) : context.localeContext,
+        quantity: token?.quantity || 1,
         referenceDate: new Date(),
       },
       context,
     );
-
-    return ercMetadata;
   },
 
   isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
     const { modules } = context;
     const product = await modules.products.findProduct({ productId: token.productId });
-    const isInvalidateable = await modules.warehousing.isInvalidateable(
-      token.chainTokenId,
+
+    const virtualProviders = await context.modules.warehousing.findProviders({
+      type: WarehousingProviderType.VIRTUAL,
+    });
+
+    const isInvalidateable = await WarehousingDirector.isInvalidateable(
+      virtualProviders,
       {
         token,
         product,
+        quantity: token?.quantity || 1,
         referenceDate: new Date(),
       },
       context,

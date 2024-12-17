@@ -1,8 +1,7 @@
-import { IncomingMessage } from 'http';
 import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
-import { systemLocale } from '@unchainedshop/utils';
 import { Context } from '../context.js';
+import { Request, RequestHandler } from 'express';
 
 const logger = createLogger('unchained:erc-metadata');
 
@@ -18,46 +17,35 @@ const methodWrongHandler = (res) => () => {
   res.end();
 };
 
-export default async function ercMetadataMiddleware(
-  req: IncomingMessage & { unchainedContext: Context },
+const ercMetadataMiddleware: RequestHandler = async (
+  req: Request & { unchainedContext: Context },
   res,
-) {
+) => {
   try {
     if (req.method !== 'GET') {
       methodWrongHandler(res)();
       return;
     }
 
-    const context = req.unchainedContext;
+    const { services, localeContext } = req.unchainedContext;
     const url = new URL(req.url, process.env.ROOT_URL);
     const parsedPath = path.parse(url.pathname);
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
 
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
+    const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;
 
-    const locale = tokenFileName ? localeOrTokenFilename : systemLocale.language;
-    const chainTokenId = parsedPath.name;
-
-    const product = await context.modules.products.findProduct({
+    const ercMetadata = await services.warehousing.ercMetadata({
       productId,
+      locale,
+      chainTokenId: parsedPath.name,
     });
 
-    const [token] = await context.modules.warehousing.findTokens({
-      chainTokenId,
-      contractAddress: product?.tokenization?.contractAddress,
-    });
-
-    const ercMetadata = await context.modules.warehousing.tokenMetadata(
-      chainTokenId,
-      {
-        token,
-        product,
-        locale: new Intl.Locale(locale),
-        referenceDate: new Date(),
-      },
-      context,
-    );
+    if (!ercMetadata) {
+      methodWrongHandler(res);
+      return;
+    }
 
     const body = JSON.stringify(ercMetadata);
     res.writeHead(200, {
@@ -68,4 +56,6 @@ export default async function ercMetadataMiddleware(
   } catch (e) {
     errorHandler(res)(e);
   }
-}
+};
+
+export default ercMetadataMiddleware;

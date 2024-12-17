@@ -20,6 +20,6 @@ export default async function setOrderDeliveryProvider(
 
   if (!(await modules.orders.orderExists({ orderId }))) throw new OrderNotFoundError({ orderId });
 
-  await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, context);
-  return services.orders.updateCalculation(orderId, context);
+  await modules.orders.setDeliveryProvider(orderId, deliveryProviderId);
+  return services.orders.updateCalculation(orderId);
 }

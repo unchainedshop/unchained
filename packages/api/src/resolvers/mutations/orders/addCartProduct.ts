@@ -7,38 +7,52 @@ import {
   OrderWrongStatusError,
 } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addCartProduct(
   root: never,
-  { orderId, productId, quantity, configuration },
+  { orderId, productId: originalProductId, quantity, configuration },
   context: Context,
 ) {
   const { modules, services, userId, user } = context;
 
   log(
-    `mutation addCartProduct ${productId} ${quantity} ${
+    `mutation addCartProduct ${originalProductId} ${quantity} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
     { userId, orderId },
   );
 
-  if (!productId) throw new InvalidIdError({ productId });
+  if (!originalProductId) throw new InvalidIdError({ productId: originalProductId });
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
-  const product = await modules.products.findProduct({ productId });
-  if (!product) throw new ProductNotFoundError({ productId });
+  const originalProduct = await modules.products.findProduct({ productId: originalProductId });
+  if (!originalProduct) throw new ProductNotFoundError({ productId: originalProductId });
 
   const order = await getOrderCart({ orderId, user }, context);
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const orderPosition = await modules.orders.positions.addProductItem(
+  const product = await modules.products.resolveOrderableProduct(originalProduct, { configuration });
+
+  // Validate add to cart mutation
+  await ordersSettings.validateOrderPosition(
     {
-      quantity,
+      order,
+      product,
       configuration,
+      quantityDiff: quantity,
     },
-    { order, product },
     context,
   );
-  await services.orders.updateCalculation(order._id, context);
+
+  const orderPosition = await modules.orders.positions.addProductItem({
+    quantity,
+    configuration,
+    productId: product._id,
+    originalProductId,
+    orderId: order._id,
+  });
+
+  await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: orderPosition._id });
 }

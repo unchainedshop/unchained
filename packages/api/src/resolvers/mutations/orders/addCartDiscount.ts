@@ -1,7 +1,11 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { getOrderCart } from '../utils/getOrderCart.js';
-import { OrderWrongStatusError } from '../../../errors.js';
+import {
+  OrderWrongStatusError,
+  OrderDiscountCodeAlreadyPresentError,
+  OrderDiscountCodeNotValidError,
+} from '../../../errors.js';
 
 export default async function addCartDiscount(
   root: never,
@@ -16,7 +20,13 @@ export default async function addCartDiscount(
 
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const discount = await modules.orders.discounts.createManualOrderDiscount({ order, code }, context);
-  await services.orders.updateCalculation(order._id, context);
+  // 1. check if discount code is not already used
+  if (await modules.orders.discounts.isDiscountCodeUsed({ code, orderId: order._id }))
+    throw new OrderDiscountCodeAlreadyPresentError({ orderId: order._id, code });
+
+  const discount = await services.orders.createManualOrderDiscount({ order, code });
+  if (!discount) throw new OrderDiscountCodeNotValidError({ code });
+
+  await services.orders.updateCalculation(order._id);
   return discount;
 }

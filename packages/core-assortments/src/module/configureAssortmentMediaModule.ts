@@ -6,7 +6,6 @@ import {
   mongodb,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
 import { AssortmentMediaText, AssortmentMediaType } from '../types.js';
 
@@ -273,16 +272,3 @@ export const configureAssortmentMediaModule = async ({
     },
   };
 };
-
-FileDirector.registerFileUploadCallback<{
-  modules: {
-    assortments: {
-      media: AssortmentMediaModule;
-    };
-  };
-}>('assortment-media', async (file, { modules }) => {
-  await modules.assortments.media.create({
-    assortmentId: file.meta.assortmentId as string,
-    mediaId: file._id,
-  });
-});

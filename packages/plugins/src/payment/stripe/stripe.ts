@@ -1,6 +1,5 @@
-import { Order } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { IOrderPricingSheet } from '@unchainedshop/core-orders';
+import { IOrderPricingSheet } from '@unchainedshop/core';
+import { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
 import { Stripe as StripeType } from 'stripe';
 

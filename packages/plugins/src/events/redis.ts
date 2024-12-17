@@ -1,7 +1,7 @@
 import { createClient } from '@redis/client';
 import { setEmitAdapter, EmitAdapter } from '@unchainedshop/events';
 
-const { REDIS_PORT = '6379', REDIS_HOST = '127.0.0.1', REDIS_DB = '0' } = process.env;
+const { REDIS_PORT = '6379', REDIS_HOST, REDIS_DB = '0' } = process.env;
 
 const subscribedEvents = new Set();
 
@@ -29,4 +29,6 @@ const RedisEventEmitter = (): EmitAdapter => {
   };
 };
 
-setEmitAdapter(RedisEventEmitter());
+if (REDIS_HOST && REDIS_PORT && REDIS_DB) {
+  setEmitAdapter(RedisEventEmitter());
+}

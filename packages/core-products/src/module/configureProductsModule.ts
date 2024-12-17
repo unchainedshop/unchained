@@ -1,14 +1,3 @@
-import {
-  Product,
-  ProductAssignment,
-  ProductBundleItem,
-  ProductConfiguration,
-  ProductDiscount,
-  ProductPrice,
-  ProductPriceRange,
-  ProductQuery,
-  ProductText,
-} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,
@@ -18,12 +7,19 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/utils';
-import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
-import { ProductsCollection } from '../db/ProductsCollection.js';
-import { ProductStatus } from '../db/ProductStatus.js';
-import { ProductPricingSheet } from '../director/ProductPricingSheet.js';
-import { ProductPricingDirector, ProductTypes } from '../products-index.js';
+import { SortDirection, SortOption, Price } from '@unchainedshop/utils';
+import {
+  Product,
+  ProductAssignment,
+  ProductBundleItem,
+  ProductConfiguration,
+  ProductPrice,
+  ProductPriceRange,
+  ProductsCollection,
+  ProductStatus,
+  ProductText,
+  ProductTypes,
+} from '../db/ProductsCollection.js';
 import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
 import { configureProductReviewsModule, ProductReviewsModule } from './configureProductReviewsModule.js';
@@ -34,14 +30,25 @@ import {
 } from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
-import {
-  IProductPricingSheet,
-  ProductPriceRate,
-  ProductPricingCalculation,
-  ProductPricingContext,
-} from '../types.js';
-import type { Currency } from '@unchainedshop/core-currencies';
-import type { OrderPosition } from '@unchainedshop/core-orders';
+import { ProductPriceRate } from '../db/ProductPriceRates.js';
+
+export type ProductQuery = {
+  queryString?: string;
+  includeDrafts?: boolean;
+  productIds?: Array<string>;
+  productSelector?: mongodb.Filter<Product>;
+  slugs?: Array<string>;
+  tags?: Array<string>;
+};
+
+export type ProductDiscount = {
+  _id?: string;
+  productId: string;
+  code: string;
+  total?: Price;
+  discountKey?: string;
+  context?: any;
+};
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -120,19 +127,10 @@ export type ProductsModule = {
   count: (query: ProductQuery) => Promise<number>;
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
-  // Transformations
-  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown, any>;
-
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
 
   normalizedStatus: (product: Product) => ProductStatus;
-
-  pricingSheet: (params: {
-    calculation: Array<ProductPricingCalculation>;
-    currency: string;
-    quantity: number;
-  }) => IProductPricingSheet;
 
   proxyAssignments: (
     product: Product,
@@ -148,29 +146,19 @@ export type ProductsModule = {
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    unchainedAPI,
   ) => Promise<Product>;
 
   prices: {
+    priceRange: (params: { productId: string; prices: Array<ProductPrice> }) => {
+      minPrice: ProductPrice;
+      maxPrice: ProductPrice;
+    };
     price: (
       product: Product,
       params: { country: string; currency?: string; quantity?: number },
     ) => Promise<ProductPrice>;
 
-    userPrice: (
-      prodct: Product,
-      params: {
-        userId: string;
-        country: string;
-        currency: string;
-        quantity?: number;
-        useNetPrice?: boolean;
-        configuration?: Array<ProductConfiguration>;
-      },
-      unchainedAPI,
-    ) => Promise<ProductPrice>;
-
-    catalogPrices: (prodct: Product) => Array<ProductPrice>;
+    catalogPrices: (product: Product) => Promise<Array<ProductPrice>>;
     catalogPricesLeveled: (
       product: Product,
       params: { currency: string; country: string },
@@ -192,29 +180,27 @@ export type ProductsModule = {
       },
     ) => Promise<ProductPriceRange>;
 
-    simulatedPriceRange: (
-      prodct: Product,
-      params: {
-        userId: string;
-        country: string;
-        currency: string;
-        includeInactive?: boolean;
-        quantity?: number;
-        useNetPrice?: boolean;
-        vectors: Array<ProductConfiguration>;
-      },
-      unchainedAPI,
-    ) => Promise<ProductPriceRange>;
-
     rates: {
       getRate(
-        baseCurrency: Currency,
-        quoteCurrency: Currency,
+        baseCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        quoteCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
         referenceDate?: Date,
       ): Promise<{ rate: number; expiresAt: Date } | null>;
       getRateRange(
-        baseCurrency: Currency,
-        quoteCurrency: Currency,
+        baseCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        quoteCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
         referenceDate?: Date,
       ): Promise<{ min: number; max: number } | null>;
       updateRates(rates: Array<ProductPriceRate>): Promise<boolean>;
@@ -222,11 +208,6 @@ export type ProductsModule = {
   };
 
   // Product adapter
-
-  calculate: (
-    pricingContext: ProductPricingContext & { item: OrderPosition },
-    unchainedAPI,
-  ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
   create: (doc: Product, options?: { autopublish?: boolean }) => Promise<Product>;
@@ -479,11 +460,6 @@ export const configureProductsModule = async ({
       return !!productCount;
     },
 
-    // Transformations
-    interface: (productDiscount) => {
-      return ProductDiscountDirector.getAdapter(productDiscount.discountKey);
-    },
-
     isActive: (product) => {
       return product.status === ProductStatus.ACTIVE;
     },
@@ -493,10 +469,6 @@ export const configureProductsModule = async ({
 
     normalizedStatus: (product) => {
       return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
-    },
-
-    pricingSheet: (params) => {
-      return ProductPricingSheet(params);
     },
 
     proxyAssignments: async (product, { includeInactive = false } = {}) => {
@@ -527,12 +499,11 @@ export const configureProductsModule = async ({
 
     proxyProducts,
 
-    resolveOrderableProduct: async (product, { configuration }, unchainedAPI) => {
-      const { modules } = unchainedAPI;
+    resolveOrderableProduct: async (product, { configuration }) => {
       const productId = product._id as string;
 
       if (product.type === ProductTypes.ConfigurableProduct) {
-        const variations = await modules.products.variations.findProductVariations({
+        const variations = await productVariations.findProductVariations({
           productId,
         });
         const vectors = configuration?.filter(({ key: configurationKey }) => {
@@ -542,7 +513,7 @@ export const configureProductsModule = async ({
           return isKeyEqualsVariationKey;
         });
 
-        const variants = await modules.products.proxyProducts(product, vectors, {
+        const variants = await proxyProducts(product, vectors, {
           includeInactive: false,
         });
         if (variants.length !== 1) {
@@ -558,13 +529,6 @@ export const configureProductsModule = async ({
     },
 
     prices: configureProductPricesModule({ proxyProducts, db }),
-
-    // Product adapter
-    calculate: async (pricingContext, unchainedAPI) => {
-      const director = await ProductPricingDirector.actions(pricingContext, unchainedAPI);
-
-      return director.calculate();
-    },
 
     // Mutations
     create: async ({ type, sequence, ...productData }) => {

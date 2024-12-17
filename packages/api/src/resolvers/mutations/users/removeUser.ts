@@ -7,7 +7,7 @@ export default async function removeUser(
   params: { userId: string; removeUserReviews?: boolean },
   unchainedAPI: Context,
 ) {
-  const { modules, userId } = unchainedAPI;
+  const { modules, services, userId } = unchainedAPI;
   const { userId: paramUserId, removeUserReviews = false } = params;
   const normalizedUserId = paramUserId || userId;
 
@@ -19,5 +19,5 @@ export default async function removeUser(
   if (removeUserReviews) {
     await modules.products.reviews.deleteMany({ authorId: userId });
   }
-  return modules.users.delete({ userId: normalizedUserId }, unchainedAPI);
+  return services.users.deleteUser({ userId: normalizedUserId });
 }

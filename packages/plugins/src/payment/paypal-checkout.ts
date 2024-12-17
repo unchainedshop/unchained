@@ -1,6 +1,10 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
-import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
+import {
+  OrderPricingSheet,
+  IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 
 let checkoutNodeJssdk;
@@ -29,7 +33,7 @@ const environment = () => {
     : new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret);
 };
 
-const PaypalCheckout: IPaymentAdapter<UnchainedCore> = {
+const PaypalCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'com.paypal.checkout',
@@ -69,7 +73,7 @@ const PaypalCheckout: IPaymentAdapter<UnchainedCore> = {
       },
 
       charge: async ({ orderID }) => {
-        const { modules, order } = context;
+        const { order } = context;
 
         if (!orderID) {
           logger.warn('Paypal Native Plugin: PRICE MATCH');
@@ -81,7 +85,10 @@ const PaypalCheckout: IPaymentAdapter<UnchainedCore> = {
           const client = new checkoutNodeJssdk.core.PayPalHttpClient(environment());
           const paypalOrder = await client.execute(request);
 
-          const pricing = modules.orders.pricingSheet(order);
+          const pricing = OrderPricingSheet({
+            calculation: order.calculation,
+            currency: order.currency,
+          });
           const ourTotal = (pricing.total({ useNetPrice: false }).amount / 100).toFixed(2);
           const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;
 

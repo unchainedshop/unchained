@@ -1,5 +1,4 @@
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
+import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import webPush from 'web-push';
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;

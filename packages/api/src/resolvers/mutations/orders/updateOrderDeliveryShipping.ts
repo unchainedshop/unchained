@@ -36,7 +36,7 @@ export default async function updateOrderDeliveryShipping(
     address,
     meta,
   });
-  await services.orders.updateCalculation(orderDelivery.orderId, context);
+  await services.orders.updateCalculation(orderDelivery.orderId);
   return modules.orders.deliveries.findDelivery({
     orderDeliveryId,
   });

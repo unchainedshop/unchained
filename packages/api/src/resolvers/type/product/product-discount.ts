@@ -1,47 +1,25 @@
-import crypto from 'crypto';
-import { Context } from '../../../context.js';
 import { ProductDiscount as ProductDiscountType } from '@unchainedshop/core-products';
+import { ProductDiscountDirector } from '@unchainedshop/core';
+import { sha256 } from '@unchainedshop/utils';
 
-type HelperType<T> = (product: ProductDiscountType, _: never, context: Context) => T;
-
-export interface ProductDiscountHelperTypes {
-  interface: HelperType<
-    Promise<{
-      _id: string;
-      label: string;
-      version: string;
-      isManualAdditionAllowed: boolean;
-      isManualRemovalAllowed: boolean;
-    } | null>
-  >;
-  total: HelperType<{
-    _id: string;
-    amount: number;
-    currency: string;
-  } | null>;
-}
-
-export const ProductDiscount: ProductDiscountHelperTypes = {
-  interface: async (obj, _, { modules }) => {
-    const Interface = modules.products.interface(obj);
+export const ProductDiscount = {
+  interface: async (productDiscount: ProductDiscountType) => {
+    const Interface = ProductDiscountDirector.getAdapter(productDiscount.discountKey);
     if (!Interface) return null;
     return {
       _id: Interface.key,
       label: Interface.label,
       version: Interface.version,
-      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(obj.code),
+      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(productDiscount.code),
       isManualRemovalAllowed: await Interface.isManualRemovalAllowed(),
     };
   },
 
-  total: (obj) => {
-    const { total } = obj;
-    if (total) {
+  async total(productDiscount: ProductDiscountType) {
+    const { total, _id } = productDiscount;
+    if (productDiscount.total) {
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([`${obj._id}`, total.amount, total.currency].join(''))
-          .digest('hex'),
+        _id: await sha256([`${_id}`, total.amount, total.currency].join('')),
         amount: total.amount,
         currency: total.currency,
       };

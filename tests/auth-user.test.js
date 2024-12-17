@@ -239,7 +239,7 @@ describe('Auth for logged in users', () => {
           resume: {
             loginTokens: [
               {
-                when: new Date(new Date().getTime() + 1000000),
+                when: new Date(),
                 hashedToken: 'dF4ilYpWpsSvkb7hdZKqsiYa207t2HI+C+HJcowykZk=',
               },
             ],
@@ -286,7 +286,7 @@ describe('Auth for logged in users', () => {
           resume: {
             loginTokens: [
               {
-                when: new Date(new Date().getTime() + 1000000),
+                when: new Date(),
                 hashedToken: 'dF4ilYpWpsSvkb7hdZKqsiYa207t2HI+C+HJcowykZk=',
               },
             ],

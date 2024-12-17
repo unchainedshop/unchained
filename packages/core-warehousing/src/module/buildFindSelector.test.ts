@@ -1,4 +1,4 @@
-import { WarehousingProviderType } from '../warehousing-index.js';
+import { WarehousingProviderType } from '../db/WarehousingProvidersCollection.js';
 import { buildFindSelector } from './configureWarehousingModule.js';
 
 describe('Warehousing', () => {

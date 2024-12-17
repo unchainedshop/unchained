@@ -1,12 +1,12 @@
 import splitProperties from './splitProperties.js';
 import { StatusResponseSuccess } from './api/types.js';
+import { sha256 } from '@unchainedshop/utils';
 
-export default function parseRegistrationData(transaction: StatusResponseSuccess) {
+export default async function parseRegistrationData(transaction: StatusResponseSuccess) {
   const parsed = Object.entries(transaction).reduce((acc, [objectKey, payload]) => {
-    const { token, info, _id } = splitProperties({ objectKey, payload });
+    const { token, info } = splitProperties({ objectKey, payload });
     if (token) {
       return {
-        _id,
         token,
         info,
         objectKey,
@@ -14,14 +14,16 @@ export default function parseRegistrationData(transaction: StatusResponseSuccess
     }
     return acc;
   }, {}) as {
-    _id?: string;
     token?: Record<string, unknown>;
     info?: Record<string, unknown>;
     objectKey?: string;
   };
   if (parsed.objectKey) {
+    const _id = await sha256(parsed.token);
+
     return {
       ...parsed,
+      _id,
       paymentMethod: transaction.paymentMethod,
       currency: transaction.currency,
       language: transaction.language,

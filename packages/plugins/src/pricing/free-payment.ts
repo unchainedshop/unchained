@@ -2,7 +2,7 @@ import {
   PaymentPricingAdapter,
   PaymentPricingDirector,
   IPaymentPricingAdapter,
-} from '@unchainedshop/core-payment';
+} from '@unchainedshop/core';
 
 export const PaymentFreePrice: IPaymentPricingAdapter = {
   ...PaymentPricingAdapter,

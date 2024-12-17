@@ -1,10 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
-import { DeliveryProviderQuery } from '@unchainedshop/core-delivery';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 
 export default async function deliveryProviders(
   root: never,
-  params: DeliveryProviderQuery,
+  params: {
+    type?: DeliveryProviderType;
+  },
   { modules, userId }: Context,
 ) {
   log(`query deliveryProviders ${params.type}`, { userId });

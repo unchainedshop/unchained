@@ -1,5 +1,25 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { TokenSurrogate } from '../types.js';
+
+export type TokenSurrogate = {
+  _id?: string;
+  userId?: string;
+  walletAddress?: string;
+  invalidatedDate?: Date;
+  expiryDate?: Date;
+  quantity: number;
+  contractAddress: string;
+  chainId: string;
+  chainTokenId: string;
+  productId: string;
+  orderPositionId: string;
+  meta: any;
+};
+
+export enum TokenStatus {
+  CENTRALIZED = 'CENTRALIZED',
+  EXPORTING = 'EXPORTING',
+  DECENTRALIZED = 'DECENTRALIZED',
+}
 
 export const TokenSurrogateCollection = async (db: mongodb.Db) => {
   const TokenSurrogates = db.collection<TokenSurrogate>('token_surrogates');

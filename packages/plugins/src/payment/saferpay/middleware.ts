@@ -9,7 +9,7 @@ export const saferpayHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context & {
     modules: { saferpayTransactions: SaferpayTransactionsModule };
   };
-  const { modules } = resolvedContext;
+  const { modules, services } = resolvedContext;
 
   const { orderPaymentId, signature, transactionId } = request.query;
   const isValidRequest =
@@ -28,7 +28,7 @@ export const saferpayHandler = async (request, response) => {
   }
 
   try {
-    logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`);
+    logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
     const orderPayment = await modules.orders.payments.findOrderPayment({
       orderPaymentId,
     });
@@ -42,15 +42,11 @@ export const saferpayHandler = async (request, response) => {
       throw new Error('Invalid signature');
     }
 
-    const order = await modules.orders.checkout(
-      orderPayment.orderId,
-      {
-        paymentContext: {
-          transactionId,
-        },
+    const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+      paymentContext: {
+        transactionId,
       },
-      resolvedContext,
-    );
+    });
     logger.info(`checkout successful`, {
       orderPaymentId,
       orderId: order._id,

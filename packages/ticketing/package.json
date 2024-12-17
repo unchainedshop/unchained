@@ -37,15 +37,11 @@
   },
   "peerDependencies": {
     "@hyperlink/node-apn": "^5.1.4",
-    "express": "^4.21.1"
+    "express": "^4.21.2"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "@unchainedshop/api": "^3.0.0-alpha4",
-    "@unchainedshop/core-files": "^3.0.0-alpha4",
-    "@unchainedshop/core-worker": "^3.0.0-alpha4",
-    "@unchainedshop/events": "^3.0.0-alpha4",
-    "@unchainedshop/logger": "^3.0.0-alpha4",
-    "@unchainedshop/mongodb": "^3.0.0-alpha4"
+    "@types/node": "^22.10.2",
+    "jest": "^29.7.0",
+    "typescript": "^5.7.2"
   }
 }

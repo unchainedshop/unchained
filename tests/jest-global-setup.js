@@ -52,6 +52,18 @@ const startAndWaitForApp = async () => {
           resolve(dataAsString.substring(19));
         }
       });
+      global.__SUBPROCESS_UNCHAINED__.stderr.on('data', (data) => {
+        const dataAsString = `${data}`;
+        if (process.env.DEBUG) {
+          console.warn(dataAsString); // eslint-disable-line
+        }
+        if (dataAsString.indexOf("Can't listen") !== -1) {
+          reject(dataAsString);
+        }
+        if (dataAsString.indexOf('Server ready at ') !== -1) {
+          resolve(dataAsString.substring(19));
+        }
+      });
     } catch (e) {
       reject(e.message);
     }

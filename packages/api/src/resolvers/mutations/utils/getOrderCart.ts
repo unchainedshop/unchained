@@ -12,8 +12,9 @@ export const getOrderCart = async (params: { orderId?: string; user: User }, con
     return order;
   }
 
-  return services.orders.nextUserCart(
-    { user, countryCode: context.countryContext, forceCartCreation: true },
-    context,
-  );
+  return services.orders.nextUserCart({
+    user,
+    countryCode: context.countryContext,
+    forceCartCreation: true,
+  });
 };

@@ -1,18 +1,16 @@
 import {
-  WarehousingDirector,
-  WarehousingAdapter,
-  WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
-import { ProductContractStandard } from '@unchainedshop/core-products';
-import {
+  UnchainedCore,
   IWarehousingAdapter,
   WarehousingContext,
   WarehousingError,
-} from '@unchainedshop/core-warehousing';
+  WarehousingDirector,
+  WarehousingAdapter,
+} from '@unchainedshop/core';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { ProductContractStandard, ProductTypes } from '@unchainedshop/core-products';
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/core';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { getFileAdapter } from '@unchainedshop/core-files';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;
 
@@ -115,7 +113,10 @@ const ETHMinter: IWarehousingAdapter = {
           limit: 1,
         });
         const file = firstMedia && (await modules.files.findFile({ fileId: firstMedia.mediaId }));
-        const url = file && (await modules.files.getUrl(file, {}));
+
+        const fileUploadAdapter = getFileAdapter();
+        const signedUrl = await fileUploadAdapter.createDownloadURL(file);
+        const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
         const text = await modules.products.texts.findLocalizedText({
           productId: product._id,
           locale: locale?.baseName || systemLocale.baseName,

@@ -1,11 +1,9 @@
-import crypto from 'crypto';
-import { Product, ProductConfiguration, IProductPricingSheet, ProductPriceRate } from '../types.js';
-import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
-import { ProductPriceRates } from '../db/ProductPriceRates.js';
+import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
 import { ProductsModule } from '../products-index.js';
-import type { Currency } from '@unchainedshop/core-currencies';
+import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
+import { sha256 } from '@unchainedshop/utils';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
@@ -20,8 +18,14 @@ export const getDecimals = (originDecimals) => {
 };
 
 export const normalizeRate = (
-  baseCurrency: Currency,
-  quoteCurrency: Currency,
+  baseCurrency: {
+    decimals?: number;
+    isoCode: string;
+  },
+  quoteCurrency: {
+    decimals?: number;
+    isoCode: string;
+  },
   rateRecord: ProductPriceRate,
 ) => {
   let rate = null;
@@ -70,69 +74,32 @@ export const configureProductPricesModule = ({
 
     if (normalizedPrice.amount !== undefined && normalizedPrice.amount !== null) {
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([product._id, normalizedPrice.countryCode, normalizedPrice.currencyCode].join(''))
-          .digest('hex'),
+        _id: await sha256(
+          [product._id, normalizedPrice.countryCode, normalizedPrice.currencyCode].join(''),
+        ),
         ...normalizedPrice,
       };
     }
     return null;
   };
 
-  const userPrice: ProductsModule['prices']['userPrice'] = async (
-    product,
-    { quantity = 1, country, currency, useNetPrice, userId, configuration },
-    unchainedAPI,
-  ) => {
-    const user = await unchainedAPI.modules.users.findUserById(userId);
-    const pricingDirector = await ProductPricingDirector.actions(
-      {
-        product,
-        user,
-        country,
-        currency,
-        quantity,
-        configuration,
-      },
-      unchainedAPI,
-    );
-
-    const calculated = await pricingDirector.calculate();
-    if (!calculated || !calculated.length) return null;
-
-    const pricing = pricingDirector.calculationSheet() as IProductPricingSheet;
-    const unitPrice = pricing.unitPrice({ useNetPrice });
-
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
-        .digest('hex'),
-      ...unitPrice,
-      isNetPrice: useNetPrice,
-      isTaxable: pricing.taxSum() > 0,
-      currencyCode: pricing.currency,
-    };
-  };
-
   return {
     price: catalogPrice,
-    userPrice,
 
-    catalogPrices: (product) => {
+    priceRange: getPriceRange,
+
+    async catalogPrices(product) {
       const prices = (product.commerce && product.commerce.pricing) || [];
-      return prices.map((price) => ({
-        _id: crypto
-          .createHash('sha256')
-          .update(
+      return await Promise.all(
+        prices.map(async (price) => ({
+          _id: await sha256(
             [product._id, price.countryCode, price.currencyCode, price.maxQuantity, price.amount].join(
               '',
             ),
-          )
-          .digest('hex'),
-        ...price,
-      }));
+          ),
+          ...price,
+        })),
+      );
     },
 
     catalogPriceRange: async (
@@ -163,82 +130,40 @@ export const configureProductPricesModule = ({
       });
 
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update(
+        _id: await sha256(
+          [
+            product._id,
+            Math.random(),
+            minPrice.amount,
+            minPrice.currencyCode,
+            maxPrice.amount,
+            maxPrice.currencyCode,
+          ].join(''),
+        ),
+        minPrice: {
+          _id: await sha256(
             [
               product._id,
-              Math.random(),
-              minPrice.amount,
-              minPrice.currencyCode,
-              maxPrice.amount,
-              maxPrice.currencyCode,
+              minPrice?.isTaxable,
+              minPrice?.isNetPrice,
+              minPrice?.amount,
+              minPrice?.currencyCode,
             ].join(''),
-          )
-          .digest('hex'),
-        minPrice,
-        maxPrice,
-      };
-    },
-
-    simulatedPriceRange: async (
-      product,
-      {
-        userId,
-        country,
-        currency,
-        includeInactive = false,
-        quantity,
-        useNetPrice = false,
-        vectors = [],
-      },
-      unchainedAPI,
-    ) => {
-      const products = await proxyProducts(product, vectors, {
-        includeInactive,
-      });
-
-      const filteredPrices = (
-        await Promise.all(
-          products.map((proxyProduct) =>
-            userPrice(
-              proxyProduct,
-              {
-                quantity,
-                currency,
-                country,
-                userId,
-                useNetPrice,
-              },
-              unchainedAPI,
-            ),
           ),
-        )
-      ).filter(Boolean);
-
-      if (!filteredPrices.length) return null;
-
-      const { minPrice, maxPrice } = getPriceRange({
-        productId: product._id as string,
-        prices: filteredPrices,
-      });
-
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update(
+          ...minPrice,
+        },
+        maxPrice: {
+          _id: await sha256(
             [
               product._id,
-              Math.random(),
-              minPrice.amount,
-              minPrice.currencyCode,
-              maxPrice.amount,
-              maxPrice.currencyCode,
+              maxPrice?.isTaxable,
+              maxPrice?.isNetPrice,
+              maxPrice?.amount,
+              maxPrice?.currencyCode,
             ].join(''),
-          )
-          .digest('hex'),
-        minPrice,
-        maxPrice,
+          ),
+          ...maxPrice,
+        },
       };
     },
 
@@ -251,26 +176,25 @@ export const configureProductPricesModule = ({
         countryCode,
       });
 
-      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-        const max = priceLevel.maxQuantity || null;
-        const min = previousMax ? previousMax + 1 : 0;
-        previousMax = priceLevel.maxQuantity;
+      return Promise.all(
+        filteredAndSortedPriceLevels.map(async (priceLevel, i) => {
+          const max = priceLevel.maxQuantity || null;
+          const min = previousMax ? previousMax + 1 : 0;
+          previousMax = priceLevel.maxQuantity;
 
-        return {
-          minQuantity: min,
-          maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
-          price: {
-            _id: crypto
-              .createHash('sha256')
-              .update([product._id, priceLevel.amount, currencyCode].join(''))
-              .digest('hex'),
-            isTaxable: !!priceLevel.isTaxable,
-            isNetPrice: !!priceLevel.isNetPrice,
-            amount: priceLevel.amount,
-            currencyCode,
-          },
-        };
-      });
+          return {
+            minQuantity: min,
+            maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
+            price: {
+              _id: await sha256([product._id, priceLevel.amount, currencyCode].join('')),
+              isTaxable: !!priceLevel.isTaxable,
+              isNetPrice: !!priceLevel.isNetPrice,
+              amount: priceLevel.amount,
+              currencyCode,
+            },
+          };
+        }),
+      );
     },
 
     rates: {

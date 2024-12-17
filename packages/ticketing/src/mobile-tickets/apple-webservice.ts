@@ -1,6 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import express, { Request, Response } from 'express';
 import { TicketingAPI } from '../types.js';
+import { getFileAdapter } from '@unchainedshop/core-files';
 
 const logger = createLogger('unchained:apple-wallet-webservice');
 
@@ -50,7 +51,10 @@ export const appleWalletHandler = async (
 
       const passFile = await modules.passes.upsertAppleWalletPass(token, resolvedContext);
 
-      const url = await modules.files.getUrl(passFile, {});
+      const fileUploadAdapter = getFileAdapter();
+      const signedUrl = await fileUploadAdapter.createDownloadURL(passFile);
+      const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
+
       const response = await fetch(url);
       const data = await response.arrayBuffer();
       const uint8View = new Uint8Array(data);
@@ -213,7 +217,10 @@ export const appleWalletHandler = async (
           return;
         }
 
-        const url = modules.files.getUrl(pass, {});
+        const fileUploadAdapter = getFileAdapter();
+        const signedUrl = await fileUploadAdapter.createDownloadURL(pass);
+        const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
+
         const result = await fetch(url);
         const data = await result.arrayBuffer();
         const uint8View = new Uint8Array(data);

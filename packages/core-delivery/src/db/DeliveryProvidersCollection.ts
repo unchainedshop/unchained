@@ -1,6 +1,36 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { DeliveryProvider } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
 
+export enum DeliveryProviderType {
+  SHIPPING = 'SHIPPING',
+  PICKUP = 'PICKUP',
+}
+export type DeliveryConfiguration = Array<{
+  key: string;
+  value: string;
+}>;
+
+export type DeliveryProvider = {
+  _id?: string;
+  type: DeliveryProviderType;
+  adapterKey: string;
+  configuration: DeliveryConfiguration;
+} & TimestampFields;
+
+export interface DeliveryLocation {
+  _id: string;
+  name: string;
+  address: {
+    addressLine: string;
+    addressLine2?: string;
+    postalCode: string;
+    countryCode: string;
+    city: string;
+  };
+  geoPoint: {
+    latitude: number;
+    longitude: number;
+  };
+}
 export const DeliveryProvidersCollection = async (db: mongodb.Db) => {
   const DeliveryProviders = db.collection<DeliveryProvider>('delivery-providers');
 

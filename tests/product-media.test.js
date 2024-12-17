@@ -17,7 +17,7 @@ let graphqlFetch;
 const productMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
 const productMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
-describe('ProductsVariation', () => {
+describe('ProductsMedia', () => {
   beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);

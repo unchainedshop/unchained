@@ -1,19 +1,19 @@
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { createLogger, LogLevel } from '@unchainedshop/logger';
+import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
+import { createLogger } from '@unchainedshop/logger';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
 import { UnchainedCore } from '@unchainedshop/core';
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
 
 const logger = createLogger('unchained:worker:bulk-import');
 
-const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
-  logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
+const streamPayloadToBulkImporter = async (
+  bulkImporter,
+  payloadId,
+  unchainedAPI: Pick<UnchainedCore, 'bulkImporter' | 'modules' | 'services'>,
+) => {
+  logger.trace(`parseAsync start`);
 
-  const readStream = await unchainedAPI.services.files.createDownloadStream(
-    { fileId: payloadId },
-    unchainedAPI,
-  );
+  const readStream = await unchainedAPI.services.files.createDownloadStream({ fileId: payloadId });
 
   if (!readStream) {
     throw new Error(
@@ -48,7 +48,7 @@ const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI
     await bulkImporter.prepare(event, unchainedAPI);
   }
 
-  logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
+  logger.trace(`parseAsync done`);
 };
 
 export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
@@ -69,7 +69,6 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
       } = rawPayload;
 
       const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter({
-        logger,
         createShouldUpsertIfIDExists,
         updateShouldUpsertIfIDNotExists,
         skipCacheInvalidation,
@@ -103,7 +102,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         result,
       };
     } catch (err) {
-      logger.error(err.message, err);
+      logger.error(err);
       return {
         success: false,
         error: {

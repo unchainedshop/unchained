@@ -1,28 +1,19 @@
-import { Order, OrdersModule } from '@unchainedshop/core-orders';
-import { DeliveryModule, deliverySettings } from '@unchainedshop/core-delivery';
-import { PaymentModule, paymentSettings } from '@unchainedshop/core-payment';
+import { Order } from '@unchainedshop/core-orders';
+import { deliverySettings } from '@unchainedshop/core-delivery';
+import { paymentSettings } from '@unchainedshop/core-payment';
+import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
+import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
+import { Modules } from '../modules.js';
 
-export const initCartProvidersService = async (
-  order: Order,
-  unchainedAPI: {
-    modules: {
-      delivery: DeliveryModule;
-      orders: OrdersModule;
-      payment: PaymentModule;
-    };
-  },
-) => {
-  const { modules } = unchainedAPI;
-
+export async function initCartProvidersService(this: Modules, order: Order) {
   let updatedOrder = order;
 
   // Init delivery provider
-  const supportedDeliveryProviders = await modules.delivery.findSupported(
-    { order: updatedOrder },
-    unchainedAPI,
-  );
+  const supportedDeliveryProviders = await supportedDeliveryProvidersService.bind(this)({
+    order: updatedOrder,
+  });
 
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
+  const orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: updatedOrder.deliveryId,
   });
   const deliveryProviderId = orderDelivery?.deliveryProviderId;
@@ -39,24 +30,22 @@ export const initCartProvidersService = async (
         providers: supportedDeliveryProviders,
         order: updatedOrder,
       },
-      unchainedAPI,
+      { modules: this },
     );
     if (defaultOrderDeliveryProvider) {
-      updatedOrder = await modules.orders.setDeliveryProvider(
+      updatedOrder = await this.orders.setDeliveryProvider(
         updatedOrder._id,
         defaultOrderDeliveryProvider._id,
-        unchainedAPI,
       );
     }
   }
 
   // Init payment provider
-  const supportedPaymentProviders = await modules.payment.paymentProviders.findSupported(
-    { order: updatedOrder },
-    unchainedAPI,
-  );
+  const supportedPaymentProviders = await supportedPaymentProvidersService.bind(this)({
+    order: updatedOrder,
+  });
 
-  const orderPayment = await modules.orders.payments.findOrderPayment({
+  const orderPayment = await this.orders.payments.findOrderPayment({
     orderPaymentId: updatedOrder.paymentId,
   });
   const paymentProviderId = orderPayment?.paymentProviderId;
@@ -68,7 +57,7 @@ export const initCartProvidersService = async (
   );
 
   if (supportedPaymentProviders?.length > 0 && !isAlreadyInitializedWithSupportedPaymentProvider) {
-    const paymentCredentials = await modules.payment.paymentCredentials.findPaymentCredentials(
+    const paymentCredentials = await this.payment.paymentCredentials.findPaymentCredentials(
       { userId: updatedOrder.userId, isPreferred: true },
       {
         sort: {
@@ -83,16 +72,15 @@ export const initCartProvidersService = async (
         order: updatedOrder,
         paymentCredentials,
       },
-      unchainedAPI,
+      { modules: this },
     );
 
     if (defaultOrderPaymentProvider) {
-      updatedOrder = await modules.orders.setPaymentProvider(
+      updatedOrder = await this.orders.setPaymentProvider(
         updatedOrder._id,
         defaultOrderPaymentProvider._id,
-        unchainedAPI,
       );
     }
   }
   return updatedOrder;
-};
+}

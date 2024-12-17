@@ -19,7 +19,7 @@ Please see our [Contribution Guidelines](/contributing.md).
 
 ### Prerequisites
 
-- Node.js 16 (see [.nvmrc](.nvmrc))
+- Node.js >22 (see [.nvmrc](.nvmrc))
 
 ### Run the example
 

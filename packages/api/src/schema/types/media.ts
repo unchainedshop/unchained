@@ -5,7 +5,7 @@ export default [
       name: String!
       type: String!
       size: Int!
-      url(version: String = "original", baseUrl: String): String!
+      url(version: String = "original", baseUrl: String): String
     }
   `,
 ];

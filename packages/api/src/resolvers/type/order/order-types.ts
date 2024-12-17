@@ -1,16 +1,18 @@
-import crypto from 'crypto';
 import { Context } from '../../../context.js';
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Enrollment } from '@unchainedshop/core-enrollments';
-import { Order as OrderType } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/core-orders';
-import { OrderDiscount } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/core-orders';
+import {
+  Order as OrderType,
+  OrderPosition,
+  OrderPayment,
+  OrderDiscount,
+  OrderDelivery,
+} from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
+import { Price, sha256 } from '@unchainedshop/utils';
+import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
   async supportedDeliveryProviders(
@@ -18,21 +20,15 @@ export const Order = {
     _,
     context: Context,
   ): Promise<Array<DeliveryProvider>> {
-    return context.modules.delivery.findSupported(
-      {
-        order,
-      },
-      context,
-    );
+    return context.services.orders.supportedDeliveryProviders({
+      order,
+    });
   },
 
   async supportedPaymentProviders(order: OrderType, _, context: Context) {
-    return context.modules.payment.paymentProviders.findSupported(
-      {
-        order,
-      },
-      context,
-    );
+    return context.services.orders.supportedPaymentProviders({
+      order,
+    });
   },
 
   async currency(order: OrderType, _, { modules }: Context): Promise<Currency> {
@@ -78,20 +74,16 @@ export const Order = {
     return order.status;
   },
 
-  async total(
-    order: OrderType,
-    params: { category: string; useNetPrice: boolean },
-    { modules }: Context,
-  ): Promise<OrderPrice> {
-    const pricingSheet = modules.orders.pricingSheet(order);
+  async total(order: OrderType, params: { category: string; useNetPrice: boolean }): Promise<Price> {
+    const pricing = OrderPricingSheet({
+      calculation: order.calculation,
+      currency: order.currency,
+    });
 
-    if (pricingSheet.isValid()) {
-      const price = pricingSheet.total(params);
+    if (pricing.isValid()) {
+      const price = pricing.total(params);
       return {
-        _id: crypto
-          .createHash('sha256')
-          .update([order._id, JSON.stringify(params), JSON.stringify(price)].join(''))
-          .digest('hex'),
+        _id: await sha256([order._id, JSON.stringify(params), JSON.stringify(price)].join('')),
         ...price,
       };
     }

@@ -10,12 +10,13 @@ import {
   resolveExpirationDate,
   IFileAdapter,
 } from '@unchainedshop/file-upload';
-
-import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import { Client } from 'minio';
 import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
 import { expiryOffsetInMs } from '@unchainedshop/file-upload/lib/put-expiration.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:plugins:minio');
 
 const {
   MINIO_ACCESS_KEY,
@@ -33,9 +34,8 @@ let client: Client;
 
 export async function connectToMinio() {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
-    log(
+    logger.error(
       'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
-      { level: LogLevel.Error },
     );
     return null;
   }
@@ -67,9 +67,7 @@ export async function connectToMinio() {
     }
     return minioClient;
   } catch (error) {
-    log(`Exception while creating Minio client: ${error.message}`, {
-      level: LogLevel.Error,
-    });
+    logger.error(`Exception while creating Minio client: ${error.message}`);
   }
   return null;
 }
@@ -126,11 +124,16 @@ export const MinioAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
+  async createDownloadURL(file) {
+    if (file.meta?.isPrivate) throw new Error("Minio Plugin doesn't support private files yet");
+    return generateMinioUrl(file.name, file._id);
+  },
+
   async createSignedURL(directoryName, fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const expiryDate = resolveExpirationDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const _id = await buildHashedFilename(directoryName, fileName, expiryDate);
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
@@ -173,7 +176,7 @@ export const MinioAdapter: IFileAdapter = {
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
-    const _id = buildHashedFilename(directoryName, fileName, new Date());
+    const _id = await buildHashedFilename(directoryName, fileName, new Date());
     const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const metaData = {
@@ -206,7 +209,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
-    const hashedFilename = buildHashedFilename(directoryName, fileName, new Date());
+    const hashedFilename = await buildHashedFilename(directoryName, fileName, new Date());
 
     const stream = await createHttpDownloadStream(fileLink, headers);
     const type = mimeType.lookup(fileName) || stream.headers['content-type'];

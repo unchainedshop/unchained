@@ -8,7 +8,7 @@ export default async function activateEnrollment(
   { enrollmentId }: { enrollmentId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
 
   log('mutation activateEnrollment', { userId });
 
@@ -28,5 +28,5 @@ export default async function activateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return modules.enrollments.activateEnrollment(enrollment, context);
+  return services.enrollments.activateEnrollment(enrollment);
 }

@@ -6,8 +6,12 @@ import {
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
-import { ProductVariation, ProductVariationText, ProductVariationType } from '../types.js';
+import {
+  ProductVariation,
+  ProductVariationsCollection,
+  ProductVariationText,
+  ProductVariationType,
+} from '../db/ProductVariationsCollection.js';
 
 export type ProductVariationsModule = {
   // Queries

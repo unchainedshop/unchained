@@ -1,3 +1,4 @@
+import { Order } from '@unchainedshop/core-orders';
 import { getOrderPositionsData } from './getOrderPositionsData.js';
 import { getOrderSummaryData } from './getOrderSummaryData.js';
 
@@ -31,7 +32,10 @@ Total: {{summary.prices.gross}}
 {{/summary.rawPrices.taxes.amount}}
 `;
 
-export const transformOrderToText = async ({ order, locale }, context) => {
+export const transformOrderToText = async (
+  { order, locale }: { order: Order; locale: string },
+  context,
+) => {
   const { modules } = context;
   const data = {
     orderDate: new Date(order.ordered).toLocaleString(),

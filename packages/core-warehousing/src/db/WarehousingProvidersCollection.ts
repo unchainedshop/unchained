@@ -1,5 +1,18 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { WarehousingProvider } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export enum WarehousingProviderType {
+  PHYSICAL = 'PHYSICAL',
+  VIRTUAL = 'VIRTUAL',
+}
+
+export type WarehousingConfiguration = Array<{ key: string; value: string }>;
+
+export type WarehousingProvider = {
+  _id?: string;
+  type: WarehousingProviderType;
+  adapterKey: string;
+  configuration: WarehousingConfiguration;
+} & TimestampFields;
 
 export const WarehousingProvidersCollection = async (db: mongodb.Db) => {
   const WarehousingProviders = db.collection<WarehousingProvider>('warehousing-providers');

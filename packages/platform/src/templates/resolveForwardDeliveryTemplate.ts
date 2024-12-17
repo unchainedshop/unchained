@@ -1,4 +1,4 @@
-import { TemplateResolver } from '@unchainedshop/core-messaging';
+import { TemplateResolver } from '@unchainedshop/core';
 import { systemLocale } from '@unchainedshop/utils';
 import { transformOrderToText } from './order-parser/index.js';
 
@@ -28,7 +28,7 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
   const data = {
     shopName: EMAIL_WEBSITE_NAME,
     shopUrl: EMAIL_WEBSITE_URL,
-    orderDetails: await transformOrderToText({ order, locale: systemLocale }, context),
+    orderDetails: await transformOrderToText({ order, locale: systemLocale.baseName }, context),
   };
 
   return [

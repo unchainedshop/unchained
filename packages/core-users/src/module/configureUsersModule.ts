@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from '@node-rs/bcrypt';
 import { ModuleInput, Address, Contact } from '@unchainedshop/mongodb';
 import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -8,15 +8,12 @@ import {
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { systemLocale, SortDirection, SortOption } from '@unchainedshop/utils';
+import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
-import * as sha256 from './sha256.js';
-import crypto from 'crypto';
-import { UnchainedCore } from '@unchainedshop/core';
 
 export type UsersModule = {
   // Submodules
@@ -73,7 +70,8 @@ export type UsersModule = {
     _id: string,
     { profile, meta }: { profile?: UserProfile; meta?: any },
   ) => Promise<User>;
-  delete: (params: { userId: string }, context: UnchainedCore) => Promise<User>;
+  markDeleted: (userId: string) => Promise<User>;
+  deletePermanently: (params: { userId: string }) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (
@@ -172,7 +170,7 @@ export const configureUsersModule = async ({
       return userCount;
     },
 
-    findUserById: async (userId: string): Promise<User> => {
+    async findUserById(userId: string): Promise<User> {
       if (!userId) return null;
       return Users.findOne(generateDbFilterById(userId), {});
     },
@@ -193,13 +191,13 @@ export const configureUsersModule = async ({
       when: Date;
     }> {
       if (!plainToken) return null;
-      const token = await sha256.hash(plainToken);
+      const token = await sha256(plainToken);
       const user = await Users.findOne(
         {
           'services.email.verificationTokens': {
             $elemMatch: {
               token,
-              when: { $gt: new Date().getTime() },
+              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
             },
           },
         },
@@ -239,13 +237,13 @@ export const configureUsersModule = async ({
     },
 
     async findUserByResetToken(plainToken: string): Promise<User> {
-      const token = await sha256.hash(plainToken);
+      const token = await sha256(plainToken);
       const user = await Users.findOne(
         {
           'services.password.reset': {
             $elemMatch: {
               token,
-              when: { $gt: new Date().getTime() },
+              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
             },
           },
         },
@@ -255,7 +253,7 @@ export const configureUsersModule = async ({
     },
 
     async findUserByToken(plainToken?: string): Promise<User> {
-      const token = await sha256.hash(plainToken);
+      const token = await sha256(plainToken);
 
       if (token) {
         return Users.findOne({
@@ -416,7 +414,7 @@ export const configureUsersModule = async ({
       plainPassword: string,
     ): Promise<boolean> {
       if (bcryptHash) {
-        const password = await sha256.hash(plainPassword);
+        const password = await sha256(plainPassword);
         return bcrypt.compare(password, bcryptHash);
       }
       if (pbkdf2SaltAndHash) {
@@ -457,9 +455,9 @@ export const configureUsersModule = async ({
     async sendResetPasswordEmail(userId: string, email: string, isEnrollment?: boolean): Promise<void> {
       const plainToken = crypto.randomUUID();
       const resetToken = {
-        token: await sha256.hash(plainToken),
+        token: await sha256(plainToken),
         address: email,
-        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+        when: new Date(),
       };
 
       await Users.updateOne(
@@ -482,9 +480,9 @@ export const configureUsersModule = async ({
     async sendVerificationEmail(userId: string, email: string): Promise<void> {
       const plainToken = crypto.randomUUID();
       const verificationToken = {
-        token: await sha256.hash(plainToken),
+        token: await sha256(plainToken),
         address: email,
-        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+        when: new Date(),
       };
 
       await Users.updateOne(
@@ -608,9 +606,7 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    delete: async ({ userId }: { userId: string }, context: UnchainedCore): Promise<User> => {
-      const { services, modules } = context as UnchainedCore;
-
+    markDeleted: async (userId: string): Promise<User> => {
       const user = await Users.findOneAndUpdate(
         { _id: userId },
         {
@@ -632,26 +628,14 @@ export const configureUsersModule = async ({
         { returnDocument: 'after' },
       );
 
-      if (!user) return null;
-
-      await modules.bookmarks.deleteByUserId(userId);
-      await services.orders.deleteUserCarts(userId, context as UnchainedCore);
-      await modules.quotations.deleteRequestedUserQuotations(userId);
-      await modules.enrollments.deleteInactiveUserEnrollments(userId);
-
-      const ordersCount = await modules.orders.count({ userId, includeCarts: true });
-      const quotationsCount = await modules.quotations.count({ userId });
-      const reviewsCount = await modules.products.reviews.count({ authorId: userId });
-      const enrollmentsCount = await modules.enrollments.count({ userId });
-      const tokens = await modules.warehousing.findTokensForUser(user);
-      if (!ordersCount && !reviewsCount && !enrollmentsCount && !quotationsCount && !tokens?.length) {
-        await Users.deleteOne({ _id: userId });
-      }
-
       await emit('USER_REMOVE', {
         user,
       });
       return user;
+    },
+
+    deletePermanently: async ({ userId }: { userId: string }): Promise<User> => {
+      return Users.findOneAndDelete({ _id: userId });
     },
 
     updateProfile: async (
@@ -695,6 +679,8 @@ export const configureUsersModule = async ({
     updateLastBillingAddress: async (_id: string, lastBillingAddress: Address): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
+
+      if (!lastBillingAddress) return user;
 
       const modifier = {
         $set: {

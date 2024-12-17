@@ -1,18 +1,9 @@
-# Unchained Engine vNEXT
-## Minor
-- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
-
-## Breaking
-- Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
-- The order module function `initProviders` has been moved to order services renamed as `initCartProviders`
-- The order module function `updateCalculation` has been moved to order services
-- The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
-
+# Unchained Engine v3.0
 
 ## Removing the auth fat of unchained
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
 
-That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passport.js which is also ESM now. That opens the door to complex login methods like OpenID Connect through the community of passport.js,
+That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passport.js which is also ESM now. That opens the door to complex login methods like OpenID Connect through the community of passport.js.
 
 We will keep supporting the following auth-strategies out of the box that we consider widely known web standards:
 - E-Mail/Username & Password
@@ -20,17 +11,27 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Access Tokens
 
 ## Major
+- Drop support for Node.js <22.x
 - `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
-- Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
-- Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
-- LoginMethodResponse has a new breaking GraphQL type
-- Remove logoutAllSessions and remove support for loging out a specific session
-- Introduce default password rules (min. 8 chars)
-- Drop 2FA support (if you want this, use a passport plugin)
-- Drop oAuth support (if you want this, use a passport plugin)
+- Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
+- Auth: Remove logoutAllSessions and remove support for loging out a specific session
+- Auth: Introduce default password rules (min. 8 chars)
+- Auth: Drop 2FA support (if you need special authentication strategies, use a passport or fastify plugin)
+- Auth: Drop oAuth support (if you need special authentication strategies, use a passport or fastify plugin)
+- Core: The order module function `initProviders` has been moved to order services renamed as `initCartProviders`
+- Core: The order module function `updateCalculation` has been moved to order services
+- Core: The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
+- API: Add built-in Fastify support
+- API: Add built-in Yoga support (we are going to deprecate Apollo Server starting from 4.x)
+- API: `LoginMethodResponse` has a new breaking GraphQL type
+- Platform: Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
 
 ## Minor
 - API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
+- API: Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
+- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
+- Plugins: Add AWS Event Bridge Plugin for Serverless Mode
+
 
 # Unchained Engine v2.14
 

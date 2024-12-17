@@ -1,8 +1,5 @@
-import {
-  WarehousingError,
-  WarehousingInterface,
-  WarehousingProvider as WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
+import { WarehousingDirector, WarehousingError, WarehousingInterface } from '@unchainedshop/core';
+import { WarehousingProvider as WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { Context } from '../../context.js';
 
 export type HelperType<P, T> = (provider: WarehousingProviderType, params: P, context: Context) => T;
@@ -14,17 +11,23 @@ export interface WarehousingProviderHelperTypes {
 }
 
 export const WarehousingProvider: WarehousingProviderHelperTypes = {
-  interface(obj, _, context) {
-    const Interface = context.modules.warehousing.findInterface(obj);
-    if (!Interface) return null;
-    return Interface;
+  interface(obj) {
+    const Adapter = WarehousingDirector.getAdapter(obj.adapterKey);
+    if (!Adapter) return null;
+    return {
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    };
   },
 
   async configurationError(obj, _, context) {
-    return context.modules.warehousing.configurationError(obj, context);
+    const actions = await WarehousingDirector.actions(obj, {}, context);
+    return actions.configurationError();
   },
 
   async isActive(obj, _, context) {
-    return context.modules.warehousing.isActive(obj, context);
+    const actions = await WarehousingDirector.actions(obj, {}, context);
+    return actions.isActive();
   },
 };

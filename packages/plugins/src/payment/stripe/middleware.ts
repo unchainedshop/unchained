@@ -11,7 +11,7 @@ export const WebhookEventTypes = {
 
 export const stripeHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context;
-  const { modules } = resolvedContext;
+  const { modules, services } = resolvedContext;
 
   let event;
 
@@ -27,7 +27,7 @@ export const stripeHandler = async (request, response) => {
   }
 
   if (!Object.values(WebhookEventTypes).includes(event.type)) {
-    logger.verbose(`unhandled event type`, {
+    logger.info(`unhandled event type`, {
       type: event.type,
     });
     response.writeHead(200);
@@ -43,7 +43,7 @@ export const stripeHandler = async (request, response) => {
   const environmentInMetadata = event.data?.object?.metadata?.environment || '';
   const environmentInEnv = process.env.STRIPE_WEBHOOK_ENVIRONMENT || '';
   if (environmentInMetadata !== environmentInEnv) {
-    logger.verbose(`unhandled event environment`, {
+    logger.info(`unhandled event environment`, {
       type: event.type,
       environment: environmentInMetadata,
     });
@@ -57,7 +57,7 @@ export const stripeHandler = async (request, response) => {
     return;
   }
 
-  logger.verbose(`Processing event`, {
+  logger.info(`Processing event`, {
     type: event.type,
   });
   try {
@@ -65,7 +65,7 @@ export const stripeHandler = async (request, response) => {
       const paymentIntent = event.data.object;
       const { orderPaymentId } = paymentIntent.metadata || {};
 
-      logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`, {
+      logger.info(`checkout with orderPaymentId: ${orderPaymentId}`, {
         type: event.type,
       });
 
@@ -78,15 +78,11 @@ export const stripeHandler = async (request, response) => {
         throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
       }
 
-      const order = await modules.orders.checkout(
-        orderPayment.orderId,
-        {
-          paymentContext: {
-            paymentIntentId: paymentIntent.id,
-          },
+      const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+        paymentContext: {
+          paymentIntentId: paymentIntent.id,
         },
-        resolvedContext,
-      );
+      });
 
       logger.info(`checkout successful`, {
         orderPaymentId,
@@ -104,21 +100,17 @@ export const stripeHandler = async (request, response) => {
       const setupIntent = event.data.object;
       const { paymentProviderId, userId } = setupIntent.metadata || {};
 
-      logger.verbose(`registered payment credential with paymentProviderId: ${paymentProviderId}`, {
+      logger.info(`registered payment credential with paymentProviderId: ${paymentProviderId}`, {
         type: event.type,
         userId,
       });
 
-      const paymentCredentials = await modules.payment.registerCredentials(
-        paymentProviderId,
-        {
-          transactionContext: {
-            setupIntentId: setupIntent.id,
-          },
-          userId,
+      const paymentCredentials = await services.orders.registerPaymentCredentials(paymentProviderId, {
+        transactionContext: {
+          setupIntentId: setupIntent.id,
         },
-        resolvedContext,
-      );
+        userId,
+      });
 
       logger.info(`payment credentials registration successful`, {
         userId,

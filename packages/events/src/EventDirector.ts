@@ -44,7 +44,7 @@ export const EventDirector = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
       events.forEach((e) => RegisteredEventsSet.add(e));
-      logger.verbose(`EventDirector -> Registered ${JSON.stringify(events)}`);
+      logger.info(`EventDirector -> Registered ${JSON.stringify(events)}`);
     }
   },
 
@@ -86,7 +86,7 @@ export const EventDirector = {
       context: extractedContext,
     });
 
-    logger.verbose(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
+    logger.debug(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
   subscribe: <T>(eventName: string, callback: (payload: RawPayloadType<T>) => void): void => {
@@ -99,7 +99,7 @@ export const EventDirector = {
       Adapter?.subscribe(eventName, callback);
       HistoryAdapter?.subscribe(eventName, callback);
       RegisteredCallbacksSet.add(currentSubscription);
-      logger.verbose(`EventDirector -> Subscribed to ${eventName}`);
+      logger.debug(`EventDirector -> Subscribed to ${eventName}`);
     }
   },
 };

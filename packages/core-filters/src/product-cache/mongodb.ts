@@ -1,13 +1,14 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import crypto from 'crypto';
-import memoizee from 'memoizee';
+import { sha256 } from '@unchainedshop/utils';
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 import { FiltersSettingsOptions } from '../filters-settings.js';
 
 const updateIfHashChanged = async (Collection, selector, doc) => {
   const _id = Object.values(selector).join(':');
   try {
-    const hash = crypto.createHash('sha256').update(JSON.stringify(doc)).digest('hex');
+    const hash = await sha256(JSON.stringify(doc));
     await Collection.updateOne(
       {
         ...selector,
@@ -28,10 +29,12 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
   return _id;
 };
 
+const memoizeCache = new ExpiryMap(7000);
+
 export default async function mongodbCache(db: mongodb.Db) {
   const { FilterProductIdCache } = await FiltersCollection(db);
 
-  const getCachedProductIdsFromMemoryCache = memoizee(
+  const getCachedProductIdsFromMemoryCache = pMemoize(
     async function getCachedProductIdsFromDatabase(filterId) {
       const filterProductIdCache = await FilterProductIdCache.find(
         {
@@ -50,9 +53,7 @@ export default async function mongodbCache(db: mongodb.Db) {
       return [allProductIds, productIdsMap];
     },
     {
-      maxAge: 7000,
-      promise: true,
-      primitive: true,
+      cache: memoizeCache,
     },
   );
 

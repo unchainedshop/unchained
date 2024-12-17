@@ -1,12 +1,12 @@
 import { UnchainedCore } from '@unchainedshop/core';
-import crypto from 'crypto';
+import { sha256 } from '@unchainedshop/utils';
 
 export default async (
   unchainedAPI: UnchainedCore,
   username: string,
   plainSecret: string,
 ): Promise<void> => {
-  const secret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
+  const secret = await sha256(`${username}:${plainSecret}`);
 
   await unchainedAPI.modules.users.updateUser(
     { username },

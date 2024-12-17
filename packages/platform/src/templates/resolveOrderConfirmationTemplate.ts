@@ -1,4 +1,4 @@
-import { TemplateResolver } from '@unchainedshop/core-messaging';
+import { TemplateResolver } from '@unchainedshop/core';
 import { transformOrderToText } from './order-parser/index.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
@@ -11,10 +11,10 @@ Thank you very much for your order.
 {{shopName}}: {{shopUrl}}
 `;
 
-export const resolveOrderConfirmationTemplate: TemplateResolver = async (
-  { orderId, locale },
-  context,
-) => {
+export const resolveOrderConfirmationTemplate: TemplateResolver<{
+  orderId: string;
+  locale: string;
+}> = async ({ orderId, locale }, context) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
 

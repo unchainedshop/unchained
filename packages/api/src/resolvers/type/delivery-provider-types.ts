@@ -1,7 +1,7 @@
-import crypto from 'crypto';
 import { Context } from '../../context.js';
-import { DeliveryError, DeliveryProvider as DeliveryProviderType } from '@unchainedshop/core-delivery';
-import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
+import { DeliveryProvider as DeliveryProviderType } from '@unchainedshop/core-delivery';
+import { DeliveryDirector, DeliveryError, DeliveryPricingDirector } from '@unchainedshop/core';
+import { sha256 } from '@unchainedshop/utils';
 
 export type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
 
@@ -35,20 +35,24 @@ export interface DeliveryProviderHelperTypes {
 }
 
 export const DeliveryProvider: DeliveryProviderHelperTypes = {
-  interface(obj, _, { modules }) {
-    const Interface = modules.delivery.findInterface(obj);
-    if (!Interface) return null;
-    return Interface;
+  interface(deliveryProvider) {
+    const Adapter = DeliveryDirector.getAdapter(deliveryProvider.adapterKey);
+    if (!Adapter) return null;
+    return {
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    };
   },
 
   async isActive(deliveryProvider, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.delivery.isActive(deliveryProvider, requestContext);
+    const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    return Boolean(director.isActive());
   },
 
   async configurationError(deliveryProvider, _, requestContext) {
-    const { modules } = requestContext;
-    return modules.delivery.configurationError(deliveryProvider, requestContext);
+    const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    return director.configurationError();
   },
 
   async simulatedPrice(
@@ -58,24 +62,21 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
   ) {
     const { modules, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
-    const currency = currencyCode || requestContext.currencyContext;
+    const currency = currencyCode || order?.currency || requestContext.currencyContext;
+    const pricingContext = {
+      country,
+      currency,
+      provider: deliveryProvider,
+      order,
+      providerContext,
+      user,
+    };
 
-    const pricingDirector = await DeliveryPricingDirector.actions(
-      {
-        country,
-        currency,
-        provider: deliveryProvider,
-        order,
-        providerContext,
-        user,
-      },
-      requestContext,
-    );
+    const calculated = await DeliveryPricingDirector.rebuildCalculation(pricingContext, requestContext);
 
-    const calculated = await pricingDirector.calculate();
     if (!calculated || !calculated.length) return null;
 
-    const pricing = pricingDirector.calculationSheet();
+    const pricing = DeliveryPricingDirector.calculationSheet(pricingContext, calculated);
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;
@@ -83,10 +84,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     };
 
     return {
-      _id: crypto
-        .createHash('sha256')
-        .update([deliveryProvider._id, country, useNetPrice, order ? order._id : ''].join(''))
-        .digest('hex'),
+      _id: await sha256([deliveryProvider._id, country, useNetPrice, order ? order._id : ''].join('')),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,
       countryCode: country,

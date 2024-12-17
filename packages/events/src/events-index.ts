@@ -1,4 +1,4 @@
-import { EventDirector, EmitAdapter } from './EventDirector.js';
+import { EventDirector, EmitAdapter, RawPayloadType } from './EventDirector.js';
 
 const {
   emit,
@@ -24,4 +24,5 @@ export {
   setEmitHistoryAdapter,
   subscribe,
   EmitAdapter,
+  RawPayloadType,
 };

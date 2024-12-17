@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../context.js';
+import { FilterDirector } from '@unchainedshop/core';
 
 export default async function removeFilterOption(
   root: never,
@@ -14,13 +15,11 @@ export default async function removeFilterOption(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  const filter = await modules.filters.removeFilterOption(
-    {
-      filterId,
-      filterOptionValue,
-    },
-    context,
-  );
+  const filter = await modules.filters.removeFilterOption({
+    filterId,
+    filterOptionValue,
+  });
+  await FilterDirector.invalidateProductIdCache(filter, context);
 
   return filter;
 }

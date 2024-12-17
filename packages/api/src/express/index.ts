@@ -4,8 +4,8 @@ import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import { Passport } from 'passport';
 import { YogaServerInstance } from 'graphql-yoga';
-import setupPassport from './passport/setup.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
@@ -42,7 +42,7 @@ const addContext = async function middlewareWithContext(
 ) {
   try {
     const setHeader = (key, value) => res.setHeader(key, value);
-    const getHeader = (key) => req.headers[key];
+    const getHeader = (key) => req.headers[key] as string;
     const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
 
     const context = getCurrentContextResolver();
@@ -59,11 +59,12 @@ const addContext = async function middlewareWithContext(
 
       const tokenObject = {
         _id: (req as any).sessionID,
+        userId: user._id,
         /* eslint-disable-next-line */
         tokenExpires: new Date((req as any).session?.cookie._expires),
       };
 
-      await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, { userId: user._id, ...tokenObject });
+      await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
 
       /* eslint-disable-next-line */
       (user as any)._inLoginMethodResponse = true;
@@ -95,6 +96,8 @@ const addContext = async function middlewareWithContext(
       return true;
     };
 
+    const [, accessToken] = req.headers.authorization?.split(' ') || [];
+
     (req as any).unchainedContext = await context({
       setHeader,
       getHeader,
@@ -102,7 +105,7 @@ const addContext = async function middlewareWithContext(
       remotePort,
       login,
       logout,
-      user: (req as any).user,
+      accessToken,
       userId: (req as any).user?._id,
     });
     next();
@@ -116,10 +119,16 @@ export const connect = (
   {
     graphqlHandler,
     db,
-    unchainedAPI,
   }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
 ) => {
-  const passport = setupPassport(unchainedAPI);
+  const passport = new Passport();
+
+  passport.serializeUser(function serialize(user, done) {
+    done(null, user._id);
+  });
+  passport.deserializeUser(function deserialize(_id, done) {
+    done(null, { _id });
+  });
 
   const name = UNCHAINED_COOKIE_NAME;
   const domain = UNCHAINED_COOKIE_DOMAIN;
@@ -155,7 +164,6 @@ export const connect = (
     }),
     passport.initialize(),
     passport.session(),
-    passport.authenticate('access-token', { session: false }),
     addContext,
   );
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);

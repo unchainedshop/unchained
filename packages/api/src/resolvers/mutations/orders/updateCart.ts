@@ -36,13 +36,13 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   }
 
   if (paymentProviderId) {
-    order = await modules.orders.setPaymentProvider(order._id, paymentProviderId, context);
+    order = await modules.orders.setPaymentProvider(order._id, paymentProviderId);
   }
 
   if (deliveryProviderId) {
-    order = await modules.orders.setDeliveryProvider(order._id, deliveryProviderId, context);
+    order = await modules.orders.setDeliveryProvider(order._id, deliveryProviderId);
   }
 
   // Recalculate, then return
-  return services.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id);
 }
