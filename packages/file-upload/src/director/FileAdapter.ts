@@ -4,7 +4,7 @@ import { IBaseAdapter } from '@unchainedshop/utils';
 import { UploadedFile, UploadFileData } from '../types.js';
 
 export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
-  createDownloadURL: (fileUrl: string, file: any, expiry?: number) => Promise<string | null>;
+  createDownloadURL: (file: any, expiry?: number) => Promise<string | null>;
   createSignedURL: (
     directoryName: string,
     fileName: string,

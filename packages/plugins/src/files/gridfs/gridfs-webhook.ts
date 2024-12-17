@@ -6,7 +6,6 @@ import express from 'express';
 import sign from './sign.js';
 import { configureGridFSFileUploadModule } from './index.js';
 import { Context } from '@unchainedshop/api';
-import { getFileAdapter } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
 
@@ -81,13 +80,9 @@ export const gridfsHandler = async (
       const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
       const fileDocument = await modules.files.findFile({ fileId });
       if (fileDocument?.meta?.isPrivate) {
-        const fileAdapter = getFileAdapter();
-        const urlWithoutQuery = url.origin + url.pathname;
-        const signedUrl = await fileAdapter.createDownloadURL(
-          urlWithoutQuery,
-          fileDocument,
-          parseInt(expiryTimestamp || 0),
-        );
+        const signedUrl = await modules.files.getUrl(fileDocument, {
+          expires: parseInt(expiryTimestamp || 0),
+        });
         if (
           new URL(signedUrl).searchParams.get('s') !== signature ||
           parseInt(expiryTimestamp, 10) <= Date.now()

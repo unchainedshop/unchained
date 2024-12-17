@@ -4,6 +4,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection.js';
 import { filesSettings, FilesSettingsOptions } from '../files-settings.js';
+import { getFileAdapter } from '../files-index.js';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
@@ -19,9 +20,12 @@ export const configureFilesModule = async ({
   const Files = await MediaObjectsCollection(db);
 
   return {
-    getUrl: (file: File, params: Record<string, any>): string | null => {
+    getUrl: async (file: File, params: Record<string, any>): Promise<string | null> => {
       if (!file?.url) return null;
-      const transformedURLString = filesSettings.transformUrl(file.url, params);
+      const fileUploadAdapter = getFileAdapter();
+
+      const url = await fileUploadAdapter.createDownloadURL(file, params?.expires);
+      const transformedURLString = filesSettings.transformUrl(url, params);
       if (URL.canParse(transformedURLString)) {
         const finalURL = new URL(transformedURLString);
         return finalURL.href;

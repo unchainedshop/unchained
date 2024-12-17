@@ -213,7 +213,7 @@ export const appleWalletHandler = async (
           return;
         }
 
-        const url = modules.files.getUrl(pass, {});
+        const url = await modules.files.getUrl(pass, {});
         const result = await fetch(url);
         const data = await result.arrayBuffer();
         const uint8View = new Uint8Array(data);
