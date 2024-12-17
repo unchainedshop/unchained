@@ -251,4 +251,105 @@ describe('Media Permissions', () => {
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     }, 10000);
   });
+
+  describe('Access Media', () => {
+    it('return product when media is private and is owner of media', async () => {
+      const { errors, data } = await loggedInGraphqlFetch({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              media {
+                _id
+                file {
+                  url
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'configurable-product-id',
+        },
+      });
+      expect((errors || []).length).toBe(0);
+      expect(data?.product?.media?.length).toBe(1);
+    });
+    it('Throw error for anonymous user when media is private', async () => {
+      const { errors } = await anonymousGraphqlFetch({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              media {
+                _id
+                file {
+                  url
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'configurable-product-id',
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('DOWNLOAD Media', () => {
+    it('Return forbidden 403 for expired links', async () => {
+      const { errors, data } = await loggedInGraphqlFetch({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              media {
+                _id
+                file {
+                  url
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'configurable-product-id',
+        },
+      });
+      expect((errors || []).length).toBe(0);
+      expect(data?.product?.media?.length).toBe(1);
+      const response = await fetch(data?.product?.media?.[0]?.file?.url);
+      expect(response.status).toEqual(404);
+      expect(response.status).not.toBe(403);
+    });
+    it('Return forbidden 403 for expired links', async () => {
+      const { errors, data } = await loggedInGraphqlFetch({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              media {
+                _id
+                file {
+                  url
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'configurable-product-id',
+        },
+      });
+      expect((errors || []).length).toBe(0);
+      expect(data?.product?.media?.length).toBe(1);
+      const url = new URL(data?.product?.media?.[0]?.file?.url);
+      url.searchParams.set('e', new Date().getTime().toString());
+      const response = await fetch(url.toString());
+
+      expect(response.status).toEqual(403);
+    });
+  });
 });

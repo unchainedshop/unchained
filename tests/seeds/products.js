@@ -220,12 +220,37 @@ export const JpegMedia = {
   created: new Date('2021-10-12T18:07:31.818Z'),
 };
 
+const GridfsMedia = {
+  _id: '7FVJLp22ye9zNNBGEosF9X-screenshot-from-2024-11-26-16-13-44.png',
+  created: new Date('2021-10-12T18:07:31.818Z'),
+  path: 'product-media',
+  expires: null,
+  name: 'Screenshot from 2024-11-26 16-13-44.png',
+  size: 104467,
+  type: 'image/png',
+  url: '/gridfs/product-media/7FVJLp22ye9zNNBGEosF9X-screenshot-from-2024-11-26-16-13-44.png',
+  isPrivate: true,
+  meta: {
+    productId: 'configurable-product-id',
+    userId: 'user',
+  },
+  updated: new Date('2021-10-12T18:07:31.818Z'),
+};
+
 export const JpegProductMedia = {
   _id: 'jpeg-product',
   mediaId: 'product-media%2Fe1674b3a9b69990d532d247382207005a276bb859a22829777ecaa5d6d3d036d',
   tags: [],
   sortKey: 1,
   productId: 'simpleproduct',
+  created: new Date('2019-09-10T14:29:01.093+0000'),
+};
+export const GridFsProductMedia = {
+  _id: 'gridfs-product-media',
+  mediaId: '7FVJLp22ye9zNNBGEosF9X-screenshot-from-2024-11-26-16-13-44.png',
+  tags: [],
+  sortKey: 1,
+  productId: 'configurable-product-id',
   created: new Date('2019-09-10T14:29:01.093+0000'),
 };
 
@@ -597,10 +622,12 @@ export default async function seedProducts(db) {
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
   await db.collection('product_texts').findOrInsertOne(FrenchProductText);
   await db.collection('product_media').findOrInsertOne(JpegProductMedia);
+  await db.collection('product_media').findOrInsertOne(GridFsProductMedia);
   await db.collection('product_media_texts').findOrInsertOne(GermanJpegProductMediaText);
   await db.collection('product_media_texts').findOrInsertOne(FrenchJpegProductMediaText);
 
   await db.collection('media_objects').findOrInsertOne(JpegMedia);
+  await db.collection('media_objects').findOrInsertOne(GridfsMedia);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
   await db.collection('product_variations').insertMany(ProductVariations);
   await db.collection('product_variation_texts').insertMany(ProductVariationTexts);

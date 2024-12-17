@@ -16,7 +16,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return true;
   };
   const canUpdateAvatar = (_, params: { userId?: string } = {}, context: Context) => {
-    console.log(context?.user);
     const isVerified = context?.user?.emails.some(({ verified }) => verified);
     if (!isVerified) return false;
     if (params?.userId) {
@@ -205,7 +204,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isFileAccessible = async (file, _, context) => {
     const user = context?.user;
     if (!user || user?.isGuest) return false;
-    if (!file?.isPrivate || file?.meta?.userId === user.userId) return true;
+    if (!file?.isPrivate || file?.meta?.userId === user?._id) return true;
 
     return false;
   };
