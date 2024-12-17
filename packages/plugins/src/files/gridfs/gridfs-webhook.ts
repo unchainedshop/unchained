@@ -80,10 +80,10 @@ export const gridfsHandler = async (
       const { s: signature, e: expiryTimestamp } = req.query;
       const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
       const fileDocument = await modules.files.findFile({ fileId });
-      if (fileDocument?.isPrivate) {
+      if (fileDocument?.meta?.isPrivate) {
         const fileAdapter = getFileAdapter();
         const urlWithoutQuery = url.origin + url.pathname;
-        const signedUrl = await fileAdapter.signUrl(
+        const signedUrl = await fileAdapter.createDownloadURL(
           urlWithoutQuery,
           fileId,
           parseInt(expiryTimestamp || 0),

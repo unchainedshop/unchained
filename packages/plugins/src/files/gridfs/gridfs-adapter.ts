@@ -30,7 +30,7 @@ export const GridFSAdapter: IFileAdapter = {
   version: '1.0.0',
 
   ...FileAdapter,
-  async signUrl(fileUrl: string, mediaId: string, expiry?: number) {
+  async createDownloadURL(fileUrl: string, mediaId: string, expiry?: number) {
     const secretKey = process.env.UNCHAINED_SECRET;
     if (!secretKey) {
       throw new Error('UNCHAINED_SECRET is not set in environment variables');
@@ -67,7 +67,7 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName),
       putURL,
       url,
-    } as UploadFileData & { putURL: string; isPrivate: boolean };
+    } as UploadFileData & { putURL: string };
   },
 
   async uploadFileFromStream(directoryName: string, rawFile: any, { modules }: any) {

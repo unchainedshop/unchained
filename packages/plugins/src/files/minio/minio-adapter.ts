@@ -146,7 +146,7 @@ export const MinioAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName),
       putURL: url,
       url: generateMinioUrl(directoryName, _id),
-    } as UploadFileData & { putURL: string; isPrivate: boolean };
+    } as UploadFileData & { putURL: string };
   },
 
   async removeFiles(files) {

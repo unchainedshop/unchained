@@ -229,10 +229,10 @@ const GridfsMedia = {
   size: 104467,
   type: 'image/png',
   url: '/gridfs/product-media/7FVJLp22ye9zNNBGEosF9X-screenshot-from-2024-11-26-16-13-44.png',
-  isPrivate: true,
   meta: {
     productId: 'configurable-product-id',
     userId: 'user',
+    isPrivate: true,
   },
   updated: new Date('2021-10-12T18:07:31.818Z'),
 };

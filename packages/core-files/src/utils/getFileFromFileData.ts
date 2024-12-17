@@ -8,7 +8,6 @@ export const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
   size: fileData.size,
   type: fileData.type || 'application/octet-stream',
   url: fileData.url,
-  isPrivate: !!meta?.isPrivate,
   meta,
 });
 

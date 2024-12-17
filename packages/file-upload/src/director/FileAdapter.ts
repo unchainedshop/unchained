@@ -4,12 +4,12 @@ import { IBaseAdapter } from '@unchainedshop/utils';
 import { UploadedFile, UploadFileData } from '../types.js';
 
 export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
-  signUrl: (fileUrl: string, mediaId: string, expiry?: number) => Promise<string | null>;
+  createDownloadURL: (fileUrl: string, mediaId: string, expiry?: number) => Promise<string | null>;
   createSignedURL: (
     directoryName: string,
     fileName: string,
     isPrivate?: boolean,
-  ) => Promise<(UploadFileData & { putURL: string; isPrivate: boolean }) | null>;
+  ) => Promise<(UploadFileData & { putURL: string }) | null>;
   removeFiles: (files: Array<UploadedFile>, unchainedContext: Context) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
@@ -29,7 +29,7 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
   createDownloadStream: (file: UploadedFile, unchainedAPI: Context) => Promise<Readable>;
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
-  signUrl() {
+  createDownloadURL() {
     if (this.key !== 'shop.unchained.file-upload-plugin.gridfs')
       throw new Error(`private media upload not supported by ${this.key} adapter`);
     return new Promise<string | null>((resolve) => {

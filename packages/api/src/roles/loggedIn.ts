@@ -204,7 +204,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isFileAccessible = async (file, _, context) => {
     const user = context?.user;
     if (!user || user?.isGuest) return false;
-    if (!file?.isPrivate || file?.meta?.userId === user?._id) return true;
+    if (!file?.meta?.isPrivate || file?.meta?.userId === user?._id) return true;
 
     return false;
   };
