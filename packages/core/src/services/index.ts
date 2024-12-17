@@ -44,14 +44,14 @@ import { Modules } from '../modules.js';
 // TODO: Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
 
-function bindMethodsToModules(coreWithOnlyModules: { modules: Modules }) {
+function bindMethodsToModules(modules: Modules) {
   return {
     get(target, prop, receiver) {
       const value = target[prop];
       if (value instanceof Function) {
-        return value.bind(coreWithOnlyModules);
+        return value.bind(modules);
       } else if (value instanceof Object) {
-        return new Proxy(value, bindMethodsToModules(coreWithOnlyModules));
+        return new Proxy(value, bindMethodsToModules(modules));
       }
       return Reflect.get(target, prop, receiver);
     },
@@ -148,10 +148,7 @@ export default function initServices(
   };
 
   // This Proxy Binds all services to the Modules Object
-  return new Proxy<typeof services>(
-    { ...services, ...customServices },
-    bindMethodsToModules({ modules }),
-  );
+  return new Proxy<typeof services>({ ...services, ...customServices }, bindMethodsToModules(modules));
 }
 
 export type Services = ReturnType<typeof initServices>;

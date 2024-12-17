@@ -16,18 +16,17 @@ export async function migrateBookmarksService(
     shouldMerge: boolean;
     countryContext: string;
   },
-  { modules }: { modules: Modules },
 ) {
-  const fromBookmarks = await modules.bookmarks.findBookmarks({ userId: fromUserId });
+  const fromBookmarks = await this.bookmarks.findBookmarks({ userId: fromUserId });
   if (!fromBookmarks) {
     // No bookmarks no copy needed
     return;
   }
   if (!shouldMerge) {
-    await modules.bookmarks.deleteByUserId(toUserId);
-    await modules.bookmarks.replaceUserId(fromUserId, toUserId);
+    await this.bookmarks.deleteByUserId(toUserId);
+    await this.bookmarks.replaceUserId(fromUserId, toUserId);
   } else {
-    const toBookmarks = await modules.bookmarks.findBookmarks({ userId: toUserId });
+    const toBookmarks = await this.bookmarks.findBookmarks({ userId: toUserId });
     const toBookmarkHashes = toBookmarks.map(hashBookmark);
     const newBookmarkIds = fromBookmarks
       .filter((fromBookmark) => {
@@ -35,6 +34,6 @@ export async function migrateBookmarksService(
         return !toBookmarkHashes.includes(hash);
       })
       .map((bookmark) => bookmark._id);
-    await modules.bookmarks.replaceUserId(fromUserId, toUserId, newBookmarkIds);
+    await this.bookmarks.replaceUserId(fromUserId, toUserId, newBookmarkIds);
   }
 }

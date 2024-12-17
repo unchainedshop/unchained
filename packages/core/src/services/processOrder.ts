@@ -21,21 +21,21 @@ const isAutoConfirmationEnabled = async (
     orderPayment: OrderPayment;
     orderDelivery: OrderDelivery;
   },
-  unchainedAPI: { modules: Modules },
+  modules: Modules,
 ) => {
   if (orderPayment.status !== OrderPaymentStatus.PAID) {
-    const provider = await unchainedAPI.modules.payment.paymentProviders.findProvider({
+    const provider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: orderPayment.paymentProviderId,
     });
-    const actions = await PaymentDirector.actions(provider, {}, unchainedAPI);
+    const actions = await PaymentDirector.actions(provider, {}, { modules });
     if (!actions.isPayLaterAllowed()) return false;
   }
 
   if (orderDelivery.status !== OrderDeliveryStatus.DELIVERED) {
-    const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
+    const deliveryProvider = await modules.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
-    const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
+    const director = await DeliveryDirector.actions(deliveryProvider, {}, { modules });
     if (!director.isAutoReleaseAllowed()) return false;
   }
 
@@ -69,7 +69,7 @@ const findNextStatus = async (
   // Ok, we have a payment and a delivery and the correct status,
   // let's check if we can auto-confirm or auto-fulfill
   if (status === OrderStatus.PENDING) {
-    if (await isAutoConfirmationEnabled({ orderPayment, orderDelivery }, { modules })) {
+    if (await isAutoConfirmationEnabled({ orderPayment, orderDelivery }, modules)) {
       return OrderStatus.CONFIRMED;
     }
   }
