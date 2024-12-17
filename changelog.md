@@ -1,6 +1,19 @@
-# Unchained Engine v3.0
+# Unchained Engine v3.0 ("Odi")
 
-## Removing the auth fat of unchained
+We are thrilled to announce Unchained Engine v3.0, 5 years after the first version. We started with an overloaded framework approach using Meteor and gradually removed dependency by dependency, getting closer to the metal and in-line with today's standards. Unchained Engine...
+- ...is 100% ESM and self-hosted
+- ...loves WebCrypto, Fetch API, WebPush, URL, WebAuthn, oAuth
+- ...runs on Bun, Node.js and Serverless frameworks.
+- ...doesn't use ORM systems; can leverage the db driver to it's fullest potential 😉
+- ...hates federated graphs; is fast 😉
+- ...loves developers and hates "customizing"; is super extensible and un-oppinionated about your project 🥸
+
+Besides the ideology about the technical stuff, it basically provides all the GraphQL API's you need to build a modern Web-Shop, Ticketing System.
+
+## Ticketing
+I don't know if you have heard it but there is a new package "ticketing". It allows self-hosted ticketing with Apple Wallet and PDF Printing...
+
+## Removing the Auth Fat
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
 
 That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passport.js which is also ESM now. That opens the door to complex login methods like OpenID Connect through the community of passport.js.
@@ -10,7 +23,75 @@ We will keep supporting the following auth-strategies out of the box that we con
 - WebAuthn (Passkeys)
 - Access Tokens
 
-## Major
+
+## Service Layer Refactoring
+When we first started with the module approach, cross-module functions like the checkout were using functions of each other, creating bi-directional dependencies that were hard to manage. With the newest release, we have moved out all bi-directional function calls into the `core` umbrella package.
+
+We got rid of about 1'000 lines of code doing that and dramatically reduced complexity across the platform. `context.services` now houses all those methods and the core modules are cleanly separated mainly doing DB abstraction work.
+
+
+## Massive Performance Improvements & Experimental Fastify Support
+Queries involving catalog and products are now approximately **3 times faster** due to improved usage of caching, dataloader techniques and less db roundtrips in general.
+
+Checkouts are about **2 times faster**, too. With the new (still experimental) Fastify and Bun support, we have improved basic query response times everywhere by an order of magnitude (checkout the minimal example).
+
+Along the way we thought it would be nice to remove about 100 NPM module dependencies, so we did that, too. Oh my god yes.
+
+## BREAKING API CHANGES
+- `Mutation.loginWithOAuth` removed
+- `Mutation.linkOAuthAccount` removed
+- `Mutation.unlinkOAuthAccount` removed
+- `Mutation.logoutAllSessions` removed
+- `Mutation.buildSecretTOTPAuthURL` removed
+- `Mutation.enableTOTP` removed
+- `Mutation.disableTOTP` removed
+- `Mutation.impersonate` removed
+- `Mutation.stopImpersonation` removed
+- `Mutation.updateUserAvatar` removed, use PUT upload
+- `Mutation.addProductMedia` removed, use PUT upload
+- `Mutation.addAssortmentMedia` removed, use PUT upload
+- `Mutation.loginWithPassword` parameters changed
+- `Mutation.createUser` parameters changed
+- `Mutation.changePassword` parameters changed
+- `Mutation.resetPassword` parameters changed
+- `Mutation.logout` parameters changed
+- `Mutation.enrollUser` parameters changed
+- `Mutation.setPassword` parameters changed
+- `Mutation.addMultipleCartProducts` return type changed
+- `Mutation.createProduct` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
+- `Mutation.updateProductTexts` parameters changed
+- `Mutation.updateProductMediaTexts` parameters changed
+- `Mutation.createProductVariation` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
+- `Mutation.updateProductVariationTexts` parameters changed
+- `Mutation.createProductVariationOption` parameters changed
+- `Mutation.createAssortment` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
+- `Mutation.updateAssortmentTexts` parameters changed
+- `Mutation.updateAssortmentMediaTexts` parameters changed
+- `Mutation.createFilter` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
+- `Mutation.updateFilterTexts` parameters changed
+- `Mutation.createFilterOption` parameters changed
+- `Query.impersonator` removed
+- `Query.eventStatistics` parameters changed
+- `Query.orderStatistics` parameters changed
+- `Query.workStatistics` parameters changed
+- `AssortmentmediaTexts.locale` type changed to Locale from String
+- `AssortmentMedia.file` optional, required before
+- `AssortmentTexts.locale` type changed to Locale from String
+- `FilterTexts.locale` type changed to Locale from String
+- `Media.url` optional, required before
+- `Shop.oAuthProviders` removed
+- `User.isTwoFactorEnabled` removed
+- `User.oAuthAccounts` removed
+- `LoginMethodResponse.token` **removed, use server-side cookies or access-keys**
+- `LoginMethodResponse.id` **removed, uses _id now like all other entities**
+- `UserLoginTracker.locale` type changed to Locale from String
+- `ProductVariationTexts.locale` type changed to Locale from String
+- `ProductMediaTexts.locale` type changed to Locale from String
+- `ProductTexts.locale` type changed to Locale from String
+- `ProductMedia.file` optional, required before
+
+
+## Major
 - Drop support for Node.js <22.x
 - `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
 - Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
@@ -18,19 +99,24 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Auth: Introduce default password rules (min. 8 chars)
 - Auth: Drop 2FA support (if you need special authentication strategies, use a passport or fastify plugin)
 - Auth: Drop oAuth support (if you need special authentication strategies, use a passport or fastify plugin)
+- Core: 99% of all Director's and Adapters have a new home in `@unchainedshop/core`, so for ex. `import { IPaymentAdapter } from '@unchainedshop/core-payment';` becomes `import { IPaymentAdapter } from '@unchainedshop/core';`
 - Core: The order module function `initProviders` has been moved to order services renamed as `initCartProviders`
 - Core: The order module function `updateCalculation` has been moved to order services
 - Core: The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
+- Core: We have moved so many module functions to services that we stop here because of lazyness... 😁 Typescript can help you there haha.
 - API: Add built-in Fastify support
 - API: Add built-in Yoga support (we are going to deprecate Apollo Server starting from 4.x)
 - API: `LoginMethodResponse` has a new breaking GraphQL type
 - Platform: Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
 
+
 ## Minor
+- Improved cookie handling
 - API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
 - API: Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
 - API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
 - Plugins: Add AWS Event Bridge Plugin for Serverless Mode
+- Update Stripe
 
 
 # Unchained Engine v2.14
@@ -60,6 +146,8 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Generally improve performance for queries and mutations across the whole API
 - Improve various Typescript annotations
 
+
+What's next? Checkout Milestone 3.1 on Github. https://github.com/unchainedshop/unchained/milestone/6
 
 # Unchained Engine v2.13
 
@@ -188,7 +276,7 @@ This release contains various bugfixes and improvements
 - Fixed a severe GridFS plugin bug that can lead to server crashes (DOS)
 - Fixed ERC metadata not optional causing issues with traditional warehousing plugins
 
-# Unchained Engine v2.0
+# Unchained Engine v2.0 ("Federer")
 
 This is a major feature release bringing Web Authentication API, Web3 Login, Web Push API and Virtual Products including an NFT/Token Minting gateway to Unchained Engine. It's also the first version of Unchained Engine that can be extended to run on other Node.js frameworks than Express.
 
