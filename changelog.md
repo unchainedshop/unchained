@@ -1,4 +1,4 @@
-# Unchained Engine v3.0 ("Odi")
+# Unchained Engine v3.0 RC1 ("Odi")
 
 We are thrilled to announce Unchained Engine v3.0, 5 years after the first version. We started with an overloaded framework approach using Meteor and gradually removed dependency by dependency, getting closer to the metal and in-line with today's standards. Unchained Engine...
 - ...is 100% ESM and self-hosted
@@ -37,7 +37,7 @@ Checkouts are about **2 times faster**, too. With the new (still experimental) F
 
 Along the way we thought it would be nice to remove about 100 NPM module dependencies, so we did that, too. Oh my god yes.
 
-## BREAKING API CHANGES
+## BREAKING API SCHEMA CHANGES (Sorry :-)
 - `Mutation.loginWithOAuth` removed
 - `Mutation.linkOAuthAccount` removed
 - `Mutation.unlinkOAuthAccount` removed
@@ -89,7 +89,6 @@ Along the way we thought it would be nice to remove about 100 NPM module depende
 - `ProductMediaTexts.locale` type changed to Locale from String
 - `ProductTexts.locale` type changed to Locale from String
 - `ProductMedia.file` optional, required before
-
 
 ## Major
 - Drop support for Node.js <22.x
