@@ -81,5 +81,5 @@ export default async function addMultipleCartProducts(
     Promise.resolve([]),
   );
 
-  return services.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id);
 }

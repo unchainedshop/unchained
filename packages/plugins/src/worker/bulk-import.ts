@@ -9,10 +9,7 @@ const logger = createLogger('unchained:worker:bulk-import');
 const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
   logger.trace(`parseAsync start`);
 
-  const readStream = await unchainedAPI.services.files.createDownloadStream(
-    { fileId: payloadId },
-    unchainedAPI,
-  );
+  const readStream = await unchainedAPI.services.files.createDownloadStream({ fileId: payloadId });
 
   if (!readStream) {
     throw new Error(

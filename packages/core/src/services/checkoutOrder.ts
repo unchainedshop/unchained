@@ -4,7 +4,8 @@ import { nextUserCartService } from './nextUserCart.js';
 import { validateOrderService } from './validateOrder.js';
 import { processOrderService } from './processOrder.js';
 
-export const checkoutOrderService = async (
+export async function checkoutOrderService(
+  this: Modules,
   orderId: string,
   transactionContext: {
     paymentContext?: any;
@@ -12,37 +13,31 @@ export const checkoutOrderService = async (
     comment?: string;
     nextStatus?: OrderStatus;
   },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
-
-  const order = await modules.orders.findOrder({ orderId });
+) {
+  const order = await this.orders.findOrder({ orderId });
   if (order.status !== null) return order;
 
-  await validateOrderService(order, unchainedAPI);
+  await validateOrderService.bind(this)(order);
 
-  const lock = await modules.orders.acquireLock(order._id, 'checkout');
+  const lock = await this.orders.acquireLock(order._id, 'checkout');
 
   try {
-    const processedOrder = await processOrderService(order, transactionContext, unchainedAPI);
+    const processedOrder = await processOrderService.bind(this)(order, transactionContext);
 
     // After checkout, store last checkout information on user
-    await modules.users.updateLastBillingAddress(processedOrder.userId, processedOrder.billingAddress);
-    await modules.users.updateLastContact(processedOrder.userId, processedOrder.contact);
+    await this.users.updateLastBillingAddress(processedOrder.userId, processedOrder.billingAddress);
+    await this.users.updateLastContact(processedOrder.userId, processedOrder.contact);
 
     // Then eventually build next cart
-    const user = await modules.users.findUserById(processedOrder.userId);
-    const locale = modules.users.userLocale(user);
-    await nextUserCartService(
-      {
-        user,
-        countryCode: locale.region,
-      },
-      unchainedAPI,
-    );
+    const user = await this.users.findUserById(processedOrder.userId);
+    const locale = this.users.userLocale(user);
+    await nextUserCartService.bind(this)({
+      user,
+      countryCode: locale.region,
+    });
 
     return processedOrder;
   } finally {
     await lock.release();
   }
-};
+}

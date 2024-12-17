@@ -1,23 +1,23 @@
 import { Modules } from '../modules.js';
 
-export type MigrateBookmarksService = (
-  params: {
+const hashBookmark = (bookmark) => {
+  return `${bookmark.productId}:${bookmark.userId}:${JSON.stringify(bookmark.meta || {})}`;
+};
+
+export async function migrateBookmarksService(
+  this: Modules,
+  {
+    fromUserId,
+    toUserId,
+    shouldMerge,
+  }: {
     fromUserId: string;
     toUserId: string;
     shouldMerge: boolean;
     countryContext: string;
   },
-  unchainedAPI: { modules: Modules },
-) => Promise<void>;
-
-const hashBookmark = (bookmark) => {
-  return `${bookmark.productId}:${bookmark.userId}:${JSON.stringify(bookmark.meta || {})}`;
-};
-
-export const migrateBookmarksService: MigrateBookmarksService = async (
-  { fromUserId, toUserId, shouldMerge },
-  { modules },
-) => {
+  { modules }: { modules: Modules },
+) {
   const fromBookmarks = await modules.bookmarks.findBookmarks({ userId: fromUserId });
   if (!fromBookmarks) {
     // No bookmarks no copy needed
@@ -37,4 +37,4 @@ export const migrateBookmarksService: MigrateBookmarksService = async (
       .map((bookmark) => bookmark._id);
     await modules.bookmarks.replaceUserId(fromUserId, toUserId, newBookmarkIds);
   }
-};
+}

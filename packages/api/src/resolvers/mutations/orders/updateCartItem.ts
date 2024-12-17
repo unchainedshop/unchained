@@ -55,6 +55,6 @@ export default async function updateCartItem(
     quantity,
     configuration,
   });
-  await services.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
 }

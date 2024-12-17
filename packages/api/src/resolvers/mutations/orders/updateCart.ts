@@ -44,5 +44,5 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   }
 
   // Recalculate, then return
-  return services.orders.updateCalculation(order._id, context);
+  return services.orders.updateCalculation(order._id);
 }

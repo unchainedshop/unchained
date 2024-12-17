@@ -14,12 +14,9 @@ export default async function prepareUserAvatarUpload(
     userId,
   });
 
-  return services.files.createSignedURL(
-    {
-      directoryName: 'user-avatars',
-      fileName: params.mediaName,
-      meta: { userId: normalizedUserId },
-    },
-    context,
-  );
+  return services.files.createSignedURL({
+    directoryName: 'user-avatars',
+    fileName: params.mediaName,
+    meta: { userId: normalizedUserId },
+  });
 }

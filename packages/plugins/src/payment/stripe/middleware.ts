@@ -78,15 +78,11 @@ export const stripeHandler = async (request, response) => {
         throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
       }
 
-      const order = await services.orders.checkoutOrder(
-        orderPayment.orderId,
-        {
-          paymentContext: {
-            paymentIntentId: paymentIntent.id,
-          },
+      const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+        paymentContext: {
+          paymentIntentId: paymentIntent.id,
         },
-        resolvedContext,
-      );
+      });
 
       logger.info(`checkout successful`, {
         orderPaymentId,

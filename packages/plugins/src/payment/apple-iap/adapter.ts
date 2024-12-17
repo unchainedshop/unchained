@@ -99,15 +99,11 @@ export const appleIAPHandler = async (req, res) => {
 
         if (!orderPayment) throw new Error('Could not find any matching order payment');
 
-        const order = await services.orders.checkoutOrder(
-          orderPayment.orderId,
-          {
-            paymentContext: {
+        const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+          paymentContext: {
                 receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-            },
           },
-          resolvedContext,
-        );
+        });
         const orderId = order._id;
         const enrollment = await modules.enrollments.findEnrollment({
           orderId,
@@ -171,7 +167,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await services.enrollments.terminateEnrollment(enrollment, resolvedContext);
+            await services.enrollments.terminateEnrollment(enrollment);
           }
         }
 
@@ -180,7 +176,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await services.enrollments.terminateEnrollment(enrollment, resolvedContext);
+            await services.enrollments.terminateEnrollment(enrollment);
           }
         }
         logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);

@@ -28,5 +28,5 @@ export default async function activateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return services.enrollments.activateEnrollment(enrollment, context);
+  return services.enrollments.activateEnrollment(enrollment);
 }

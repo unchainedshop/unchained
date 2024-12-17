@@ -25,5 +25,5 @@ export default async function terminateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return services.enrollments.terminateEnrollment(enrollment, context);
+  return services.enrollments.terminateEnrollment(enrollment);
 }

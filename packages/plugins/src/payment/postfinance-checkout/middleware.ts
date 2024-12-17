@@ -21,15 +21,11 @@ export const postfinanceCheckoutHandler = async (req, res) => {
       });
       if (!orderPayment) throw new Error('Order Payment not found');
 
-      const order = await services.orders.checkoutOrder(
-        orderPayment.orderId,
-        {
-          paymentContext: {
-            transactionId: transactionCompletion.linkedTransaction,
-          },
+      const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+        paymentContext: {
+          transactionId: transactionCompletion.linkedTransaction,
         },
-        context,
-      );
+      });
       logger.info(
         `PostFinance Checkout Webhook: Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
       );

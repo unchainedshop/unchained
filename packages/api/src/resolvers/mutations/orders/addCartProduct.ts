@@ -53,6 +53,6 @@ export default async function addCartProduct(
     orderId: order._id,
   });
 
-  await services.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: orderPosition._id });
 }

@@ -5,7 +5,7 @@ export default async function removeProduct(payload: any, { logger }, unchainedA
   const { _id } = payload;
   logger.debug(`remove product ${_id}`);
 
-  await services.products.removeProduct({ productId: _id }, unchainedAPI);
+  await services.products.removeProduct({ productId: _id });
 
   return {
     entity: 'PRODUCT',

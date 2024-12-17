@@ -40,6 +40,6 @@ export default async function removeCartDiscount(
   }
 
   const deletedDiscount = await modules.orders.discounts.delete(discountId);
-  await services.orders.updateCalculation(order._id, requestContext);
+  await services.orders.updateCalculation(order._id);
   return deletedDiscount;
 }

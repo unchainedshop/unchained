@@ -2,29 +2,28 @@ import { ProductStatus } from '@unchainedshop/core-products';
 import { updateCalculationService } from './updateCalculation.js';
 import { Modules } from '../modules.js';
 
-export const removeProductService = async (
+export async function removeProductService(
+  this: Modules,
   { productId }: { productId: string },
-  unchainedAPI: { modules: Modules },
-): Promise<boolean> => {
-  const { modules } = unchainedAPI;
-  const product = await modules.products.findProduct({ productId });
+): Promise<boolean> {
+  const product = await this.products.findProduct({ productId });
   switch (product.status) {
     case ProductStatus.ACTIVE:
-      await modules.products.unpublish(product);
+      await this.products.unpublish(product);
     // falls through
     case null:
     case ProductStatus.DRAFT:
       {
-        await modules.bookmarks.deleteByProductId(productId);
-        await modules.assortments.products.delete(productId);
+        await this.bookmarks.deleteByProductId(productId);
+        await this.assortments.products.delete(productId);
         const orderIdsToRecalculate =
-          await modules.orders.positions.removeProductByIdFromAllOpenPositions(productId);
+          await this.orders.positions.removeProductByIdFromAllOpenPositions(productId);
         await Promise.all(
           [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
-            await updateCalculationService(orderIdToRecalculate, unchainedAPI);
+            await updateCalculationService.bind(this)(orderIdToRecalculate);
           }),
         );
-        await modules.products.delete(productId);
+        await this.products.delete(productId);
       }
       break;
     default:
@@ -32,4 +31,4 @@ export const removeProductService = async (
   }
 
   return true;
-};
+}

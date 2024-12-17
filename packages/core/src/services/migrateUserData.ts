@@ -1,39 +1,22 @@
 import { userSettings } from '@unchainedshop/core-users';
 import { migrateBookmarksService } from './migrateBookmarks.js';
 import { migrateOrderCartsService } from './migrateOrderCart.js';
-import { Modules } from '../modules.js';
 
-export type MigrateUserDataService = (
-  userIdBeforeLogin,
-  userId,
-  unchainedAPI: { modules: Modules },
-) => Promise<void>;
+export async function migrateUserDataService(userIdBeforeLogin, userId) {
+  const user = await this.users.findUserById(userId);
+  const userBeforeLogin = await this.users.findUserById(userIdBeforeLogin);
 
-export const migrateUserDataService: MigrateUserDataService = async (
-  userIdBeforeLogin,
-  userId,
-  unchainedAPI,
-) => {
-  const user = await unchainedAPI.modules.users.findUserById(userId);
-  const userBeforeLogin = await unchainedAPI.modules.users.findUserById(userIdBeforeLogin);
+  await migrateOrderCartsService.bind(this)({
+    fromUserId: userIdBeforeLogin,
+    toUserId: userId,
+    shouldMerge: userSettings.mergeUserCartsOnLogin,
+    countryContext: userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
+  });
 
-  await migrateOrderCartsService(
-    {
-      fromUserId: userIdBeforeLogin,
-      toUserId: userId,
-      shouldMerge: userSettings.mergeUserCartsOnLogin,
-      countryContext: userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
-    },
-    unchainedAPI,
-  );
-
-  await migrateBookmarksService(
-    {
-      fromUserId: userIdBeforeLogin,
-      toUserId: userId,
-      shouldMerge: userSettings.mergeUserCartsOnLogin,
-      countryContext: userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
-    },
-    unchainedAPI,
-  );
-};
+  await migrateBookmarksService.bind(this)({
+    fromUserId: userIdBeforeLogin,
+    toUserId: userId,
+    shouldMerge: userSettings.mergeUserCartsOnLogin,
+    countryContext: userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
+  });
+}

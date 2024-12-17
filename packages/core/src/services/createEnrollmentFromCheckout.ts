@@ -5,7 +5,8 @@ import { Modules } from '../modules.js';
 import { EnrollmentDirector } from '../directors/index.js';
 import { initializeEnrollmentService } from './initializeEnrollment.js';
 
-export const createEnrollmentFromCheckoutService = async (
+export async function createEnrollmentFromCheckoutService(
+  this: Modules,
   order: Order,
   {
     items,
@@ -20,15 +21,13 @@ export const createEnrollmentFromCheckoutService = async (
       deliveryContext?: any;
     };
   },
-  unchainedAPI: { modules: Modules },
-): Promise<Array<Enrollment>> => {
-  const { modules } = unchainedAPI;
+): Promise<Array<Enrollment>> {
   const orderId = order._id;
 
-  const payment = await modules.orders.payments.findOrderPayment({
+  const payment = await this.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
   });
-  const delivery = await modules.orders.deliveries.findDelivery({
+  const delivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
 
@@ -53,21 +52,15 @@ export const createEnrollmentFromCheckoutService = async (
 
   return Promise.all(
     items.map(async (item) => {
-      const enrollmentData = await EnrollmentDirector.transformOrderItemToEnrollment(
-        item,
-        template,
-        unchainedAPI,
-      );
+      const enrollmentData = await EnrollmentDirector.transformOrderItemToEnrollment(item, template, {
+        modules: this,
+      });
 
-      const enrollment = await modules.enrollments.create(enrollmentData);
-      return await initializeEnrollmentService(
-        enrollment,
-        {
-          orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
-          reason: 'new_enrollment',
-        },
-        unchainedAPI,
-      );
+      const enrollment = await this.enrollments.create(enrollmentData);
+      return await initializeEnrollmentService.bind(this)(enrollment, {
+        orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
+        reason: 'new_enrollment',
+      });
     }),
   );
-};
+}

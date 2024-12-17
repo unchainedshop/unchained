@@ -33,5 +33,5 @@ export default async function payOrder(root: never, { orderId }: { orderId: stri
   }
 
   await modules.orders.payments.markAsPaid(payment, null);
-  return services.orders.processOrder(order, {}, context);
+  return services.orders.processOrder(order, {});
 }

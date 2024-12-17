@@ -57,16 +57,12 @@ const generateOrder = async (
     await modules.orders.setDeliveryProvider(orderId, deliveryProviderId);
   }
 
-  await services.orders.updateCalculation(orderId, unchainedAPI);
+  await services.orders.updateCalculation(orderId);
 
-  order = await services.orders.checkoutOrder(
-    order._id,
-    {
-      paymentContext,
-      deliveryContext,
-    },
-    unchainedAPI,
-  );
+  order = await services.orders.checkoutOrder(order._id, {
+    paymentContext,
+    deliveryContext,
+  });
 
   return order;
 };

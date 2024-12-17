@@ -48,12 +48,8 @@ export default async function createEnrollment(
     userId,
   });
 
-  return await services.enrollments.initializeEnrollment(
-    enrollment,
-    {
-      orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
-      reason: 'new_enrollment',
-    },
-    context,
-  );
+  return await services.enrollments.initializeEnrollment(enrollment, {
+    orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
+    reason: 'new_enrollment',
+  });
 }

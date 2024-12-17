@@ -24,9 +24,9 @@ export default async function addCartDiscount(
   if (await modules.orders.discounts.isDiscountCodeUsed({ code, orderId: order._id }))
     throw new OrderDiscountCodeAlreadyPresentError({ orderId: order._id, code });
 
-  const discount = await services.orders.createManualOrderDiscount({ order, code }, context);
+  const discount = await services.orders.createManualOrderDiscount({ order, code });
   if (!discount) throw new OrderDiscountCodeNotValidError({ code });
 
-  await services.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id);
   return discount;
 }

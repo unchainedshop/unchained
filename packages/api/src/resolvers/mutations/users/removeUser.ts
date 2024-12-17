@@ -19,5 +19,5 @@ export default async function removeUser(
   if (removeUserReviews) {
     await modules.products.reviews.deleteMany({ authorId: userId });
   }
-  return services.users.deleteUser({ userId: normalizedUserId }, unchainedAPI);
+  return services.users.deleteUser({ userId: normalizedUserId });
 }

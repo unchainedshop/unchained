@@ -2,7 +2,8 @@ import { Order, OrderStatus } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import { processOrderService } from './processOrder.js';
 
-export const confirmOrderService = async (
+export async function confirmOrderService(
+  this: Modules,
   order: Order,
   transactionContext: {
     paymentContext?: any;
@@ -10,23 +11,16 @@ export const confirmOrderService = async (
     comment?: string;
     nextStatus?: OrderStatus;
   },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
-
+) {
   if (order.status !== OrderStatus.PENDING) return order;
 
-  const lock = await modules.orders.acquireLock(order._id, 'confirm-reject', 1500);
+  const lock = await this.orders.acquireLock(order._id, 'confirm-reject', 1500);
   try {
-    return await processOrderService(
-      order,
-      {
-        ...transactionContext,
-        nextStatus: OrderStatus.CONFIRMED,
-      },
-      unchainedAPI,
-    );
+    return await processOrderService.bind(this)(order, {
+      ...transactionContext,
+      nextStatus: OrderStatus.CONFIRMED,
+    });
   } finally {
     await lock.release();
   }
-};
+}

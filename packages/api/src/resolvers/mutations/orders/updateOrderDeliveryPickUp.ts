@@ -37,7 +37,7 @@ export default async function updateOrderDeliveryPickUp(
     orderPickUpLocationId,
     meta,
   });
-  await services.orders.updateCalculation(orderDelivery.orderId, context);
+  await services.orders.updateCalculation(orderDelivery.orderId);
   return modules.orders.deliveries.findDelivery({
     orderDeliveryId,
   });

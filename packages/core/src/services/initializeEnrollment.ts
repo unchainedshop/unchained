@@ -1,32 +1,29 @@
 import { Enrollment } from '@unchainedshop/core-enrollments';
-import { Modules } from '../modules.js';
 import { EnrollmentDirector } from '../core-index.js';
 import { processEnrollmentService } from './processEnrollment.js';
+import { Modules } from '../modules.js';
 
-export const initializeEnrollmentService = async (
+export async function initializeEnrollmentService(
+  this: Modules,
   enrollment: Enrollment,
   params: { orderIdForFirstPeriod?: string; reason: string },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
-
-  const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
+) {
+  const director = await EnrollmentDirector.actions({ enrollment }, { modules: this });
   const period = await director.nextPeriod();
 
   let updatedEnrollment = enrollment;
   if (period && (params.orderIdForFirstPeriod || period.isTrial)) {
-    updatedEnrollment = await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+    updatedEnrollment = await this.enrollments.addEnrollmentPeriod(enrollment._id, {
       ...period,
       orderId: params.orderIdForFirstPeriod,
     });
   }
 
-  const processedEnrollment = await processEnrollmentService(updatedEnrollment, unchainedAPI);
+  const processedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
+  const user = await this.users.findUserById(enrollment.userId);
+  const locale = this.users.userLocale(user);
 
-  const user = await modules.users.findUserById(enrollment.userId);
-  const locale = modules.users.userLocale(user);
-
-  await modules.worker.addWork({
+  await this.worker.addWork({
     type: 'MESSAGE',
     retries: 0,
     input: {
@@ -38,4 +35,4 @@ export const initializeEnrollmentService = async (
   });
 
   return processedEnrollment;
-};
+}

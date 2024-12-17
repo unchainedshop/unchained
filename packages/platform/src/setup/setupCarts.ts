@@ -14,7 +14,7 @@ export const setupCarts = async (unchainedAPI: UnchainedCore, options: SetupCart
     );
     await Promise.allSettled(
       orders.map(async (order) => {
-        await unchainedAPI.services.orders.updateCalculation(order._id, unchainedAPI);
+        await unchainedAPI.services.orders.updateCalculation(order._id);
       }),
     );
   }

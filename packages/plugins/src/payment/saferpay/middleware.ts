@@ -42,15 +42,11 @@ export const saferpayHandler = async (request, response) => {
       throw new Error('Invalid signature');
     }
 
-    const order = await services.orders.checkoutOrder(
-      orderPayment.orderId,
-      {
-        paymentContext: {
-          transactionId,
-        },
+    const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+      paymentContext: {
+        transactionId,
       },
-      resolvedContext,
-    );
+    });
     logger.info(`checkout successful`, {
       orderPaymentId,
       orderId: order._id,

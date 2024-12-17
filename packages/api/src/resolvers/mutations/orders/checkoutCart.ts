@@ -23,7 +23,7 @@ export default async function checkoutCart(
   let order = await getOrderCart({ orderId: forceOrderId, user }, context);
 
   try {
-    order = await services.orders.checkoutOrder(order._id, transactionContext, context);
+    order = await services.orders.checkoutOrder(order._id, transactionContext);
     return order;
   } catch (error) {
     logger.error(error.message, { userId, orderId: order._id });

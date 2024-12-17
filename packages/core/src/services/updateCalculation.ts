@@ -10,17 +10,15 @@ import {
   PaymentPricingDirector,
 } from '../directors/index.js';
 
-export const updateCalculationService = async (orderId: string, unchainedAPI: { modules: Modules }) => {
-  const { modules } = unchainedAPI;
-
-  const order = await modules.orders.findOrder({ orderId });
+export async function updateCalculationService(this: Modules, orderId: string) {
+  const order = await this.orders.findOrder({ orderId });
 
   // Don't recalculate orders, only carts
   if (order.status !== null) return order;
 
   // 1. go through existing order-discounts and check if discount still valid,
   // those who are not valid anymore should get removed
-  const discounts = await modules.orders.discounts.findOrderDiscounts({
+  const discounts = await this.orders.discounts.findOrderDiscounts({
     orderId: order._id,
   });
 
@@ -29,7 +27,7 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
       const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
       if (!Adapter) return null;
       const adapter = await Adapter.actions({
-        context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
+        context: { order, orderDiscount, code: orderDiscount.code, modules: this },
       });
 
       const isValid =
@@ -43,24 +41,24 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
         if (orderDiscount.trigger === OrderDiscountTrigger.USER) {
           await adapter.release();
         }
-        await modules.orders.discounts.delete(orderDiscount._id);
+        await this.orders.discounts.delete(orderDiscount._id);
       }
     }),
   );
 
   // 2. run auto-system discount
-  const cleanedDiscounts = await modules.orders.discounts.findOrderDiscounts({
+  const cleanedDiscounts = await this.orders.discounts.findOrderDiscounts({
     orderId: order._id,
   });
 
   const currentDiscountKeys = cleanedDiscounts.map(({ discountKey }) => discountKey);
-  const director = await OrderDiscountDirector.actions({ order, code: null }, unchainedAPI);
+  const director = await OrderDiscountDirector.actions({ order, code: null }, { modules: this });
   const systemDiscounts = await director.findSystemDiscounts();
   await Promise.all(
     systemDiscounts
       .filter((key) => currentDiscountKeys.indexOf(key) === -1)
       .map(async (discountKey) =>
-        modules.orders.discounts.create({
+        this.orders.discounts.create({
           orderId: order._id,
           discountKey,
           trigger: OrderDiscountTrigger.SYSTEM,
@@ -68,7 +66,7 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
       ),
   );
 
-  let orderPositions = await modules.orders.positions.findOrderPositions({
+  let orderPositions = await this.orders.positions.findOrderPositions({
     orderId,
   });
   orderPositions = await Promise.all(
@@ -80,13 +78,13 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
           item: orderPosition,
           configuration: orderPosition.configuration,
         },
-        unchainedAPI,
+        { modules: this },
       );
-      return modules.orders.positions.updateCalculation(orderPosition._id, positionCalculation);
+      return this.orders.positions.updateCalculation(orderPosition._id, positionCalculation);
     }),
   );
 
-  let orderDelivery = await modules.orders.deliveries.findDelivery({
+  let orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
   if (orderDelivery) {
@@ -95,14 +93,14 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
         currency: order.currency,
         item: orderDelivery,
       },
-      unchainedAPI,
+      { modules: this },
     );
-    orderDelivery = await modules.orders.deliveries.updateCalculation(
+    orderDelivery = await this.orders.deliveries.updateCalculation(
       orderDelivery._id,
       deliveryCalculation,
     );
   }
-  let orderPayment = await modules.orders.payments.findOrderPayment({
+  let orderPayment = await this.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
   });
   if (orderPayment) {
@@ -111,9 +109,9 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
         currency: order.currency,
         item: orderPayment,
       },
-      unchainedAPI,
+      { modules: this },
     );
-    orderPayment = await modules.orders.payments.updateCalculation(orderPayment._id, paymentCalculation);
+    orderPayment = await this.orders.payments.updateCalculation(orderPayment._id, paymentCalculation);
   }
 
   orderPositions = await updateSchedulingService(
@@ -122,15 +120,15 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
       orderPositions,
       orderDelivery,
     },
-    unchainedAPI,
+    { modules: this },
   );
 
   const calculation = await OrderPricingDirector.rebuildCalculation(
     { currency: order.currency, order, orderPositions, orderDelivery, orderPayment },
-    unchainedAPI,
+    { modules: this },
   );
 
-  const updatedOrder = await modules.orders.updateCalculationSheet(orderId, calculation);
+  const updatedOrder = await this.orders.updateCalculationSheet(orderId, calculation);
 
   /*
        // We have to do initCartProviders after calculation, only then filterSupportedProviders will work correctly and has access to recent pricing
@@ -144,5 +142,5 @@ export const updateCalculationService = async (orderId: string, unchainedAPI: { 
         // 6. update calculation -> order pricing updated to items 0, delivery 0, payment 0
         // 7. initCartProviders with updated order -> all providers are valid -> return order
     */
-  return initCartProvidersService(updatedOrder, unchainedAPI);
-};
+  return initCartProvidersService(updatedOrder, { modules: this });
+}

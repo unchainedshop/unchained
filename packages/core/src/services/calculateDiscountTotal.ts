@@ -11,16 +11,15 @@ import {
   PaymentPricingSheet,
 } from '../directors/index.js';
 
-export const calculateDiscountTotalService = async (
+export async function calculateDiscountTotalService(
+  this: Modules,
   order: Order,
   orderDiscount: OrderDiscount,
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
+) {
   const orderDiscountId = orderDiscount._id;
 
   // Delivery discounts
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
+  const orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
   const orderDeliveryDiscountSum = DeliveryPricingSheet({
@@ -29,7 +28,7 @@ export const calculateDiscountTotalService = async (
   }).total({ category: DeliveryPricingRowCategory.Discount, discountId: orderDiscountId });
 
   // Payment discounts
-  const orderPayment = await modules.orders.payments.findOrderPayment({
+  const orderPayment = await this.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
   });
   const orderPaymentDiscountSum = PaymentPricingSheet({
@@ -38,7 +37,7 @@ export const calculateDiscountTotalService = async (
   }).total({ category: PaymentPricingRowCategory.Discount, discountId: orderDiscountId });
 
   // Position discounts
-  const orderPositions = await modules.orders.positions.findOrderPositions({
+  const orderPositions = await this.orders.positions.findOrderPositions({
     orderId: order._id,
   });
   const orderPositionDiscounts = orderPositions.map((orderPosition) =>
@@ -69,4 +68,4 @@ export const calculateDiscountTotalService = async (
     amount,
     currency: order.currency,
   };
-};
+}

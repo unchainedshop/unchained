@@ -75,15 +75,11 @@ export const payrexxHandler = async (request, response) => {
         throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
       }
 
-      const order = await services.orders.checkoutOrder(
-        orderPayment.orderId,
-        {
-          paymentContext: {
-            gatewayId: invoice.paymentRequestId,
-          },
+      const order = await services.orders.checkoutOrder(orderPayment.orderId, {
+        paymentContext: {
+          gatewayId: invoice.paymentRequestId,
         },
-        resolvedContext,
-      );
+      });
       logger.info(`checkout successful`, {
         orderPaymentId,
         orderId: order._id,

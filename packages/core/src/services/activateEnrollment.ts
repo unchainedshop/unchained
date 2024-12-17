@@ -2,26 +2,20 @@ import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { Modules } from '../modules.js';
 import { processEnrollmentService } from './processEnrollment.js';
 
-export const activateEnrollmentService = async (
-  enrollment: Enrollment,
-  unchainedAPI: {
-    modules: Modules;
-  },
-) => {
-  const { modules } = unchainedAPI;
+export async function activateEnrollmentService(this: Modules, enrollment: Enrollment) {
   if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
-  let updatedEnrollment = await unchainedAPI.modules.enrollments.updateStatus(enrollment._id, {
+  let updatedEnrollment = await this.enrollments.updateStatus(enrollment._id, {
     status: EnrollmentStatus.ACTIVE,
     info: 'activated manually',
   });
 
-  updatedEnrollment = await processEnrollmentService(updatedEnrollment, unchainedAPI);
+  updatedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
 
-  const user = await modules.users.findUserById(enrollment.userId);
-  const locale = modules.users.userLocale(user);
+  const user = await this.users.findUserById(enrollment.userId);
+  const locale = this.users.userLocale(user);
 
-  await modules.worker.addWork({
+  await this.worker.addWork({
     type: 'MESSAGE',
     retries: 0,
     input: {
@@ -33,4 +27,4 @@ export const activateEnrollmentService = async (
   });
 
   return updatedEnrollment;
-};
+}

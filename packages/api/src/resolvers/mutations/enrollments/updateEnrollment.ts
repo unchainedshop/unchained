@@ -65,11 +65,7 @@ export default async function updateEnrollment(
       );
     }
     enrollment = await modules.enrollments.updatePlan(enrollmentId, plan);
-    enrollment = await services.enrollments.initializeEnrollment(
-      enrollment,
-      { reason: 'updated_plan' },
-      context,
-    );
+    enrollment = await services.enrollments.initializeEnrollment(enrollment, { reason: 'updated_plan' });
   }
 
   return enrollment;

@@ -9,14 +9,11 @@ export default async function prepareAssortmentMediaUpload(
   const { services, userId } = context;
   log('mutation prepareAssortmentMediaUpload', { mediaName, userId });
 
-  const preparedFile = await services.files.createSignedURL(
-    {
-      directoryName: 'assortment-media',
-      fileName: mediaName,
-      meta: { assortmentId },
-    },
-    context,
-  );
+  const preparedFile = await services.files.createSignedURL({
+    directoryName: 'assortment-media',
+    fileName: mediaName,
+    meta: { assortmentId },
+  });
 
   return preparedFile;
 }

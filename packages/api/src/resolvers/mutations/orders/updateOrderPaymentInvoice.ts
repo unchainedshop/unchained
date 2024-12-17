@@ -33,6 +33,6 @@ export default async function updateOrderPaymentInvoice(
     });
 
   await modules.orders.payments.updateContext(orderPayment._id, { meta });
-  await services.orders.updateCalculation(orderPayment.orderId, context);
+  await services.orders.updateCalculation(orderPayment.orderId);
   return modules.orders.payments.findOrderPayment({ orderPaymentId });
 }

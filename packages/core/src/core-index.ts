@@ -1,5 +1,5 @@
 import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
-import defaultServices, { Services } from './services/index.js';
+import initServices, { Services } from './services/index.js';
 import initModules, { Modules, ModuleOptions } from './modules.js';
 
 export * from './services/index.js';
@@ -19,7 +19,7 @@ export interface UnchainedCoreOptions {
       configure: (params: ModuleInput<any>) => any;
     }
   >;
-  services?: Record<string, any>;
+  services?: Record<string, (this: Modules, ...args) => any>;
   options?: ModuleOptions;
 }
 
@@ -34,36 +34,22 @@ export const initCore = async ({
   db,
   migrationRepository,
   bulkImporter,
-  modules = {},
-  services = {},
+  modules: customModules = {},
+  services: customServices = {},
   options = {},
 }: UnchainedCoreOptions): Promise<UnchainedCore> => {
   // Configure custom modules
-  const customModules = await Object.entries(modules).reduce(
-    async (modulesPromise, [key, customModule]: any) => {
-      return {
-        ...(await modulesPromise),
-        [key]: await customModule.configure({
-          db,
-          options: options?.[key],
-          migrationRepository,
-        }),
-      };
-    },
-    Promise.resolve({}),
-  );
 
-  const defaultModules = await initModules({ db, migrationRepository, options });
+  const modules = await initModules({ db, migrationRepository, options }, customModules);
+  const services = initServices(modules, {
+    asdf: (test: string) => {
+      return test;
+    },
+  });
 
   return {
-    modules: {
-      ...defaultModules,
-      ...customModules,
-    },
-    services: {
-      ...defaultServices,
-      ...services,
-    },
+    modules,
+    services,
     bulkImporter,
     options,
   };

@@ -44,7 +44,7 @@ import {
 import { configureUsersModule, UserSettingsOptions, UsersModule } from '@unchainedshop/core-users';
 import { configureWarehousingModule, WarehousingModule } from '@unchainedshop/core-warehousing';
 import { configureWorkerModule, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
-import { MigrationRepository, mongodb } from '@unchainedshop/mongodb';
+import { MigrationRepository, ModuleInput, mongodb } from '@unchainedshop/mongodb';
 
 export interface Modules {
   assortments: AssortmentsModule;
@@ -81,15 +81,23 @@ export interface ModuleOptions {
   users?: UserSettingsOptions;
 }
 
-const initModules = async ({
-  db,
-  migrationRepository,
-  options,
-}: {
-  db: mongodb.Db;
-  migrationRepository: MigrationRepository<unknown>;
-  options?: ModuleOptions;
-}): Promise<Modules> => {
+const initModules = async (
+  {
+    db,
+    migrationRepository,
+    options,
+  }: {
+    db: mongodb.Db;
+    migrationRepository: MigrationRepository<unknown>;
+    options?: ModuleOptions;
+  },
+  customModules: Record<
+    string,
+    {
+      configure: (params: ModuleInput<any>) => any;
+    }
+  >,
+): Promise<Modules> => {
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
@@ -173,7 +181,7 @@ const initModules = async ({
     migrationRepository,
   });
 
-  return {
+  const modules = {
     assortments,
     bookmarks,
     countries,
@@ -193,6 +201,15 @@ const initModules = async ({
     warehousing,
     worker,
   };
+  for (const [key, customModule] of Object.entries(customModules)) {
+    modules[key] = await customModule.configure({
+      db,
+      options: options[key],
+      migrationRepository,
+    });
+  }
+
+  return modules;
 };
 
 export default initModules;

@@ -45,10 +45,8 @@ const isAutoConfirmationEnabled = async (
 const findNextStatus = async (
   status: OrderStatus | null,
   order: Order,
-  unchainedAPI,
+  modules: Modules,
 ): Promise<OrderStatus | null> => {
-  const { modules } = unchainedAPI;
-
   if (status === null) {
     return OrderStatus.PENDING;
   }
@@ -71,7 +69,7 @@ const findNextStatus = async (
   // Ok, we have a payment and a delivery and the correct status,
   // let's check if we can auto-confirm or auto-fulfill
   if (status === OrderStatus.PENDING) {
-    if (await isAutoConfirmationEnabled({ orderPayment, orderDelivery }, unchainedAPI)) {
+    if (await isAutoConfirmationEnabled({ orderPayment, orderDelivery }, { modules })) {
       return OrderStatus.CONFIRMED;
     }
   }
@@ -87,7 +85,8 @@ const findNextStatus = async (
   return status;
 };
 
-export const processOrderService = async (
+export async function processOrderService(
+  this: Modules,
   initialOrder: Order,
   orderTransactionContext: {
     paymentContext?: any;
@@ -95,9 +94,7 @@ export const processOrderService = async (
     comment?: string;
     nextStatus?: OrderStatus;
   },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
+) {
   const {
     paymentContext,
     deliveryContext,
@@ -107,64 +104,64 @@ export const processOrderService = async (
 
   const orderId = initialOrder._id;
   let order = initialOrder;
-  let nextStatus = forceNextStatus || (await findNextStatus(initialOrder.status, order, unchainedAPI));
+  let nextStatus = forceNextStatus || (await findNextStatus(initialOrder.status, order, this));
 
   if (nextStatus === OrderStatus.PENDING) {
     // auto charge during transition to pending
-    const orderPayment = await modules.orders.payments.findOrderPayment({
+    const orderPayment = await this.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });
 
     await PaymentDirector.chargeOrderPayment(
       orderPayment,
       { userId: order.userId, transactionContext: paymentContext },
-      unchainedAPI,
+      { modules: this },
     );
 
-    nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
+    nextStatus = await findNextStatus(nextStatus, order, this);
   }
 
   if (nextStatus === OrderStatus.REJECTED) {
     // auto cancel during transition to rejected
-    const orderPayment = await modules.orders.payments.findOrderPayment({
+    const orderPayment = await this.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });
     await PaymentDirector.cancelOrderPayment(
       orderPayment,
       { userId: order.userId, transactionContext: paymentContext },
-      unchainedAPI,
+      { modules: this },
     );
   }
 
   if (nextStatus === OrderStatus.CONFIRMED) {
     // confirm pre-authorized payments
-    const orderPayment = await modules.orders.payments.findOrderPayment({
+    const orderPayment = await this.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });
     await PaymentDirector.confirmOrderPayment(
       orderPayment,
       { userId: order.userId, transactionContext: paymentContext },
-      unchainedAPI,
+      { modules: this },
     );
     if (order.status !== OrderStatus.CONFIRMED) {
       // we have to stop here shortly to complete the confirmation
       // before auto delivery is started, else we have no chance to create
       // numbers that are needed for delivery
-      order = await modules.orders.updateStatus(orderId, {
+      order = await this.orders.updateStatus(orderId, {
         status: OrderStatus.CONFIRMED,
         info: comment,
       });
 
-      const orderDelivery = await modules.orders.deliveries.findDelivery({
+      const orderDelivery = await this.orders.deliveries.findDelivery({
         orderDeliveryId: order.deliveryId,
       });
 
-      await DeliveryDirector.sendOrderDelivery(orderDelivery, deliveryContext, unchainedAPI);
+      await DeliveryDirector.sendOrderDelivery(orderDelivery, deliveryContext, { modules: this });
 
-      const orderPositions = await modules.orders.positions.findOrderPositions({ orderId });
+      const orderPositions = await this.orders.positions.findOrderPositions({ orderId });
       const mappedProductOrderPositions = await Promise.all(
         orderPositions.map(async (orderPosition) => {
-          const product = await modules.products.findProduct({
+          const product = await this.products.findProduct({
             productId: orderPosition.productId,
           });
           return {
@@ -178,7 +175,7 @@ export const processOrderService = async (
       );
       if (tokenizedItems.length > 0) {
         // Give virtual warehouse a chance to instantiate new virtual objects
-        const virtualProviders = await modules.warehousing.findProviders({
+        const virtualProviders = await this.warehousing.findProviders({
           type: WarehousingProviderType.VIRTUAL,
         });
         // It's very important to do this in a series and not in Promise.all
@@ -195,12 +192,12 @@ export const processOrderService = async (
                 quantity: orderPosition.quantity,
                 referenceDate: order.ordered,
               },
-              unchainedAPI,
+              { modules: this },
             );
             const isActive = await adapterActions.isActive();
             if (isActive) {
               const tokens = await adapterActions.tokenize();
-              await modules.warehousing.createTokens(tokens);
+              await this.warehousing.createTokens(tokens);
             }
           }
         }
@@ -211,17 +208,13 @@ export const processOrderService = async (
         (item) => item.product?.type === ProductTypes.PlanProduct && !order.originEnrollmentId,
       );
       if (planItems.length > 0) {
-        await createEnrollmentFromCheckoutService(
-          order,
-          {
-            items: planItems,
-            context: {
-              paymentContext,
-              deliveryContext,
-            },
+        await createEnrollmentFromCheckoutService.bind(this)(order, {
+          items: planItems,
+          context: {
+            paymentContext,
+            deliveryContext,
           },
-          unchainedAPI,
-        );
+        });
       }
 
       // Quotations: If we came here, the checkout succeeded, so we can fullfill underlying quotations
@@ -230,23 +223,19 @@ export const processOrderService = async (
       );
       await Promise.all(
         quotationItems.map(async ({ orderPosition }) => {
-          const quotation = await modules.quotations.findQuotation({
+          const quotation = await this.quotations.findQuotation({
             quotationId: orderPosition.quotationId,
           });
-          await fullfillQuotationService(
-            quotation,
-            {
-              orderId,
-              orderPositionId: orderPosition._id,
-            },
-            unchainedAPI,
-          );
+          await fullfillQuotationService.bind(this)(quotation, {
+            orderId,
+            orderPositionId: orderPosition._id,
+          });
         }),
       );
     }
 
-    nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
+    nextStatus = await findNextStatus(nextStatus, order, this);
   }
 
-  return modules.orders.updateStatus(order._id, { status: nextStatus, info: comment });
-};
+  return this.orders.updateStatus(order._id, { status: nextStatus, info: comment });
+}

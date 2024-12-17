@@ -67,6 +67,6 @@ export default async function addCartQuotation(
     originalProductId: quotation.productId,
     orderId: order._id,
   });
-  await services.orders.updateCalculation(order._id, context);
+  await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
 }
