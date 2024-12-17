@@ -1,6 +1,20 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { File } from '../types.js';
+import { TimestampFields } from '@unchainedshop/mongodb';
 
+export type File = {
+  _id?: string;
+  expires?: Date;
+  path: string;
+  meta?: Record<string, unknown>;
+  name: string;
+  size?: number;
+  type?: string;
+  url?: string;
+} & TimestampFields;
+
+export type SignedFileUpload = File & {
+  putURL: string;
+};
 export const MediaObjectsCollection = async (db: mongodb.Db) => {
   const MediaObjects = db.collection<File>('media_objects');
 

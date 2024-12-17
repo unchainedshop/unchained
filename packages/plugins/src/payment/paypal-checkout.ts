@@ -9,6 +9,8 @@ import { createLogger } from '@unchainedshop/logger';
 
 let checkoutNodeJssdk;
 try {
+  // eslint-disable-next-line
+  // @ts-ignore
   checkoutNodeJssdk = await import('@paypal/checkout-server-sdk');
 } catch {
   /* */

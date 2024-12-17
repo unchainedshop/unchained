@@ -1,7 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
-import { OrderDiscount } from '../types.js';
+import { OrderDiscount, OrderDiscountTrigger } from '../db/OrderDiscountsCollection.js';
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',
@@ -9,7 +8,7 @@ const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_REMOVE_DISCOUNT',
 ];
 
-export const buildFindByIdSelector = (orderDiscountId: string) =>
+export const buildFindOrderDiscountByIdSelector = (orderDiscountId: string) =>
   generateDbFilterById(orderDiscountId) as mongodb.Filter<OrderDiscount>;
 
 export const configureOrderDiscountsModule = ({
@@ -25,7 +24,7 @@ export const configureOrderDiscountsModule = ({
       { discountId }: { discountId: string },
       options?: mongodb.FindOptions,
     ): Promise<OrderDiscount> => {
-      return OrderDiscounts.findOne(buildFindByIdSelector(discountId), options);
+      return OrderDiscounts.findOne(buildFindOrderDiscountByIdSelector(discountId), options);
     },
 
     findOrderDiscounts: async ({ orderId }: { orderId: string }): Promise<Array<OrderDiscount>> => {
@@ -49,7 +48,7 @@ export const configureOrderDiscountsModule = ({
     },
 
     delete: async (orderDiscountId: string): Promise<OrderDiscount> => {
-      const selector = buildFindByIdSelector(orderDiscountId);
+      const selector = buildFindOrderDiscountByIdSelector(orderDiscountId);
       const orderDiscount = await OrderDiscounts.findOneAndDelete(selector);
       await emit('ORDER_REMOVE_DISCOUNT', { discount: orderDiscount });
       return orderDiscount;

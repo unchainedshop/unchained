@@ -5,6 +5,8 @@ let mongod;
 
 export const startDb = async () => {
   try {
+    // eslint-disable-next-line
+    // @ts-ignore
     const { MongoMemoryServer } = await import('mongodb-memory-server');
     try {
       mkdirSync(`${process.cwd()}/.db`);
@@ -33,6 +35,8 @@ export const stopDb = async () => {
 const initDb = async (): Promise<Db> => {
   let zstdEnabled = false;
   try {
+    // eslint-disable-next-line
+    // @ts-ignore
     await import('@mongodb-js/zstd');
     zstdEnabled = true;
   } catch {

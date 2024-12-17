@@ -14,6 +14,8 @@ export const initStripeClient = async (): Promise<StripeType> => {
     logger.warn('STRIPE_SECRET is not set, skipping initialization');
     return null;
   }
+  // eslint-disable-next-line
+  // @ts-ignore
   const { default: Stripe } = await import('stripe');
   stripe = new Stripe(STRIPE_SECRET, {
     apiVersion: '2024-11-20.acacia',

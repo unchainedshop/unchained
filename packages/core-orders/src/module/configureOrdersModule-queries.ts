@@ -1,7 +1,15 @@
 import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
-import { Order, OrderQuery, OrderReport } from '../types.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 import buildFindSelector from './buildFindSelector.js';
+import { Order, OrderQuery } from '../db/OrdersCollection.js';
+
+export type OrderReport = {
+  newCount: number;
+  checkoutCount: number;
+  rejectCount: number;
+  confirmCount: number;
+  fulfillCount: number;
+};
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {

@@ -4,7 +4,7 @@ import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.js';
 import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.js';
 import { OrderPositionsCollection } from '../db/OrderPositionsCollection.js';
-import { OrdersCollection } from '../db/OrdersCollection.js';
+import { OrdersCollection, Order, OrderStatus } from '../db/OrdersCollection.js';
 import { ordersSettings, OrdersSettingsOptions } from '../orders-settings.js';
 import {
   configureOrderDeliveriesModule,
@@ -17,7 +17,6 @@ import { configureOrderModuleMutations, OrderMutations } from './configureOrders
 import { configureOrdersModuleQueries, OrderQueries } from './configureOrdersModule-queries.js';
 
 import { emit, registerEvents } from '@unchainedshop/events';
-import { Order, OrderStatus } from '../types.js';
 
 export type OrdersModule = OrderQueries &
   OrderMutations & {

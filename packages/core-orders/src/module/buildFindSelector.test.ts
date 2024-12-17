@@ -1,11 +1,11 @@
-import { OrderStatus } from '../types.js';
+import { OrderStatus } from '../db/OrdersCollection.js';
 import { buildFindByIdSelector as buildFindByIdSelectorForDelivery } from './configureOrderDeliveriesModule.js';
-import { buildFindByIdSelector as buildFindByIdSelectorForDiscount } from './configureOrderDiscountsModule.js';
+import { buildFindOrderDiscountByIdSelector } from './configureOrderDiscountsModule.js';
 import {
-  buildFindByIdSelector as buildFindByIdSelectorForPayment,
+  buildFindOrderPaymentByIdSelector,
   buildFindByContextDataSelector,
 } from './configureOrderPaymentsModule.js';
-import { buildFindByIdSelector as buildFindByIdSelectorForPosition } from './configureOrderPositionsModule.js';
+import { buildFindOrderPositionByIdSelector } from './configureOrderPositionsModule.js';
 import buildFindSelectorForOrder from './buildFindSelector.js';
 
 describe('OrderPosition', () => {
@@ -75,7 +75,7 @@ describe('OrderDelivery', () => {
 describe('OrderDiscount', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindByIdSelectorForDiscount('order-discount-id')).toEqual({
+      expect(buildFindOrderDiscountByIdSelector('order-discount-id')).toEqual({
         _id: 'order-discount-id',
       });
     });
@@ -85,7 +85,7 @@ describe('OrderDiscount', () => {
 describe('OrderPayment', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindByIdSelectorForPayment('order-payment-id')).toEqual({ _id: 'order-payment-id' });
+      expect(buildFindOrderPaymentByIdSelector('order-payment-id')).toEqual({ _id: 'order-payment-id' });
     });
   });
 
@@ -102,7 +102,7 @@ describe('OrderPayment', () => {
 describe('OrderPosition', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindByIdSelectorForPosition('order-position-id')).toEqual({
+      expect(buildFindOrderPositionByIdSelector('order-position-id')).toEqual({
         _id: 'order-position-id',
       });
     });

@@ -1,4 +1,3 @@
-export * from './types.js';
 export * from './module/configureFilesModule.js';
 export * from './db/MediaObjectsCollection.js';
 export * from './files-settings.js';

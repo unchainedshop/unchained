@@ -1,7 +1,7 @@
-import { OrderPosition } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { PricingCalculation } from '@unchainedshop/utils';
+import { OrderPosition } from '../db/OrderPositionsCollection.js';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
@@ -10,7 +10,7 @@ const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_ADD_PRODUCT',
 ];
 
-export const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
+export const buildFindOrderPositionByIdSelector = (orderPositionId: string, orderId?: string) =>
   generateDbFilterById(
     orderPositionId,
     orderId ? { orderId } : undefined,
@@ -29,7 +29,7 @@ export const configureOrderPositionsModule = ({
       { itemId }: { itemId: string },
       options?: mongodb.FindOptions,
     ): Promise<OrderPosition> => {
-      return OrderPositions.findOne(buildFindByIdSelector(itemId), options);
+      return OrderPositions.findOne(buildFindOrderPositionByIdSelector(itemId), options);
     },
 
     findOrderPositions: async ({ orderId }: { orderId: string }): Promise<OrderPosition[]> => {
@@ -38,7 +38,7 @@ export const configureOrderPositionsModule = ({
     },
 
     delete: async (orderPositionId: string): Promise<OrderPosition> => {
-      const selector = buildFindByIdSelector(orderPositionId);
+      const selector = buildFindOrderPositionByIdSelector(orderPositionId);
       const orderPosition = await OrderPositions.findOneAndDelete(selector, {});
       await emit('ORDER_REMOVE_CART_ITEM', {
         orderPosition,

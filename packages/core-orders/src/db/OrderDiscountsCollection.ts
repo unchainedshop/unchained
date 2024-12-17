@@ -1,5 +1,16 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { OrderDiscount } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { Price } from '@unchainedshop/utils';
+
+export type OrderDiscount = {
+  _id?: string;
+  orderId: string;
+  code?: string;
+  total?: Price;
+  trigger?: OrderDiscountTrigger;
+  discountKey?: string;
+  reservation?: any;
+  context?: any;
+} & TimestampFields;
 
 export const OrderDiscountsCollection = async (db: mongodb.Db) => {
   const OrderDiscounts = db.collection<OrderDiscount>('order_discounts');
@@ -12,3 +23,8 @@ export const OrderDiscountsCollection = async (db: mongodb.Db) => {
 
   return OrderDiscounts;
 };
+
+export enum OrderDiscountTrigger {
+  USER = 'USER',
+  SYSTEM = 'SYSTEM',
+}

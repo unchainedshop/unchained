@@ -1,11 +1,11 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { OrderPayment, OrderPaymentStatus } from '../types.js';
 import { PricingCalculation } from '@unchainedshop/utils';
+import { OrderPayment, OrderPaymentStatus } from '../db/OrderPaymentsCollection.js';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
-export const buildFindByIdSelector = (orderPaymentId: string) =>
+export const buildFindOrderPaymentByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;
 
 export const buildFindByContextDataSelector = (context: any): mongodb.Filter<OrderPayment> => {
@@ -69,7 +69,7 @@ export const configureOrderPaymentsModule = ({
       modifier.$set.paid = date;
     }
 
-    const selector = buildFindByIdSelector(orderPaymentId);
+    const selector = buildFindOrderPaymentByIdSelector(orderPaymentId);
     return OrderPayments.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
@@ -83,7 +83,7 @@ export const configureOrderPaymentsModule = ({
       },
       options?: mongodb.FindOptions,
     ): Promise<OrderPayment> => {
-      return OrderPayments.findOne(buildFindByIdSelector(orderPaymentId), options);
+      return OrderPayments.findOne(buildFindOrderPaymentByIdSelector(orderPaymentId), options);
     },
     findOrderPaymentByContextData: async (
       {
@@ -123,7 +123,9 @@ export const configureOrderPaymentsModule = ({
         context: doc.context || {},
       });
 
-      const orderPayment = await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId));
+      const orderPayment = await OrderPayments.findOne(
+        buildFindOrderPaymentByIdSelector(orderPaymentId),
+      );
 
       return orderPayment;
     },
@@ -155,7 +157,7 @@ export const configureOrderPaymentsModule = ({
     },
 
     updateContext: async (orderPaymentId: string, context: any): Promise<OrderPayment> => {
-      const selector = buildFindByIdSelector(orderPaymentId);
+      const selector = buildFindOrderPaymentByIdSelector(orderPaymentId);
       if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
 
       const contextSetters = Object.fromEntries(
@@ -189,7 +191,7 @@ export const configureOrderPaymentsModule = ({
       calculation: Array<T>,
     ) => {
       return OrderPayments.findOneAndUpdate(
-        buildFindByIdSelector(orderPaymentId),
+        buildFindOrderPaymentByIdSelector(orderPaymentId),
         {
           $set: {
             calculation,

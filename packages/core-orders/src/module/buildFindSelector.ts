@@ -1,4 +1,4 @@
-import { Order, OrderQuery } from '../types.js';
+import { OrderQuery, Order } from '../db/OrdersCollection.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
