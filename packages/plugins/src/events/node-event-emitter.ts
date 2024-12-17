@@ -15,5 +15,4 @@ const NodeEventEmitter = (): EmitAdapter => {
   };
 };
 
-const adapter = NodeEventEmitter();
-setEmitAdapter(adapter);
+setEmitAdapter(NodeEventEmitter());
