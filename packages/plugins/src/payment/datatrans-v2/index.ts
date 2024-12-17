@@ -11,7 +11,6 @@ import {
 import parseRegistrationData from './parseRegistrationData.js';
 import roundedAmountFromOrder from './roundedAmountFromOrder.js';
 import {
-  UnchainedCore,
   IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
@@ -46,7 +45,7 @@ const throwIfResponseError = (result) => {
   }
 };
 
-const Datatrans: IPaymentAdapter<UnchainedCore> = {
+const Datatrans: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.datatrans',

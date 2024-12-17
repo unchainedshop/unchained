@@ -2,9 +2,9 @@ import { Quotation, QuotationStatus } from '@unchainedshop/core-quotations';
 import { Modules } from '../modules.js';
 import { QuotationDirector } from '../core-index.js';
 
-const findNextStatus = async (quotation: Quotation, unchainedAPI): Promise<QuotationStatus> => {
+const findNextStatus = async (quotation: Quotation, modules: Modules): Promise<QuotationStatus> => {
   let status = quotation.status as QuotationStatus;
-  const director = await QuotationDirector.actions({ quotation }, unchainedAPI);
+  const director = await QuotationDirector.actions({ quotation }, { modules });
 
   if (status === QuotationStatus.REQUESTED) {
     if (!(await director.isManualRequestVerificationRequired())) {
@@ -19,51 +19,49 @@ const findNextStatus = async (quotation: Quotation, unchainedAPI): Promise<Quota
   return status;
 };
 
-export const processQuotationService = async (
+export async function processQuotationService(
+  this: Modules,
   initialQuotation: Quotation,
   params: { quotationContext?: any },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
-
+) {
   const quotationId = initialQuotation._id;
   let quotation = initialQuotation;
-  let nextStatus = await findNextStatus(quotation, unchainedAPI);
-  const director = await QuotationDirector.actions({ quotation }, unchainedAPI);
+  let nextStatus = await findNextStatus(quotation, this);
+  const director = await QuotationDirector.actions({ quotation }, { modules: this });
 
   if (quotation.status === QuotationStatus.REQUESTED && nextStatus !== QuotationStatus.REQUESTED) {
     await director.submitRequest(params.quotationContext);
   }
 
-  quotation = await modules.quotations.findQuotation({ quotationId });
-  nextStatus = await findNextStatus(quotation, unchainedAPI);
+  quotation = await this.quotations.findQuotation({ quotationId });
+  nextStatus = await findNextStatus(quotation, this);
   if (nextStatus !== QuotationStatus.PROCESSING) {
     await director.verifyRequest(params.quotationContext);
   }
 
-  quotation = await modules.quotations.findQuotation({ quotationId });
-  nextStatus = await findNextStatus(quotation, unchainedAPI);
+  quotation = await this.quotations.findQuotation({ quotationId });
+  nextStatus = await findNextStatus(quotation, this);
   if (nextStatus === QuotationStatus.REJECTED) {
     await director.rejectRequest(params.quotationContext);
   }
 
-  quotation = await modules.quotations.findQuotation({ quotationId });
-  nextStatus = await findNextStatus(quotation, unchainedAPI);
+  quotation = await this.quotations.findQuotation({ quotationId });
+  nextStatus = await findNextStatus(quotation, this);
   if (nextStatus === QuotationStatus.PROPOSED) {
     const proposal = await director.quote();
-    quotation = await modules.quotations.updateProposal(quotation._id, proposal);
-    nextStatus = await findNextStatus(quotation, unchainedAPI);
+    quotation = await this.quotations.updateProposal(quotation._id, proposal);
+    nextStatus = await findNextStatus(quotation, this);
   }
 
-  const updatedQuotation = await unchainedAPI.modules.quotations.updateStatus(quotation._id, {
+  const updatedQuotation = await this.quotations.updateStatus(quotation._id, {
     status: nextStatus,
     info: 'quotation processed',
   });
 
-  const user = await modules.users.findUserById(updatedQuotation.userId);
-  const locale = modules.users.userLocale(user);
+  const user = await this.users.findUserById(updatedQuotation.userId);
+  const locale = this.users.userLocale(user);
 
-  await modules.worker.addWork({
+  await this.worker.addWork({
     type: 'MESSAGE',
     retries: 0,
     input: {
@@ -74,4 +72,4 @@ export const processQuotationService = async (
   });
 
   return updatedQuotation;
-};
+}

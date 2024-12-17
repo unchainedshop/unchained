@@ -9,7 +9,6 @@ import {
   PaymentDirector,
   PaymentError,
   OrderPricingSheet,
-  UnchainedCore,
 } from '@unchainedshop/core';
 import { CryptopayModule } from './module/configureCryptopayModule.js';
 
@@ -48,11 +47,7 @@ const getDerivationPath = (currency: CryptopayCurrencies, index: number): string
   return `0/${address}`;
 };
 
-const Cryptopay: IPaymentAdapter<
-  UnchainedCore & {
-    modules: { cryptopay: CryptopayModule };
-  }
-> = {
+const Cryptopay: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.cryptopay',
@@ -64,7 +59,7 @@ const Cryptopay: IPaymentAdapter<
   },
 
   actions: (config, context) => {
-    const { modules } = context;
+    const { modules } = context as typeof context & { modules: { cryptopay: CryptopayModule } };
 
     const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
       const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });

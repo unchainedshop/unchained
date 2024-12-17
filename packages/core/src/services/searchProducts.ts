@@ -13,16 +13,16 @@ export interface SearchProductConfiguration extends SearchConfiguration {
   productSelector: mongodb.Filter<Product>;
 }
 
-export const searchProductsService = async (
+export async function searchProductsService(
+  this: Modules,
   searchQuery: SearchQuery,
   { forceLiveCollection }: { forceLiveCollection?: boolean },
-  unchainedAPI: { modules: Modules },
-) => {
-  const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
+) {
+  const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 
   const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
   const productSelector = await filterActions.transformProductSelector(
-    defaultProductSelector(searchQuery, unchainedAPI),
+    defaultProductSelector(searchQuery, { modules: this }),
     {},
   );
   const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery));
@@ -53,7 +53,7 @@ export const searchProductsService = async (
   const filteredProductIds = await FilterDirector.productFacetedSearch(
     totalProductIds,
     searchConfiguration,
-    unchainedAPI,
+    { modules: this },
   );
 
   const aggregatedTotalProductIds = filterActions.aggregateProductIds({
@@ -70,4 +70,4 @@ export const searchProductsService = async (
     aggregatedTotalProductIds,
     aggregatedFilteredProductIds,
   };
-};
+}

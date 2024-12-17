@@ -9,6 +9,7 @@ import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 import { PaymentProvider } from '@unchainedshop/core-payment';
 import { OrderDiscount, OrderPayment, Order } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
+import { Modules } from '../modules.js';
 
 export interface PaymentPricingCalculation extends PricingCalculation {
   discountId?: string;
@@ -44,11 +45,8 @@ export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
   }) => void;
 };
 
-export type IPaymentPricingAdapter<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingAdapter<
-  PaymentPricingAdapterContext & UnchainedAPI,
+export type IPaymentPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
+  PaymentPricingAdapterContext & { modules: Modules },
   PaymentPricingCalculation,
   IPaymentPricingSheet,
   DiscountConfiguration

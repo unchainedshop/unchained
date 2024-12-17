@@ -2,6 +2,7 @@ import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
 import { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { PaymentConfiguration, PaymentProvider, PaymentProviderType } from '@unchainedshop/core-payment';
+import { Modules } from '../modules.js';
 
 export enum PaymentError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
@@ -41,7 +42,7 @@ export interface PaymentContext {
   meta?: any;
 }
 
-export type IPaymentAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
+export type IPaymentAdapter = IBaseAdapter & {
   initialConfiguration: PaymentConfiguration;
 
   typeSupported: (type: PaymentProviderType) => boolean;
@@ -51,7 +52,8 @@ export type IPaymentAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
     context: PaymentContext & {
       paymentProviderId: string;
       paymentProvider: PaymentProvider;
-    } & UnchainedAPI,
+      modules: Modules;
+    },
   ) => IPaymentActions;
 };
 

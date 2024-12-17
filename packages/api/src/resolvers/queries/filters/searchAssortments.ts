@@ -11,11 +11,7 @@ export default async function searchAssortments(root: never, query: SearchQuery,
 
   if (!query.queryString && !query.assortmentIds?.length) throw new QueryStringRequiredError({});
 
-  return services.filters.searchAssortments(
-    query,
-    {
-      forceLiveCollection,
-    },
-    context,
-  );
+  return services.filters.searchAssortments(query, {
+    forceLiveCollection,
+  });
 }

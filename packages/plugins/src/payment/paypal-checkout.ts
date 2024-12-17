@@ -1,5 +1,4 @@
 import {
-  UnchainedCore,
   OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
@@ -34,7 +33,7 @@ const environment = () => {
     : new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret);
 };
 
-const PaypalCheckout: IPaymentAdapter<UnchainedCore> = {
+const PaypalCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'com.paypal.checkout',

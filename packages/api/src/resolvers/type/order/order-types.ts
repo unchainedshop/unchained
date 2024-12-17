@@ -20,21 +20,15 @@ export const Order = {
     _,
     context: Context,
   ): Promise<Array<DeliveryProvider>> {
-    return context.services.orders.supportedDeliveryProviders(
-      {
-        order,
-      },
-      context,
-    );
+    return context.services.orders.supportedDeliveryProviders({
+      order,
+    });
   },
 
   async supportedPaymentProviders(order: OrderType, _, context: Context) {
-    return context.services.orders.supportedPaymentProviders(
-      {
-        order,
-      },
-      context,
-    );
+    return context.services.orders.supportedPaymentProviders({
+      order,
+    });
   },
 
   async currency(order: OrderType, _, { modules }: Context): Promise<Currency> {

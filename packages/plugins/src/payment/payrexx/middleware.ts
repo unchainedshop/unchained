@@ -45,11 +45,10 @@ export const payrexxHandler = async (request, response) => {
       const { referenceId: paymentProviderId, invoice } = transaction;
       const userId = '';
       logger.info(`register credentials for: ${userId}`);
-      await services.orders.registerPaymentCredentials(
-        paymentProviderId,
-        { userId, transactionContext: { gatewayId: invoice.paymentRequestId } },
-        resolvedContext,
-      );
+      await services.orders.registerPaymentCredentials(paymentProviderId, {
+        userId,
+        transactionContext: { gatewayId: invoice.paymentRequestId },
+      });
       logger.info(`registration successful`, {
         paymentProviderId,
         userId,

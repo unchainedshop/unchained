@@ -1,6 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
 import {
-  UnchainedCore,
   OrderPricingSheet,
   IPaymentActions,
   IPaymentAdapter,
@@ -45,7 +44,7 @@ const newError = ({ code, message }: { code: string; message: string }) => {
   return error;
 };
 
-const PostfinanceCheckout: IPaymentAdapter<UnchainedCore> = {
+const PostfinanceCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.postfinance-checkout',

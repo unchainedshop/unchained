@@ -14,6 +14,7 @@ import {
   OrderPosition,
 } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
+import { Modules } from '../modules.js';
 
 export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   currency?: string;
@@ -25,11 +26,8 @@ export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   user: User;
 }
 
-export type IOrderPricingAdapter<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingAdapter<
-  OrderPricingAdapterContext & UnchainedAPI,
+export type IOrderPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
+  OrderPricingAdapterContext & { modules: Modules },
   OrderPricingCalculation,
   IOrderPricingSheet,
   DiscountConfiguration

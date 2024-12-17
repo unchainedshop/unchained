@@ -5,14 +5,10 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');
 
-export const updateUserAvatarAfterUploadService = async (
-  { file }: { file: File },
-  unchainedAPI: { modules: Modules },
-): Promise<void> => {
-  const { modules } = unchainedAPI;
+export async function updateUserAvatarAfterUploadService(this: Modules, { file }: { file: File }) {
   const { userId } = file.meta as { userId: string };
 
-  const files = await modules.files.findFiles({
+  const files = await this.files.findFiles({
     _id: { $ne: file._id },
     path: file.path,
     'meta.userId': userId,
@@ -21,17 +17,14 @@ export const updateUserAvatarAfterUploadService = async (
 
   try {
     if (fileIds?.length) {
-      await removeFilesService(
-        {
-          fileIds,
-        },
-        unchainedAPI,
-      );
+      await removeFilesService.bind(this)({
+        fileIds,
+      });
     }
   } catch (e: unknown) {
     // cleanup error, not critical
     logger.warn(`could not clean up all old avatars: ${(e as Error).message}`);
   }
 
-  await modules.users.updateAvatar(userId, file._id);
-};
+  await this.users.updateAvatar(userId, file._id);
+}

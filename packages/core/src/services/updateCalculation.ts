@@ -114,14 +114,11 @@ export async function updateCalculationService(this: Modules, orderId: string) {
     orderPayment = await this.orders.payments.updateCalculation(orderPayment._id, paymentCalculation);
   }
 
-  orderPositions = await updateSchedulingService(
-    {
-      order,
-      orderPositions,
-      orderDelivery,
-    },
-    { modules: this },
-  );
+  orderPositions = await updateSchedulingService.bind(this)({
+    order,
+    orderPositions,
+    orderDelivery,
+  });
 
   const calculation = await OrderPricingDirector.rebuildCalculation(
     { currency: order.currency, order, orderPositions, orderDelivery, orderPayment },
@@ -142,5 +139,5 @@ export async function updateCalculationService(this: Modules, orderId: string) {
         // 6. update calculation -> order pricing updated to items 0, delivery 0, payment 0
         // 7. initCartProviders with updated order -> all providers are valid -> return order
     */
-  return initCartProvidersService(updatedOrder, { modules: this });
+  return initCartProvidersService.bind(this)(updatedOrder);
 }

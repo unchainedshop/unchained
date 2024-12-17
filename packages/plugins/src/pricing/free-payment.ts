@@ -1,11 +1,10 @@
 import {
-  UnchainedCore,
   PaymentPricingAdapter,
   PaymentPricingDirector,
   IPaymentPricingAdapter,
 } from '@unchainedshop/core';
 
-export const PaymentFreePrice: IPaymentPricingAdapter<UnchainedCore> = {
+export const PaymentFreePrice: IPaymentPricingAdapter = {
   ...PaymentPricingAdapter,
 
   key: 'shop.unchained.pricing.payment-free',

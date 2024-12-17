@@ -34,7 +34,6 @@ export default async function searchProducts(
     return services.filters.searchProducts(
       { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
       { forceLiveCollection },
-      context,
     );
   }
 
@@ -43,6 +42,5 @@ export default async function searchProducts(
   return services.filters.searchProducts(
     { queryString, includeInactive, filterQuery, ...rest },
     { forceLiveCollection },
-    context,
   );
 }

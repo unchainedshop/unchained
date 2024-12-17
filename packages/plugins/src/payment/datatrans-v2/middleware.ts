@@ -48,7 +48,6 @@ export const datatransHandler = async (req, res) => {
           const paymentCredentials = await services.orders.registerPaymentCredentials(
             paymentProviderId,
             { userId, transactionContext: { transactionId: transaction.transactionId } },
-            resolvedContext,
           );
           logger.info(`registered payment credentials for ${userId}`, {
             userId,

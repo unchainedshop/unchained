@@ -1,5 +1,4 @@
 import {
-  UnchainedCore,
   OrderPricingAdapter,
   OrderPricingDirector,
   IOrderPricingAdapter,
@@ -11,7 +10,7 @@ interface PriceRoundSettings {
   roundTo: (value: number, precision: number, currency: string) => number;
 }
 
-export const OrderPriceRound: IOrderPricingAdapter<UnchainedCore> & {
+export const OrderPriceRound: IOrderPricingAdapter & {
   configure: (params: PriceRoundSettings) => void;
   settings: PriceRoundSettings;
 } = {

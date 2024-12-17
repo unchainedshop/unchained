@@ -23,16 +23,12 @@ export type DeliveryPricingContext =
     }
   | { currency: string; item: OrderDelivery };
 
-export type IDeliveryPricingDirector<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingDirector<
+export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   DeliveryPricingContext,
   DeliveryPricingCalculation,
   DeliveryPricingAdapterContext,
   IDeliveryPricingSheet,
-  IDeliveryPricingAdapter<UnchainedAPI, DiscountConfiguration>,
-  UnchainedAPI
+  IDeliveryPricingAdapter<DiscountConfiguration>
 >;
 
 const baseDirector = BasePricingDirector<

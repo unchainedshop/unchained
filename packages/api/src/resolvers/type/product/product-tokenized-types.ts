@@ -54,13 +54,10 @@ export const TokenizedProduct = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await services.orders.supportedWarehousingProviders(
-        {
-          product: obj,
-          deliveryProvider,
-        },
-        requestContext,
-      );
+      const warehousingProviders = await services.orders.supportedWarehousingProviders({
+        product: obj,
+        deliveryProvider,
+      });
 
       const mappedWarehousingProviders = await Promise.all(
         warehousingProviders.map(async (warehousingProvider) => {

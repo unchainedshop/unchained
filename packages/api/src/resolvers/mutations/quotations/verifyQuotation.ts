@@ -22,5 +22,5 @@ export default async function verifyQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return services.quotations.verifyQuotation(quotation, transactionContext, context);
+  return services.quotations.verifyQuotation(quotation, transactionContext);
 }

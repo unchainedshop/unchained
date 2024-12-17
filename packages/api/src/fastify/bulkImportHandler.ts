@@ -31,14 +31,11 @@ const bulkImportHandler: RouteHandlerMethod = async (
 
     const date = new Date().toISOString();
 
-    const file = await context.services.files.uploadFileFromStream(
-      {
-        directoryName: 'bulk-import-streams',
-        rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req }),
-        meta: {},
-      },
-      context,
-    );
+    const file = await context.services.files.uploadFileFromStream({
+      directoryName: 'bulk-import-streams',
+      rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req }),
+      meta: {},
+    });
 
     input.payloadId = file._id;
     input.payloadSize = file.size;

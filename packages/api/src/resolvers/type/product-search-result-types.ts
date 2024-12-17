@@ -61,10 +61,9 @@ export const ProductSearchResult = {
       productIds: totalProductIds,
       includeDrafts: searchConfiguration.searchQuery.includeInactive,
     });
-    return services.filters.loadFilters(
-      searchConfiguration.searchQuery,
-      { productIds: relevantProductIds, forceLiveCollection: searchConfiguration.forceLiveCollection },
-      context,
-    );
+    return services.filters.loadFilters(searchConfiguration.searchQuery, {
+      productIds: relevantProductIds,
+      forceLiveCollection: searchConfiguration.forceLiveCollection,
+    });
   },
 };

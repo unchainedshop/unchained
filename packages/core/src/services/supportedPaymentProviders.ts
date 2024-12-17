@@ -3,16 +3,13 @@ import { PaymentDirector } from '../directors/PaymentDirector.js';
 import { PaymentContext } from '../directors/PaymentAdapter.js';
 import { Modules } from '../modules.js';
 
-export const supportedPaymentProvidersService = async (
-  params: PaymentContext,
-  unchainedAPI: { modules: Modules },
-) => {
-  const allProviders = await unchainedAPI.modules.payment.paymentProviders.findProviders({});
+export async function supportedPaymentProvidersService(this: Modules, params: PaymentContext) {
+  const allProviders = await this.payment.paymentProviders.findProviders({});
 
   const providers = (
     await Promise.all(
       allProviders.map(async (provider: PaymentProvider) => {
-        const adapter = await PaymentDirector.actions(provider, params, unchainedAPI);
+        const adapter = await PaymentDirector.actions(provider, params, { modules: this });
         return adapter.isActive() ? [provider] : [];
       }),
     )
@@ -23,6 +20,6 @@ export const supportedPaymentProvidersService = async (
       providers,
       order: params.order,
     },
-    unchainedAPI,
+    { modules: this },
   );
-};
+}

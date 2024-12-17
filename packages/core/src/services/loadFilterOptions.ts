@@ -3,16 +3,15 @@ import { intersectSet } from '@unchainedshop/utils';
 import { Modules } from '../modules.js';
 import { FilterDirector, parseQueryArray } from '../directors/FilterDirector.js';
 
-export const loadFilterOptionsService = async (
+export async function loadFilterOptionsService(
+  this: Modules,
   filter: Filter,
   params: {
     searchQuery: SearchQuery;
     forceLiveCollection: boolean;
     productIdSet: Set<string>;
   },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
+) {
   const { forceLiveCollection, productIdSet, searchQuery } = params;
 
   const filterQueryParsed = parseQueryArray(searchQuery?.filterQuery);
@@ -27,11 +26,11 @@ export const loadFilterOptionsService = async (
           values: [value],
           forceLiveCollection,
         },
-        unchainedAPI,
+        { modules: this },
       );
       const filteredProductIdSet = intersectSet(productIdSet, new Set(filterOptionProductIds));
 
-      const normalizedValues = values && modules.filters.parse(filter, values, [value]);
+      const normalizedValues = values && this.filters.parse(filter, values, [value]);
       const isSelected = normalizedValues && normalizedValues.indexOf(value) !== -1;
 
       if (!filteredProductIdSet.size && !isSelected) {
@@ -48,4 +47,4 @@ export const loadFilterOptionsService = async (
     }),
   );
   return mappedOptions.filter(Boolean);
-};
+}

@@ -6,10 +6,9 @@ import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
   Discount,
-  UnchainedCore,
 } from '@unchainedshop/core';
 
-const ProductDiscount: IProductPricingAdapter<UnchainedCore, ProductDiscountConfiguration> = {
+const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-discount',

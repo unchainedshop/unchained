@@ -25,13 +25,10 @@ export const setupCarts = async (unchainedAPI: UnchainedCore, options: SetupCart
     await Promise.all(
       users.map((user) => {
         const locale = unchainedAPI.modules.users.userLocale(user);
-        return unchainedAPI.services.orders.nextUserCart(
-          {
-            user,
-            countryCode: locale.region,
-          },
-          unchainedAPI,
-        );
+        return unchainedAPI.services.orders.nextUserCart({
+          user,
+          countryCode: locale.region,
+        });
       }),
     );
   }

@@ -41,11 +41,7 @@ export const initCore = async ({
   // Configure custom modules
 
   const modules = await initModules({ db, migrationRepository, options }, customModules);
-  const services = initServices(modules, {
-    asdf: (test: string) => {
-      return test;
-    },
-  });
+  const services = initServices(modules, customServices);
 
   return {
     modules,

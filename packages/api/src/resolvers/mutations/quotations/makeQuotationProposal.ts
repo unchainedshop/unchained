@@ -22,5 +22,5 @@ export default async function makeQuotationProposal(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return services.quotations.proposeQuotation(quotation, transactionContext, context);
+  return services.quotations.proposeQuotation(quotation, transactionContext);
 }

@@ -25,16 +25,12 @@ export type PaymentPricingContext =
       item: OrderPayment;
     };
 
-export type IPaymentPricingDirector<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingDirector<
+export type IPaymentPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   PaymentPricingContext,
   PaymentPricingCalculation,
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
-  IPaymentPricingAdapter<UnchainedAPI, DiscountConfiguration>,
-  UnchainedAPI
+  IPaymentPricingAdapter<DiscountConfiguration>
 >;
 
 const baseDirector = BasePricingDirector<

@@ -1,24 +1,26 @@
-import { OrderPosition } from '@unchainedshop/core-orders';
+import { Order, OrderDelivery, OrderPosition } from '@unchainedshop/core-orders';
 import { WarehousingDirector } from '../directors/index.js';
 import { Modules } from '../modules.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
 
-export const updateSchedulingService = async (
-  { orderPositions, order, orderDelivery },
-  unchainedAPI: { modules: Modules },
-): Promise<Array<OrderPosition>> => {
-  const { modules } = unchainedAPI;
-
+export async function updateSchedulingService(
+  this: Modules,
+  {
+    orderPositions,
+    order,
+    orderDelivery,
+  }: { orderPositions: OrderPosition[]; order: Order; orderDelivery: OrderDelivery },
+) {
   const deliveryProvider =
     orderDelivery &&
-    (await modules.delivery.findProvider({
+    (await this.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     }));
 
-  return await Promise.all(
+  return (await Promise.all(
     orderPositions.map(async (orderPosition) => {
       // scheduling (store in db for auditing)
-      const product = await modules.products.findProduct({
+      const product = await this.products.findProduct({
         productId: orderPosition.productId,
       });
 
@@ -26,13 +28,10 @@ export const updateSchedulingService = async (
 
       const scheduling = await Promise.all(
         (
-          await supportedWarehousingProvidersService(
-            {
-              product,
-              deliveryProvider,
-            },
-            unchainedAPI,
-          )
+          await supportedWarehousingProvidersService.bind(this)({
+            product,
+            deliveryProvider,
+          })
         ).map(async (warehousingProvider) => {
           const context = {
             warehousingProvider,
@@ -47,7 +46,9 @@ export const updateSchedulingService = async (
             quantity: orderPosition.quantity,
           };
 
-          const director = await WarehousingDirector.actions(warehousingProvider, context, unchainedAPI);
+          const director = await WarehousingDirector.actions(warehousingProvider, context, {
+            modules: this,
+          });
           const dispatch = await director.estimatedDispatch();
 
           return {
@@ -57,7 +58,7 @@ export const updateSchedulingService = async (
         }),
       );
 
-      return modules.orders.positions.updateScheduling(orderPosition._id, scheduling);
+      return this.orders.positions.updateScheduling(orderPosition._id, scheduling);
     }),
-  );
-};
+  )) as Array<OrderPosition>;
+}

@@ -3,6 +3,7 @@ import { BasePricingAdapterContext, BasePricingContext, IPricingAdapter } from '
 import { IPricingSheet } from './BasePricingSheet.js';
 import { OrderDiscountDirector } from './OrderDiscountDirector.js';
 import { createLogger } from '@unchainedshop/logger';
+import { Modules } from '../modules.js';
 
 const logger = createLogger('unchained:core');
 
@@ -17,7 +18,7 @@ export type IPricingDirector<
   PricingAdapterContext extends BasePricingAdapterContext,
   PricingAdapterSheet extends IPricingSheet<Calculation>,
   Adapter extends IPricingAdapter<PricingAdapterContext & Context, Calculation, PricingAdapterSheet>,
-  Context = unknown,
+  Context = { modules: Modules },
 > = IBaseDirector<Adapter> & {
   buildPricingContext: (
     pricingContext: PricingContext,

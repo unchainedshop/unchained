@@ -11,6 +11,7 @@ import {
   DeliveryProvider,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
+import { Modules } from '../modules.js';
 
 export enum DeliveryError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
@@ -44,14 +45,14 @@ export interface DeliveryContext {
   warehousingThroughputTime?: number;
 }
 
-export type IDeliveryAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
+export type IDeliveryAdapter = IBaseAdapter & {
   initialConfiguration: DeliveryConfiguration;
 
   typeSupported: (type: DeliveryProviderType) => boolean;
 
   actions: (
     config: DeliveryConfiguration,
-    context: DeliveryContext & UnchainedAPI,
+    context: DeliveryContext & { modules: Modules },
   ) => DeliveryAdapterActions;
 };
 

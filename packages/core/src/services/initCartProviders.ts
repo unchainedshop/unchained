@@ -5,18 +5,15 @@ import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.
 import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
 import { Modules } from '../modules.js';
 
-export const initCartProvidersService = async (order: Order, unchainedAPI: { modules: Modules }) => {
-  const { modules } = unchainedAPI;
-
+export async function initCartProvidersService(this: Modules, order: Order) {
   let updatedOrder = order;
 
   // Init delivery provider
-  const supportedDeliveryProviders = await supportedDeliveryProvidersService(
-    { order: updatedOrder },
-    unchainedAPI,
-  );
+  const supportedDeliveryProviders = await supportedDeliveryProvidersService.bind(this)({
+    order: updatedOrder,
+  });
 
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
+  const orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: updatedOrder.deliveryId,
   });
   const deliveryProviderId = orderDelivery?.deliveryProviderId;
@@ -33,10 +30,10 @@ export const initCartProvidersService = async (order: Order, unchainedAPI: { mod
         providers: supportedDeliveryProviders,
         order: updatedOrder,
       },
-      unchainedAPI,
+      { modules: this },
     );
     if (defaultOrderDeliveryProvider) {
-      updatedOrder = await modules.orders.setDeliveryProvider(
+      updatedOrder = await this.orders.setDeliveryProvider(
         updatedOrder._id,
         defaultOrderDeliveryProvider._id,
       );
@@ -44,12 +41,11 @@ export const initCartProvidersService = async (order: Order, unchainedAPI: { mod
   }
 
   // Init payment provider
-  const supportedPaymentProviders = await supportedPaymentProvidersService(
-    { order: updatedOrder },
-    unchainedAPI,
-  );
+  const supportedPaymentProviders = await supportedPaymentProvidersService.bind(this)({
+    order: updatedOrder,
+  });
 
-  const orderPayment = await modules.orders.payments.findOrderPayment({
+  const orderPayment = await this.orders.payments.findOrderPayment({
     orderPaymentId: updatedOrder.paymentId,
   });
   const paymentProviderId = orderPayment?.paymentProviderId;
@@ -61,7 +57,7 @@ export const initCartProvidersService = async (order: Order, unchainedAPI: { mod
   );
 
   if (supportedPaymentProviders?.length > 0 && !isAlreadyInitializedWithSupportedPaymentProvider) {
-    const paymentCredentials = await modules.payment.paymentCredentials.findPaymentCredentials(
+    const paymentCredentials = await this.payment.paymentCredentials.findPaymentCredentials(
       { userId: updatedOrder.userId, isPreferred: true },
       {
         sort: {
@@ -76,15 +72,15 @@ export const initCartProvidersService = async (order: Order, unchainedAPI: { mod
         order: updatedOrder,
         paymentCredentials,
       },
-      unchainedAPI,
+      { modules: this },
     );
 
     if (defaultOrderPaymentProvider) {
-      updatedOrder = await modules.orders.setPaymentProvider(
+      updatedOrder = await this.orders.setPaymentProvider(
         updatedOrder._id,
         defaultOrderPaymentProvider._id,
       );
     }
   }
   return updatedOrder;
-};
+}

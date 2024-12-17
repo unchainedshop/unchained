@@ -1,6 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
 import {
-  UnchainedCore,
   IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
@@ -12,7 +11,7 @@ const logger = createLogger('unchained:core-payment:braintree');
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
-const BraintreeDirect: IPaymentAdapter<UnchainedCore> = {
+const BraintreeDirect: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.braintree-direct',

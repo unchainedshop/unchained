@@ -1,7 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import stripeClient, { createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
 import {
-  UnchainedCore,
   OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
@@ -13,7 +12,7 @@ export * from './middleware.js';
 
 const logger = createLogger('unchained:core-payment:stripe');
 
-const Stripe: IPaymentAdapter<UnchainedCore> = {
+const Stripe: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.stripe',

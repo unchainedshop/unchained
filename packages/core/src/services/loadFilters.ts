@@ -2,19 +2,17 @@ import { SearchQuery, defaultFilterSelector } from '@unchainedshop/core-filters'
 import { Modules } from '../modules.js';
 import { FilterDirector } from '../directors/FilterDirector.js';
 
-export const loadFiltersService = async (
+export async function loadFiltersService(
+  this: Modules,
   searchQuery: SearchQuery,
   { productIds, forceLiveCollection }: { productIds: Array<string>; forceLiveCollection: boolean },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
-
-  const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
+) {
+  const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
   const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
 
   if (!filterSelector) return [];
 
-  const otherFilters = await modules.filters.findFilters({
+  const otherFilters = await this.filters.findFilters({
     ...filterSelector,
     limit: 0,
     includeInactive: true,
@@ -38,7 +36,7 @@ export const loadFiltersService = async (
             allProductIds: productIds,
             otherFilters,
           },
-          unchainedAPI,
+          { modules: this },
         );
 
       return {
@@ -51,4 +49,4 @@ export const loadFiltersService = async (
       };
     }),
   );
-};
+}

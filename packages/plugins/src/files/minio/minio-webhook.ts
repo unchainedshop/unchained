@@ -20,7 +20,7 @@ export const minioHandler = async (req, res) => {
         const { size, contentType: type } = object;
         const [fileId] = object.key.split('.');
         const { services } = req.unchainedContext;
-        await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
+        await services.files.linkFile({ fileId, type, size });
         res.writeHead(200);
         res.end();
         return;

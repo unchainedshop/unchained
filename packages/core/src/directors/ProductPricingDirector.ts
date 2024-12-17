@@ -35,16 +35,12 @@ const baseDirector = BasePricingDirector<
   IProductPricingAdapter
 >('ProductPricingDirector');
 
-export type IProductPricingDirector<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingDirector<
+export type IProductPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   ProductPricingContext,
   ProductPricingCalculation,
   ProductPricingAdapterContext,
   IProductPricingSheet,
-  IProductPricingAdapter<any, DiscountConfiguration>,
-  UnchainedAPI
+  IProductPricingAdapter<DiscountConfiguration>
 >;
 
 export const ProductPricingDirector: IProductPricingDirector<any> = {

@@ -29,14 +29,11 @@ const ercMetadataHandler: RouteHandlerMethod = async (
     const { productId, localeOrTokenFilename, tokenFileName } = req.params as any;
     const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;
 
-    const ercMetadata = await services.warehousing.ercMetadata(
-      {
-        productId,
-        locale,
-        chainTokenId: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
-      },
-      req.unchainedContext,
-    );
+    const ercMetadata = await services.warehousing.ercMetadata({
+      productId,
+      locale,
+      chainTokenId: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
+    });
 
     if (!ercMetadata) return notFoundHandler(res);
 

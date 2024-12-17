@@ -14,7 +14,7 @@ const generateOrder = async (
   params: {
     orderPositions: Array<OrderPosition>;
   } & { [x: string]: any },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: Pick<UnchainedCore, 'modules' | 'services'>,
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;
 

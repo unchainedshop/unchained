@@ -22,5 +22,5 @@ export default async function rejectQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return services.quotations.rejectQuotation(quotation, transactionContext, context);
+  return services.quotations.rejectQuotation(quotation, transactionContext);
 }

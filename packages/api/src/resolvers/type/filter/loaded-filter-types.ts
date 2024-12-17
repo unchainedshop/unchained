@@ -50,14 +50,10 @@ export const LoadedFilter = {
     // - Fit this filter generally
     // - Are filtered by all other filters
     // - Are not filtered by the currently selected value of this filter
-    return services.filters.loadFilterOptions(
-      filter,
-      {
-        searchQuery,
-        forceLiveCollection,
-        productIdSet: filteredByOtherFiltersSet,
-      },
-      context,
-    );
+    return services.filters.loadFilterOptions(filter, {
+      searchQuery,
+      forceLiveCollection,
+      productIdSet: filteredByOtherFiltersSet,
+    });
   },
 };

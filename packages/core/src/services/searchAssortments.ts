@@ -13,13 +13,12 @@ export interface SearchAssortmentConfiguration extends SearchConfiguration {
   assortmentSelector: mongodb.Filter<Assortment>;
 }
 
-export const searchAssortmentsService = async (
+export async function searchAssortmentsService(
+  this: Modules,
   searchQuery: SearchQuery,
   { forceLiveCollection }: { forceLiveCollection?: boolean },
-  unchainedAPI: { modules: Modules },
-) => {
-  const { modules } = unchainedAPI;
-  const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
+) {
+  const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 
   const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
   const assortmentSelector = defaultAssortmentSelector(searchQuery);
@@ -43,12 +42,12 @@ export const searchAssortmentsService = async (
     totalAssortmentIds,
 
     assortmentsCount: async () =>
-      modules.assortments.count({
+      this.assortments.count({
         assortmentSelector,
         assortmentIds: totalAssortmentIds,
       }),
     assortments: async ({ offset, limit }) =>
-      modules.assortments.search.findFilteredAssortments({
+      this.assortments.search.findFilteredAssortments({
         limit,
         offset,
         assortmentIds: totalAssortmentIds,
@@ -56,4 +55,4 @@ export const searchAssortmentsService = async (
         sort: sortStage,
       }),
   };
-};
+}

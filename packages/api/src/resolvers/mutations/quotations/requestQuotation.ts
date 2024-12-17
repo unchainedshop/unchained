@@ -27,5 +27,5 @@ export default async function requestQuotation(
     configuration,
   });
 
-  return services.quotations.processQuotation(newQuotation, {}, context);
+  return services.quotations.processQuotation(newQuotation, {});
 }

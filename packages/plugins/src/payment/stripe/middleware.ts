@@ -105,16 +105,12 @@ export const stripeHandler = async (request, response) => {
         userId,
       });
 
-      const paymentCredentials = await services.orders.registerPaymentCredentials(
-        paymentProviderId,
-        {
-          transactionContext: {
-            setupIntentId: setupIntent.id,
-          },
-          userId,
+      const paymentCredentials = await services.orders.registerPaymentCredentials(paymentProviderId, {
+        transactionContext: {
+          setupIntentId: setupIntent.id,
         },
-        resolvedContext,
-      );
+        userId,
+      });
 
       logger.info(`payment credentials registration successful`, {
         userId,

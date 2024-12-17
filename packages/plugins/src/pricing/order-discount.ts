@@ -7,12 +7,11 @@ import {
   DeliveryPricingSheet,
   PaymentPricingSheet,
   ProductPricingSheet,
-  UnchainedCore,
   resolveRatioAndTaxDivisorForPricingSheet,
 } from '@unchainedshop/core';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
-export const OrderDiscount: IOrderPricingAdapter<UnchainedCore, OrderDiscountConfiguration> = {
+export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-discount',

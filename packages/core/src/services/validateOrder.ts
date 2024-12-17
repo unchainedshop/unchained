@@ -1,18 +1,16 @@
 import { Order, ordersSettings } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 
-export const validateOrderService = async (order: Order, unchainedAPI: { modules: Modules }) => {
-  const { modules } = unchainedAPI;
-
+export async function validateOrderService(this: Modules, order: Order) {
   const errors = [];
   if (!order.contact) errors.push(new Error('Contact data not provided'));
   if (!order.billingAddress) errors.push(new Error('Billing address not provided'));
-  if (!(await modules.orders.deliveries.findDelivery({ orderDeliveryId: order.deliveryId })))
+  if (!(await this.orders.deliveries.findDelivery({ orderDeliveryId: order.deliveryId })))
     errors.push('No delivery provider selected');
-  if (!(await modules.orders.payments.findOrderPayment({ orderPaymentId: order.paymentId })))
+  if (!(await this.orders.payments.findOrderPayment({ orderPaymentId: order.paymentId })))
     errors.push('No payment provider selected');
 
-  const orderPositions = await modules.orders.positions.findOrderPositions({ orderId: order._id });
+  const orderPositions = await this.orders.positions.findOrderPositions({ orderId: order._id });
   if (orderPositions.length === 0) {
     const NoItemsError = new Error('No items to checkout');
     NoItemsError.name = 'NoItemsError';
@@ -20,7 +18,7 @@ export const validateOrderService = async (order: Order, unchainedAPI: { modules
   }
   await Promise.all(
     orderPositions.map(async (orderPosition) => {
-      const product = await unchainedAPI.modules.products.findProduct({
+      const product = await this.products.findProduct({
         productId: orderPosition.productId,
       });
 
@@ -32,7 +30,7 @@ export const validateOrderService = async (order: Order, unchainedAPI: { modules
             configuration: orderPosition.configuration,
             quantityDiff: 0,
           },
-          unchainedAPI,
+          { modules: this },
         );
       } catch (e) {
         errors.push(e);
@@ -40,10 +38,10 @@ export const validateOrderService = async (order: Order, unchainedAPI: { modules
 
       const quotation =
         orderPosition.quotationId &&
-        (await unchainedAPI.modules.quotations.findQuotation({
+        (await this.quotations.findQuotation({
           quotationId: orderPosition.quotationId,
         }));
-      if (quotation && !unchainedAPI.modules.quotations.isProposalValid(quotation)) {
+      if (quotation && !this.quotations.isProposalValid(quotation)) {
         errors.push(new Error('Quotation expired or fullfiled, please request a new offer'));
       }
     }),
@@ -52,4 +50,4 @@ export const validateOrderService = async (order: Order, unchainedAPI: { modules
   if (errors.length > 0) {
     throw new Error(errors[0]);
   }
-};
+}

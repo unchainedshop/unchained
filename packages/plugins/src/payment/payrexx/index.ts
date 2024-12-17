@@ -2,7 +2,6 @@ import { createLogger } from '@unchainedshop/logger';
 import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.js';
 import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
 import {
-  UnchainedCore,
   OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
@@ -14,7 +13,7 @@ export * from './middleware.js';
 
 const logger = createLogger('unchained:core-payment:payrexx');
 
-const Payrexx: IPaymentAdapter<UnchainedCore> = {
+const Payrexx: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.payrexx',

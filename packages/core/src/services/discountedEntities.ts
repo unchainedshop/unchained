@@ -8,17 +8,13 @@ import {
 } from '../directors/index.js';
 import { Modules } from '../modules.js';
 
-export const discountedEntitiesService = async (
+export async function discountedEntitiesService(
+  this: Modules,
   order: Order,
   orderDiscount: OrderDiscount,
-  unchainedAPI: {
-    modules: Modules;
-  },
-): Promise<Array<OrderPricingDiscount>> => {
-  const { modules } = unchainedAPI;
-
+): Promise<Array<OrderPricingDiscount>> {
   // Delivery discounts
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
+  const orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
 
@@ -34,7 +30,7 @@ export const discountedEntitiesService = async (
     }));
 
   // Payment discounts
-  const orderPayment = await modules.orders.payments.findOrderPayment({
+  const orderPayment = await this.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
   });
   const paymentPricingSheet = PaymentPricingSheet({
@@ -49,7 +45,7 @@ export const discountedEntitiesService = async (
     }));
 
   // Position discounts
-  const orderPositions = await modules.orders.positions.findOrderPositions({
+  const orderPositions = await this.orders.positions.findOrderPositions({
     orderId: order._id,
   });
   const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
@@ -82,4 +78,4 @@ export const discountedEntitiesService = async (
   ].filter(Boolean);
 
   return discounted;
-};
+}

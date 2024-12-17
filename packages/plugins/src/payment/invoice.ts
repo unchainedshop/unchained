@@ -1,7 +1,7 @@
-import { UnchainedCore, IPaymentAdapter, PaymentAdapter, PaymentDirector } from '@unchainedshop/core';
+import { IPaymentAdapter, PaymentAdapter, PaymentDirector } from '@unchainedshop/core';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 
-const Invoice: IPaymentAdapter<UnchainedCore> = {
+const Invoice: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.invoice',

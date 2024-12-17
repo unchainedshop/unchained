@@ -3,7 +3,6 @@ import { PaymentPageInitializeInput, SaferpayClient } from './api/index.js';
 import { buildSignature } from './buildSignature.js';
 import { SaferpayTransactionsModule } from './module/configureSaferpayTransactionsModule.js';
 import {
-  UnchainedCore,
   OrderPricingSheet,
   IPaymentAdapter,
   PaymentAdapter,
@@ -36,11 +35,7 @@ const addTransactionId = (urlString, saferpayTransactionId) => {
   return urlWithTransactionId.href;
 };
 
-export const WordlineSaferpay: IPaymentAdapter<
-  UnchainedCore & {
-    modules: { saferpayTransactions: SaferpayTransactionsModule };
-  }
-> = {
+export const WordlineSaferpay: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.saferpay',
@@ -52,7 +47,9 @@ export const WordlineSaferpay: IPaymentAdapter<
   },
 
   actions: (config, context) => {
-    const { modules } = context;
+    const { modules } = context as typeof context & {
+      modules: { saferpayTransactions: SaferpayTransactionsModule };
+    };
 
     const createSaferPayClient = () => {
       if (!SAFERPAY_CUSTOMER_ID || !SAFERPAY_USER || !SAFERPAY_PW)

@@ -36,14 +36,11 @@ const ercMetadataMiddleware: RequestHandler = async (
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
     const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;
 
-    const ercMetadata = await services.warehousing.ercMetadata(
-      {
-        productId,
-        locale,
-        chainTokenId: parsedPath.name,
-      },
-      req.unchainedContext,
-    );
+    const ercMetadata = await services.warehousing.ercMetadata({
+      productId,
+      locale,
+      chainTokenId: parsedPath.name,
+    });
 
     if (!ercMetadata) {
       methodWrongHandler(res);

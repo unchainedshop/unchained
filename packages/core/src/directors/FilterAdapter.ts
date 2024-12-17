@@ -4,6 +4,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { IBaseAdapter } from '@unchainedshop/utils';
 import { Product } from '@unchainedshop/core-products';
 import { Filter, SearchQuery } from '@unchainedshop/core-filters';
+import { Modules } from '../modules.js';
 
 export type FilterInputText = { locale: string; title: string; subtitle?: string };
 
@@ -55,10 +56,10 @@ export interface FilterAdapterActions {
   ) => Promise<mongodb.FindOptions['sort']>;
 }
 
-export type IFilterAdapter<UnchainedAPI = unknown> = IBaseAdapter & {
+export type IFilterAdapter = IBaseAdapter & {
   orderIndex: number;
 
-  actions: (params: FilterContext & UnchainedAPI) => FilterAdapterActions;
+  actions: (params: FilterContext & { modules: Modules }) => FilterAdapterActions;
 };
 
 export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = {

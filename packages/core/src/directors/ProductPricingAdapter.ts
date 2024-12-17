@@ -8,6 +8,7 @@ import {
   BasePricingAdapterContext,
   IPricingAdapter,
 } from '../directors/index.js';
+import { Modules } from '../modules.js';
 
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
@@ -18,11 +19,8 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   order?: Order;
 }
 
-export type IProductPricingAdapter<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingAdapter<
-  ProductPricingAdapterContext & UnchainedAPI,
+export type IProductPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
+  ProductPricingAdapterContext & { modules: Modules },
   ProductPricingCalculation,
   IProductPricingSheet,
   DiscountConfiguration

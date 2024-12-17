@@ -20,19 +20,16 @@ const upsertAsset = async (
       return updatedFile;
     }
 
-    const assetObject = await services.files.uploadFileFromURL(
-      {
-        directoryName,
-        fileInput: {
-          fileLink: url,
-          fileName,
-          fileId,
-          headers,
-        },
-        meta,
+    const assetObject = await services.files.uploadFileFromURL({
+      directoryName,
+      fileInput: {
+        fileLink: url,
+        fileName,
+        fileId,
+        headers,
       },
-      unchainedAPI,
-    );
+      meta,
+    });
 
     if (!assetObject) throw new Error('Media not created');
     return assetObject;

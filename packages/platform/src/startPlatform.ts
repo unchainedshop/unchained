@@ -121,7 +121,7 @@ export const startPlatform = async ({
 
   // Setup filter cache
   if (!workQueueOptions?.skipInvalidationOnStartup) {
-    setImmediate(() => unchainedAPI.services.filters.invalidateFilterCache(unchainedAPI));
+    setImmediate(() => unchainedAPI.services.filters.invalidateFilterCache());
   }
 
   return { unchainedAPI, graphqlHandler, db };

@@ -25,16 +25,12 @@ export type OrderPricingDiscount = PricingDiscount & {
   payment?: OrderPayment;
 };
 
-export type IOrderPricingDirector<
-  UnchainedAPI = unknown,
-  DiscountConfiguration = unknown,
-> = IPricingDirector<
+export type IOrderPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   OrderPricingContext,
   OrderPricingCalculation,
   OrderPricingAdapterContext,
   IOrderPricingSheet,
-  IOrderPricingAdapter<any, DiscountConfiguration>,
-  UnchainedAPI
+  IOrderPricingAdapter<DiscountConfiguration>
 >;
 
 const baseDirector = BasePricingDirector<

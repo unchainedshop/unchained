@@ -117,6 +117,6 @@ export const AssortmentTypes = {
     const filterIds = await modules.assortments.filters.findFilterIds({
       assortmentId: obj._id,
     });
-    return services.filters.searchProducts({ ...query, productIds, filterIds }, {}, requestContext);
+    return services.filters.searchProducts({ ...query, productIds, filterIds }, {});
   },
 };

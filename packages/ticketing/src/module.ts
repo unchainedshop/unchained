@@ -48,27 +48,21 @@ const ticketingModule = {
       });
 
       const registrations: any = previousFile?.meta?.registrations || [];
-      const pkpassFile = await unchainedAPI.services.files.uploadFileFromStream(
-        {
-          directoryName: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-          rawFile,
-          meta: {
-            rawData: token,
-            passTypeIdentifier: pass.passTypeIdentifier,
-            serialNumber: pass.serialNumber,
-            registrations,
-          },
+      const pkpassFile = await unchainedAPI.services.files.uploadFileFromStream({
+        directoryName: APPLE_WALLET_PASSES_FILE_DIRECTORY,
+        rawFile,
+        meta: {
+          rawData: token,
+          passTypeIdentifier: pass.passTypeIdentifier,
+          serialNumber: pass.serialNumber,
+          registrations,
         },
-        unchainedAPI,
-      );
+      });
 
       if (previousFile) {
-        await unchainedAPI.services.files.removeFiles(
-          {
-            fileIds: [previousFile._id],
-          },
-          unchainedAPI,
-        );
+        await unchainedAPI.services.files.removeFiles({
+          fileIds: [previousFile._id],
+        });
       }
 
       // Push updates!

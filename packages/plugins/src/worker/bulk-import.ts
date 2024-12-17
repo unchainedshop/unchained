@@ -6,7 +6,11 @@ import { UnchainedCore } from '@unchainedshop/core';
 
 const logger = createLogger('unchained:worker:bulk-import');
 
-const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
+const streamPayloadToBulkImporter = async (
+  bulkImporter,
+  payloadId,
+  unchainedAPI: Pick<UnchainedCore, 'bulkImporter' | 'modules' | 'services'>,
+) => {
   logger.trace(`parseAsync start`);
 
   const readStream = await unchainedAPI.services.files.createDownloadStream({ fileId: payloadId });

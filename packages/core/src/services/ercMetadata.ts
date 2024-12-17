@@ -2,20 +2,20 @@ import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector } from '../directors/WarehousingDirector.js';
 import { Modules } from '../modules.js';
 
-export const ercMetadataService = async (
+export async function ercMetadataService(
+  this: Modules,
   { productId, chainTokenId, locale }: { productId: string; chainTokenId: string; locale: Intl.Locale },
-  context: { modules: Modules },
-) => {
-  const product = await context.modules.products.findProduct({
+) {
+  const product = await this.products.findProduct({
     productId,
   });
 
-  const [token] = await context.modules.warehousing.findTokens({
+  const [token] = await this.warehousing.findTokens({
     chainTokenId,
     contractAddress: product?.tokenization?.contractAddress,
   });
 
-  const virtualProviders = await context.modules.warehousing.findProviders({
+  const virtualProviders = await this.warehousing.findProviders({
     type: WarehousingProviderType.VIRTUAL,
   });
 
@@ -28,6 +28,6 @@ export const ercMetadataService = async (
       quantity: token?.quantity || 1,
       referenceDate: new Date(),
     },
-    context,
+    { modules: this },
   );
-};
+}

@@ -137,16 +137,12 @@ export const appleIAPHandler = async (req, res) => {
           orderId: originalOrder._id,
         });
 
-        await services.orders.registerPaymentCredentials(
-          enrollment.payment.paymentProviderId,
-          {
-            transactionContext: {
+        await services.orders.registerPaymentCredentials(enrollment.payment.paymentProviderId, {
+          transactionContext: {
               receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-            },
-            userId: enrollment.userId,
           },
-          resolvedContext,
-        );
+          userId: enrollment.userId,
+        });
 
         await fixPeriods(
           {
@@ -196,7 +192,7 @@ export const appleIAPHandler = async (req, res) => {
   res.end();
 };
 
-const AppleIAP: IPaymentAdapter<UnchainedCore> = {
+const AppleIAP: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.apple-iap',
