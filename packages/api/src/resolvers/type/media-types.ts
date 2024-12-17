@@ -13,11 +13,7 @@ export const Media: MediaHelperTypes = {
       await checkAction(context, actions.downloadFile, [file, params]);
       const fileUploadAdapter = getFileAdapter();
       const mediaUrl = modules.files.getUrl(file, params);
-      if (file?.meta?.isPrivate) {
-        return fileUploadAdapter.createDownloadURL(mediaUrl, file._id);
-      } else {
-        return mediaUrl;
-      }
+      return fileUploadAdapter.createDownloadURL(mediaUrl, file);
     } catch (e) {
       console.error(e);
       return null;

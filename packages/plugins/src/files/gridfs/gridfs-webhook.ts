@@ -85,7 +85,7 @@ export const gridfsHandler = async (
         const urlWithoutQuery = url.origin + url.pathname;
         const signedUrl = await fileAdapter.createDownloadURL(
           urlWithoutQuery,
-          fileId,
+          fileDocument,
           parseInt(expiryTimestamp || 0),
         );
         if (

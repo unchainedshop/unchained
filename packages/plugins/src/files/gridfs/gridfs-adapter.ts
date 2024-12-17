@@ -30,21 +30,22 @@ export const GridFSAdapter: IFileAdapter = {
   version: '1.0.0',
 
   ...FileAdapter,
-  async createDownloadURL(fileUrl: string, mediaId: string, expiry?: number) {
+  async createDownloadURL(mediaUrl: string, file: any, expiry?: number) {
     const secretKey = process.env.UNCHAINED_SECRET;
     if (!secretKey) {
       throw new Error('UNCHAINED_SECRET is not set in environment variables');
     }
-
+    if (!file?._id || !mediaUrl) return null;
+    if (!file.meta?.isPrivate) return mediaUrl;
     const expiryTimestamp = new Date(
       new Date().getTime() + (filesSettings?.privateFileSharingMaxAge || 0),
     ).getTime();
 
     const normalizedTimestamp = expiry || expiryTimestamp;
-    const data = `${mediaId}:${normalizedTimestamp}`;
+    const data = `${file._id}:${normalizedTimestamp}`;
 
     const signature = crypto.createHmac('sha256', secretKey).update(data).digest('hex');
-    return `${fileUrl}?s=${signature}&e=${normalizedTimestamp}`;
+    return `${mediaUrl}?s=${signature}&e=${normalizedTimestamp}`;
   },
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();
