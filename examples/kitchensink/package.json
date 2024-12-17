@@ -34,7 +34,7 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@graphql-yoga/plugin-response-cache": "^3.12.4",
+    "@graphql-yoga/plugin-response-cache": "^3.12.6",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/api": "^3.0.0-alpha4",
     "@unchainedshop/core-delivery": "^3.0.0-alpha4",
@@ -48,14 +48,14 @@
     "ethers": "^6.13.4",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
-    "graphql": "^16.9.0",
+    "graphql": "^16.10.0",
     "nodemailer": "^6.9.16",
     "open": "^10.1.0",
     "passport": "^0.7.0",
     "postfinancecheckout": "^4.5.0",
     "stripe": "^17.4.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.3.7",
+    "twilio": "^5.4.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   },
@@ -63,7 +63,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "mongodb-memory-server": "^10.1.2",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

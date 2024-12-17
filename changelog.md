@@ -11,6 +11,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Access Tokens
 
 ## Major
+- Drop support for Node.js <22.x
 - `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
 - Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
 - Auth: Remove logoutAllSessions and remove support for loging out a specific session

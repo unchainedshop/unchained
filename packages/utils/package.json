@@ -29,7 +29,7 @@
   "dependencies": {
     "@unchainedshop/logger": "^3.0.0-alpha4",
     "hashids": "^2.3.0",
-    "resolve-accept-language": "^3.1.9"
+    "resolve-accept-language": "^3.1.10"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

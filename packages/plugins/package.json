@@ -65,7 +65,7 @@
     "postfinancecheckout": "^4.5.0",
     "stripe": "^17.4.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.3.7",
+    "twilio": "^5.4.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   },
