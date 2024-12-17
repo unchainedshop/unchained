@@ -1,26 +1,38 @@
 import { Context } from '../../context.js';
-import { WebAuthnCredentials as WebAuthnCredentialsTypes } from '@unchainedshop/core-users';
 
-type HelperType<P, T> = (
-  credentials: WebAuthnCredentialsTypes,
-  params: P,
-  context: Context,
-) => Promise<T>;
-
-export interface WebAuthnCredentialsHelperTypes {
-  _id: HelperType<any, string>;
-  created: HelperType<any, Date>;
-  mdsMetadata: HelperType<any, any>;
-}
-
-export const WebAuthnCredentials: WebAuthnCredentialsHelperTypes = {
-  async _id(obj) {
+export const WebAuthnCredentials = {
+  async _id(obj: {
+    id: string;
+    publicKey: string;
+    created: Date;
+    aaguid: string;
+    counter: number;
+    mdsMetadata: any;
+  }) {
     return obj.id;
   },
-  async created(obj) {
+  async created(obj: {
+    id: string;
+    publicKey: string;
+    created: Date;
+    aaguid: string;
+    counter: number;
+    mdsMetadata: any;
+  }) {
     return obj.created || new Date(0);
   },
-  async mdsMetadata(obj, _, { modules }) {
+  async mdsMetadata(
+    obj: {
+      id: string;
+      publicKey: string;
+      created: Date;
+      aaguid: string;
+      counter: number;
+      mdsMetadata: any;
+    },
+    _: never,
+    { modules }: Context,
+  ) {
     const metadata = await modules.users.webAuthn.findMDSMetadataForAAGUID(obj.aaguid);
     return metadata;
   },

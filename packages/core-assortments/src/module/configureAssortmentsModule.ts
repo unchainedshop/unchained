@@ -8,10 +8,17 @@ import {
   generateDbObjectId,
   ModuleInput,
 } from '@unchainedshop/mongodb';
+import { createLogger } from '@unchainedshop/logger';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 import addMigrations from '../migrations/addMigrations.js';
-import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
+import {
+  Assortment,
+  AssortmentLink,
+  AssortmentQuery,
+  AssortmentsCollection,
+  InvalidateCacheFn,
+} from '../db/AssortmentsCollection.js';
 import {
   AssortmentFiltersModule,
   configureAssortmentFiltersModule,
@@ -32,14 +39,12 @@ import {
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
 import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
 import { AssortmentMediaModule } from './configureAssortmentMediaModule.js';
-import {
-  Assortment,
-  AssortmentLink,
-  AssortmentPathLink,
-  AssortmentQuery,
-  InvalidateCacheFn,
-} from '../types.js';
-import { createLogger } from '@unchainedshop/logger';
+
+export interface AssortmentPathLink {
+  assortmentId: string;
+  childAssortmentId: string;
+  parentIds: string[];
+}
 
 const logger = createLogger('unchained:core');
 

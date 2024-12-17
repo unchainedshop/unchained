@@ -1,19 +1,39 @@
 import bcrypt from '@node-rs/bcrypt';
-import { ModuleInput, Address, Contact } from '@unchainedshop/mongodb';
-import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
-import { emit, registerEvents } from '@unchainedshop/events';
 import {
+  ModuleInput,
+  Address,
+  Contact,
   generateDbFilterById,
   buildSortOptions,
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
+import {
+  User,
+  UserQuery,
+  Email,
+  UserLastLogin,
+  UserProfile,
+  UsersCollection,
+} from '../db/UsersCollection.js';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
-import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
+
+export interface UserData {
+  email?: string;
+  guest?: boolean;
+  initialPassword?: boolean;
+  lastBillingAddress?: User['lastBillingAddress'];
+  password: string | null;
+  webAuthnPublicKeyCredentials?: any;
+  profile?: UserProfile;
+  roles?: Array<string>;
+  username?: string;
+}
 
 export type UsersModule = {
   // Submodules

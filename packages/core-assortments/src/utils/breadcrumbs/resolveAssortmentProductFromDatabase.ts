@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { AssortmentProduct } from '../../types.js';
+import { AssortmentProduct } from '../../db/AssortmentsCollection.js';
 
 export function resolveAssortmentProductFromDatabase(
   AssortmentProducts: mongodb.Collection<AssortmentProduct>,

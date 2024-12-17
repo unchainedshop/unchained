@@ -2,7 +2,8 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
-import { Assortment, AssortmentText } from '../types.js';
+import { Assortment, AssortmentText } from '../db/AssortmentsCollection.js';
+
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
 export type AssortmentTextsModule = {

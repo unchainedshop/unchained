@@ -1,6 +1,5 @@
-import { User } from './types.js';
 import { mongodb } from '@unchainedshop/mongodb';
-
+import { User } from './db/UsersCollection.js';
 export interface UserSettingsOptions {
   mergeUserCartsOnLogin?: boolean;
   autoMessagingAfterUserCreation?: boolean;

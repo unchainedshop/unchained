@@ -6,22 +6,36 @@ import { Language } from '@unchainedshop/core-languages';
 import { Order, OrderStatus } from '@unchainedshop/core-orders';
 import { PaymentCredentials } from '@unchainedshop/core-payment';
 import { Quotation } from '@unchainedshop/core-quotations';
-import {
-  Email,
-  User as UserType,
-  UserProfile,
-  Web3Address,
-  WebAuthnCredentials,
-  PushSubscription,
-} from '@unchainedshop/core-users';
+import { Email, User as UserType, UserProfile } from '@unchainedshop/core-users';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { Roles, permissions } from '@unchainedshop/roles';
 import { ProductReview } from '@unchainedshop/core-products';
+import { Contact } from '@unchainedshop/mongodb';
+import { Country } from '@unchainedshop/core-countries';
 import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
 import { Context } from '../../context.js';
-import { Contact } from '@unchainedshop/mongodb';
-import { Country } from '@unchainedshop/core-countries';
+
+export interface PushSubscription {
+  _id: string;
+  userAgent: string;
+  expirationTime: number;
+  endpoint: string;
+}
+
+export interface Web3Address {
+  address: string;
+  nonce?: number;
+  verified: boolean;
+}
+export interface WebAuthnCredentials {
+  id: string;
+  publicKey: string;
+  created: Date;
+  aaguid: string;
+  counter: number;
+  mdsMetadata: any;
+}
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 

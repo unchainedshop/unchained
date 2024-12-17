@@ -1,6 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { InvalidateCacheFn, AssortmentProduct } from '../types.js';
+import { InvalidateCacheFn, AssortmentProduct } from '../db/AssortmentsCollection.js';
+
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
   'ASSORTMENT_REMOVE_PRODUCT',

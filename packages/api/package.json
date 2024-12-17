@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "3.0.0-rc1",
+  "version": "3.0.0-rc2",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
@@ -40,12 +40,12 @@
     "passport": "^0.7.0"
   },
   "dependencies": {
-    "@metamask/eth-sig-util": "^8.1.1",
-    "@unchainedshop/core": "^3.0.0-rc1",
-    "@unchainedshop/events": "^3.0.0-rc1",
-    "@unchainedshop/logger": "^3.0.0-rc1",
-    "@unchainedshop/roles": "^3.0.0-rc1",
-    "@unchainedshop/utils": "^3.0.0-rc1",
+    "@metamask/eth-sig-util": "^8.1.2",
+    "@unchainedshop/core": "^3.0.0-rc2",
+    "@unchainedshop/events": "^3.0.0-rc2",
+    "@unchainedshop/logger": "^3.0.0-rc2",
+    "@unchainedshop/roles": "^3.0.0-rc2",
+    "@unchainedshop/utils": "^3.0.0-rc2",
     "accounting": "0.4.1",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",

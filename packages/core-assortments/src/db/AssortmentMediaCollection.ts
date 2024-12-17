@@ -1,5 +1,21 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { AssortmentMediaText, AssortmentMediaType } from '../types.js';
+import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+
+export type AssortmentMediaText = {
+  _id?: string;
+  assortmentMediaId: string;
+  locale?: string;
+  title?: string;
+  subtitle?: string;
+} & TimestampFields;
+
+export type AssortmentMediaType = {
+  _id?: string;
+  mediaId: string;
+  assortmentId: string;
+  sortKey: number;
+  tags: Array<string>;
+  meta?: any;
+} & TimestampFields;
 
 export const AssortmentMediaCollection = async (db: mongodb.Db) => {
   const AssortmentMedia = db.collection<AssortmentMediaType>('assortment_media');

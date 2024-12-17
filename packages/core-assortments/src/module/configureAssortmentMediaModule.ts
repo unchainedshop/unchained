@@ -7,7 +7,7 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
-import { AssortmentMediaText, AssortmentMediaType } from '../types.js';
+import { AssortmentMediaText, AssortmentMediaType } from '../db/AssortmentMediaCollection.js';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',

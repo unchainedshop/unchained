@@ -1,5 +1,11 @@
-import { WebAuthnCredentialsCreationRequest } from '../types.js';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+
+export interface WebAuthnCredentialsCreationRequest {
+  challenge: string;
+  username: string;
+  origin: string;
+  factor: 'first' | 'second' | 'either';
+}
 
 type Collection = WebAuthnCredentialsCreationRequest & { _id: number };
 
