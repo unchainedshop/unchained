@@ -16,6 +16,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return true;
   };
   const canUpdateAvatar = (_, params: { userId?: string } = {}, context: Context) => {
+    console.log(context?.user);
     const isVerified = context?.user?.emails.some(({ verified }) => verified);
     if (!isVerified) return false;
     if (params?.userId) {
