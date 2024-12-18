@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/plugins",
-  "version": "3.0.0-rc3",
+  "version": "3.0.0-rc4",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
@@ -32,18 +32,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^3.0.0-rc3",
-    "@unchainedshop/core-delivery": "^3.0.0-rc3",
-    "@unchainedshop/core-enrollments": "^3.0.0-rc3",
-    "@unchainedshop/core-orders": "^3.0.0-rc3",
-    "@unchainedshop/core-payment": "^3.0.0-rc3",
-    "@unchainedshop/core-products": "^3.0.0-rc3",
-    "@unchainedshop/core-warehousing": "^3.0.0-rc3",
-    "@unchainedshop/core-worker": "^3.0.0-rc3",
-    "@unchainedshop/events": "^3.0.0-rc3",
-    "@unchainedshop/file-upload": "^3.0.0-rc3",
-    "@unchainedshop/logger": "^3.0.0-rc3",
-    "@unchainedshop/utils": "^3.0.0-rc3"
+    "@unchainedshop/api": "^3.0.0-rc4",
+    "@unchainedshop/core-delivery": "^3.0.0-rc4",
+    "@unchainedshop/core-enrollments": "^3.0.0-rc4",
+    "@unchainedshop/core-orders": "^3.0.0-rc4",
+    "@unchainedshop/core-payment": "^3.0.0-rc4",
+    "@unchainedshop/core-products": "^3.0.0-rc4",
+    "@unchainedshop/core-warehousing": "^3.0.0-rc4",
+    "@unchainedshop/core-worker": "^3.0.0-rc4",
+    "@unchainedshop/events": "^3.0.0-rc4",
+    "@unchainedshop/file-upload": "^3.0.0-rc4",
+    "@unchainedshop/logger": "^3.0.0-rc4",
+    "@unchainedshop/utils": "^3.0.0-rc4"
   },
   "optionalDependencies": {
     "@aws-sdk/client-eventbridge": "^3.714.0",

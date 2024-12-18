@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-messaging",
-  "version": "3.0.0-rc3",
+  "version": "3.0.0-rc4",
   "main": "lib/messaging-index.js",
   "types": "lib/messaging-index.d.ts",
   "type": "module",
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^3.0.0-rc3",
+    "@unchainedshop/logger": "^3.0.0-rc4",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
