@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-languages",
-  "version": "3.0.0-rc5",
+  "version": "3.0.0-rc6",
   "main": "lib/languages-index.js",
   "types": "lib/languages-index.d.ts",
   "type": "module",
@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-rc5",
-    "@unchainedshop/utils": "^3.0.0-rc5"
+    "@unchainedshop/events": "^3.0.0-rc6",
+    "@unchainedshop/utils": "^3.0.0-rc6"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

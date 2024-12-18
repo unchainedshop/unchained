@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/events",
-  "version": "3.0.0-rc5",
+  "version": "3.0.0-rc6",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^3.0.0-rc5"
+    "@unchainedshop/logger": "^3.0.0-rc6"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
