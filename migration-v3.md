@@ -88,3 +88,17 @@ connect(app, engine);
 ## Remove types
 
 Remove all imports from `@unchainedshop/types` and find the types in the according core modules, core and platform.
+
+
+
+## Benchmarks
+
+Dependency Hell:
+
+Minimal v2 without optional and without dev (production setup):
+* 449 Packages
+* 205M
+
+Minimal v3 without optional and without dev (production setup):
+* 245 Packages
+* 127M

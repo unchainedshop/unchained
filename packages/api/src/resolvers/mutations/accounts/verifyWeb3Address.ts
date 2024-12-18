@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { recoverPersonalSignature } from '@metamask/eth-sig-util';
+import { recoverPersonalSignature } from '@metamask/eth-sig-util'; // TODO: Optional peer dep!
 import { UserWeb3AddressNotFoundError, UserWeb3AddressSignatureError } from '../../../errors.js';
 import { Context } from '../../../context.js';
 

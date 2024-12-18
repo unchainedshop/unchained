@@ -1,8 +1,4 @@
 import { Tree } from '@unchainedshop/utils';
-import zip from 'ramda/es/zip';
-import flatten from 'ramda/es/flatten';
-import filter from 'ramda/es/filter';
-import pipe from 'ramda/es/pipe';
 
 export const fillUp = <T>(arr: Array<T>, size: number): Array<T> =>
   [...arr, ...new Array(size).fill(null)].slice(0, size);
@@ -33,9 +29,9 @@ export const divideTreeByLevels = (
   return [currentLevel.length && { level, items: currentLevel }, ...nextLevels].filter(Boolean);
 };
 
-export const concatItemsByLevels = (levelArray): Tree<string> => {
+export const concatItemsByLevels = (levelArray: Array<{ level: number; items: Array<string> }>) => {
   return Object.values(
-    levelArray.reduce((acc, { level, items }) => {
+    levelArray.reduce<Record<number, Array<Array<string>>>>((acc, { level, items }) => {
       return {
         ...acc,
         [level]: [...(acc[level] || []), items],
@@ -44,9 +40,20 @@ export const concatItemsByLevels = (levelArray): Tree<string> => {
   );
 };
 
-export const shuffleEachLevel = (unshuffledLevels) => {
+const zip = function zip(a, b) {
+  const len = Math.min(a.length, b.length);
+  const rv = Array(len);
+  let idx = 0;
+  while (idx < len) {
+    rv[idx] = [a[idx], b[idx]];
+    idx += 1;
+  }
+  return rv;
+};
+
+export const shuffleEachLevel = (unshuffledLevels: string[][][]) => {
   return unshuffledLevels.map((subArrays) => {
-    const shuffled = subArrays.reduce((a, b) => {
+    const shuffled = subArrays.reduce<string[]>((a, b) => {
       const [accumulator, currentArray] = fillToSameLengthArray(a, b);
       return zip(accumulator, currentArray);
     }, []);
@@ -58,6 +65,5 @@ export default (tree: Tree<string>): Array<string> => {
   const levels = divideTreeByLevels(tree);
   const concattedLevels = concatItemsByLevels(levels);
   const items = shuffleEachLevel(concattedLevels);
-  const zipped: Array<string> = pipe(flatten, filter(Boolean))(items);
-  return zipped;
+  return items.flat().filter(Boolean);
 };
