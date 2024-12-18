@@ -1,5 +1,4 @@
 import { log } from '@unchainedshop/logger';
-import { recoverPersonalSignature } from '@metamask/eth-sig-util'; // TODO: Optional peer dep!
 import { UserWeb3AddressNotFoundError, UserWeb3AddressSignatureError } from '../../../errors.js';
 import { Context } from '../../../context.js';
 
@@ -20,6 +19,10 @@ export default async function verifyWeb3Address(
   }
 
   const msg = `0x${Buffer.from(foundCredentials.nonce, 'utf8').toString('hex')}`;
+
+  // eslint-disable-next-line
+  // @ts-ignore
+  const { recoverPersonalSignature } = await import('@metamask/eth-sig-util');
 
   const recoveredAddr = recoverPersonalSignature({
     data: msg,

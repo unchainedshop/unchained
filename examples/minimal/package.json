@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
-    "mongodb-memory-server": "^10.0.0",
+    "mongodb-memory-server": "^10.1.2",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",

@@ -65,5 +65,5 @@ export default (tree: Tree<string>): Array<string> => {
   const levels = divideTreeByLevels(tree);
   const concattedLevels = concatItemsByLevels(levels);
   const items = shuffleEachLevel(concattedLevels);
-  return items.flat().filter(Boolean);
+  return items.flat(Infinity).filter(Boolean) as any as Array<string>;
 };

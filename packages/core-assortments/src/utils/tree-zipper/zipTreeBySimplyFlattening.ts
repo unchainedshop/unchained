@@ -1,10 +1,5 @@
 import { Tree } from '@unchainedshop/utils';
-import flatten from 'ramda/es/flatten';
-import filter from 'ramda/es/filter';
-import pipe from 'ramda/es/pipe';
 
 export default (tree: Tree<string>): Array<string> => {
-  console.log({ tree });
-  const zipped = pipe(flatten, filter(Boolean))(tree);
-  return zipped;
+  return (tree as string[][]).flat(Number.MAX_SAFE_INTEGER).filter(Boolean) as Array<string>;
 };
