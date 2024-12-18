@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "3.0.0-rc4",
+  "version": "3.0.0-rc5",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -28,15 +28,15 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^3.0.0-rc4",
-    "@unchainedshop/core": "^3.0.0-rc4",
-    "@unchainedshop/events": "^3.0.0-rc4",
-    "@unchainedshop/file-upload": "^3.0.0-rc4",
-    "@unchainedshop/logger": "^3.0.0-rc4",
-    "@unchainedshop/mongodb": "^3.0.0-rc4",
-    "@unchainedshop/plugins": "^3.0.0-rc4",
-    "@unchainedshop/roles": "^3.0.0-rc4",
-    "@unchainedshop/utils": "^3.0.0-rc4"
+    "@unchainedshop/api": "^3.0.0-rc5",
+    "@unchainedshop/core": "^3.0.0-rc5",
+    "@unchainedshop/events": "^3.0.0-rc5",
+    "@unchainedshop/file-upload": "^3.0.0-rc5",
+    "@unchainedshop/logger": "^3.0.0-rc5",
+    "@unchainedshop/mongodb": "^3.0.0-rc5",
+    "@unchainedshop/plugins": "^3.0.0-rc5",
+    "@unchainedshop/roles": "^3.0.0-rc5",
+    "@unchainedshop/utils": "^3.0.0-rc5"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
