@@ -1,24 +1,25 @@
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.js';
+import { Modules } from '../modules.js';
 
-export type IDiscountDirector<DiscountConfiguration, Context> = IBaseDirector<
-  IDiscountAdapter<DiscountConfiguration, Context>
+export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
+  IDiscountAdapter<DiscountConfiguration>
 > & {
   actions: (
     discountContext: DiscountContext,
-    unchainedAPI: Context,
+    unchainedAPI: { modules: Modules },
   ) => Promise<{
     resolveDiscountAdapterFromStaticCode: (params: {
       code: string;
-    }) => Promise<IDiscountAdapter<DiscountConfiguration, Context>>;
+    }) => Promise<IDiscountAdapter<DiscountConfiguration>>;
     findSystemDiscounts: () => Promise<Array<string>>;
   }>;
 };
 
-export const BaseDiscountDirector = <DiscountConfigurationType, Context>(
+export const BaseDiscountDirector = <DiscountConfigurationType>(
   directorName: string,
-): IDiscountDirector<DiscountConfigurationType, Context> => {
-  const baseDirector = BaseDirector<IDiscountAdapter<DiscountConfigurationType, Context>>(directorName, {
+): IDiscountDirector<DiscountConfigurationType> => {
+  const baseDirector = BaseDirector<IDiscountAdapter<DiscountConfigurationType>>(directorName, {
     adapterSortKey: 'orderIndex',
   });
 

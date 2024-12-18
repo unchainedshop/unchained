@@ -170,7 +170,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return warehousingProvider;
     },
 
-    update: async (warehousingProviderId: string, doc: WarehousingProvider) => {
+    update: async (warehousingProviderId: string, doc: Partial<WarehousingProvider>) => {
       const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
         { _id: warehousingProviderId },
         {

@@ -2,20 +2,22 @@ import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
 import { IPricingSheet } from './BasePricingSheet.js';
 import { PricingCalculation } from '@unchainedshop/utils';
+import { Order, OrderDiscount } from '@unchainedshop/core-orders';
+import { Modules } from '../modules.js';
 export interface DiscountContext {
   code?: string;
-  orderDiscount?: { _id?: string; orderId: string };
-  order?: { _id?: string; userId: string };
+  orderDiscount?: OrderDiscount;
+  order?: Order;
 }
 
-export type IDiscountAdapter<DiscountConfiguration, Context> = IBaseAdapter & {
+export type IDiscountAdapter<DiscountConfiguration> = IBaseAdapter & {
   orderIndex: number;
 
   isManualAdditionAllowed: (code: string) => Promise<boolean>;
   isManualRemovalAllowed: () => Promise<boolean>;
 
   actions: (params: {
-    context: DiscountContext & Context;
+    context: DiscountContext & { modules: Modules };
   }) => Promise<DiscountAdapterActions<DiscountConfiguration>>;
 };
 
@@ -32,10 +34,7 @@ export interface DiscountAdapterActions<DiscountConfiguration> {
   release: () => Promise<void>;
 }
 
-export const BaseDiscountAdapter: Omit<
-  IDiscountAdapter<unknown, unknown>,
-  'key' | 'label' | 'version'
-> = {
+export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label' | 'version'> = {
   orderIndex: 0,
 
   isManualAdditionAllowed: async () => {

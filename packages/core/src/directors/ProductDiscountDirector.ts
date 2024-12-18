@@ -1,5 +1,4 @@
 import { BaseDiscountDirector, ProductDiscountConfiguration } from '../directors/index.js';
 
-export const ProductDiscountDirector = BaseDiscountDirector<ProductDiscountConfiguration, any>(
-  'ProductDiscountDirector',
-);
+export const ProductDiscountDirector =
+  BaseDiscountDirector<ProductDiscountConfiguration>('ProductDiscountDirector');

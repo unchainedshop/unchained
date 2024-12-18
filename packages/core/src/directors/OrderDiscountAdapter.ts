@@ -5,6 +5,6 @@ import {
 } from '../directors/index.js';
 
 export const OrderDiscountAdapter: Omit<
-  IDiscountAdapter<OrderDiscountConfiguration, any>,
+  IDiscountAdapter<OrderDiscountConfiguration>,
   'key' | 'label' | 'version'
 > = BaseDiscountAdapter;

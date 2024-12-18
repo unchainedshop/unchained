@@ -1,4 +1,4 @@
-import bcrypt from '@node-rs/bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 import {
   ModuleInput,
   Address,
