@@ -2,8 +2,13 @@
 
 Add the env `UNCHAINED_TOKEN_SECRET`, use any random string secret to the server.
 
-## Apollo to Yoga
+## Schema Changes
+Checkout the Changelog for a list. We encourage you to use codegen to have statically typed queries and mutations for frontend projects.
 
+## Apollo to Yoga
+Boot.ts files need to be migrated in order to work with the new Yoga GraphQL Server.
+
+First: Dependencies
 `npm install @graphql-yoga/plugin-response-cache graphql-yoga`
 `npm uninstall @apollo/server-plugin-response-cache @apollo/server apollo-graphiql-playground`
 

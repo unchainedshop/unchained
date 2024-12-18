@@ -23,15 +23,16 @@ We will keep supporting the following auth-strategies out of the box that we con
 - WebAuthn (Passkeys)
 - Access Tokens
 
-
 ## Service Layer Refactoring
 When we first started with the module approach, cross-module functions like the checkout were using functions of each other, creating bi-directional dependencies that were hard to manage. With the newest release, we have moved out all bi-directional function calls into the `core` umbrella package.
 
 We got rid of about 1'000 lines of code doing that and dramatically reduced complexity across the platform. `context.services` now houses all those methods and the core modules are cleanly separated mainly doing DB abstraction work.
 
-## Changed the GraphQL Server
+## Bye bye Apollo Server
+We switched over from Apollo Server to GraphQL Yoga. It's just better in all ways possible. Okay, thanks, bye. Checkout the kitchensink or example projects to see how you can switch over or consult the [Migration Guide](./migration-v3.md).
 
-We switched over from Apollo Server to GraphQL Yoga. It's just better in all ways possible. Okay, thanks, bye. Checkout the kitchensink or example projects to see how you can switch over.
+## Better Typescript Support
+Removed `@unchainedshop/types`. All types needed are now coming directly from the corresponding packages which leads to clearer intents and types beeing more strict and in sync with the actual code. This has a massive impact on custom backend code. Please check the [Migration Guide](./migration-v3.md) for further instructions besides that.
 
 ## Massive Performance Improvements & Experimental Fastify Support
 Queries involving catalog and products are now approximately **3 times faster** due to improved usage of caching, dataloader techniques and less db roundtrips in general.
@@ -40,7 +41,9 @@ Checkouts are about **2 times faster**, too. With the new (still experimental) F
 
 Along the way we thought it would be nice to remove about 100 NPM module dependencies, so we did that, too. Oh my god yes.
 
-## BREAKING API SCHEMA CHANGES (Sorry :-)
+## BREAKING API CHANGES
+Behavioral Change: Cart total are now null if there is no item in the cart and needs to be defaulted to an amount of 0 by the frontend. The reason for this change is that a free position could still have delivery or payment fees based on the article. So in order to communicate that to the frontend, we can't price an order when we don't know what is beeing ordered. As orders without a price can't be checked out it makes that clear to the client, too.
+
 - `Mutation.loginWithOAuth` removed
 - `Mutation.linkOAuthAccount` removed
 - `Mutation.unlinkOAuthAccount` removed
