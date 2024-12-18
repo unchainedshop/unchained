@@ -334,7 +334,11 @@ export const configureUsersModule = async ({
 
     userLocale(user: User): Intl.Locale {
       if (!user?.lastLogin?.locale) return systemLocale;
-      return new Intl.Locale(user.lastLogin.locale);
+      try {
+        return new Intl.Locale(user.lastLogin.locale);
+      } catch {
+        return systemLocale;
+      }
     },
 
     // Mutations

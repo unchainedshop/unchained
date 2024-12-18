@@ -20,7 +20,7 @@ export default function addMigrations(repository: MigrationRepository) {
   });
 
   repository?.register({
-    id: 20241218084300,
+    id: 20241218092300,
     name: 'Convert user.lastLogin.locale',
     up: async () => {
       const Users = await UsersCollection(repository.db);
@@ -35,11 +35,11 @@ export default function addMigrations(repository: MigrationRepository) {
       for (const user of users) {
         let newLocale;
         try {
-          newLocale = new Intl.Locale(user.lastLogin.locale);
+          newLocale = new Intl.Locale(user.lastLogin.locale).baseName;
         } catch {
           /* */
           try {
-            newLocale = new Intl.Locale(user.lastLogin.locale.split('_').join('-'));
+            newLocale = new Intl.Locale(user.lastLogin.locale.split('_').join('-')).baseName;
           } catch {
             /* */
             newLocale = systemLocale.baseName;
