@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
+import { WebAuthnDisabledError } from '../../../errors.js';
 
 export default async function addWebAuthnCredentials(
   root: never,
@@ -14,6 +15,8 @@ export default async function addWebAuthnCredentials(
     user.username,
     credentials,
   );
+
+  if (!webAuthnService) throw new WebAuthnDisabledError();
 
   return modules.users.updateUser(
     { _id: userId },

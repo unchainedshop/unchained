@@ -79,6 +79,8 @@ export const UserWebAuthnCredentialsNotFoundError = createError(
   'User WebAuth Credentials not found',
 );
 
+export const WebAuthnDisabledError = createError('WebAuthnDisabledError', 'WebAuthn disabled');
+
 export const UserWeb3AddressNotFoundError = createError(
   'UserWeb3AddressNotFoundError',
   'Web3 Account not found for User',

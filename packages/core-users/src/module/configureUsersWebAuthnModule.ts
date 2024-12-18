@@ -1,6 +1,7 @@
 import { ModuleInput } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
+
 import type { PublicKeyCredentialCreationOptions, PublicKeyCredentialRequestOptions } from 'fido2-lib';
 export interface UsersWebAuthnModule {
   findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
@@ -97,6 +98,8 @@ export const configureUsersWebAuthnModule = async ({
     },
 
     createCredentialCreationOptions: async (origin, username, extensionOptions) => {
+      if (!f2l) return null;
+
       const registrationOptions = await f2l.attestationOptions(extensionOptions);
       const challenge = Buffer.from(registrationOptions.challenge).toString('base64');
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
@@ -115,6 +118,8 @@ export const configureUsersWebAuthnModule = async ({
     },
 
     createCredentialRequestOptions: async (origin, username, extensionOptions) => {
+      if (!f2l) return null;
+
       const loginOptions = await f2l.assertionOptions(extensionOptions);
       const challenge = Buffer.from(loginOptions.challenge).toString('base64');
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
@@ -133,6 +138,8 @@ export const configureUsersWebAuthnModule = async ({
     },
 
     verifyCredentialCreation: async (username, credentials) => {
+      if (!f2l) return null;
+
       const request = await WebAuthnCredentialsCreationRequests.findOne(
         {
           username,
@@ -180,6 +187,8 @@ export const configureUsersWebAuthnModule = async ({
     },
 
     verifyCredentialRequest: async (userPublicKeys, username, credentials) => {
+      if (!f2l) return null;
+
       const request = await WebAuthnCredentialsCreationRequests.findOne(
         {
           _id: credentials.requestId,
@@ -198,7 +207,7 @@ export const configureUsersWebAuthnModule = async ({
           return credentials.id === publicCredentials.id;
         }) || {};
 
-      if (!publicKey) throw new Error('WebAuthn not setup');
+      if (!publicKey) return null;
 
       const assertionExpectations = {
         challenge: request.challenge,

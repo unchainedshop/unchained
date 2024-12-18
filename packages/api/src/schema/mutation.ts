@@ -75,7 +75,7 @@ export default [
       """
       Create WebAuthn PublicKeyCredentialCreationOptions to use for Registering a new WebAuthn Device
       """
-      createWebAuthnCredentialCreationOptions(username: String!, extensionOptions: JSON): JSON!
+      createWebAuthnCredentialCreationOptions(username: String!, extensionOptions: JSON): JSON
 
       """
       Register WebAuthn Credentials for current user
@@ -90,7 +90,7 @@ export default [
       """
       Create WebAuthn PublicKeyCredentialRequestrOptions to use for WebAuthn Login Flow
       """
-      createWebAuthnCredentialRequestOptions(username: String, extensionOptions: JSON): JSON!
+      createWebAuthnCredentialRequestOptions(username: String, extensionOptions: JSON): JSON
 
       """
       Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the
