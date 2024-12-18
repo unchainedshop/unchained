@@ -37,9 +37,10 @@
   },
   "peerDependencies": {
     "@hyperlink/node-apn": "^5.1.4",
-    "express": "^4.21.2"
+    "express": "^5.0.1"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "jest": "^29.7.0",
     "typescript": "^5.7.2"
