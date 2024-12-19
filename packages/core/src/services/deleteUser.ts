@@ -8,7 +8,7 @@ export async function deleteUserService(this: Modules, { userId }: { userId: str
   await this.bookmarks.deleteByUserId(userId);
   await this.quotations.deleteRequestedUserQuotations(userId);
   await this.enrollments.deleteInactiveUserEnrollments(userId);
-  await this.payment.paymentCredentials.removeUserCredentials(userId);
+  await this.payment.paymentCredentials.deleteUserPaymentCredentials(userId);
   await this.users.webAuthn.deleteUserCredentials(user.username);
 
   const carts = await this.orders.findOrders({ userId, status: null });
@@ -26,8 +26,16 @@ export async function deleteUserService(this: Modules, { userId }: { userId: str
   const reviewsCount = await this.products.reviews.count({ authorId: userId });
   const enrollmentsCount = await this.enrollments.count({ userId });
   const tokens = await this.warehousing.findTokensForUser({ userId });
+  const paymentCredentials = await this.payment.paymentCredentials.count({ userId });
 
-  if (!ordersCount && !reviewsCount && !enrollmentsCount && !quotationsCount && !tokens?.length) {
+  if (
+    !ordersCount &&
+    !reviewsCount &&
+    !enrollmentsCount &&
+    !quotationsCount &&
+    !tokens?.length &&
+    !paymentCredentials
+  ) {
     await this.users.deletePermanently({ userId });
   }
 

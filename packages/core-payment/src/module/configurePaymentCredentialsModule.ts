@@ -36,7 +36,10 @@ export const configurePaymentCredentialsModule = (
 
   return {
     markPreferred,
-
+    async count(query: mongodb.Filter<PaymentCredentialsType>): Promise<number> {
+      const credentials = await PaymentCredentials.countDocuments(query);
+      return credentials;
+    },
     credentialsExists: async ({
       paymentCredentialsId,
     }: {
@@ -91,9 +94,9 @@ export const configurePaymentCredentialsModule = (
         _id
           ? generateDbFilterById(_id)
           : {
-              userId,
-              paymentProviderId,
-            },
+            userId,
+            paymentProviderId,
+          },
         {
           $setOnInsert: {
             _id: insertedId,
@@ -128,7 +131,7 @@ export const configurePaymentCredentialsModule = (
       const paymentCredentials = await PaymentCredentials.findOneAndDelete(selector, {});
       return paymentCredentials;
     },
-    removeUserCredentials: async (userId: string): Promise<number> => {
+    deleteUserPaymentCredentials: async (userId: string): Promise<number> => {
       const { deletedCount } = await PaymentCredentials.deleteMany({ userId }, {});
       return deletedCount;
     },
