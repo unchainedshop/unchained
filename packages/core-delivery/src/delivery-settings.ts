@@ -32,7 +32,7 @@ const sortByCreationDate = (left: DeliveryProvider, right: DeliveryProvider) => 
 };
 
 const allProviders: FilterProviders = async ({ providers }) => {
-  return providers.sort(sortByCreationDate);
+  return providers.toSorted(sortByCreationDate);
 };
 
 const firstProviderIsDefault: DetermineDefaultProvider = async ({ providers }) => {

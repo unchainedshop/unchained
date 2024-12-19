@@ -22,7 +22,7 @@ const options = {
     delivery: {
       filterSupportedProviders: ({ order, providers }) => {
         return providers
-          .sort(
+          .toSorted(
             (left, right) => {
               return new Date(left.created).getTime() - new Date(right.created).getTime();
             }

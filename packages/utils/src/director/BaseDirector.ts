@@ -26,7 +26,7 @@ export const BaseDirector = <AdapterType extends IBaseAdapter>(
     getAdapters: ({ adapterFilter } = {}) => {
       const sortKey = options?.adapterSortKey || keyField;
       return Array.from(Adapters.values())
-        .sort((left, right) => left[sortKey] - right[sortKey])
+        .toSorted((left, right) => left[sortKey] - right[sortKey])
         .filter(adapterFilter || (() => true));
     },
 

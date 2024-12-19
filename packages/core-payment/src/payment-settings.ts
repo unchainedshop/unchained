@@ -34,7 +34,7 @@ const sortByCreationDate = (left: PaymentProvider, right: PaymentProvider) => {
 };
 
 const allProviders: FilterProviders = async ({ providers }) => {
-  return providers.sort(sortByCreationDate);
+  return providers.toSorted(sortByCreationDate);
 };
 
 const firstProviderIsDefault: DetermineDefaultProvider = async ({ providers, paymentCredentials }) => {

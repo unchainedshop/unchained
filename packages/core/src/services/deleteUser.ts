@@ -11,13 +11,13 @@ export async function deleteUserService(this: Modules, { userId }: { userId: str
 
   const carts = await this.orders.findOrders({ userId, status: null });
 
-  for (const userCart of carts) {
+  await Array.fromAsync(carts, async (userCart) => {
     await this.orders.positions.deleteOrderPositions(userCart?._id);
     await this.orders.payments.deleteOrderPayments(userCart?._id);
     await this.orders.deliveries.deleteOrderDeliveries(userCart?._id);
     await this.orders.discounts.deleteOrderDiscounts(userCart?._id);
     await this.orders.delete(userCart?._id);
-  }
+  });
 
   const ordersCount = await this.orders.count({ userId, includeCarts: true });
   const quotationsCount = await this.quotations.count({ userId });

@@ -21,12 +21,18 @@
     "ecommerce",
     "core"
   ],
-  "author": "Joël Meiller",
+  "authors": [
+    "Joël Meiller",
+    "Pascal Kaufmann"
+  ],
   "license": "EUPL-1.2",
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@unchainedshop/api": "^3.0.0-rc6",
     "@unchainedshop/core": "^3.0.0-rc6",

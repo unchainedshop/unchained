@@ -4,12 +4,10 @@ export * from './locale-helpers.js';
 export { default as objectInvert } from './object-invert.js';
 export { default as findUnusedSlug } from './find-unused-slug.js';
 export { default as slugify } from './slugify.js';
-export { default as pipePromises } from './pipe-promises.js';
 export { default as generateRandomHash } from './generate-random-hash.js';
 export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-fields-filter.js';
 export { default as sha256 } from './sha256.js';
 export { default as sha1 } from './sha1.js';
-export { default as intersectSet } from './intersect-set.js';
 
 export enum SortDirection {
   ASC = 'ASC',

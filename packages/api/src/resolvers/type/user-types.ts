@@ -114,7 +114,9 @@ const {
 } = actions as Record<string, string>;
 
 const getPrimaryEmail = (user: UserType) => {
-  return (user.emails || []).sort((left, right) => Number(right.verified) - Number(left.verified))?.[0];
+  return (user.emails || []).toSorted(
+    (left, right) => Number(right.verified) - Number(left.verified),
+  )?.[0];
 };
 
 export const User: UserHelperTypes = {

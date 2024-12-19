@@ -19,7 +19,7 @@ export async function loadFiltersService(
   });
 
   const extractedFilterIds = (filterSelector?._id as any)?.$in || [];
-  const sortedFilters = otherFilters.sort((left, right) => {
+  const sortedFilters = otherFilters.toSorted((left, right) => {
     const leftIndex = extractedFilterIds.indexOf(left._id);
     const rightIndex = extractedFilterIds.indexOf(right._id);
     return leftIndex - rightIndex;
@@ -34,7 +34,7 @@ export async function loadFiltersService(
             searchQuery,
             forceLiveCollection,
             allProductIds: productIds,
-            otherFilters,
+            otherFilters: sortedFilters,
           },
           { modules: this },
         );

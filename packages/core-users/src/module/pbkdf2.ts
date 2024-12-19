@@ -4,7 +4,7 @@ const PBKDF2_KEY_LENGTH = 256; // Bytes
 const PBKDF2_SALT_LENGTH = 16; // Bytes
 
 export function generateSalt(saltLength = PBKDF2_SALT_LENGTH) {
-  const array = new Uint32Array(saltLength);
+  const array = new Uint8Array(saltLength);
   return Buffer.from(crypto.getRandomValues(array)).toString('hex');
 }
 

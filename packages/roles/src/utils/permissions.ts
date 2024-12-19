@@ -17,5 +17,5 @@ export const permissions = async (userRoles: any, allRoles: any) => {
     });
   });
   const resolvedActions = await Promise.all(actions);
-  return [...new Set(resolvedActions)].filter(Boolean).sort((a: any, b: any) => a.localeCompare(b));
+  return [...new Set(resolvedActions)].filter(Boolean).toSorted((a: any, b: any) => a.localeCompare(b));
 };

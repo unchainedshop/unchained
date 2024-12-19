@@ -63,7 +63,7 @@ const fixPeriods = async (
         orderId: transaction.transaction_id === transactionId ? orderId : null,
       };
     })
-    .sort((left, right) => {
+    .toSorted((left, right) => {
       return left.end.getTime() - right.end.getTime();
     });
 

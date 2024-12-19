@@ -327,7 +327,7 @@ export const configureUsersModule = async ({
 
     // Transformations
     primaryEmail(user: User): Email {
-      return (user.emails || []).sort(
+      return (user.emails || []).toSorted(
         (left, right) => Number(right.verified) - Number(left.verified),
       )?.[0];
     },

@@ -53,7 +53,7 @@ const start = async () => {
       },
       payment: {
         filterSupportedProviders: async ({ providers }) => {
-          return providers.sort((left, right) => {
+          return providers.toSorted((left, right) => {
             if (left.adapterKey < right.adapterKey) {
               return -1;
             }

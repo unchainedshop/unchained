@@ -9,7 +9,7 @@ export const createMigrationRepository = (db: mongodb.Db): MigrationRepository =
       migrations.set(migration.id, migration);
     },
     allMigrations: () => {
-      return [...migrations.values()].sort((left, right) => {
+      return [...migrations.values()].toSorted((left, right) => {
         return left.id - right.id;
       });
     },
