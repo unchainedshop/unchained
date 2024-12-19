@@ -8,6 +8,8 @@ export async function deleteUserService(this: Modules, { userId }: { userId: str
   await this.bookmarks.deleteByUserId(userId);
   await this.quotations.deleteRequestedUserQuotations(userId);
   await this.enrollments.deleteInactiveUserEnrollments(userId);
+  await this.payment.paymentCredentials.removeUserCredentials(userId);
+  await this.users.webAuthn.deleteUserCredentials(user.username);
 
   const carts = await this.orders.findOrders({ userId, status: null });
 
