@@ -128,6 +128,10 @@ export const configurePaymentCredentialsModule = (
       const paymentCredentials = await PaymentCredentials.findOneAndDelete(selector, {});
       return paymentCredentials;
     },
+    removeUserCredentials: async (userId: string): Promise<number> => {
+      const { deletedCount } = await PaymentCredentials.deleteMany({ userId }, {});
+      return deletedCount;
+    },
   };
 };
 
