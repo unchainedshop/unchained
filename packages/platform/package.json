@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "2.17.0",
+  "version": "2.18.0",
   "main": "lib/platform-index.js",
   "exports": {
     ".": "./lib/platform-index.js",
@@ -31,25 +31,25 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^2.17.0",
-    "@unchainedshop/core": "^2.17.0",
-    "@unchainedshop/events": "^2.17.0",
-    "@unchainedshop/file-upload": "^2.17.0",
-    "@unchainedshop/logger": "^2.17.0",
-    "@unchainedshop/mongodb": "^2.17.0",
-    "@unchainedshop/plugins": "^2.17.0",
-    "@unchainedshop/roles": "^2.17.0",
-    "@unchainedshop/utils": "^2.17.0",
+    "@unchainedshop/api": "^2.18.0",
+    "@unchainedshop/core": "^2.18.0",
+    "@unchainedshop/events": "^2.18.0",
+    "@unchainedshop/file-upload": "^2.18.0",
+    "@unchainedshop/logger": "^2.18.0",
+    "@unchainedshop/mongodb": "^2.18.0",
+    "@unchainedshop/plugins": "^2.18.0",
+    "@unchainedshop/roles": "^2.18.0",
+    "@unchainedshop/utils": "^2.18.0",
     "event-iterator": "^2.0.0",
     "JSONStream": "^1.3.5",
     "moniker": "0.1.2"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
-    "@unchainedshop/types": "^2.17.0",
+    "@types/node": "^22.10.2",
+    "@unchainedshop/types": "^2.18.0",
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }
