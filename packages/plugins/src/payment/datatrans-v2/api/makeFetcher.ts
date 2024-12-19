@@ -1,11 +1,5 @@
-import fs from 'fs';
-import util from 'util';
-import { resolve } from 'path';
 import { createLogger } from '@unchainedshop/logger';
-
-const readFile = util.promisify(fs.readFile);
-
-const { DATATRANS_API_MOCKS_PATH } = process.env;
+const { MOCK_APIS } = process.env;
 
 const logger = createLogger('unchained:datatrans');
 
@@ -14,12 +8,15 @@ export default (
   merchantId: string,
   secret: string,
 ): ((path: string, body: unknown) => Promise<Response>) => {
-  if (DATATRANS_API_MOCKS_PATH) {
+  if (MOCK_APIS) {
     return async (path): Promise<Response> => {
       try {
-        const filePath = resolve(process.env.PWD, DATATRANS_API_MOCKS_PATH, `.${path}.json`);
-        const content = await readFile(filePath);
-        const json = JSON.parse(content.toString());
+        const { default: json } = await import(
+          `${import.meta.dirname}/../../../../tests/mock/datatrans/${path}.json`,
+          {
+            with: { type: 'json' },
+          }
+        );
         return {
           json: async () => json,
           status: json?.error ? 500 : 204,

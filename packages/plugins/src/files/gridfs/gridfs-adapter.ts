@@ -1,6 +1,5 @@
-import { URL } from 'url';
-import { Readable, PassThrough } from 'stream';
-import { pipeline } from 'stream/promises';
+import { Readable, PassThrough } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import mimeType from 'mime-types';
 import {
   FileAdapter,
@@ -12,6 +11,8 @@ import {
 import { UploadFileData } from '@unchainedshop/file-upload';
 import sign from './sign.js';
 import { filesSettings } from '@unchainedshop/core-files';
+import { UnchainedCore } from '@unchainedshop/core';
+import { GridFSFileUploadsModule } from './index.js';
 
 const { ROOT_URL } = process.env;
 
@@ -23,7 +24,13 @@ const bufferToStream = (buffer: any) => {
   return stream;
 };
 
-export const GridFSAdapter: IFileAdapter = {
+export const GridFSAdapter: IFileAdapter<
+  UnchainedCore & {
+    modules: {
+      gridfsFileUploads: GridFSFileUploadsModule;
+    };
+  }
+> = {
   key: 'shop.unchained.file-upload-plugin.gridfs',
   label: 'Uploads files to Database using GridFS',
   version: '1.0.0',
@@ -64,8 +71,8 @@ export const GridFSAdapter: IFileAdapter = {
     } as UploadFileData & { putURL: string };
   },
 
-  async uploadFileFromStream(directoryName: string, rawFile: any, { modules }: any) {
-    let stream;
+  async uploadFileFromStream(directoryName: string, rawFile: any, { modules }) {
+    let stream: Readable;
     let fileName;
     if (rawFile instanceof Promise) {
       const { filename: f, createReadStream } = await rawFile;
@@ -104,7 +111,7 @@ export const GridFSAdapter: IFileAdapter = {
   async uploadFileFromURL(
     directoryName: string,
     { fileLink, fileName: fname, fileId, headers }: any,
-    { modules }: any,
+    { modules },
   ) {
     const { href } = new URL(fileLink);
     const fileName = decodeURIComponent(fname || href.split('/').pop());

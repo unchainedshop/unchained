@@ -1,17 +1,13 @@
-import { mkdtemp, writeFile } from 'fs/promises';
-import { join, isAbsolute } from 'path';
-import { tmpdir } from 'os';
 import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
-import open from 'open';
 import nodemailer from 'nodemailer';
 
 export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 
-const buildLink = ({ filename, content, href, contentType, encoding, path }) => {
+const buildLink = async ({ filename, content, href, contentType, encoding, path }) => {
   if (path) {
-    return `<a href="${isAbsolute(path) ? path : join(process.cwd(), path)}">${filename}</a>`;
+    return `<a href="file:/${path.startsWith('/') ? path : `${process.cwd()}/${path}`}">${filename}</a>`;
   }
   if (href) {
     return `<a href="${href}">${filename}</a>`;
@@ -23,8 +19,12 @@ const buildLink = ({ filename, content, href, contentType, encoding, path }) => 
 };
 
 const openInBrowser = async (options) => {
-  const filename = `${Date.now()}.html`;
+  // eslint-disable-next-line
+  // @ts-ignore
+  const { default: open, apps } = await import('open');
+
   const messageBody = options.html || options.text.replace(/(\r\n|\n|\r)/gm, '<br/>');
+  const attachmentLinks = await Promise.all((options.attachments || []).map(buildLink));
   const content = `
 <!DOCTYPE html>
 <html lang="en" xmlns="https://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -40,16 +40,17 @@ const openInBrowser = async (options) => {
     <b>Reply-To:&nbsp;</b>${options.replyTo}<br/>
     <br/>
     <b>subject:&nbsp;</b>${options.subject}<br/>
-    <b>attachments:&nbsp;</b>${(options.attachments || []).map(buildLink).join(',&nbsp;')}<br/>
+    <b>attachments:&nbsp;</b>${attachmentLinks.join(',&nbsp;')}<br/>
     <hr/>
     ${messageBody}
   </body>
 </html>`;
 
-  const folder = await mkdtemp(join(tmpdir(), 'email-'));
-  const fileName = `${folder}/${filename}`;
-  await writeFile(fileName, content);
-  return open(fileName);
+  const base64 = Buffer.from(content).toString('base64');
+  const dataUri = `data:text/html;base64,${base64}`;
+
+  await open(dataUri, { app: [{ name: apps.chrome }, { name: apps.firefox }, { name: apps.browser }] });
+  return true;
 };
 
 const EmailWorkerPlugin: IWorkerAdapter<
@@ -87,8 +88,12 @@ const EmailWorkerPlugin: IWorkerAdapter<
         ...rest,
       };
       if (checkEmailInterceptionEnabled()) {
-        await openInBrowser(sendMailOptions);
-        return { success: true, result: { intercepted: true } };
+        const opened = await openInBrowser(sendMailOptions);
+        return {
+          success: opened,
+          result: opened ? { intercepted: true } : undefined,
+          error: !opened ? { message: "Interception failed due to missing package 'open'" } : undefined,
+        };
       }
       if (!process.env.MAIL_URL) {
         return {

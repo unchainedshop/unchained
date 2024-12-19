@@ -1,5 +1,5 @@
 import { TemplateResolver } from '@unchainedshop/core';
-import util from 'util';
+import { stringify } from 'safe-stable-stringify';
 
 const {
   EMAIL_FROM = 'noreply@unchained.local',
@@ -11,7 +11,7 @@ const {
 const formatWorkItems = (workItems) => {
   return workItems
     .map(({ _id, type, started, error }) => {
-      const stringifiedErrors = util.inspect(error, false, 10, false);
+      const stringifiedErrors = stringify(error, null, 2);
       return `${new Date(started).toLocaleString()} ${type} (${_id}): ${stringifiedErrors}`;
     })
     .join('\n');

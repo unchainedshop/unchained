@@ -1,4 +1,3 @@
-import { mkdirSync } from 'fs';
 import { Db, MongoClient } from 'mongodb';
 
 let mongod;
@@ -7,9 +6,10 @@ export const startDb = async () => {
   try {
     // eslint-disable-next-line
     // @ts-ignore
+    const { mkdir } = await import('node:fs/promises');
     const { MongoMemoryServer } = await import('mongodb-memory-server');
     try {
-      mkdirSync(`${process.cwd()}/.db`);
+      await mkdir(`${process.cwd()}/.db`);
     } catch {
       //
     }

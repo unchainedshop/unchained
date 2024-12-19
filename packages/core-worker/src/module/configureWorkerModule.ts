@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,

@@ -13,9 +13,9 @@ import {
   GUEST_TOKEN,
   Guest,
 } from './seeds/users.js';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 

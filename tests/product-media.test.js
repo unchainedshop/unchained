@@ -6,9 +6,9 @@ import {
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { JpegProductMedia, SimpleProduct } from './seeds/products.js';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 

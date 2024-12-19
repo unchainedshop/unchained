@@ -1,7 +1,5 @@
-import https from 'https';
-import http, { OutgoingHttpHeaders } from 'http';
-import { Readable } from 'stream';
-import { URL } from 'url';
+import { Readable } from 'node:stream';
+import type { ReadableStream } from 'node:stream/web';
 import { UploadFileData } from '@unchainedshop/file-upload';
 import {
   FileAdapter,
@@ -84,24 +82,6 @@ const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
 connectToMinio().then(function setClient(c) {
   client = c;
 });
-
-const createHttpDownloadStream = async (
-  fileUrl: string,
-  headers: OutgoingHttpHeaders,
-): Promise<http.IncomingMessage> => {
-  const { href, protocol } = new URL(fileUrl);
-  return new Promise((resolve, reject) => {
-    try {
-      if (protocol === 'http:') {
-        http.get(href, { headers }, resolve);
-      } else {
-        https.get(href, { headers }, resolve);
-      }
-    } catch (e) {
-      reject(e);
-    }
-  });
-};
 
 const getObjectStats = async (fileName: string) => {
   if (!client) throw new Error('Minio not connected, check env variables');
@@ -211,9 +191,10 @@ export const MinioAdapter: IFileAdapter = {
     const fileName = fname || href.split('/').pop();
     const hashedFilename = await buildHashedFilename(directoryName, fileName, new Date());
 
-    const stream = await createHttpDownloadStream(fileLink, headers);
-    const type = mimeType.lookup(fileName) || stream.headers['content-type'];
-
+    const url = new URL(fileLink);
+    const response = await fetch(url, { headers });
+    const type = mimeType.lookup(fileName) || response.headers['content-type'];
+    const readable = Readable.fromWeb(response.body as ReadableStream<Uint8Array<ArrayBufferLike>>);
     const metaData = {
       'Content-Type': type,
     };
@@ -221,7 +202,7 @@ export const MinioAdapter: IFileAdapter = {
     await client.putObject(
       MINIO_BUCKET_NAME,
       generateMinioPath(directoryName, hashedFilename),
-      stream,
+      readable,
       undefined,
       metaData,
     );

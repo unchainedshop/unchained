@@ -8,12 +8,11 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';
-import { IncomingMessage } from 'http';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 
-const resolveUserRemoteAddress = (req: IncomingMessage) => {
+const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
     (req.headers['x-real-ip'] as string) ||
     (req.headers['x-forwarded-for'] as string) ||

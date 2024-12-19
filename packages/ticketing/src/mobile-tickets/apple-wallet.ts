@@ -1,5 +1,5 @@
 import apn from '@hyperlink/node-apn';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 export const pushToApplePushNotificationService = async (deviceTokens) => {
   const apnProvider = new apn.Provider({

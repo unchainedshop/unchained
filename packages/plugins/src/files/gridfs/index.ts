@@ -27,3 +27,5 @@ export const configureGridFSFileUploadModule = ({ db }) => {
     },
   };
 };
+
+export type GridFSFileUploadsModule = ReturnType<typeof configureGridFSFileUploadModule>;

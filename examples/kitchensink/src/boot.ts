@@ -1,5 +1,5 @@
 import express from 'express';
-import http from 'http';
+import http from 'node:http';
 import { useExecutionCancellation } from 'graphql-yoga';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';

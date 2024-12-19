@@ -1,11 +1,6 @@
-import fs from 'fs';
-import util from 'util';
-import { resolve } from 'path';
 import { createLogger } from '@unchainedshop/logger';
 
-const readFile = util.promisify(fs.readFile);
-
-const { PAYREXX_API_MOCKS_PATH } = process.env;
+const { MOCK_APIS } = process.env;
 
 const logger = createLogger('unchained:payrexx');
 
@@ -14,17 +9,19 @@ export default (
   instance: string = null,
   secret: string = null,
 ): ((path: string, method: 'GET' | 'DELETE' | 'PUT' | 'POST', data?: any) => Promise<Response>) => {
-  if (PAYREXX_API_MOCKS_PATH) {
+  if (MOCK_APIS) {
     return async (path): Promise<Response> => {
       try {
-        const filePath = resolve(process.env.PWD, PAYREXX_API_MOCKS_PATH, `${path}.json`);
-        const content = await readFile(filePath);
-        const textData = content.toString();
-        const jsonData = JSON.parse(textData);
+        const { default: jsonData } = await import(
+          `${import.meta.dirname}/../../../../tests/mock/payrexx/${path}.json`,
+          {
+            with: { type: 'json' },
+          }
+        );
         return {
           json: async () => jsonData,
-          text: async () => textData,
-          ok: !jsonData?.error,
+          text: async () => JSON.stringify(jsonData?.error),
+          ok: true,
           status: jsonData?.error ? 500 : 204,
         } as any;
       } catch (error) {

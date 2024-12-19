@@ -1,7 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import { checkAction } from '../acl.js';
 import { actions } from '../roles/index.js';
-import { IncomingMessage } from 'http';
 import { Context } from '../context.js';
 
 const logger = createLogger('unchained:bulk-import');
@@ -19,7 +18,7 @@ const methodWrongHandler = (res) => () => {
 };
 
 export default async function bulkImportMiddleware(
-  req: IncomingMessage & { query?: any; unchainedContext: Context },
+  req: Request & { query?: any; unchainedContext: Context },
   res,
 ) {
   try {

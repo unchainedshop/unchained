@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/utils';
 import { UploadedFile, UploadFileData } from '../types.js';

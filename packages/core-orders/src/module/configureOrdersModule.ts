@@ -36,6 +36,7 @@ export type OrdersModule = OrderQueries &
     setPaymentProvider: (orderId: string, paymentProviderId: string) => Promise<Order>;
   };
 
+// @kontsedal/locco uses a deprecated way of importing files in ESM (node16 behavior)
 const require = createRequire(import.meta.url);
 const { Locker, MongoAdapter } = require('@kontsedal/locco');
 

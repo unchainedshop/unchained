@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { UnchainedCore } from '@unchainedshop/core';
 import instantiateLoaders, { UnchainedLoaders } from './loaders/index.js';
 import { getLocaleContext, UnchainedLocaleContext } from './locale-context.js';
@@ -58,24 +56,10 @@ export type UnchainedContextResolver = (
   },
 ) => Promise<Context>;
 
-export const loadJSON = (filename) => {
-  try {
-    const base = typeof __filename !== 'undefined' && __filename;
-    if (!base)
-      return {
-        version: process.env.npm_package_version,
-      };
-    const absolutePath = path.resolve(path.dirname(base), filename);
-    const data = JSON.parse(fs.readFileSync(absolutePath, 'utf-8'));
-    return data;
-  } catch {
-    return null;
-  }
-};
-
-const packageJson = loadJSON('../package.json');
-
-const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
+const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
+  with: { type: 'json' },
+});
+const { UNCHAINED_API_VERSION = packageJson?.version || '3.x' } = process.env;
 
 export const createContextResolver =
   (

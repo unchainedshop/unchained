@@ -42,7 +42,8 @@
     "@unchainedshop/mongodb": "^3.0.0-rc6",
     "@unchainedshop/plugins": "^3.0.0-rc6",
     "@unchainedshop/roles": "^3.0.0-rc6",
-    "@unchainedshop/utils": "^3.0.0-rc6"
+    "@unchainedshop/utils": "^3.0.0-rc6",
+    "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

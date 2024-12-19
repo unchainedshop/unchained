@@ -1,5 +1,5 @@
 import dotenv from 'dotenv-extended';
-import fs from 'fs';
+import fs from 'node:fs';
 
 dotenv.load({
   silent: Boolean(process.env.SUPPRESS_ENV_ERRORS),

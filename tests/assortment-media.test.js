@@ -6,11 +6,11 @@ import {
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments.js';
-import fs from 'fs';
+import fs from 'node:fs';
 import crypto from 'crypto';
-import path from 'path';
+import path from 'node:path';
 
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 

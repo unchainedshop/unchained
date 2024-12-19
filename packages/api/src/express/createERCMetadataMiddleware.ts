@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '../context.js';
 import { Request, RequestHandler } from 'express';

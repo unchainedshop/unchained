@@ -11,9 +11,8 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';
-import { IncomingMessage } from 'http';
 
-const resolveUserRemoteAddress = (req: IncomingMessage) => {
+const resolveUserRemoteAddress = (req: e.Request) => {
   const remoteAddress =
     (req.headers['x-real-ip'] as string) ||
     (req.headers['x-forwarded-for'] as string) ||

@@ -1,5 +1,5 @@
-import { pipeline, finished } from 'stream/promises';
-import { PassThrough } from 'stream';
+import { pipeline, finished } from 'node:stream/promises';
+import { PassThrough } from 'node:stream';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
 import express from 'express';
 import sign from './sign.js';
