@@ -1,4 +1,5 @@
 export * as calculation from './calculation.js';
+export * as ch from './ch/index.js';
 
 export * from './locale-helpers.js';
 export { default as objectInvert } from './object-invert.js';

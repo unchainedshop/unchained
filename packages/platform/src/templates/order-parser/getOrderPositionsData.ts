@@ -1,7 +1,7 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
-import formatPrice from './formatPrice.js';
 import { ProductPricingSheet } from '@unchainedshop/core';
+import { ch } from '@unchainedshop/utils';
 
 type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
 
@@ -11,7 +11,7 @@ export const getOrderPositionsData = async (
   context: UnchainedCore,
 ) => {
   const { modules } = context;
-  const { useNetPrice, format = formatPrice } = params || {};
+  const { useNetPrice, format = ch.priceToString } = params || {};
   const orderPositions = await modules.orders.positions.findOrderPositions({
     orderId: order._id,
   });

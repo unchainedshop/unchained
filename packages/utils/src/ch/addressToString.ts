@@ -1,6 +1,14 @@
-import { Address } from '@unchainedshop/mongodb';
-
-export const formatAddress = (address: Address) => {
+export const addressToString = (address: {
+  addressLine?: string;
+  addressLine2?: string;
+  city?: string;
+  company?: string;
+  countryCode?: string;
+  firstName?: string;
+  lastName?: string;
+  postalCode?: string;
+  regionCode?: string;
+}) => {
   return [
     [address.firstName, address.lastName].filter(Boolean).join(' '),
     address.company,

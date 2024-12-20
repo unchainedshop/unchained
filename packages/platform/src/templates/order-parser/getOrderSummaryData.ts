@@ -1,7 +1,6 @@
 import { Order } from '@unchainedshop/core-orders';
 import { UnchainedCore, OrderPricingSheet, OrderPricingRowCategory } from '@unchainedshop/core';
-import formatPrice from './formatPrice.js';
-import { formatAddress } from './formatAddress.js';
+import { ch } from '@unchainedshop/utils';
 
 type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
 
@@ -11,7 +10,7 @@ export const getOrderSummaryData = async (
   context: UnchainedCore,
 ) => {
   const { modules } = context;
-  const { useNetPrice, format = formatPrice } = params || {};
+  const { useNetPrice, format = ch.priceToString } = params || {};
   const orderDelivery = await modules.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
@@ -25,8 +24,10 @@ export const getOrderSummaryData = async (
     deliveryProviderId: orderDelivery.deliveryProviderId,
   });
 
-  const deliveryAddress = formatAddress(orderDelivery?.context?.deliveryAddress || order.billingAddress);
-  const billingAddress = formatAddress(order.billingAddress);
+  const deliveryAddress = ch.addressToString(
+    orderDelivery?.context?.deliveryAddress || order.billingAddress,
+  );
+  const billingAddress = ch.addressToString(order.billingAddress);
   const orderPricing = OrderPricingSheet({
     calculation: order.calculation,
     currency: order.currency,
