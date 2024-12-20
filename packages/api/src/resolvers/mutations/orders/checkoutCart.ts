@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
-import { OrderCheckoutError } from '../../../errors.js';
-import { getOrderCart } from '../utils/getOrderCart.js';
+import { OrderCheckoutError, OrderNotFoundError } from '../../../errors.js';
 import { createLogger, log } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api');
@@ -20,11 +19,12 @@ export default async function checkoutCart(
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
 
   // Do not check for order status here! The checkout method will act accordingly
-  let order = await getOrderCart({ orderId: forceOrderId, user }, context);
+  const order = await services.orders.cart({ orderId: forceOrderId, user });
+  if (!order) throw new OrderNotFoundError({ orderId: forceOrderId });
 
   try {
-    order = await services.orders.checkoutOrder(order._id, transactionContext);
-    return order;
+    const checkedOutOrder = await services.orders.checkoutOrder(order._id, transactionContext);
+    return checkedOutOrder;
   } catch (error) {
     logger.error(error.message, { userId, orderId: order._id });
     throw new OrderCheckoutError({

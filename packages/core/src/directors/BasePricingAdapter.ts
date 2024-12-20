@@ -2,11 +2,9 @@ import { createLogger } from '@unchainedshop/logger';
 import { IPricingSheet } from './BasePricingSheet.js';
 import { IBaseAdapter, PricingCalculation } from '@unchainedshop/utils';
 import { Discount } from './BasePricingDirector.js';
+import { Order, OrderDiscount } from '@unchainedshop/core-orders';
 
 const logger = createLogger('unchained:core');
-
-type Order = { _id?: string };
-type OrderDiscount = { _id?: string };
 
 interface IDiscountableItem {
   _id?: string;

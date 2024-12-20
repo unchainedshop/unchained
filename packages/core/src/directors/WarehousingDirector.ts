@@ -10,6 +10,7 @@ import {
   WarehousingContext,
   WarehousingError,
 } from '../directors/index.js';
+import { Modules } from '../modules.js';
 
 export type EstimatedDispatch = {
   shipping?: Date;
@@ -40,7 +41,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   actions: (
     warehousingProvider: WarehousingProvider,
     warehousingContext: WarehousingContext,
-    unchainedAPI,
+    unchainedAPI: { modules: Modules },
   ) => Promise<{
     configurationError: () => WarehousingError;
     isActive: () => boolean;

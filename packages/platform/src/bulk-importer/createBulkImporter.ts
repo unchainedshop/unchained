@@ -132,3 +132,5 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     createBulkImporter,
   };
 };
+
+export { AssortmentHandlers, ProductHandlers, FilterHandlers };

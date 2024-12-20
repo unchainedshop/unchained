@@ -10,8 +10,8 @@ import { UnchainedCore } from '@unchainedshop/core';
 export * from './context.js';
 export * from './locale-context.js';
 export * from './loaders/index.js';
+export * from './errors.js';
 export * as acl from './acl.js';
-export * as errors from './errors.js';
 export * as roles from './roles/index.js';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 

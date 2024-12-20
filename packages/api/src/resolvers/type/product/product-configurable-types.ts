@@ -8,7 +8,6 @@ import {
 import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
 import { sha256 } from '@unchainedshop/utils';
-import { ProductPricingDirector } from '@unchainedshop/core';
 
 export const ConfigurableProduct = {
   ...Product,
@@ -105,7 +104,7 @@ export const ConfigurableProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPriceRange> {
-    const { countryContext, modules } = requestContext;
+    const { countryContext, modules, services } = requestContext;
     const currency = forcedCurrencyCode || requestContext.currencyContext;
 
     const products = await modules.products.proxyProducts(product, vectors, {
@@ -123,14 +122,7 @@ export const ConfigurableProduct = {
             quantity,
           };
 
-          const calculated = await ProductPricingDirector.rebuildCalculation(
-            pricingContext,
-            requestContext,
-          );
-
-          if (!calculated || !calculated.length) return null;
-
-          const pricing = ProductPricingDirector.calculationSheet(pricingContext, calculated);
+          const pricing = await services.products.simulateProductPricing(pricingContext);
           const unitPrice = pricing.unitPrice({ useNetPrice });
 
           return {

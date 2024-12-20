@@ -89,16 +89,46 @@ connect(app, engine);
 
 Remove all imports from `@unchainedshop/types` and find the types in the according core modules, core and platform.
 
+## Migrate Removed Module Functions
 
+`modules.products.prices.userPrice`: `services.products.simulateProductPricing`
+
+`modules.orders.pricingSheet`:
+
+`modules.orders.positions.pricingSheet`:
+
+`modules.orders.delivery.pricingSheet`:
+
+`modules.orders.payment.pricingSheet`:
+
+`modules.accounts.findUserByEmail` => `modules.users.findUserByEmail`
+
+`modules.accounts.setUsername` => `modules.users.setUsername`
+
+`modules.accounts.createUser` => `modules.users.createUser` (password does not take a hashed password anymore, provide plain password here it will hash it on it's own)
+
+`modules.accounts.sendEnrollmentEmail(...)` => `modules.users.sendResetPasswordEmail(..., true);`
+
+`modules.users.delete` => `services.users.deleteUser`
+
+`modules.files.getUrl(file...)` => `modules.files.normalizeUrl(file.url...`
+
+`modules.filters.search.searchProducts` => `services.filters.searchProducts`
+
+`modules.warehousing.estimatedDispatch` => `services.products.simulatedProductDispatching`
+
+`modules.warehousing.estimatedStock` => `services.products.simulatedProductInventory`
+
+`getOrderCart` => `services.orders.cart`
 
 ## Benchmarks
 
 Dependency Hell:
 
 Minimal v2 without optional and without dev (production setup):
-* 449 Packages
+* 449 Packages in node_modules
 * 205M
 
 Minimal v3 without optional and without dev (production setup):
-* 245 Packages
-* 127M
+* 245 Packages in node_modules
+* 76M

@@ -1,3 +1,4 @@
+import { Modules } from '../modules.js';
 import { migrateUserDataService } from './migrateUserData.js';
 import { updateUserAvatarAfterUploadService } from './updateUserAvatarAfterUpload.js';
 import { linkFileService } from './linkFileService.js';
@@ -39,7 +40,10 @@ import { verifyQuotationService } from './verifyQuotation.js';
 import { loadFiltersService } from './loadFilters.js';
 import { loadFilterOptionsService } from './loadFilterOptions.js';
 import { ercMetadataService } from './ercMetadata.js';
-import { Modules } from '../modules.js';
+import { simulateProductPricingService } from './simulateProductPricing.js';
+import { simulateProductDispatchingService } from './simulateProductDispatching.js';
+import { simulateProductInventoryService } from './simulateProductInventory.js';
+import { cartService } from './cart.js';
 
 // TODO: Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -89,6 +93,7 @@ export default function initServices(
       >,
       migrateOrderCarts: migrateOrderCartsService as Bound<typeof migrateOrderCartsService>,
       nextUserCart: nextUserCartService as Bound<typeof nextUserCartService>,
+      cart: cartService as Bound<typeof cartService>,
       initCartProviders: initCartProvidersService as Bound<typeof initCartProvidersService>,
       updateCalculation: updateCalculationService as Bound<typeof updateCalculationService>,
       supportedDeliveryProviders: supportedDeliveryProvidersService as Bound<
@@ -110,6 +115,15 @@ export default function initServices(
       >,
     },
     products: {
+      simulateProductPricing: simulateProductPricingService as Bound<
+        typeof simulateProductPricingService
+      >,
+      simulateProductDispatching: simulateProductDispatchingService as Bound<
+        typeof simulateProductDispatchingService
+      >,
+      simulateProductInventory: simulateProductInventoryService as Bound<
+        typeof simulateProductInventoryService
+      >,
       removeProduct: removeProductService as Bound<typeof removeProductService>,
     },
     users: {

@@ -5,8 +5,8 @@ import {
   OrderQuantityTooLowError,
   InvalidIdError,
   OrderWrongStatusError,
+  OrderNotFoundError,
 } from '../../../errors.js';
-import { getOrderCart } from '../utils/getOrderCart.js';
 import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addCartProduct(
@@ -29,7 +29,9 @@ export default async function addCartProduct(
   const originalProduct = await modules.products.findProduct({ productId: originalProductId });
   if (!originalProduct) throw new ProductNotFoundError({ productId: originalProductId });
 
-  const order = await getOrderCart({ orderId, user }, context);
+  const order = await services.orders.cart({ orderId, user });
+  if (!order) throw new OrderNotFoundError({ orderId });
+
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   const product = await modules.products.resolveOrderableProduct(originalProduct, { configuration });

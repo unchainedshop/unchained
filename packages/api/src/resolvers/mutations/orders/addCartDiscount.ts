@@ -1,10 +1,10 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { getOrderCart } from '../utils/getOrderCart.js';
 import {
   OrderWrongStatusError,
   OrderDiscountCodeAlreadyPresentError,
   OrderDiscountCodeNotValidError,
+  OrderNotFoundError,
 } from '../../../errors.js';
 
 export default async function addCartDiscount(
@@ -16,7 +16,8 @@ export default async function addCartDiscount(
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
 
-  const order = await getOrderCart({ orderId, user }, context);
+  const order = await services.orders.cart({ orderId, user });
+  if (!order) throw new OrderNotFoundError({ orderId });
 
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 

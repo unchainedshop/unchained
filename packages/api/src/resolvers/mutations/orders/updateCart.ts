@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
-import { getOrderCart } from '../utils/getOrderCart.js';
-import { OrderWrongStatusError } from '../../../errors.js';
+import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors.js';
 import { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateCartParams {
@@ -20,7 +19,8 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
 
   log('mutation updateCart', { userId });
 
-  let order = await getOrderCart({ orderId, user }, context);
+  let order = await services.orders.cart({ orderId, user });
+  if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   if (meta) {

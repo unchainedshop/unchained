@@ -5,7 +5,6 @@ import {
 } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
-import { ProductPricingDirector } from '@unchainedshop/core';
 import { sha256 } from '@unchainedshop/utils';
 
 export const PlanProduct = {
@@ -40,7 +39,7 @@ export const PlanProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPrice> {
-    const { countryContext, user } = requestContext;
+    const { countryContext, user, services } = requestContext;
     const currency = forcedCurrencyCode || requestContext.currencyContext;
 
     const pricingContext = {
@@ -52,11 +51,7 @@ export const PlanProduct = {
       configuration,
     };
 
-    const calculated = await ProductPricingDirector.rebuildCalculation(pricingContext, requestContext);
-
-    if (!calculated || !calculated.length) return null;
-
-    const pricing = ProductPricingDirector.calculationSheet(pricingContext, calculated);
+    const pricing = await services.products.simulateProductPricing(pricingContext);
     const unitPrice = pricing.unitPrice({ useNetPrice });
 
     return {

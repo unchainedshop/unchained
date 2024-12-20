@@ -1,4 +1,3 @@
-import { WarehousingContext, WarehousingDirector } from '@unchainedshop/core';
 import {
   Product,
   ProductContractConfiguration,
@@ -40,7 +39,6 @@ export const TokenizedProduct = {
     requestContext: Context,
   ): Promise<
     Array<{
-      _id: string;
       deliveryProvider?: DeliveryProvider;
       warehousingProvider?: WarehousingProvider;
       quantity?: number;
@@ -51,39 +49,11 @@ export const TokenizedProduct = {
 
     const deliveryProviders = await modules.delivery.findProviders({});
 
-    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
-      const result = await oldResult;
-
-      const warehousingProviders = await services.orders.supportedWarehousingProviders({
-        product: obj,
-        deliveryProvider,
-      });
-
-      const mappedWarehousingProviders = await Promise.all(
-        warehousingProviders.map(async (warehousingProvider) => {
-          const warehousingContext: WarehousingContext = {
-            deliveryProvider,
-            product: obj,
-            referenceDate,
-          };
-
-          const director = await WarehousingDirector.actions(
-            warehousingProvider,
-            warehousingContext,
-            requestContext,
-          );
-          const stock = await director.estimatedStock();
-
-          return {
-            warehousingProvider,
-            ...warehousingContext,
-            ...stock,
-          };
-        }),
-      );
-
-      return result.concat(result, mappedWarehousingProviders);
-    }, Promise.resolve([]));
+    return services.products.simulateProductInventory({
+      deliveryProviders,
+      product: obj,
+      referenceDate,
+    });
   },
 
   async tokens(product: Product, params: never, requestContext: Context) {

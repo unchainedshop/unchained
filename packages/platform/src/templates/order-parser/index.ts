@@ -46,3 +46,5 @@ export const transformOrderToText = async (
 
   return modules.messaging.renderToText(textTemplate, data);
 };
+
+export { getOrderPositionsData, getOrderSummaryData };

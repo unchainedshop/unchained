@@ -8,8 +8,8 @@ import {
   InvalidIdError,
   OrderWrongStatusError,
   ProductNotFoundError,
+  OrderNotFoundError,
 } from '../../../errors.js';
-import { getOrderCart } from '../utils/getOrderCart.js';
 import { QuotationDirector } from '@unchainedshop/core';
 
 export default async function addCartQuotation(
@@ -43,7 +43,8 @@ export default async function addCartQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  const order = await getOrderCart({ orderId, user }, context);
+  const order = await services.orders.cart({ orderId, user });
+  if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   if (

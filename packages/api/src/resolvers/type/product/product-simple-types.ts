@@ -15,54 +15,23 @@ export const SimpleProduct = {
     requestContext: Context,
   ): Promise<
     Array<{
-      _id: string;
       deliveryProvider?: DeliveryProvider;
       warehousingProvider?: WarehousingProvider;
       shipping?: Date;
       earliestDelivery?: Date;
     }>
   > {
-    const { deliveryProviderType, referenceDate, quantity } = params;
-    const { modules, services } = requestContext;
+    const { referenceDate, quantity } = params;
+    const { services, modules } = requestContext;
 
-    const deliveryProviders = await modules.delivery.findProviders({
-      type: deliveryProviderType,
+    const deliveryProviders = await modules.delivery.findProviders({});
+
+    return services.products.simulateProductDispatching({
+      deliveryProviders,
+      product: obj,
+      quantity,
+      referenceDate,
     });
-
-    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
-      const result = await oldResult;
-
-      const warehousingProviders = await services.orders.supportedWarehousingProviders({
-        product: obj,
-        deliveryProvider,
-      });
-
-      const mappedWarehousingProviders = await Promise.all(
-        warehousingProviders.map(async (warehousingProvider) => {
-          const warehousingContext: WarehousingContext = {
-            deliveryProvider,
-            product: obj,
-            quantity,
-            referenceDate,
-          };
-
-          const director = await WarehousingDirector.actions(
-            warehousingProvider,
-            warehousingContext,
-            requestContext,
-          );
-          const dispatch = await director.estimatedDispatch();
-
-          return {
-            warehousingProvider,
-            ...warehousingContext,
-            ...dispatch,
-          };
-        }),
-      );
-
-      return result.concat(result, mappedWarehousingProviders);
-    }, Promise.resolve([]));
   },
 
   async simulatedStocks(
@@ -74,7 +43,6 @@ export const SimpleProduct = {
     requestContext: Context,
   ): Promise<
     Array<{
-      _id: string;
       deliveryProvider?: DeliveryProvider;
       warehousingProvider?: WarehousingProvider;
       quantity?: number;
@@ -87,39 +55,11 @@ export const SimpleProduct = {
       type: deliveryProviderType,
     });
 
-    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
-      const result = await oldResult;
-
-      const warehousingProviders = await services.orders.supportedWarehousingProviders({
-        product: obj,
-        deliveryProvider,
-      });
-
-      const mappedWarehousingProviders = await Promise.all(
-        warehousingProviders.map(async (warehousingProvider) => {
-          const warehousingContext: WarehousingContext = {
-            deliveryProvider,
-            product: obj,
-            referenceDate,
-          };
-
-          const director = await WarehousingDirector.actions(
-            warehousingProvider,
-            warehousingContext,
-            requestContext,
-          );
-          const stock = await director.estimatedStock();
-
-          return {
-            warehousingProvider,
-            ...warehousingContext,
-            ...stock,
-          };
-        }),
-      );
-
-      return result.concat(result, mappedWarehousingProviders);
-    }, Promise.resolve([]));
+    return services.products.simulateProductInventory({
+      deliveryProviders,
+      product: obj,
+      referenceDate,
+    });
   },
 
   baseUnit({ warehousing }): string {

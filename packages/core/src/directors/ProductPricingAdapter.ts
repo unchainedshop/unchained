@@ -9,6 +9,7 @@ import {
   IPricingAdapter,
 } from '../directors/index.js';
 import { Modules } from '../modules.js';
+import { User } from '@unchainedshop/core-users';
 
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
@@ -17,6 +18,7 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   quantity: number;
   configuration: Array<ProductConfiguration>;
   order?: Order;
+  user?: User;
 }
 
 export type IProductPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
