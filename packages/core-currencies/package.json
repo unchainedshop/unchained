@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-currencies",
-  "version": "3.0.0-rc8",
+  "version": "3.0.0-rc9",
   "main": "lib/currencies-index.js",
   "types": "lib/currencies-index.d.ts",
   "type": "module",
@@ -31,8 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-rc8",
-    "@unchainedshop/utils": "^3.0.0-rc8"
+    "@unchainedshop/events": "^3.0.0-rc9",
+    "@unchainedshop/utils": "^3.0.0-rc9"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

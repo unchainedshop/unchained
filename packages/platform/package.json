@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "3.0.0-rc8",
+  "version": "3.0.0-rc9",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -34,15 +34,15 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "^3.0.0-rc8",
-    "@unchainedshop/core": "^3.0.0-rc8",
-    "@unchainedshop/events": "^3.0.0-rc8",
-    "@unchainedshop/file-upload": "^3.0.0-rc8",
-    "@unchainedshop/logger": "^3.0.0-rc8",
-    "@unchainedshop/mongodb": "^3.0.0-rc8",
-    "@unchainedshop/plugins": "^3.0.0-rc8",
-    "@unchainedshop/roles": "^3.0.0-rc8",
-    "@unchainedshop/utils": "^3.0.0-rc8",
+    "@unchainedshop/api": "^3.0.0-rc9",
+    "@unchainedshop/core": "^3.0.0-rc9",
+    "@unchainedshop/events": "^3.0.0-rc9",
+    "@unchainedshop/file-upload": "^3.0.0-rc9",
+    "@unchainedshop/logger": "^3.0.0-rc9",
+    "@unchainedshop/mongodb": "^3.0.0-rc9",
+    "@unchainedshop/plugins": "^3.0.0-rc9",
+    "@unchainedshop/roles": "^3.0.0-rc9",
+    "@unchainedshop/utils": "^3.0.0-rc9",
     "mustache": "^4.2.0",
     "safe-stable-stringify": "^2.5.0"
   },

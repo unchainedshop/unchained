@@ -1,4 +1,4 @@
-# Unchained Engine v3.0 RC8 ("Odi")
+# Unchained Engine v3.0 RC9 ("Odi")
 
 We are thrilled to announce Unchained Engine v3.0, 5 years after the first version. We started with an overloaded framework approach using Meteor and gradually removed dependency by dependency, getting closer to the metal and in-line with today's standards. Unchained Engine...
 - ...is 100% ESM and self-hosted

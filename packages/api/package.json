@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "3.0.0-rc8",
+  "version": "3.0.0-rc9",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
@@ -71,11 +71,11 @@
     }
   },
   "dependencies": {
-    "@unchainedshop/core": "^3.0.0-rc8",
-    "@unchainedshop/events": "^3.0.0-rc8",
-    "@unchainedshop/logger": "^3.0.0-rc8",
-    "@unchainedshop/roles": "^3.0.0-rc8",
-    "@unchainedshop/utils": "^3.0.0-rc8",
+    "@unchainedshop/core": "^3.0.0-rc9",
+    "@unchainedshop/events": "^3.0.0-rc9",
+    "@unchainedshop/logger": "^3.0.0-rc9",
+    "@unchainedshop/roles": "^3.0.0-rc9",
+    "@unchainedshop/utils": "^3.0.0-rc9",
     "accounting": "0.4.1",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
