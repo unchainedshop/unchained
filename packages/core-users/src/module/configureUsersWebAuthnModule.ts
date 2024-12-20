@@ -19,6 +19,7 @@ export interface UsersWebAuthnModule {
     extensionOptions?: any,
   ) => Promise<any>;
   verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
+  deleteUserWebAuthnCredentials: (username: string) => Promise<number>;
 }
 
 const logger = createLogger('unchained:core-users');
@@ -230,6 +231,12 @@ export const configureUsersWebAuthnModule = async ({
 
       const loginResult = await f2l.assertionResult(assertionResponse, assertionExpectations);
       return { userHandle: loginResult?.authnrData?.get('userHandle') };
+    },
+    deleteUserWebAuthnCredentials: async (username: string) => {
+      const { deletedCount } = await WebAuthnCredentialsCreationRequests.deleteMany({
+        username,
+      });
+      return deletedCount;
     },
   };
 };
