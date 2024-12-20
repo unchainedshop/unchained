@@ -45,7 +45,6 @@ export default [
       isoCode: String!
       isActive: Boolean
       defaultCurrencyCode: String
-      defaultCurrencyId: String @deprecated(reason: "Use defaultCurrencyCode instead")
     }
 
     input CreateCurrencyInput {
