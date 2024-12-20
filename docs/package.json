@@ -2,7 +2,7 @@
   "name": "docs",
   "description": "Docs for Unchained Engine",
   "private": true,
-  "version": "3.0.0-rc6",
+  "version": "3.0.0-rc7",
   "license": "ISC",
   "scripts": {
     "dev": "docusaurus start",
