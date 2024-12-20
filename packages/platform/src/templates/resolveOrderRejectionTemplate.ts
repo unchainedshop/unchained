@@ -1,5 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/core';
 import { transformOrderToText } from './order-parser/index.js';
+import mustache from 'mustache';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
@@ -25,11 +26,16 @@ export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId,
 
   const subject = `Order rejected ${order.orderNumber}`;
 
-  const data = {
-    shopName: EMAIL_WEBSITE_NAME,
-    shopUrl: EMAIL_WEBSITE_URL,
-    orderDetails: await transformOrderToText({ order, locale }, context),
-  };
+  const text = mustache.render(
+    textTemplate,
+    {
+      shopName: EMAIL_WEBSITE_NAME,
+      shopUrl: EMAIL_WEBSITE_URL,
+      orderDetails: await transformOrderToText({ order, locale }, context),
+    },
+    undefined,
+    { escape: (t) => t },
+  );
 
   return [
     {
@@ -38,7 +44,7 @@ export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId,
         from: `${EMAIL_WEBSITE_NAME} <${EMAIL_FROM || 'noreply@unchained.local'}>`,
         to: order.contact.emailAddress,
         subject,
-        text: modules.messaging.renderToText(textTemplate, data),
+        text,
       },
     },
   ];

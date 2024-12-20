@@ -10,7 +10,7 @@ export default async function validateResetPasswordToken(
 
   log('query validateResetPasswordToken', { userId, token: params.token });
 
-  const user = await modules.users.findUserByResetToken(params.token);
+  const resetToken = await modules.users.findResetToken(params.token);
 
-  return !!user;
+  return !!resetToken;
 }

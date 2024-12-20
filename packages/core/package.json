@@ -42,7 +42,6 @@
     "@unchainedshop/core-files": "^3.0.0-rc8",
     "@unchainedshop/core-filters": "^3.0.0-rc8",
     "@unchainedshop/core-languages": "^3.0.0-rc8",
-    "@unchainedshop/core-messaging": "^3.0.0-rc8",
     "@unchainedshop/core-orders": "^3.0.0-rc8",
     "@unchainedshop/core-payment": "^3.0.0-rc8",
     "@unchainedshop/core-products": "^3.0.0-rc8",

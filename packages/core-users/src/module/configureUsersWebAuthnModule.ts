@@ -3,23 +3,6 @@ import { createLogger } from '@unchainedshop/logger';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
 
 import type { PublicKeyCredentialCreationOptions, PublicKeyCredentialRequestOptions } from 'fido2-lib';
-export interface UsersWebAuthnModule {
-  findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
-
-  createCredentialCreationOptions: (
-    origin: string,
-    username: string,
-    extensionOptions?: any,
-  ) => Promise<any>;
-  verifyCredentialCreation: (username: string, credentials: any) => Promise<any>;
-
-  createCredentialRequestOptions: (
-    origin: string,
-    username?: string,
-    extensionOptions?: any,
-  ) => Promise<any>;
-  verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
-}
 
 const logger = createLogger('unchained:core-users');
 
@@ -83,13 +66,11 @@ const initF2L = async () => {
   }
 };
 
-export const configureUsersWebAuthnModule = async ({
-  db,
-}: ModuleInput<any>): Promise<UsersWebAuthnModule> => {
+export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => {
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
   const f2l = await initF2L();
   return {
-    findMDSMetadataForAAGUID: async (aaguid) => {
+    findMDSMetadataForAAGUID: async (aaguid: string) => {
       const mdsCollection = await fetchMDS();
       const foundEntry = mdsCollection.find((entry) => {
         return entry.aaguid === aaguid;
@@ -97,7 +78,11 @@ export const configureUsersWebAuthnModule = async ({
       return foundEntry?.metadataStatement;
     },
 
-    createCredentialCreationOptions: async (origin, username, extensionOptions) => {
+    createCredentialCreationOptions: async (
+      origin: string,
+      username: string,
+      extensionOptions?: any,
+    ) => {
       if (!f2l) return null;
 
       const registrationOptions = await f2l.attestationOptions(extensionOptions);
@@ -117,7 +102,11 @@ export const configureUsersWebAuthnModule = async ({
       } as SerializedOptions<PublicKeyCredentialCreationOptions>;
     },
 
-    createCredentialRequestOptions: async (origin, username, extensionOptions) => {
+    createCredentialRequestOptions: async (
+      origin: string,
+      username?: string,
+      extensionOptions?: any,
+    ) => {
       if (!f2l) return null;
 
       const loginOptions = await f2l.assertionOptions(extensionOptions);
@@ -137,7 +126,7 @@ export const configureUsersWebAuthnModule = async ({
       } as SerializedOptions<PublicKeyCredentialRequestOptions>;
     },
 
-    verifyCredentialCreation: async (username, credentials) => {
+    verifyCredentialCreation: async (username: string, credentials: any) => {
       if (!f2l) return null;
 
       const request = await WebAuthnCredentialsCreationRequests.findOne(
@@ -186,7 +175,7 @@ export const configureUsersWebAuthnModule = async ({
       return { publicKey, counter, id: credentials.id, aaguid, created: new Date() };
     },
 
-    verifyCredentialRequest: async (userPublicKeys, username, credentials) => {
+    verifyCredentialRequest: async (userPublicKeys: any[], username: string, credentials: any) => {
       if (!f2l) return null;
 
       const request = await WebAuthnCredentialsCreationRequests.findOne(

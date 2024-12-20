@@ -41,7 +41,6 @@
     "packages/core-users",
     "packages/core-bookmarks",
     "packages/core-delivery",
-    "packages/core-messaging",
     "packages/core-payment",
     "packages/core-quotations",
     "packages/core-products",

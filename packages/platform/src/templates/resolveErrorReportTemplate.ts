@@ -1,5 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/core';
 import { stringify } from 'safe-stable-stringify';
+import mustache from 'mustache';
 
 const {
   EMAIL_FROM = 'noreply@unchained.local',
@@ -26,8 +27,17 @@ Shop Name: {{name}}
 {{content}}
 `;
 
-const resolveErrorReportTemplate: TemplateResolver = async ({ workItems }, context) => {
-  const { modules } = context;
+const resolveErrorReportTemplate: TemplateResolver = async ({ workItems }) => {
+  const text = mustache.render(
+    textTemplate,
+    {
+      endpoint: ROOT_URL,
+      content: formatWorkItems(workItems),
+      name: EMAIL_WEBSITE_NAME,
+    },
+    undefined,
+    { escape: (t) => t },
+  );
 
   return [
     {
@@ -36,11 +46,7 @@ const resolveErrorReportTemplate: TemplateResolver = async ({ workItems }, conte
         from: EMAIL_FROM || 'noreply@unchained.local',
         to: EMAIL_ERROR_REPORT_RECIPIENT,
         subject: `${EMAIL_WEBSITE_NAME}: Queue Errors`,
-        text: modules.messaging.renderToText(textTemplate, {
-          endpoint: ROOT_URL,
-          content: formatWorkItems(workItems),
-          name: EMAIL_WEBSITE_NAME,
-        }),
+        text,
       },
     },
   ];

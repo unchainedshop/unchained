@@ -1,6 +1,9 @@
-import { Order } from '@unchainedshop/core-orders';
 import { getOrderPositionsData } from './getOrderPositionsData.js';
 import { getOrderSummaryData } from './getOrderSummaryData.js';
+import { Order } from '@unchainedshop/core-orders';
+import { UnchainedCore } from '@unchainedshop/core';
+
+import mustache from 'mustache';
 
 const textTemplate = `Order number: {{orderNumber}}
 Ordered: {{orderDate}}
@@ -34,17 +37,19 @@ Total: {{summary.prices.gross}}
 
 export const transformOrderToText = async (
   { order, locale }: { order: Order; locale: string },
-  context,
+  context: UnchainedCore,
 ) => {
-  const { modules } = context;
-  const data = {
-    orderDate: new Date(order.ordered).toLocaleString(),
-    orderNumber: order.orderNumber,
-    summary: await getOrderSummaryData(order, { locale }, context),
-    positions: await getOrderPositionsData(order, { locale }, context),
-  };
-
-  return modules.messaging.renderToText(textTemplate, data);
+  return mustache.render(
+    textTemplate,
+    {
+      orderDate: new Date(order.ordered).toLocaleString(),
+      orderNumber: order.orderNumber,
+      summary: await getOrderSummaryData(order, { locale }, context),
+      positions: await getOrderPositionsData(order, { locale }, context),
+    },
+    undefined,
+    { escape: (t) => t },
+  );
 };
 
 export { getOrderPositionsData, getOrderSummaryData };

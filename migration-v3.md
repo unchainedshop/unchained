@@ -11,7 +11,7 @@ mutations for frontend projects.
 
 Boot.ts files need to be migrated in order to work with the new Yoga GraphQL Server.
 
-First: Dependencies `npm install @graphql-yoga/plugin-response-cache graphql-yoga`
+First: Dependencies `npm install @graphql-yoga/plugin-response-cache graphql-yoga cookie`
 `npm uninstall @apollo/server-plugin-response-cache @apollo/server apollo-graphiql-playground`
 
 Remove
@@ -32,6 +32,7 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
 Add
 
 ```js
+import cookie from "cookie";
 import { useExecutionCancellation } from 'graphql-yoga';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
@@ -80,7 +81,7 @@ const engine = await startPlatform({
       session(req) {
         const auth = req.headers.get('authorization');
         const cookies = cookie.parse(req.headers.get('cookie') || '');
-        return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
+        return auth || cookies[process.env.UNCHAINED_COOKIE_NAME] || null;
       },
       enabled() {
         return process.env.NODE_ENV === 'production';
@@ -96,7 +97,8 @@ connect(app, engine);
 Remove all imports from `@unchainedshop/types` and find the types in the according core modules, core and
 platform.
 
-## Migrate Removed Module Functions
+
+## Removed Module Functions
 
 `modules.products.prices.userPrice`: `services.products.simulateProductPricing`
 
@@ -143,6 +145,15 @@ anymore, provide plain password here it will hash it on it's own)
 `modules.warehousing.estimatedStock` => `services.products.simulatedProductInventory`
 
 `getOrderCart` => `services.orders.findOrInitCart`
+
+## Move away from registerLoginHandlers
+
+Thus the accounts package doesn't exist anymore, if you need custom login, just implement your own mutation and do the checks there and then call `context.login(user)`
+
+The special account events have been migrated too. For account specific topics there is now general events you can subscribe to:
+
+- `USER_UPDATE_PASSWORD`
+- `USER_ACCOUNT_ACTION`
 
 ## Benchmarks
 

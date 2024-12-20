@@ -1,4 +1,5 @@
 import { TemplateResolver } from '@unchainedshop/core';
+import mustache from 'mustache';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_URL, EMAIL_WEBSITE_NAME } = process.env;
 
@@ -96,12 +97,17 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
   const { url } = emailConfig[action];
   const { subject, message, buttonText } = emailConfig[action][locale.language];
 
-  const data = {
-    buttonText,
-    message,
-    subject,
-    url: url(token),
-  };
+  const text = mustache.render(
+    textTemplate,
+    {
+      buttonText,
+      message,
+      subject,
+      url: url(token),
+    },
+    undefined,
+    { escape: (t) => t },
+  );
 
   return [
     {
@@ -110,7 +116,7 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
         from: EMAIL_FROM || 'noreply@unchained.local',
         to: recipientEmail || modules.users.primaryEmail(user)?.address,
         subject,
-        text: modules.messaging.renderToText(textTemplate, data),
+        text,
       },
     },
   ];

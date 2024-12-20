@@ -109,6 +109,7 @@ export const buildFindSelector = ({
   return selector;
 };
 
+// TODO: Infer!
 export type ProductsModule = {
   // Queries
   findProduct: (params: { productId?: string; slug?: string; sku?: string }) => Promise<Product>;

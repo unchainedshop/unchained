@@ -20,7 +20,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
 import addMigrations from './addMigrations.js';
 import { userSettings, UserSettingsOptions } from '../users-settings.js';
-import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
+import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 
 export interface UserData {
@@ -34,84 +34,6 @@ export interface UserData {
   roles?: Array<string>;
   username?: string;
 }
-
-export type UsersModule = {
-  // Submodules
-  webAuthn: UsersWebAuthnModule;
-
-  // Queries
-  count: (query: UserQuery) => Promise<number>;
-  findUserById: (userId: string) => Promise<User>;
-  findUserByToken: (hashedToken?: string) => Promise<User>;
-  findUserByResetToken: (token: string) => Promise<User>;
-  findUnverifiedEmailToken: (token: string) => Promise<{
-    userId: string;
-    address: string;
-    when: Date;
-  }>;
-  findUserByEmail(email: string): Promise<User>;
-  findUserByUsername(username: string): Promise<User>;
-  findUser: (
-    selector: UserQuery & { sort?: Array<SortOption> },
-    options?: mongodb.FindOptions,
-  ) => Promise<User>;
-  findUsers: (
-    query: UserQuery & {
-      sort?: Array<SortOption>;
-      limit?: number;
-      offset?: number;
-    },
-  ) => Promise<Array<User>>;
-  userExists: (query: { userId: string }) => Promise<boolean>;
-  // Transformations
-  primaryEmail: (user: User) => Email;
-  userLocale: (user: User) => Intl.Locale;
-
-  // Mutations
-  createUser: (
-    userData: UserData,
-    options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
-  ) => Promise<string>;
-  addEmail: (userId: string, email: string) => Promise<void>;
-  removeEmail: (userId: string, email: string) => Promise<void>;
-  sendVerificationEmail: (userId: string, email: string) => Promise<void>;
-  sendResetPasswordEmail: (userId: string, email: string, isEnrollment?: boolean) => Promise<void>;
-  verifyEmail: (userId: string, email: string) => Promise<void>;
-  setUsername: (userId: string, newUsername: string) => Promise<void>;
-  setPassword: (userId: string, newPassword?: string) => Promise<void>;
-  verifyPassword: (hashObject: Record<string, string>, password: string) => Promise<boolean>;
-  addRoles: (userId: string, roles: Array<string>) => Promise<number>;
-  updateAvatar: (_id: string, fileId: string) => Promise<User>;
-  updateGuest: (user: User, guest: boolean) => Promise<void>;
-  updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
-  updateLastBillingAddress: (_id: string, lastAddress: Address) => Promise<User>;
-  updateLastContact: (_id: string, lastContact: Contact) => Promise<User>;
-  updateProfile: (
-    _id: string,
-    { profile, meta }: { profile?: UserProfile; meta?: any },
-  ) => Promise<User>;
-  markDeleted: (userId: string) => Promise<User>;
-  deletePermanently: (params: { userId: string }) => Promise<User>;
-  updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
-  updateTags: (_id: string, tags: Array<string>) => Promise<User>;
-  updateUser: (
-    selector: mongodb.Filter<User>,
-    modifier: mongodb.UpdateFilter<User>,
-    options: mongodb.FindOneAndUpdateOptions,
-  ) => Promise<User>;
-  addPushSubscription: (
-    userId: string,
-    subscription: any,
-    options?: {
-      userAgent: string;
-      unsubscribeFromOtherUsers: boolean;
-    },
-  ) => Promise<void>;
-  removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
-  hashPassword(password: string): Promise<{
-    pbkdf2: string;
-  }>;
-};
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -172,7 +94,7 @@ export const configureUsersModule = async ({
   db,
   options,
   migrationRepository,
-}: ModuleInput<UserSettingsOptions>): Promise<UsersModule> => {
+}: ModuleInput<UserSettingsOptions>) => {
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
@@ -232,31 +154,37 @@ export const configureUsersModule = async ({
     },
 
     async verifyEmail(userId: string, address: string): Promise<void> {
-      await Users.updateOne(
-        { _id: userId },
+      const updated = await Users.updateOne(
+        {
+          _id: userId,
+          emails: { $elemMatch: { address: { $regex: address, $options: 'i' }, verified: false } },
+        },
         {
           $set: {
-            'emails.$[email].verified': true,
+            'emails.$.verified': true,
           },
           $pull: {
             'services.email.verificationTokens': {
-              address,
+              address: { $regex: address, $options: 'i' },
             },
           },
         },
-        {
-          arrayFilters: [{ 'email.address': address }],
-        },
       );
 
-      await emit('USER_ACCOUNT_ACTION', {
-        action: 'email-verified',
-        address,
-        userId,
-      });
+      if (updated.modifiedCount > 0) {
+        await emit('USER_ACCOUNT_ACTION', {
+          action: 'email-verified',
+          address,
+          userId,
+        });
+      }
     },
 
-    async findUserByResetToken(plainToken: string): Promise<User> {
+    async findResetToken(plainToken: string): Promise<{
+      userId: string;
+      address: string;
+      when: Date;
+    }> {
       const token = await sha256(plainToken);
       const user = await Users.findOne(
         {
@@ -269,10 +197,15 @@ export const configureUsersModule = async ({
         },
         {},
       );
-      return user;
+      if (!user) return null;
+      const resetToken = user.services.password.reset.find((v) => v.token === token);
+      return {
+        userId: user._id,
+        ...resetToken,
+      };
     },
 
-    async findUserByToken(plainToken?: string): Promise<User> {
+    async findUserByToken(plainToken: string): Promise<User> {
       const token = await sha256(plainToken);
 
       if (token) {
@@ -427,7 +360,9 @@ export const configureUsersModule = async ({
       return userId;
     },
 
-    async hashPassword(password) {
+    async hashPassword(password: string): Promise<{
+      pbkdf2: string;
+    }> {
       const salt = pbkdf2.generateSalt();
       const hashedPassword = await pbkdf2.getDerivedKey(salt, password);
       return { pbkdf2: `${salt}:${hashedPassword}` };
@@ -558,12 +493,12 @@ export const configureUsersModule = async ({
       });
     },
 
-    async setPassword(userId: string, plainPassword: string) {
+    async setPassword(userId: string, plainPassword: string): Promise<User> {
       if (!(await userSettings.validatePassword(plainPassword))) {
         throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
       }
       const password = plainPassword || crypto.randomUUID().split('-').pop();
-      await Users.updateOne(
+      const user = await Users.findOneAndUpdate(
         { _id: userId },
         {
           $set: {
@@ -573,11 +508,28 @@ export const configureUsersModule = async ({
             ),
           },
         },
+        { returnDocument: 'after' },
       );
-      const user = await Users.findOne({ _id: userId }, {});
       await emit('USER_UPDATE_PASSWORD', {
         user: removeConfidentialServiceHashes(user),
       });
+      return user;
+    },
+
+    async resetPassword(token: string, newPassword: string): Promise<User> {
+      const resetToken = await this.findResetToken(token);
+      if (!resetToken) return null;
+      const updatedUser = await this.setPassword(resetToken.userId, newPassword);
+      if (updatedUser) {
+        // Now invalidate the reset token
+        await emit('USER_ACCOUNT_ACTION', {
+          action: 'password-resetted',
+          userId: updatedUser._id,
+        });
+
+        await this.verifyEmail(updatedUser._id, resetToken.address);
+      }
+      return updatedUser;
     },
 
     updateAvatar: async (_id: string, fileId: string): Promise<User> => {
@@ -859,3 +811,5 @@ export const configureUsersModule = async ({
     },
   };
 };
+
+export type UsersModule = Awaited<ReturnType<typeof configureUsersModule>>;

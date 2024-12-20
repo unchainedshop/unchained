@@ -24,7 +24,6 @@ import {
   FiltersSettingsOptions,
 } from '@unchainedshop/core-filters';
 import { configureLanguagesModule, LanguagesModule } from '@unchainedshop/core-languages';
-import { configureMessagingModule, MessagingModule } from '@unchainedshop/core-messaging';
 import { configureOrdersModule, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/core-orders';
 import {
   configurePaymentModule,
@@ -57,7 +56,6 @@ export interface Modules {
   files: FilesModule;
   filters: FiltersModule;
   languages: LanguagesModule;
-  messaging: MessagingModule;
   orders: OrdersModule;
   payment: PaymentModule;
   products: ProductsModule;
@@ -143,10 +141,6 @@ const initModules = async (
     db,
     migrationRepository,
   });
-  const messaging = await configureMessagingModule({
-    db,
-    migrationRepository,
-  });
   const orders = await configureOrdersModule({
     db,
     options: options.orders,
@@ -192,7 +186,6 @@ const initModules = async (
     files,
     filters,
     languages,
-    messaging,
     orders,
     payment,
     products,

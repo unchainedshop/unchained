@@ -1,5 +1,5 @@
 import { TemplateResolver } from '@unchainedshop/core';
-
+import mustache from 'mustache';
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const textTemplate = `
@@ -22,12 +22,17 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
 
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Enrollment / ${enrollment.enrollmentNumber}`;
 
-  const data = {
-    enrollment,
-    locale,
-    subject,
-    url: `${EMAIL_WEBSITE_URL}/enrollment?_id=${enrollment._id}`,
-  };
+  const text = mustache.render(
+    textTemplate,
+    {
+      enrollment,
+      locale,
+      subject,
+      url: `${EMAIL_WEBSITE_URL}/enrollment?_id=${enrollment._id}`,
+    },
+    undefined,
+    { escape: (t) => t },
+  );
 
   return [
     {
@@ -36,7 +41,7 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
         from: EMAIL_FROM || 'noreply@unchained.local',
         to: modules.users.primaryEmail(user)?.address,
         subject,
-        text: modules.messaging.renderToText(textTemplate, data),
+        text,
       },
     },
   ];

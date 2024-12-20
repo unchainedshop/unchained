@@ -1,4 +1,5 @@
 import { TemplateResolver } from '@unchainedshop/core';
+import mustache from 'mustache';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
@@ -32,12 +33,17 @@ export const resolveQuotationStatusTemplate: TemplateResolver = async (
 
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Quotation / ${quotation.quotationNumber}`;
 
-  const data = {
-    locale,
-    quotation,
-    subject,
-    url: `${EMAIL_WEBSITE_URL}/quotation?_id=${quotation._id}`,
-  };
+  const text = mustache.render(
+    textTemplate,
+    {
+      locale,
+      quotation,
+      subject,
+      url: `${EMAIL_WEBSITE_URL}/quotation?_id=${quotation._id}`,
+    },
+    undefined,
+    { escape: (t) => t },
+  );
 
   return [
     {
@@ -46,7 +52,7 @@ export const resolveQuotationStatusTemplate: TemplateResolver = async (
         from: EMAIL_FROM,
         to: modules.users.primaryEmail(user)?.address,
         subject,
-        text: modules.messaging.renderToText(textTemplate, data),
+        text,
         attachments,
       },
     },

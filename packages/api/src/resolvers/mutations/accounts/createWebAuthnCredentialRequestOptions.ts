@@ -20,7 +20,7 @@ export default async function createWebAuthnCredentialRequestOptions(
     const user = await modules.users.findUserByUsername(username);
     options.allowCredentials = user?.services?.webAuthn?.map(({ id, type }) => ({
       id,
-      type: type || options.type || 'public-key',
+      type: type || 'public-key',
     }));
   }
 
