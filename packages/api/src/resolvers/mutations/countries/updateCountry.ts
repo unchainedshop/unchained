@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 
 export default async function updateCountry(
   root: never,
-  { country, countryId }: { country: Country & { defaultCurrencyId: string }; countryId: string },
+  { country, countryId }: { country: Country; countryId: string },
   { userId, modules }: Context,
 ) {
   log(`mutation updateCountry ${countryId}`, { userId });
@@ -15,12 +15,7 @@ export default async function updateCountry(
   if (!(await modules.countries.countryExists({ countryId })))
     throw new CountryNotFoundError({ countryId });
 
-  const currencyObject = await modules.currencies.findCurrency({
-    currencyId: country.defaultCurrencyId,
-  });
-  const defaultCurrencyCode = country?.defaultCurrencyCode || currencyObject?.isoCode;
-
-  await modules.countries.update(countryId, { ...country, defaultCurrencyCode });
+  await modules.countries.update(countryId, country);
 
   return modules.countries.findCountry({ countryId });
 }

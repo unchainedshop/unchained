@@ -4,8 +4,8 @@ import { Country } from '../countries-index.js';
 
 export default function addMigrations(repository: MigrationRepository) {
   repository?.register({
-    id: 20240712123500,
-    name: 'Convert all tags to lower case to make it easy for search',
+    id: 20241220123500,
+    name: 'Remove defaultCurrencyId from countries and add defaultCurrencyCode',
     up: async () => {
       const Currencies = await repository.db.collection<{ _id: string; isoCode: string }>('currencies');
       const Countries = await CountriesCollection(repository.db);

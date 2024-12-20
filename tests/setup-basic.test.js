@@ -288,7 +288,7 @@ describe('basic setup of internationalization and localization context', () => {
           country: {
             isoCode: 'CH',
             isActive: true,
-            defaultCurrencyId: currency._id,
+            defaultCurrencyCode: currency.isoCode,
           },
         },
       });
@@ -317,7 +317,7 @@ describe('basic setup of internationalization and localization context', () => {
           country: {
             isoCode: 'CH',
             isActive: true,
-            defaultCurrencyId: currency._id,
+            defaultCurrencyCode: currency.isoCode,
           },
         },
       });
@@ -341,7 +341,7 @@ describe('basic setup of internationalization and localization context', () => {
           country: {
             isoCode: 'CH',
             isActive: true,
-            defaultCurrencyId: currency._id,
+            defaultCurrencyCode: currency.isoCode,
           },
         },
       });
