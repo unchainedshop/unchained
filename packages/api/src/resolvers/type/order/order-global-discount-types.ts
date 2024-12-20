@@ -1,6 +1,6 @@
 import { Order } from '@unchainedshop/core-orders';
 import { Context } from '../../../context.js';
-import { Price, sha256 } from '@unchainedshop/utils';
+import { Price } from '@unchainedshop/utils';
 
 export const OrderGlobalDiscount = {
   _id(
@@ -25,14 +25,13 @@ export const OrderGlobalDiscount = {
     });
   },
 
-  async total(
+  total(
     obj: Price & {
       order: Order;
       discountId: string;
     },
   ) {
     return {
-      _id: await sha256([`${obj.order._id}:${obj.discountId}`, obj.amount, obj.currency].join('')),
       amount: obj.amount,
       currency: obj.currency,
     };

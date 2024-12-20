@@ -39,7 +39,6 @@ describe('Guest user cart migration', () => {
             _id
             quantity
             total {
-              _id
               currency
               amount
             }

@@ -1,7 +1,6 @@
 import accounting from 'accounting';
 
 type PriceType = {
-  _id?: string;
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode?: string;

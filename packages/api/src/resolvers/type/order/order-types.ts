@@ -11,7 +11,7 @@ import {
   OrderDelivery,
 } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
-import { Price, sha256 } from '@unchainedshop/utils';
+import { Price } from '@unchainedshop/utils';
 import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
@@ -74,18 +74,14 @@ export const Order = {
     return order.status;
   },
 
-  async total(order: OrderType, params: { category: string; useNetPrice: boolean }): Promise<Price> {
+  total(order: OrderType, params: { category: string; useNetPrice: boolean }): Price {
     const pricing = OrderPricingSheet({
       calculation: order.calculation,
       currency: order.currency,
     });
 
     if (pricing.isValid()) {
-      const price = pricing.total(params);
-      return {
-        _id: await sha256([order._id, JSON.stringify(params), JSON.stringify(price)].join('')),
-        ...price,
-      };
+      return pricing.total(params);
     }
     return null;
   },

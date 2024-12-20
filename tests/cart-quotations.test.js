@@ -33,12 +33,10 @@ describe('Cart: Quotations', () => {
                 _id
               }
               unitPrice {
-                _id
                 amount
                 currency
               }
               total {
-                _id
                 amount
                 currency
               }

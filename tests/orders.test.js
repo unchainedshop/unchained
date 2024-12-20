@@ -219,7 +219,6 @@ describe('Order: Management', () => {
               supportedDeliveryProviders {
                 _id
                 simulatedPrice {
-                  _id
                   amount
                   currency
                 }
@@ -248,7 +247,6 @@ describe('Order: Management', () => {
               supportedDeliveryProviders {
                 _id
                 simulatedPrice(currency: "EUR") {
-                  _id
                   amount
                   currency
                 }

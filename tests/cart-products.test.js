@@ -23,12 +23,10 @@ describe('Cart: Product Items', () => {
               _id
               quantity
               total {
-                _id
                 currency
                 amount
               }
               taxes: total(category: TAX) {
-                _id
                 currency
                 amount
               }
@@ -36,7 +34,6 @@ describe('Cart: Product Items', () => {
                 _id
               }
               unitPrice {
-                _id
                 currency
                 amount
               }

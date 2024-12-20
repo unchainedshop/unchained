@@ -27,14 +27,12 @@ describe('Cart: Discounts', () => {
                   }
                 }
                 total {
-                  _id
                   amount
                 }
               }
               _id
               order {
                 total(category: DISCOUNTS) {
-                  _id
                   amount
                 }
                 discounts {
@@ -87,7 +85,6 @@ describe('Cart: Discounts', () => {
                   }
                 }
                 total {
-                  _id
                   amount
                 }
               }

@@ -1,4 +1,4 @@
-import { PricingCalculation } from '@unchainedshop/utils';
+import { Price, PricingCalculation } from '@unchainedshop/utils';
 
 import { BasePricingSheet, IPricingSheet, PricingSheetParams } from '../directors/index.js';
 
@@ -33,10 +33,7 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
     meta?: any;
   }) => void;
 
-  unitPrice: (params?: { useNetPrice: boolean }) => {
-    amount: number;
-    currency: string;
-  };
+  unitPrice: (params?: { useNetPrice: boolean }) => Price;
 }
 
 export const ProductPricingSheet = (

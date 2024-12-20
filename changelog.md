@@ -44,6 +44,10 @@ Along the way we thought it would be nice to remove about 100 NPM module depende
 ## BREAKING API CHANGES
 Behavioral Change: Cart total are now null if there is no item in the cart and needs to be defaulted to an amount of 0 by the frontend. The reason for this change is that a free position could still have delivery or payment fees based on the article. So in order to communicate that to the frontend, we can't price an order when we don't know what is beeing ordered. As orders without a price can't be checked out it makes that clear to the client, too.
 
+- `Price._id` **removed** (this only caused problems with caching behavior and added weight to the code)
+- `Stock._id` **removed** (this only caused problems with caching behavior and added weight to the code)
+- `Dispatch._id` **removed** (this only caused problems with caching behavior and added weight to the code)
+- `PriceRange._id` **removed** (this only caused problems with caching behavior and added weight to the code)
 - `Mutation.loginWithOAuth` removed
 - `Mutation.linkOAuthAccount` removed
 - `Mutation.unlinkOAuthAccount` removed

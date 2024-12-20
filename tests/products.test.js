@@ -35,12 +35,10 @@ describe('Products', () => {
               }
               ... on SimpleProduct {
                 catalogPrice {
-                  _id
                   amount
                   currency
                 }
                 simulatedPrice {
-                  _id
                   amount
                   currency
                 }
@@ -642,12 +640,10 @@ describe('Products', () => {
               tags
               ... on SimpleProduct {
                 simulatedPrice {
-                  _id
                   amount
                   currency
                 }
                 catalogPrice {
-                  _id
                   isTaxable
                   isNetPrice
                   amount
@@ -677,7 +673,6 @@ describe('Products', () => {
               _id
               ... on SimpleProduct {
                 simulatedPrice(currency: "ETB") {
-                  _id
                   amount
                   currency
                 }
@@ -703,7 +698,6 @@ describe('Products', () => {
               _id
               ... on PlanProduct {
                 simulatedPrice {
-                  _id
                   amount
                   currency
                 }
@@ -731,7 +725,6 @@ describe('Products', () => {
               _id
               ... on PlanProduct {
                 simulatedPrice(currency: "ETB") {
-                  _id
                   amount
                   currency
                 }
@@ -1708,13 +1701,12 @@ describe('Products', () => {
               _id
               ... on SimpleProduct {
                 catalogPrice {
-                  _id
+                  amount
                 }
                 leveledCatalogPrices {
                   minQuantity
                   maxQuantity
                   price {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -1742,13 +1734,12 @@ describe('Products', () => {
               _id
               ... on PlanProduct {
                 catalogPrice {
-                  _id
+                  amount
                 }
                 leveledCatalogPrices {
                   minQuantity
                   maxQuantity
                   price {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -1780,16 +1771,13 @@ describe('Products', () => {
               status
               ... on ConfigurableProduct {
                 simulatedPriceRange {
-                  _id
                   minPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
                     currency
                   }
                   maxPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -1804,7 +1792,6 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
-      console.log(rest);
       expect(product.simulatedPriceRange).toMatchObject({
         minPrice: {
           isTaxable: true,
@@ -1832,16 +1819,13 @@ describe('Products', () => {
               status
               ... on ConfigurableProduct {
                 simulatedPriceRange(quantity: 5) {
-                  _id
                   minPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
                     currency
                   }
                   maxPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -1883,16 +1867,13 @@ describe('Products', () => {
               status
               ... on ConfigurableProduct {
                 simulatedPriceRange(vectors: [{ key: "color-variant", value: "color-variant-red" }]) {
-                  _id
                   minPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
                     currency
                   }
                   maxPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -1936,16 +1917,13 @@ describe('Products', () => {
               status
               ... on ConfigurableProduct {
                 catalogPriceRange {
-                  _id
                   minPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
                     currency
                   }
                   maxPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -1988,16 +1966,13 @@ describe('Products', () => {
               status
               ... on ConfigurableProduct {
                 catalogPriceRange(quantity: 5) {
-                  _id
                   minPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
                     currency
                   }
                   maxPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
@@ -2039,16 +2014,13 @@ describe('Products', () => {
               status
               ... on ConfigurableProduct {
                 catalogPriceRange(vectors: [{ key: "color-variant", value: "color-variant-red" }]) {
-                  _id
                   minPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount
                     currency
                   }
                   maxPrice {
-                    _id
                     isTaxable
                     isNetPrice
                     amount

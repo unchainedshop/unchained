@@ -40,7 +40,6 @@ describe('DeliveryProviders', () => {
               configurationError
               isActive
               simulatedPrice {
-                _id
                 isTaxable
                 isNetPrice
                 amount
@@ -175,7 +174,6 @@ describe('DeliveryProviders', () => {
               configurationError
               isActive
               simulatedPrice {
-                _id
                 isTaxable
                 isNetPrice
                 amount
@@ -204,7 +202,6 @@ describe('DeliveryProviders', () => {
             deliveryProvider(deliveryProviderId: $deliveryProviderId) {
               _id
               simulatedPrice {
-                _id
                 amount
                 currency
               }
@@ -227,7 +224,6 @@ describe('DeliveryProviders', () => {
             deliveryProvider(deliveryProviderId: $deliveryProviderId) {
               _id
               simulatedPrice(currency: "EUR") {
-                _id
                 amount
                 currency
               }

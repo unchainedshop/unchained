@@ -3,7 +3,6 @@ import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
 import { ProductsModule } from '../products-index.js';
 import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
-import { sha256 } from '@unchainedshop/utils';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
@@ -73,12 +72,7 @@ export const configureProductPricesModule = ({
     };
 
     if (normalizedPrice.amount !== undefined && normalizedPrice.amount !== null) {
-      return {
-        _id: await sha256(
-          [product._id, normalizedPrice.countryCode, normalizedPrice.currencyCode].join(''),
-        ),
-        ...normalizedPrice,
-      };
+      return normalizedPrice;
     }
     return null;
   };
@@ -89,17 +83,7 @@ export const configureProductPricesModule = ({
     priceRange: getPriceRange,
 
     async catalogPrices(product) {
-      const prices = (product.commerce && product.commerce.pricing) || [];
-      return await Promise.all(
-        prices.map(async (price) => ({
-          _id: await sha256(
-            [product._id, price.countryCode, price.currencyCode, price.maxQuantity, price.amount].join(
-              '',
-            ),
-          ),
-          ...price,
-        })),
-      );
+      return (product.commerce && product.commerce.pricing) || [];
     },
 
     catalogPriceRange: async (
@@ -130,40 +114,8 @@ export const configureProductPricesModule = ({
       });
 
       return {
-        _id: await sha256(
-          [
-            product._id,
-            Math.random(),
-            minPrice.amount,
-            minPrice.currencyCode,
-            maxPrice.amount,
-            maxPrice.currencyCode,
-          ].join(''),
-        ),
-        minPrice: {
-          _id: await sha256(
-            [
-              product._id,
-              minPrice?.isTaxable,
-              minPrice?.isNetPrice,
-              minPrice?.amount,
-              minPrice?.currencyCode,
-            ].join(''),
-          ),
-          ...minPrice,
-        },
-        maxPrice: {
-          _id: await sha256(
-            [
-              product._id,
-              maxPrice?.isTaxable,
-              maxPrice?.isNetPrice,
-              maxPrice?.amount,
-              maxPrice?.currencyCode,
-            ].join(''),
-          ),
-          ...maxPrice,
-        },
+        minPrice,
+        maxPrice,
       };
     },
 
@@ -186,7 +138,6 @@ export const configureProductPricesModule = ({
             minQuantity: min,
             maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
             price: {
-              _id: await sha256([product._id, priceLevel.amount, currencyCode].join('')),
               isTaxable: !!priceLevel.isTaxable,
               isNetPrice: !!priceLevel.isNetPrice,
               amount: priceLevel.amount,

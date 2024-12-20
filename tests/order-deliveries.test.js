@@ -172,7 +172,6 @@ describe('Order: Deliveries', () => {
                 type
               }
               fee {
-                _id
                 amount
               }
               address {

@@ -20,7 +20,7 @@ export type SortOption = {
   value: SortDirection;
 };
 
-export type Price = { _id?: string; amount: number; currency: string };
+export type Price = { amount: number; currency: string };
 
 export interface PricingCalculation {
   category: string;

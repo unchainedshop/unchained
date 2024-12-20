@@ -1,7 +1,6 @@
 import { Context } from '../../../context.js';
 import { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
 import { PaymentDirector, PaymentPricingDirector } from '@unchainedshop/core';
-import { sha256 } from '@unchainedshop/utils';
 
 export const PaymentProvider = {
   interface(provider: PaymentProviderType) {
@@ -53,7 +52,6 @@ export const PaymentProvider = {
     };
 
     return {
-      _id: await sha256([paymentProvider._id, country, useNetPrice, order ? order._id : ''].join('')),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,
       countryCode: country,

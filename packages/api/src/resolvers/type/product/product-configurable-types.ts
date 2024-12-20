@@ -7,7 +7,6 @@ import {
 } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
-import { sha256 } from '@unchainedshop/utils';
 
 export const ConfigurableProduct = {
   ...Product,
@@ -127,15 +126,6 @@ export const ConfigurableProduct = {
           const unitPrice = pricing.unitPrice({ useNetPrice });
 
           return {
-            _id: await sha256(
-              [
-                proxyProduct._id,
-                countryContext,
-                quantity,
-                useNetPrice,
-                requestContext.userId || 'ANONYMOUS',
-              ].join(''),
-            ),
             ...unitPrice,
             isNetPrice: useNetPrice,
             isTaxable: pricing.taxSum() > 0,
@@ -152,36 +142,9 @@ export const ConfigurableProduct = {
       prices: filteredPrices,
     });
 
-    const minPriceHash = await sha256(
-      [
-        product._id,
-        minPrice?.isTaxable,
-        minPrice?.isNetPrice,
-        minPrice?.amount,
-        minPrice?.currencyCode,
-      ].join(''),
-    );
-
-    const maxPriceHash = await sha256(
-      [
-        product._id,
-        maxPrice?.isTaxable,
-        maxPrice?.isNetPrice,
-        maxPrice?.amount,
-        maxPrice?.currencyCode,
-      ].join(''),
-    );
-
     return {
-      _id: await sha256([product._id, minPriceHash, maxPriceHash].join('')),
-      minPrice: {
-        _id: minPriceHash,
-        ...minPrice,
-      },
-      maxPrice: {
-        _id: maxPriceHash,
-        ...maxPrice,
-      },
+      minPrice,
+      maxPrice,
     };
   },
 };

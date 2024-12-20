@@ -1,7 +1,6 @@
 import { Context } from '../../context.js';
 import { DeliveryProvider as DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { DeliveryDirector, DeliveryError, DeliveryPricingDirector } from '@unchainedshop/core';
-import { sha256 } from '@unchainedshop/utils';
 
 export type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
 
@@ -24,7 +23,6 @@ export interface DeliveryProviderHelperTypes {
       context: any;
     },
     Promise<{
-      _id: string;
       amount: number;
       currencyCode: string;
       countryCode: string;
@@ -84,7 +82,6 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     };
 
     return {
-      _id: await sha256([deliveryProvider._id, country, useNetPrice, order ? order._id : ''].join('')),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,
       countryCode: country,

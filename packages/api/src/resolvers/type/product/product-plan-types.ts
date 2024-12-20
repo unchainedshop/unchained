@@ -5,7 +5,6 @@ import {
 } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
-import { sha256 } from '@unchainedshop/utils';
 
 export const PlanProduct = {
   ...Product,
@@ -56,9 +55,6 @@ export const PlanProduct = {
     const unitPrice = pricing.unitPrice({ useNetPrice });
 
     return {
-      _id: await sha256(
-        [obj._id, countryContext, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''),
-      ),
       ...unitPrice,
       isNetPrice: useNetPrice,
       isTaxable: pricing.taxSum() > 0,

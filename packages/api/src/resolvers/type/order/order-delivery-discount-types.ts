@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
 import { OrderDeliveryDiscount as OrderDeliveryDiscountType } from '@unchainedshop/core-orders';
-import { sha256 } from '@unchainedshop/utils';
 
 export const OrderDeliveryDiscount = {
   _id(obj: OrderDeliveryDiscountType) {
@@ -13,9 +12,8 @@ export const OrderDeliveryDiscount = {
     });
   },
 
-  async total(obj: OrderDeliveryDiscountType) {
+  total(obj: OrderDeliveryDiscountType) {
     return {
-      _id: await sha256([`${obj.item._id}:${obj.discountId}`, obj.amount, obj.currency].join('')),
       amount: obj.amount,
       currency: obj.currency,
     };

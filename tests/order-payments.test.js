@@ -29,7 +29,6 @@ describe('Order: Payments', () => {
                   _id
                 }
                 fee {
-                  _id
                   amount
                 }
               }

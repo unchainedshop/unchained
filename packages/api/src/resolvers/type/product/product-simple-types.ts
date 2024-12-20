@@ -1,5 +1,4 @@
 import { Product, ProductSupply } from '@unchainedshop/core-products';
-import { WarehousingContext, WarehousingDirector } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';

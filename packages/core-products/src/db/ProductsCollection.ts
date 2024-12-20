@@ -53,7 +53,6 @@ export interface ProductBundleItem {
 
 export interface ProductPrice {
   // TODO: Extends Price!
-  _id?: string;
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode?: string;
@@ -63,7 +62,6 @@ export interface ProductPrice {
 }
 
 export interface ProductPriceRange {
-  _id: string;
   minPrice: ProductPrice;
   maxPrice: ProductPrice;
 }

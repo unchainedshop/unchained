@@ -12,7 +12,6 @@ import { Country } from './country-types.js';
 import { Currency } from './currency-types.js';
 import { DeliveryProvider } from './delivery-provider-types.js';
 import { Dimensions } from './dimensions-types.js';
-import { Dispatch } from './dispatch-types.js';
 import { Enrollment } from './enrollment/enrollment-types.js';
 import { EnrollmentDelivery } from './enrollment/enrollment-delivery-types.js';
 import { EnrollmentPayment } from './enrollment/enrollment-payment-types.js';
@@ -57,7 +56,6 @@ import { Quotation } from './quotation-types.js';
 import { Shop } from './shop-types.js';
 import { SimpleProduct } from './product/product-simple-types.js';
 import { TokenizedProduct } from './product/product-tokenized-types.js';
-import { Stock } from './stock-types.js';
 import { User } from './user-types.js';
 import { WebAuthnCredentials } from './webauthn-credentials-types.js';
 import { WarehousingProvider } from './warehousing-provider-types.js';
@@ -84,7 +82,6 @@ const types = {
   Currency,
   DeliveryProvider,
   Dimensions,
-  Dispatch,
   Enrollment,
   EnrollmentDelivery,
   EnrollmentPayment,
@@ -131,7 +128,6 @@ const types = {
   SimpleProduct,
   TokenizedProduct,
   Token,
-  Stock,
   User,
   WebAuthnCredentials,
   WarehousingProvider,
