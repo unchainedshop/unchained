@@ -631,6 +631,9 @@ export const configureUsersModule = async ({
     },
 
     markDeleted: async (userId: string): Promise<User> => {
+      await db.collection('sessions').deleteMany({
+        session: { $regex: `"user":"${userId}"` },
+      });
       const user = await Users.findOneAndUpdate(
         { _id: userId },
         {
@@ -659,9 +662,6 @@ export const configureUsersModule = async ({
     },
 
     deletePermanently: async ({ userId }: { userId: string }): Promise<User> => {
-      await db.collection('sessions').deleteMany({
-        session: { $regex: `"user":"${userId}"` },
-      });
       return Users.findOneAndDelete({ _id: userId });
     },
 

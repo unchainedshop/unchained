@@ -94,9 +94,9 @@ export const configurePaymentCredentialsModule = (
         _id
           ? generateDbFilterById(_id)
           : {
-            userId,
-            paymentProviderId,
-          },
+              userId,
+              paymentProviderId,
+            },
         {
           $setOnInsert: {
             _id: insertedId,
