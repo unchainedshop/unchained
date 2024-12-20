@@ -20,7 +20,7 @@ export async function activateEnrollmentService(this: Modules, enrollment: Enrol
     retries: 0,
     input: {
       reason: 'status_change',
-      locale,
+      locale: locale.baseName,
       template: 'ENROLLMENT_STATUS',
       enrollmentId: updatedEnrollment._id,
     },

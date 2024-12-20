@@ -65,7 +65,7 @@ export async function processQuotationService(
     type: 'MESSAGE',
     retries: 0,
     input: {
-      locale,
+      locale: locale.baseName,
       template: 'QUOTATION_STATUS',
       quotationId: updatedQuotation._id,
     },

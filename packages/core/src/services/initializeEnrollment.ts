@@ -28,7 +28,7 @@ export async function initializeEnrollmentService(
     retries: 0,
     input: {
       reason: params.reason || 'status_change',
-      locale,
+      locale: locale.baseName,
       template: 'ENROLLMENT_STATUS',
       enrollmentId: processedEnrollment._id,
     },

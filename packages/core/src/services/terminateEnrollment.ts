@@ -19,7 +19,7 @@ export async function terminateEnrollmentService(enrollment: Enrollment) {
     retries: 0,
     input: {
       reason: 'status_change',
-      locale,
+      locale: locale.baseName,
       template: 'ENROLLMENT_STATUS',
       enrollmentId: updatedEnrollment._id,
     },
