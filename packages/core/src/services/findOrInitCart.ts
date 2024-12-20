@@ -3,7 +3,7 @@ import { Order } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import { nextUserCartService } from './nextUserCart.js';
 
-export async function cartService(
+export async function findOrInitCartService(
   this: Modules,
   {
     user,
@@ -11,8 +11,8 @@ export async function cartService(
     orderId,
   }: {
     user: User;
+    countryCode: string;
     orderId?: string;
-    countryCode?: string;
   },
 ) {
   if (orderId) {

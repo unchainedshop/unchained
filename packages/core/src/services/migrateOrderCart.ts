@@ -16,11 +16,11 @@ export async function migrateOrderCartsService(
   },
 ) {
   const fromCart = await this.orders.cart({
-    countryContext,
+    countryCode: countryContext,
     userId: fromUserId,
   });
   const toCart = await this.orders.cart({
-    countryContext,
+    countryCode: countryContext,
     userId: toUserId,
   });
 

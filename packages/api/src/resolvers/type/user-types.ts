@@ -176,7 +176,7 @@ export const User: UserHelperTypes = {
     const { modules, countryContext } = context;
     await checkAction(context, viewUserOrders, [user, params]);
     return modules.orders.cart({
-      countryContext: countryContext || user.lastLogin?.countryCode,
+      countryCode: countryContext,
       orderNumber: params.orderNumber,
       userId: user._id,
     });

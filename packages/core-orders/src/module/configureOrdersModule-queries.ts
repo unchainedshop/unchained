@@ -34,15 +34,15 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
 
     cart: async ({
       orderNumber,
-      countryContext,
+      countryCode,
       userId,
     }: {
-      countryContext?: string;
+      countryCode?: string;
       orderNumber?: string;
       userId: string;
     }): Promise<Order> => {
       const selector: mongodb.Filter<Order> = {
-        countryCode: countryContext,
+        countryCode,
         status: { $eq: null },
         userId,
       };

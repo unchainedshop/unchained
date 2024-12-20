@@ -123,6 +123,7 @@ export const ConfigurableProduct = {
           };
 
           const pricing = await services.products.simulateProductPricing(pricingContext);
+          if (!pricing) return null;
           const unitPrice = pricing.unitPrice({ useNetPrice });
 
           return {

@@ -1771,6 +1771,7 @@ describe('Products', () => {
     it('return minimum and maximum simulated price range of a configurable product', async () => {
       const {
         data: { product = {} },
+        ...rest
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query simulatedPriceRange($productId: ID!) {
@@ -1803,6 +1804,7 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
+      console.log(rest);
       expect(product.simulatedPriceRange).toMatchObject({
         minPrice: {
           isTaxable: true,

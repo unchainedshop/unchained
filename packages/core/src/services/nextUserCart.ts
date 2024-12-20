@@ -14,12 +14,12 @@ export async function nextUserCartService(
   }: {
     user: User;
     orderNumber?: string;
-    countryCode?: string;
+    countryCode: string;
     forceCartCreation?: boolean;
   },
 ) {
   const cart = await this.orders.cart({
-    countryContext: countryCode || user.lastLogin?.countryCode,
+    countryCode,
     orderNumber,
     userId: user._id,
   });

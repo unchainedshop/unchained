@@ -19,7 +19,11 @@ export default async function checkoutCart(
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
 
   // Do not check for order status here! The checkout method will act accordingly
-  const order = await services.orders.cart({ orderId: forceOrderId, user });
+  const order = await services.orders.findOrInitCart({
+    orderId: forceOrderId,
+    user,
+    countryCode: context.countryContext,
+  });
   if (!order) throw new OrderNotFoundError({ orderId: forceOrderId });
 
   try {

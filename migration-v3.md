@@ -119,7 +119,7 @@ Remove all imports from `@unchainedshop/types` and find the types in the accordi
 
 `modules.warehousing.estimatedStock` => `services.products.simulatedProductInventory`
 
-`getOrderCart` => `services.orders.cart`
+`getOrderCart` => `services.orders.findOrInitCart`
 
 ## Benchmarks
 

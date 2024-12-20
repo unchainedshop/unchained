@@ -32,7 +32,7 @@ export default async function signPaymentProviderForCheckout(
     if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
   } else {
     const order = await modules.orders.cart({
-      countryContext: context.countryContext || context.user.lastLogin?.countryCode,
+      countryCode: context.countryContext,
       userId,
     });
     if (!order) throw new UserNoCartError({ userId });

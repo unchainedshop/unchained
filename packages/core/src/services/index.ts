@@ -43,7 +43,7 @@ import { ercMetadataService } from './ercMetadata.js';
 import { simulateProductPricingService } from './simulateProductPricing.js';
 import { simulateProductDispatchingService } from './simulateProductDispatching.js';
 import { simulateProductInventoryService } from './simulateProductInventory.js';
-import { cartService } from './cart.js';
+import { findOrInitCartService } from './findOrInitCart.js';
 
 // TODO: Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -93,7 +93,7 @@ export default function initServices(
       >,
       migrateOrderCarts: migrateOrderCartsService as Bound<typeof migrateOrderCartsService>,
       nextUserCart: nextUserCartService as Bound<typeof nextUserCartService>,
-      cart: cartService as Bound<typeof cartService>,
+      findOrInitCart: findOrInitCartService as Bound<typeof findOrInitCartService>,
       initCartProviders: initCartProvidersService as Bound<typeof initCartProvidersService>,
       updateCalculation: updateCalculationService as Bound<typeof updateCalculationService>,
       supportedDeliveryProviders: supportedDeliveryProvidersService as Bound<

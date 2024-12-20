@@ -41,7 +41,11 @@ export default async function addMultipleCartProducts(
     }),
   );
 
-  const order = await services.orders.cart({ orderId, user });
+  const order = await services.orders.findOrInitCart({
+    orderId,
+    user,
+    countryCode: context.countryContext,
+  });
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
