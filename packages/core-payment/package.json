@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-payment",
-  "version": "3.0.0-rc.11",
+  "version": "3.0.0-rc.12",
   "main": "lib/payment-index.js",
   "types": "lib/payment-index.d.ts",
   "type": "module",
@@ -31,9 +31,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-rc.11",
-    "@unchainedshop/logger": "^3.0.0-rc.11",
-    "@unchainedshop/utils": "^3.0.0-rc.11"
+    "@unchainedshop/events": "^3.0.0-rc.12",
+    "@unchainedshop/logger": "^3.0.0-rc.12",
+    "@unchainedshop/utils": "^3.0.0-rc.12"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
