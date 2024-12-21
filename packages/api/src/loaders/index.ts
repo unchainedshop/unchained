@@ -145,9 +145,13 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
 
       const assortmentMediaMap = {};
       for (const assortmentMedia of assortmentMediaItems) {
-        assortmentMediaMap[assortmentMedia._id] = assortmentMedia;
+        if (!assortmentMediaMap[assortmentMedia.assortmentId]) {
+          assortmentMediaMap[assortmentMedia.assortmentId] = [assortmentMedia];
+        } else {
+          assortmentMediaMap[assortmentMedia.assortmentId].push(assortmentMedia);
+        }
       }
-      return queries.map((q) => assortmentMediaMap[q.assortmentId]);
+      return queries.map((q) => assortmentMediaMap[q.assortmentId] || []);
     }),
 
     assortmentLinkLoader: new DataLoader(async (queries) => {
