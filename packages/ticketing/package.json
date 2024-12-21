@@ -39,8 +39,8 @@
     "@unchainedshop/mongodb": "^3.0.0-rc9"
   },
   "peerDependencies": {
-    "@hyperlink/node-apn": "^5.1.4",
-    "express": "^5.0.1"
+    "@hyperlink/node-apn": ">= 5.1",
+    "express": "5.x"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

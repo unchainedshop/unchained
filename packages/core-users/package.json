@@ -40,7 +40,7 @@
     "@unchainedshop/utils": "^3.0.0-rc9"
   },
   "peerDependencies": {
-    "fido2-lib": "^3.5.3"
+    "fido2-lib": ">= 3.5 < 4"
   },
   "peerDependenciesMeta": {
     "fido2-lib": {

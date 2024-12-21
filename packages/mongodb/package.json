@@ -34,9 +34,9 @@
     "@unchainedshop/utils": "^3.0.0-rc9"
   },
   "peerDependencies": {
-    "@mongodb-js/zstd": "^2.0.0",
-    "mongodb": "^6.12.0",
-    "mongodb-memory-server": "^10.1.2"
+    "@mongodb-js/zstd": ">= 2.0 < 3",
+    "mongodb": ">= 6.12 < 7",
+    "mongodb-memory-server": ">= 10.1 < 11"
   },
   "peerDependenciesMeta": {
     "mongodb": {
