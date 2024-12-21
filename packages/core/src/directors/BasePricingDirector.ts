@@ -73,8 +73,8 @@ export const BasePricingDirector = <
       throw new Error('Method not implemented');
     },
 
-    async rebuildCalculation(pricingContext, unchainedAPI) {
-      const context = await director.buildPricingContext(pricingContext, unchainedAPI);
+    async rebuildCalculation(this: typeof director, pricingContext, unchainedAPI) {
+      const context = await this.buildPricingContext(pricingContext, unchainedAPI);
 
       let calculation: Array<Calculation> = [];
 
