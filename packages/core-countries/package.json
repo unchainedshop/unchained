@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-countries",
-  "version": "3.0.0-rc10",
+  "version": "3.0.0-rc11",
   "main": "lib/countries-index.js",
   "types": "lib/countries-index.d.ts",
   "type": "module",
@@ -31,8 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-rc10",
-    "@unchainedshop/utils": "^3.0.0-rc10"
+    "@unchainedshop/events": "^3.0.0-rc11",
+    "@unchainedshop/utils": "^3.0.0-rc11"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

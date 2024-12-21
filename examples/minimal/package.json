@@ -2,7 +2,7 @@
   "name": "@unchainedshop/minimal",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "3.0.0-rc10",
+  "version": "3.0.0-rc11",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -36,8 +36,8 @@
   "dependencies": {
     "@fastify/cookie": "^11.0.1",
     "@fastify/session": "^11.0.2",
-    "@unchainedshop/platform": "^3.0.0-rc10",
-    "@unchainedshop/plugins": "^3.0.0-rc10",
+    "@unchainedshop/platform": "^3.0.0-rc11",
+    "@unchainedshop/plugins": "^3.0.0-rc11",
     "connect-mongo": "^5.1.0",
     "fastify": "^5.2.0"
   },
