@@ -185,10 +185,14 @@ export const FilterDirector: IFilterDirector = {
       values,
       Object.keys(keyToProductIdMap),
     );
-    return filteredKeys.reduce((accumulator, key) => {
+    const result = [];
+    for (const key of filteredKeys) {
       const additionalValues = key === undefined ? allProductIds : keyToProductIdMap[key];
-      return [...accumulator, ...(additionalValues || [])];
-    }, []);
+      if (additionalValues) {
+        result.push(...additionalValues);
+      }
+    }
+    return result;
   },
 
   async productFacetedSearch(
