@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-bookmarks",
-  "version": "3.0.0-rc9",
+  "version": "3.0.0-rc10",
   "main": "lib/bookmarks-index.js",
   "types": "lib/bookmarks-index.d.ts",
   "type": "module",
@@ -31,8 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-rc9",
-    "@unchainedshop/mongodb": "^3.0.0-rc9"
+    "@unchainedshop/events": "^3.0.0-rc10",
+    "@unchainedshop/mongodb": "^3.0.0-rc10"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
