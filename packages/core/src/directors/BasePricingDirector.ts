@@ -74,7 +74,7 @@ export const BasePricingDirector = <
     },
 
     async rebuildCalculation(pricingContext, unchainedAPI) {
-      const context = await this.buildPricingContext(pricingContext, unchainedAPI);
+      const context = await director.buildPricingContext(pricingContext, unchainedAPI);
 
       let calculation: Array<Calculation> = [];
 
@@ -95,6 +95,7 @@ export const BasePricingDirector = <
             });
             const DiscountAdapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
             if (!DiscountAdapter) return null;
+
             const adapter = await DiscountAdapter.actions({
               context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
             });
@@ -115,7 +116,7 @@ export const BasePricingDirector = <
           const adapter = Adapter.actions({
             context,
             calculationSheet: this.calculationSheet(pricingContext, calculation),
-            discounts: discounts.filter(({ configuration }) => configuration !== null),
+            discounts: discounts.filter((d) => d?.configuration !== null),
           });
 
           const nextCalculationResult = await adapter.calculate();
