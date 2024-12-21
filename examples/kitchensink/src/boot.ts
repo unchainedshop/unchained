@@ -1,6 +1,5 @@
 import express from 'express';
 import http from 'node:http';
-import { useExecutionCancellation } from 'graphql-yoga';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/lib/express/index.js';
@@ -34,7 +33,6 @@ const start = async () => {
     modules: { ...defaultModules, ...ticketingModules },
     services: { ...ticketingServices },
     plugins: [
-      useExecutionCancellation(),
       useResponseCache({
         ttl: 0,
         session(req) {

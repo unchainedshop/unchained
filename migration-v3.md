@@ -33,7 +33,6 @@ Add
 
 ```js
 import cookie from "cookie";
-import { useExecutionCancellation } from 'graphql-yoga';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/lib/express/index.js';
@@ -75,7 +74,6 @@ to:
 ```js
 const engine = await startPlatform({
   plugins: [
-    useExecutionCancellation(),
     useResponseCache({
       ttl: 0,
       session(req) {
