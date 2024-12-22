@@ -37,7 +37,9 @@ Removed `@unchainedshop/types`. All types needed are now coming directly from th
 ## Massive Performance Improvements & Experimental Fastify Support
 Queries involving catalog and products are now approximately **3 times faster** due to improved usage of caching, dataloader techniques and less db roundtrips in general.
 
-Checkouts are about **2 times faster**, too. With the new (still experimental) Fastify and Bun support, we have improved basic query response times everywhere by an order of magnitude (checkout the minimal example).
+Checkouts are about **2 times faster**, too.
+
+With the new (still experimental) Fastify and Bun support, we further increased baseline query response times everywhere (checkout the minimal example).
 
 Along the way we thought it would be nice to remove about 100 NPM module dependencies, so we did that, too. Oh my god yes.
 
