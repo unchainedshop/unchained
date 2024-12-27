@@ -106,9 +106,9 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       );
       for (const text of texts) {
         const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[`${locale}:${text.assortmentId}`] = text;
+        textsMap[locale + text.assortmentId] = text;
       }
-      return queries.map((q) => textsMap[`${q.locale.toLowerCase()}:${q.assortmentId}`]);
+      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentId]);
     }),
 
     assortmentMediaTextLoader: new DataLoader(async (queries) => {
@@ -132,9 +132,9 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       );
       for (const text of texts) {
         const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[`${locale}:${text.assortmentMediaId}`] = text;
+        textsMap[locale + text.assortmentMediaId] = text;
       }
-      return queries.map((q) => textsMap[`${q.locale.toLowerCase()}:${q.assortmentMediaId}`]);
+      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentMediaId]);
     }),
 
     assortmentMediasLoader: new DataLoader(async (queries) => {
@@ -259,11 +259,9 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       );
       for (const text of texts) {
         const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[`${locale}:${text.filterId}:${text.filterOptionValue}`] = text;
+        textsMap[locale + text.filterId + text.filterOptionValue] = text;
       }
-      return queries.map(
-        (q) => textsMap[`${q.locale.toLowerCase()}:${q.filterId}:${q.filterOptionValue}`],
-      );
+      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.filterId + q.filterOptionValue]);
     }),
 
     productLoader: new DataLoader(async (queries) => {
@@ -321,9 +319,9 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       );
       for (const text of texts) {
         const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[`${locale}:${text.productId}`] = text;
+        textsMap[locale + text.productId] = text;
       }
-      return queries.map((q) => textsMap[`${q.locale.toLowerCase()}:${q.productId}`]);
+      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productId]);
     }),
 
     productMediaTextLoader: new DataLoader(async (queries) => {
@@ -347,9 +345,9 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       );
       for (const text of texts) {
         const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[`${locale}:${text.productMediaId}`] = text;
+        textsMap[locale + text.productMediaId] = text;
       }
-      return queries.map((q) => textsMap[`${q.locale.toLowerCase()}:${q.productMediaId}`]);
+      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productMediaId]);
     }),
 
     productMediasLoader: new DataLoader(async (queries) => {
