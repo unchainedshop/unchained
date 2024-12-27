@@ -1,6 +1,7 @@
 import { FilterType, Filter, SearchQuery } from '@unchainedshop/core-filters';
 import { Modules } from '../modules.js';
 import { FilterDirector, parseQueryArray } from '../directors/FilterDirector.js';
+import { fastIntersectSet } from '@unchainedshop/utils';
 
 export async function loadFilterOptionsService(
   this: Modules,
@@ -27,7 +28,10 @@ export async function loadFilterOptionsService(
         },
         { modules: this },
       );
-      const filteredProductIdSet = productIdSet.intersection(new Set(filterOptionProductIds));
+
+      const filteredProductIdSet = new Set(
+        fastIntersectSet(productIdSet, new Set(filterOptionProductIds)),
+      );
 
       const normalizedValues = values && this.filters.parse(filter, values, [value]);
       const isSelected = normalizedValues && normalizedValues.indexOf(value) !== -1;

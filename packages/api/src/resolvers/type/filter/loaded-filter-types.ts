@@ -1,6 +1,7 @@
 import { Context } from '../../../context.js';
 import { Filter, SearchQuery } from '@unchainedshop/core-filters';
 import { FilterDirector } from '@unchainedshop/core';
+import { fastIntersectSet } from '@unchainedshop/utils';
 
 export interface LoadedFilterData {
   forceLiveCollection: boolean;
@@ -25,7 +26,7 @@ export const LoadedFilter = {
   ) => {
     const filterActions = await FilterDirector.actions({ searchQuery }, context);
     return filterActions.aggregateProductIds({
-      productIds: Array.from(filteredByOtherFiltersSet.intersection(filteredByThisFilterSet)),
+      productIds: fastIntersectSet(filteredByOtherFiltersSet, filteredByThisFilterSet),
     }).length;
   },
   productsCount: async (
@@ -35,7 +36,7 @@ export const LoadedFilter = {
   ) => {
     const filterActions = await FilterDirector.actions({ searchQuery }, context);
     return filterActions.aggregateProductIds({
-      productIds: Array.from(examinedProductIdSet),
+      productIds: [...examinedProductIdSet],
     }).length;
   },
   options: async (
