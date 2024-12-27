@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, IBaseDirector, fastIntersectSet } from '@unchainedshop/utils';
 import { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.js';
 import {
   Filter,
@@ -234,7 +234,7 @@ export const FilterDirector: IFilterDirector = {
           unchainedAPI,
         );
 
-        return productIdSet.intersection(new Set(filterOptionProductIds));
+        return new Set(fastIntersectSet(productIdSet, new Set(filterOptionProductIds)));
       },
       Promise.resolve(new Set(productIds)),
     );
@@ -259,7 +259,10 @@ export const FilterDirector: IFilterDirector = {
       unchainedAPI,
     );
 
-    const examinedProductIdSet = new Set(allProductIds).intersection(new Set(filteredProductIds));
+    const examinedProductIdSet = new Set(
+      fastIntersectSet(new Set(allProductIds), new Set(filteredProductIds)),
+    );
+
     const values = filterQueryParsed[filter.key];
 
     // The filteredProductIdSet is a set of product id's that:
@@ -282,7 +285,8 @@ export const FilterDirector: IFilterDirector = {
             },
             unchainedAPI,
           );
-          return productIdSet.intersection(new Set(otherFilterProductIds));
+
+          return new Set(fastIntersectSet(productIdSet, new Set(otherFilterProductIds)));
         },
         Promise.resolve(new Set(examinedProductIdSet)),
       );

@@ -24,7 +24,7 @@ export const EventDirector = {
   },
 
   getRegisteredEvents: (): string[] => {
-    return Array.from(RegisteredEventsSet) as string[];
+    return [...RegisteredEventsSet] as string[];
   },
 
   setEmitAdapter: (adapter: EmitAdapter): void => {
