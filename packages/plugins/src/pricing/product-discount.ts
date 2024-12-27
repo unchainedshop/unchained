@@ -66,6 +66,8 @@ const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
 
       calculate: async () => {
         params.discounts.forEach((discount) => {
+          if (!discount) return;
+
           const { configuration } = discount;
 
           const resolvedConfiguration = configuration.customPriceConfigurationResolver
