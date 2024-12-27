@@ -220,5 +220,11 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       const loginResult = await f2l.assertionResult(assertionResponse, assertionExpectations);
       return { userHandle: loginResult?.authnrData?.get('userHandle') };
     },
+    deleteUserWebAuthnCredentials: async (username: string) => {
+      const { deletedCount } = await WebAuthnCredentialsCreationRequests.deleteMany({
+        username,
+      });
+      return deletedCount;
+    },
   };
 };
