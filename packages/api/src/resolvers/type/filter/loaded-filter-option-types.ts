@@ -8,7 +8,7 @@ export const LoadedFilterOption = {
     }
     const filterActions = await FilterDirector.actions({ searchQuery }, context);
     return filterActions.aggregateProductIds({
-      productIds: Array.from(filteredProductIdSet),
+      productIds: [...filteredProductIdSet],
     }).length;
   },
 
