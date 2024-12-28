@@ -63,6 +63,7 @@ import warehousingProviders from './warehousing/warehousingProviders.js';
 import warehousingProvidersCount from './warehousing/warehousingProvidersCount.js';
 import token from './warehousing/token.js';
 import tokens from './warehousing/tokens.js';
+import tokensCount from './warehousing/tokensCount.js';
 import work from './worker/work.js';
 import workQueue from './worker/workQueue.js';
 import workStatistics from './worker/workStatistics.js';
@@ -104,6 +105,7 @@ export default {
   warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(warehousingInterfaces),
   token: acl(actions.viewToken)(token),
   tokens: acl(actions.viewTokens)(tokens),
+  tokensCount: acl(actions.viewTokens)(tokensCount),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
   translatedProductMediaTexts: acl(actions.viewTranslations)(translatedProductMediaTexts),
   translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),

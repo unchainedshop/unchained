@@ -214,6 +214,11 @@ export default [
       tokens(limit: Int = 10, offset: Int = 0): [Token!]!
 
       """
+      Returns total tokens
+      """
+      tokensCount: Int!
+
+      """
       Returns total number of payment providers, optionally filtered by type
       """
       paymentProvidersCount(type: PaymentProviderType): Int! @cacheControl(scope: PRIVATE, maxAge: 0)

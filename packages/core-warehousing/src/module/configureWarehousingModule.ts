@@ -59,6 +59,11 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return TokenSurrogates.find(selector, options).toArray();
     },
 
+    tokensCount: async (): Promise<number> => {
+      const tokenCount = await TokenSurrogates.countDocuments();
+      return tokenCount;
+    },
+
     findTokensForUser: async (
       params: { userId: string } | { walletAddresses: string[] },
       options?: mongodb.FindOptions,
