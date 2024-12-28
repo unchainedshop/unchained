@@ -60,7 +60,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     tokensCount: async (): Promise<number> => {
-      const tokenCount = await TokenSurrogates.countDocuments();
+      const tokenCount = await TokenSurrogates.countDocuments({});
       return tokenCount;
     },
 
