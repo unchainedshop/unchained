@@ -11,6 +11,11 @@ type WarehousingProviderQuery = {
   type?: WarehousingProviderType;
 };
 
+type TokenQuery = {
+  queryString?: string;
+  userId?: string;
+};
+
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
   'WAREHOUSING_PROVIDER_UPDATE',
@@ -22,6 +27,14 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
 export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   const query = type ? { type, deleted: null } : { deleted: null };
   return query;
+};
+export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
+  const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
+  if (queryString) {
+    (selector as any).$text = { $search: queryString };
+  }
+
+  return selector;
 };
 
 export const configureWarehousingModule = async ({ db }: ModuleInput<Record<string, never>>) => {
@@ -56,11 +69,11 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     findTokens: async (selector: any, options?: mongodb.FindOptions): Promise<Array<TokenSurrogate>> => {
-      return TokenSurrogates.find(selector, options).toArray();
+      return TokenSurrogates.find(buildTokenFindSelector(selector), options).toArray();
     },
 
-    tokensCount: async (): Promise<number> => {
-      const tokenCount = await TokenSurrogates.countDocuments({});
+    tokensCount: async (selector: any = {}): Promise<number> => {
+      const tokenCount = await TokenSurrogates.countDocuments(buildTokenFindSelector(selector));
       return tokenCount;
     },
 

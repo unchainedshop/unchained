@@ -4,15 +4,17 @@ import { Context } from '../../../context.js';
 export default async function tokens(
   root: never,
   {
+    queryString = null,
     limit = 10,
     offset = 0,
   }: {
     limit: number;
     offset: number;
+    queryString?: string;
   },
   { modules, userId }: Context,
 ) {
   log(`query tokens`, { userId });
 
-  return modules.warehousing.findTokens({}, { limit, skip: offset });
+  return modules.warehousing.findTokens({ queryString }, { limit, skip: offset });
 }
