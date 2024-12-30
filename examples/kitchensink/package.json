@@ -34,7 +34,7 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@graphql-yoga/plugin-response-cache": "^3.12.6",
+    "@graphql-yoga/plugin-response-cache": "^3.12.8",
     "@unchainedshop/api": "^3.0.0-rc.12",
     "@unchainedshop/core-delivery": "^3.0.0-rc.12",
     "@unchainedshop/core-payment": "^3.0.0-rc.12",
@@ -48,7 +48,7 @@
     "express": "^5.0.1",
     "express-session": "^1.18.1",
     "graphql": "^16.10.0",
-    "graphql-yoga": "^5.10.6",
+    "graphql-yoga": "^5.10.8",
     "nodemailer": "^6.9.16",
     "open": "^10.1.0",
     "passport": "^0.7.0",
