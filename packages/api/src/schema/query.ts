@@ -211,7 +211,12 @@ export default [
       """
       Get all tokens
       """
-      tokens(limit: Int = 10, offset: Int = 0): [Token!]!
+      tokens(queryString: String, limit: Int = 10, offset: Int = 0): [Token!]!
+
+      """
+      Returns total tokens
+      """
+      tokensCount(queryString: String): Int!
 
       """
       Returns total number of payment providers, optionally filtered by type
