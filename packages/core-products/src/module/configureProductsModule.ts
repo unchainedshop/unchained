@@ -13,24 +13,17 @@ import {
   ProductAssignment,
   ProductBundleItem,
   ProductConfiguration,
-  ProductPrice,
-  ProductPriceRange,
   ProductsCollection,
   ProductStatus,
-  ProductText,
   ProductTypes,
 } from '../db/ProductsCollection.js';
-import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
+import { configureProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
-import { configureProductReviewsModule, ProductReviewsModule } from './configureProductReviewsModule.js';
+import { configureProductReviewsModule } from './configureProductReviewsModule.js';
 import { configureProductTextsModule } from './configureProductTextsModule.js';
-import {
-  configureProductVariationsModule,
-  ProductVariationsModule,
-} from './configureProductVariationsModule.js';
+import { configureProductVariationsModule } from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
-import { ProductPriceRate } from '../db/ProductPriceRates.js';
 
 export type ProductQuery = {
   queryString?: string;
@@ -109,209 +102,11 @@ export const buildFindSelector = ({
   return selector;
 };
 
-// TODO: Infer!
-export type ProductsModule = {
-  // Queries
-  findProduct: (params: { productId?: string; slug?: string; sku?: string }) => Promise<Product>;
-
-  findProducts: (
-    params: ProductQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<Product>>;
-
-  findProductIds: (query: ProductQuery) => Promise<Array<string>>;
-
-  count: (query: ProductQuery) => Promise<number>;
-  productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
-
-  isActive: (product: Product) => boolean;
-  isDraft: (product: Product) => boolean;
-
-  normalizedStatus: (product: Product) => ProductStatus;
-
-  proxyAssignments: (
-    product: Product,
-    options: { includeInactive?: boolean },
-  ) => Promise<Array<{ assignment: ProductAssignment; product: Product }>>;
-
-  proxyProducts: (
-    product: Product,
-    vectors: Array<ProductConfiguration>,
-    options: { includeInactive?: boolean },
-  ) => Promise<Array<Product>>;
-
-  resolveOrderableProduct: (
-    product: Product,
-    params: { configuration?: Array<ProductConfiguration> },
-  ) => Promise<Product>;
-
-  prices: {
-    priceRange: (params: { productId: string; prices: Array<ProductPrice> }) => {
-      minPrice: ProductPrice;
-      maxPrice: ProductPrice;
-    };
-    price: (
-      product: Product,
-      params: { country: string; currency?: string; quantity?: number },
-    ) => Promise<ProductPrice>;
-
-    catalogPrices: (product: Product) => Promise<Array<ProductPrice>>;
-    catalogPricesLeveled: (
-      product: Product,
-      params: { currency: string; country: string },
-    ) => Promise<
-      Array<{
-        minQuantity: number;
-        maxQuantity: number;
-        price: ProductPrice;
-      }>
-    >;
-    catalogPriceRange: (
-      product: Product,
-      params: {
-        country: string;
-        currency: string;
-        includeInactive?: boolean;
-        quantity?: number;
-        vectors: Array<ProductConfiguration>;
-      },
-    ) => Promise<ProductPriceRange>;
-
-    rates: {
-      getRate(
-        baseCurrency: {
-          isoCode: string;
-          decimals?: number;
-        },
-        quoteCurrency: {
-          isoCode: string;
-          decimals?: number;
-        },
-        referenceDate?: Date,
-      ): Promise<{ rate: number; expiresAt: Date } | null>;
-      getRateRange(
-        baseCurrency: {
-          isoCode: string;
-          decimals?: number;
-        },
-        quoteCurrency: {
-          isoCode: string;
-          decimals?: number;
-        },
-        referenceDate?: Date,
-      ): Promise<{ min: number; max: number } | null>;
-      updateRates(rates: Array<ProductPriceRate>): Promise<boolean>;
-    };
-  };
-
-  // Product adapter
-
-  // Mutations
-  create: (doc: Product, options?: { autopublish?: boolean }) => Promise<Product>;
-
-  delete: (productId: string) => Promise<number>;
-  firstActiveProductProxy: (productId: string) => Promise<Product>;
-  firstActiveProductBundle: (productId: string) => Promise<Product>;
-  deleteProductPermanently: (
-    params: { productId: string },
-    options?: { keepReviews: boolean },
-  ) => Promise<number>;
-
-  update: (productId: string, doc: mongodb.UpdateFilter<Product>) => Promise<string>;
-
-  publish: (product: Product) => Promise<boolean>;
-  unpublish: (product: Product) => Promise<boolean>;
-
-  /*
-   * Product bundle items
-   */
-
-  bundleItems: {
-    addBundleItem: (productId: string, doc: ProductBundleItem) => Promise<string>;
-    removeBundleItem: (productId: string, index: number) => Promise<ProductBundleItem>;
-  };
-
-  /*
-   * Product assignments
-   */
-
-  assignments: {
-    addProxyAssignment: (
-      productId: string,
-      params: { proxyId: string; vectors: Array<ProductConfiguration> },
-    ) => Promise<string>;
-    removeAssignment: (
-      productId: string,
-      params: { vectors: Array<ProductConfiguration> },
-    ) => Promise<number>;
-  };
-
-  /*
-   * Product sub entities (Media, Variations & Reviews)
-   */
-  media: ProductMediaModule;
-  reviews: ProductReviewsModule;
-  variations: ProductVariationsModule;
-
-  /*
-   * Product search
-   */
-
-  search: {
-    buildActiveStatusFilter: () => mongodb.Filter<Product>;
-    buildActiveDraftStatusFilter: () => mongodb.Filter<Product>;
-    countFilteredProducts: (params: {
-      productIds: Array<string>;
-      productSelector: mongodb.Filter<Product>;
-    }) => Promise<number>;
-    findFilteredProducts: (params: {
-      limit?: number;
-      offset?: number;
-      productIds: Array<string>;
-      productSelector: mongodb.Filter<Product>;
-      sort?: mongodb.FindOptions['sort'];
-    }) => Promise<Array<Product>>;
-  };
-
-  /*
-   * Product texts
-   */
-
-  texts: {
-    // Queries
-    findTexts: (
-      query: mongodb.Filter<ProductText>,
-      options?: mongodb.FindOptions,
-    ) => Promise<Array<ProductText>>;
-
-    findLocalizedText: (params: { productId: string; locale?: string }) => Promise<ProductText>;
-
-    // Mutations
-    updateTexts: (
-      productId: string,
-      texts: Array<Omit<ProductText, 'productId'>>,
-    ) => Promise<Array<ProductText>>;
-
-    makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
-
-    deleteMany: ({
-      productId,
-    }: {
-      productId?: string;
-      excludedProductIds?: string[];
-    }) => Promise<number>;
-  };
-};
-
 export const configureProductsModule = async ({
   db,
   options: productsOptions = {},
   migrationRepository,
-}: ModuleInput<ProductsSettingsOptions>): Promise<ProductsModule> => {
+}: ModuleInput<ProductsSettingsOptions>) => {
   registerEvents(PRODUCT_EVENTS);
   await productsSettings.configureSettings(productsOptions);
 
@@ -332,10 +127,10 @@ export const configureProductsModule = async ({
   const productReviews = await configureProductReviewsModule({ db });
   const productVariations = await configureProductVariationsModule({ db });
 
-  const deleteProductPermanently: ProductsModule['deleteProductPermanently'] = async (
-    { productId },
-    options,
-  ) => {
+  const deleteProductPermanently = async (
+    { productId }: { productId: string },
+    options?: { keepReviews: boolean },
+  ): Promise<number> => {
     const selector: mongodb.Filter<Product> = generateDbFilterById(productId, {
       status: ProductStatus.DELETED,
     });
@@ -352,7 +147,7 @@ export const configureProductsModule = async ({
     return deletedResult.deletedCount;
   };
 
-  const publishProduct: ProductsModule['publish'] = async (product) => {
+  const publishProduct = async (product: Product): Promise<boolean> => {
     if (product.status === InternalProductStatus.DRAFT) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
@@ -370,7 +165,7 @@ export const configureProductsModule = async ({
     return false;
   };
 
-  const unpublishProduct: ProductsModule['unpublish'] = async (product) => {
+  const unpublishProduct = async (product: Product): Promise<boolean> => {
     if (product.status === ProductStatus.ACTIVE) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
@@ -388,11 +183,11 @@ export const configureProductsModule = async ({
     return false;
   };
 
-  const proxyProducts: ProductsModule['proxyProducts'] = async (
-    product,
-    vectors = [],
-    { includeInactive = false } = {},
-  ) => {
+  const proxyProducts = async (
+    product: Product,
+    vectors: Array<ProductConfiguration> = [],
+    { includeInactive = false }: { includeInactive?: boolean } = {},
+  ): Promise<Array<Product>> => {
     const { proxy } = product;
     let filtered = [...(proxy.assignments || [])];
 
@@ -420,7 +215,15 @@ export const configureProductsModule = async ({
 
   return {
     // Queries
-    findProduct: async ({ productId, slug, sku }) => {
+    findProduct: async ({
+      productId,
+      slug,
+      sku,
+    }: {
+      productId?: string;
+      slug?: string;
+      sku?: string;
+    }): Promise<Product> => {
       if (sku) {
         return Products.findOne({ 'warehousing.sku': sku }, { sort: { sequence: 1 } });
       }
@@ -428,7 +231,19 @@ export const configureProductsModule = async ({
       return Products.findOne(selector, {});
     },
 
-    findProducts: async ({ limit, offset, sort, ...query }, options) => {
+    findProducts: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: ProductQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: Array<SortOption>;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<Array<Product>> => {
       const defaultSortOption: Array<SortOption> = [
         { key: 'sequence', value: SortDirection.ASC },
         { key: 'published', value: SortDirection.DESC },
@@ -442,15 +257,15 @@ export const configureProductsModule = async ({
       return products.toArray();
     },
 
-    findProductIds: async (query) => {
+    findProductIds: async (query: ProductQuery): Promise<Array<string>> => {
       return Products.distinct('_id', buildFindSelector(query));
     },
 
-    count: async (query) => {
+    count: async (query: ProductQuery) => {
       return Products.countDocuments(buildFindSelector(query));
     },
 
-    productExists: async ({ productId, slug }) => {
+    productExists: async ({ productId, slug }: { productId?: string; slug?: string }) => {
       const selector: mongodb.Filter<Product> = productId
         ? generateDbFilterById(productId)
         : { slugs: slug };
@@ -461,18 +276,20 @@ export const configureProductsModule = async ({
       return !!productCount;
     },
 
-    isActive: (product) => {
+    isActive: (product: Product) => {
       return product.status === ProductStatus.ACTIVE;
     },
-    isDraft: (product) => {
+    isDraft: (product: Product) => {
       return product.status === ProductStatus.DRAFT || product.status === InternalProductStatus.DRAFT;
     },
-
-    normalizedStatus: (product) => {
+    normalizedStatus: (product: Product): ProductStatus => {
       return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
     },
 
-    proxyAssignments: async (product, { includeInactive = false } = {}) => {
+    proxyAssignments: async (
+      product: Product,
+      { includeInactive = false }: { includeInactive?: boolean } = {},
+    ): Promise<Array<{ assignment: ProductAssignment; product: Product }>> => {
       const assignments = product.proxy?.assignments || [];
 
       const productIds = assignments.map(({ productId }) => productId);
@@ -500,7 +317,10 @@ export const configureProductsModule = async ({
 
     proxyProducts,
 
-    resolveOrderableProduct: async (product, { configuration }) => {
+    resolveOrderableProduct: async (
+      product: Product,
+      { configuration }: { configuration?: Array<ProductConfiguration> },
+    ): Promise<Product> => {
       const productId = product._id as string;
 
       if (product.type === ProductTypes.ConfigurableProduct) {
@@ -532,7 +352,7 @@ export const configureProductsModule = async ({
     prices: configureProductPricesModule({ proxyProducts, db }),
 
     // Mutations
-    create: async ({ type, sequence, ...productData }) => {
+    create: async ({ type, sequence, ...productData }: Product): Promise<Product> => {
       if (productData._id) {
         await deleteProductPermanently(
           {
@@ -557,7 +377,7 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    update: async (productId, doc) => {
+    update: async (productId: string, doc: mongodb.UpdateFilter<Product>): Promise<string> => {
       const updateDoc = doc;
       if (doc.type) {
         updateDoc.type = ProductTypes[doc.type];
@@ -579,13 +399,13 @@ export const configureProductsModule = async ({
 
       return productId;
     },
-    firstActiveProductProxy: async (productId) => {
+    firstActiveProductProxy: async (productId: string): Promise<Product> => {
       return Products.findOne({ 'proxy.assignments.productId': productId });
     },
-    firstActiveProductBundle: async (productId) => {
+    firstActiveProductBundle: async (productId: string): Promise<Product> => {
       return Products.findOne({ 'bundleItems.productId': productId });
     },
-    delete: async (productId) => {
+    delete: async (productId: string) => {
       const product = await Products.findOne(generateDbFilterById(productId), {});
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);
@@ -613,7 +433,10 @@ export const configureProductsModule = async ({
      */
 
     assignments: {
-      addProxyAssignment: async (productId, { proxyId, vectors }) => {
+      addProxyAssignment: async (
+        productId: string,
+        { proxyId, vectors }: { proxyId: string; vectors: Array<ProductConfiguration> },
+      ): Promise<string> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
@@ -637,7 +460,10 @@ export const configureProductsModule = async ({
         return proxyId;
       },
 
-      removeAssignment: async (productId, { vectors }) => {
+      removeAssignment: async (
+        productId: string,
+        { vectors }: { vectors: Array<ProductConfiguration> },
+      ): Promise<number> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
@@ -661,7 +487,7 @@ export const configureProductsModule = async ({
     },
 
     bundleItems: {
-      addBundleItem: async (productId, doc) => {
+      addBundleItem: async (productId: string, doc: ProductBundleItem): Promise<string> => {
         await Products.updateOne(generateDbFilterById(productId), {
           $set: {
             updated: new Date(),
@@ -676,7 +502,7 @@ export const configureProductsModule = async ({
         return productId;
       },
 
-      removeBundleItem: async (productId, index) => {
+      removeBundleItem: async (productId: string, index: number): Promise<ProductBundleItem> => {
         const product = await Products.findOne(generateDbFilterById(productId), {});
 
         const { bundleItems = [] } = product;
@@ -706,19 +532,37 @@ export const configureProductsModule = async ({
     variations: productVariations,
 
     search: {
-      buildActiveDraftStatusFilter: () => ({
+      buildActiveDraftStatusFilter: (): mongodb.Filter<Product> => ({
         status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
       }),
-      buildActiveStatusFilter: () => ({
+      buildActiveStatusFilter: (): mongodb.Filter<Product> => ({
         status: { $in: [ProductStatus.ACTIVE] },
       }),
-      countFilteredProducts: async ({ productIds, productSelector }) => {
+      countFilteredProducts: async ({
+        productIds,
+        productSelector,
+      }: {
+        productIds: Array<string>;
+        productSelector: mongodb.Filter<Product>;
+      }): Promise<number> => {
         return Products.countDocuments({
           ...productSelector,
           _id: { $in: productIds },
         });
       },
-      findFilteredProducts: async ({ limit, offset, productIds, productSelector, sort }) => {
+      findFilteredProducts: async ({
+        limit,
+        offset,
+        productIds,
+        productSelector,
+        sort,
+      }: {
+        limit?: number;
+        offset?: number;
+        productIds: Array<string>;
+        productSelector: mongodb.Filter<Product>;
+        sort?: mongodb.FindOptions['sort'];
+      }): Promise<Array<Product>> => {
         return findPreservingIds(Products)(productSelector, productIds, {
           skip: offset,
           limit,
@@ -730,3 +574,5 @@ export const configureProductsModule = async ({
     texts: productTexts,
   };
 };
+
+export type ProductsModule = Awaited<ReturnType<typeof configureProductsModule>>;

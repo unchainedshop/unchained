@@ -21,8 +21,11 @@ export interface ProductVariationHelperTypes {
   texts: HelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
 }
 export const ProductVariation: ProductVariationHelperTypes = {
-  options: (obj, _, { modules }) => {
-    return (obj.options || []).map((option) => modules.products.variations.option(obj, option));
+  options: (obj) => {
+    return (obj.options || []).map((option) => ({
+      _id: obj._id,
+      productVariationOption: option,
+    }));
   },
 
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {

@@ -1,20 +1,14 @@
 import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection.js';
 
-export interface AppleTransactionsModule {
-  findTransactionById: (transactionIdentifier: string) => Promise<AppleTransaction>;
-
-  createTransaction: (doc: AppleTransaction) => Promise<string | null>;
-}
-
-export const configureAppleTransactionsModule = async ({ db }): Promise<AppleTransactionsModule> => {
+export const configureAppleTransactionsModule = async ({ db }) => {
   const AppleTransactions = await AppleTransactionsCollection(db);
 
   return {
-    findTransactionById: async (transactionIdentifier) => {
+    findTransactionById: async (transactionIdentifier: string): Promise<AppleTransaction> => {
       return AppleTransactions.findOne({ _id: transactionIdentifier });
     },
 
-    createTransaction: async (doc) => {
+    createTransaction: async (doc: AppleTransaction) => {
       await AppleTransactions.insertOne({
         ...doc,
         created: new Date(),
@@ -23,3 +17,5 @@ export const configureAppleTransactionsModule = async ({ db }): Promise<AppleTra
     },
   };
 };
+
+export type AppleTransactionsModule = Awaited<ReturnType<typeof configureAppleTransactionsModule>>;

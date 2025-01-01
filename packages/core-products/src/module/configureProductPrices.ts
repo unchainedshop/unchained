@@ -1,8 +1,12 @@
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
-import { ProductsModule } from '../products-index.js';
-import { Product, ProductConfiguration } from '../db/ProductsCollection.js';
+import {
+  Product,
+  ProductConfiguration,
+  ProductPrice,
+  ProductPriceRange,
+} from '../db/ProductsCollection.js';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
@@ -49,11 +53,15 @@ export const configureProductPricesModule = ({
     options: { includeInactive?: boolean },
   ) => Promise<Array<Product>>;
   db: any;
-}): ProductsModule['prices'] => {
-  const catalogPrice: ProductsModule['prices']['price'] = async (
-    product,
-    { country: countryCode, currency: currencyCode, quantity = 1 },
-  ) => {
+}) => {
+  const catalogPrice = async (
+    product: Product,
+    {
+      country: countryCode,
+      currency: currencyCode,
+      quantity = 1,
+    }: { country: string; currency?: string; quantity?: number },
+  ): Promise<ProductPrice> => {
     const pricing = getPriceLevels({
       product,
       currencyCode,
@@ -82,14 +90,26 @@ export const configureProductPricesModule = ({
 
     priceRange: getPriceRange,
 
-    async catalogPrices(product) {
+    async catalogPrices(product: Product): Promise<Array<ProductPrice>> {
       return (product.commerce && product.commerce.pricing) || [];
     },
 
     catalogPriceRange: async (
-      product,
-      { quantity = 0, vectors = [], includeInactive = false, country, currency },
-    ) => {
+      product: Product,
+      {
+        quantity = 0,
+        vectors = [],
+        includeInactive = false,
+        country,
+        currency,
+      }: {
+        country: string;
+        currency: string;
+        includeInactive?: boolean;
+        quantity?: number;
+        vectors: Array<ProductConfiguration>;
+      },
+    ): Promise<ProductPriceRange> => {
       const products = await proxyProducts(product, vectors, {
         includeInactive,
       });
@@ -119,7 +139,16 @@ export const configureProductPricesModule = ({
       };
     },
 
-    catalogPricesLeveled: async (product, { currency: currencyCode, country: countryCode }) => {
+    catalogPricesLeveled: async (
+      product: Product,
+      { currency: currencyCode, country: countryCode }: { currency: string; country: string },
+    ): Promise<
+      Array<{
+        minQuantity: number;
+        maxQuantity: number;
+        price: ProductPrice;
+      }>
+    > => {
       let previousMax = null;
 
       const filteredAndSortedPriceLevels = getPriceLevels({
@@ -149,7 +178,17 @@ export const configureProductPricesModule = ({
     },
 
     rates: {
-      getRate: async (baseCurrency, quoteCurrency, referenceDate = new Date()) => {
+      getRate: async (
+        baseCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        quoteCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        referenceDate: Date = new Date(),
+      ): Promise<{ rate: number; expiresAt: Date } | null> => {
         const priceRates = await (await ProductPriceRates(db)).ProductRates;
         const mostRecentCurrencyRate = await priceRates.findOne(
           {
@@ -173,7 +212,17 @@ export const configureProductPricesModule = ({
         const rate = normalizeRate(baseCurrency, quoteCurrency, mostRecentCurrencyRate);
         return { rate, expiresAt: mostRecentCurrencyRate.expiresAt };
       },
-      getRateRange: async (baseCurrency, quoteCurrency, referenceDate = new Date()) => {
+      getRateRange: async (
+        baseCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        quoteCurrency: {
+          isoCode: string;
+          decimals?: number;
+        },
+        referenceDate: Date = new Date(),
+      ): Promise<{ min: number; max: number } | null> => {
         const priceRates = await (await ProductPriceRates(db)).ProductRates;
         const rates = await priceRates
           .find({
@@ -204,7 +253,7 @@ export const configureProductPricesModule = ({
           {} as { min: number; max: number },
         );
       },
-      updateRates: async (rates) => {
+      updateRates: async (rates: Array<ProductPriceRate>): Promise<boolean> => {
         const priceRates = await ProductPriceRates(db);
         try {
           if (rates?.length) {

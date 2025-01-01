@@ -7,7 +7,6 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
-import { ProductsModule } from '../products-index.js';
 import { Product, ProductText } from '../db/ProductsCollection.js';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
@@ -18,10 +17,18 @@ export const configureProductTextsModule = ({
 }: {
   Products: mongodb.Collection<Product>;
   ProductTexts: mongodb.Collection<ProductText>;
-}): ProductsModule['texts'] => {
+}) => {
   registerEvents(PRODUCT_TEXT_EVENTS);
 
-  const makeSlug = async ({ slug, title, productId }) => {
+  const makeSlug = async ({
+    slug,
+    title,
+    productId,
+  }: {
+    slug?: string;
+    title: string;
+    productId: string;
+  }): Promise<string> => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
       return (
         (await ProductTexts.countDocuments(
@@ -116,13 +123,22 @@ export const configureProductTextsModule = ({
 
   return {
     // Queries
-    findTexts: async (selector, options) => {
-      const texts = ProductTexts.find(selector, options);
+    findTexts: async (
+      query: mongodb.Filter<ProductText>,
+      options?: mongodb.FindOptions,
+    ): Promise<Array<ProductText>> => {
+      const texts = ProductTexts.find(query, options);
 
       return texts.toArray();
     },
 
-    findLocalizedText: async ({ productId, locale }) => {
+    findLocalizedText: async ({
+      productId,
+      locale,
+    }: {
+      productId: string;
+      locale?: string;
+    }): Promise<ProductText> => {
       const parsedLocale = new Intl.Locale(locale);
 
       const text = await findLocalizedText<ProductText>(ProductTexts, { productId }, parsedLocale);
@@ -131,7 +147,10 @@ export const configureProductTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (productId, texts) => {
+    updateTexts: async (
+      productId: string,
+      texts: Array<Omit<ProductText, 'productId'>>,
+    ): Promise<Array<ProductText>> => {
       const productTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
       );
@@ -140,7 +159,13 @@ export const configureProductTextsModule = ({
 
     makeSlug,
 
-    deleteMany: async ({ productId, excludedProductIds }) => {
+    deleteMany: async ({
+      productId,
+      excludedProductIds,
+    }: {
+      productId?: string;
+      excludedProductIds?: string[];
+    }): Promise<number> => {
       const selector: mongodb.Filter<ProductText> = {};
       if (productId) {
         selector.productId = productId;

@@ -36,10 +36,10 @@ export const ZombieKillerWorker: IWorkerAdapter<
       });
 
       // Remove unreferenced assortment entities
-      const assortments = await modules.assortments.findAssortments(
-        { includeInactive: true, includeLeaves: true },
-        { projection: { _id: 1 } },
-      );
+      const assortments = await modules.assortments.findAssortments({
+        includeInactive: true,
+        includeLeaves: true,
+      });
       const assortmentIds = assortments.map((a) => a._id);
       const deletedAssortmentTextsCount = await modules.assortments.texts.deleteMany({
         excludedAssortmentIds: assortmentIds,

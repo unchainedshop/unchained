@@ -103,7 +103,7 @@ export const configureCountriesModule = async ({
       return country.isoCode === systemLocale.region;
     },
 
-    create: async (doc: Partial<Country>) => {
+    create: async (doc: Country) => {
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const { insertedId: countryId } = await Countries.insertOne({
         _id: generateDbObjectId(),
@@ -142,4 +142,4 @@ export const configureCountriesModule = async ({
   };
 };
 
-export type CountriesModules = Awaited<ReturnType<typeof configureCountriesModule>>;
+export type CountriesModule = Awaited<ReturnType<typeof configureCountriesModule>>;

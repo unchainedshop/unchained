@@ -98,11 +98,12 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       return mediaList.toArray();
     },
 
-    create: async (
-      doc: Partial<AssortmentMediaType> & { assortmentId: string; mediaId: string },
-    ): Promise<AssortmentMediaType> => {
-      let { sortKey } = doc;
-
+    create: async ({
+      sortKey = null,
+      tags = [],
+      ...doc
+    }: Omit<AssortmentMediaType, 'sortKey' | 'tags'> &
+      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags'>>): Promise<AssortmentMediaType> => {
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentMedia = (await AssortmentMedia.findOne(
@@ -119,7 +120,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       const { insertedId: assortmentMediaId } = await AssortmentMedia.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
-        tags: [],
+        tags,
         ...doc,
         sortKey,
       });

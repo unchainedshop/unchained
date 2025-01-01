@@ -1,38 +1,14 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions.js';
 
-export interface CryptopayModule {
-  getWalletAddress: (addressId: string) => Promise<CryptopayTransaction>;
-  getWalletAddressesByOrderPaymentId: (orderPaymentId: string) => Promise<CryptopayTransaction[]>;
-  updateMostRecentBlock: (currency: string, blockHeight: number) => Promise<void>;
-  updateWalletAddress: (walletData: {
-    addressId: string;
-    blockHeight: number;
-    amount: string;
-    contract: string;
-    currency: string;
-    decimals: number;
-  }) => Promise<CryptopayTransaction>;
-  mapOrderPaymentToWalletAddress: (walletData: {
-    addressId: string;
-    contract: string;
-    currency: string;
-    orderPaymentId: string;
-  }) => Promise<CryptopayTransaction>;
-  getNextDerivationNumber: (currency: string) => Promise<number>;
-}
-
-export const configureCryptopayModule = ({ db }): CryptopayModule => {
+export const configureCryptopayModule = ({ db }) => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
-  const getWalletAddress: CryptopayModule['getWalletAddress'] = async (addressId) => {
+  const getWalletAddress = async (addressId: string): Promise<CryptopayTransaction> => {
     return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
-  const updateMostRecentBlock: CryptopayModule['updateMostRecentBlock'] = async (
-    currency,
-    blockHeight,
-  ) => {
+  const updateMostRecentBlock = async (currency: string, blockHeight: number): Promise<void> => {
     await CryptoTransactions.updateMany(
       {
         currency,
@@ -45,12 +21,17 @@ export const configureCryptopayModule = ({ db }): CryptopayModule => {
     );
   };
 
-  const mapOrderPaymentToWalletAddress: CryptopayModule['mapOrderPaymentToWalletAddress'] = async ({
+  const mapOrderPaymentToWalletAddress = async ({
     addressId,
     contract,
     currency,
     orderPaymentId,
-  }) => {
+  }: {
+    addressId: string;
+    contract: string;
+    currency: string;
+    orderPaymentId: string;
+  }): Promise<CryptopayTransaction> => {
     await CryptoTransactions.updateOne(
       {
         _id: addressId.toLowerCase(),
@@ -77,25 +58,33 @@ export const configureCryptopayModule = ({ db }): CryptopayModule => {
     return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
-  const getNextDerivationNumber: CryptopayModule['getNextDerivationNumber'] = async (currency) => {
+  const getNextDerivationNumber = async (currency: string): Promise<number> => {
     return (await CryptoTransactions.countDocuments({ currency })) + 1;
   };
 
-  const getWalletAddressesByOrderPaymentId: CryptopayModule['getWalletAddressesByOrderPaymentId'] =
-    async (orderPaymentId) => {
-      return CryptoTransactions.find({
-        orderPaymentId,
-      }).toArray();
-    };
+  const getWalletAddressesByOrderPaymentId = async (
+    orderPaymentId: string,
+  ): Promise<CryptopayTransaction[]> => {
+    return CryptoTransactions.find({
+      orderPaymentId,
+    }).toArray();
+  };
 
-  const updateWalletAddress: CryptopayModule['updateWalletAddress'] = async ({
+  const updateWalletAddress = async ({
     addressId,
     blockHeight,
     amount,
     contract,
     currency,
     decimals,
-  }) => {
+  }: {
+    addressId: string;
+    blockHeight: number;
+    amount: string;
+    contract: string;
+    currency: string;
+    decimals: number;
+  }): Promise<CryptopayTransaction> => {
     await CryptoTransactions.updateOne(
       {
         _id: addressId.toLowerCase(),
@@ -130,3 +119,5 @@ export const configureCryptopayModule = ({ db }): CryptopayModule => {
     getWalletAddressesByOrderPaymentId,
   };
 };
+
+export type CryptopayModule = ReturnType<typeof configureCryptopayModule>;

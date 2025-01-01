@@ -14,62 +14,12 @@ import {
   ProductVote,
 } from '../db/ProductReviewsCollection.js';
 
-export const ProductReviewVoteTypes = {
-  UPVOTE: 'UPVOTE',
-  DOWNVOTE: 'DOWNVOTE',
-  REPORT: 'REPORT',
-};
-
 export type ProductReviewQuery = {
   productId?: string;
   authorId?: string;
   queryString?: string;
   created?: { end?: Date; start?: Date };
   updated?: { end?: Date; start?: Date };
-};
-
-export type ProductReviewsModule = {
-  // Queries
-  findProductReview: (query: { productReviewId: string }) => Promise<ProductReview>;
-
-  findProductReviews: (
-    query: ProductReviewQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-  ) => Promise<Array<ProductReview>>;
-
-  count: (query: ProductReviewQuery) => Promise<number>;
-  reviewExists: (query: { productReviewId: string }) => Promise<boolean>;
-
-  // Mutations
-  create: (doc: ProductReview) => Promise<ProductReview>;
-
-  delete: (productPreviewId: string) => Promise<number>;
-
-  deleteMany: (selector: mongodb.Filter<ProductReview>) => Promise<number>;
-
-  update: (productReviewId: string, doc: ProductReview) => Promise<ProductReview>;
-
-  /*
-   * Product review votes
-   */
-
-  votes: {
-    // Queries
-    userIdsThatVoted: (
-      productReview: ProductReview,
-      query: { type: ProductReviewVoteType },
-    ) => Array<string>;
-
-    ownVotes: (productReview: ProductReview, query: { userId: string }) => Array<ProductVote>;
-
-    // Mutations
-    addVote: (productReview: ProductReview, doc: ProductVote) => Promise<ProductReview>;
-
-    removeVote: (productReviewId: string, doc: ProductVote) => Promise<ProductReview>;
-  };
 };
 
 const PRODUCT_REVIEW_EVENTS = [
@@ -111,18 +61,16 @@ const buildFindSelector = ({
   return selector;
 };
 
-const userIdsThatVoted: ProductReviewsModule['votes']['userIdsThatVoted'] = (
-  productReview,
-  { type = ProductReviewVoteTypes.UPVOTE },
-) => {
+const userIdsThatVoted = (
+  productReview: ProductReview,
+  { type = ProductReviewVoteType.UPVOTE }: { type: ProductReviewVoteType },
+): Array<string> => {
   return (productReview.votes || [])
     .filter(({ type: currentType }) => type === currentType)
     .map(({ userId }) => userId);
 };
 
-export const configureProductReviewsModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<ProductReviewsModule> => {
+export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(PRODUCT_REVIEW_EVENTS);
 
   const { ProductReviews } = await ProductReviewsCollection(db);
@@ -137,10 +85,22 @@ export const configureProductReviewsModule = async ({
 
   return {
     // Queries
-    findProductReview: async ({ productReviewId }) =>
-      ProductReviews.findOne(generateDbFilterById(productReviewId), {}),
+    findProductReview: async ({
+      productReviewId,
+    }: {
+      productReviewId: string;
+    }): Promise<ProductReview> => ProductReviews.findOne(generateDbFilterById(productReviewId), {}),
 
-    findProductReviews: async ({ offset, limit, sort, ...query }) => {
+    findProductReviews: async ({
+      offset,
+      limit,
+      sort,
+      ...query
+    }: ProductReviewQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    }): Promise<Array<ProductReview>> => {
       const reviewsList = ProductReviews.find(buildFindSelector(query), {
         skip: offset,
         limit,
@@ -152,11 +112,11 @@ export const configureProductReviewsModule = async ({
       return reviewsList.toArray();
     },
 
-    count: async (query) => {
+    count: async (query: ProductReviewQuery): Promise<number> => {
       return ProductReviews.countDocuments(buildFindSelector(query));
     },
 
-    reviewExists: async ({ productReviewId }) => {
+    reviewExists: async ({ productReviewId }: { productReviewId: string }): Promise<boolean> => {
       const productReviewCount = await ProductReviews.countDocuments(
         generateDbFilterById(productReviewId, { deleted: null }),
         { limit: 1 },
@@ -166,7 +126,7 @@ export const configureProductReviewsModule = async ({
     },
 
     // Mutations
-    create: async (doc) => {
+    create: async (doc: ProductReview): Promise<ProductReview> => {
       const { insertedId: productReviewId } = await ProductReviews.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -182,7 +142,7 @@ export const configureProductReviewsModule = async ({
       return productReview;
     },
 
-    delete: async (productReviewId) => {
+    delete: async (productReviewId: string): Promise<number> => {
       const { modifiedCount: deletedCount } = await ProductReviews.updateOne(
         generateDbFilterById(productReviewId),
         {
@@ -199,7 +159,7 @@ export const configureProductReviewsModule = async ({
       return deletedCount;
     },
 
-    deleteMany: async (selector) => {
+    deleteMany: async (selector: mongodb.Filter<ProductReview>): Promise<number> => {
       const productReviews = await ProductReviews.find(selector, {
         projection: { _id: 1 },
       }).toArray();
@@ -217,7 +177,7 @@ export const configureProductReviewsModule = async ({
       return deletionResult.deletedCount;
     },
 
-    update: async (productReviewId, doc) => {
+    update: async (productReviewId: string, doc: Partial<ProductReview>): Promise<ProductReview> => {
       const productReview = await ProductReviews.findOneAndUpdate(
         generateDbFilterById(productReviewId),
         {
@@ -236,31 +196,34 @@ export const configureProductReviewsModule = async ({
     votes: {
       userIdsThatVoted,
 
-      ownVotes: (productReview, { userId: ownUserId }) => {
+      ownVotes: (
+        productReview: ProductReview,
+        { userId: ownUserId }: { userId: string },
+      ): Array<ProductVote> => {
         return (productReview.votes || []).filter(({ userId }) => userId === ownUserId);
       },
 
       addVote: async (
-        productReview,
-        { userId, type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType, meta },
-      ) => {
+        productReview: ProductReview,
+        { userId, type = ProductReviewVoteType.UPVOTE as ProductReviewVoteType, meta }: ProductVote,
+      ): Promise<ProductReview> => {
         if (!userIdsThatVoted(productReview, { type }).includes(userId)) {
           const selector = generateDbFilterById(productReview._id, {
             deleted: null,
           });
 
-          if (type === ProductReviewVoteTypes.UPVOTE) {
+          if (type === ProductReviewVoteType.UPVOTE) {
             // if this is an upvote, remove the downvote first
             await removeVote(selector, {
               userId,
-              type: ProductReviewVoteTypes.DOWNVOTE as ProductReviewVoteType,
+              type: ProductReviewVoteType.DOWNVOTE as ProductReviewVoteType,
             });
           }
-          if (type === ProductReviewVoteTypes.DOWNVOTE) {
+          if (type === ProductReviewVoteType.DOWNVOTE) {
             // if this is a downvote, remove the upvote first
             await removeVote(selector, {
               userId,
-              type: ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType,
+              type: ProductReviewVoteType.UPVOTE as ProductReviewVoteType,
             });
           }
 
@@ -290,8 +253,8 @@ export const configureProductReviewsModule = async ({
       },
 
       removeVote: async (
-        productReviewId,
-        { userId, type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType },
+        productReviewId: string,
+        { userId, type = ProductReviewVoteType.UPVOTE as ProductReviewVoteType }: ProductVote,
       ) => {
         const selector = generateDbFilterById(productReviewId, {
           deleted: null,

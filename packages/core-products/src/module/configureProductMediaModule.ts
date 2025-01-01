@@ -8,58 +8,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { ProductMedia, ProductMediaCollection, ProductMediaText } from '../db/ProductMediaCollection.js';
 
-export type ProductMediaModule = {
-  // Queries
-  findProductMedia: (params: { productMediaId: string }) => Promise<ProductMedia>;
-
-  findProductMedias: (
-    params: {
-      productId?: mongodb.Filter<ProductMedia>['assortmentId'];
-      limit?: number;
-      offset?: number;
-      tags?: Array<string>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<ProductMedia>>;
-
-  // Mutations
-  create: (data: { productId: string; mediaId: string }) => Promise<ProductMedia>;
-
-  delete: (productMediaId: string) => Promise<number>;
-  deleteMediaFiles: (params: {
-    productId?: string;
-    excludedProductIds?: Array<string>;
-    excludedProductMediaIds?: Array<string>;
-  }) => Promise<number>;
-
-  update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;
-  updateManualOrder: (params: {
-    sortKeys: Array<{
-      productMediaId: string;
-      sortKey: number;
-    }>;
-  }) => Promise<Array<ProductMedia>>;
-
-  texts: {
-    // Queries
-    findMediaTexts: (
-      query: mongodb.Filter<ProductMediaText>,
-      options?: mongodb.FindOptions,
-    ) => Promise<Array<ProductMediaText>>;
-
-    findLocalizedMediaText: (query: {
-      productMediaId: string;
-      locale: string;
-    }) => Promise<ProductMediaText>;
-
-    // Mutations
-    updateMediaTexts: (
-      productMediaId: string,
-      texts: Array<Omit<ProductMediaText, 'productMediaId'>>,
-    ) => Promise<Array<ProductMediaText>>;
-  };
-};
-
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',
   'PRODUCT_REMOVE_MEDIA',
@@ -67,9 +15,7 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
 
-export const configureProductMediaModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<ProductMediaModule> => {
+export const configureProductMediaModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(PRODUCT_MEDIA_EVENTS);
 
   const { ProductMedias, ProductMediaTexts } = await ProductMediaCollection(db);
@@ -114,11 +60,24 @@ export const configureProductMediaModule = async ({
 
   return {
     // Queries
-    findProductMedia: async ({ productMediaId }) => {
+    findProductMedia: async ({ productMediaId }: { productMediaId: string }): Promise<ProductMedia> => {
       return ProductMedias.findOne(generateDbFilterById(productMediaId), {});
     },
 
-    findProductMedias: async ({ productId, tags, offset, limit }, options) => {
+    findProductMedias: async (
+      {
+        productId,
+        tags,
+        offset,
+        limit,
+      }: {
+        productId?: mongodb.Filter<ProductMedia>['assortmentId'];
+        limit?: number;
+        offset?: number;
+        tags?: Array<string>;
+      },
+      options?: mongodb.FindOptions<ProductMedia>,
+    ): Promise<Array<ProductMedia>> => {
       const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
       if (tags?.length > 0) {
         selector.tags = { $all: tags };
@@ -135,9 +94,11 @@ export const configureProductMediaModule = async ({
     },
 
     // Mutations
-    create: async (doc: ProductMedia) => {
-      let { sortKey } = doc;
-
+    create: async ({
+      sortKey,
+      ...doc
+    }: Omit<ProductMedia, 'sortKey' | 'tags'> &
+      Partial<Pick<ProductMedia, 'sortKey' | 'tags'>>): Promise<ProductMedia> => {
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastProductMedia = (await ProductMedias.findOne(
@@ -168,7 +129,7 @@ export const configureProductMediaModule = async ({
       return productMedia;
     },
 
-    delete: async (productMediaId) => {
+    delete: async (productMediaId: string) => {
       const selector = generateDbFilterById(productMediaId);
 
       await ProductMediaTexts.deleteMany({ productMediaId });
@@ -182,7 +143,15 @@ export const configureProductMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({ productId, excludedProductIds, excludedProductMediaIds }) => {
+    deleteMediaFiles: async ({
+      productId,
+      excludedProductIds,
+      excludedProductMediaIds,
+    }: {
+      productId?: string;
+      excludedProductIds?: Array<string>;
+      excludedProductMediaIds?: Array<string>;
+    }): Promise<number> => {
       const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
 
       if (!productId && excludedProductIds) {
@@ -211,13 +180,20 @@ export const configureProductMediaModule = async ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (productMediaId, doc) => {
+    update: async (productMediaId: string, doc: Partial<ProductMedia>): Promise<ProductMedia> => {
       const selector = generateDbFilterById(productMediaId);
       const modifier = { $set: doc };
       return ProductMedias.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
     },
 
-    updateManualOrder: async ({ sortKeys }) => {
+    updateManualOrder: async ({
+      sortKeys,
+    }: {
+      sortKeys: Array<{
+        productMediaId: string;
+        sortKey: number;
+      }>;
+    }): Promise<Array<ProductMedia>> => {
       const changedProductMediaIds = await Promise.all(
         sortKeys.map(async ({ productMediaId, sortKey }) => {
           await ProductMedias.updateOne(generateDbFilterById(productMediaId), {
@@ -249,11 +225,20 @@ export const configureProductMediaModule = async ({
 
     texts: {
       // Queries
-      findMediaTexts: async ({ productMediaId }, options) => {
+      findMediaTexts: async (
+        { productMediaId }: mongodb.Filter<ProductMediaText>,
+        options?: mongodb.FindOptions,
+      ): Promise<Array<ProductMediaText>> => {
         return ProductMediaTexts.find({ productMediaId }, options).toArray();
       },
 
-      findLocalizedMediaText: async ({ productMediaId, locale }) => {
+      findLocalizedMediaText: async ({
+        productMediaId,
+        locale,
+      }: {
+        productMediaId: string;
+        locale: string;
+      }): Promise<ProductMediaText> => {
         const parsedLocale = new Intl.Locale(locale);
 
         const text = await findLocalizedText<ProductMediaText>(
@@ -266,7 +251,10 @@ export const configureProductMediaModule = async ({
       },
 
       // Mutations
-      updateMediaTexts: async (productMediaId, texts) => {
+      updateMediaTexts: async (
+        productMediaId: string,
+        texts: Array<Omit<ProductMediaText, 'productMediaId'>>,
+      ): Promise<Array<ProductMediaText>> => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...localizations }) =>
             upsertLocalizedText(productMediaId, locale, localizations),

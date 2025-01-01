@@ -1,9 +1,12 @@
-import { mongodb } from '@unchainedshop/mongodb';
-
-import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  generateDbFilterById,
+  buildSortOptions,
+  generateDbObjectId,
+  ModuleInput,
+} from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
-import { ModuleInput } from '@unchainedshop/mongodb';
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
 
@@ -27,40 +30,16 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
   return selector;
 };
 
-export interface EventsModule {
-  findEvent: (
-    params: mongodb.Filter<Event> & { eventId: string },
-    options?: mongodb.FindOptions,
-  ) => Promise<Event>;
-
-  findEvents: (
-    params: EventQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<Event>>;
-
-  type: (event: Event) => string;
-  create: (doc: Event) => Promise<string | null>;
-
-  count: (query: EventQuery) => Promise<number>;
-  getReport: (params?: { dateRange?: DateFilterInput; types?: string[] }) => Promise<EventReport[]>;
-}
-
-export const configureEventsModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<EventsModule> => {
+export const configureEventsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   const Events = await EventsCollection(db);
 
-  const create = async (doc) => {
+  const create = async (doc: Event) => {
     const result = await Events.insertOne({
       _id: generateDbObjectId(),
       created: new Date(),
       ...doc,
     });
-    return result.insertedId as string;
+    return result.insertedId;
   };
 
   await configureEventHistoryAdapter(create);
@@ -68,12 +47,24 @@ export const configureEventsModule = async ({
   return {
     create,
 
-    findEvent: async ({ eventId, ...rest }, options) => {
+    findEvent: async (
+      { eventId, ...rest }: mongodb.Filter<Event> & { eventId: string },
+      options?: mongodb.FindOptions,
+    ): Promise<Event> => {
       const selector = eventId ? generateDbFilterById<Event>(eventId) : rest;
       return Events.findOne(selector, options);
     },
 
-    findEvents: async ({ limit, offset, sort, ...query }) => {
+    findEvents: async ({
+      limit,
+      offset,
+      sort,
+      ...query
+    }: EventQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    }): Promise<Array<Event>> => {
       const defaultSort = [{ key: 'created', value: SortDirection.DESC }] as Array<SortOption>;
       return Events.find(buildFindSelector(query), {
         skip: offset,
@@ -82,19 +73,24 @@ export const configureEventsModule = async ({
       }).toArray();
     },
 
-    type: (event) => {
+    type: (event: Event) => {
       if (getRegisteredEvents().includes(event.type)) {
         return event.type;
       }
       return 'UNKNOWN';
     },
 
-    count: async (query) => {
+    count: async (query: EventQuery) => {
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
 
-    getReport: async ({ dateRange, types } = { dateRange: {}, types: null }) => {
+    getReport: async (
+      { dateRange, types }: { dateRange?: DateFilterInput; types?: string[] } = {
+        dateRange: {},
+        types: null,
+      },
+    ): Promise<EventReport[]> => {
       const pipeline = [];
       const matchConditions = [];
       // build date filter based on provided values it can be a range if both to and from is supplied
@@ -152,3 +148,5 @@ export const configureEventsModule = async ({
     },
   };
 };
+
+export type EventsModule = Awaited<ReturnType<typeof configureEventsModule>>;

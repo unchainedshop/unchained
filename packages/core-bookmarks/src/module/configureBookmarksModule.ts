@@ -17,41 +17,28 @@ export type Bookmark = {
   meta?: any;
 } & TimestampFields;
 
-/*
- * Module
- */
-
-export interface BookmarksModule {
-  create: (doc: Bookmark) => Promise<string | null>;
-  update: (_id: string, doc: mongodb.UpdateFilter<Bookmark> | Bookmark) => Promise<string>;
-  delete: (_id: string) => Promise<number>;
-  findBookmarksByUserId: (userId: string) => Promise<Array<Bookmark>>;
-  findBookmarkById: (bookmarkId: string) => Promise<Bookmark>;
-  findBookmarks: (query: mongodb.Filter<Bookmark>) => Promise<Array<Bookmark>>;
-  replaceUserId: (fromUserId: string, toUserId: string, bookmarkIds?: Array<string>) => Promise<number>;
-  deleteByUserId: (toUserId: string) => Promise<number>;
-  deleteByProductId: (productId: string) => Promise<number>;
-  deleteByUserIdAndMeta: (meta: any) => Promise<number>;
-}
-
-export const configureBookmarksModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<BookmarksModule> => {
+export const configureBookmarksModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(BOOKMARK_EVENTS);
 
   const Bookmarks = await BookmarksCollection(db);
 
   return {
     // Queries
-    findBookmarksByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
-    findBookmarkById: async (bookmarkId) => {
+    findBookmarksByUserId: async (userId: string): Promise<Array<Bookmark>> =>
+      Bookmarks.find({ userId }).toArray(),
+    findBookmarkById: async (bookmarkId: string): Promise<Bookmark> => {
       const filter = generateDbFilterById(bookmarkId);
       return Bookmarks.findOne(filter, {});
     },
-    findBookmarks: async (query) => Bookmarks.find(query).toArray(),
+    findBookmarks: async (query: mongodb.Filter<Bookmark>): Promise<Array<Bookmark>> =>
+      Bookmarks.find(query).toArray(),
 
     // Mutations
-    replaceUserId: async (fromUserId, toUserId, bookmarkIds) => {
+    replaceUserId: async (
+      fromUserId: string,
+      toUserId: string,
+      bookmarkIds?: Array<string>,
+    ): Promise<number> => {
       const selector: mongodb.Filter<Bookmark> = { userId: fromUserId };
       if (bookmarkIds) {
         selector._id = { $in: bookmarkIds };
@@ -64,21 +51,15 @@ export const configureBookmarksModule = async ({
       });
       return result.upsertedCount;
     },
-    deleteByUserId: async (userId) => {
+    deleteByUserId: async (userId: string) => {
       const bookmarks = await Bookmarks.find({ userId }, { projection: { _id: true } }).toArray();
       const result = await Bookmarks.deleteMany({ userId });
       await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
       return result.deletedCount;
     },
-    deleteByProductId: async (productId) => {
+    deleteByProductId: async (productId: string) => {
       const bookmarks = await Bookmarks.find({ productId }, { projection: { _id: true } }).toArray();
       const result = await Bookmarks.deleteMany({ productId });
-      await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
-      return result.deletedCount;
-    },
-    deleteByUserIdAndMeta: async ({ userId, meta }) => {
-      const bookmarks = await Bookmarks.find({ userId, meta }, { projection: { _id: true } }).toArray();
-      const result = await Bookmarks.deleteMany({ meta, userId });
       await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
       return result.deletedCount;
     },
@@ -91,7 +72,7 @@ export const configureBookmarksModule = async ({
       await emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
-    update: async (bookmarkId, doc) => {
+    update: async (bookmarkId: string, doc: Partial<Bookmark>) => {
       await Bookmarks.updateOne(
         { _id: bookmarkId },
         {
@@ -104,10 +85,12 @@ export const configureBookmarksModule = async ({
       await emit('BOOKMARK_UPDATE', { bookmarkId });
       return bookmarkId;
     },
-    delete: async (bookmarkId) => {
+    delete: async (bookmarkId: string) => {
       const { deletedCount } = await Bookmarks.deleteOne({ _id: bookmarkId });
       await emit('BOOKMARK_REMOVE', { bookmarkId });
       return deletedCount;
     },
   };
 };
+
+export type BookmarksModule = Awaited<ReturnType<typeof configureBookmarksModule>>;

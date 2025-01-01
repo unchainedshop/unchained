@@ -22,7 +22,10 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
       key: obj.key,
       productId: obj.product._id,
     });
-    return modules.products.variations.option(productVariation, obj.value);
+    return {
+      _id: productVariation._id,
+      productVariationOption: obj.value,
+    };
   },
 
   variation: (obj, _, { modules }) => {

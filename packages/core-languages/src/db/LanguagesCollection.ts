@@ -1,7 +1,7 @@
 import { TimestampFields, buildDbIndexes, mongodb } from '@unchainedshop/mongodb';
 
 export type Language = {
-  _id: string;
+  _id?: string;
   isoCode: string;
   isActive?: boolean;
 } & TimestampFields;

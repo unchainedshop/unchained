@@ -13,67 +13,6 @@ import {
   ProductVariationType,
 } from '../db/ProductVariationsCollection.js';
 
-export type ProductVariationsModule = {
-  // Queries
-  findProductVariationByKey: (query: { productId: string; key: string }) => Promise<ProductVariation>;
-  findProductVariation: (query: { productVariationId: string }) => Promise<ProductVariation>;
-
-  findProductVariations: (query: {
-    productId: string;
-    limit?: number;
-    offset?: number;
-    tags?: Array<string>;
-  }) => Promise<Array<ProductVariation>>;
-
-  // Transformations
-  option: (
-    productVariation: ProductVariation,
-    productVariationOptionValue: string,
-  ) => {
-    _id: string;
-    productVariationOption: string;
-  };
-
-  // Mutations
-  create: (doc: ProductVariation & { locale?: string; title?: string }) => Promise<ProductVariation>;
-
-  delete: (productVariationId: string) => Promise<number>;
-  deleteVariations: (params: {
-    productId?: string;
-    excludedProductIds?: Array<string>;
-  }) => Promise<number>;
-
-  update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
-
-  addVariationOption: (productVariationId: string, data: { value: string }) => Promise<ProductVariation>;
-
-  removeVariationOption: (
-    productVariationId: string,
-    productVariationOptionValue: string,
-  ) => Promise<void>;
-
-  texts: {
-    // Queries
-    findVariationTexts: (query: {
-      productVariationId: string;
-      productVariationOptionValue?: string;
-    }) => Promise<Array<ProductVariationText>>;
-
-    findLocalizedVariationText: (query: {
-      locale: string;
-      productVariationId: string;
-      productVariationOptionValue?: string;
-    }) => Promise<ProductVariationText>;
-
-    // Mutations
-    updateVariationTexts: (
-      productVariationId: string,
-      texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
-      productVariationOptionValue?: string,
-    ) => Promise<Array<ProductVariationText>>;
-  };
-};
-
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',
   'PRODUCT_REMOVE_VARIATION',
@@ -82,9 +21,7 @@ const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_REMOVE_VARIATION_OPTION',
 ];
 
-export const configureProductVariationsModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<ProductVariationsModule> => {
+export const configureProductVariationsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(PRODUCT_VARIATION_EVENTS);
 
   const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);
@@ -146,7 +83,13 @@ export const configureProductVariationsModule = async ({
 
   return {
     // Queries
-    findProductVariationByKey: async ({ productId, key }) => {
+    findProductVariationByKey: async ({
+      productId,
+      key,
+    }: {
+      productId: string;
+      key: string;
+    }): Promise<ProductVariation> => {
       const selector: mongodb.Filter<ProductVariation> = {
         productId,
         key,
@@ -154,11 +97,25 @@ export const configureProductVariationsModule = async ({
       return ProductVariations.findOne(selector, {});
     },
 
-    findProductVariation: async ({ productVariationId }) => {
+    findProductVariation: async ({
+      productVariationId,
+    }: {
+      productVariationId: string;
+    }): Promise<ProductVariation> => {
       return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
     },
 
-    findProductVariations: async ({ productId, tags, offset, limit }) => {
+    findProductVariations: async ({
+      productId,
+      tags,
+      offset,
+      limit,
+    }: {
+      productId: string;
+      limit?: number;
+      offset?: number;
+      tags?: Array<string>;
+    }): Promise<Array<ProductVariation>> => {
       const selector: mongodb.Filter<ProductVariation> = { productId };
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
@@ -172,17 +129,10 @@ export const configureProductVariationsModule = async ({
       return variations.toArray();
     },
 
-    // Transformations
-
-    option: (productVariation, productVariationOption) => {
-      return {
-        _id: productVariation._id,
-        productVariationOption,
-      };
-    },
-
-    // Mutations
-    create: async ({ type, ...doc }: ProductVariation & { title: string; locale: string }) => {
+    create: async ({
+      type,
+      ...doc
+    }: ProductVariation & { locale?: string; title?: string }): Promise<ProductVariation> => {
       const { insertedId: productVariationId } = await ProductVariations.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -202,7 +152,7 @@ export const configureProductVariationsModule = async ({
       return productVariation;
     },
 
-    delete: async (productVariationId) => {
+    delete: async (productVariationId: string) => {
       const selector = generateDbFilterById(productVariationId);
 
       await ProductVariationTexts.deleteMany({ productVariationId });
@@ -216,7 +166,13 @@ export const configureProductVariationsModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteVariations: async ({ productId, excludedProductIds }) => {
+    deleteVariations: async ({
+      productId,
+      excludedProductIds,
+    }: {
+      productId?: string;
+      excludedProductIds?: Array<string>;
+    }) => {
       const selector: mongodb.Filter<ProductVariation> = {};
       if (productId) {
         selector.productId = productId;
@@ -234,7 +190,7 @@ export const configureProductVariationsModule = async ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (productVariationId, doc) => {
+    update: async (productVariationId: string, doc: ProductVariation): Promise<ProductVariation> => {
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
       return ProductVariations.findOneAndUpdate(selector, modifier, {
@@ -242,7 +198,10 @@ export const configureProductVariationsModule = async ({
       });
     },
 
-    addVariationOption: async (productVariationId, { value }) => {
+    addVariationOption: async (
+      productVariationId,
+      { value }: { value: string },
+    ): Promise<ProductVariation> => {
       const productVariation = await ProductVariations.findOneAndUpdate(
         generateDbFilterById(productVariationId),
         {
@@ -260,7 +219,7 @@ export const configureProductVariationsModule = async ({
       return productVariation;
     },
 
-    removeVariationOption: async (productVariationId, productVariationOptionValue) => {
+    removeVariationOption: async (productVariationId: string, productVariationOptionValue: string) => {
       await ProductVariations.updateOne(generateDbFilterById(productVariationId), {
         $set: {
           updated: new Date(),
@@ -282,7 +241,13 @@ export const configureProductVariationsModule = async ({
 
     texts: {
       // Queries
-      findVariationTexts: async ({ productVariationId, productVariationOptionValue }) => {
+      findVariationTexts: async ({
+        productVariationId,
+        productVariationOptionValue,
+      }: {
+        productVariationId: string;
+        productVariationOptionValue?: string;
+      }): Promise<Array<ProductVariationText>> => {
         return ProductVariationTexts.find({
           productVariationId,
           productVariationOptionValue,
@@ -293,7 +258,11 @@ export const configureProductVariationsModule = async ({
         productVariationId,
         productVariationOptionValue,
         locale,
-      }) => {
+      }: {
+        locale: string;
+        productVariationId: string;
+        productVariationOptionValue?: string;
+      }): Promise<ProductVariationText> => {
         const parsedLocale = new Intl.Locale(locale);
 
         const selector: mongodb.Filter<ProductVariationText> = { productVariationId };
@@ -308,7 +277,11 @@ export const configureProductVariationsModule = async ({
       },
 
       // Mutations
-      updateVariationTexts: async (productVariationId, texts, productVariationOptionValue) => {
+      updateVariationTexts: async (
+        productVariationId: string,
+        texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
+        productVariationOptionValue?: string,
+      ): Promise<Array<ProductVariationText>> => {
         const productVariationTexts = await Promise.all(
           texts.map(async ({ locale, ...text }) =>
             upsertLocalizedText(
