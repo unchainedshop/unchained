@@ -21,16 +21,12 @@ import { OrdersCollection } from '@unchainedshop/core-orders'
 import { generateDbFilterById } from '@unchainedshop/mongodb'
 import { Order } from '@unchainedshop/core-orders';
 
-type CurrencyModule = {
-  changeCartCurrency: (currency: string, cartId: string) => Promise<Order>
-}
-
 const currencyModule = {
   configure: async ({ db }: { db: Db }): Promise<CurrencyModule> => {
     const Orders = await OrdersCollection(db)
 
     return {
-      async changeCartCurrency(currency, cartId) {
+      async changeCartCurrency(currency: string, cartId: string): Promise<Order> {
         const selector = generateDbFilterById(cartId)
         Orders.updateOne(selector, {
           $set: {

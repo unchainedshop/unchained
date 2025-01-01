@@ -6,41 +6,24 @@ import { Assortment, AssortmentText } from '../db/AssortmentsCollection.js';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
-export type AssortmentTextsModule = {
-  // Queries
-  findTexts: (
-    query: mongodb.Filter<AssortmentText>,
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<AssortmentText>>;
-
-  findLocalizedText: (params: { assortmentId: string; locale?: string }) => Promise<AssortmentText>;
-
-  // Mutations
-  updateTexts: (
-    assortmentId: string,
-    texts: Array<Omit<AssortmentText, 'assortmentId'>>,
-  ) => Promise<Array<AssortmentText>>;
-
-  makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;
-
-  deleteMany: ({
-    assortmentId,
-  }: {
-    assortmentId?: string;
-    excludedAssortmentIds?: string[];
-  }) => Promise<number>;
-};
-
 export const configureAssortmentTextsModule = ({
   Assortments,
   AssortmentTexts,
 }: {
   Assortments: mongodb.Collection<Assortment>;
   AssortmentTexts: mongodb.Collection<AssortmentText>;
-}): AssortmentTextsModule => {
+}) => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
-  const makeSlug = async ({ slug, title, assortmentId }) => {
+  const makeSlug = async ({
+    slug,
+    title,
+    assortmentId,
+  }: {
+    slug?: string;
+    title: string;
+    assortmentId: string;
+  }): Promise<string> => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
       return (
         (await AssortmentTexts.countDocuments(
@@ -136,13 +119,22 @@ export const configureAssortmentTextsModule = ({
 
   return {
     // Queries
-    findTexts: async (query, options) => {
+    findTexts: async (
+      query: mongodb.Filter<AssortmentText>,
+      options?: mongodb.FindOptions<AssortmentText>,
+    ): Promise<Array<AssortmentText>> => {
       const texts = AssortmentTexts.find(query, options);
 
       return texts.toArray();
     },
 
-    findLocalizedText: async ({ assortmentId, locale }) => {
+    findLocalizedText: async ({
+      assortmentId,
+      locale,
+    }: {
+      assortmentId: string;
+      locale?: string;
+    }): Promise<AssortmentText> => {
       const parsedLocale = new Intl.Locale(locale);
 
       const text = await findLocalizedText<AssortmentText>(
@@ -155,7 +147,10 @@ export const configureAssortmentTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (assortmentId, texts) => {
+    updateTexts: async (
+      assortmentId: string,
+      texts: Array<Omit<AssortmentText, 'assortmentId'>>,
+    ): Promise<Array<AssortmentText>> => {
       const assortmentTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
       );
@@ -164,7 +159,13 @@ export const configureAssortmentTextsModule = ({
 
     makeSlug,
 
-    deleteMany: async ({ assortmentId, excludedAssortmentIds }) => {
+    deleteMany: async ({
+      assortmentId,
+      excludedAssortmentIds,
+    }: {
+      assortmentId?: string;
+      excludedAssortmentIds?: string[];
+    }): Promise<number> => {
       const selector: mongodb.Filter<AssortmentText> = {};
       if (assortmentId) {
         selector.assortmentId = assortmentId;
@@ -177,3 +178,5 @@ export const configureAssortmentTextsModule = ({
     },
   };
 };
+
+export type AssortmentTextsModule = ReturnType<typeof configureAssortmentTextsModule>;

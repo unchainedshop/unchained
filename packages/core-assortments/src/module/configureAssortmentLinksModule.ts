@@ -9,68 +9,26 @@ const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_REORDER_LINKS',
 ];
 
-export type AssortmentLinksModule = {
-  // Queries
-  findLink: (
-    query: {
-      assortmentLinkId?: string;
-      parentAssortmentId?: string;
-      childAssortmentId?: string;
-    },
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<AssortmentLink>;
-  findLinks: (
-    query: {
-      assortmentId?: string;
-      assortmentIds?: string[];
-      parentAssortmentId?: string;
-      parentAssortmentIds?: string[];
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<AssortmentLink>>;
-
-  // Mutations
-  create: (doc: AssortmentLink, options?: { skipInvalidation?: boolean }) => Promise<AssortmentLink>;
-
-  delete: (
-    assortmentLinkId: string,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<AssortmentLink>;
-
-  deleteMany: (
-    selector: mongodb.Filter<AssortmentLink>,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<number>;
-
-  update: (
-    assortmentLinkId: string,
-    doc: AssortmentLink,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<AssortmentLink>;
-
-  updateManualOrder: (
-    params: {
-      sortKeys: Array<{
-        assortmentLinkId: string;
-        sortKey: number;
-      }>;
-    },
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<Array<AssortmentLink>>;
-};
-
 export const configureAssortmentLinksModule = ({
   AssortmentLinks,
   invalidateCache,
 }: {
   AssortmentLinks: mongodb.Collection<AssortmentLink>;
   invalidateCache: InvalidateCacheFn;
-}): AssortmentLinksModule => {
+}) => {
   registerEvents(ASSORTMENT_LINK_EVENTS);
 
   return {
     // Queries
-    findLink: async ({ assortmentLinkId, parentAssortmentId, childAssortmentId }) => {
+    findLink: async ({
+      assortmentLinkId,
+      parentAssortmentId,
+      childAssortmentId,
+    }: {
+      assortmentLinkId?: string;
+      parentAssortmentId?: string;
+      childAssortmentId?: string;
+    }): Promise<AssortmentLink> => {
       return AssortmentLinks.findOne(
         assortmentLinkId
           ? generateDbFilterById(assortmentLinkId)
@@ -80,9 +38,19 @@ export const configureAssortmentLinksModule = ({
     },
 
     findLinks: async (
-      { assortmentId, assortmentIds, parentAssortmentId, parentAssortmentIds },
-      options,
-    ) => {
+      {
+        assortmentId,
+        assortmentIds,
+        parentAssortmentId,
+        parentAssortmentIds,
+      }: {
+        assortmentId?: string;
+        assortmentIds?: string[];
+        parentAssortmentId?: string;
+        parentAssortmentIds?: string[];
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<Array<AssortmentLink>> => {
       const selector =
         parentAssortmentId || parentAssortmentIds
           ? {
@@ -106,7 +74,10 @@ export const configureAssortmentLinksModule = ({
     },
 
     // Mutations
-    create: async (doc, options) => {
+    create: async (
+      doc: AssortmentLink,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<AssortmentLink> => {
       const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
 
       const assortmentLinksPath = await walkUpFromAssortment({
@@ -176,7 +147,11 @@ export const configureAssortmentLinksModule = ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentLinkId, doc, options) => {
+    update: async (
+      assortmentLinkId: string,
+      doc: AssortmentLink,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<AssortmentLink> => {
       const selector = generateDbFilterById(assortmentLinkId);
       const modifier = {
         $set: {
@@ -194,7 +169,10 @@ export const configureAssortmentLinksModule = ({
       return assortmentLink;
     },
 
-    delete: async (assortmentLinkId, options) => {
+    delete: async (
+      assortmentLinkId: string,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<AssortmentLink> => {
       const selector = generateDbFilterById(assortmentLinkId);
 
       const assortmentLink = await AssortmentLinks.findOneAndDelete(selector);
@@ -212,7 +190,10 @@ export const configureAssortmentLinksModule = ({
       return assortmentLink;
     },
 
-    deleteMany: async (selector, options) => {
+    deleteMany: async (
+      selector: mongodb.Filter<AssortmentLink>,
+      options?: { skipInvalidation?: boolean },
+    ) => {
       const assortmentLinks = await AssortmentLinks.find(selector, {
         projection: {
           _id: 1,
@@ -242,7 +223,17 @@ export const configureAssortmentLinksModule = ({
       return deletionResult.deletedCount;
     },
 
-    updateManualOrder: async ({ sortKeys }, options) => {
+    updateManualOrder: async (
+      {
+        sortKeys,
+      }: {
+        sortKeys: Array<{
+          assortmentLinkId: string;
+          sortKey: number;
+        }>;
+      },
+      options?: { skipInvalidation?: boolean },
+    ): Promise<Array<AssortmentLink>> => {
       const changedAssortmentLinkIds = await Promise.all(
         sortKeys.map(async ({ assortmentLinkId, sortKey }) => {
           await AssortmentLinks.updateOne(generateDbFilterById(assortmentLinkId), {
@@ -270,3 +261,5 @@ export const configureAssortmentLinksModule = ({
     },
   };
 };
+
+export type AssortmentLinksModule = ReturnType<typeof configureAssortmentLinksModule>;

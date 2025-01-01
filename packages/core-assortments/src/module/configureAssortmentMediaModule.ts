@@ -16,60 +16,7 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
 
-export type AssortmentMediaModule = {
-  // Queries
-  findAssortmentMedia: (params: { assortmentMediaId: string }) => Promise<AssortmentMediaType>;
-
-  findAssortmentMedias: (
-    params: {
-      assortmentId?: mongodb.Filter<AssortmentMediaType>['assortmentId'];
-      limit?: number;
-      offset?: number;
-      tags?: Array<string>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<AssortmentMediaType>>;
-
-  create: (doc: { assortmentId: string; mediaId: string }) => Promise<AssortmentMediaType>;
-
-  delete: (assortmentMediaId: string) => Promise<number>;
-
-  deleteMediaFiles: (params: {
-    assortmentId?: string;
-    excludedAssortmentIds?: Array<string>;
-    excludedAssortmentMediaIds?: Array<string>;
-  }) => Promise<number>;
-
-  update: (assortmentMediaId: string, doc: AssortmentMediaType) => Promise<AssortmentMediaType>;
-
-  updateManualOrder: (params: {
-    sortKeys: Array<{
-      assortmentMediaId: string;
-      sortKey: number;
-    }>;
-  }) => Promise<Array<AssortmentMediaType>>;
-
-  texts: {
-    findMediaTexts: (
-      query: mongodb.Filter<AssortmentMediaText>,
-      options?: mongodb.FindOptions,
-    ) => Promise<Array<AssortmentMediaText>>;
-
-    findLocalizedMediaText: (query: {
-      assortmentMediaId: string;
-      locale: string;
-    }) => Promise<AssortmentMediaText>;
-
-    updateMediaTexts: (
-      assortmentMediaId: string,
-      texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
-    ) => Promise<Array<AssortmentMediaText>>;
-  };
-};
-
-export const configureAssortmentMediaModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<AssortmentMediaModule> => {
+export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
   const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
@@ -114,11 +61,28 @@ export const configureAssortmentMediaModule = async ({
 
   return {
     // Queries
-    findAssortmentMedia: async ({ assortmentMediaId }) => {
+    findAssortmentMedia: async ({
+      assortmentMediaId,
+    }: {
+      assortmentMediaId: string;
+    }): Promise<AssortmentMediaType> => {
       return AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
     },
 
-    findAssortmentMedias: async ({ assortmentId, tags, offset, limit }, options) => {
+    findAssortmentMedias: async (
+      {
+        assortmentId,
+        tags,
+        offset,
+        limit,
+      }: {
+        assortmentId?: mongodb.Filter<AssortmentMediaType>['assortmentId'];
+        limit?: number;
+        offset?: number;
+        tags?: Array<string>;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<Array<AssortmentMediaType>> => {
       const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
@@ -134,7 +98,9 @@ export const configureAssortmentMediaModule = async ({
       return mediaList.toArray();
     },
 
-    create: async (doc: AssortmentMediaType) => {
+    create: async (
+      doc: Partial<AssortmentMediaType> & { assortmentId: string; mediaId: string },
+    ): Promise<AssortmentMediaType> => {
       let { sortKey } = doc;
 
       if (sortKey === undefined || sortKey === null) {
@@ -167,7 +133,7 @@ export const configureAssortmentMediaModule = async ({
       return assortmentMedia;
     },
 
-    delete: async (assortmentMediaId) => {
+    delete: async (assortmentMediaId: string): Promise<number> => {
       const selector = generateDbFilterById(assortmentMediaId);
       await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
       const deletedResult = await AssortmentMedia.deleteOne(selector);
@@ -178,7 +144,15 @@ export const configureAssortmentMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({ assortmentId, excludedAssortmentIds, excludedAssortmentMediaIds }) => {
+    deleteMediaFiles: async ({
+      assortmentId,
+      excludedAssortmentIds,
+      excludedAssortmentMediaIds,
+    }: {
+      assortmentId?: string;
+      excludedAssortmentIds?: Array<string>;
+      excludedAssortmentMediaIds?: Array<string>;
+    }): Promise<number> => {
       const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
 
       if (!assortmentId && excludedAssortmentIds) {
@@ -209,7 +183,10 @@ export const configureAssortmentMediaModule = async ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentMediaId, doc) => {
+    update: async (
+      assortmentMediaId: string,
+      doc: Partial<AssortmentMediaType>,
+    ): Promise<AssortmentMediaType> => {
       const selector = generateDbFilterById(assortmentMediaId);
       const modifier = { $set: doc };
       return AssortmentMedia.findOneAndUpdate(selector, modifier, {
@@ -217,7 +194,14 @@ export const configureAssortmentMediaModule = async ({
       });
     },
 
-    updateManualOrder: async ({ sortKeys }) => {
+    updateManualOrder: async ({
+      sortKeys,
+    }: {
+      sortKeys: Array<{
+        assortmentMediaId: string;
+        sortKey: number;
+      }>;
+    }): Promise<Array<AssortmentMediaType>> => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
           await AssortmentMedia.updateOne(generateDbFilterById(assortmentMediaId), {
@@ -246,11 +230,20 @@ export const configureAssortmentMediaModule = async ({
 
     texts: {
       // Queries
-      findMediaTexts: async ({ assortmentMediaId }, options) => {
+      findMediaTexts: async (
+        { assortmentMediaId }: mongodb.Filter<AssortmentMediaText>,
+        options?: mongodb.FindOptions,
+      ): Promise<Array<AssortmentMediaText>> => {
         return AssortmentMediaTexts.find({ assortmentMediaId }, options).toArray();
       },
 
-      findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {
+      findLocalizedMediaText: async ({
+        assortmentMediaId,
+        locale,
+      }: {
+        assortmentMediaId: string;
+        locale: string;
+      }): Promise<AssortmentMediaText> => {
         const parsedLocale = new Intl.Locale(locale);
 
         const text = await findLocalizedText<AssortmentMediaText>(
@@ -262,7 +255,10 @@ export const configureAssortmentMediaModule = async ({
         return text;
       },
 
-      updateMediaTexts: async (assortmentMediaId, texts) => {
+      updateMediaTexts: async (
+        assortmentMediaId: string,
+        texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
+      ): Promise<Array<AssortmentMediaText>> => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
         );
@@ -272,3 +268,5 @@ export const configureAssortmentMediaModule = async ({
     },
   };
 };
+
+export type AssortmentMediaModule = Awaited<ReturnType<typeof configureAssortmentMediaModule>>;

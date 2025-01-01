@@ -18,26 +18,13 @@ import {
   AssortmentsCollection,
   InvalidateCacheFn,
 } from '../db/AssortmentsCollection.js';
-import {
-  AssortmentFiltersModule,
-  configureAssortmentFiltersModule,
-} from './configureAssortmentFiltersModule.js';
-import {
-  AssortmentLinksModule,
-  configureAssortmentLinksModule,
-} from './configureAssortmentLinksModule.js';
+import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.js';
+import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.js';
 import { assortmentsSettings, AssortmentsSettingsOptions } from '../assortments-settings.js';
-import {
-  AssortmentProductsModule,
-  configureAssortmentProductsModule,
-} from './configureAssortmentProductsModule.js';
-import {
-  AssortmentTextsModule,
-  configureAssortmentTextsModule,
-} from './configureAssortmentTextsModule.js';
+import { configureAssortmentProductsModule } from './configureAssortmentProductsModule.js';
+import { configureAssortmentTextsModule } from './configureAssortmentTextsModule.js';
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
 import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
-import { AssortmentMediaModule } from './configureAssortmentMediaModule.js';
 
 export interface AssortmentPathLink {
   assortmentId: string;
@@ -54,100 +41,6 @@ export type BreacrumbAssortmentProductFunction = (
 ) => Promise<Array<AssortmentProduct>>;
 
 const logger = createLogger('unchained:core');
-
-export type AssortmentsModule = {
-  // Queries
-  assortmentExists: (query: { assortmentId?: string; slug?: string }) => Promise<boolean>;
-
-  children: (query: { assortmentId: string; includeInactive?: boolean }) => Promise<Array<Assortment>>;
-
-  count: (query: AssortmentQuery) => Promise<number>;
-
-  findAssortment: (query: { assortmentId?: string; slug?: string }) => Promise<Assortment>;
-
-  findAssortments: (
-    query: AssortmentQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<Assortment>>;
-
-  findProductIds: (params: {
-    assortmentId: string;
-    forceLiveCollection?: boolean;
-    ignoreChildAssortments?: boolean;
-  }) => Promise<Array<string>>;
-
-  breadcrumbs: (
-    params: {
-      assortmentId?: string;
-      productId?: string;
-    },
-    resolvers: {
-      resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
-      resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
-    },
-  ) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
-
-  // Mutations
-  create: (doc: Assortment) => Promise<Assortment>;
-
-  update: (
-    assortmentId: string,
-    doc: Assortment,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<string>;
-
-  delete: (assortmentId: string, options?: { skipInvalidation?: boolean }) => Promise<number>;
-
-  invalidateCache: InvalidateCacheFn;
-
-  setBase: (assortmentId: string) => Promise<void>;
-
-  /*
-   * Assortment media
-   */
-  media: AssortmentMediaModule;
-
-  /*
-   * Assortment filters
-   */
-  filters: AssortmentFiltersModule;
-
-  /*
-   * Assortment links
-   */
-
-  links: AssortmentLinksModule;
-
-  /*
-   * Assortment products
-   */
-
-  products: AssortmentProductsModule;
-
-  /*
-   * Assortment Filter Search
-   */
-
-  search: {
-    findFilteredAssortments: (params: {
-      assortmentIds: Array<string>;
-      assortmentSelector: mongodb.Filter<Assortment>;
-      limit: number;
-      offset: number;
-      sort: mongodb.FindOptions['sort'];
-    }) => Promise<Array<Assortment>>;
-  };
-
-  /*
-   * Assortment texts
-   */
-
-  texts: AssortmentTextsModule;
-};
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',
@@ -202,7 +95,7 @@ export const configureAssortmentsModule = async ({
   db,
   migrationRepository,
   options: assortmentOptions = {},
-}: ModuleInput<AssortmentsSettingsOptions>): Promise<AssortmentsModule> => {
+}: ModuleInput<AssortmentsSettingsOptions>) => {
   // Events
   registerEvents(ASSORTMENT_EVENTS);
 
@@ -275,21 +168,6 @@ export const configureAssortmentsModule = async ({
     return [...assortmentSet];
   };
 
-  const findProductIds = async (
-    assortment: Assortment,
-    { forceLiveCollection = false, ignoreChildAssortments = false } = {},
-  ) => {
-    if (ignoreChildAssortments) {
-      const productAssignments = await findProductAssignments(assortment._id);
-      return productAssignments.map(({ productId }) => productId);
-    }
-    if (!forceLiveCollection) {
-      const cachedProductIds = await assortmentsSettings.getCachedProductIds(assortment._id);
-      if (cachedProductIds) return cachedProductIds;
-    }
-    return buildProductIds(assortment);
-  };
-
   const invalidateProductIdCache = async (
     assortment: Assortment,
     cacheOptions: { skipUpstreamTraversal: boolean } = {
@@ -327,7 +205,7 @@ export const configureAssortmentsModule = async ({
     return updateCount;
   };
 
-  const invalidateCache: AssortmentsModule['invalidateCache'] = async (selector, options) => {
+  const invalidateCache: InvalidateCacheFn = async (selector, options) => {
     logger.debug('Invalidating productId cache for assortments');
 
     const assortments = await Assortments.find(
@@ -372,7 +250,13 @@ export const configureAssortmentsModule = async ({
    */
 
   return {
-    findAssortment: async ({ assortmentId, slug }) => {
+    findAssortment: async ({
+      assortmentId,
+      slug,
+    }: {
+      assortmentId?: string;
+      slug?: string;
+    }): Promise<Assortment> => {
       let selector: mongodb.Filter<Assortment> = {};
 
       if (assortmentId) {
@@ -386,7 +270,16 @@ export const configureAssortmentsModule = async ({
       return Assortments.findOne(selector, {});
     },
 
-    findAssortments: async ({ limit, offset, sort, ...query }) => {
+    findAssortments: async ({
+      limit,
+      offset,
+      sort,
+      ...query
+    }: AssortmentQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    }): Promise<Array<Assortment>> => {
       const defaultSortOption: Array<SortOption> = [{ key: 'sequence', value: SortDirection.ASC }];
       const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
@@ -396,16 +289,36 @@ export const configureAssortmentsModule = async ({
       return assortments.toArray();
     },
 
-    findProductIds: async ({ assortmentId, forceLiveCollection, ignoreChildAssortments }) => {
+    findProductIds: async ({
+      assortmentId,
+      forceLiveCollection,
+      ignoreChildAssortments,
+    }: {
+      assortmentId: string;
+      forceLiveCollection?: boolean;
+      ignoreChildAssortments?: boolean;
+    }): Promise<Array<string>> => {
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId), {});
       if (!assortment) return [];
-      return findProductIds(assortment, {
-        forceLiveCollection,
-        ignoreChildAssortments,
-      });
+
+      if (ignoreChildAssortments) {
+        const productAssignments = await findProductAssignments(assortment._id);
+        return productAssignments.map(({ productId }) => productId);
+      }
+      if (!forceLiveCollection) {
+        const cachedProductIds = await assortmentsSettings.getCachedProductIds(assortment._id);
+        if (cachedProductIds) return cachedProductIds;
+      }
+      return buildProductIds(assortment);
     },
 
-    children: async ({ assortmentId, includeInactive }) => {
+    children: async ({
+      assortmentId,
+      includeInactive,
+    }: {
+      assortmentId: string;
+      includeInactive?: boolean;
+    }): Promise<Array<Assortment>> => {
       const links = await AssortmentLinks.find(
         { parentAssortmentId: assortmentId },
         {
@@ -420,9 +333,15 @@ export const configureAssortmentsModule = async ({
       return findPreservingIds(Assortments)(selector, assortmentIds);
     },
 
-    count: async (query) => Assortments.countDocuments(buildFindSelector(query)),
+    count: async (query: AssortmentQuery): Promise<number> =>
+      Assortments.countDocuments(buildFindSelector(query)),
 
-    assortmentExists: async ({ assortmentId }) => {
+    assortmentExists: async ({
+      assortmentId,
+    }: {
+      assortmentId?: string;
+      slug?: string;
+    }): Promise<boolean> => {
       const assortmentCount = await Assortments.countDocuments(
         generateDbFilterById(assortmentId, { deleted: null }),
         {
@@ -433,7 +352,10 @@ export const configureAssortmentsModule = async ({
     },
 
     breadcrumbs: async (
-      params,
+      params: {
+        assortmentId?: string;
+        productId?: string;
+      },
       {
         resolveAssortmentLinks,
         resolveAssortmentProducts,
@@ -441,7 +363,7 @@ export const configureAssortmentsModule = async ({
         resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
         resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
       },
-    ) => {
+    ): Promise<Array<{ links: Array<AssortmentPathLink> }>> => {
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
         resolveAssortmentLinks,
         resolveAssortmentProducts,
@@ -459,7 +381,7 @@ export const configureAssortmentsModule = async ({
       meta = {},
       sequence,
       ...rest
-    }) => {
+    }: Assortment): Promise<Assortment> => {
       if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
       const { insertedId: assortmentId } = await Assortments.insertOne({
         _id: _id || generateDbObjectId(),
@@ -477,7 +399,11 @@ export const configureAssortmentsModule = async ({
       return assortment;
     },
 
-    update: async (assortmentId, doc, options) => {
+    update: async (
+      assortmentId: string,
+      doc: Assortment,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<string> => {
       await Assortments.updateOne(generateDbFilterById(assortmentId), {
         $set: {
           updated: new Date(),
@@ -492,7 +418,7 @@ export const configureAssortmentsModule = async ({
       return assortmentId;
     },
 
-    delete: async (assortmentId, options) => {
+    delete: async (assortmentId: string, options?: { skipInvalidation?: boolean }): Promise<number> => {
       await assortmentLinks.deleteMany(
         {
           $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
@@ -525,7 +451,7 @@ export const configureAssortmentsModule = async ({
     },
 
     invalidateCache,
-    setBase: async (assortmentId) => {
+    setBase: async (assortmentId: string): Promise<void> => {
       await Assortments.updateMany(
         { isBase: true },
         {
@@ -546,7 +472,19 @@ export const configureAssortmentsModule = async ({
     },
 
     search: {
-      findFilteredAssortments: async ({ limit, offset, assortmentIds, assortmentSelector, sort }) => {
+      findFilteredAssortments: async ({
+        limit,
+        offset,
+        assortmentIds,
+        assortmentSelector,
+        sort,
+      }: {
+        assortmentIds: Array<string>;
+        assortmentSelector: mongodb.Filter<Assortment>;
+        limit: number;
+        offset: number;
+        sort: mongodb.FindOptions['sort'];
+      }): Promise<Array<Assortment>> => {
         const assortments = await findPreservingIds(Assortments)(assortmentSelector, assortmentIds, {
           limit,
           skip: offset,
@@ -565,3 +503,5 @@ export const configureAssortmentsModule = async ({
     texts: assortmentTexts,
   };
 };
+
+export type AssortmentsModule = Awaited<ReturnType<typeof configureAssortmentsModule>>;
