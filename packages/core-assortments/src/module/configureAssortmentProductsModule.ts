@@ -8,71 +8,24 @@ const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_REORDER_PRODUCTS',
 ];
 
-export type AssortmentProductsModule = {
-  // Queries
-  findAssortmentIds: (params: { productId: string; tags?: Array<string> }) => Promise<Array<string>>;
-  findProductIds: (params: { assortmentId: string; tags?: Array<string> }) => Promise<Array<string>>;
-
-  findProduct: (params: { assortmentProductId: string }) => Promise<AssortmentProduct>;
-
-  findProducts: (
-    params: {
-      assortmentId?: string;
-      assortmentIds?: Array<string>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<AssortmentProduct>>;
-
-  findProductSiblings: (params: {
-    productId: string;
-    assortmentIds: Array<string>;
-  }) => Promise<Array<string>>;
-
-  // Mutations
-  create: (
-    doc: AssortmentProduct,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<AssortmentProduct>;
-
-  delete: (
-    assortmentProductId: string,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<Array<{ _id: string; assortmentId: string }>>;
-
-  deleteMany: (
-    selector: mongodb.Filter<AssortmentProduct>,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<number>;
-
-  update: (
-    assortmentProductId: string,
-    doc: AssortmentProduct,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<AssortmentProduct>;
-
-  updateManualOrder: (
-    params: {
-      sortKeys: Array<{
-        assortmentProductId: string;
-        sortKey: number;
-      }>;
-    },
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<Array<AssortmentProduct>>;
-};
-
 export const configureAssortmentProductsModule = ({
   AssortmentProducts,
   invalidateCache,
 }: {
   AssortmentProducts: mongodb.Collection<AssortmentProduct>;
   invalidateCache: InvalidateCacheFn;
-}): AssortmentProductsModule => {
+}) => {
   registerEvents(ASSORTMENT_PRODUCT_EVENTS);
 
   return {
     // Queries
-    findAssortmentIds: async ({ productId, tags }) => {
+    findAssortmentIds: async ({
+      productId,
+      tags,
+    }: {
+      productId: string;
+      tags?: Array<string>;
+    }): Promise<Array<string>> => {
       const selector: mongodb.Filter<AssortmentProduct> = { productId };
       if (tags) {
         selector.tags = { $in: tags };
@@ -82,7 +35,13 @@ export const configureAssortmentProductsModule = ({
         .toArray();
     },
 
-    findProductIds: async ({ assortmentId, tags }) => {
+    findProductIds: async ({
+      assortmentId,
+      tags,
+    }: {
+      assortmentId: string;
+      tags?: Array<string>;
+    }): Promise<Array<string>> => {
       const selector: mongodb.Filter<AssortmentProduct> = { assortmentId };
       if (tags) {
         selector.tags = { $in: tags };
@@ -92,19 +51,46 @@ export const configureAssortmentProductsModule = ({
         .toArray();
     },
 
-    findProduct: async ({ assortmentProductId }) => {
+    findAssortmentProduct: async ({
+      assortmentProductId,
+    }: {
+      assortmentProductId: string;
+    }): Promise<AssortmentProduct> => {
       return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId), {});
     },
 
-    findProducts: async ({ assortmentId, assortmentIds }, options) => {
-      const products = AssortmentProducts.find(
-        { assortmentId: assortmentId || { $in: assortmentIds } },
-        options,
-      );
-      return products.toArray();
+    findAssortmentProducts: async (
+      {
+        productId,
+        productIds,
+        assortmentId,
+        assortmentIds,
+      }: {
+        assortmentId?: string;
+        assortmentIds?: Array<string>;
+        productId?: string;
+        productIds?: Array<string>;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<Array<AssortmentProduct>> => {
+      const selector: mongodb.Filter<AssortmentProduct> = {};
+      if (assortmentId || assortmentIds) {
+        selector.assortmentId = assortmentId || { $in: assortmentIds };
+      }
+      if (productId || productIds) {
+        selector.productId = productId || { $in: productIds };
+      }
+      const assortmentProducts = AssortmentProducts.find(selector, options);
+      return assortmentProducts.toArray();
     },
 
-    findProductSiblings: async ({ assortmentIds, productId }) => {
+    findSiblings: async ({
+      assortmentIds,
+      productId,
+    }: {
+      productId: string;
+      assortmentIds: Array<string>;
+    }): Promise<Array<string>> => {
       const selector = {
         assortmentId: { $in: assortmentIds },
       };
@@ -120,7 +106,10 @@ export const configureAssortmentProductsModule = ({
     },
 
     // Mutations
-    create: async (doc: AssortmentProduct, options) => {
+    create: async (
+      doc: AssortmentProduct,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<AssortmentProduct> => {
       const { _id, assortmentId, productId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -170,7 +159,10 @@ export const configureAssortmentProductsModule = ({
       return assortmentProduct;
     },
 
-    delete: async (assortmentProductId, options) => {
+    delete: async (
+      assortmentProductId: string,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<Array<AssortmentProduct>> => {
       const selector = generateDbFilterById(assortmentProductId);
 
       const assortmentProduct = await AssortmentProducts.findOneAndDelete(selector);
@@ -187,7 +179,10 @@ export const configureAssortmentProductsModule = ({
       return [assortmentProduct];
     },
 
-    deleteMany: async (selector, options) => {
+    deleteMany: async (
+      selector: mongodb.Filter<AssortmentProduct>,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<number> => {
       const assortmentProducts = await AssortmentProducts.find(selector, {
         projection: { _id: 1, assortmentId: 1 },
       }).toArray();
@@ -211,7 +206,11 @@ export const configureAssortmentProductsModule = ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentProductId, doc, options) => {
+    update: async (
+      assortmentProductId: string,
+      doc: AssortmentProduct,
+      options?: { skipInvalidation?: boolean },
+    ): Promise<AssortmentProduct> => {
       const selector = generateDbFilterById(assortmentProductId);
       const modifier = {
         $set: {
@@ -229,7 +228,17 @@ export const configureAssortmentProductsModule = ({
       return assortmentProduct;
     },
 
-    updateManualOrder: async ({ sortKeys }, options) => {
+    updateManualOrder: async (
+      {
+        sortKeys,
+      }: {
+        sortKeys: Array<{
+          assortmentProductId: string;
+          sortKey: number;
+        }>;
+      },
+      options?: { skipInvalidation?: boolean },
+    ): Promise<Array<AssortmentProduct>> => {
       const changedAssortmentProductIds = await Promise.all(
         sortKeys.map(async ({ assortmentProductId, sortKey }) => {
           await AssortmentProducts.updateOne(generateDbFilterById(assortmentProductId), {
@@ -258,3 +267,5 @@ export const configureAssortmentProductsModule = ({
     },
   };
 };
+
+export type AssortmentProductsModule = ReturnType<typeof configureAssortmentProductsModule>;

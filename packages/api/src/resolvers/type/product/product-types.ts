@@ -18,15 +18,27 @@ export const Product = {
     params: {
       forceLocale?: string;
     },
-    { modules }: Context,
+    { modules, loaders }: Context,
   ): Promise<
     Array<{
       links: Array<AssortmentPathLink>;
     }>
   > {
-    return modules.assortments.breadcrumbs({
-      productId: product._id,
-    });
+    return modules.assortments.breadcrumbs(
+      {
+        productId: product._id,
+      },
+      {
+        resolveAssortmentProducts: async (productId) =>
+          loaders.assortmentProductsLoader.load({
+            productId,
+          }),
+        resolveAssortmentLinks: async (childAssortmentId) =>
+          loaders.assortmentLinksLoader.load({
+            childAssortmentId,
+          }),
+      },
+    );
   },
 
   // TODO: Use a loader!
@@ -103,7 +115,7 @@ export const Product = {
 
     if (!assortmentIds.length) return [];
 
-    const productIds = await modules.assortments.products.findProductSiblings({
+    const productIds = await modules.assortments.products.findSiblings({
       productId,
       assortmentIds,
     });

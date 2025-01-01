@@ -13,7 +13,7 @@ export default async function removeAssortmentProduct(
 
   if (!assortmentProductId) throw new InvalidIdError({ assortmentProductId });
 
-  const assortmentProduct = await modules.assortments.products.findProduct({
+  const assortmentProduct = await modules.assortments.products.findAssortmentProduct({
     assortmentProductId,
   });
   if (!assortmentProduct) throw new AssortmentProductNotFoundError({ assortmentProductId });

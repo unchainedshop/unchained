@@ -1,7 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.js';
-import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 import { AssortmentLink, InvalidateCacheFn } from '../db/AssortmentsCollection.js';
 
 const ASSORTMENT_LINK_EVENTS = [
@@ -110,32 +109,35 @@ export const configureAssortmentLinksModule = ({
     create: async (doc, options) => {
       const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
 
-      const selector = {
-        ...(assortmentLinkId ? generateDbFilterById(assortmentLinkId) : {}),
-        parentAssortmentId,
-        childAssortmentId,
-      };
+      const assortmentLinksPath = await walkUpFromAssortment({
+        resolveAssortmentLinks: async (id: string) => {
+          return AssortmentLinks.find(
+            { childAssortmentId: id },
+            {
+              projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
+              sort: { sortKey: 1, parentAssortmentId: 1 },
+            },
+          ).toArray();
+        },
+        assortmentId: parentAssortmentId,
+      });
+      const assortmentIdAlreadyPartOfGraphParents = assortmentLinksPath.some((path) =>
+        path.links?.some(
+          (l) => l.parentAssortmentId === childAssortmentId || l.childAssortmentId === childAssortmentId,
+        ),
+      );
+      if (assortmentIdAlreadyPartOfGraphParents) throw Error('CyclicGraphNotSupported');
 
-      const $set: any = {
+      const $set: mongodb.UpdateFilter<AssortmentLink> = {
         updated: new Date(),
         ...rest,
       };
-      const $setOnInsert: any = {
+      const $setOnInsert: mongodb.UpdateFilter<AssortmentLink> = {
         _id: assortmentLinkId || generateDbObjectId(),
         parentAssortmentId,
         childAssortmentId,
         created: new Date(),
       };
-
-      const assortmentLinksPath = await walkUpFromAssortment({
-        resolveAssortmentLink: resolveAssortmentLinkFromDatabase(AssortmentLinks),
-        assortmentId: parentAssortmentId,
-      });
-      assortmentLinksPath
-        .flatMap(({ links }) => links)
-        .forEach(({ parentIds }) => {
-          if (parentIds.includes(childAssortmentId)) throw Error('CyclicGraphNotSupported');
-        });
 
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
@@ -149,7 +151,11 @@ export const configureAssortmentLinksModule = ({
       }
 
       const assortmentLink = await AssortmentLinks.findOneAndUpdate(
-        selector,
+        {
+          ...(assortmentLinkId ? generateDbFilterById(assortmentLinkId) : {}),
+          parentAssortmentId,
+          childAssortmentId,
+        },
         {
           $set,
           $setOnInsert,

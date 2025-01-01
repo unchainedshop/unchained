@@ -1,37 +1,46 @@
-const walkAssortmentLinks = (resolveAssortmentLink) => async (rootAssortmentId) => {
-  const walk = async (assortmentId, initialPaths: string[], childAssortmentId?: string) => {
-    const assortmentLink = await resolveAssortmentLink(assortmentId, childAssortmentId);
-    if (!assortmentLink) return initialPaths;
+import {
+  BreacrumbAssortmentProductFunction,
+  BreadcrumbAssortmentLinkFunction,
+} from '../../assortments-index.js';
 
-    const subAsssortmentLinks = await Promise.all(
-      assortmentLink.parentIds.map(async (parentAssortmentId) => {
-        return walk(parentAssortmentId, initialPaths, assortmentId);
-      }),
-    );
+const walkAssortmentLinks =
+  (resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction) => async (rootAssortmentId) => {
+    const walk = async (assortmentId) => {
+      const parentAssortmentLinks = await resolveAssortmentLinks(assortmentId);
+      if (!parentAssortmentLinks?.length)
+        return [
+          [
+            {
+              childAssortmentId: assortmentId,
+              parentAssortmentId: null,
+            },
+          ],
+        ];
 
-    if (subAsssortmentLinks.length > 0) {
-      return subAsssortmentLinks
-        .map((subAsssortmentLink) => {
-          return subAsssortmentLink.map((subSubLinks) => [
-            ...subSubLinks,
-            assortmentLink,
-            ...initialPaths,
-          ]);
-        })
-        .flat();
-    }
-    return [[assortmentLink, ...initialPaths]];
+      return await Promise.all(
+        parentAssortmentLinks.map(async (assortmentLink) => {
+          const upstream = await walk(assortmentLink.parentAssortmentId);
+          if (upstream.length) {
+            return [...upstream, assortmentLink].flat();
+          }
+          return [assortmentLink];
+        }),
+      );
+    };
+    // Recursively walk up the directed graph in reverse
+    return walk(rootAssortmentId);
   };
-  // Recursively walk up the directed graph in reverse
-  return walk(rootAssortmentId, []);
-};
 
 export const walkUpFromProduct = async ({
   resolveAssortmentProducts,
-  resolveAssortmentLink,
+  resolveAssortmentLinks,
   productId,
+}: {
+  resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
+  resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
+  productId: string;
 }) => {
-  const pathResolver = walkAssortmentLinks(resolveAssortmentLink);
+  const pathResolver = walkAssortmentLinks(resolveAssortmentLinks);
   const assortmentProducts = await resolveAssortmentProducts(productId);
   return (
     await Promise.all(
@@ -47,12 +56,10 @@ export const walkUpFromProduct = async ({
   ).flat();
 };
 
-export const walkUpFromAssortment = async ({ resolveAssortmentLink, assortmentId }) => {
-  const pathResolver = walkAssortmentLinks(resolveAssortmentLink);
+export const walkUpFromAssortment = async ({ resolveAssortmentLinks, assortmentId }) => {
+  const pathResolver = walkAssortmentLinks(resolveAssortmentLinks);
   const paths = await pathResolver(assortmentId);
-  return paths
-    .map((links) => ({
-      links: links.slice(0, -1),
-    }))
-    .filter(({ links }) => links.length);
+  return paths.map((links) => ({
+    links: links.slice(0, -1),
+  }));
 };

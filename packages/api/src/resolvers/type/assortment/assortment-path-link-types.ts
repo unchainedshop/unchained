@@ -1,28 +1,23 @@
+import { AssortmentLink } from '@unchainedshop/core-assortments';
 import { Context } from '../../../context.js';
-import {
-  AssortmentPathLink as AssortmentPathLinkType,
-  AssortmentLink as AssortmentLinkType,
-  AssortmentText,
-} from '@unchainedshop/core-assortments';
 
-type HelperType<P, T> = (assortmentPathLink: AssortmentPathLinkType, params: P, context: Context) => T;
-
-export interface AssortmentPathLinkHelperTypes {
-  link: HelperType<never, Promise<AssortmentLinkType>>;
-  assortmentTexts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
-}
-
-export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
-  link: async ({ assortmentId, childAssortmentId }, _, { loaders }) => {
-    return loaders.assortmentLinkLoader.load({
-      parentAssortmentId: assortmentId,
-      childAssortmentId,
-    });
+export const AssortmentPathLink = {
+  link(linkObj) {
+    if (linkObj._id) return linkObj;
+    return null;
   },
 
-  assortmentTexts: async ({ assortmentId }, params, { loaders, localeContext }) => {
+  assortmentId(linkObj) {
+    return linkObj.childAssortmentId;
+  },
+
+  assortmentTexts: async (
+    { childAssortmentId }: AssortmentLink,
+    params: { forceLocale?: string },
+    { loaders, localeContext }: Context,
+  ) => {
     const text = await loaders.assortmentTextLoader.load({
-      assortmentId,
+      assortmentId: childAssortmentId,
       locale: params.forceLocale || localeContext.baseName,
     });
     return text;

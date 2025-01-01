@@ -32,9 +32,9 @@ export type Context = UnchainedCore & {
   version?: string;
   roles?: any;
   adminUiConfig?: AdminUiConfig;
+  loaders: UnchainedLoaders;
 } & UnchainedUserContext &
   UnchainedLocaleContext &
-  UnchainedLoaders &
   UnchainedHTTPServerContext;
 
 let context;

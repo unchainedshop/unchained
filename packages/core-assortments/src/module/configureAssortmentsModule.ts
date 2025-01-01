@@ -9,12 +9,11 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
-import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 import addMigrations from '../migrations/addMigrations.js';
 import {
   Assortment,
   AssortmentLink,
+  AssortmentProduct,
   AssortmentQuery,
   AssortmentsCollection,
   InvalidateCacheFn,
@@ -46,6 +45,14 @@ export interface AssortmentPathLink {
   parentIds: string[];
 }
 
+export type BreadcrumbAssortmentLinkFunction = (
+  childAssortmentId: string,
+) => Promise<Array<AssortmentLink>>;
+
+export type BreacrumbAssortmentProductFunction = (
+  productId: string,
+) => Promise<Array<AssortmentProduct>>;
+
 const logger = createLogger('unchained:core');
 
 export type AssortmentsModule = {
@@ -73,10 +80,16 @@ export type AssortmentsModule = {
     ignoreChildAssortments?: boolean;
   }) => Promise<Array<string>>;
 
-  breadcrumbs: (params: {
-    assortmentId?: string;
-    productId?: string;
-  }) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
+  breadcrumbs: (
+    params: {
+      assortmentId?: string;
+      productId?: string;
+    },
+    resolvers: {
+      resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
+      resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
+    },
+  ) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
 
   // Mutations
   create: (doc: Assortment) => Promise<Assortment>;
@@ -419,12 +432,18 @@ export const configureAssortmentsModule = async ({
       return !!assortmentCount;
     },
 
-    breadcrumbs: async (params) => {
-      const resolveAssortmentLink = resolveAssortmentLinkFromDatabase(AssortmentLinks);
-      const resolveAssortmentProducts = resolveAssortmentProductFromDatabase(AssortmentProducts);
-
+    breadcrumbs: async (
+      params,
+      {
+        resolveAssortmentLinks,
+        resolveAssortmentProducts,
+      }: {
+        resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
+        resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
+      },
+    ) => {
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
-        resolveAssortmentLink,
+        resolveAssortmentLinks,
         resolveAssortmentProducts,
       });
 

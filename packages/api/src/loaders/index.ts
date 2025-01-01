@@ -13,48 +13,6 @@ import {
 } from '@unchainedshop/core-assortments';
 import { File } from '@unchainedshop/core-files';
 
-export interface UnchainedLoaders {
-  loaders: {
-    productLoader: InstanceType<typeof DataLoader<{ productId: string }, Product>>;
-    productLoaderBySKU: InstanceType<typeof DataLoader<{ sku: string }, Product>>;
-    productTextLoader: InstanceType<
-      typeof DataLoader<{ productId: string; locale: string }, ProductText>
-    >;
-    productMediaTextLoader: InstanceType<
-      typeof DataLoader<{ productMediaId: string; locale: string }, ProductMediaText>
-    >;
-
-    fileLoader: InstanceType<typeof DataLoader<{ fileId: string }, File>>;
-
-    filterLoader: InstanceType<typeof DataLoader<{ filterId: string }, Filter>>;
-    filterTextLoader: InstanceType<
-      typeof DataLoader<{ filterId: string; filterOptionValue?: string; locale: string }, FilterText>
-    >;
-
-    assortmentLoader: InstanceType<typeof DataLoader<{ assortmentId: string }, Assortment>>;
-    assortmentTextLoader: InstanceType<
-      typeof DataLoader<{ assortmentId: string; locale: string }, AssortmentText>
-    >;
-    assortmentLinkLoader: InstanceType<
-      typeof DataLoader<{ parentAssortmentId: string; childAssortmentId: string }, AssortmentLink>
-    >;
-    assortmentLinksLoader: InstanceType<
-      typeof DataLoader<{ parentAssortmentId?: string; assortmentId?: string }, AssortmentLink[]>
-    >;
-    assortmentProductLoader: InstanceType<
-      typeof DataLoader<{ assortmentId: string; productId: string }, AssortmentProduct>
-    >;
-    assortmentMediaTextLoader: InstanceType<
-      typeof DataLoader<{ assortmentMediaId: string; locale: string }, AssortmentMediaText>
-    >;
-
-    productMediasLoader: InstanceType<typeof DataLoader<{ productId?: string }, ProductMedia[]>>;
-    assortmentMediasLoader: InstanceType<
-      typeof DataLoader<{ assortmentId?: string }, AssortmentMediaType[]>
-    >;
-  };
-}
-
 function getLocaleStrings(locale: string) {
   const localeObj = new Intl.Locale(locale);
   return [
@@ -67,9 +25,9 @@ function getLocaleStrings(locale: string) {
   ];
 }
 
-const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['loaders']> => {
+const loaders = async (unchainedAPI: UnchainedCore) => {
   return {
-    assortmentLoader: new DataLoader(async (queries) => {
+    assortmentLoader: new DataLoader<{ assortmentId: string }, Assortment>(async (queries) => {
       const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
       const assortments = await unchainedAPI.modules.assortments.findAssortments({
@@ -85,33 +43,38 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => assortmentMap[q.assortmentId]);
     }),
 
-    assortmentTextLoader: new DataLoader(async (queries) => {
-      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+    assortmentTextLoader: new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(
+      async (queries) => {
+        const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
-      const texts = await unchainedAPI.modules.assortments.texts.findTexts(
-        { assortmentId: { $in: assortmentIds } },
-        {
-          sort: {
-            assortmentId: 1,
+        const texts = await unchainedAPI.modules.assortments.texts.findTexts(
+          { assortmentId: { $in: assortmentIds } },
+          {
+            sort: {
+              assortmentId: 1,
+            },
           },
-        },
-      );
+        );
 
-      const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
-      const textsMap = {};
-      const localeMap = Object.fromEntries(
-        queryLocales.flatMap((queryLocale) => {
-          return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-        }),
-      );
-      for (const text of texts) {
-        const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[locale + text.assortmentId] = text;
-      }
-      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentId]);
-    }),
+        const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+        const textsMap = {};
+        const localeMap = Object.fromEntries(
+          queryLocales.flatMap((queryLocale) => {
+            return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
+          }),
+        );
+        for (const text of texts) {
+          const locale = localeMap[text.locale.toLowerCase()];
+          textsMap[locale + text.assortmentId] = text;
+        }
+        return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentId]);
+      },
+    ),
 
-    assortmentMediaTextLoader: new DataLoader(async (queries) => {
+    assortmentMediaTextLoader: new DataLoader<
+      { assortmentMediaId: string; locale: string },
+      AssortmentMediaText
+    >(async (queries) => {
       const assortmentMediaIds = [...new Set(queries.map((q) => q.assortmentMediaId).filter(Boolean))];
 
       const texts = await unchainedAPI.modules.assortments.media.texts.findMediaTexts(
@@ -137,92 +100,136 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentMediaId]);
     }),
 
-    assortmentMediasLoader: new DataLoader(async (queries) => {
-      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
-      const assortmentMediaItems = await unchainedAPI.modules.assortments.media.findAssortmentMedias({
-        assortmentId: { $in: assortmentIds },
-      });
+    assortmentMediasLoader: new DataLoader<{ assortmentId?: string }, AssortmentMediaType[]>(
+      async (queries) => {
+        const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+        const assortmentMediaItems = await unchainedAPI.modules.assortments.media.findAssortmentMedias({
+          assortmentId: { $in: assortmentIds },
+        });
 
-      const assortmentMediaMap = {};
-      for (const assortmentMedia of assortmentMediaItems) {
-        if (!assortmentMediaMap[assortmentMedia.assortmentId]) {
-          assortmentMediaMap[assortmentMedia.assortmentId] = [assortmentMedia];
-        } else {
-          assortmentMediaMap[assortmentMedia.assortmentId].push(assortmentMedia);
+        const assortmentMediaMap = {};
+        for (const assortmentMedia of assortmentMediaItems) {
+          if (!assortmentMediaMap[assortmentMedia.assortmentId]) {
+            assortmentMediaMap[assortmentMedia.assortmentId] = [assortmentMedia];
+          } else {
+            assortmentMediaMap[assortmentMedia.assortmentId].push(assortmentMedia);
+          }
         }
-      }
-      return queries.map((q) => assortmentMediaMap[q.assortmentId] || []);
-    }),
+        return queries.map((q) => assortmentMediaMap[q.assortmentId] || []);
+      },
+    ),
 
-    assortmentLinkLoader: new DataLoader(async (queries) => {
+    assortmentLinkLoader: new DataLoader<
+      { parentAssortmentId: string; childAssortmentId: string },
+      AssortmentLink
+    >(async (queries) => {
       const parentAssortmentIds = [...new Set(queries.map((q) => q.parentAssortmentId).filter(Boolean))];
 
       const links = await unchainedAPI.modules.assortments.links.findLinks({
         parentAssortmentIds,
       });
 
-      // TODO: Optimize
+      const assortmentLinkMap = {};
+      for (const link of links) {
+        if (!assortmentLinkMap[link.parentAssortmentId]) {
+          assortmentLinkMap[link.parentAssortmentId] = [link];
+        } else {
+          assortmentLinkMap[link.parentAssortmentId].push(link);
+        }
+      }
+
       return queries.map((q) => {
-        return links.find((link) => {
-          if (link.parentAssortmentId !== q.parentAssortmentId) return false;
-          if (q.childAssortmentId && link.childAssortmentId !== q.childAssortmentId) return false;
-          return true;
-        });
+        if (q.childAssortmentId) {
+          return assortmentLinkMap[q.parentAssortmentId].find(
+            (link) => link.childAssortmentId === q.childAssortmentId,
+          );
+        }
+        return assortmentLinkMap[q.parentAssortmentId][0];
       });
     }),
 
-    assortmentLinksLoader: new DataLoader(async (queries) => {
-      const parentAssortmentIds = [
-        ...new Set(queries.flatMap((q) => q.parentAssortmentId).filter(Boolean)),
-      ];
-      const assortmentIds = [...new Set(queries.flatMap((q) => q.assortmentId).filter(Boolean))];
+    assortmentLinksLoader: new DataLoader<
+      { parentAssortmentId?: string; childAssortmentId?: string; assortmentId?: string },
+      AssortmentLink[]
+    >(async (queries) => {
+      const parentAssortmentIds = queries.flatMap((q) => q.parentAssortmentId).filter(Boolean);
+      const childAssortmentIds = queries.flatMap((q) => q.childAssortmentId).filter(Boolean);
+      const assortmentIds = queries.flatMap((q) => q.assortmentId).filter(Boolean);
 
-      const linksByParentAssortmentId =
-        parentAssortmentIds?.length &&
-        (await unchainedAPI.modules.assortments.links.findLinks({
-          parentAssortmentIds,
-        }));
-      const linksByAssortmentId =
-        assortmentIds?.length &&
-        (await unchainedAPI.modules.assortments.links.findLinks({
-          assortmentIds,
-        }));
+      const allLinks = await unchainedAPI.modules.assortments.links.findLinks({
+        assortmentIds: [...new Set([...parentAssortmentIds, ...childAssortmentIds, ...assortmentIds])],
+      });
 
-      // TODO: Optimize
+      const parentAssortmentLinkMap = {};
+      const childAssortmentLinkMap = {};
+
+      for (const link of allLinks) {
+        if (!parentAssortmentLinkMap[link.parentAssortmentId]) {
+          parentAssortmentLinkMap[link.parentAssortmentId] = [link];
+        } else {
+          parentAssortmentLinkMap[link.parentAssortmentId].push(link);
+        }
+
+        if (!childAssortmentLinkMap[link.childAssortmentId]) {
+          childAssortmentLinkMap[link.childAssortmentId] = [link];
+        } else {
+          childAssortmentLinkMap[link.childAssortmentId].push(link);
+        }
+      }
+
       return queries.map((q) => {
         if (q.parentAssortmentId) {
-          return linksByParentAssortmentId.filter(
-            (link) => link.parentAssortmentId === q.parentAssortmentId,
-          );
+          return parentAssortmentLinkMap[q.parentAssortmentId] || [];
+        } else if (q.childAssortmentId) {
+          return childAssortmentLinkMap[q.childAssortmentId] || [];
         }
-        if (q.assortmentId) {
-          return linksByAssortmentId.filter(
-            (link) =>
-              link.parentAssortmentId === q.assortmentId || link.childAssortmentId === q.assortmentId,
-          );
-        }
-        return [];
+        return [
+          ...(parentAssortmentLinkMap[q.assortmentId] || []),
+          ...(childAssortmentLinkMap[q.assortmentId] || []),
+        ];
       });
     }),
 
-    assortmentProductLoader: new DataLoader(async (queries) => {
+    assortmentProductLoader: new DataLoader<
+      { assortmentId: string; productId: string },
+      AssortmentProduct
+    >(async (queries) => {
       const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
-      const assortmentProducts = await unchainedAPI.modules.assortments.products.findProducts({
+      const assortmentProducts = await unchainedAPI.modules.assortments.products.findAssortmentProducts({
         assortmentIds,
       });
 
-      // TODO: Optimize
-      return queries.map((q) => {
-        return assortmentProducts.find((assortmentProduct) => {
-          if (assortmentProduct.assortmentId !== q.assortmentId) return false;
-          if (assortmentProduct.productId !== q.productId) return false;
-          return true;
-        });
-      });
+      const assortmentProductMap = {};
+      for (const assortmentProduct of assortmentProducts) {
+        assortmentProductMap[assortmentProduct.assortmentId + assortmentProduct.productId] =
+          assortmentProduct;
+      }
+      return queries.map((q) => assortmentProductMap[q.assortmentId + q.productId]);
     }),
 
-    filterLoader: new DataLoader(async (queries) => {
+    assortmentProductsLoader: new DataLoader<{ productId: string }, AssortmentProduct[]>(
+      async (queries) => {
+        const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+
+        const assortmentProducts =
+          await unchainedAPI.modules.assortments.products.findAssortmentProducts({
+            productIds,
+          });
+
+        const assortmentProductsMap = {};
+        for (const assortmentProduct of assortmentProducts) {
+          if (!assortmentProductsMap[assortmentProduct.productId]) {
+            assortmentProductsMap[assortmentProduct.productId] = [assortmentProduct];
+          } else {
+            assortmentProductsMap[assortmentProduct.productId].push(assortmentProduct);
+          }
+        }
+        return queries.map((q) => assortmentProductsMap[q.productId] || []);
+      },
+    ),
+
+    filterLoader: new DataLoader<{ filterId: string }, Filter>(async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 
       const filters = await unchainedAPI.modules.filters.findFilters({
@@ -238,7 +245,10 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => filterMap[q.filterId]);
     }),
 
-    filterTextLoader: new DataLoader(async (queries) => {
+    filterTextLoader: new DataLoader<
+      { filterId: string; filterOptionValue?: string; locale: string },
+      FilterText
+    >(async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 
       const texts = await unchainedAPI.modules.filters.texts.findTexts(
@@ -264,7 +274,7 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => textsMap[q.locale.toLowerCase() + q.filterId + q.filterOptionValue]);
     }),
 
-    productLoader: new DataLoader(async (queries) => {
+    productLoader: new DataLoader<{ productId: string }, Product>(async (queries) => {
       const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))]; // you don't need lodash, _.unique my ass
 
       const products = await unchainedAPI.modules.products.findProducts({
@@ -282,7 +292,7 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => productMap[q.productId]);
     }),
 
-    productLoaderBySKU: new DataLoader(async (queries) => {
+    productLoaderBySKU: new DataLoader<{ sku: string }, Product>(async (queries) => {
       const skus = [...new Set(queries.map((q) => q.sku).filter(Boolean))]; // you don't need lodash, _.unique my ass
 
       const products = await unchainedAPI.modules.products.findProducts({
@@ -300,57 +310,61 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => productMap[q.sku]);
     }),
 
-    productTextLoader: new DataLoader(async (queries) => {
-      const productIds = [...new Set(queries.map((q) => q.productId))].filter(Boolean);
-      const texts = await unchainedAPI.modules.products.texts.findTexts(
-        { productId: { $in: productIds } },
-        {
-          sort: {
-            productId: 1,
+    productTextLoader: new DataLoader<{ productId: string; locale: string }, ProductText>(
+      async (queries) => {
+        const productIds = [...new Set(queries.map((q) => q.productId))].filter(Boolean);
+        const texts = await unchainedAPI.modules.products.texts.findTexts(
+          { productId: { $in: productIds } },
+          {
+            sort: {
+              productId: 1,
+            },
           },
-        },
-      );
-      const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
-      const textsMap = {};
-      const localeMap = Object.fromEntries(
-        queryLocales.flatMap((queryLocale) => {
-          return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-        }),
-      );
-      for (const text of texts) {
-        const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[locale + text.productId] = text;
-      }
-      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productId]);
-    }),
+        );
+        const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+        const textsMap = {};
+        const localeMap = Object.fromEntries(
+          queryLocales.flatMap((queryLocale) => {
+            return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
+          }),
+        );
+        for (const text of texts) {
+          const locale = localeMap[text.locale.toLowerCase()];
+          textsMap[locale + text.productId] = text;
+        }
+        return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productId]);
+      },
+    ),
 
-    productMediaTextLoader: new DataLoader(async (queries) => {
-      const productMediaIds = [...new Set(queries.map((q) => q.productMediaId).filter(Boolean))];
+    productMediaTextLoader: new DataLoader<{ productMediaId: string; locale: string }, ProductMediaText>(
+      async (queries) => {
+        const productMediaIds = [...new Set(queries.map((q) => q.productMediaId).filter(Boolean))];
 
-      const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts(
-        { productMediaId: { $in: productMediaIds } },
-        {
-          sort: {
-            productMediaId: 1,
+        const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts(
+          { productMediaId: { $in: productMediaIds } },
+          {
+            sort: {
+              productMediaId: 1,
+            },
           },
-        },
-      );
+        );
 
-      const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
-      const textsMap = {};
-      const localeMap = Object.fromEntries(
-        queryLocales.flatMap((queryLocale) => {
-          return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-        }),
-      );
-      for (const text of texts) {
-        const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[locale + text.productMediaId] = text;
-      }
-      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productMediaId]);
-    }),
+        const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+        const textsMap = {};
+        const localeMap = Object.fromEntries(
+          queryLocales.flatMap((queryLocale) => {
+            return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
+          }),
+        );
+        for (const text of texts) {
+          const locale = localeMap[text.locale.toLowerCase()];
+          textsMap[locale + text.productMediaId] = text;
+        }
+        return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productMediaId]);
+      },
+    ),
 
-    productMediasLoader: new DataLoader(async (queries) => {
+    productMediasLoader: new DataLoader<{ productId?: string }, ProductMedia[]>(async (queries) => {
       const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
       const productMediaItems = await unchainedAPI.modules.products.media.findProductMedias({
         productId: { $in: productIds },
@@ -367,7 +381,7 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
       return queries.map((q) => productMediaMap[q.productId] || []);
     }),
 
-    fileLoader: new DataLoader(async (queries) => {
+    fileLoader: new DataLoader<{ fileId: string }, File>(async (queries) => {
       const fileIds = [...new Set(queries.map((q) => q.fileId).filter(Boolean))]; // you don't need lodash, _.unique my ass
 
       const files = await unchainedAPI.modules.files.findFiles({
@@ -383,5 +397,7 @@ const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['l
     }),
   };
 };
+
+export type UnchainedLoaders = Awaited<ReturnType<typeof loaders>>;
 
 export default loaders;

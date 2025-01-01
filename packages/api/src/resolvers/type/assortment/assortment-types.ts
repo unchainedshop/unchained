@@ -3,10 +3,22 @@ import { Assortment } from '@unchainedshop/core-assortments';
 import { SearchFilterQuery } from '@unchainedshop/core-filters';
 
 export const AssortmentTypes = {
-  assortmentPaths: (obj: Assortment, _, { modules }: Context) => {
-    return modules.assortments.breadcrumbs({
-      assortmentId: obj._id,
-    });
+  assortmentPaths(obj: Assortment, _, { modules, loaders }: Context) {
+    return modules.assortments.breadcrumbs(
+      {
+        assortmentId: obj._id,
+      },
+      {
+        resolveAssortmentProducts: async (productId) =>
+          loaders.assortmentProductsLoader.load({
+            productId,
+          }),
+        resolveAssortmentLinks: async (childAssortmentId) =>
+          loaders.assortmentLinksLoader.load({
+            childAssortmentId,
+          }),
+      },
+    );
   },
 
   children: async (
@@ -79,7 +91,7 @@ export const AssortmentTypes = {
 
   async productAssignments(obj: Assortment, _, { modules }: Context) {
     // TODO: Loader & move default sort to core module
-    return modules.assortments.products.findProducts(
+    return modules.assortments.products.findAssortmentProducts(
       {
         assortmentId: obj._id,
       },
