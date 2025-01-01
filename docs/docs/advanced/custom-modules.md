@@ -17,16 +17,16 @@ In many cases this goes together with [extending the API](../advanced/extending-
 Below is an example of a custom module that will be used to change currency of a cart.
 
 ```typescript
-import { OrdersCollection } from '@unchainedshop/core-orders'
+import { OrdersCollection, Order } from '@unchainedshop/core-orders'
 import { generateDbFilterById } from '@unchainedshop/mongodb'
-import { Order } from '@unchainedshop/core-orders';
+import { ModuleInput } from '@unchainedshop/core';
 
-const currencyModule = {
-  configure: async ({ db }: { db: Db }): Promise<CurrencyModule> => {
+const myModule = {
+  configure: async ({ db }: ModuleInput<Record<string, never>>) => {
     const Orders = await OrdersCollection(db)
 
     return {
-      async changeCartCurrency(currency: string, cartId: string): Promise<Order> {
+      async changeCartCurrency(currency: string, cartId: string) {
         const selector = generateDbFilterById(cartId)
         Orders.updateOne(selector, {
           $set: {
@@ -55,7 +55,7 @@ startPlatform({
     ...
     modules: {
       ...
-      currencyModule
+      myModule
       ...
     },
     ...
@@ -64,10 +64,10 @@ startPlatform({
 
 **Note: avoid giving the custom module a name that is identical to the built in module. this will replace the existing module and change result in runtime error**
 
-Now the `currencyModule` is available globally though out the engine context and can be accessed as follows
+Now the `myModule` is available globally though out the engine context and can be accessed as follows
 
 ```
-  unchainedContext.modules.currencyModule.changeCartCurrency(...)
+  unchainedContext.modules.myModule.changeCartCurrency(...)
 
 ```
 
@@ -83,10 +83,13 @@ You can access built in or custom services from unchained context anywhere in th
 unchainedAPIContext.services.serviceName.[function name]
 ```
 
-It is possible to create a custom service for your need and have it available throughout the engine context like the built-in services. Custom services function can accept first arguments that will be used in the service and will also receive unchained context as there second argument
+It is possible to create a custom service for your need and have it available throughout the engine context like the built-in services. Custom services function are bound to the core modules and have access to those through this.
 
 ```typescript
-function serviceFunc(args: obj, context: UnchainedCore) {
+import { Modules } from '@unchainedshop/core';
+
+function serviceFunc(this: Modules, ...myParams: any) {
   ...
+  this.orders.findOrder(...)
 }
 ``` 

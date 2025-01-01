@@ -10,22 +10,6 @@ import { CurrenciesCollection, Currency, CurrencyQuery } from '../db/CurrenciesC
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
-export type CurrenciesModule = {
-  findCurrency: (params: { currencyId?: string; isoCode?: string }) => Promise<Currency>;
-  findCurrencies: (
-    params: CurrencyQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-  ) => Promise<Array<Currency>>;
-  count: (query: CurrencyQuery) => Promise<number>;
-  currencyExists: (params: { currencyId: string }) => Promise<boolean>;
-  update: (_id: string, doc: Currency) => Promise<string>;
-  delete: (_id: string) => Promise<number>;
-  create: (doc: Currency) => Promise<string | null>;
-};
-
 export const buildFindSelector = ({
   includeInactive = false,
   contractAddress,
@@ -40,19 +24,32 @@ export const buildFindSelector = ({
   return selector;
 };
 
-export const configureCurrenciesModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<CurrenciesModule> => {
+export const configureCurrenciesModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(CURRENCY_EVENTS);
 
   const Currencies = await CurrenciesCollection(db);
 
   return {
-    findCurrency: async ({ currencyId, isoCode }) => {
+    findCurrency: async ({
+      currencyId,
+      isoCode,
+    }: {
+      currencyId?: string;
+      isoCode?: string;
+    }): Promise<Currency> => {
       return Currencies.findOne(currencyId ? generateDbFilterById(currencyId) : { isoCode });
     },
 
-    findCurrencies: async ({ limit, offset, sort, ...query }) => {
+    findCurrencies: async ({
+      limit,
+      offset,
+      sort,
+      ...query
+    }: CurrencyQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    }): Promise<Array<Currency>> => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const currencies = Currencies.find(buildFindSelector(query), {
         skip: offset,
@@ -62,12 +59,12 @@ export const configureCurrenciesModule = async ({
       return currencies.toArray();
     },
 
-    count: async (query) => {
+    count: async (query: CurrencyQuery) => {
       const count = await Currencies.countDocuments(buildFindSelector(query));
       return count;
     },
 
-    currencyExists: async ({ currencyId }) => {
+    currencyExists: async ({ currencyId }: { currencyId: string }) => {
       const currencyCount = await Currencies.countDocuments(
         generateDbFilterById(currencyId, { deleted: null }),
         {
@@ -102,7 +99,7 @@ export const configureCurrenciesModule = async ({
       return currencyId;
     },
 
-    delete: async (currencyId) => {
+    delete: async (currencyId: string) => {
       const { modifiedCount: deletedCount } = await Currencies.updateOne(
         generateDbFilterById(currencyId),
         {
@@ -116,3 +113,5 @@ export const configureCurrenciesModule = async ({
     },
   };
 };
+
+export type CurrenciesModule = Awaited<ReturnType<typeof configureCurrenciesModule>>;

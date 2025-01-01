@@ -45,7 +45,7 @@ import { simulateProductDispatchingService } from './simulateProductDispatching.
 import { simulateProductInventoryService } from './simulateProductInventory.js';
 import { findOrInitCartService } from './findOrInitCart.js';
 
-// TODO: Auto-Inject Unchained API as last parameter
+// Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
 
 function bindMethodsToModules(modules: Modules) {
