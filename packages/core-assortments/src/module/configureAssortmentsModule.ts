@@ -357,11 +357,27 @@ export const configureAssortmentsModule = async ({
         productId?: string;
       },
       {
-        resolveAssortmentLinks,
-        resolveAssortmentProducts,
+        resolveAssortmentLinks = async (id: string) => {
+          return AssortmentLinks.find(
+            { childAssortmentId: id },
+            {
+              projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
+              sort: { sortKey: 1, parentAssortmentId: 1 },
+            },
+          ).toArray();
+        },
+        resolveAssortmentProducts = async (id: string) => {
+          return AssortmentProducts.find(
+            { productId: id },
+            {
+              projection: { _id: true, assortmentId: true, productId: true },
+              sort: { sortKey: 1, productId: 1 },
+            },
+          ).toArray();
+        },
       }: {
-        resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
-        resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
+        resolveAssortmentLinks?: BreadcrumbAssortmentLinkFunction;
+        resolveAssortmentProducts?: BreacrumbAssortmentProductFunction;
       },
     ): Promise<Array<{ links: Array<AssortmentPathLink> }>> => {
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
