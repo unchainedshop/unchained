@@ -1,4 +1,4 @@
-import { gridfsHandler } from '../files/gridfs/gridfs-webhook.js';
+import { gridfsHandler } from '../files/gridfs/gridfs-webhook-express.js';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
