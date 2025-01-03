@@ -1,0 +1,52 @@
+{
+  "name": "@unchainedshop/example-keycloak",
+  "description": "Keycloak Example",
+  "private": true,
+  "version": "3.0.0-rc.15",
+  "license": "EUPL-1.2",
+  "type": "module",
+  "homepage": "https://unchained.shop",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "contributors": [
+    "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
+    "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
+    "Marco Wettstein <maw@panter.ch>",
+    "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)",
+    "Mikael Araya Mengistu <mikaeln@unchained.shop> (https://unchained.shop)"
+  ],
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "lint": "prettier -w .",
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "start": "node --env-file .env.defaults lib/boot.js",
+    "dev:run": "node --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
+    "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.1",
+    "@fastify/oauth2": "^8.1.0",
+    "@fastify/session": "^11.0.2",
+    "@unchainedshop/platform": "^3.0.0-rc.15",
+    "@unchainedshop/plugins": "^3.0.0-rc.15",
+    "fastify": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "mongodb-memory-server": "^10.1.2",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}

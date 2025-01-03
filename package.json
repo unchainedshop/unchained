@@ -57,7 +57,8 @@
     "packages/platform",
     "examples/kitchensink",
     "examples/kitchensink-express",
-    "examples/minimal"
+    "examples/minimal",
+    "examples/keycloak"
   ],
   "scripts": {
     "lint": "eslint packages tests --fix --ext=js --ext=ts",
