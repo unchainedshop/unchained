@@ -76,19 +76,32 @@ app.get(
     const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
     try {
       const userinfo = await this.keycloak.userinfo(accessToken.token.access_token);
-      const { sub, email, resource_access, email_verified, name, given_name, family_name } =
-        userinfo as {
-          sub: string;
-          email: string;
-          resource_access: Record<string, { roles: string[] }>;
-          email_verified: boolean;
-          name: string;
-          given_name: string;
-          family_name: string;
-        };
+      const {
+        sub,
+        email,
+        resource_access,
+        email_verified,
+        name,
+        given_name,
+        family_name,
+        preferred_username,
+      } = userinfo as {
+        sub: string;
+        email?: string;
+        resource_access: Record<string, { roles: string[] }>;
+        email_verified: boolean;
+        name?: string;
+        given_name?: string;
+        family_name?: string;
+        preferred_username: string;
+      };
+      console.log(userinfo, accessToken);
+
       const roles = resource_access?.['unchained-local']?.roles || [];
-      const username = `keycloak:${sub}`;
+      const username = preferred_username || `keycloak:${sub}`;
       const user = await engine.unchainedAPI.modules.users.findUserByUsername(username);
+
+      request.session.keycloak = accessToken;
 
       if (user) {
         if (JSON.stringify(user.roles) !== JSON.stringify(roles)) {
@@ -122,13 +135,40 @@ app.get(
       reply.status(500);
       return reply.send();
     }
-
-    // if later need to refresh the token this can be used
-    // const { token: newToken } = await this.getNewAccessTokenUsingRefreshToken(token)
-
-    reply.send({ access_token: accessToken.token.access_token });
   },
 );
+
+// app.get(
+//   '/impersonate',
+//   async function (
+//     this: FastifyInstance & {
+//       keycloak: FastifyOAuth2.OAuth2Namespace;
+//     },
+//     request: FastifyRequest & {
+//       unchainedContext: Context;
+//     },
+//     reply,
+//   ) {
+//     console.log(request.session);
+//     const newToken = await this.keycloak.getNewAccessTokenUsingRefreshToken(
+//       request.session.keycloak,
+//       {},
+//     );
+//     request.session.keycloak = newToken;
+//     const test = await fetch(
+//       `http://localhost:8080/admin/realms/master/users/2399c45f-073b-4e96-abbf-85d9fef7b234/impersonation`,
+//       {
+//         method: 'POST',
+//         headers: {
+//           'content-type': 'application/json',
+//           Authorization: `Bearer ${newToken.token.access_token}`,
+//         },
+//       },
+//     );
+//     console.log(test.headers);
+//     return reply.send(await test.json());
+//   },
+// );
 
 await seed(engine.unchainedAPI);
 await setAccessToken(engine.unchainedAPI, 'admin', 'secret');

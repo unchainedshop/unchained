@@ -42,7 +42,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
   const context = getCurrentContextResolver();
 
   async function login(user: User) {
-    req.session.user = user;
+    req.session.userId = user._id;
     const tokenObject = {
       _id: req.session.sessionId,
       userId: user._id,
@@ -57,12 +57,12 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
   async function logout() {
     /* eslint-disable-line */
-    if (!req.session?.user?._id) return false;
+    if (!req.session?.userId) return false;
     const tokenObject = {
       _id: (req as any).session.sessionId,
-      userId: req.session?.user?._id,
+      userId: req.session?.userId,
     };
-    req.session.user = null;
+    req.session.userId = null;
     await emit(API_EVENTS.API_LOGOUT, tokenObject);
     return true;
   }
@@ -77,7 +77,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     login,
     logout,
     accessToken,
-    userId: req.session.user?._id,
+    userId: req.session.userId,
   });
 };
 
