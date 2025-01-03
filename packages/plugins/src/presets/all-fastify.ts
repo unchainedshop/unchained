@@ -25,22 +25,42 @@ export default (fastify: FastifyInstance, { unchainedAPI }: { unchainedAPI: Unch
   connectBaseToFastify(fastify);
   connectCryptoToFastify(fastify, unchainedAPI);
 
-  fastify.route({
-    url: STRIPE_WEBHOOK_PATH,
-    method: 'POST',
-    handler: stripeHandler,
+  fastify.register((s, opts, registered) => {
+    // Disable JSON parsing!
+    // fastify.addContentTypeParser(
+    //   'application/json',
+    //   { parseAs: 'string', bodyLimit: 1024 * 1024 },
+    //   function (req, body, done) {
+    //     try {
+    //       done(null, body);
+    //     } catch (err) {
+    //       err.statusCode = 400;
+    //       done(err, undefined);
+    //     }
+    //   },
+    // );
+    s.addContentTypeParser(
+      'application/json',
+      { parseAs: 'string', bodyLimit: 1024 * 1024 },
+      s.defaultTextParser,
+    );
+    s.route({
+      url: STRIPE_WEBHOOK_PATH,
+      method: 'POST',
+      handler: stripeHandler,
+    });
+    s.route({
+      url: DATATRANS_WEBHOOK_PATH,
+      method: 'POST',
+      handler: datatransHandler,
+    });
+    registered();
   });
 
   fastify.route({
     url: PFCHECKOUT_WEBHOOK_PATH,
     method: 'POST',
     handler: postfinanceCheckoutHandler,
-  });
-
-  fastify.route({
-    url: DATATRANS_WEBHOOK_PATH,
-    method: 'POST',
-    handler: datatransHandler,
   });
 
   fastify.route({
@@ -62,26 +82,6 @@ export default (fastify: FastifyInstance, { unchainedAPI }: { unchainedAPI: Unch
   });
 
   // app.use(STRIPE_WEBHOOK_PATH, express.raw({ type: 'application/json' }), stripeHandler);
-  // app.use(PFCHECKOUT_WEBHOOK_PATH, express.json(), postfinanceCheckoutHandler);
-
-  // app.use(
-  //   DATATRANS_WEBHOOK_PATH,
-  //   express.text({
-  //     type: 'application/json',
-  //   }),
-  //   datatransHandler,
-  // );
-
-  // app.use(
-  //   APPLE_IAP_WEBHOOK_PATH,
-  //   express.json({
-  //     strict: false,
-  //   }),
-  //   appleIAPHandler,
-  // );
-
-  // app.use(PAYREXX_WEBHOOK_PATH, express.json({ type: 'application/json' }), payrexxHandler);
-  // app.use(SAFERPAY_WEBHOOK_PATH, saferpayHandler);
 
   configureGenerateOrderAutoscheduling();
 };

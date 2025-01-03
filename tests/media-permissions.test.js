@@ -84,7 +84,7 @@ describe('Media Permissions', () => {
 
       await putFile(userAvatarFile1, {
         url: prepareUserAvatarUpload.putURL,
-        type: 'image/jpg',
+        type: 'image/jpeg',
       });
 
       const {
@@ -103,13 +103,13 @@ describe('Media Permissions', () => {
         variables: {
           mediaUploadTicketId: prepareUserAvatarUpload._id,
           size: 38489,
-          type: 'image/jpg',
+          type: 'image/jpeg',
         },
       });
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareUserAvatarUpload._id,
         name: 'test-media',
-        type: 'image/jpg',
+        type: 'image/jpeg',
         size: 38489,
       });
     });
@@ -161,7 +161,7 @@ describe('Media Permissions', () => {
 
       await putFile(userAvatar2, {
         url: prepareUserAvatarUpload.putURL,
-        type: 'image/jpg',
+        type: 'image/jpeg',
       });
 
       const {
@@ -180,14 +180,14 @@ describe('Media Permissions', () => {
         variables: {
           mediaUploadTicketId: prepareUserAvatarUpload._id,
           size: 8615,
-          type: 'image/jpg',
+          type: 'image/jpeg',
         },
       });
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareUserAvatarUpload._id,
         name: 'test-media',
         size: 8615,
-        type: 'image/jpg',
+        type: 'image/jpeg',
       });
     });
   });

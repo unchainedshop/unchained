@@ -25,7 +25,7 @@ const gridfsHandler: RouteHandlerMethod = async (
     /* This is a file upload endpoint, and thus we need to allow CORS.
     else we'd need proxies for all kinds of things for storefronts */
     reply.header('Access-Control-Allow-Methods', 'GET, PUT');
-    reply.header('Access-Control-Allow-Headers', 'Content-Type');
+    reply.header('Access-Control-Allow-Headers', 'content-type');
     reply.header('Access-Control-Allow-Origin', '*');
 
     if (req.method === 'OPTIONS') {
@@ -46,9 +46,9 @@ const gridfsHandler: RouteHandlerMethod = async (
         // If the type is octet-stream, prefer mimetype lookup from the filename
         // Else prefer the content-type header
         const type =
-          req.headers['Content-Type'] === 'application/octet-stream'
-            ? file.type || (req.headers['Content-Type'] as string)
-            : (req.headers['Content-Type'] as string) || file.type;
+          req.headers['content-type'] === 'application/octet-stream'
+            ? file.type || (req.headers['content-type'] as string)
+            : (req.headers['content-type'] as string) || file.type;
 
         const writeStream = await modules.gridfsFileUploads.createWriteStream(
           directoryName,
@@ -90,14 +90,16 @@ const gridfsHandler: RouteHandlerMethod = async (
           return reply.send('Access restricted: Invalid signature.');
         }
       }
+
       if (file?.metadata?.['content-type']) {
-        reply.header('Content-Type', file.metadata['content-type']);
+        reply.header('content-type', file.metadata['content-type']);
       }
       if (file?.length) {
-        reply.header('Content-Length', file?.length.toString());
+        reply.header('content-length', file?.length.toString());
       }
 
       const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
+
       reply.status(200);
       return reply.send(readStream);
     }

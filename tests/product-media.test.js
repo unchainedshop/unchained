@@ -95,7 +95,7 @@ describe('ProductsMedia', () => {
 
       await putFile(productMediaFile3, {
         url: prepareProductMediaUpload.putURL,
-        type: 'image/jpg',
+        type: 'image/jpeg',
       });
 
       const {
@@ -114,13 +114,13 @@ describe('ProductsMedia', () => {
         variables: {
           mediaUploadTicketId: prepareProductMediaUpload._id,
           size: 8615,
-          type: 'image/jpg',
+          type: 'image/jpeg',
         },
       });
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareProductMediaUpload._id,
         name: 'test-media',
-        type: 'image/jpg',
+        type: 'image/jpeg',
         size: 8615,
       });
     });

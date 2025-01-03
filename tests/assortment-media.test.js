@@ -122,7 +122,7 @@ describe('AssortmentMedia', () => {
 
       await putFile(assortmentMediaFile3, {
         url: prepareAssortmentMediaUpload.putURL,
-        type: 'image/jpg',
+        type: 'image/jpeg',
       });
 
       const {
@@ -141,14 +141,14 @@ describe('AssortmentMedia', () => {
         variables: {
           mediaUploadTicketId: prepareAssortmentMediaUpload._id,
           size: 8615,
-          type: 'image/jpg',
+          type: 'image/jpeg',
         },
       });
 
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareAssortmentMediaUpload._id,
         name: 'test-media',
-        type: 'image/jpg',
+        type: 'image/jpeg',
         size: 8615,
       });
     }, 20000);

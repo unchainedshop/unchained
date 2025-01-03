@@ -11,24 +11,20 @@ export const WebhookEventTypes = {
 };
 
 export const stripeHandler: RouteHandlerMethod = async (
-  request: FastifyRequest & {
+  req: FastifyRequest & {
     unchainedContext: Context;
   },
   reply,
 ) => {
-  const resolvedContext = request.unchainedContext as Context;
+  const resolvedContext = req.unchainedContext as Context;
   const { modules, services } = resolvedContext;
 
   let event;
 
   try {
     const stripe = stripeClient();
-    const sig = request.headers['stripe-signature'];
-    event = stripe.webhooks.constructEvent(
-      request.body as string,
-      sig,
-      process.env.STRIPE_ENDPOINT_SECRET,
-    );
+    const sig = req.headers['stripe-signature'];
+    event = stripe.webhooks.constructEvent(req.body as string, sig, process.env.STRIPE_ENDPOINT_SECRET);
   } catch (err) {
     logger.error(`Error constructing event: ${err.message}`);
     reply.status(400);

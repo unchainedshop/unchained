@@ -44,10 +44,17 @@ const startAndWaitForApp = async () => {
         if (process.env.DEBUG) {
           console.log(dataAsString); // eslint-disable-line
         }
-        if (dataAsString.indexOf("Can't listen") !== -1) {
+        if (
+          dataAsString.indexOf("Can't listen") !== -1 ||
+          dataAsString.indexOf('already in use') !== -1 ||
+          dataAsString.indexOf('EADDRINUSE') !== -1
+        ) {
           reject(dataAsString);
         }
-        if (dataAsString.indexOf('Server ready at ') !== -1) {
+        if (
+          dataAsString.indexOf('Server listening at ') !== -1 ||
+          dataAsString.indexOf('Server ready at ') !== -1
+        ) {
           resolve(dataAsString.substring(19));
         }
       });

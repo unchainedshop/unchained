@@ -29,10 +29,10 @@ export const datatransHandler: RouteHandlerMethod = async (
     const comparableSignature = await generateSignature({
       security: DATATRANS_SECURITY as any,
       signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
-    })(timestamp, req.body);
+    })(timestamp, req.body as string);
 
     if (hash !== comparableSignature) {
-      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body);
+      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body as string);
       reply.status(403);
       return reply.send('Hash mismatch');
     }
