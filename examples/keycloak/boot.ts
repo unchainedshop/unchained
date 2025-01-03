@@ -95,12 +95,13 @@ app.get(
         family_name?: string;
         preferred_username: string;
       };
-      console.log(userinfo, accessToken);
 
       const roles = resource_access?.['unchained-local']?.roles || [];
       const username = preferred_username || `keycloak:${sub}`;
       const user = await engine.unchainedAPI.modules.users.findUserByUsername(username);
 
+      // eslint-disable-next-line
+      // @ts-ignore
       request.session.keycloak = accessToken;
 
       if (user) {
