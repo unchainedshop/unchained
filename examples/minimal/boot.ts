@@ -1,5 +1,5 @@
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import baseModules from '@unchainedshop/plugins/presets/base-modules.js';
+import baseModules from '@unchainedshop/plugins/presets/base.js';
 import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
 import { connect } from '@unchainedshop/api/lib/fastify/index.js';
 import { createLogger } from '@unchainedshop/logger';
