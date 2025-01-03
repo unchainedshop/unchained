@@ -12,6 +12,7 @@ import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import setupTicketing, { ticketingModules, TicketingAPI } from '@unchainedshop/ticketing';
+import connectTicketingToFastify from '@unchainedshop/ticketing/lib/connect-fastify.js';
 
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
 
@@ -92,11 +93,12 @@ connect(app, engine);
 connectDefaultPluginsToFastify(app, engine);
 
 // Unchained Ticketing Extension
-// setupTicketing(app, engine.unchainedAPI as TicketingAPI, {
-//   renderOrderPDF: console.log,
-//   createAppleWalletPass: console.log,
-//   createGoogleWalletPass: console.log,
-// });
+setupTicketing(engine.unchainedAPI as TicketingAPI, {
+  renderOrderPDF: console.log,
+  createAppleWalletPass: console.log,
+  createGoogleWalletPass: console.log,
+});
+connectTicketingToFastify(app);
 
 const fileUrl = new URL(import.meta.resolve('../static/index.html'));
 app.route({

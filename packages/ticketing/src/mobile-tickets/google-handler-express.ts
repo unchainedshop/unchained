@@ -1,10 +1,8 @@
 import { createLogger } from '@unchainedshop/logger';
-import express, { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { TicketingAPI } from '../types.js';
 
 const logger = createLogger('unchained:google-wallet-webservice');
-
-const { GOOGLE_WALLET_WEBSERVICE_PATH = '/rest/google-wallet' } = process.env;
 
 export const googleWalletHandler = async (
   req: Request & { unchainedContext: TicketingAPI },
@@ -57,12 +55,4 @@ export const googleWalletHandler = async (
   res.end();
 };
 
-export default function loadGoogleWalletHandler(app) {
-  app.use(
-    GOOGLE_WALLET_WEBSERVICE_PATH,
-    express.json({
-      type: 'application/json',
-    }),
-    googleWalletHandler,
-  );
-}
+export default googleWalletHandler;

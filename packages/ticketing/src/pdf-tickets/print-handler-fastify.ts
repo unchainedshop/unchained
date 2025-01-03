@@ -1,13 +1,16 @@
 import { checkAction } from '@unchainedshop/api/lib/acl.js';
 import { actions } from '@unchainedshop/api/lib/roles/index.js';
-import express, { Request, Response } from 'express';
-import { Context } from '@unchainedshop/api';
 import { RendererTypes, getRenderer } from '../template-registry.js';
+import { TicketingAPI } from '../types.js';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const { UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets' } = process.env;
-
-export async function printTicketsHandler(req: Request & { unchainedContext: Context }, res: Response) {
-  const { variant, orderId, otp } = req.query || {};
+const printTicketsHandler: RouteHandlerMethod = async (
+  req: FastifyRequest & {
+    unchainedContext: TicketingAPI;
+  },
+  reply,
+) => {
+  const { variant, orderId, otp } = (req.query as Record<string, any>) || {};
 
   try {
     if (
@@ -21,21 +24,13 @@ export async function printTicketsHandler(req: Request & { unchainedContext: Con
 
     const render = getRenderer(RendererTypes.ORDER_PDF);
     const pdfStream = await render({ orderId, variant: variant as string }, req.unchainedContext);
-    res.setHeader('Content-Type', 'application/pdf');
-    pdfStream.pipe(res);
+    reply.header('content-type', 'application/pdf');
+    return reply.send(pdfStream);
   } catch (error) {
     console.error(error);
-    res.status(403);
-    res.end();
+    reply.status(403);
+    return reply.send();
   }
-}
+};
 
-export default function connectPrintWebservice(app) {
-  app.use(
-    UNCHAINED_PDF_PRINT_HANDLER_PATH,
-    express.json({
-      type: 'application/json',
-    }),
-    printTicketsHandler,
-  );
-}
+export default printTicketsHandler;

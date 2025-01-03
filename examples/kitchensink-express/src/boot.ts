@@ -12,9 +12,12 @@ import { log } from '@unchainedshop/logger';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
-import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
-import { TicketingAPI } from '@unchainedshop/ticketing';
-import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import setupTicketing, {
+  TicketingAPI,
+  ticketingServices,
+  ticketingModules,
+} from '@unchainedshop/ticketing';
+import connectTicketingToExpress from '@unchainedshop/ticketing/lib/connect-express.js';
 
 import seed from './seed.js';
 
@@ -33,7 +36,7 @@ app.use((req, res, next) => {
 const httpServer = http.createServer(app);
 const engine = await startPlatform({
   modules: { ...defaultModules, ...ticketingModules },
-  services: { ...ticketingServices },
+  services: ticketingServices,
   plugins: [
     useResponseCache({
       ttl: 0,
@@ -74,11 +77,12 @@ connect(app, engine);
 connectDefaultPluginsToExpress(app, engine);
 
 // Unchained Ticketing Extension
-setupTicketing(app, engine.unchainedAPI as TicketingAPI, {
+setupTicketing(engine.unchainedAPI as TicketingAPI, {
   renderOrderPDF: console.log,
   createAppleWalletPass: console.log,
   createGoogleWalletPass: console.log,
 });
+connectTicketingToExpress(app);
 
 const fileUrl = new URL(import.meta.resolve('../static/index.html'));
 app.use('/', async (req, res) => {

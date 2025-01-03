@@ -1,34 +1,36 @@
 import { createLogger } from '@unchainedshop/logger';
-import express, { Request, Response } from 'express';
 import { TicketingAPI } from '../types.js';
 import { getFileAdapter } from '@unchainedshop/core-files';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:apple-wallet-webservice');
-
-const { APPLE_WALLET_WEBSERVICE_PATH = '/rest/apple-wallet' } = process.env;
 
 const isAuthenticationTokenCorrect = (req, authenticationToken) => {
   const expectedAuthorizationValue = `ApplePass ${authenticationToken}`;
   return req.headers.authorization === expectedAuthorizationValue;
 };
 
-export const appleWalletHandler = async (
-  req: Request & { unchainedContext: TicketingAPI },
-  res: Response,
+const appleWalletHandler: RouteHandlerMethod = async (
+  req: FastifyRequest & {
+    unchainedContext: TicketingAPI;
+  },
+  reply,
 ) => {
   const resolvedContext = req.unchainedContext;
   const { modules } = resolvedContext;
-  logger.info(`${req.path} (${JSON.stringify(req.query)})`);
 
-  if (req.path.startsWith('/download/')) {
+  const path = req.url;
+
+  logger.info(`${path} (${JSON.stringify(req.query)})`);
+
+  if (path.startsWith('/download/')) {
     try {
-      const [, , passFileName] = req.path.split('/');
+      const [, , passFileName] = path.split('/');
       const [tokenId] = passFileName.split('.pkpass');
 
       if (!tokenId) {
-        res.writeHead(404);
-        res.end();
-        return;
+        reply.status(404);
+        return reply.send();
       }
 
       const token = await modules.warehousing.findToken({
@@ -36,17 +38,15 @@ export const appleWalletHandler = async (
       });
 
       if (!token) {
-        res.writeHead(404);
-        res.end('Token not found');
-        return;
+        reply.status(404);
+        return reply.send('Token not found');
       }
 
-      const { hash } = req.query;
+      const { hash } = req.query as Record<string, string>;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
       if (hash !== correctHash) {
-        res.writeHead(403);
-        res.end('Token hash invalid for current owner');
-        return;
+        reply.status(403);
+        return reply.send('Token hash invalid for current owner');
       }
 
       const passFile = await modules.passes.upsertAppleWalletPass(token, resolvedContext);
@@ -59,25 +59,23 @@ export const appleWalletHandler = async (
       const data = await response.arrayBuffer();
       const uint8View = new Uint8Array(data);
 
-      res.status(200);
-      res.setHeader('Content-Type', 'application/vnd.apple.pkpass');
-      res.setHeader('Content-Disposition', `attachment; filename=${tokenId}.pkpass`);
-      res.end(uint8View);
-      return;
+      reply.status(200);
+      reply.header('content-type', 'application/vnd.apple.pkpass');
+      reply.header('Content-Disposition', `attachment; filename=${tokenId}.pkpass`);
+      return reply.send(uint8View);
     } catch (e) {
       console.error(e);
     }
-    res.writeHead(500);
-    res.end();
-    return;
+    reply.status(500);
+    return reply.send();
   }
 
-  const [, apiVersion, endpoint, ...pathComponents] = req.path.split("/"); /* eslint-disable-line */
+  const [, apiVersion, endpoint, ...pathComponents] = path.split("/"); /* eslint-disable-line */
   if (endpoint === 'devices') {
     if (req.method === 'POST') {
       // Register Device
       const [deviceLibraryIdentifier, , passTypeIdentifier, serialNumber] = pathComponents;
-      const { pushToken } = req.body;
+      const { pushToken } = req.body as Record<string, any>;
 
       const pass = await modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
 
@@ -88,9 +86,8 @@ export const appleWalletHandler = async (
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
-          res.writeHead(401);
-          res.end();
-          return;
+          reply.status(401);
+          return reply.send();
         }
 
         const newRegistration = await modules.passes.registerDeviceForAppleWalletPass(
@@ -103,21 +100,20 @@ export const appleWalletHandler = async (
         );
 
         if (!newRegistration) {
-          res.writeHead(200);
-          res.end();
-          return;
+          reply.status(200);
+          return reply.send();
         }
 
-        res.writeHead(201);
-        res.end();
-        return;
+        reply.status(201);
+        return reply.send();
       }
     } else if (req.method === 'GET') {
       // Get the List of Updatable Passes
       const lastUpdated = new Date();
       const [deviceLibraryIdentifier, , passTypeIdentifier] = pathComponents;
       const passesUpdatedSince =
-        req.query?.passesUpdatedSince && new Date(req.query.passesUpdatedSince as string);
+        (req.query as Record<string, string>)?.passesUpdatedSince &&
+        new Date((req.query as Record<string, string>).passesUpdatedSince as string);
 
       const passes = await modules.passes.findUpdatedAppleWalletPasses(
         passTypeIdentifier,
@@ -127,22 +123,18 @@ export const appleWalletHandler = async (
       const serialNumbers = passes.map((t) => t.meta.serialNumber);
 
       if (serialNumbers?.length) {
-        res.writeHead(200, {
-          'Content-Type': 'application/json',
-        });
-        res.write(
+        reply.status(200);
+        reply.header('content-type', 'application/json');
+        return reply.send(
           JSON.stringify({
             serialNumbers,
             lastUpdated,
           }),
         );
-        res.end();
-        return;
       }
 
-      res.writeHead(204);
-      res.end();
-      return;
+      reply.status(204);
+      return reply.send();
     } else if (req.method === 'DELETE') {
       // Unregister Device
       const [deviceLibraryIdentifier, , passTypeIdentifier, serialNumber] = pathComponents;
@@ -156,9 +148,8 @@ export const appleWalletHandler = async (
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
-          res.writeHead(401);
-          res.end();
-          return;
+          reply.status(401);
+          return reply.send();
         }
 
         await modules.passes.unregisterDeviceForAppleWalletPass(
@@ -168,22 +159,20 @@ export const appleWalletHandler = async (
         );
 
         // Unregistered
-        res.writeHead(200);
-        res.end();
-        return;
+        reply.status(200);
+        return reply.send();
       }
     }
   } else if (endpoint === 'log') {
     // Log Mesage
-    const { logs } = req.body;
+    const { logs } = req.body as Record<string, any>;
     logs?.forEach((log) => {
       if (typeof log === 'string') {
         logger.info(log);
       }
     });
-    res.writeHead(200);
-    res.end();
-    return;
+    reply.status(200);
+    return reply.send();
   } else if (endpoint === 'passes') {
     if (req.method === 'GET') {
       // Get an updated Pass
@@ -198,9 +187,8 @@ export const appleWalletHandler = async (
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
-          res.writeHead(401);
-          res.end();
-          return;
+          reply.status(401);
+          return reply.send();
         }
 
         const { updated, created } = pass;
@@ -208,13 +196,12 @@ export const appleWalletHandler = async (
         const lastModifiedDate = new Date(updated || created);
         lastModifiedDate.setMilliseconds(0);
 
-        const ifModifiedSinceDate = new Date(req.header('if-modified-since'));
+        const ifModifiedSinceDate = new Date(req.headers['if-modified-since']);
         ifModifiedSinceDate.setMilliseconds(0);
 
         if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
-          res.writeHead(304);
-          res.end();
-          return;
+          reply.status(304);
+          return reply.send();
         }
 
         const fileUploadAdapter = getFileAdapter();
@@ -225,26 +212,16 @@ export const appleWalletHandler = async (
         const data = await result.arrayBuffer();
         const uint8View = new Uint8Array(data);
 
-        res.writeHead(200, {
-          'Content-Type': 'application/vnd.apple.pkpass',
-          'Last-Modified': lastModifiedDate.toUTCString(),
-        });
-        res.end(uint8View);
-        return;
+        reply.status(200);
+        reply.header('content-type', 'application/vnd.apple.pkpass');
+        reply.header('last-modified', lastModifiedDate.toUTCString());
+        return reply.send(uint8View);
       }
     }
   }
 
-  res.writeHead(404);
-  res.end();
+  reply.status(404);
+  return reply.send();
 };
 
-export default function loadAppleWalletHandler(app) {
-  app.use(
-    APPLE_WALLET_WEBSERVICE_PATH,
-    express.json({
-      type: 'application/json',
-    }),
-    appleWalletHandler,
-  );
-}
+export default appleWalletHandler;

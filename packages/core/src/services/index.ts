@@ -63,15 +63,14 @@ function bindMethodsToModules(modules: Modules) {
 }
 
 export interface ServiceInterface {
-  (this: Modules, ...args: any[]): any;
+  (this: Modules, ...args: any[]): Promise<any> | any;
 }
 
 export type Bound<T extends ServiceInterface> = OmitThisParameter<T>;
 
-export default function initServices(
-  modules: Modules,
-  customServices: Record<string, ServiceInterface> = {},
-) {
+export type CustomServices = Record<string, ServiceInterface | Record<string, ServiceInterface>>;
+
+export default function initServices(modules: Modules, customServices: CustomServices = {}) {
   const services = {
     bookmarks: {
       migrateBookmarks: migrateBookmarksService as Bound<typeof migrateBookmarksService>,

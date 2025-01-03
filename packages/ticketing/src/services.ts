@@ -1,25 +1,35 @@
-import { TicketingAPI } from './types.js';
+import { TicketingModule } from './module.js';
+import { Bound, UnchainedCore } from '@unchainedshop/core';
 
-const ticketingServices = {
-  cancelTicketsForProduct: async (productId: string, context: TicketingAPI): Promise<number> => {
-    const tokensToCancel = await context.modules.warehousing.findTokens({
-      productId,
-      'meta.cancelled': null,
-    });
+async function cancelTicketsForProduct(
+  this: TicketingModule & UnchainedCore['modules'],
+  productId: string,
+): Promise<number> {
+  const tokensToCancel = await this.warehousing.findTokens({
+    productId,
+    'meta.cancelled': null,
+  });
 
-    for (const token of tokensToCancel) {
-      await context.modules.warehousing.invalidateToken(token._id);
-      await context.modules.passes.cancelTicket(token._id);
-    }
+  for (const token of tokensToCancel) {
+    await this.warehousing.invalidateToken(token._id);
+    await this.passes.cancelTicket(token._id);
+  }
 
-    await context.modules.products.update(productId, {
-      $set: { 'meta.cancelled': true },
-    });
+  await this.products.update(productId, {
+    $set: { 'meta.cancelled': true },
+  });
 
-    return tokensToCancel.length;
+  return tokensToCancel.length;
+}
+
+export default {
+  ticketing: {
+    cancelTicketsForProduct,
   },
 };
 
-export type TicketingServices = { ticketing: typeof ticketingServices };
-
-export default ticketingServices;
+export type TicketingServices = {
+  ticketing: {
+    cancelTicketsForProduct: Bound<typeof cancelTicketsForProduct>;
+  };
+};

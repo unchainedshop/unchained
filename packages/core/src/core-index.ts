@@ -1,5 +1,5 @@
 import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
-import initServices, { Services } from './services/index.js';
+import initServices, { CustomServices, Services } from './services/index.js';
 import initModules, { Modules, ModuleOptions } from './modules.js';
 
 export * from './services/index.js';
@@ -19,7 +19,7 @@ export interface UnchainedCoreOptions {
       configure: (params: ModuleInput<any>) => any;
     }
   >;
-  services?: Record<string, (this: Modules, ...args) => any>;
+  services?: CustomServices;
   options?: ModuleOptions;
 }
 

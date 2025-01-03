@@ -3,6 +3,6 @@ import { TicketingModule } from './module.js';
 import { TicketingServices } from './services.js';
 
 export type TicketingAPI = UnchainedCore & {
-  modules: { passes: TicketingModule };
+  modules: TicketingModule;
   services: TicketingServices;
 };

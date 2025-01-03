@@ -1,59 +1,33 @@
-import express from 'express';
 import { subscribe } from '@unchainedshop/events';
 import { RawPayloadType } from '@unchainedshop/events';
 import { WorkerEventTypes, Work } from '@unchainedshop/core-worker';
 import { RendererTypes, registerRenderer } from './template-registry.js';
-import loadAppleWalletHandler from './mobile-tickets/apple-webservice.js';
-import loadGoogleWalletHandler from './mobile-tickets/google-webservice.js';
-import loadPDFHandler from './pdf-tickets/print-webservice.js';
-import passes from './module.js';
-import ticketing from './services.js';
+import ticketingModules, { TicketingModule } from './module.js';
 
 import { TicketingAPI } from './types.js';
 import setupMagicKey from './magic-key.js';
-import { TicketingServices } from './services.js';
+import ticketingServices, { TicketingServices } from './services.js';
 
 export type { TicketingAPI, RendererTypes };
 
-export const ticketingModules = {
-  passes,
-};
+export { ticketingServices, ticketingModules, TicketingModule, TicketingServices };
 
-export const ticketingServices: TicketingServices = {
-  ticketing,
-};
-
-export function setupPDFTickets(
-  app: express.Express,
-  {
-    renderOrderPDF,
-  }: {
-    renderOrderPDF: any;
-  },
-) {
+export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
-  loadPDFHandler(app);
 }
 
-export function setupMobileTickets(
-  app: express.Express,
-  {
-    createGoogleWalletPass,
-    createAppleWalletPass,
-  }: {
-    createGoogleWalletPass: any;
-    createAppleWalletPass: any;
-  },
-) {
+export function setupMobileTickets({
+  createGoogleWalletPass,
+  createAppleWalletPass,
+}: {
+  createGoogleWalletPass: any;
+  createAppleWalletPass: any;
+}) {
   registerRenderer(RendererTypes.GOOGLE_WALLET, createGoogleWalletPass);
   registerRenderer(RendererTypes.APPLE_WALLET, createAppleWalletPass);
-
-  loadAppleWalletHandler(app);
-  loadGoogleWalletHandler(app);
 }
 
 export default function setupTicketing(
-  app: express.Express,
   unchainedAPI: TicketingAPI,
   {
     renderOrderPDF,
@@ -65,10 +39,10 @@ export default function setupTicketing(
     createGoogleWalletPass: any;
   },
 ) {
-  setupPDFTickets(app, {
+  setupPDFTickets({
     renderOrderPDF,
   });
-  setupMobileTickets(app, {
+  setupMobileTickets({
     createAppleWalletPass,
     createGoogleWalletPass,
   });
