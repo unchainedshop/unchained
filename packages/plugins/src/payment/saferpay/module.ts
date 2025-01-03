@@ -1,7 +1,7 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { SaferpayTransactionsCollection } from '../db/SaferpayTransactionsCollection.js';
+import { SaferpayTransactionsCollection } from './db/SaferpayTransactionsCollection.js';
 
-export const configureSaferpayTransactionsModule = async ({ db }: { db: mongodb.Db }) => {
+const configureSaferpayTransactionsModule = async ({ db }: { db: mongodb.Db }) => {
   const SaferpayTransactions = await SaferpayTransactionsCollection(db);
 
   return {
@@ -30,4 +30,12 @@ export const configureSaferpayTransactionsModule = async ({ db }: { db: mongodb.
   };
 };
 
-export type SaferpayTransactionsModule = Awaited<ReturnType<typeof configureSaferpayTransactionsModule>>;
+export default {
+  saferpayTransactions: {
+    configure: configureSaferpayTransactionsModule,
+  },
+};
+
+export type SaferpayTransactionsModule = {
+  saferpayTransactions: Awaited<ReturnType<typeof configureSaferpayTransactionsModule>>;
+};

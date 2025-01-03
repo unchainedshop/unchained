@@ -22,18 +22,18 @@ Logger.prototype.child = function () {
 };
 
 const start = async () => {
-  const fastify = Fastify({
+  const app = Fastify({
     loggerInstance: new Logger(),
     disableRequestLogging: true,
     trustProxy: true,
   });
 
   // Workaround: Allow to use sandbox with localhost
-  fastify.addHook('preHandler', async function (request) {
+  app.addHook('preHandler', async function (request) {
     request.headers['x-forwarded-proto'] = 'https';
   });
 
-  fastify.addHook('onSend', async function (_, reply) {
+  app.addHook('onSend', async function (_, reply) {
     reply.headers({
       'Access-Control-Allow-Private-Network': 'true',
     });
@@ -46,13 +46,13 @@ const start = async () => {
   await seed(engine.unchainedAPI);
   await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
-  await connect(fastify, engine);
-  await connectBasePluginsToFastify(fastify);
+  await connect(app, engine);
+  await connectBasePluginsToFastify(app);
 
   try {
-    await fastify.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+    await app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
   } catch (err) {
-    fastify.log.error(err);
+    logger.error(err);
     process.exit(1);
   }
 };

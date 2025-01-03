@@ -14,7 +14,7 @@ export const defaultModules = new Proxy(
 );
 
 export const connectDefaultPluginsToExpress4 = (...args: any[]) => { // eslint-disable-line
-  logger.error(`connectDefaultPluginsToExpress4 has been moved, to load all plugins middlewares use direct imports based on the environment you use:
+  logger.error(`connectDefaultPluginsToExpress4 has been moved, to load all plugin handlers use direct imports based on the environment you use:
   * @unchainedshop/plugins/presets/all-express.js
   * @unchainedshop/plugins/presets/all-fastify.js
   `);

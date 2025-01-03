@@ -24,8 +24,6 @@ import {
 import { orderIsPaid } from './utils.js';
 import { CompletionModes, IntegrationModes, SignResponse } from './types.js';
 
-export * from './middleware.js';
-
 const { PostFinanceCheckout } = pf;
 
 const {

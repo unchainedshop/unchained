@@ -8,8 +8,6 @@ import {
   PaymentError,
 } from '@unchainedshop/core';
 
-export * from './middleware.js';
-
 const logger = createLogger('unchained:core-payment:stripe');
 
 const Stripe: IPaymentAdapter = {

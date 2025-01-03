@@ -1,5 +1,7 @@
-import CryptopayPlugin from './plugin.js';
+import './plugin.js';
 
-export * from './module/configureCryptopayModule.js';
+import cryptopayModules, { type CryptopayModule } from './module.js';
 
-export default CryptopayPlugin;
+export type { CryptopayModule };
+
+export default cryptopayModules;

@@ -9,7 +9,7 @@ const {
   DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
 } = process.env;
 
-const logger = createLogger('unchained:core-payment:datatrans:webhook');
+const logger = createLogger('unchained:core-payment:datatrans:handler');
 
 export const datatransHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context;

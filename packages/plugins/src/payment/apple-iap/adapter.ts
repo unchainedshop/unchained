@@ -1,196 +1,11 @@
-import { Context } from '@unchainedshop/api';
-import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { IPaymentAdapter, PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/core';
-import { AppleTransactionsModule } from './module/configureAppleTransactionsModule.js';
+import { AppleTransactionsModule } from './module.js';
+import { verifyReceipt } from './verify-receipt.js';
 
 const logger = createLogger('unchained:core-payment:iap');
 
-const { APPLE_IAP_SHARED_SECRET, APPLE_IAP_ENVIRONMENT = 'sandbox' } = process.env;
-
-// https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store
-const environments = {
-  sandbox: 'https://sandbox.itunes.apple.com/verifyReceipt',
-  production: 'https://buy.itunes.apple.com/verifyReceipt',
-};
-
-const verifyReceipt = async ({ receiptData, password }): Promise<any> => {
-  const payload: any = {
-    'receipt-data': receiptData,
-  };
-  if (password) {
-    payload.password = password;
-  }
-  const result = await fetch(environments[APPLE_IAP_ENVIRONMENT], {
-    body: JSON.stringify(payload),
-    method: 'POST',
-    // eslint-disable-next-line
-    // @ts-ignore
-    duplex: 'half',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  return result.json();
-};
-
-const AppleNotificationTypes = {
-  INITIAL_BUY: 'INITIAL_BUY',
-  DID_RECOVER: 'DID_RECOVER',
-  DID_CHANGE_RENEWAL_STATUS: 'DID_CHANGE_RENEWAL_STATUS',
-  DID_FAIL_TO_RENEW: 'DID_FAIL_TO_RENEW',
-  DID_CHANGE_RENEWAL_PREF: 'DID_CHANGE_RENEWAL_PREF',
-};
-
-const fixPeriods = async (
-  { transactionId, enrollmentId, orderId, transactions },
-  unchainedAPI: UnchainedCore,
-) => {
-  const relevantTransactions = transactions.filter(
-    // eslint-disable-next-line
-    ({ original_transaction_id }) => {
-      return original_transaction_id === transactionId; // eslint-disable-line
-    },
-  );
-
-  const adjustedEnrollmentPeriods = relevantTransactions
-    .map((transaction) => {
-      return {
-        isTrial: transaction.is_trial_period === 'true', // eslint-disable-line
-        start: new Date(parseInt(transaction.purchase_date_ms, 10)),
-        end: new Date(parseInt(transaction.expires_date_ms, 10)),
-        orderId: transaction.transaction_id === transactionId ? orderId : null,
-      };
-    })
-    .toSorted((left, right) => {
-      return left.end.getTime() - right.end.getTime();
-    });
-
-  await unchainedAPI.modules.enrollments.removeEnrollmentPeriodByOrderId(enrollmentId, orderId);
-
-  return Promise.all(
-    adjustedEnrollmentPeriods.map((period) =>
-      unchainedAPI.modules.enrollments.addEnrollmentPeriod(enrollmentId, period),
-    ),
-  );
-};
-
-export const appleIAPHandler = async (req, res) => {
-  if (req.method === 'POST') {
-    try {
-      const resolvedContext = req.unchainedContext as Context;
-      const { modules, services } = resolvedContext;
-      const responseBody = req.body || {};
-      if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
-        throw new Error('shared secret not valid');
-      }
-
-      const transactions = responseBody?.unified_receipt?.latest_receipt_info; // eslint-disable-line
-      const latestTransaction = transactions[0];
-
-      if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
-        // Find the cart to checkout
-        const orderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-          context: {
-            'meta.transactionIdentifier': latestTransaction.transaction_id,
-          },
-        });
-
-        if (!orderPayment) throw new Error('Could not find any matching order payment');
-
-        const order = await services.orders.checkoutOrder(orderPayment.orderId, {
-          paymentContext: {
-                receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-          },
-        });
-        const orderId = order._id;
-        const enrollment = await modules.enrollments.findEnrollment({
-          orderId,
-        });
-        await fixPeriods(
-          {
-            transactionId: latestTransaction.original_transaction_id,
-            transactions,
-            enrollmentId: enrollment._id,
-            orderId,
-          },
-          resolvedContext,
-        );
-
-        logger.info(`Apple IAP Webhook: Confirmed checkout for order ${order.orderNumber}`, {
-          orderId: order._id,
-        });
-      } else {
-        // Just store payment credentials, use the enrollments paymentProvider reference and
-        // let the job do the rest
-        const originalOrderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-          context: {
-            'meta.transactionIdentifier': latestTransaction.original_transaction_id,
-          },
-        });
-        if (!originalOrderPayment) throw new Error('Could not find any matching order payment');
-        const originalOrder = await modules.orders.findOrder({
-          orderId: originalOrderPayment.orderId,
-        });
-        const enrollment = await modules.enrollments.findEnrollment({
-          orderId: originalOrder._id,
-        });
-
-        await services.orders.registerPaymentCredentials(enrollment.payment.paymentProviderId, {
-          transactionContext: {
-              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-          },
-          userId: enrollment.userId,
-        });
-
-        await fixPeriods(
-          {
-            transactionId: latestTransaction.original_transaction_id,
-            transactions,
-            enrollmentId: enrollment._id,
-            orderId: originalOrder._id,
-          },
-          resolvedContext,
-        );
-
-        logger.info(
-          `Apple IAP Webhook: Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
-        );
-
-        if (responseBody.notification_type === AppleNotificationTypes.DID_RECOVER) {
-          if (
-            enrollment.status !== EnrollmentStatus.TERMINATED &&
-            responseBody.auto_renew_status === 'false'
-          ) {
-            await services.enrollments.terminateEnrollment(enrollment);
-          }
-        }
-
-        if (responseBody.notification_type === AppleNotificationTypes.DID_CHANGE_RENEWAL_STATUS) {
-          if (
-            enrollment.status !== EnrollmentStatus.TERMINATED &&
-            responseBody.auto_renew_status === 'false'
-          ) {
-            await services.enrollments.terminateEnrollment(enrollment);
-          }
-        }
-        logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
-      }
-
-      res.writeHead(200);
-      res.end();
-      return;
-    } catch (e) {
-      logger.warn(`Apple IAP Webhook: ${e.message}`, e);
-      res.writeHead(503);
-      res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
-      return;
-    }
-  }
-  res.writeHead(404);
-  res.end();
-};
+const { APPLE_IAP_SHARED_SECRET } = process.env;
 
 const AppleIAP: IPaymentAdapter = {
   ...PaymentAdapter,
@@ -205,7 +20,7 @@ const AppleIAP: IPaymentAdapter = {
   },
 
   actions: (params, context) => {
-    const { modules } = context;
+    const { order, modules } = context as typeof context & { modules: AppleTransactionsModule };
 
     const adapterActions = {
       ...PaymentAdapter.actions(params, context),
@@ -266,10 +81,8 @@ const AppleIAP: IPaymentAdapter = {
 
       // eslint-disable-next-line
       async charge(transactionContext) {
-        const { order } = context;
         const { meta, paymentCredentials, receiptData } = transactionContext || {};
         const { transactionIdentifier } = meta || {};
-        const appleTransactions = (context.modules as any).appleTransactions as AppleTransactionsModule;
 
         if (!transactionIdentifier) {
           throw new Error('Apple IAP Plugin: You have to set the transaction id on the order payment');
@@ -324,13 +137,13 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Apple IAP Plugin: Product in order does not match transaction');
 
         const alreadyProcessedTransaction =
-          await appleTransactions.findTransactionById(transactionIdentifier);
+          await modules.appleTransactions.findTransactionById(transactionIdentifier);
 
         if (alreadyProcessedTransaction)
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
-        await appleTransactions.createTransaction({
+        await modules.appleTransactions.createTransaction({
           _id: transactionIdentifier,
           matchedTransaction,
           orderId: order._id,

@@ -10,7 +10,7 @@ import {
   PaymentError,
   OrderPricingSheet,
 } from '@unchainedshop/core';
-import { CryptopayModule } from './module/configureCryptopayModule.js';
+import { CryptopayModule } from './module.js';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 
@@ -59,7 +59,7 @@ const Cryptopay: IPaymentAdapter = {
   },
 
   actions: (config, context) => {
-    const { modules } = context as typeof context & { modules: { cryptopay: CryptopayModule } };
+    const { modules } = context as typeof context & { modules: CryptopayModule };
 
     const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
       const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });
@@ -267,7 +267,7 @@ const Cryptopay: IPaymentAdapter = {
 
         1. Check that generated crypto addresses are unique and no order payments share the same crypto address, only repeat when derivations completely exhausted.
         2. When derivation path get's close to "exhaustedness" (95%), send a special e-mail alert to tell the user should generate a new xpub.
-        3. Extend the middleware to report the highest seen block number so we can calculate confirmations, 
+        3. Extend the handler to report the highest seen block number so we can calculate confirmations, 
         4. Order rejection should trigger an e-mail advising the vendor to actively send back funds
 
         To allow paying in ETH or BTC or Tokens for CHF orders, it should work like this:

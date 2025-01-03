@@ -20,8 +20,6 @@ import {
   OrderPricingSheet,
 } from '@unchainedshop/core';
 
-export * from './middleware.js';
-
 const logger = createLogger('unchained:core-payment:datatrans');
 
 // v2

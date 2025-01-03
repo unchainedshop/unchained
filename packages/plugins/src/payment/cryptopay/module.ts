@@ -1,7 +1,7 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions.js';
+import { CryptopayTransaction, CryptopayTransactionsCollection } from './db/CryptopayTransactions.js';
 
-export const configureCryptopayModule = ({ db }) => {
+const configureCryptopayModule = ({ db }) => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
   const getWalletAddress = async (addressId: string): Promise<CryptopayTransaction> => {
@@ -120,4 +120,12 @@ export const configureCryptopayModule = ({ db }) => {
   };
 };
 
-export type CryptopayModule = ReturnType<typeof configureCryptopayModule>;
+export default {
+  cryptopay: {
+    configure: configureCryptopayModule,
+  },
+};
+
+export type CryptopayModule = {
+  cryptopay: ReturnType<typeof configureCryptopayModule>;
+};

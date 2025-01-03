@@ -1,7 +1,7 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { PaymentPageInitializeInput, SaferpayClient } from './api/index.js';
 import { buildSignature } from './buildSignature.js';
-import { SaferpayTransactionsModule } from './module/configureSaferpayTransactionsModule.js';
+import { SaferpayTransactionsModule } from './module.js';
 import {
   OrderPricingSheet,
   IPaymentAdapter,
@@ -9,8 +9,6 @@ import {
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
-
-export * from './middleware.js';
 
 const {
   SAFERPAY_BASE_URL = 'https://test.saferpay.com/api',
@@ -48,7 +46,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
 
   actions: (config, context) => {
     const { modules } = context as typeof context & {
-      modules: { saferpayTransactions: SaferpayTransactionsModule };
+      modules: SaferpayTransactionsModule;
     };
 
     const createSaferPayClient = () => {

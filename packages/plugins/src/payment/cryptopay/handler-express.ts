@@ -1,18 +1,16 @@
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/api';
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { CryptopayModule } from './module/configureCryptopayModule.js';
+import { CryptopayModule } from './module.js';
 import { ProductPriceRate } from '@unchainedshop/core-products';
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_MAX_RATE_AGE = '360' } = process.env;
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 
-export const cryptopayHandler = async (req, res) => {
+const cryptopayHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context & {
-    modules: {
-      cryptopay: CryptopayModule;
-    };
+    modules: CryptopayModule;
   };
   const { modules, services } = resolvedContext;
 
@@ -88,3 +86,5 @@ export const cryptopayHandler = async (req, res) => {
   res.writeHead(404);
   res.end(JSON.stringify({ success: false }));
 };
+
+export default cryptopayHandler;

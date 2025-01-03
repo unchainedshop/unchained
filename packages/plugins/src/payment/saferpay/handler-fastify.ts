@@ -1,17 +1,23 @@
 import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { buildSignature } from './buildSignature.js';
-import { SaferpayTransactionsModule } from './module/configureSaferpayTransactionsModule.js';
+import { SaferpayTransactionsModule } from './module.js';
+import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const logger = createLogger('unchained:core-payment:saferpay:webhook');
+const logger = createLogger('unchained:core-payment:saferpay:handler');
 
-export const saferpayHandler = async (request, response) => {
+export const saferpayHandler: RouteHandlerMethod = async (
+  request: FastifyRequest & {
+    unchainedContext: Context;
+  },
+  reply,
+) => {
   const resolvedContext = request.unchainedContext as Context & {
-    modules: { saferpayTransactions: SaferpayTransactionsModule };
+    modules: SaferpayTransactionsModule;
   };
   const { modules, services } = resolvedContext;
 
-  const { orderPaymentId, signature, transactionId } = request.query;
+  const { orderPaymentId, signature, transactionId } = request.query as Record<string, string>;
   const isValidRequest =
     typeof orderPaymentId === 'string' &&
     typeof signature === 'string' &&
@@ -20,11 +26,10 @@ export const saferpayHandler = async (request, response) => {
     transactionId &&
     signature;
 
-  if ((request.method !== 'GET' && request.method !== 'HEAD') || !isValidRequest) {
-    logger.warn(`unhandled http method ${request.method} or orderPaymentId missing in query`);
-    response.writeHead(404);
-    response.end();
-    return;
+  if (!isValidRequest) {
+    logger.warn(`orderPaymentId missing in query`);
+    reply.status(404);
+    return reply.send();
   }
 
   try {
@@ -51,8 +56,8 @@ export const saferpayHandler = async (request, response) => {
       orderPaymentId,
       orderId: order._id,
     });
-    response.writeHead(200);
-    response.end(
+    reply.status(200);
+    return reply.send(
       JSON.stringify({
         message: 'checkout successful',
         orderPaymentId,
@@ -64,7 +69,7 @@ export const saferpayHandler = async (request, response) => {
       orderPaymentId,
       transactionId,
     });
-    response.writeHead(500);
-    response.end(error.message);
+    reply.status(500);
+    return reply.send(error.message);
   }
 };

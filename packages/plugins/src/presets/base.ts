@@ -1,5 +1,3 @@
-import { ModuleInput } from '@unchainedshop/mongodb';
-
 // Delivery
 import '../delivery/post.js';
 
@@ -39,18 +37,6 @@ import '../worker/email.js';
 import '../worker/error-notifications.js';
 
 // Asset Management
-import '../files/gridfs/gridfs-adapter.js';
-import { configureGridFSFileUploadModule } from '../files/gridfs/index.js';
+import gridfsModules from '../files/gridfs/index.js';
 
-const modules: Record<
-  string,
-  {
-    configure: (params: ModuleInput<any>) => any;
-  }
-> = {
-  gridfsFileUploads: {
-    configure: configureGridFSFileUploadModule,
-  },
-};
-
-export default modules;
+export default gridfsModules;

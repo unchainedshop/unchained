@@ -26,9 +26,7 @@ const bufferToStream = (buffer: any) => {
 
 export const GridFSAdapter: IFileAdapter<
   UnchainedCore & {
-    modules: {
-      gridfsFileUploads: GridFSFileUploadsModule;
-    };
+    modules: GridFSFileUploadsModule;
   }
 > = {
   key: 'shop.unchained.file-upload-plugin.gridfs',

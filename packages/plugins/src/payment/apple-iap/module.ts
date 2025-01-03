@@ -1,4 +1,4 @@
-import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection.js';
+import { AppleTransaction, AppleTransactionsCollection } from './db/AppleTransactionsCollection.js';
 
 export const configureAppleTransactionsModule = async ({ db }) => {
   const AppleTransactions = await AppleTransactionsCollection(db);
@@ -18,4 +18,12 @@ export const configureAppleTransactionsModule = async ({ db }) => {
   };
 };
 
-export type AppleTransactionsModule = Awaited<ReturnType<typeof configureAppleTransactionsModule>>;
+export default {
+  appleTransactions: {
+    configure: configureAppleTransactionsModule,
+  },
+};
+
+export type AppleTransactionsModule = {
+  appleTransactions: Awaited<ReturnType<typeof configureAppleTransactionsModule>>;
+};
