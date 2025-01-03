@@ -96,7 +96,13 @@ in this case `mediaUploadTicketId` is the id provided to you when you first call
 If you don't want to perform multiple request when uploading media files you can setup a webhook that listens for `s3:ObjectCreated:Put` and link the uploaded file with the media. To make things easier we have already configured a minimal webhook the does just that and all you have to do is import at in boot file.
 
 ```js boot.js
-import '@unchainedshop/core-files/plugins/minio-webhook';
+import { minioHandler } from '@unchainedshop/plugins/files/minio/minio-webhook-express';
+```
+
+or
+
+```js boot.js
+import { minioHandler } from '@unchainedshop/plugins/files/minio/minio-webhook-fastify';
 ```
 
 After this unchained will listen to `s3:ObjectCreated:Put` event from minio and link media on successful uploads. Make sure to point your minio webhook to `http|s://your-domain:port/minio` to use this webhook.
