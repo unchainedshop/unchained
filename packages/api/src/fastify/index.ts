@@ -100,7 +100,7 @@ export const connect = (
     '0': false,
   }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
 
-  fastify.register(fastifyCookie);
+  fastify.register(fastifyCookie); // TODO: Do not register when using oAuth!
   fastify.register(fastifySession, {
     secret: process.env.UNCHAINED_TOKEN_SECRET,
     cookieName,
