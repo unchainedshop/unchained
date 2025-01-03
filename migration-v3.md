@@ -27,6 +27,7 @@ import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheContr
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
+import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 ```
 
 Add
@@ -36,7 +37,8 @@ import cookie from "cookie";
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/lib/express/index.js';
-import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
+import defaultModules from '@unchainedshop/plugins/presets/all.js';
+import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
 ```
 
 Change startPlatform from:
@@ -88,6 +90,8 @@ const engine = await startPlatform({
   ],
 });
 connect(app, engine);
+connectDefaultPluginsToExpress(app, engine);
+
 ```
 
 ## Remove types

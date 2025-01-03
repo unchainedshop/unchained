@@ -1,57 +1,36 @@
-import Fastify from 'fastify';
+import express from 'express';
+import http from 'node:http';
 import cookie from 'cookie';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import { connect } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect } from '@unchainedshop/api/lib/express/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
-import { createLogger } from '@unchainedshop/logger';
+import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
+import { log } from '@unchainedshop/logger';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
-import setupTicketing, { ticketingModules, TicketingAPI } from '@unchainedshop/ticketing';
-
+import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
+import { TicketingAPI } from '@unchainedshop/ticketing';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
 
 import seed from './seed.js';
-import { createReadStream } from 'node:fs';
 
 const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 
-const logger = createLogger('kitchensink');
-
-function Logger(...args) {
-  this.args = args;
-}
-Logger.prototype.info = logger.info;
-Logger.prototype.error = logger.error;
-Logger.prototype.debug = logger.debug;
-Logger.prototype.fatal = logger.error;
-Logger.prototype.warn = logger.warn;
-Logger.prototype.trace = logger.trace;
-Logger.prototype.child = function () {
-  return new Logger();
-};
-
-const app = Fastify({
-  loggerInstance: new Logger(),
-  disableRequestLogging: true,
-  trustProxy: true,
-});
+const app = express();
 
 // Workaround: Allow to use sandbox with localhost
-app.addHook('preHandler', async function (request) {
-  request.headers['x-forwarded-proto'] = 'https';
+app.set('trust proxy', 1);
+app.use((req, res, next) => {
+  req.headers['x-forwarded-proto'] = 'https';
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  next();
 });
 
-app.addHook('onSend', async function (_, reply) {
-  reply.headers({
-    'Access-Control-Allow-Private-Network': 'true',
-  });
-});
-
+const httpServer = http.createServer(app);
 const engine = await startPlatform({
   modules: { ...defaultModules, ...ticketingModules },
   services: { ...ticketingServices },
@@ -69,6 +48,9 @@ const engine = await startPlatform({
     }),
   ],
   options: {
+    files: {
+      privateFileSharingMaxAge: 86400000,
+    },
     payment: {
       filterSupportedProviders: async ({ providers }) => {
         return providers.toSorted((left, right) => {
@@ -89,29 +71,19 @@ await seed(engine.unchainedAPI);
 await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
 connect(app, engine);
-connectDefaultPluginsToFastify(app, engine);
+connectDefaultPluginsToExpress(app, engine);
 
 // Unchained Ticketing Extension
-// setupTicketing(app, engine.unchainedAPI as TicketingAPI, {
-//   renderOrderPDF: console.log,
-//   createAppleWalletPass: console.log,
-//   createGoogleWalletPass: console.log,
-// });
-
-const fileUrl = new URL(import.meta.resolve('../static/index.html'));
-app.route({
-  method: 'GET',
-  url: '*',
-  handler: async (req, reply) => {
-    reply.status(200);
-    reply.header('Content-Type', 'text/html');
-    return createReadStream(fileUrl.pathname);
-  },
+setupTicketing(app, engine.unchainedAPI as TicketingAPI, {
+  renderOrderPDF: console.log,
+  createAppleWalletPass: console.log,
+  createGoogleWalletPass: console.log,
 });
 
-try {
-  await app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
-} catch (err) {
-  logger.error(err);
-  process.exit(1);
-}
+const fileUrl = new URL(import.meta.resolve('../static/index.html'));
+app.use('/', async (req, res) => {
+  res.status(200).sendFile(fileUrl.pathname);
+});
+
+await httpServer.listen({ port: process.env.PORT || 3000 });
+log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);

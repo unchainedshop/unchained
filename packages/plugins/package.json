@@ -4,7 +4,6 @@
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
-    ".": "./lib/plugins-index.js",
     "./*": "./lib/*"
   },
   "type": "module",
