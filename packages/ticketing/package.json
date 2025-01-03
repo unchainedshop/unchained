@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
-  "version": "3.0.0-rc.14",
+  "version": "3.0.0-rc.15",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
@@ -31,21 +31,37 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^3.0.0-rc.14",
-    "@unchainedshop/core-files": "^3.0.0-rc.14",
-    "@unchainedshop/core-worker": "^3.0.0-rc.14",
-    "@unchainedshop/events": "^3.0.0-rc.14",
-    "@unchainedshop/logger": "^3.0.0-rc.14",
-    "@unchainedshop/mongodb": "^3.0.0-rc.14"
+    "@unchainedshop/api": "^3.0.0-rc.15",
+    "@unchainedshop/core": "^3.0.0-rc.15",
+    "@unchainedshop/core-files": "^3.0.0-rc.15",
+    "@unchainedshop/core-worker": "^3.0.0-rc.15",
+    "@unchainedshop/core-warehousing": "^3.0.0-rc.15",
+    "@unchainedshop/events": "^3.0.0-rc.15",
+    "@unchainedshop/logger": "^3.0.0-rc.15",
+    "@unchainedshop/mongodb": "^3.0.0-rc.15"
   },
   "peerDependencies": {
     "@hyperlink/node-apn": ">= 5.1",
-    "express": "5.x"
+    "express": "5.x",
+    "fastify": ">= 5.2 < 6"
+  },
+  "peerDependenciesMeta": {
+    "@hyperlink/node-apn": {
+      "optional": false
+    },
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "jest": "^29.7.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "express": "^5.0.1",
+    "fastify": "^5.2.0"
   }
 }

@@ -12,7 +12,7 @@ import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import setupTicketing, { ticketingModules, TicketingAPI } from '@unchainedshop/ticketing';
-import connectTicketingToFastify from '@unchainedshop/ticketing/lib/connect-fastify.js';
+import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
 

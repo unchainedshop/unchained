@@ -17,7 +17,7 @@ import setupTicketing, {
   ticketingServices,
   ticketingModules,
 } from '@unchainedshop/ticketing';
-import connectTicketingToExpress from '@unchainedshop/ticketing/lib/connect-express.js';
+import connectTicketingToExpress from '@unchainedshop/ticketing/lib/express.js';
 
 import seed from './seed.js';
 
