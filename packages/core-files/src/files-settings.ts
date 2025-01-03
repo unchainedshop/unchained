@@ -11,11 +11,13 @@ export interface FilesSettings {
 
 export const defaultTransformUrl = (url) => url;
 
+export const PRIVATE_FILE_SHARING_MAX_AGE = 86400000;
+
 export const filesSettings: FilesSettings = {
   transformUrl: null,
   privateFileSharingMaxAge: null,
   configureSettings: async ({ transformUrl, privateFileSharingMaxAge }) => {
     filesSettings.transformUrl = transformUrl || defaultTransformUrl;
-    filesSettings.privateFileSharingMaxAge = privateFileSharingMaxAge;
+    filesSettings.privateFileSharingMaxAge = privateFileSharingMaxAge || PRIVATE_FILE_SHARING_MAX_AGE;
   },
 };
