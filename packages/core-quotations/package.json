@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-quotations",
-  "version": "3.0.0-rc.14",
+  "version": "3.0.0-rc.15",
   "main": "lib/quotations-index.js",
   "types": "lib/quotations-index.d.ts",
   "type": "module",
@@ -31,9 +31,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-rc.14",
-    "@unchainedshop/logger": "^3.0.0-rc.14",
-    "@unchainedshop/utils": "^3.0.0-rc.14"
+    "@unchainedshop/events": "^3.0.0-rc.15",
+    "@unchainedshop/logger": "^3.0.0-rc.15",
+    "@unchainedshop/utils": "^3.0.0-rc.15"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
