@@ -33,11 +33,11 @@
   "peerDependencies": {
     "@fastify/cookie": ">= 11.0 < 12",
     "@fastify/session": ">= 11.0 < 12",
+    "fastify": ">= 5.2 < 6",
     "@metamask/eth-sig-util": ">= 8.1 < 9",
     "connect-mongo": ">= 5.1.0 < 6",
     "express": ">= 5.0 < 6",
     "express-session": ">= 1.18 < 2",
-    "fastify": ">= 5.2 < 6",
     "graphql-yoga": ">= 5.9 < 6.0",
     "passport": ">= 0.7 < 1"
   },

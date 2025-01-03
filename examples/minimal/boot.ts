@@ -21,40 +21,36 @@ Logger.prototype.child = function () {
   return new Logger();
 };
 
-const start = async () => {
-  const app = Fastify({
-    loggerInstance: new Logger(),
-    disableRequestLogging: true,
-    trustProxy: true,
+const app = Fastify({
+  loggerInstance: new Logger(),
+  disableRequestLogging: true,
+  trustProxy: true,
+});
+
+// Workaround: Allow to use sandbox with localhost
+app.addHook('preHandler', async function (request) {
+  request.headers['x-forwarded-proto'] = 'https';
+});
+
+app.addHook('onSend', async function (_, reply) {
+  reply.headers({
+    'Access-Control-Allow-Private-Network': 'true',
   });
+});
 
-  // Workaround: Allow to use sandbox with localhost
-  app.addHook('preHandler', async function (request) {
-    request.headers['x-forwarded-proto'] = 'https';
-  });
+const engine = await startPlatform({
+  modules: baseModules,
+});
 
-  app.addHook('onSend', async function (_, reply) {
-    reply.headers({
-      'Access-Control-Allow-Private-Network': 'true',
-    });
-  });
+await seed(engine.unchainedAPI);
+await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
-  const engine = await startPlatform({
-    modules: baseModules,
-  });
+await connect(app, engine);
+await connectBasePluginsToFastify(app);
 
-  await seed(engine.unchainedAPI);
-  await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
-
-  await connect(app, engine);
-  await connectBasePluginsToFastify(app);
-
-  try {
-    await app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
-  } catch (err) {
-    logger.error(err);
-    process.exit(1);
-  }
-};
-
-start();
+try {
+  await app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+} catch (err) {
+  logger.error(err);
+  process.exit(1);
+}
