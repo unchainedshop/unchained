@@ -6,7 +6,7 @@ import { createLogger } from '@unchainedshop/logger';
 import seed from './seed.js';
 import Fastify, { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
-import { Context } from '@unchainedshop/api';
+import { Context, UnchainedContextResolver } from '@unchainedshop/api';
 import fastifyCookie from '@fastify/cookie';
 
 const logger = createLogger('keycloak');
@@ -60,22 +60,41 @@ app.addHook('onSend', async function (_, reply) {
 
 const engine = await startPlatform({
   modules: baseModules,
-  context: (contextResolver) => async (props, req) => {
+  context: (contextResolver: UnchainedContextResolver) => async (props, req) => {
+    const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
+    const context = await contextResolver(props);
+    if (context.user || !req.session.keycloak) return context;
     try {
-      const accessToken = req.session.keycloak;
-      if (accessToken) {
-        // eslint-disable-next-line
-        const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
+      const isExpired = new Date(req.session.keycloak.expires_at) < new Date();
+      if (isExpired) {
         req.session.keycloak = await keycloakInstance.getNewAccessTokenUsingRefreshToken(
-          accessToken,
+          req.session.keycloak,
           {},
         );
-        console.log(req.session.keycloak);
       }
+
+      const userinfo = await keycloakInstance.userinfo(req.session.keycloak.access_token);
+      const { sub, resource_access, preferred_username } = userinfo as {
+        sub: string;
+        resource_access: Record<string, { roles: string[] }>;
+        preferred_username: string;
+      };
+
+      const roles = resource_access?.['unchained-local']?.roles || [];
+      const username = preferred_username || `keycloak:${sub}`;
+      let user = await context.modules.users.findUserByUsername(username);
+      if (roles.join(':') !== user.roles.join(':')) {
+        user = await context.modules.users.updateRoles(user._id, roles);
+      }
+
+      return {
+        ...context,
+        userId: user._id,
+        user,
+      };
     } catch (e) {
-      console.error(e);
+      delete req.session.keycloak;
     }
-    const context = contextResolver(props);
     return {
       ...context,
     };
@@ -93,8 +112,8 @@ app.get(
     },
     reply,
   ) {
-    const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
     try {
+      const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
       const userinfo = await this.keycloak.userinfo(accessToken.token.access_token);
       const {
         sub,
@@ -118,10 +137,10 @@ app.get(
 
       const roles = resource_access?.['unchained-local']?.roles || [];
       const username = preferred_username || `keycloak:${sub}`;
-      const user = await engine.unchainedAPI.modules.users.findUserByUsername(username);
+      const user = await request.unchainedContext.modules.users.findUserByUsername(username);
 
       if (!user) {
-        await engine.unchainedAPI.modules.users.createUser(
+        await request.unchainedContext.modules.users.createUser(
           {
             username,
             password: null,
