@@ -3,13 +3,11 @@ import instantiateLoaders, { UnchainedLoaders } from './loaders/index.js';
 import { getLocaleContext, UnchainedLocaleContext } from './locale-context.js';
 import { UnchainedServerOptions } from './api-index.js';
 import { User } from '@unchainedshop/core-users';
-import { IncomingMessage, OutgoingMessage } from 'node:http';
 
 export type LoginFn = (
   user: User,
   options?: {
     impersonator?: User;
-    maxAge?: number;
   },
 ) => Promise<{ _id: string; tokenExpires: Date }>;
 

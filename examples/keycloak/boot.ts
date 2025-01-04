@@ -6,8 +6,10 @@ import { createLogger } from '@unchainedshop/logger';
 import seed from './seed.js';
 import Fastify, { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
-import { Context, UnchainedContextResolver } from '@unchainedshop/api';
+import { Context, UnchainedContextResolver, API_EVENTS } from '@unchainedshop/api';
 import fastifyCookie from '@fastify/cookie';
+import { emit } from '@unchainedshop/events';
+import jwt from 'jsonwebtoken';
 
 const logger = createLogger('keycloak');
 
@@ -42,7 +44,7 @@ app.register(FastifyOAuth2, {
     },
   },
   startRedirectPath: '/login',
-  scope: ['profile', 'email', 'phone', 'openid', 'address'],
+  scope: ['profile', 'email', 'openid'],
   callbackUri: 'http://localhost:4010/login/keycloak/callback',
   discovery: { issuer: 'http://localhost:8080/realms/master' },
 });
@@ -61,26 +63,26 @@ app.addHook('onSend', async function (_, reply) {
 const engine = await startPlatform({
   modules: baseModules,
   context: (contextResolver: UnchainedContextResolver) => async (props, req) => {
+    // eslint-disable-next-line
     const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
     const context = await contextResolver(props);
     if (context.user || !req.session.keycloak) return context;
     try {
       const isExpired = new Date(req.session.keycloak.expires_at) < new Date();
       if (isExpired) {
-        req.session.keycloak = await keycloakInstance.getNewAccessTokenUsingRefreshToken(
-          req.session.keycloak,
-          {},
-        );
+        req.session.keycloak = (
+          await keycloakInstance.getNewAccessTokenUsingRefreshToken(req.session.keycloak, {})
+        ).token;
       }
 
-      const userinfo = await keycloakInstance.userinfo(req.session.keycloak.access_token);
-      const { sub, resource_access, preferred_username } = userinfo as {
+      const decoded = jwt.decode(req.session.keycloak.id_token);
+      const { sub, groups, preferred_username } = decoded as {
         sub: string;
-        resource_access: Record<string, { roles: string[] }>;
+        groups: string[];
         preferred_username: string;
       };
 
-      const roles = resource_access?.['unchained-local']?.roles || [];
+      const roles = groups || [];
       const username = preferred_username || `keycloak:${sub}`;
       let user = await context.modules.users.findUserByUsername(username);
       if (roles.join(':') !== user.roles.join(':')) {
@@ -91,8 +93,24 @@ const engine = await startPlatform({
         ...context,
         userId: user._id,
         user,
+        logout: async () => {
+          const tokenObject = {
+            // eslint-disable-next-line
+            _id: (req as any).session.sessionId,
+            userId: user._id,
+          };
+          try {
+            await keycloakInstance.revokeAllToken(req.session.keycloak, undefined);
+          } catch {
+            /* */
+          }
+          req.session.keycloak = null;
+          await emit(API_EVENTS.API_LOGOUT, tokenObject);
+          return true;
+        },
       };
     } catch (e) {
+      console.error(e);
       delete req.session.keycloak;
     }
     return {
@@ -114,28 +132,14 @@ app.get(
   ) {
     try {
       const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
-      const userinfo = await this.keycloak.userinfo(accessToken.token.access_token);
-      const {
-        sub,
-        email,
-        resource_access,
-        email_verified,
-        name,
-        given_name,
-        family_name,
-        preferred_username,
-      } = userinfo as {
+      const decoded = jwt.decode(accessToken.token.id_token);
+      const { sub, groups, preferred_username } = decoded as {
         sub: string;
-        email?: string;
-        resource_access: Record<string, { roles: string[] }>;
-        email_verified: boolean;
-        name?: string;
-        given_name?: string;
-        family_name?: string;
+        groups: string[];
         preferred_username: string;
       };
 
-      const roles = resource_access?.['unchained-local']?.roles || [];
+      const roles = groups || [];
       const username = preferred_username || `keycloak:${sub}`;
       const user = await request.unchainedContext.modules.users.findUserByUsername(username);
 
@@ -144,14 +148,7 @@ app.get(
           {
             username,
             password: null,
-            email: email_verified ? email : undefined,
-            profile: {
-              displayName: name,
-              address: {
-                firstName: given_name,
-                lastName: family_name,
-              },
-            },
+            profile: {},
             roles,
           },
           { skipMessaging: true, skipPasswordEnrollment: true },
@@ -159,8 +156,8 @@ app.get(
       }
       // eslint-disable-next-line
       // @ts-ignore
-      request.session.keycloak = accessToken;
-      return reply.redirect('/');
+      request.session.keycloak = accessToken.token;
+      return reply.redirect('http://localhost:3000/');
     } catch (e) {
       console.error(e);
       reply.status(500);

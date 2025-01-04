@@ -7,7 +7,7 @@ import {
   UnchainedContextResolver,
 } from './context.js';
 import { UnchainedCore } from '@unchainedshop/core';
-
+export * from './events.js';
 export * from './context.js';
 export * from './locale-context.js';
 export * from './loaders/index.js';

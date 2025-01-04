@@ -42,18 +42,16 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
   const context = getCurrentContextResolver();
 
   const login: LoginFn = async function (user: User, options = {}) {
-    const { impersonator, maxAge } = options;
+    const { impersonator } = options;
 
     req.session.userId = user._id;
     req.session.impersonatorId = impersonator?._id;
-    req.session.loginExpires = maxAge
-      ? new Date(Date.now() + maxAge) /* eslint-disable-next-line */
-      : new Date((req as any).session.cookie._expires);
 
     const tokenObject = {
       _id: req.session.sessionId,
       userId: user._id,
-      tokenExpires: req.session.loginExpires,
+      // eslint-disable-next-line
+      tokenExpires: new Date((req as any).session.cookie._expires),
     };
     await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
     /* eslint-disable-next-line */
@@ -63,7 +61,6 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
   const logout: LogoutFn = async function logout() {
     /* eslint-disable-line */
-    if (!req.session?.userId) return false;
     const tokenObject = {
       _id: (req as any).session.sessionId,
       userId: req.session?.userId,
