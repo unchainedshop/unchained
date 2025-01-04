@@ -3,15 +3,24 @@ import instantiateLoaders, { UnchainedLoaders } from './loaders/index.js';
 import { getLocaleContext, UnchainedLocaleContext } from './locale-context.js';
 import { UnchainedServerOptions } from './api-index.js';
 import { User } from '@unchainedshop/core-users';
+import { IncomingMessage, OutgoingMessage } from 'node:http';
 
+export type LoginFn = (
+  user: User,
+  options?: {
+    impersonator?: User;
+    maxAge?: number;
+  },
+) => Promise<{ _id: string; tokenExpires: Date }>;
+
+export type LogoutFn = (sessionId?: string) => Promise<boolean>;
 export interface UnchainedUserContext {
-  login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;
-  logout: () => Promise<boolean>;
+  login: LoginFn;
+  logout: LogoutFn;
   userId?: string;
+  impersonatorId?: string;
+  accessToken?: string;
   user?: User;
-  remoteAddress?: string;
-  remotePort?: string;
-  userAgent?: string;
 }
 
 export interface CustomAdminUiProperties {
@@ -26,6 +35,8 @@ export interface AdminUiConfig {
 export type UnchainedHTTPServerContext = {
   setHeader: (key: string, value: string) => void;
   getHeader: (key: string) => string;
+  remoteAddress?: string;
+  remotePort?: number;
 };
 
 export type Context = UnchainedCore & {
@@ -45,15 +56,10 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
   context = newContext;
 };
 
-export type UnchainedContextResolver = (
-  params: UnchainedHTTPServerContext & {
-    remoteAddress?: string;
-    remotePort?: number;
-    userId?: string;
-    login: (user: any) => Promise<{ _id: string; user: any; tokenExpires: Date }>;
-    accessToken?: string;
-    logout: () => Promise<boolean>;
-  },
+export type UnchainedContextResolver<Request = any, Response = any> = (
+  params: UnchainedHTTPServerContext & Omit<UnchainedUserContext, 'user'>,
+  req?: Request,
+  res?: Response,
 ) => Promise<Context>;
 
 const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
@@ -66,11 +72,21 @@ export const createContextResolver =
     unchainedAPI: UnchainedCore,
     unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
   ): UnchainedContextResolver =>
-  async ({ getHeader, setHeader, remoteAddress, remotePort, userId, accessToken, login, logout }) => {
+  async ({
+    getHeader,
+    setHeader,
+    remoteAddress,
+    remotePort,
+    userId,
+    impersonatorId,
+    accessToken,
+    login,
+    logout,
+  }) => {
     const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
     const loaders = await instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
-    const userContext: UnchainedUserContext = { login, logout };
+    const userContext: UnchainedUserContext = { login, logout, impersonatorId };
 
     if (accessToken) {
       const accessTokenUser = await unchainedAPI.modules.users.findUserByToken(accessToken);

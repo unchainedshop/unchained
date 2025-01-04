@@ -15,9 +15,6 @@ export interface UnchainedLocaleContext {
   countryContext: string;
   localeContext: Intl.Locale;
   currencyContext: string;
-  remoteAddress?: string;
-  remotePort?: string;
-  userAgent?: string;
 }
 const { NODE_ENV } = process.env;
 
@@ -76,20 +73,14 @@ export const resolveDefaultContext = pMemoize(
 
 export const getLocaleContext = async (
   {
-    remoteAddress,
-    remotePort,
     getHeader,
   }: {
-    remoteAddress: string;
-    remotePort: number | string;
     getHeader: UnchainedHTTPServerContext['getHeader'];
   },
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLocaleContext> => {
-  const userAgent = getHeader('user-agent');
-  const context = await resolveDefaultContext(
+  return resolveDefaultContext(
     { acceptLang: getHeader('accept-language'), acceptCountry: getHeader('x-shop-country') },
     unchainedAPI,
   );
-  return { remoteAddress, remotePort: String(remotePort), userAgent, ...context };
 };

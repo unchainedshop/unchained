@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../../errors.js';
 export default async function heartbeat(
   root: never,
   _: any,
-  { countryContext, localeContext, modules, remoteAddress, remotePort, userAgent, userId }: Context,
+  { countryContext, localeContext, modules, remoteAddress, remotePort, userId, getHeader }: Context,
 ) {
   log(`mutation heartbeat ${remoteAddress}`, { userId });
 
@@ -20,7 +20,7 @@ export default async function heartbeat(
     locale: localeContext.baseName,
     remoteAddress,
     remotePort,
-    userAgent,
+    userAgent: getHeader('user-agent'),
   });
 
   return user;

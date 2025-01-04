@@ -1,4 +1,4 @@
-import { getCurrentContextResolver } from '../context.js';
+import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import bulkImportHandler from './bulkImportHandler.js';
 import ercMetadataHandler from './ercMetadataHandler.js';
 import MongoStore from 'connect-mongo';
@@ -41,21 +41,27 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
   const context = getCurrentContextResolver();
 
-  async function login(user: User) {
+  const login: LoginFn = async function (user: User, options = {}) {
+    const { impersonator, maxAge } = options;
+
     req.session.userId = user._id;
+    req.session.impersonatorId = impersonator?._id;
+    req.session.loginExpires = maxAge
+      ? new Date(Date.now() + maxAge) /* eslint-disable-next-line */
+      : new Date((req as any).session.cookie._expires);
+
     const tokenObject = {
       _id: req.session.sessionId,
       userId: user._id,
-      /* eslint-disable-next-line */
-      tokenExpires: new Date((req as any).session?.cookie._expires),
+      tokenExpires: req.session.loginExpires,
     };
     await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
     /* eslint-disable-next-line */
     (user as any)._inLoginMethodResponse = true;
     return { user, ...tokenObject };
-  }
+  };
 
-  async function logout() {
+  const logout: LogoutFn = async function logout() {
     /* eslint-disable-line */
     if (!req.session?.userId) return false;
     const tokenObject = {
@@ -65,20 +71,25 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     req.session.userId = null;
     await emit(API_EVENTS.API_LOGOUT, tokenObject);
     return true;
-  }
+  };
 
   const [, accessToken] = req.headers.authorization?.split(' ') || [];
 
-  (req as any).unchainedContext = await context({
-    setHeader,
-    getHeader,
-    remoteAddress,
-    remotePort,
-    login,
-    logout,
-    accessToken,
-    userId: req.session.userId,
-  });
+  (req as any).unchainedContext = await context(
+    {
+      setHeader,
+      getHeader,
+      remoteAddress,
+      remotePort,
+      login,
+      logout,
+      accessToken,
+      userId: req.session.userId,
+      impersonatorId: req.session.impersonatorId,
+    },
+    req,
+    reply,
+  );
 };
 
 export const connect = (

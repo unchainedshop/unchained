@@ -58,6 +58,16 @@ export default [
       logout: SuccessResponse
 
       """
+      Impersonate a user
+      """
+      impersonate(userId: ID!): LoginMethodResponse!
+
+      """
+      End customer impersonated user session and resume the impersonator session
+      """
+      stopImpersonation: LoginMethodResponse
+
+      """
       Marks the user's email address as verified. Logs the user in afterwards.
       """
       verifyEmail(token: String!): LoginMethodResponse

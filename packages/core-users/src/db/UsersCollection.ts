@@ -13,7 +13,7 @@ export interface UserLastLogin {
   locale?: string;
   countryCode?: string;
   remoteAddress?: string;
-  remotePort?: string;
+  remotePort?: number;
   userAgent?: string;
 }
 

@@ -45,7 +45,7 @@ export default [
     type UserLoginTracker {
       timestamp: Timestamp!
       remoteAddress: String
-      remotePort: String
+      remotePort: Int
       userAgent: String
       locale: Locale
       countryCode: String

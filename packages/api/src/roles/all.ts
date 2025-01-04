@@ -100,6 +100,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewTokens, () => false);
   role.allow(actions.viewStatistics, () => false);
   role.allow(actions.uploadUserAvatar, () => false);
+  role.allow(actions.impersonate, () => false);
 
   // special case: when doing a login mutation, the user is not logged in technically yet,
   // but should be able to see user data of the user that is about to be logged in
@@ -139,6 +140,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewFilter, () => true);
   role.allow(actions.viewTranslations, () => true);
   role.allow(actions.logout, () => true);
+  role.allow(actions.stopImpersonation, () => true);
   role.allow(actions.loginAsGuest, () => true);
   role.allow(actions.loginWithPassword, () => true);
   role.allow(actions.loginWithWebAuthn, () => true);

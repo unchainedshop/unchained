@@ -2,7 +2,9 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
 const removePushSubscription = async (_, { p256dh }, context: Context) => {
-  const { modules, userId, userAgent } = context;
+  const { modules, userId } = context;
+  const userAgent = context.getHeader('user-agent');
+
   log(`mutation removePushSubscription ${userId} ${userAgent}`, { userId });
 
   await modules.users.removePushSubscription(userId, p256dh);

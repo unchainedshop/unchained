@@ -7,6 +7,11 @@ export default [
       me: User
 
       """
+      User impersonating currently logged in user
+      """
+      impersonator: User
+
+      """
       Get list of users, by default sorted by creation date (ascending) unless a queryString is set
       """
       users(

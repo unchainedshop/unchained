@@ -62,7 +62,7 @@ export default {
   lastLogin: {
     timestamp: new Date('2022-11-28T16:28:53.202Z'),
     remoteAddress: '::ffff:127.0.0.1',
-    remotePort: '42978',
+    remotePort: 42978,
     userAgent:
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
     locale: 'de-CH',

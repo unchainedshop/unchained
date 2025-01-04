@@ -23,7 +23,7 @@ export type ContextNormalizerFunction = (context: any) => RawPayloadType<any>['c
 
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   return {
-    userAgent: context?.userAgent,
+    userAgent: context?.getHeader?.('user-agent'),
     language: context?.localeContext?.code,
     country: context?.localeContext?.country,
     remoteAddress: context?.remoteAddress,

@@ -12,6 +12,8 @@ const roles = {
 const allRoles = roles;
 
 const actions: Record<string, string> = [
+  'impersonate',
+  'stopImpersonation',
   'viewEvent',
   'viewEvents',
   'viewUserRoles',

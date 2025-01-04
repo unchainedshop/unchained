@@ -4,6 +4,7 @@ import {
   setCurrentContextResolver,
   getCurrentContextResolver,
   AdminUiConfig,
+  UnchainedContextResolver,
 } from './context.js';
 import { UnchainedCore } from '@unchainedshop/core';
 
@@ -23,7 +24,7 @@ export type UnchainedServerOptions = {
   roles?: any;
   adminUiConfig?: AdminUiConfig;
   unchainedAPI: UnchainedCore;
-  context?: any;
+  context?: (defaultResolver: UnchainedContextResolver) => UnchainedContextResolver;
   events: Array<string>;
   workTypes: Array<string>;
 } & GraphQLServerOptions;
@@ -45,8 +46,8 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
 
   setCurrentContextResolver(
     customContext
-      ? (props) => {
-          return customContext(props, contextResolver);
+      ? (props, ...rest) => {
+          return customContext(contextResolver)(props, ...rest);
         }
       : contextResolver,
   );

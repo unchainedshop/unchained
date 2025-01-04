@@ -308,3 +308,8 @@ export const ProductLinkedToQuotationError = createError(
 export const FileNotFoundError = createError('FileNotFoundError', 'File not found');
 
 export const FileUploadExpiredError = createError('FileUploadExpired', 'File upload has expired');
+
+export const ImpersonatingAdminUserError = createError(
+  'ImpersonatingAdminUserError',
+  'Can not impersonate a admin user account',
+);

@@ -18,7 +18,7 @@ export default async function verifyEmail(root: never, { token }: { token: any }
   const user = await context.modules.users.updateHeartbeat(unverifiedToken.userId, {
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
-    userAgent: context.userAgent,
+    userAgent: context.getHeader('user-agent'),
     locale: context.localeContext.baseName,
     countryCode: context.countryContext,
   });

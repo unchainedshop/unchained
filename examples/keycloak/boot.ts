@@ -60,6 +60,26 @@ app.addHook('onSend', async function (_, reply) {
 
 const engine = await startPlatform({
   modules: baseModules,
+  context: (contextResolver) => async (props, req) => {
+    try {
+      const accessToken = req.session.keycloak;
+      if (accessToken) {
+        // eslint-disable-next-line
+        const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
+        req.session.keycloak = await keycloakInstance.getNewAccessTokenUsingRefreshToken(
+          accessToken,
+          {},
+        );
+        console.log(req.session.keycloak);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    const context = contextResolver(props);
+    return {
+      ...context,
+    };
+  },
 });
 
 app.get(
@@ -100,36 +120,27 @@ app.get(
       const username = preferred_username || `keycloak:${sub}`;
       const user = await engine.unchainedAPI.modules.users.findUserByUsername(username);
 
+      if (!user) {
+        await engine.unchainedAPI.modules.users.createUser(
+          {
+            username,
+            password: null,
+            email: email_verified ? email : undefined,
+            profile: {
+              displayName: name,
+              address: {
+                firstName: given_name,
+                lastName: family_name,
+              },
+            },
+            roles,
+          },
+          { skipMessaging: true, skipPasswordEnrollment: true },
+        );
+      }
       // eslint-disable-next-line
       // @ts-ignore
       request.session.keycloak = accessToken;
-
-      if (user) {
-        if (JSON.stringify(user.roles) !== JSON.stringify(roles)) {
-          await engine.unchainedAPI.modules.users.updateRoles(user._id, roles);
-        }
-        await request.unchainedContext.login(user);
-        return reply.redirect('/');
-      }
-      // TODO: try to use the preferred_username as the username first
-      const newUserId = await engine.unchainedAPI.modules.users.createUser(
-        {
-          username,
-          password: null,
-          email: email_verified ? email : undefined,
-          profile: {
-            displayName: name,
-            address: {
-              firstName: given_name,
-              lastName: family_name,
-            },
-          },
-          roles,
-        },
-        { skipMessaging: true, skipPasswordEnrollment: true },
-      );
-      const newUser = await engine.unchainedAPI.modules.users.findUserById(newUserId);
-      await request.unchainedContext.login(newUser);
       return reply.redirect('/');
     } catch (e) {
       console.error(e);
@@ -138,38 +149,6 @@ app.get(
     }
   },
 );
-
-// app.get(
-//   '/impersonate',
-//   async function (
-//     this: FastifyInstance & {
-//       keycloak: FastifyOAuth2.OAuth2Namespace;
-//     },
-//     request: FastifyRequest & {
-//       unchainedContext: Context;
-//     },
-//     reply,
-//   ) {
-//     console.log(request.session);
-//     const newToken = await this.keycloak.getNewAccessTokenUsingRefreshToken(
-//       request.session.keycloak,
-//       {},
-//     );
-//     request.session.keycloak = newToken;
-//     const test = await fetch(
-//       `http://localhost:8080/admin/realms/master/users/2399c45f-073b-4e96-abbf-85d9fef7b234/impersonation`,
-//       {
-//         method: 'POST',
-//         headers: {
-//           'content-type': 'application/json',
-//           Authorization: `Bearer ${newToken.token.access_token}`,
-//         },
-//       },
-//     );
-//     console.log(test.headers);
-//     return reply.send(await test.json());
-//   },
-// );
 
 await seed(engine.unchainedAPI);
 await setAccessToken(engine.unchainedAPI, 'admin', 'secret');

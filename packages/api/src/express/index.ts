@@ -1,5 +1,5 @@
 import e from 'express';
-import { getCurrentContextResolver } from '../context.js';
+import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import session from 'express-session';
@@ -46,7 +46,7 @@ const addContext = async function middlewareWithContext(
 
     const context = getCurrentContextResolver();
 
-    const login = async (user: User) => {
+    const login: LoginFn = async (user: User) => {
       await new Promise((resolve, reject) => {
         (req as any).login(user, (error, result) => {
           if (error) {
@@ -70,7 +70,7 @@ const addContext = async function middlewareWithContext(
       return { user, ...tokenObject };
     };
 
-    const logout = async (sessionId?: string) => { /* eslint-disable-line */
+    const logout: LogoutFn = async (sessionId) => { /* eslint-disable-line */
       // TODO: this should only logout an explicitly provided session if sessionID
       // has been provided
       // express-session destroy
@@ -97,16 +97,20 @@ const addContext = async function middlewareWithContext(
 
     const [, accessToken] = req.headers.authorization?.split(' ') || [];
 
-    (req as any).unchainedContext = await context({
-      setHeader,
-      getHeader,
-      remoteAddress,
-      remotePort,
-      login,
-      logout,
-      accessToken,
-      userId: (req as any).user?._id,
-    });
+    (req as any).unchainedContext = await context(
+      {
+        setHeader,
+        getHeader,
+        remoteAddress,
+        remotePort,
+        login,
+        logout,
+        accessToken,
+        userId: (req as any).user?._id,
+      },
+      req,
+      res,
+    );
     next();
   } catch (error) {
     next(error);

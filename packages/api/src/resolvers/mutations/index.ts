@@ -4,6 +4,8 @@ import loginWithPassword from './accounts/loginWithPassword.js';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.js';
 import loginAsGuest from './accounts/loginAsGuest.js';
 import logout from './accounts/logout.js';
+import impersonate from './accounts/impersonate.js';
+import stopImpersonation from './accounts/stopImpersonation.js';
 import changePassword from './accounts/changePassword.js';
 import createUser from './accounts/createUser.js';
 import verifyEmail from './accounts/verifyEmail.js';
@@ -155,6 +157,9 @@ import removeUserProductReviews from './users/removeUserProductReviews.js';
 export default {
   logout: acl(actions.logout)(logout),
   loginAsGuest: acl(actions.loginAsGuest)(loginAsGuest),
+  impersonate: acl(actions.impersonate)(impersonate),
+  stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),
+
   createWebAuthnCredentialCreationOptions: acl(actions.useWebAuthn)(
     createWebAuthnCredentialCreationOptions,
   ),
@@ -313,5 +318,5 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout,
   ),
-  removeUserProductReviews,
+  removeUserProductReviews, // TODO!
 };
