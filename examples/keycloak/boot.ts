@@ -76,13 +76,13 @@ const engine = await startPlatform({
       }
 
       const decoded = jwt.decode(req.session.keycloak.id_token);
-      const { sub, groups, preferred_username } = decoded as {
+      const { sub, resource_access, preferred_username } = decoded as {
         sub: string;
-        groups: string[];
+        resource_access: Record<string, { roles: string[] }>;
         preferred_username: string;
       };
 
-      const roles = groups || [];
+      const roles = resource_access?.['unchained-local']?.roles || [];
       const username = preferred_username || `keycloak:${sub}`;
       let user = await context.modules.users.findUserByUsername(username);
       if (roles.join(':') !== user.roles.join(':')) {
@@ -133,13 +133,13 @@ app.get(
     try {
       const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
       const decoded = jwt.decode(accessToken.token.id_token);
-      const { sub, groups, preferred_username } = decoded as {
+      const { sub, resource_access, preferred_username } = decoded as {
         sub: string;
-        groups: string[];
+        resource_access: Record<string, { roles: string[] }>;
         preferred_username: string;
       };
 
-      const roles = groups || [];
+      const roles = resource_access?.['unchained-local']?.roles || [];
       const username = preferred_username || `keycloak:${sub}`;
       const user = await request.unchainedContext.modules.users.findUserByUsername(username);
 
