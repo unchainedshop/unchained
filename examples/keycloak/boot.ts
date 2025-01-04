@@ -75,16 +75,16 @@ const engine = await startPlatform({
         ).token;
       }
 
-      const decoded = jwt.decode(req.session.keycloak.id_token);
-      const { sub, resource_access, preferred_username } = decoded as {
+      const {
+        sub,
+        resource_access,
+      }: {
         sub: string;
         resource_access: Record<string, { roles: string[] }>;
-        preferred_username: string;
-      };
+      } = jwt.decode(req.session.keycloak.id_token);
 
       const roles = resource_access?.['unchained-local']?.roles || [];
-      const username = preferred_username || `keycloak:${sub}`;
-      let user = await context.modules.users.findUserByUsername(username);
+      let user = await context.modules.users.findUserById(`unchained-local:${sub}`);
       if (roles.join(':') !== user.roles.join(':')) {
         user = await context.modules.users.updateRoles(user._id, roles);
       }
@@ -99,18 +99,12 @@ const engine = await startPlatform({
             _id: (req as any).session.sessionId,
             userId: user._id,
           };
-          try {
-            await keycloakInstance.revokeAllToken(req.session.keycloak, undefined);
-          } catch {
-            /* */
-          }
-          req.session.keycloak = null;
+          delete req.session.keycloak;
           await emit(API_EVENTS.API_LOGOUT, tokenObject);
           return true;
         },
       };
-    } catch (e) {
-      console.error(e);
+    } catch {
       delete req.session.keycloak;
     }
     return {
@@ -133,22 +127,46 @@ app.get(
     try {
       const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
       const decoded = jwt.decode(accessToken.token.id_token);
-      const { sub, resource_access, preferred_username } = decoded as {
+      const {
+        sub,
+        resource_access,
+        preferred_username,
+        name,
+        given_name,
+        family_name,
+        email,
+        email_verified,
+      } = decoded as {
         sub: string;
         resource_access: Record<string, { roles: string[] }>;
         preferred_username: string;
+        name?: string;
+        given_name?: string;
+        family_name?: string;
+        email?: string;
+        email_verified: boolean;
       };
 
       const roles = resource_access?.['unchained-local']?.roles || [];
-      const username = preferred_username || `keycloak:${sub}`;
+      const username = preferred_username || `unchained-local:${sub}`;
       const user = await request.unchainedContext.modules.users.findUserByUsername(username);
 
       if (!user) {
         await request.unchainedContext.modules.users.createUser(
           {
+            // eslint-disable-next-line
+            // @ts-ignore WE KNOW THAT WE CAN SET THAT FIELD
+            _id: `unchained-local:${sub}`,
             username,
             password: null,
-            profile: {},
+            email: email_verified ? email : null,
+            profile: {
+              displayName: name,
+              address: {
+                firstName: given_name,
+                lastName: family_name,
+              },
+            },
             roles,
           },
           { skipMessaging: true, skipPasswordEnrollment: true },
