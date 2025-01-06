@@ -89,7 +89,7 @@ const config = {
         id: 'platform',
         entryPoints: ['../packages/platform/src/platform-index.ts'],
         tsconfig: '../packages/platform/tsconfig.json',
-        out: '/docs/types/platform',
+        out: 'docs/types/platform',
       },
     ],
   ],
