@@ -48,7 +48,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.5",
     "fido2-lib": "^3.5.3",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
