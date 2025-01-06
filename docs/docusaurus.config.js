@@ -83,6 +83,15 @@ const config = {
         schema: 'http://localhost:4010/graphql',
       },
     ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'platform',
+        entryPoints: ['../packages/platform/src/platform-index.ts'],
+        tsconfig: '../packages/platform/tsconfig.json',
+        out: '/docs/types/platform',
+      },
+    ],
   ],
 
   themeConfig:

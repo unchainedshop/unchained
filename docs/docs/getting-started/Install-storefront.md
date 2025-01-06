@@ -4,10 +4,10 @@ title: Install and setup the storefront web-app
 sidebar_label: Install storefront
 ---
 
-> To test the Unchained Engine we setup the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
+To test the Unchained Engine we setup the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
 
 
-This tutorial helps you:
+Steps:
 
 - Install the storefront web app locally
 - Conntect to the local Unchained Engine via [graphQL](https://graphql.org/)

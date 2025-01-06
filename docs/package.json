@@ -29,7 +29,10 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
-    "@docusaurus/types": "^3.7.0"
+    "@docusaurus/types": "^3.7.0",
+    "docusaurus-plugin-typedoc": "^1.2.0",
+    "typedoc": "^0.27.6",
+    "typedoc-plugin-markdown": "^4.4.1"
   },
   "browserslist": {
     "production": [

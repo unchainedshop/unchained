@@ -8,7 +8,7 @@ sidebar_label: Install engine
 Usage and Configuration Options for the Cryptopay Plugin
 :::
 
-> In this section, we will walk you through the steps required to start up an Unchained Engine API server locally.
+In this section, we will walk you through the steps required to start up an Unchained Engine API server locally.
 
 This tutorial helps you:
 

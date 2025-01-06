@@ -5,9 +5,9 @@ sidebar_label: Search
 ---
 # Search Behavior
 ---
-:::
+::::
  Learn about the search feature
-:::
+::::
 
 Unchained provides you with the ability to search and filter products and assortments.
 

@@ -29,7 +29,7 @@ title: Add new products to your store
   }
 </style> <-->
 
-> This chapter teaches you how to add new products and categories to your store. It explains the major entities like categories, pricing & products required to show some products in the storefront app.
+This chapter teaches you how to add new products and categories to your store. It explains the major entities like categories, pricing & products required to show some products in the storefront app.
 
 Steps:
 
