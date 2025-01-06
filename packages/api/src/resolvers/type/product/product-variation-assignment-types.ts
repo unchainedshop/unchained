@@ -15,7 +15,7 @@ export interface ProductVariationAssignmentHelperTypes {
 
 export const ProductVariationAssignment: ProductVariationAssignmentHelperTypes = {
   _id: ({ product, assignment }) => {
-    return `${product._id}:${Object.values(assignment.vector).join('-')}`;
+    return `${product?._id}:${assignment?.productId}:${Object.values(assignment.vector).join('-')}`;
   },
   vectors: ({ assignment, product }) => {
     return Object.keys(assignment.vector || {}).map((key) => ({

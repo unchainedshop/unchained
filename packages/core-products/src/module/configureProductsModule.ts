@@ -188,7 +188,6 @@ export const configureProductsModule = async ({
   ): Promise<Product[]> => {
     const { proxy } = product;
     let filtered = [...(proxy.assignments || [])];
-
     vectors.forEach(({ key, value }) => {
       filtered = filtered.filter((assignment) => {
         if (assignment.vector[key] === value) {
@@ -289,7 +288,6 @@ export const configureProductsModule = async ({
       { includeInactive = false }: { includeInactive?: boolean } = {},
     ): Promise<{ assignment: ProductAssignment; product: Product }[]> => {
       const assignments = product.proxy?.assignments || [];
-
       const productIds = assignments.map(({ productId }) => productId);
       const selector: mongodb.Filter<Product> = {
         _id: { $in: productIds },
@@ -302,7 +300,6 @@ export const configureProductsModule = async ({
       })
         .map(({ _id }) => _id)
         .toArray();
-
       return assignments
         .filter(({ productId }) => {
           return supportedProductIds.includes(productId);
@@ -459,8 +456,8 @@ export const configureProductsModule = async ({
       },
 
       removeAssignment: async (
-        productId: string,
-        { vectors }: { vectors: ProductConfiguration[] },
+        proxyId: string,
+        { vectors, productId }: { vectors: ProductConfiguration[]; productId: string },
       ): Promise<number> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
@@ -473,12 +470,13 @@ export const configureProductsModule = async ({
           $pull: {
             'proxy.assignments': {
               vector,
+              productId,
             },
           },
         };
-        await Products.updateOne(generateDbFilterById(productId), modifier);
+        await Products.updateOne(generateDbFilterById(proxyId), modifier);
 
-        await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
+        await emit('PRODUCT_REMOVE_ASSIGNMENT', { proxyId, productId });
 
         return vectors.length;
       },

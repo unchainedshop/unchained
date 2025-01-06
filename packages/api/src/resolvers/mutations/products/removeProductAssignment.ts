@@ -6,10 +6,10 @@ import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../
 
 export default async function removeProductAssignment(
   root: never,
-  params: { proxyId: string; vectors: ProductConfiguration[] },
+  params: { proxyId: string; vectors: Array<ProductConfiguration>; productId: string },
   { modules, userId }: Context,
 ) {
-  const { proxyId, vectors } = params;
+  const { proxyId, vectors, productId } = params;
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
@@ -24,7 +24,7 @@ export default async function removeProductAssignment(
       required: ProductTypes.ConfigurableProduct,
     });
 
-  await modules.products.assignments.removeAssignment(proxyId, { vectors });
+  await modules.products.assignments.removeAssignment(proxyId, { vectors, productId });
 
   return modules.products.findProduct({ productId: proxyId });
 }
