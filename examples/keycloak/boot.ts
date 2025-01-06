@@ -5,7 +5,7 @@ import { connect } from '@unchainedshop/api/lib/fastify/index.js';
 import { createLogger } from '@unchainedshop/logger';
 import seed from './seed.js';
 import Fastify from 'fastify';
-import setupKeycloak from 'keycloak.js';
+import setupKeycloak from './keycloak.js';
 
 const logger = createLogger('keycloak');
 

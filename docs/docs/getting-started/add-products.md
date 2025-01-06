@@ -31,7 +31,7 @@ title: Add new products to your store
 
 > This chapter teaches you how to add new products and categories to your store. It explains the major entities like categories, pricing & products required to show some products in the storefront app.
 
-This tutorial helps you to ...
+Steps:
 
 - Log into your Admin UI
 - Fill your store with content using the Admin UI

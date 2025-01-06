@@ -27,12 +27,6 @@ It is also possible to chain operations:
 3. the specific configuration is handed to the vector logic to try to find a distinct concrete product Z
 4. bundle product Z is resolved
 
-Now the cart looks like this:
+Now the cart looks like this (you guessed it):
 
 1 x Bundle Z (e.g. a piece of furniture)
-
-Now, if you explode the bundle, the cart will contain:
-
-1 x Part A
-2 x Part B
-10 x Part C

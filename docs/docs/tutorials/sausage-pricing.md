@@ -34,7 +34,7 @@ cd your-awesome-ecommerce-project
 
 npm init @unchainedshop
 
-npm run install-all
+npm run install
 ```
 
 The above command will pull a boilerplate Unchained engine instance and a storefront that connects with it out of the box in your local environment.

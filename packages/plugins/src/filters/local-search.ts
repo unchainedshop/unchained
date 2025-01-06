@@ -3,17 +3,6 @@ import { ProductText } from '@unchainedshop/core-products';
 import { AssortmentText } from '@unchainedshop/core-assortments';
 import { FilterDirector, FilterAdapter, IFilterAdapter } from '@unchainedshop/core';
 
-function escapeStringRegexp(string) {
-  if (typeof string !== 'string') {
-    throw new TypeError('Expected a string');
-  }
-  // Escape characters with special meaning either inside or outside character sets.
-  // Use a simple backslash escape when it’s always valid, and a `\xnn` escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
-  return string.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
-}
-
-const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
-
 const LocalSearch: IFilterAdapter = {
   ...FilterAdapter,
 
@@ -32,20 +21,9 @@ const LocalSearch: IFilterAdapter = {
 
         if (!queryString) return productIds;
 
-        const selector: mongodb.Filter<ProductText> = AMAZON_DOCUMENTDB_COMPAT_MODE
-          ? {
-              $or: [
-                { title: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
-                { subtitle: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
-                { vendor: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
-                { brand: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
-                { description: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
-                { labels: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
-              ],
-            }
-          : {
-              $text: { $search: queryString },
-            };
+        const selector: mongodb.Filter<ProductText> = {
+          $text: { $search: queryString },
+        };
 
         if (productIds) {
           selector.productId = { $in: [...new Set(productIds)] as any };

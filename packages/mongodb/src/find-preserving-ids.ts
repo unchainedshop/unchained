@@ -1,16 +1,10 @@
 import { Collection, FindOptions, Filter } from 'mongodb';
 
-const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
-
 const sortByIndex = {
   index: 1,
 };
 
-const sortBySequence = {
-  sequence: 1,
-};
-
-const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE ? sortBySequence : sortByIndex;
+const defaultSort = sortByIndex;
 
 export const findPreservingIds =
   <T>(

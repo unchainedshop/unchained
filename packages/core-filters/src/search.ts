@@ -5,8 +5,6 @@ const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
 const DIRECTION_ASCENDING = 'ASC';
 
-const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
-
 export type SearchFilterQuery = Array<{ key: string; value?: string }>;
 
 export type SearchQuery = {
@@ -71,11 +69,6 @@ export const defaultFilterSelector = (searchQuery: SearchQuery) => {
 
 export const defaultSortStage = ({ orderBy }: { orderBy?: string }): mongodb.FindOptions['sort'] => {
   if (!orderBy || orderBy === ORDER_BY_INDEX) {
-    if (AMAZON_DOCUMENTDB_COMPAT_MODE) {
-      return {
-        sequence: 1,
-      };
-    }
     return {
       index: 1,
     };
@@ -91,7 +84,7 @@ export const defaultSortStage = ({ orderBy }: { orderBy?: string }): mongodb.Fin
 
   return {
     [keyPath]: direction === null ? 1 : direction,
-    [AMAZON_DOCUMENTDB_COMPAT_MODE ? 'sequence' : 'index']: 1,
+    ['index']: 1,
   };
 };
 

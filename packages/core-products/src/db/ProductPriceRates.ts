@@ -10,8 +10,7 @@ export type ProductPriceRate = {
 
 export const ProductPriceRates = async (db: mongodb.Db) => {
   const ProductRates = db.collection<ProductPriceRate>('product_rates');
-  // ProductRates Indexes
-  // TODO: Time-Series Data in MongoDb 5.0!
+
   await buildDbIndexes(ProductRates, [
     { index: { baseCurrency: 1 } },
     { index: { quoteCurrency: 1 } },

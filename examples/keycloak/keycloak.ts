@@ -14,9 +14,9 @@ const {
 } = process.env;
 
 export default async function setupKeycloak(app: FastifyInstance) {
-  if (!UNCHAINED_KEYCLOAK_CLIENT_SECRET || UNCHAINED_KEYCLOAK_REALM_URL)
+  if (!UNCHAINED_KEYCLOAK_CLIENT_SECRET || !UNCHAINED_KEYCLOAK_REALM_URL)
     throw new Error(
-      'Environment variables UNCHAINED_KEYCLOAK_CLIENT_SECRET and UNCHAINED_KEYCLOAK_REALm_URL are required',
+      'Environment variables UNCHAINED_KEYCLOAK_CLIENT_SECRET and UNCHAINED_KEYCLOAK_REALM_URL are required',
     );
 
   await app.register(fastifyCookie);
