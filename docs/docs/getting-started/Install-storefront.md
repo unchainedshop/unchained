@@ -4,17 +4,11 @@ title: Install and setup the storefront web-app
 sidebar_label: Install storefront
 ---
 
-To test the Unchained Engine we setup the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
-
-
-Steps:
-
-- Install the storefront web app locally
-- Conntect to the local Unchained Engine via [graphQL](https://graphql.org/)
+To test the Unchained Engine, set up the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
 
 ## Prerequisites
 
-The storefront installation requires a Node version > 14.
+The storefront installation requires Node.js version >= 18.
 
 ```bash
 node --version
@@ -23,22 +17,22 @@ v14.17.1
 
 ## Step 1: Installation
 
-The **Storefront** project is a [Next.js](https://nextjs.org/) based web app and connects to your Unchained Engine through [graphQL](https://graphql.org/) queries.
+The **Storefront** project is a [Next.js](https://nextjs.org/) based web app that connects to your Unchained Engine through [GraphQL](https://graphql.org/) queries.
 
-1. First create a new folder for your project to be installed.
+1. Create a new folder for your project.
 
 ```bash
 mkdir my-storefront-webapp
 cd my-storefront-webapp
 ```
 
-2. Use the Unchained initialisation script to download the code.
+2. Use the Unchained initialization script to download the code.
 
 ```bash
 npm init @unchainedshop
 ```
 
-3. A message prompts you to select the installation template. Choose **storefront** by using the `down key` and press `enter`
+3. Select the installation template. Choose **storefront**.
 
 ```bash
 ? What type of template do you want ›
@@ -47,7 +41,7 @@ Storefront <--
 Unchained engine
 ```
 
-4. Next two steps are to select the directory, as we already created a new empty directory you can simply press `enter`, and whether you want to initialise git which is up to you.
+4. Select the directory (press `enter` to use the current directory) and whether to initialize git.
 
 ```bash
 ? Directory name relative to current directory
@@ -55,34 +49,27 @@ Unchained engine
 ? Do you want Initialize git? no / yes
 ```
 
-5. Install the npm packages
+5. Install the npm packages.
 
 ```bash
 npm install
 ```
 
-The installation script downloads, installs and initialises all files and packages required to build and run the storefront web app.
-
 ## Step 2: Start the app
 
-Now, start the app by using the following command. Make sure that the engine runs that you set the `UNCHAINED_ENDPOINT` environment variable to.
+Start the app and ensure the engine runs by setting the `UNCHAINED_ENDPOINT` environment variable.
 
 ```bash
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000) to check your storefront webapp is running correctly.
+Open [localhost:3000](http://localhost:3000) to check your storefront web app is running correctly.
 
-And that's it!
+## Connect to a remote test Unchained Engine
 
-Your Unchained E-Commerce environment is fully setup and running locally.
-
-## (Connect to a remote test Unchained Engine)
-
-Currently the store is empty since you haven't  added any product so far. With a little update of our `.env` settings we can change that by connecting to Unchained's remote test engine which contains some prefilled product data.
+To see prefilled product data, update the `.env` settings to connect to Unchained's remote test engine.
 
 - Stop the app: `ctrl+c`
-- Open the file in the _my-storefront-webapp_
 - Update the endpoint in the `.env` file to: `UNCHAINED_ENDPOINT=https://engine.swag.unchained.shop/graphql`
 - Restart the app:
 
@@ -90,6 +77,6 @@ Currently the store is empty since you haven't  added any product so far. With a
 npm run dev
 ```
 
-- Open `localhost:3000` again to see some swaggy products popping up in your store. 😎
+Open [localhost:3000](http://localhost:3000) to see the products in your store.
 
 ![diagram](../assets/Storefront-Swag-Startscreen.png)

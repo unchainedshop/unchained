@@ -20,8 +20,8 @@ The main entry point for unchained engine is `startPlatform` imported from `@unc
 import { startPlatform } from '@unchainedshop/platform'
 
 const unchainedAPI = await startPlatform({})
-
 ```
+
 `startPlatform` returns the unchained api that lets you control all the modules and services defined. for example you can create seed the database with configurations like add currency, language, payment provider, admin accounts etc...
 
 ```typescript
@@ -36,8 +36,8 @@ await unchainedAPI.modules.users.createUser(
   },
   { skipMessaging: true },
 )
-
 ```
+
 Its also possible to configure the platform with a little effort through the various configuration options available.
 These options are available:
   - `modules: Record<string, { configure: (params: ModuleInput<any>) => any }>`: Custom modules configuration point. allows you to extends the functionality the engine.

@@ -83,15 +83,6 @@ const config = {
         schema: 'http://localhost:4010/graphql',
       },
     ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'platform',
-        entryPoints: ['../packages/platform/src/platform-index.ts'],
-        tsconfig: '../packages/platform/tsconfig.json',
-        out: 'docs/types/platform',
-      },
-    ],
   ],
 
   themeConfig:
@@ -103,6 +94,7 @@ const config = {
         disableSwitch: true,
         defaultMode: 'light',
       },
+
       navbar: {
         title: 'Unchained Engine',
         logo: {
@@ -115,6 +107,11 @@ const config = {
             sidebarId: 'tutorialSidebar',
             position: 'left',
             label: 'Docs',
+          },
+          {
+            position: 'left',
+            label: 'Types',
+            href: '/types/index.html',
           },
           {
             href: 'https://github.com/unchainedshop/unchained',
