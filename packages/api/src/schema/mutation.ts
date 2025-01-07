@@ -487,11 +487,7 @@ export default [
       Unlinks a product from a ConfigurableProduct by providing a configuration
       combination that uniquely identifies a row in the assignment matrix
       """
-      removeProductAssignment(
-        proxyId: ID!
-        productId: ID
-        vectors: [ProductAssignmentVectorInput!]!
-      ): Product!
+      removeProductAssignment(proxyId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
 
       """
       Adds new language along with the user who created it

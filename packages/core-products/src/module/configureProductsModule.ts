@@ -436,6 +436,14 @@ export const configureProductsModule = async ({
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
         });
+        // Check if a similar vector assignment already exists
+        const existingAssignment = await Products.findOne({
+          _id: proxyId,
+          'proxy.assignments.vector': vector,
+        });
+
+        if (existingAssignment) return;
+
         const modifier = {
           $set: {
             updated: new Date(),
