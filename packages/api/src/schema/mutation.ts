@@ -489,7 +489,7 @@ export default [
       """
       removeProductAssignment(
         proxyId: ID!
-        productId: ID!
+        productId: ID
         vectors: [ProductAssignmentVectorInput!]!
       ): Product!
 

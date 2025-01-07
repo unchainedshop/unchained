@@ -470,10 +470,11 @@ export const configureProductsModule = async ({
           $pull: {
             'proxy.assignments': {
               vector,
-              productId,
             },
           },
         };
+        if (productId) modifier.$pull['proxy.assignments']['productId'] = productId;
+
         await Products.updateOne(generateDbFilterById(proxyId), modifier);
 
         await emit('PRODUCT_REMOVE_ASSIGNMENT', { proxyId, productId });
