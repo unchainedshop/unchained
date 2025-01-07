@@ -35,7 +35,6 @@ export default async function addProductAssignment(
       received: proxyProduct.type,
       required: ProductTypes.ConfigurableProduct,
     });
-
   await modules.products.assignments.addProxyAssignment(productId, {
     proxyId,
     vectors,
