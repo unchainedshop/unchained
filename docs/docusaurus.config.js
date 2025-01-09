@@ -111,7 +111,7 @@ const config = {
           {
             position: 'left',
             label: 'Types',
-            href: '/types/index.html',
+            href: 'https://docs.unchained.shop/types/index.html',
           },
           {
             href: 'https://github.com/unchainedshop/unchained',

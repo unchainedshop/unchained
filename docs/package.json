@@ -13,7 +13,7 @@
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.7.0",
-    "@easyops-cn/docusaurus-search-local": "^0.46.0",
+    "@easyops-cn/docusaurus-search-local": "^0.47.0",
     "@graphql-markdown/diff": "^1.1.9",
     "@graphql-markdown/docusaurus": "^1.26.4",
     "@graphql-tools/graphql-file-loader": "^8.0.11",
