@@ -5,6 +5,8 @@ import { Request, RequestHandler } from 'express';
 
 const logger = createLogger('unchained:erc-metadata');
 
+const { ROOT_URL = 'http://localhost:4010' } = process.env;
+
 const errorHandler = (res, e) => {
   logger.error(e.message);
   res.writeHead(503);
@@ -29,7 +31,7 @@ const ercMetadataMiddleware: RequestHandler = async (
     }
 
     const { services, localeContext } = req.unchainedContext;
-    const url = new URL(req.url, process.env.ROOT_URL);
+    const url = new URL(req.url, ROOT_URL);
     const parsedPath = path.parse(url.pathname);
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');

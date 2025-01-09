@@ -12,7 +12,7 @@ import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '@unchainedshop/core-files';
 
-const { MINTER_TOKEN_OFFSET = '0' } = process.env;
+const { MINTER_TOKEN_OFFSET = '0', ROOT_URL = 'http://localhost:4010' } = process.env;
 
 const ETHMinter: IWarehousingAdapter = {
   ...WarehousingAdapter,
@@ -127,7 +127,7 @@ const ETHMinter: IWarehousingAdapter = {
         const isDefaultLanguageActive = locale ? locale?.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
           ? {
-              uri: `${process.env.ROOT_URL}/erc-metadata/${product._id}/{locale}/${tokenId}.json`,
+              uri: `${ROOT_URL}/erc-metadata/${product._id}/{locale}/${tokenId}.json`,
               default: systemLocale.language,
               locales: allLanguages.map((lang) => lang.isoCode),
             }

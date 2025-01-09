@@ -6,6 +6,8 @@ import { filesSettings, FilesSettingsOptions } from '../files-settings.js';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
+const { ROOT_URL = 'http://localhost:4010' } = process.env;
+
 export const configureFilesModule = async ({
   db,
   options: filesOptions = {},
@@ -23,8 +25,8 @@ export const configureFilesModule = async ({
       if (URL.canParse(transformedURLString)) {
         const finalURL = new URL(transformedURLString);
         return finalURL.href;
-      } else if (URL.canParse(transformedURLString, process.env.ROOT_URL)) {
-        const finalURL = new URL(transformedURLString, process.env.ROOT_URL);
+      } else if (URL.canParse(transformedURLString, ROOT_URL)) {
+        const finalURL = new URL(transformedURLString, ROOT_URL);
         return finalURL.href;
       }
       return transformedURLString;

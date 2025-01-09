@@ -4,6 +4,8 @@ import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:erc-metadata');
 
+const { ROOT_URL = 'http://localhost:4010' } = process.env;
+
 const errorHandler = (res) => (e) => {
   logger.error(e.message);
   res.status(503);
@@ -22,7 +24,7 @@ const ercMetadataHandler: RouteHandlerMethod = async (
 ) => {
   try {
     const { services, localeContext } = req.unchainedContext;
-    const url = new URL(req.url, process.env.ROOT_URL);
+    const url = new URL(req.url, ROOT_URL);
 
     if (!url.pathname.toLowerCase().endsWith('.json')) throw new Error('Invalid ERC Metadata URI');
 
