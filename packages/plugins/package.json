@@ -135,7 +135,7 @@
     }
   },
   "devDependencies": {
-    "@aws-sdk/client-eventbridge": "^3.721.0",
+    "@aws-sdk/client-eventbridge": "^3.723.0",
     "@breejs/later": "^4.2.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@redis/client": "^1.6.0",
@@ -157,8 +157,8 @@
     "stripe": "^17.5.0",
     "tiny-secp256k1": "^2.2.3",
     "ts-jest": "^29.2.5",
-    "twilio": "^5.4.0",
-    "typescript": "^5.7.2",
+    "twilio": "^5.4.1",
+    "typescript": "^5.7.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   }

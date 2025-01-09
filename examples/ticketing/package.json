@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
-    "@fastify/session": "^11.0.2",
+    "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^3.0.0-rc.15",
     "@unchainedshop/plugins": "^3.0.0-rc.15",
     "@unchainedshop/ticketing": "^3.0.0-rc.15",
@@ -47,6 +47,6 @@
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }

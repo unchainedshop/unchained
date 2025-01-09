@@ -53,7 +53,7 @@
     "postfinancecheckout": "^4.5.0",
     "stripe": "^17.5.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.4.0",
+    "twilio": "^5.4.1",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   },
@@ -64,6 +64,6 @@
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }

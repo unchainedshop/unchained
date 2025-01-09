@@ -33,12 +33,12 @@
   "peerDependencies": {
     "@fastify/cookie": ">= 11.0 < 12",
     "@fastify/session": ">= 11.0 < 12",
-    "fastify": ">= 5.2 < 6",
     "@metamask/eth-sig-util": ">= 8.1 < 9",
     "connect-mongo": ">= 5.1.0 < 6",
     "express": ">= 5.0 < 6",
     "express-session": ">= 1.18 < 2",
     "graphql-yoga": ">= 5.9 < 6.0",
+    "fastify": ">= 5.2 < 6",
     "passport": ">= 0.7 < 1"
   },
   "peerDependenciesMeta": {
@@ -85,7 +85,7 @@
   },
   "devDependencies": {
     "@fastify/cookie": "^11.0.2",
-    "@fastify/session": "^11.0.2",
+    "@fastify/session": "^11.1.0",
     "@metamask/eth-sig-util": "^8.1.2",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",
@@ -95,6 +95,6 @@
     "jest": "^29.7.0",
     "passport": "^0.7.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }
