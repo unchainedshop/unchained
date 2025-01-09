@@ -10,7 +10,8 @@ import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
+import { createLogger } from '@unchainedshop/logger';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
@@ -89,13 +90,46 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
   );
 };
 
+export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
+  const logger = createLogger(prefix);
+  function Logger(...args) {
+    this.args = args;
+  }
+  Logger.prototype.info = logger.info;
+  Logger.prototype.error = logger.error;
+  Logger.prototype.debug = logger.debug;
+  Logger.prototype.fatal = logger.error;
+  Logger.prototype.warn = logger.warn;
+  Logger.prototype.trace = logger.trace;
+  Logger.prototype.child = function () {
+    return new Logger();
+  };
+  return new Logger();
+};
+
 export const connect = (
   fastify: FastifyInstance,
   {
     graphqlHandler,
     db,
   }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  {
+    allowRemoteToLocalhostSecureCookies = false,
+  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
 ) => {
+  if (allowRemoteToLocalhostSecureCookies) {
+    // Workaround: Allow to use sandbox with localhost
+    // https://github.com/fastify/fastify-cookie/issues/308
+    fastify.addHook('preHandler', async function (request) {
+      request.headers['x-forwarded-proto'] = 'https';
+    });
+    fastify.addHook('onSend', async function (_, reply) {
+      reply.headers({
+        'Access-Control-Allow-Private-Network': 'true',
+      });
+    });
+  }
+
   const cookieName = UNCHAINED_COOKIE_NAME;
   const domain = UNCHAINED_COOKIE_DOMAIN;
   const path = UNCHAINED_COOKIE_PATH;

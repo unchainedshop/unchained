@@ -58,7 +58,8 @@
     "examples/kitchensink",
     "examples/kitchensink-express",
     "examples/minimal",
-    "examples/keycloak"
+    "examples/keycloak",
+    "examples/ticketing"
   ],
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && mv ./typedocs ./docs/static/types",

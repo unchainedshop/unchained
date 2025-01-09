@@ -5,16 +5,18 @@ import { Request, RequestHandler } from 'express';
 
 const logger = createLogger('unchained:erc-metadata');
 
-const errorHandler = (res) => (e) => {
+const errorHandler = (res, e) => {
   logger.error(e.message);
   res.writeHead(503);
   res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+  return;
 };
 
-const methodWrongHandler = (res) => () => {
+const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.writeHead(404);
   res.end();
+  return;
 };
 
 const ercMetadataMiddleware: RequestHandler = async (
@@ -23,8 +25,7 @@ const ercMetadataMiddleware: RequestHandler = async (
 ) => {
   try {
     if (req.method !== 'GET') {
-      methodWrongHandler(res)();
-      return;
+      return methodWrongHandler(res);
     }
 
     const { services, localeContext } = req.unchainedContext;
@@ -43,8 +44,7 @@ const ercMetadataMiddleware: RequestHandler = async (
     });
 
     if (!ercMetadata) {
-      methodWrongHandler(res);
-      return;
+      return methodWrongHandler(res);
     }
 
     const body = JSON.stringify(ercMetadata);
@@ -54,7 +54,7 @@ const ercMetadataMiddleware: RequestHandler = async (
     });
     res.end(body);
   } catch (e) {
-    errorHandler(res)(e);
+    return errorHandler(res, e);
   }
 };
 

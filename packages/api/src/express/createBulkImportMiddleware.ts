@@ -11,10 +11,11 @@ const errorHandler = (res) => (e) => {
   res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
 };
 
-const methodWrongHandler = (res) => () => {
+const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.writeHead(404);
   res.end();
+  return;
 };
 
 export default async function bulkImportMiddleware(
@@ -25,8 +26,7 @@ export default async function bulkImportMiddleware(
     const context = req.unchainedContext;
 
     if (req.method !== 'POST') {
-      methodWrongHandler(res)();
-      return;
+      return methodWrongHandler(res);
     }
 
     await checkAction(context, (actions as any).bulkImport);

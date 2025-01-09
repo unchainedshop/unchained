@@ -1,87 +1,46 @@
+import { createReadStream } from 'node:fs';
 import Fastify from 'fastify';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import { connect } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
-import { createLogger } from '@unchainedshop/logger';
+import seed from './seed.js';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
-import setupTicketing, { ticketingModules, TicketingAPI } from '@unchainedshop/ticketing';
-import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
-
-import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
-
-import seed from './seed.js';
-import { createReadStream } from 'node:fs';
-
-const logger = createLogger('kitchensink');
-
-function Logger(...args) {
-  this.args = args;
-}
-Logger.prototype.info = logger.info;
-Logger.prototype.error = logger.error;
-Logger.prototype.debug = logger.debug;
-Logger.prototype.fatal = logger.error;
-Logger.prototype.warn = logger.warn;
-Logger.prototype.trace = logger.trace;
-Logger.prototype.child = function () {
-  return new Logger();
-};
-
-const app = Fastify({
-  loggerInstance: new Logger(),
+const fastify = Fastify({
+  loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
-  trustProxy: true,
-});
-
-// Workaround: Allow to use sandbox with localhost
-app.addHook('preHandler', async function (request) {
-  request.headers['x-forwarded-proto'] = 'https';
-});
-
-app.addHook('onSend', async function (_, reply) {
-  reply.headers({
-    'Access-Control-Allow-Private-Network': 'true',
-  });
-});
-
-const engine = await startPlatform({
-  modules: { ...defaultModules, ...ticketingModules },
-  services: { ...ticketingServices },
-});
-
-await seed(engine.unchainedAPI);
-await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
-
-// Unchained Ticketing Extension
-setupTicketing(engine.unchainedAPI as TicketingAPI, {
-  renderOrderPDF: console.log,
-  createAppleWalletPass: console.log,
-  createGoogleWalletPass: console.log,
-});
-
-// Connect Unchained Engine & Ticketing to Fastify
-connect(app, engine);
-connectDefaultPluginsToFastify(app, engine);
-connectTicketingToFastify(app);
-
-const fileUrl = new URL(import.meta.resolve('../static/index.html'));
-app.route({
-  method: 'GET',
-  url: '*',
-  handler: async (req, reply) => {
-    reply.status(200);
-    reply.header('Content-Type', 'text/html');
-    return createReadStream(fileUrl.pathname);
-  },
+  trustProxy: process.env.NODE_ENV !== 'production',
 });
 
 try {
-  await app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+  const platform = await startPlatform({
+    modules: defaultModules,
+  });
+
+  connect(fastify, platform, {
+    allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+  });
+  connectDefaultPluginsToFastify(fastify, platform);
+
+  const fileUrl = new URL(import.meta.resolve('../static/index.html'));
+  fastify.route({
+    method: 'GET',
+    url: '*',
+    handler: async (req, reply) => {
+      reply.status(200);
+      reply.header('Content-Type', 'text/html');
+      return createReadStream(fileUrl.pathname);
+    },
+  });
+
+  await seed(platform.unchainedAPI);
+  await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
+
+  await fastify.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 } catch (err) {
-  logger.error(err);
+  fastify.log.error(err);
   process.exit(1);
 }

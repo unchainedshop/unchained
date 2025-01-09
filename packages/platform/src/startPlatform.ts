@@ -68,6 +68,10 @@ export const startPlatform = async ({
 }> => {
   exitOnMissingEnvironmentVariables();
 
+  const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);
+
+  const configuredRoles = roles.configureRoles(rolesOptions);
+
   // Configure database
   const db = await initDb();
 
@@ -85,12 +89,10 @@ export const startPlatform = async ({
     options,
   });
 
-  const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);
   if (isWorkQueueEnabled) {
     await runMigrations({ migrationRepository, unchainedAPI });
   }
 
-  const configuredRoles = roles.configureRoles(rolesOptions);
   const configuredEvents = getRegisteredEvents();
   const configuredWorkTypes = WorkerDirector.getActivePluginTypes();
 

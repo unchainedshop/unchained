@@ -123,7 +123,19 @@ export const connect = (
     graphqlHandler,
     db,
   }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  {
+    allowRemoteToLocalhostSecureCookies = false,
+  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
 ) => {
+  if (allowRemoteToLocalhostSecureCookies) {
+    // Workaround: Allow to use sandbox with localhost
+    expressApp.set('trust proxy', 1);
+    expressApp.use((req, res, next) => {
+      req.headers['x-forwarded-proto'] = 'https';
+      res.setHeader('Access-Control-Allow-Private-Network', 'true');
+      next();
+    });
+  }
   const passport = new Passport();
 
   passport.serializeUser(function serialize(user, done) {
