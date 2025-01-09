@@ -3,7 +3,7 @@ sidebar_position: 4
 title: Enrollments
 sidebar_label: Enrollments
 ---
-:::
+:::info
 Configure the Enrollments Module
 :::
 

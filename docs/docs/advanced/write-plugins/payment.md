@@ -3,7 +3,7 @@ sidebar_position: 8
 sidebar_label: Payment
 title: Payment Providers
 ---
-:::
+:::info
 Customize Payment
 :::
 

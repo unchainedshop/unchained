@@ -3,7 +3,7 @@ sidebar_position: 6
 sidebar_label: Order pricing
 title: Order Pricing
 ---
-:::
+:::info
 Add an order pricing plugin
 :::
 

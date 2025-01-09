@@ -3,7 +3,7 @@ sidebar_position: 11
 sidebar_label: Worker
 title: Worker
 ---
-:::
+:::info
 Configure the Worker Module
 :::
 

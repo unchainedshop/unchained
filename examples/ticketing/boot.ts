@@ -1,22 +1,17 @@
-import Fastify from 'fastify';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
+import baseModules from '@unchainedshop/plugins/presets/base.js';
+import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
 import { connect } from '@unchainedshop/api/lib/fastify/index.js';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import { createLogger } from '@unchainedshop/logger';
-
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
+import seed from './seed.js';
+import Fastify from 'fastify';
 
 import setupTicketing, { ticketingModules, TicketingAPI } from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
 
-import seed from './seed.js';
-import { createReadStream } from 'node:fs';
-
-const logger = createLogger('kitchensink');
+const logger = createLogger('unchained:ticketing');
 
 function Logger(...args) {
   this.args = args;
@@ -49,12 +44,9 @@ app.addHook('onSend', async function (_, reply) {
 });
 
 const engine = await startPlatform({
-  modules: { ...defaultModules, ...ticketingModules },
+  modules: { ...baseModules, ...ticketingModules },
   services: { ...ticketingServices },
 });
-
-await seed(engine.unchainedAPI);
-await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
 // Unchained Ticketing Extension
 setupTicketing(engine.unchainedAPI as TicketingAPI, {
@@ -63,21 +55,12 @@ setupTicketing(engine.unchainedAPI as TicketingAPI, {
   createGoogleWalletPass: console.log,
 });
 
-// Connect Unchained Engine & Ticketing to Fastify
-connect(app, engine);
-connectDefaultPluginsToFastify(app, engine);
-connectTicketingToFastify(app);
+await seed(engine.unchainedAPI);
+await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
-const fileUrl = new URL(import.meta.resolve('../static/index.html'));
-app.route({
-  method: 'GET',
-  url: '*',
-  handler: async (req, reply) => {
-    reply.status(200);
-    reply.header('Content-Type', 'text/html');
-    return createReadStream(fileUrl.pathname);
-  },
-});
+await connect(app, engine);
+await connectBasePluginsToFastify(app);
+await connectTicketingToFastify(app);
 
 try {
   await app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });

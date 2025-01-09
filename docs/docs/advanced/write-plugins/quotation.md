@@ -3,7 +3,7 @@ sidebar_position: 9
 sidebar_label: Quotations
 title: Quotations
 ---
-:::
+:::info
 Customizing quotation
 :::
 

@@ -3,7 +3,7 @@ sidebar_position: 4
 sidebar_label: Event
 title: Event Bus
 ---
-:::
+:::info
 Wire Unchained to an Event based system
 :::
 

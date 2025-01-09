@@ -3,7 +3,7 @@ sidebar_position: 3
 sidebar_label: Custom Modules
 title: Write Custom Modules
 ---
-:::
+:::info
 Configure custom modules and services
 :::
 

@@ -4,7 +4,7 @@ title: Orders
 sidebar_label: Orders 
 ---
 # Orders
-:::
+:::info
 Configure the Orders Module
 :::
 

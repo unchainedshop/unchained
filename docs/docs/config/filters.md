@@ -4,7 +4,7 @@ sidebar_label: Filters
 title: Filters
 ---
 # Filters
-:::
+:::info
 Configure the Filters Module
 :::
 

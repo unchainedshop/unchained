@@ -3,7 +3,7 @@ sidebar_position: 11
 sidebar_label: Work queue
 title: Work Queue
 ---
-:::
+:::info
  Add custom background workers
 :::
 

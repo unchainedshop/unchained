@@ -4,7 +4,7 @@ sidebar_label: Bulk Import
 title: 'Bulk Import API'
 ---
 
-:::
+:::info
  Import Data from PIM / ERP
 :::
 

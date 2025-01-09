@@ -3,7 +3,7 @@ sidebar_position: 4
 sidebar_label: Product Conversion Rates
 title: Product Conversion Rates
 ---
-:::
+:::info
  Configure the product conversion rates
 :::
 

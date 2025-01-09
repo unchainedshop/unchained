@@ -4,7 +4,7 @@ title: Extend the GraphQL API
 sidebar_label: Extending Schema
 
 ---
-:::
+:::info
  Extending the schema to hold custom types
 :::
 

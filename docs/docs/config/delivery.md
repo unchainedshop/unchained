@@ -5,7 +5,7 @@ sidebar_label: Delivery
 ---
 # Delivery
 
-:::
+:::info
 Configure the Delivery Module
 :::
 

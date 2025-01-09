@@ -3,7 +3,7 @@ sidebar_position: 7
 sidebar_label: Payment Pricing
 title: Payment Pricing
 ---
-:::
+:::info
 Add a payment pricing plugin
 :::
 

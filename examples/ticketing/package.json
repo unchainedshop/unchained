@@ -1,6 +1,6 @@
 {
-  "name": "@unchainedshop/example-kitchensink",
-  "description": "Kitchensink for Unchained Engine (Fastify)",
+  "name": "@unchainedshop/example-ticketing",
+  "description": "Kitchensink for Unchained Engine",
   "private": true,
   "version": "3.0.0-rc.15",
   "license": "EUPL-1.2",
@@ -22,42 +22,24 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
   },
   "scripts": {
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "node --import ./load_env.js lib/boot.js",
-    "dev:run": "node --import ./load_env.js --no-warnings --loader ts-node/esm src/boot.ts",
-    "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
+    "start": "node --env-file .env.defaults lib/boot.js",
+    "dev:run": "node --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
+    "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.0.2",
-    "@unchainedshop/api": "^3.0.0-rc.15",
-    "@unchainedshop/core-delivery": "^3.0.0-rc.15",
-    "@unchainedshop/core-payment": "^3.0.0-rc.15",
     "@unchainedshop/platform": "^3.0.0-rc.15",
     "@unchainedshop/plugins": "^3.0.0-rc.15",
     "@unchainedshop/ticketing": "^3.0.0-rc.15",
-    "bip32": "^4.0.0",
-    "bitcoinjs-lib": "^6.1.7",
-    "dotenv-extended": "^2.9.0",
-    "ethers": "^6.13.5",
-    "fastify": "^5.2.1",
-    "graphql": "^16.10.0",
-    "graphql-yoga": "^5.10.9",
-    "nodemailer": "^6.9.16",
-    "open": "^10.1.0",
-    "passport": "^0.7.0",
-    "postfinancecheckout": "^4.5.0",
-    "stripe": "^17.5.0",
-    "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.4.0",
-    "web-push": "^3.6.7",
-    "xml-js": "^1.6.11"
+    "fastify": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",

@@ -4,7 +4,7 @@ sidebar_label: Files
 title: Files
 ---
 # Files
-:::
+:::info
 Configure the Files Module
 :::
 

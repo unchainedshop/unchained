@@ -4,7 +4,9 @@ title: Messaging
 sidebar_label: Messaging
 ---
 
-::: Customize messaging :::
+:::info
+Customize messaging
+:::
 
 It is possible to trigger `SMS` or `EMAIL` notification for various operation performed. Notification are
 are added to the work queue for processing, By default Email notification is triggered by the engine to

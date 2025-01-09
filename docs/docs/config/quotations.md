@@ -5,7 +5,7 @@ sidebar_label: Quotations
 
 ---
 
-:::
+:::info
 Configure the Quotation Module
 :::
 

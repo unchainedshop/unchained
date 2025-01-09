@@ -3,7 +3,7 @@ sidebar_position: 9
 sidebar_label: Product pricing
 title: Product Pricing
 ---
-:::
+:::info
 Add a product pricing plugins
 :::
 

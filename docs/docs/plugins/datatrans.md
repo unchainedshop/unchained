@@ -3,7 +3,7 @@ sidebar_position: 2
 title: Payment through Datatrans
 ---
 # Payment through datatrans
-:::
+:::info
 Configuration Options for our Datatrans Integration
 :::
 

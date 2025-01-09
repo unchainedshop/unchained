@@ -1,18 +1,18 @@
 ---
 sidebar_position: 2
 title: Install and setup the storefront web-app
-sidebar_label: Install storefront
+sidebar_label: Run Example Storefront
 ---
 
 To test the Unchained Engine, set up the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
 
 ## Prerequisites
 
-The storefront installation requires Node.js version >= 18.
+The storefront installation requires Node.js version >= 20.
 
 ```bash
 node --version
-v14.17.1
+v22.12.0
 ```
 
 ## Step 1: Installation
@@ -70,7 +70,7 @@ Open [localhost:3000](http://localhost:3000) to check your storefront web app is
 To see prefilled product data, update the `.env` settings to connect to Unchained's remote test engine.
 
 - Stop the app: `ctrl+c`
-- Update the endpoint in the `.env` file to: `UNCHAINED_ENDPOINT=https://engine.swag.unchained.shop/graphql`
+- Update the endpoint in the `.env` file to: `UNCHAINED_ENDPOINT=https://my-unchained-instance/graphql`
 - Restart the app:
 
 ```bash

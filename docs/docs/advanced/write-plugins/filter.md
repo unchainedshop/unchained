@@ -3,7 +3,7 @@ sidebar_position: 5
 sidebare_label: Filter
 title: Filter
 ---
-:::
+:::info
 Customize filter and search
 :::
 

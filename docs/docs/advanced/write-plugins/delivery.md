@@ -3,7 +3,7 @@ sidebar_position: 2
 sidebar_label: Delivery
 title: Delivery Providers
 ---
-:::
+:::info
 Customize delivery
 :::
 ---

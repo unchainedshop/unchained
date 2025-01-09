@@ -4,7 +4,9 @@ title: Overview
 sidebar_label: Overview
 ---
 
-::: System Design of Unchained Engine :::
+:::info
+System Design of Unchained Engine
+:::
 
 ## Core Values
 

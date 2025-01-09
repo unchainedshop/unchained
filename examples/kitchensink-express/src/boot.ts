@@ -1,7 +1,5 @@
 import express from 'express';
 import http from 'node:http';
-import cookie from 'cookie';
-import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/lib/express/index.js';
@@ -12,16 +10,7 @@ import { log } from '@unchainedshop/logger';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
-import setupTicketing, {
-  TicketingAPI,
-  ticketingServices,
-  ticketingModules,
-} from '@unchainedshop/ticketing';
-import connectTicketingToExpress from '@unchainedshop/ticketing/lib/express.js';
-
 import seed from './seed.js';
-
-const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 
 const app = express();
 
@@ -35,59 +24,23 @@ app.use((req, res, next) => {
 
 const httpServer = http.createServer(app);
 const engine = await startPlatform({
-  modules: { ...defaultModules, ...ticketingModules },
-  services: ticketingServices,
-  plugins: [
-    useResponseCache({
-      ttl: 0,
-      session(req) {
-        const auth = req.headers.get('authorization');
-        const cookies = cookie.parse(req.headers.get('cookie') || '');
-        return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
-      },
-      enabled() {
-        return process.env.NODE_ENV === 'production';
-      },
-    }),
-  ],
-  options: {
-    files: {
-      privateFileSharingMaxAge: 86400000,
-    },
-    payment: {
-      filterSupportedProviders: async ({ providers }) => {
-        return providers.toSorted((left, right) => {
-          if (left.adapterKey < right.adapterKey) {
-            return -1;
-          }
-          if (left.adapterKey > right.adapterKey) {
-            return 1;
-          }
-          return 0;
-        });
-      },
-    },
-  },
+  modules: defaultModules,
 });
 
-await seed(engine.unchainedAPI);
-await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
-
+// Connect Unchained Engine to Express
 connect(app, engine);
 connectDefaultPluginsToExpress(app, engine);
-
-// Unchained Ticketing Extension
-setupTicketing(engine.unchainedAPI as TicketingAPI, {
-  renderOrderPDF: console.log,
-  createAppleWalletPass: console.log,
-  createGoogleWalletPass: console.log,
-});
-connectTicketingToExpress(app);
 
 const fileUrl = new URL(import.meta.resolve('../static/index.html'));
 app.use('/', async (req, res) => {
   res.status(200).sendFile(fileUrl.pathname);
 });
+
+// Seed Database and Set a super insecure Access Token for admin
+await seed(engine.unchainedAPI);
+
+// Warning: Do not use this in production
+await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
 await httpServer.listen({ port: process.env.PORT || 3000 });
 log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);

@@ -4,7 +4,7 @@ title: Run Unchained Engine in Docker
 sidebar_label: Run Unchained Engine in Docker
 ---
 # Run Unchained Engine in Docker
-:::
+:::info
 An alternative approach to start the engine in dev mode
 :::
 

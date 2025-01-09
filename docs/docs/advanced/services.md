@@ -3,7 +3,7 @@ sidebar_position: 5
 title: Built-In Services
 sidebar_label: Services
 ---
-:::
+:::info
  Learn about the layered approach of Unchained
 :::
 

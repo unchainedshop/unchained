@@ -4,7 +4,7 @@ title: Push Notification (W3C compliant)
 sidebar_label: Push Notification (W3C compliant)
 ---
 # Push Notification (W3C compliant)
-:::
+:::info
  Configuring W3C based push notification service
 :::
 

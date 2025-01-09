@@ -3,7 +3,7 @@ sidebar_position: 8
 sidebar_label: Payment
 titel: Payment
 ---
-:::
+:::info
 Configure the Payment Module
 :::
 

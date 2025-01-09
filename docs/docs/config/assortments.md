@@ -6,9 +6,10 @@ sidebar_label: Assortments
 ---
 # Assortment
 
-:::
+:::info
 Configure the Assortments Module
 :::
+
 - setCachedProductIds:
 - getCachedProductIds:
 - zipTree: the default function build the tree in one direction.

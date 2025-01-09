@@ -5,7 +5,7 @@ sidebar_label: Payment through Wordline Saferpay
 ---
 # Payment through Wordline Saferpay
 
-:::
+:::info
 description: Configuration Options for our Worldline Saferpay Integration
 :::
 

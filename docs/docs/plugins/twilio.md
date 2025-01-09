@@ -4,7 +4,7 @@ title: Twilio SMS Communication
 sidebar_labe: Twilio SMS Communication
 ---
 # Twilio SMS Communication
-:::
+:::info
 Usage and Configuration Options for the Twilio SMS Plugin
 :::
 

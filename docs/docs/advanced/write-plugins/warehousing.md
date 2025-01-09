@@ -3,7 +3,7 @@ sidebar_position: 10
 sidebar_label: Warehousing Providers
 title: Warehousing Providers
 ---
-:::
+:::info
 Customize warehousing
 :::
 

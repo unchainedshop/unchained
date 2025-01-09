@@ -4,7 +4,7 @@ sidebar_label: Overview
 title: Overview
 ---
 
-:::
+:::info
  Customizing unchained with custom plugins
 :::
 

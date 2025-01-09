@@ -4,7 +4,7 @@ title: Products
 sidebar_label: Products
 ---
 
-:::
+:::info
 Configure the Products Module
 :::
 

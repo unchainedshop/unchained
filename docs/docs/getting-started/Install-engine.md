@@ -1,14 +1,10 @@
 ---
 sidebar_position: 1
-title: Setup the Unchained Engine
-sidebar_label: Install engine
+title: Project Setup
+sidebar_label: Installation
 ---
 
-:::
-Usage and Configuration Options for the Cryptopay Plugin
-:::
-
-This section walks you through the steps to start an Unchained Engine API server locally.
+This section walks you through the steps to create a basic Node.js project and boot the Unchained Engine API server locally.
 
 ## Step 1: Installation
 
@@ -16,10 +12,9 @@ This section walks you through the steps to start an Unchained Engine API server
 
 ```bash
 mkdir my-unchained-engine
-cd my-unchained-engine
 ```
 
-2. Use the Unchained initialization script to download the code.
+1. Use the Unchained initialization script to download the code.
 
 ```bash
 npm init @unchainedshop
@@ -45,6 +40,7 @@ Unchained engine <--
 5. Ensure your Node version is 22+ and install the npm packages.
 
 ```bash
+cd my-unchained-engine
 npm install
 ```
 
@@ -60,10 +56,15 @@ Open [localhost:4010](http://localhost:4010) to check if your Unchained Engine i
 
 ## Open Admin UI sandbox
 
+:::info
+The Unchained Admin UI needs a browser that allows cross-origin requests to localhost such as Chrome or Firefox. Safari is not supported.
+:::
+
 On the initial landing page, click [Use sandbox Admin UI](https://sandbox-v3.unchained.shop/log-in) to manage your local engine instance using the admin UI sandbox. Use the following credentials to log in and change them as soon as possible:
 
 **Username**: _admin@unchained.local_<br />
 **Password**: _password_
+
 
 ![diagram](../assets/sandbox-login.png)
 

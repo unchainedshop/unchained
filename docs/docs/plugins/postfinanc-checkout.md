@@ -3,7 +3,7 @@ sidebar_position: 4
 title: Payment through PostFinance Checkout
 ---
 # Payment through Postfinanc Checkout
-:::
+:::info
 Configuration Options for our PostFinance Checkout Integration
 :::
 

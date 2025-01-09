@@ -3,7 +3,7 @@ sidebar_position: 1
 sidebar_label: Delivery Pricing
 title: Delivery Pricing
 ---
-:::
+:::info
 Add a delivery pricing plugin
 :::
 

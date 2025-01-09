@@ -36,7 +36,7 @@ Steps:
 - Log into your Admin UI
 - Fill your store with content using the Admin UI
 - Understand the store's data entities
-- Use graphQL queries and mutations to feed and search over the Unchained Engine api.
+- Use GraphQL queries and mutations to feed and search over the Unchained Engine api.
 
 <p class="info">This is an example application of a management admin UI.<br />The Unchained Engine is designed for professional enterprise applications and uses powerful plugins to connect to existing CRM solutions which should be the choice if you build the store.<br />However, to start we can manage a simple shop catalogue and add a basic payment option using the provide Admin UI.</p>
 

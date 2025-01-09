@@ -3,7 +3,7 @@ sidebar_position: 10
 title: Admin UI Extension
 sidebar_label: Admin UI Extension
 ---
-:::
+:::info
  Extending Admin UI 
 :::
 

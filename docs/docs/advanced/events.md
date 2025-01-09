@@ -4,7 +4,7 @@ sidebar_label: Events
 title: Event System
 ---
 
-:::
+:::info
  How to use the built-in Event system
 :::
 

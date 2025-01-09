@@ -1,5 +1,5 @@
 {
-  "name": "example-kitchensink-express",
+  "name": "@unchainedshop/example-kitchensink-express",
   "description": "Kitchensink for Unchained Engine (Express.js)",
   "private": true,
   "version": "3.0.0-rc.15",
@@ -34,13 +34,11 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@graphql-yoga/plugin-response-cache": "^3.12.9",
     "@unchainedshop/api": "^3.0.0-rc.15",
     "@unchainedshop/core-delivery": "^3.0.0-rc.15",
     "@unchainedshop/core-payment": "^3.0.0-rc.15",
     "@unchainedshop/platform": "^3.0.0-rc.15",
     "@unchainedshop/plugins": "^3.0.0-rc.15",
-    "@unchainedshop/ticketing": "^3.0.0-rc.15",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.7",
     "dotenv-extended": "^2.9.0",

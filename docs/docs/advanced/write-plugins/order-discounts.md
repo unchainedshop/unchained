@@ -3,7 +3,7 @@ sidebar_position: 5
 title: Order Discounts
 sidebar_label: Order discounts
 ---
-:::
+:::info
 Apply custom discount logic to orders
 :::
 
