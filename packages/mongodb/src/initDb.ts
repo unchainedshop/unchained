@@ -3,7 +3,8 @@ import { Db, MongoClient } from 'mongodb';
 let zstdEnabled = false;
 
 try {
-  // @ts-ignore
+  // eslint-disable-next-line
+  // @ts-expect-error
   await import('@mongodb-js/zstd');
   zstdEnabled = true;
 } catch {
@@ -11,6 +12,7 @@ try {
 }
 
 const { mkdir } = await import('node:fs/promises');
+
 const { MongoMemoryServer } = await import('mongodb-memory-server');
 try {
   await mkdir(`${process.cwd()}/.db`);
