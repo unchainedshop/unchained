@@ -7,7 +7,6 @@ export default function shopInfo(
   context: Context,
 ): {
   version?: string;
-  externalLinks: () => Array<string>;
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
 } {
@@ -16,16 +15,17 @@ export default function shopInfo(
 
   return {
     version: context.version,
-    externalLinks: () => {
-      try {
-        const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
-        return parsed;
-      } catch {
-        return [];
-      }
-    },
     adminUiConfig: {
       customProperties: adminUiConfig?.customProperties ?? [],
+      singleSignOnURL: adminUiConfig?.singleSignOnURL,
+      externalLinks: () => {
+        try {
+          const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
+          return parsed;
+        } catch {
+          return [];
+        }
+      },
     },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,
   };

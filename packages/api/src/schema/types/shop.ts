@@ -10,7 +10,7 @@ export default [
       """
       SELF
     }
-    type Link @cacheControl(maxAge: 180) {
+    type AdminUiLink @cacheControl(maxAge: 180) {
       href: String
       title: String
       target: ExternalLinkTarget
@@ -23,6 +23,8 @@ export default [
 
     type AdminUiConfig {
       customProperties: [AdminUiConfigCustomEntityInterface!]!
+      externalLinks: [AdminUiLink!]!
+      singleSignOnURL: String
     }
 
     type Shop @cacheControl(maxAge: 180) {
@@ -31,7 +33,6 @@ export default [
       country: Country
       version: String
       userRoles: [String!]!
-      externalLinks: [Link]!
       adminUiConfig: AdminUiConfig!
       vapidPublicKey: String
     }

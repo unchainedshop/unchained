@@ -28,6 +28,7 @@ export interface CustomAdminUiProperties {
 
 export interface AdminUiConfig {
   customProperties?: CustomAdminUiProperties[];
+  singleSignOnURL?: string;
 }
 
 export type UnchainedHTTPServerContext = {
