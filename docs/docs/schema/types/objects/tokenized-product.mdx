@@ -1,0 +1,284 @@
+---
+pagination_next: null
+pagination_prev: null
+id: tokenized-product
+title: TokenizedProduct
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Tokenized Product (Blockchain materialized Product)
+
+
+```graphql
+type TokenizedProduct implements Product {
+  _id: ID!
+  sequence: Int!
+  status: ProductStatus!
+  tags: [LowerCaseString!]
+  created: DateTimeISO
+  updated: DateTimeISO
+  published: DateTimeISO
+  media(
+    limit: Int = 10
+    offset: Int = 0
+    tags: [LowerCaseString!]
+  ): [ProductMedia!]!
+  texts(
+    forceLocale: String
+  ): ProductTexts
+  catalogPrice(
+    quantity: Int = 1
+    currency: String
+  ): Price
+  leveledCatalogPrices(
+    currency: String
+  ): [PriceLevel!]!
+  simulatedPrice(
+    currency: String
+    useNetPrice: Boolean = false
+    quantity: Int = 1
+    configuration: [ProductConfigurationParameterInput!]
+  ): Price
+  simulatedStocks(
+    referenceDate: Timestamp
+  ): [Stock!]
+  assortmentPaths(
+    forceLocale: String
+  ): [ProductAssortmentPath!]!
+  siblings(
+    assortmentId: ID
+    limit: Int = 10
+    offset: Int = 0
+    includeInactive: Boolean = false
+  ): [Product!]!
+  reviews(
+    limit: Int = 10
+    offset: Int = 0
+    sort: [SortOptionInput!]
+    queryString: String
+  ): [ProductReview!]!
+  reviewsCount(
+    queryString: String
+  ): Int!
+  contractAddress: String
+  contractStandard: SmartContractStandard
+  contractConfiguration: ContractConfiguration
+  tokens: [Token!]!
+  tokensCount: Int!
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>_id</b></code>](#)<Bullet />[`ID!`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>sequence</b></code>](#)<Bullet />[`Int!`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>status</b></code>](#)<Bullet />[`ProductStatus!`](/schema/types/enums/product-status.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/schema/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>created</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>updated</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>published</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>media</b></code>](#)<Bullet />[`[ProductMedia!]!`](/schema/types/objects/product-media.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.media.<b>limit</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.media.<b>offset</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.media.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/schema/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>texts</b></code>](#)<Bullet />[`ProductTexts`](/schema/types/objects/product-texts.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.texts.<b>forceLocale</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>catalogPrice</b></code>](#)<Bullet />[`Price`](/schema/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.catalogPrice.<b>quantity</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.catalogPrice.<b>currency</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>leveledCatalogPrices</b></code>](#)<Bullet />[`[PriceLevel!]!`](/schema/types/objects/price-level.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.leveledCatalogPrices.<b>currency</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>simulatedPrice</b></code>](#)<Bullet />[`Price`](/schema/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.simulatedPrice.<b>currency</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.simulatedPrice.<b>useNetPrice</b></code>](#)<Bullet />[`Boolean`](/schema/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.simulatedPrice.<b>quantity</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.simulatedPrice.<b>configuration</b></code>](#)<Bullet />[`[ProductConfigurationParameterInput!]`](/schema/types/inputs/product-configuration-parameter-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>simulatedStocks</b></code>](#)<Bullet />[`[Stock!]`](/schema/types/objects/stock.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.simulatedStocks.<b>referenceDate</b></code>](#)<Bullet />[`Timestamp`](/schema/types/scalars/timestamp.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>assortmentPaths</b></code>](#)<Bullet />[`[ProductAssortmentPath!]!`](/schema/types/objects/product-assortment-path.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.assortmentPaths.<b>forceLocale</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>siblings</b></code>](#)<Bullet />[`[Product!]!`](/schema/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="interface"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.siblings.<b>assortmentId</b></code>](#)<Bullet />[`ID`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.siblings.<b>limit</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.siblings.<b>offset</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.siblings.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/schema/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>reviews</b></code>](#)<Bullet />[`[ProductReview!]!`](/schema/types/objects/product-review.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.reviews.<b>limit</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.reviews.<b>offset</b></code>](#)<Bullet />[`Int`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.reviews.<b>sort</b></code>](#)<Bullet />[`[SortOptionInput!]`](/schema/types/inputs/sort-option-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.reviews.<b>queryString</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>reviewsCount</b></code>](#)<Bullet />[`Int!`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.reviewsCount.<b>queryString</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>contractAddress</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>contractStandard</b></code>](#)<Bullet />[`SmartContractStandard`](/schema/types/enums/smart-contract-standard.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>contractConfiguration</b></code>](#)<Bullet />[`ContractConfiguration`](/schema/types/objects/contract-configuration.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>tokens</b></code>](#)<Bullet />[`[Token!]!`](/schema/types/objects/token.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>TokenizedProduct.<b>tokensCount</b></code>](#)<Bullet />[`Int!`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+### Interfaces
+
+#### [`Product`](/schema/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="interface"/> 
+Abstract Product
+
+
+
+
+
+
+### Returned By
+
+[`updateProductTokenization`](/schema/operations/mutations/update-product-tokenization.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`Token`](/schema/types/objects/token.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
