@@ -19,6 +19,9 @@ try {
   const platform = await startPlatform({
     modules: baseModules,
     context,
+    adminUiConfig: {
+      singleSignOnURL: `${process.env.ROOT_URL}/login`,
+    },
   });
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',

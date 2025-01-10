@@ -69,17 +69,22 @@ export default async function setupKeycloak(app: FastifyInstance) {
           email_verified: boolean;
         };
 
-        const roles = resource_access?.['unchained-local']?.roles || [];
-        const username = preferred_username || `unchained-local:${sub}`;
-        const user = await request.unchainedContext.modules.users.findUserByUsername(username);
+        const roles = resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID]?.roles || [];
+        const userId = `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
+        const user = await request.unchainedContext.modules.users.findUserById(userId);
+        const userByUsername =
+          preferred_username &&
+          (await request.unchainedContext.modules.users.findUserByUsername(preferred_username));
+        const usernameAvailable =
+          preferred_username && (!userByUsername || userByUsername._id === userId);
 
         if (!user) {
           await request.unchainedContext.modules.users.createUser(
             {
               // eslint-disable-next-line
               // @ts-ignore WE KNOW THAT WE CAN SET THAT FIELD
-              _id: `unchained-local:${sub}`,
-              username,
+              _id: userId,
+              username: usernameAvailable ? preferred_username : sub,
               password: null,
               email: email_verified ? email : null,
               profile: {
@@ -128,11 +133,12 @@ export default async function setupKeycloak(app: FastifyInstance) {
         resource_access: Record<string, { roles: string[] }>;
       } = jwt.decode(req.session.keycloak.id_token);
 
-      let user = await context.modules.users.findUserById(`unchained-local:${sub}`);
+      const userId = `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
+      let user = await context.modules.users.findUserById(userId);
 
       if (isExpired) {
         // only update roles when the token has been refreshed
-        const roles = resource_access?.['unchained-local']?.roles || [];
+        const roles = resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID]?.roles || [];
         if (roles.join(':') !== user.roles.join(':')) {
           user = await context.modules.users.updateRoles(user._id, roles);
         }
