@@ -1,0 +1,93 @@
+---
+pagination_next: null
+pagination_prev: null
+id: language
+title: Language
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+type Language {
+  _id: ID!
+  isoCode: String
+  isActive: Boolean
+  isBase: Boolean
+  name: String
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>Language.<b>_id</b></code>](#)<Bullet />[`ID!`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Language.<b>isoCode</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+ISO 639-1 alpha-2 https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Language.<b>isActive</b></code>](#)<Bullet />[`Boolean`](/schema/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Language.<b>isBase</b></code>](#)<Bullet />[`Boolean`](/schema/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Language.<b>name</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`createLanguage`](/schema/operations/mutations/create-language.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`language`](/schema/operations/queries/language.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`languages`](/schema/operations/queries/languages.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`removeLanguage`](/schema/operations/mutations/remove-language.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateLanguage`](/schema/operations/mutations/update-language.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`Shop`](/schema/types/objects/shop.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`User`](/schema/types/objects/user.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

@@ -1,0 +1,96 @@
+---
+pagination_next: null
+pagination_prev: null
+id: search-products
+title: searchProducts
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Search products
+
+
+```graphql
+searchProducts(
+  queryString: String
+  filterQuery: [FilterQueryInput!]
+  assortmentId: ID
+  orderBy: SearchOrderBy
+  includeInactive: Boolean = false
+  ignoreChildAssortments: Boolean = false
+): ProductSearchResult!
+```
+
+
+
+
+### Arguments
+
+#### [<code style={{ fontWeight: 'normal' }}>searchProducts.<b>queryString</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>searchProducts.<b>filterQuery</b></code>](#)<Bullet />[`[FilterQueryInput!]`](/types/inputs/filter-query-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>searchProducts.<b>assortmentId</b></code>](#)<Bullet />[`ID`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>searchProducts.<b>orderBy</b></code>](#)<Bullet />[`SearchOrderBy`](/types/enums/search-order-by.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>searchProducts.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>searchProducts.<b>ignoreChildAssortments</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+### Type
+
+#### [`ProductSearchResult`](/types/objects/product-search-result.mdx) <Badge class="badge badge--secondary" text="object"/> 
+Search result
+
+
+
+
+
+

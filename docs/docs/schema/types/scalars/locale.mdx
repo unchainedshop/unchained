@@ -1,0 +1,61 @@
+---
+pagination_next: null
+pagination_prev: null
+id: locale
+title: Locale
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+The locale in the format of a BCP 47 (RFC 5646) standard string
+
+
+```graphql
+scalar Locale
+```
+
+
+
+
+
+
+
+
+### Member Of
+
+[`AssortmentMediaTextInput`](/schema/types/inputs/assortment-media-text-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`AssortmentMediaTexts`](/schema/types/objects/assortment-media-texts.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentTextInput`](/schema/types/inputs/assortment-text-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`AssortmentTexts`](/schema/types/objects/assortment-texts.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`FilterTextInput`](/schema/types/inputs/filter-text-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`FilterTexts`](/schema/types/objects/filter-texts.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ProductMediaTextInput`](/schema/types/inputs/product-media-text-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`ProductMediaTexts`](/schema/types/objects/product-media-texts.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ProductTextInput`](/schema/types/inputs/product-text-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`ProductTexts`](/schema/types/objects/product-texts.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ProductVariationTextInput`](/schema/types/inputs/product-variation-text-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`ProductVariationTexts`](/schema/types/objects/product-variation-texts.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`UserLoginTracker`](/schema/types/objects/user-login-tracker.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

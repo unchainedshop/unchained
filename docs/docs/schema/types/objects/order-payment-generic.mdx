@@ -1,0 +1,100 @@
+---
+pagination_next: null
+pagination_prev: null
+id: order-payment-generic
+title: OrderPaymentGeneric
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+type OrderPaymentGeneric implements OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  fee: Price
+  paid: DateTimeISO
+  discounts: [OrderPaymentDiscount!]
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>OrderPaymentGeneric.<b>_id</b></code>](#)<Bullet />[`ID!`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>OrderPaymentGeneric.<b>provider</b></code>](#)<Bullet />[`PaymentProvider`](/schema/types/objects/payment-provider.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>OrderPaymentGeneric.<b>status</b></code>](#)<Bullet />[`OrderPaymentStatus`](/schema/types/enums/order-payment-status.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>OrderPaymentGeneric.<b>fee</b></code>](#)<Bullet />[`Price`](/schema/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>OrderPaymentGeneric.<b>paid</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>OrderPaymentGeneric.<b>discounts</b></code>](#)<Bullet />[`[OrderPaymentDiscount!]`](/schema/types/objects/order-payment-discount.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+### Interfaces
+
+#### [`OrderPayment`](/schema/types/interfaces/order-payment.mdx) <Badge class="badge badge--secondary" text="interface"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`updateOrderPaymentGeneric`](/schema/operations/mutations/update-order-payment-generic.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+

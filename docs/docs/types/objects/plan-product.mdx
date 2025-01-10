@@ -1,0 +1,266 @@
+---
+pagination_next: null
+pagination_prev: null
+id: plan-product
+title: PlanProduct
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Plan (Virtual Product that somebody can enroll to)
+
+
+```graphql
+type PlanProduct implements Product {
+  _id: ID!
+  sequence: Int!
+  status: ProductStatus!
+  tags: [LowerCaseString!]
+  created: DateTimeISO
+  updated: DateTimeISO
+  published: DateTimeISO
+  media(
+    limit: Int = 10
+    offset: Int = 0
+    tags: [LowerCaseString!]
+  ): [ProductMedia!]!
+  texts(
+    forceLocale: String
+  ): ProductTexts
+  catalogPrice(
+    quantity: Int = 1
+    currency: String
+  ): Price
+  leveledCatalogPrices(
+    currency: String
+  ): [PriceLevel!]!
+  simulatedPrice(
+    currency: String
+    useNetPrice: Boolean = false
+    quantity: Int = 1
+    configuration: [ProductConfigurationParameterInput!]
+  ): Price
+  assortmentPaths(
+    forceLocale: String
+  ): [ProductAssortmentPath!]!
+  siblings(
+    assortmentId: ID
+    limit: Int = 10
+    offset: Int = 0
+    includeInactive: Boolean = false
+  ): [Product!]!
+  salesUnit: String
+  salesQuantityPerUnit: String
+  defaultOrderQuantity: Int
+  reviews(
+    limit: Int = 10
+    offset: Int = 0
+    sort: [SortOptionInput!]
+    queryString: String
+  ): [ProductReview!]!
+  reviewsCount(
+    queryString: String
+  ): Int!
+  plan: ProductPlanConfiguration
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>_id</b></code>](#)<Bullet />[`ID!`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>sequence</b></code>](#)<Bullet />[`Int!`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>status</b></code>](#)<Bullet />[`ProductStatus!`](/types/enums/product-status.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>created</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>updated</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>published</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>media</b></code>](#)<Bullet />[`[ProductMedia!]!`](/types/objects/product-media.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.media.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.media.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.media.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>texts</b></code>](#)<Bullet />[`ProductTexts`](/types/objects/product-texts.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.texts.<b>forceLocale</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>catalogPrice</b></code>](#)<Bullet />[`Price`](/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.catalogPrice.<b>quantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.catalogPrice.<b>currency</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>leveledCatalogPrices</b></code>](#)<Bullet />[`[PriceLevel!]!`](/types/objects/price-level.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.leveledCatalogPrices.<b>currency</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>simulatedPrice</b></code>](#)<Bullet />[`Price`](/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.simulatedPrice.<b>currency</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.simulatedPrice.<b>useNetPrice</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.simulatedPrice.<b>quantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.simulatedPrice.<b>configuration</b></code>](#)<Bullet />[`[ProductConfigurationParameterInput!]`](/types/inputs/product-configuration-parameter-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>assortmentPaths</b></code>](#)<Bullet />[`[ProductAssortmentPath!]!`](/types/objects/product-assortment-path.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.assortmentPaths.<b>forceLocale</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>siblings</b></code>](#)<Bullet />[`[Product!]!`](/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="interface"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.siblings.<b>assortmentId</b></code>](#)<Bullet />[`ID`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.siblings.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.siblings.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.siblings.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>salesUnit</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>salesQuantityPerUnit</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>defaultOrderQuantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>reviews</b></code>](#)<Bullet />[`[ProductReview!]!`](/types/objects/product-review.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.reviews.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.reviews.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.reviews.<b>sort</b></code>](#)<Bullet />[`[SortOptionInput!]`](/types/inputs/sort-option-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.reviews.<b>queryString</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>reviewsCount</b></code>](#)<Bullet />[`Int!`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>PlanProduct.reviewsCount.<b>queryString</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>PlanProduct.<b>plan</b></code>](#)<Bullet />[`ProductPlanConfiguration`](/types/objects/product-plan-configuration.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+### Interfaces
+
+#### [`Product`](/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="interface"/> 
+Abstract Product
+
+
+
+
+
+
+### Member Of
+
+[`EnrollmentPlan`](/types/objects/enrollment-plan.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

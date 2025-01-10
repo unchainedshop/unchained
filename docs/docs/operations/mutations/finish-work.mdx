@@ -1,0 +1,103 @@
+---
+pagination_next: null
+pagination_prev: null
+id: finish-work
+title: finishWork
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Register a work attempt manually.
+Note: Usually, work attempts are handled internally by the inbuilt cron
+worker. This mutation is part of the interface for "outside" workers.
+
+
+```graphql
+finishWork(
+  workId: ID!
+  result: JSON
+  error: JSON
+  success: Boolean
+  worker: String
+  started: Timestamp
+  finished: Timestamp
+): Work!
+```
+
+
+
+
+### Arguments
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>workId</b></code>](#)<Bullet />[`ID!`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>result</b></code>](#)<Bullet />[`JSON`](/types/scalars/json.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>error</b></code>](#)<Bullet />[`JSON`](/types/scalars/json.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>success</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>worker</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>started</b></code>](#)<Bullet />[`Timestamp`](/types/scalars/timestamp.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>finishWork.<b>finished</b></code>](#)<Bullet />[`Timestamp`](/types/scalars/timestamp.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+### Type
+
+#### [`Work`](/types/objects/work.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+
+
+
+

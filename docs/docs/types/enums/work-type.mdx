@@ -1,0 +1,143 @@
+---
+pagination_next: null
+pagination_prev: null
+id: work-type
+title: WorkType
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+enum WorkType {
+  BULK_IMPORT
+  ZOMBIE_KILLER
+  MESSAGE
+  EXTERNAL
+  HTTP_REQUEST
+  HEARTBEAT
+  EMAIL
+  ERROR_NOTIFICATIONS
+  UPDATE_ECB_RATES
+  UPDATE_COINBASE_RATES
+  EXPORT_TOKEN
+  SMS
+  PUSH
+  ENROLLMENT_ORDER_GENERATOR
+  UNKNOWN
+}
+```
+
+
+
+
+### Values
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>BULK_IMPORT</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>ZOMBIE_KILLER</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>MESSAGE</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>EXTERNAL</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>HTTP_REQUEST</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>HEARTBEAT</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>EMAIL</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>ERROR_NOTIFICATIONS</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>UPDATE_ECB_RATES</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>UPDATE_COINBASE_RATES</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>EXPORT_TOKEN</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>SMS</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>PUSH</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>ENROLLMENT_ORDER_GENERATOR</b></code>](#)  
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WorkType.<b>UNKNOWN</b></code>](#)  
+
+
+
+
+
+
+
+### Returned By
+
+[`activeWorkTypes`](/operations/queries/active-work-types.mdx)  <Badge class="badge badge--secondary" text="query"/>
+
+### Member Of
+
+[`addWork`](/operations/mutations/add-work.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`allocateWork`](/operations/mutations/allocate-work.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`Work`](/types/objects/work.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`workQueue`](/operations/queries/work-queue.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`workQueueCount`](/operations/queries/work-queue-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`WorkStatistics`](/types/objects/work-statistics.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

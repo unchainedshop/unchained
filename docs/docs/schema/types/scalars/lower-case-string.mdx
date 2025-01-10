@@ -1,0 +1,61 @@
+---
+pagination_next: null
+pagination_prev: null
+id: lower-case-string
+title: LowerCaseString
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Lowercased string
+
+
+```graphql
+scalar LowerCaseString
+```
+
+
+
+
+
+
+
+
+### Member Of
+
+[`addAssortmentFilter`](/schema/operations/mutations/add-assortment-filter.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`addAssortmentLink`](/schema/operations/mutations/add-assortment-link.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`addAssortmentProduct`](/schema/operations/mutations/add-assortment-product.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`Assortment`](/schema/types/objects/assortment.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentFilter`](/schema/types/objects/assortment-filter.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentLink`](/schema/types/objects/assortment-link.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentMedia`](/schema/types/objects/assortment-media.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentProduct`](/schema/types/objects/assortment-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`assortments`](/schema/operations/queries/assortments.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`assortmentsCount`](/schema/operations/queries/assortments-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`BundleProduct`](/schema/types/objects/bundle-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ConfigurableProduct`](/schema/types/objects/configurable-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`CreateAssortmentInput`](/schema/types/inputs/create-assortment-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`CreateProductInput`](/schema/types/inputs/create-product-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`PlanProduct`](/schema/types/objects/plan-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Product`](/schema/types/interfaces/product.mdx)  <Badge class="badge badge--secondary" text="interface"/><Bullet />[`ProductMedia`](/schema/types/objects/product-media.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`products`](/schema/operations/queries/products.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`productsCount`](/schema/operations/queries/products-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`setUserTags`](/schema/operations/mutations/set-user-tags.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`SimpleProduct`](/schema/types/objects/simple-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`TokenizedProduct`](/schema/types/objects/tokenized-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`UpdateAssortmentInput`](/schema/types/inputs/update-assortment-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateProductInput`](/schema/types/inputs/update-product-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`User`](/schema/types/objects/user.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

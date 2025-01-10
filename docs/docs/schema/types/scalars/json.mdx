@@ -1,0 +1,65 @@
+---
+pagination_next: null
+pagination_prev: null
+id: json
+title: JSON
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+
+
+```graphql
+scalar JSON
+```
+
+
+
+
+
+
+
+
+### Returned By
+
+[`createWebAuthnCredentialCreationOptions`](/schema/operations/mutations/create-web-authn-credential-creation-options.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`createWebAuthnCredentialRequestOptions`](/schema/operations/mutations/create-web-authn-credential-request-options.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`addProductReviewVote`](/schema/operations/mutations/add-product-review-vote.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`addPushSubscription`](/schema/operations/mutations/add-push-subscription.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`addWebAuthnCredentials`](/schema/operations/mutations/add-web-authn-credentials.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`addWork`](/schema/operations/mutations/add-work.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`checkoutCart`](/schema/operations/mutations/checkout-cart.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`confirmOrder`](/schema/operations/mutations/confirm-order.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`ContractConfiguration`](/schema/types/objects/contract-configuration.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`createBookmark`](/schema/operations/mutations/create-bookmark.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`createEnrollment`](/schema/operations/mutations/create-enrollment.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`createUser`](/schema/operations/mutations/create-user.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`createWebAuthnCredentialCreationOptions`](/schema/operations/mutations/create-web-authn-credential-creation-options.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`createWebAuthnCredentialRequestOptions`](/schema/operations/mutations/create-web-authn-credential-request-options.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`DeliveryProvider`](/schema/types/objects/delivery-provider.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`EnrollmentDeliveryInput`](/schema/types/inputs/enrollment-delivery-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`EnrollmentPaymentInput`](/schema/types/inputs/enrollment-payment-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`Event`](/schema/types/objects/event.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`finishWork`](/schema/operations/mutations/finish-work.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`loginWithWebAuthn`](/schema/operations/mutations/login-with-web-authn.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`makeQuotationProposal`](/schema/operations/mutations/make-quotation-proposal.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`PaymentCredentials`](/schema/types/objects/payment-credentials.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`PaymentProvider`](/schema/types/objects/payment-provider.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`registerPaymentCredentials`](/schema/operations/mutations/register-payment-credentials.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`rejectOrder`](/schema/operations/mutations/reject-order.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`rejectQuotation`](/schema/operations/mutations/reject-quotation.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`signPaymentProviderForCheckout`](/schema/operations/mutations/sign-payment-provider-for-checkout.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`signPaymentProviderForCredentialRegistration`](/schema/operations/mutations/sign-payment-provider-for-credential-registration.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`Token`](/schema/types/objects/token.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`updateCart`](/schema/operations/mutations/update-cart.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateEnrollment`](/schema/operations/mutations/update-enrollment.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateOrderDeliveryPickUp`](/schema/operations/mutations/update-order-delivery-pick-up.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateOrderDeliveryShipping`](/schema/operations/mutations/update-order-delivery-shipping.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateOrderPaymentCard`](/schema/operations/mutations/update-order-payment-card.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateOrderPaymentGeneric`](/schema/operations/mutations/update-order-payment-generic.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateOrderPaymentInvoice`](/schema/operations/mutations/update-order-payment-invoice.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`UpdateProductInput`](/schema/types/inputs/update-product-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateProductTokenizationInput`](/schema/types/inputs/update-product-tokenization-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateProviderInput`](/schema/types/inputs/update-provider-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`updateUserProfile`](/schema/operations/mutations/update-user-profile.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`verifyQuotation`](/schema/operations/mutations/verify-quotation.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`WarehousingProvider`](/schema/types/objects/warehousing-provider.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`WebAuthnMDSv3Metadata`](/schema/types/objects/web-authn-mdsv-3-metadata.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Work`](/schema/types/objects/work.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`WorkOutput`](/schema/types/objects/work-output.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

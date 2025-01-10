@@ -1,0 +1,93 @@
+---
+pagination_next: null
+pagination_prev: null
+id: assortment-product
+title: AssortmentProduct
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+type AssortmentProduct {
+  _id: ID!
+  sortKey: Int!
+  tags: [LowerCaseString!]
+  assortment: Assortment!
+  product: Product!
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentProduct.<b>_id</b></code>](#)<Bullet />[`ID!`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentProduct.<b>sortKey</b></code>](#)<Bullet />[`Int!`](/schema/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentProduct.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/schema/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentProduct.<b>assortment</b></code>](#)<Bullet />[`Assortment!`](/schema/types/objects/assortment.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentProduct.<b>product</b></code>](#)<Bullet />[`Product!`](/schema/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="interface"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`addAssortmentProduct`](/schema/operations/mutations/add-assortment-product.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`removeAssortmentProduct`](/schema/operations/mutations/remove-assortment-product.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`reorderAssortmentProducts`](/schema/operations/mutations/reorder-assortment-products.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`Assortment`](/schema/types/objects/assortment.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ProductAssortmentPath`](/schema/types/objects/product-assortment-path.mdx)  <Badge class="badge badge--secondary" text="object"/>
+

@@ -1,0 +1,74 @@
+---
+pagination_next: null
+pagination_prev: null
+id: date-filter-input
+title: DateFilterInput
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+input DateFilterInput {
+  start: DateTimeISO
+  end: DateTimeISO
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>DateFilterInput.<b>start</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DateFilterInput.<b>end</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+
+
+
+
+### Member Of
+
+[`eventStatistics`](/schema/operations/queries/event-statistics.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`orderStatistics`](/schema/operations/queries/order-statistics.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`users`](/schema/operations/queries/users.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`usersCount`](/schema/operations/queries/users-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`workQueue`](/schema/operations/queries/work-queue.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`workQueueCount`](/schema/operations/queries/work-queue-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`workStatistics`](/schema/operations/queries/work-statistics.mdx)  <Badge class="badge badge--secondary" text="query"/>
+
