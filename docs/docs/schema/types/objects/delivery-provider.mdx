@@ -1,0 +1,137 @@
+---
+pagination_next: null
+pagination_prev: null
+id: delivery-provider
+title: DeliveryProvider
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+type DeliveryProvider {
+  _id: ID!
+  created: DateTimeISO
+  updated: DateTimeISO
+  deleted: DateTimeISO
+  type: DeliveryProviderType
+  interface: DeliveryInterface
+  configuration: JSON
+  configurationError: DeliveryProviderError
+  isActive: Boolean
+  simulatedPrice(
+    currency: String
+    useNetPrice: Boolean = false
+    orderId: ID
+    context: JSON
+  ): Price
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>_id</b></code>](#)<Bullet />[`ID!`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>created</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>updated</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>deleted</b></code>](#)<Bullet />[`DateTimeISO`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>type</b></code>](#)<Bullet />[`DeliveryProviderType`](/schema/types/enums/delivery-provider-type.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>interface</b></code>](#)<Bullet />[`DeliveryInterface`](/schema/types/objects/delivery-interface.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>configuration</b></code>](#)<Bullet />[`JSON`](/schema/types/scalars/json.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>configurationError</b></code>](#)<Bullet />[`DeliveryProviderError`](/schema/types/enums/delivery-provider-error.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>isActive</b></code>](#)<Bullet />[`Boolean`](/schema/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.<b>simulatedPrice</b></code>](#)<Bullet />[`Price`](/schema/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.simulatedPrice.<b>currency</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.simulatedPrice.<b>useNetPrice</b></code>](#)<Bullet />[`Boolean`](/schema/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.simulatedPrice.<b>orderId</b></code>](#)<Bullet />[`ID`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>DeliveryProvider.simulatedPrice.<b>context</b></code>](#)<Bullet />[`JSON`](/schema/types/scalars/json.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`createDeliveryProvider`](/schema/operations/mutations/create-delivery-provider.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`deliveryProvider`](/schema/operations/queries/delivery-provider.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`deliveryProviders`](/schema/operations/queries/delivery-providers.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`removeDeliveryProvider`](/schema/operations/mutations/remove-delivery-provider.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateDeliveryProvider`](/schema/operations/mutations/update-delivery-provider.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`Dispatch`](/schema/types/objects/dispatch.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`EnrollmentDelivery`](/schema/types/objects/enrollment-delivery.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Order`](/schema/types/objects/order.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`OrderDelivery`](/schema/types/interfaces/order-delivery.mdx)  <Badge class="badge badge--secondary" text="interface"/><Bullet />[`OrderDeliveryPickUp`](/schema/types/objects/order-delivery-pick-up.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`OrderDeliveryShipping`](/schema/types/objects/order-delivery-shipping.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Stock`](/schema/types/objects/stock.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
