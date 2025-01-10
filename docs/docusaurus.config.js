@@ -41,7 +41,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          routeBasePath: '/', // Serve the docs at the site's root
+          routeBasePath: '/docs', // Serve the docs at the site's root
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl: 'https://github.com/unchainedshop/unchained/tree/main/docs',
@@ -58,31 +58,10 @@ const config = {
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         hashed: true,
-        docsRouteBasePath: '/',
+        docsRouteBasePath: '/docs/api',
       },
     ],
-    [
-      '@graphql-markdown/docusaurus',
-      /** @type {import('@graphql-markdown/types').ConfigOptions} */
-      {
-        // ... other options
-        loaders: {
-          GraphQLFileLoader: '@graphql-tools/graphql-file-loader',
-        },
-      },
-    ],
-    [
-      'docusaurus-graphql-plugin',
-      {
-        // can be a path, a glob or an URL
-        routeBasePath: '/api',
-        // sidebar: {
-        //   label: 'GraphQL API Schema',
-        //   position: 11,
-        // },
-        schema: 'http://localhost:4010/graphql',
-      },
-    ],
+    '@graphql-markdown/docusaurus',
   ],
 
   themeConfig:

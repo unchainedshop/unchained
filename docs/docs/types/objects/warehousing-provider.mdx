@@ -1,0 +1,113 @@
+---
+pagination_next: null
+pagination_prev: null
+id: warehousing-provider
+title: WarehousingProvider
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+type WarehousingProvider {
+  _id: ID!
+  created: DateTimeISO
+  updated: DateTimeISO
+  deleted: DateTimeISO
+  type: WarehousingProviderType
+  interface: WarehousingInterface
+  configuration: JSON
+  configurationError: WarehousingProviderError
+  isActive: Boolean
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>_id</b></code>](#)<Bullet />[`ID!`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>created</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>updated</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>deleted</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>type</b></code>](#)<Bullet />[`WarehousingProviderType`](/types/enums/warehousing-provider-type.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>interface</b></code>](#)<Bullet />[`WarehousingInterface`](/types/objects/warehousing-interface.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>configuration</b></code>](#)<Bullet />[`JSON`](/types/scalars/json.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>configurationError</b></code>](#)<Bullet />[`WarehousingProviderError`](/types/enums/warehousing-provider-error.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>WarehousingProvider.<b>isActive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`createWarehousingProvider`](/operations/mutations/create-warehousing-provider.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`removeWarehousingProvider`](/operations/mutations/remove-warehousing-provider.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateWarehousingProvider`](/operations/mutations/update-warehousing-provider.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`warehousingProvider`](/operations/queries/warehousing-provider.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`warehousingProviders`](/operations/queries/warehousing-providers.mdx)  <Badge class="badge badge--secondary" text="query"/>
+
+### Member Of
+
+[`Dispatch`](/types/objects/dispatch.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Stock`](/types/objects/stock.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
