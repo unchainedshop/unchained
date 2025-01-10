@@ -1,0 +1,208 @@
+---
+pagination_next: null
+pagination_prev: null
+id: assortment
+title: Assortment
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Assortment
+
+
+```graphql
+type Assortment {
+  _id: ID!
+  created: DateTimeISO
+  updated: DateTimeISO
+  deleted: DateTimeISO
+  isActive: Boolean
+  isBase: Boolean
+  isRoot: Boolean
+  sequence: Int!
+  tags: [LowerCaseString!]
+  media(
+    limit: Int = 10
+    offset: Int = 0
+    tags: [LowerCaseString!]
+  ): [AssortmentMedia!]!
+  texts(
+    forceLocale: String
+  ): AssortmentTexts
+  productAssignments: [AssortmentProduct!]
+  filterAssignments: [AssortmentFilter!]
+  linkedAssortments: [AssortmentLink!]
+  assortmentPaths: [AssortmentPath!]!
+  children(
+    includeInactive: Boolean = false
+  ): [Assortment!]
+  childrenCount(
+    includeInactive: Boolean = false
+  ): Int!
+  searchProducts(
+    queryString: String
+    filterQuery: [FilterQueryInput!]
+    includeInactive: Boolean = false
+    ignoreChildAssortments: Boolean = false
+    orderBy: SearchOrderBy
+  ): ProductSearchResult!
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>_id</b></code>](#)<Bullet />[`ID!`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>created</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>updated</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>deleted</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>isActive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>isBase</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>isRoot</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>sequence</b></code>](#)<Bullet />[`Int!`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>media</b></code>](#)<Bullet />[`[AssortmentMedia!]!`](/types/objects/assortment-media.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.media.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.media.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.media.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>texts</b></code>](#)<Bullet />[`AssortmentTexts`](/types/objects/assortment-texts.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.texts.<b>forceLocale</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>productAssignments</b></code>](#)<Bullet />[`[AssortmentProduct!]`](/types/objects/assortment-product.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>filterAssignments</b></code>](#)<Bullet />[`[AssortmentFilter!]`](/types/objects/assortment-filter.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>linkedAssortments</b></code>](#)<Bullet />[`[AssortmentLink!]`](/types/objects/assortment-link.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>assortmentPaths</b></code>](#)<Bullet />[`[AssortmentPath!]!`](/types/objects/assortment-path.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>children</b></code>](#)<Bullet />[`[Assortment!]`](/types/objects/assortment.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.children.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>childrenCount</b></code>](#)<Bullet />[`Int!`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.childrenCount.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>Assortment.<b>searchProducts</b></code>](#)<Bullet />[`ProductSearchResult!`](/types/objects/product-search-result.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.searchProducts.<b>queryString</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.searchProducts.<b>filterQuery</b></code>](#)<Bullet />[`[FilterQueryInput!]`](/types/inputs/filter-query-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.searchProducts.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.searchProducts.<b>ignoreChildAssortments</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>Assortment.searchProducts.<b>orderBy</b></code>](#)<Bullet />[`SearchOrderBy`](/types/enums/search-order-by.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`assortment`](/operations/queries/assortment.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`assortments`](/operations/queries/assortments.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`createAssortment`](/operations/mutations/create-assortment.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`removeAssortment`](/operations/mutations/remove-assortment.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`setBaseAssortment`](/operations/mutations/set-base-assortment.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`updateAssortment`](/operations/mutations/update-assortment.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`Assortment`](/types/objects/assortment.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentFilter`](/types/objects/assortment-filter.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentLink`](/types/objects/assortment-link.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentProduct`](/types/objects/assortment-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentSearchResult`](/types/objects/assortment-search-result.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
