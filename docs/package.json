@@ -29,6 +29,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
+    "@graphql-markdown/types": "^1.4.2",
     "docusaurus-plugin-typedoc": "^1.4.0",
     "typedoc": "^0.28.7",
     "typedoc-plugin-markdown": "^4.7.0"
