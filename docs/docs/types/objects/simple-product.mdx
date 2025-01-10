@@ -1,0 +1,301 @@
+---
+pagination_next: null
+pagination_prev: null
+id: simple-product
+title: SimpleProduct
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Simple Product
+
+
+```graphql
+type SimpleProduct implements Product {
+  _id: ID!
+  sequence: Int!
+  status: ProductStatus!
+  tags: [LowerCaseString!]
+  created: DateTimeISO
+  updated: DateTimeISO
+  published: DateTimeISO
+  media(
+    limit: Int = 10
+    offset: Int = 0
+    tags: [LowerCaseString!]
+  ): [ProductMedia!]!
+  texts(
+    forceLocale: String
+  ): ProductTexts
+  catalogPrice(
+    quantity: Int = 1
+    currency: String
+  ): Price
+  leveledCatalogPrices(
+    currency: String
+  ): [PriceLevel!]!
+  simulatedPrice(
+    currency: String
+    useNetPrice: Boolean = false
+    quantity: Int = 1
+    configuration: [ProductConfigurationParameterInput!]
+  ): Price
+  simulatedDispatches(
+    deliveryProviderType: DeliveryProviderType = SHIPPING
+    referenceDate: Timestamp
+    quantity: Int = 1
+  ): [Dispatch!]
+  simulatedStocks(
+    deliveryProviderType: DeliveryProviderType = SHIPPING
+    referenceDate: Timestamp
+  ): [Stock!]
+  assortmentPaths: [ProductAssortmentPath!]!
+  siblings(
+    assortmentId: ID
+    limit: Int = 10
+    offset: Int = 0
+    includeInactive: Boolean = false
+  ): [Product!]!
+  dimensions: Dimensions
+  sku: String
+  baseUnit: String
+  salesUnit: String
+  salesQuantityPerUnit: String
+  defaultOrderQuantity: Int
+  reviews(
+    limit: Int = 10
+    offset: Int = 0
+    sort: [SortOptionInput!]
+    queryString: String
+  ): [ProductReview!]!
+  reviewsCount(
+    queryString: String
+  ): Int!
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>_id</b></code>](#)<Bullet />[`ID!`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>sequence</b></code>](#)<Bullet />[`Int!`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>status</b></code>](#)<Bullet />[`ProductStatus!`](/types/enums/product-status.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>created</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>updated</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>published</b></code>](#)<Bullet />[`DateTimeISO`](/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>media</b></code>](#)<Bullet />[`[ProductMedia!]!`](/types/objects/product-media.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.media.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.media.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.media.<b>tags</b></code>](#)<Bullet />[`[LowerCaseString!]`](/types/scalars/lower-case-string.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>texts</b></code>](#)<Bullet />[`ProductTexts`](/types/objects/product-texts.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.texts.<b>forceLocale</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>catalogPrice</b></code>](#)<Bullet />[`Price`](/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.catalogPrice.<b>quantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.catalogPrice.<b>currency</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>leveledCatalogPrices</b></code>](#)<Bullet />[`[PriceLevel!]!`](/types/objects/price-level.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.leveledCatalogPrices.<b>currency</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>simulatedPrice</b></code>](#)<Bullet />[`Price`](/types/objects/price.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedPrice.<b>currency</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedPrice.<b>useNetPrice</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedPrice.<b>quantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedPrice.<b>configuration</b></code>](#)<Bullet />[`[ProductConfigurationParameterInput!]`](/types/inputs/product-configuration-parameter-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>simulatedDispatches</b></code>](#)<Bullet />[`[Dispatch!]`](/types/objects/dispatch.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedDispatches.<b>deliveryProviderType</b></code>](#)<Bullet />[`DeliveryProviderType`](/types/enums/delivery-provider-type.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedDispatches.<b>referenceDate</b></code>](#)<Bullet />[`Timestamp`](/types/scalars/timestamp.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedDispatches.<b>quantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>simulatedStocks</b></code>](#)<Bullet />[`[Stock!]`](/types/objects/stock.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedStocks.<b>deliveryProviderType</b></code>](#)<Bullet />[`DeliveryProviderType`](/types/enums/delivery-provider-type.mdx) <Badge class="badge badge--secondary" text="enum"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.simulatedStocks.<b>referenceDate</b></code>](#)<Bullet />[`Timestamp`](/types/scalars/timestamp.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>assortmentPaths</b></code>](#)<Bullet />[`[ProductAssortmentPath!]!`](/types/objects/product-assortment-path.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>siblings</b></code>](#)<Bullet />[`[Product!]!`](/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="interface"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.siblings.<b>assortmentId</b></code>](#)<Bullet />[`ID`](/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.siblings.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.siblings.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.siblings.<b>includeInactive</b></code>](#)<Bullet />[`Boolean`](/types/scalars/boolean.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>dimensions</b></code>](#)<Bullet />[`Dimensions`](/types/objects/dimensions.mdx) <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>sku</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>baseUnit</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>salesUnit</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>salesQuantityPerUnit</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>defaultOrderQuantity</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>reviews</b></code>](#)<Bullet />[`[ProductReview!]!`](/types/objects/product-review.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.reviews.<b>limit</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.reviews.<b>offset</b></code>](#)<Bullet />[`Int`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.reviews.<b>sort</b></code>](#)<Bullet />[`[SortOptionInput!]`](/types/inputs/sort-option-input.mdx) <Badge class="badge badge--secondary" text="list"/> <Badge class="badge badge--secondary" text="input"/> 
+
+
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.reviews.<b>queryString</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.<b>reviewsCount</b></code>](#)<Bullet />[`Int!`](/types/scalars/int.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+##### [<code style={{ fontWeight: 'normal' }}>SimpleProduct.reviewsCount.<b>queryString</b></code>](#)<Bullet />[`String`](/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+### Interfaces
+
+#### [`Product`](/types/interfaces/product.mdx) <Badge class="badge badge--secondary" text="interface"/> 
+Abstract Product
+
+
+
+
+
+

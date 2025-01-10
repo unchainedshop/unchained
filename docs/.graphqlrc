@@ -1,0 +1,11 @@
+schema: 'http://localhost:4010/graphql'
+extensions:
+  graphql-markdown:
+    loaders:
+      UrlLoader: '@graphql-tools/url-loader'
+    docOptions:
+      frontMatter:
+        pagination_next: null
+        pagination_prev: null
+    printTypeOptions:
+      deprecated: 'group'

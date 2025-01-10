@@ -1,0 +1,74 @@
+---
+pagination_next: null
+pagination_prev: null
+id: product-assortment-path
+title: ProductAssortmentPath
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Directed assortment to product paths (breadcrumbs)
+
+
+```graphql
+type ProductAssortmentPath {
+  assortmentProduct: AssortmentProduct!
+  links: [AssortmentPathLink!]!
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>ProductAssortmentPath.<b>assortmentProduct</b></code>](#)<Bullet />[`AssortmentProduct!`](/types/objects/assortment-product.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>ProductAssortmentPath.<b>links</b></code>](#)<Bullet />[`[AssortmentPathLink!]!`](/types/objects/assortment-path-link.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="object"/> 
+
+
+
+
+
+
+
+### Member Of
+
+[`BundleProduct`](/types/objects/bundle-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ConfigurableProduct`](/types/objects/configurable-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`PlanProduct`](/types/objects/plan-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Product`](/types/interfaces/product.mdx)  <Badge class="badge badge--secondary" text="interface"/><Bullet />[`SimpleProduct`](/types/objects/simple-product.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`TokenizedProduct`](/types/objects/tokenized-product.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
