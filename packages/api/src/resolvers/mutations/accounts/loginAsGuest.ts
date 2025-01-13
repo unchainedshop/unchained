@@ -27,5 +27,7 @@ export default async function loginAsGuest(root: never, _: any, context: Context
     countryCode: context.countryContext,
   });
 
+  await context.services.orders.nextUserCart({ user, countryCode: context.countryContext });
+
   return context.login(user);
 }

@@ -1,4 +1,4 @@
-import { log } from '@unchainedshop/logger';
+import { defaultLogger } from '@unchainedshop/logger';
 import { subscribe } from '@unchainedshop/events';
 import { Work, WorkData, WorkerEventTypes } from '@unchainedshop/core-worker';
 
@@ -40,7 +40,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
             ? new Date(now.getTime() + workDelayMs * 2)
             : new Date(now.setSeconds(now.getSeconds() + 5));
 
-        log(
+        defaultLogger.error(
           `${FailedRescheduler.key} -> Reschedule failed work ${work._id} ${
             work.type
           } for ${scheduled.toISOString()} (in ${Math.round(workDelayMs / 1000)}). Remaining retries: ${

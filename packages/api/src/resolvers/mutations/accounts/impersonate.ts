@@ -15,6 +15,11 @@ const impersonate = async (root, { userId }, context: Context) => {
     throw new ImpersonatingAdminUserError({ impersonatedUserId: userId, userId: context.userId });
   }
 
+  await context.services.orders.nextUserCart({
+    user: userToImpersonate,
+    countryCode: context.countryContext,
+  });
+
   return context.login(userToImpersonate, {
     impersonator: context.user,
   });

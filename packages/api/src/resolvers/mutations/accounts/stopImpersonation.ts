@@ -15,5 +15,10 @@ export default async function stopImpersonation(root: never, _, context: Context
 
   await context.logout();
 
+  await context.services.orders.nextUserCart({
+    user: impersonator,
+    countryCode: context.countryContext,
+  });
+
   return context.login(impersonator);
 }

@@ -27,6 +27,12 @@ export default async function resetPassword(
       countryCode: context.countryContext,
     });
 
+    if (context.userId) {
+      await context.services.users.migrateUserData(context.userId, user._id);
+    }
+
+    await context.services.orders.nextUserCart({ user, countryCode: context.countryContext });
+
     return context.login(user);
   } catch (e) {
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({});

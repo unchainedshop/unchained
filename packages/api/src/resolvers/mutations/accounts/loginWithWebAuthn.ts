@@ -33,5 +33,11 @@ export default async function loginWithWebAuthn(
     countryCode: context.countryContext,
   });
 
+  if (context.userId) {
+    await context.services.users.migrateUserData(context.userId, user._id);
+  }
+
+  await context.services.orders.nextUserCart({ user, countryCode: context.countryContext });
+
   return context.login(user);
 }

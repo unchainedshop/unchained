@@ -105,12 +105,12 @@ platform.
 `modules.products.prices.userPrice`: `services.products.simulateProductPricing`
 
 `modules.orders.pricingSheet`:
-```js
+```ts
 OrderPricingSheet(order);`
 ```
 
 `modules.orders.positions.pricingSheet`:
-```js
+```ts
 ProductPricingSheet({
   ...item,
   currency: order.currency,
@@ -118,12 +118,12 @@ ProductPricingSheet({
 ```
 
 `modules.orders.delivery.pricingSheet`:
-```js
+```ts
 DeliveryPricingSheet(delivery);`
 ```
 
 `modules.orders.payment.pricingSheet`:
-```js
+```ts
 PaymentPricingSheet(payment);`
 ```
 
@@ -147,6 +147,37 @@ anymore, provide plain password here it will hash it on it's own)
 `modules.warehousing.estimatedStock` => `services.products.simulatedProductInventory`
 
 `getOrderCart` => `services.orders.findOrInitCart`
+
+`modules.orders.deliveries.activePickUpLocation` => 
+```ts
+const { orderPickUpLocationId } = orderDelivery.context || {};
+
+const provider = await context.modules.delivery.findProvider({
+  deliveryProviderId: orderDelivery.deliveryProviderId,
+});
+const director = await DeliveryDirector.actions(
+  provider,
+  { orderDelivery: orderDelivery },
+  context,
+);
+
+const location = await director.pickUpLocationById(orderPickUpLocationId);
+```
+
+`modules.orders.payments.isBlockingOrderConfirmation` =>
+```ts
+if (orderPayment.status === OrderPaymentStatus.PAID) return false:
+const provider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: orderPayment.paymentProviderId,
+});
+const actions = await PaymentDirector.actions(provider, {}, { modules });
+return (!actions.isPayLaterAllowed())
+```
+
+`modules.messaging.renderToText` =>
+```ts
+
+```
 
 ## Move away from registerLoginHandlers
 

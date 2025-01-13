@@ -42,6 +42,8 @@ export default async function createUser(root: never, params: UserData, context:
       countryCode: context.countryContext,
     });
 
+    await context.services.orders.nextUserCart({ user, countryCode: context.countryContext });
+
     return context.login(user);
   } catch (e) {
     if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
