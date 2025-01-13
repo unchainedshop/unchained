@@ -1,5 +1,4 @@
-import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import type { Order, OrderPosition, OrderDelivery } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
@@ -57,6 +56,7 @@ export type IDeliveryAdapter = IBaseAdapter & {
 };
 
 export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   initialConfiguration: [],
 
   typeSupported: () => {
@@ -102,9 +102,5 @@ export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'
         return [];
       },
     };
-  },
-
-  log: (message: string, { level = LogLevel.Debug, ...options } = {}) => {
-    return log(message, { level, ...options });
   },
 };

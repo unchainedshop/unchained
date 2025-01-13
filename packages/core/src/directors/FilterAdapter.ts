@@ -1,7 +1,6 @@
-import { log, LogLevel } from '@unchainedshop/logger';
 import { Assortment } from '@unchainedshop/core-assortments';
 import { mongodb } from '@unchainedshop/mongodb';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { Product } from '@unchainedshop/core-products';
 import { Filter, SearchQuery } from '@unchainedshop/core-filters';
 import { Modules } from '../modules.js';
@@ -63,6 +62,7 @@ export type IFilterAdapter = IBaseAdapter & {
 };
 
 export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   orderIndex: 0,
 
   actions: () => {
@@ -95,9 +95,5 @@ export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = 
         return lastSelector;
       },
     };
-  },
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
   },
 };

@@ -44,7 +44,6 @@ export const EventDirector = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
       events.forEach((e) => RegisteredEventsSet.add(e));
-      logger.info(`EventDirector -> Registered ${JSON.stringify(events)}`);
     }
   },
 
@@ -99,7 +98,6 @@ export const EventDirector = {
       Adapter?.subscribe(eventName, callback);
       HistoryAdapter?.subscribe(eventName, callback);
       RegisteredCallbacksSet.add(currentSubscription);
-      logger.debug(`EventDirector -> Subscribed to ${eventName}`);
     }
   },
 };

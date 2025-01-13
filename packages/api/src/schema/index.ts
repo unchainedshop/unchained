@@ -4,8 +4,21 @@ import types from './types/index.js';
 import inputTypes from './inputTypes.js';
 import query from './query.js';
 import mutation from './mutation.js';
+import { getRegisteredEvents } from '@unchainedshop/events';
+import { WorkerDirector } from '@unchainedshop/core';
+import { createLogger } from '@unchainedshop/logger';
 
-export const buildDefaultTypeDefs = ({ actions = [], events = [], workTypes = [] }) => {
+const logger = createLogger('unchained:api');
+
+export const buildDefaultTypeDefs = ({ actions = [] }) => {
+  logger.debug(`${actions.length} role actions added to GraphQL schema`, { actions });
+
+  const events = getRegisteredEvents() || [];
+  logger.debug(`${events.length} event types added to GraphQL schema`, { events });
+
+  const workTypes = WorkerDirector.getActivePluginTypes() || [];
+  logger.debug(`${workTypes.length} work types added to GraphQL schema`, { workTypes });
+
   const dynamicTypeDefs = [
     actions?.length && `extend enum RoleAction { ${actions.join(',')} }`,
     events?.length && `extend enum EventType { ${events.join(',')} }`,

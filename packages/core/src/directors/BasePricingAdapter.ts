@@ -1,10 +1,7 @@
-import { createLogger } from '@unchainedshop/logger';
 import { IPricingSheet } from './BasePricingSheet.js';
-import { IBaseAdapter, PricingCalculation } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter, PricingCalculation } from '@unchainedshop/utils';
 import { Discount } from './BasePricingDirector.js';
 import { Order, OrderDiscount } from '@unchainedshop/core-orders';
-
-const logger = createLogger('unchained:core');
 
 interface IDiscountableItem {
   _id?: string;
@@ -54,6 +51,7 @@ export const BasePricingAdapter = <
   PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
 >(): IPricingAdapter<PricingAdapterContext, Calculation, IPricingSheet<Calculation>> => ({
+  ...BaseAdapter,
   key: '',
   label: '',
   version: '',
@@ -72,9 +70,5 @@ export const BasePricingAdapter = <
         throw new Error('Method not implemented.');
       }, // abstract
     };
-  },
-
-  log(message: string, options) {
-    return logger.debug(message, options);
   },
 });

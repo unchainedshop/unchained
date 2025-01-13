@@ -1,5 +1,3 @@
-import { log } from '@unchainedshop/logger';
-
 export type EmailTemplateType = {
   type: 'EMAIL';
   input: {
@@ -41,19 +39,14 @@ export type TemplateResolver<T = { [x: string]: any }> = (
   unchainedAPI,
 ) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
 
-export type IMessagingDirector = {
-  registerTemplate: (templateName: string, templateResolver: TemplateResolver) => void;
-  getTemplate: (templateName: string) => TemplateResolver;
-};
-
 const TemplateResolvers = new Map<string, TemplateResolver>();
 
-export const MessagingDirector: IMessagingDirector = {
-  registerTemplate: (templateName, templateResolver) => {
-    log(`MessagingDirector -> Registered template resolver for ${templateName}`);
-
+export const MessagingDirector = {
+  registerTemplate: (templateName: string, templateResolver: TemplateResolver) => {
     TemplateResolvers.set(templateName, templateResolver);
   },
 
-  getTemplate: (templateName) => TemplateResolvers.get(templateName),
+  getTemplate: (templateName: string) => TemplateResolvers.get(templateName),
+
+  getRegisteredTemplates: () => Array.from(TemplateResolvers.keys()),
 };

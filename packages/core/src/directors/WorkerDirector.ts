@@ -73,13 +73,9 @@ export const WorkerDirector: IWorkerDirector = {
   },
 
   configureAutoscheduling: (workItemConfiguration) => {
-    const adapter = WorkerDirector.getAdapterByType(workItemConfiguration.type);
     AutoScheduleMap.set(
       workItemConfiguration.scheduleId || workItemConfiguration.type,
       workItemConfiguration,
-    );
-    logger.info(
-      `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${JSON.stringify(workItemConfiguration.schedule?.schedules)}`,
     );
   },
 
@@ -98,7 +94,7 @@ export const WorkerDirector: IWorkerDirector = {
     const adapter = WorkerDirector.getAdapterByType(type);
 
     if (!adapter) {
-      logger.info(`WorkerDirector: No registered adapter for type: ${type}`);
+      logger.warn(`WorkerDirector: No registered adapter for type: ${type}`);
     }
 
     try {
@@ -107,7 +103,7 @@ export const WorkerDirector: IWorkerDirector = {
     } catch (error) {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
       logger.debug('DO not use this as flow control.');
-      logger.info(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
+      logger.error(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
 
       const errorOutput = { error, success: false };
       return errorOutput;

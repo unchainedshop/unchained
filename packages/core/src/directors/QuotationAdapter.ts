@@ -3,8 +3,7 @@ import {
   QuotationItemConfiguration,
   QuotationProposal,
 } from '@unchainedshop/core-quotations';
-import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 
 export type QuotationContext = {
   quotation?: Quotation;
@@ -38,6 +37,7 @@ export enum QuotationError {
 }
 
 export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   orderIndex: 0,
 
   isActivatedFor: () => {
@@ -78,9 +78,5 @@ export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'versio
         return { quantity, configuration };
       },
     };
-  },
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
   },
 };

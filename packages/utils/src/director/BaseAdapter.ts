@@ -1,9 +1,10 @@
-import { log, LogLevel } from '@unchainedshop/logger';
+import { defaultLogger, LogLevel } from '@unchainedshop/logger';
 
 export interface IBaseAdapter {
   key: string;
   label: string;
   version: string;
+  asString: () => string;
   log: (
     message: string,
     options?: {
@@ -15,6 +16,10 @@ export interface IBaseAdapter {
 
 export const BaseAdapter: Omit<IBaseAdapter, 'key' | 'label' | 'version'> = {
   log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
+    defaultLogger[level](message, options);
+  },
+
+  asString() {
+    return `${this.key}@${this.version}`;
   },
 };

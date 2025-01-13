@@ -1,5 +1,4 @@
-import { IBaseAdapter } from '@unchainedshop/utils';
-import { log, LogLevel } from '@unchainedshop/logger';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import {
   Enrollment,
   EnrollmentPeriod,
@@ -52,6 +51,7 @@ export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, i
 };
 
 export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   isActivatedFor: () => {
     return false;
   },
@@ -104,10 +104,5 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
         };
       },
     };
-  },
-
-  // eslint-disable-next-line
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
   },
 };

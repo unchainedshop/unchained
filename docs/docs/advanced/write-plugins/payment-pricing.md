@@ -35,9 +35,6 @@ export const ShopCommission: IPaymentPricingAdapter = {
   isActivatedFor: (context: PaymentPricingAdapterContext): boolean => {
     return true;
   },
-  log(message: string, options?: LogOptions): void {
-    console.log(message);
-  },
 
   actions: (params: {
     calculationSheet: IPaymentPricingSheet;

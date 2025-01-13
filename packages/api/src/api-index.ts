@@ -25,8 +25,6 @@ export type UnchainedServerOptions = {
   adminUiConfig?: AdminUiConfig;
   unchainedAPI: UnchainedCore;
   context?: (defaultResolver: UnchainedContextResolver) => UnchainedContextResolver;
-  events: Array<string>;
-  workTypes: Array<string>;
 } & GraphQLServerOptions;
 
 export const startAPIServer = async (options: UnchainedServerOptions) => {
@@ -35,8 +33,6 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     context: customContext,
     roles,
     adminUiConfig = {},
-    events,
-    workTypes,
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
     ...serverOptions
@@ -56,8 +52,6 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     typeDefs: [
       ...buildDefaultTypeDefs({
         actions: Object.keys(actions),
-        events,
-        workTypes,
       }),
       ...additionalTypeDefs,
     ],

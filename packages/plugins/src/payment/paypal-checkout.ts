@@ -38,9 +38,9 @@ const environment = () => {
 const PaypalCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
-  key: 'com.paypal.checkout',
+  key: 'shop.unchained.payment.paypal',
   label: 'Paypal',
-  version: '1.0.0',
+  version: '1.0.1',
 
   initialConfiguration: [],
 

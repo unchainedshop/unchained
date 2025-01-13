@@ -1,5 +1,4 @@
-import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { PaymentConfiguration, PaymentProvider, PaymentProviderType } from '@unchainedshop/core-payment';
 import { Modules } from '../modules.js';
@@ -58,6 +57,7 @@ export type IPaymentAdapter = IBaseAdapter & {
 };
 
 export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   initialConfiguration: [],
 
   typeSupported: () => {
@@ -110,9 +110,5 @@ export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> 
         return false;
       },
     };
-  },
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
   },
 };

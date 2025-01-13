@@ -1,6 +1,5 @@
 import type { Readable } from 'node:stream';
-import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { UploadedFile, UploadFileData } from '../types.js';
 
 export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
@@ -29,6 +28,7 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
   createDownloadStream: (file: UploadedFile, unchainedAPI: Context) => Promise<Readable>;
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   async createDownloadURL() {
     throw new Error('Method not implemented');
   },
@@ -57,9 +57,5 @@ export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
     return new Promise<null>((resolve) => {
       resolve(null);
     });
-  },
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
   },
 };

@@ -272,7 +272,7 @@ export const configureWorkerModule = async ({
 
     const duration = new Date(work.finished).getTime() - new Date(work.started).getTime();
     if (work.success) {
-      logger.info(`${work.type} finished with success (${duration}ms)`, {
+      logger.debug(`${work.type} finished with success (${duration}ms)`, {
         workId,
         worker,
       });
@@ -422,7 +422,7 @@ export const configureWorkerModule = async ({
         worker,
       });
 
-      logger.info(`${type} scheduled @ ${new Date(scheduled || created).toISOString()}`, {
+      logger.debug(`${type} scheduled @ ${new Date(scheduled || created).toISOString()}`, {
         workId,
       });
 
@@ -532,7 +532,7 @@ export const configureWorkerModule = async ({
         );
 
         if (!result.lastErrorObject.updatedExisting) {
-          logger.info(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
+          logger.debug(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
             workId,
           });
           emit(WorkerEventTypes.ADDED, removePrivateFields(result.value));

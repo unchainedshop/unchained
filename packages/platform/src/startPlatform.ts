@@ -1,10 +1,8 @@
 import { startAPIServer, roles, UnchainedServerOptions } from '@unchainedshop/api';
 import { initCore, UnchainedCoreOptions } from '@unchainedshop/core';
 import { initDb, mongodb } from '@unchainedshop/mongodb';
-import { createLogger } from '@unchainedshop/logger';
+import { defaultLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
-import { getRegisteredEvents } from '@unchainedshop/events';
-import { WorkerDirector } from '@unchainedshop/core';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
@@ -24,9 +22,7 @@ export type PlatformOptions = {
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions & { skipInvalidationOnStartup?: boolean };
 } & Omit<UnchainedCoreOptions, 'bulkImporter' | 'migrationRepository' | 'db'> &
-  Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI' | 'workTypes' | 'events'>;
-
-const logger = createLogger('unchained');
+  Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 
 const REQUIRED_ENV_VARIABLES = [
   'EMAIL_WEBSITE_NAME',
@@ -41,7 +37,7 @@ const { UNCHAINED_DISABLE_WORKER } = process.env;
 const exitOnMissingEnvironmentVariables = () => {
   const failedEnv = REQUIRED_ENV_VARIABLES.filter((key) => !process.env[key]);
   if (failedEnv.length > 0) {
-    logger.error(`Missing required environment variables at boot time: ${failedEnv.join(', ')}`);
+    defaultLogger.error(`Missing required environment variables at boot time: ${failedEnv.join(', ')}`);
     process.exit(1);
   }
 };
@@ -93,9 +89,6 @@ export const startPlatform = async ({
     await runMigrations({ migrationRepository, unchainedAPI });
   }
 
-  const configuredEvents = getRegisteredEvents();
-  const configuredWorkTypes = WorkerDirector.getActivePluginTypes();
-
   // Setup accountsjs specific extensions and event handlers
   setupAccounts(unchainedAPI);
 
@@ -109,8 +102,6 @@ export const startPlatform = async ({
   const graphqlHandler = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
-    events: configuredEvents,
-    workTypes: configuredWorkTypes,
     ...arbitraryAPIServerConfiguration,
   });
 
@@ -125,6 +116,11 @@ export const startPlatform = async ({
   if (!workQueueOptions?.skipInvalidationOnStartup) {
     setImmediate(() => unchainedAPI.services.filters.invalidateFilterCache());
   }
+
+  const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
+    with: { type: 'json' },
+  });
+  defaultLogger.info(`Unchained Engine running`, { version: packageJson.version });
 
   return { unchainedAPI, graphqlHandler, db };
 };

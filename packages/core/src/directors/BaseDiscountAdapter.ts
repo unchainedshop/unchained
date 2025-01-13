@@ -1,5 +1,4 @@
-import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { IPricingSheet } from './BasePricingSheet.js';
 import { PricingCalculation } from '@unchainedshop/utils';
 import { Order, OrderDiscount } from '@unchainedshop/core-orders';
@@ -35,6 +34,7 @@ export interface DiscountAdapterActions<DiscountConfiguration> {
 }
 
 export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   orderIndex: 0,
 
   isManualAdditionAllowed: async () => {
@@ -83,8 +83,4 @@ export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label
       return null;
     },
   }),
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
-  },
 };

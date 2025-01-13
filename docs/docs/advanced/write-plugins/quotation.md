@@ -69,10 +69,6 @@ export const ManualOffering: IQuotationAdapter = {
       },
     };
   },
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    return log(message, { level, ...options });
-  },
 };
 
 ```

@@ -15,7 +15,7 @@ const everyDayAtFourInTheNight = later.parse.cron('0 3 * * *');
 export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
   ...WorkerAdapter,
 
-  key: 'ch.unchained.worker.error-notifications',
+  key: 'shop.unchained.worker.error-notifications',
   label: 'Send a daily report about errors that failed permanently/unrecoverable',
   version: '1.0',
 

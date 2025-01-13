@@ -1,5 +1,4 @@
 import later from '@breejs/later';
-import { log } from '@unchainedshop/logger';
 import { Work, WorkData } from '@unchainedshop/core-worker';
 import { WorkerDirector } from '@unchainedshop/core';
 
@@ -41,9 +40,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
     return floored;
   },
 
-  actions: ({ workerId, worker }: WorkerParams, unchainedAPI) => {
-    log(`${worker.key} -> Initialized ${worker.type}`);
-
+  actions: ({ workerId }: WorkerParams, unchainedAPI) => {
     const workerActions = {
       start() {
         throw new Error(`Not implemented on ${this.constructor.key}`);

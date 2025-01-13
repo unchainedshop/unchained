@@ -17,7 +17,7 @@ export const runMigrations = async ({
   const findCurrentId = async () => {
     const last = await LastMigration.findOne({ category: 'unchained' }, { sort: { _id: -1 } });
     const id = last ? last._id : 0;
-    logger.info(`Most recent migration id: ${id}`);
+    logger.debug(`Most recent migration id: ${id}`);
     return id;
   };
 
@@ -55,9 +55,9 @@ export const runMigrations = async ({
     if (operationCount > 0) {
       logger.info(`All ${operationCount} migrations completed with most recent id: ${lastMigrationId}`);
     } else {
-      logger.info(`No migrations run, already at latest id: ${currentId}`);
+      logger.debug(`No migrations run, already at latest id: ${currentId}`);
     }
   } else {
-    logger.info(`Some migrations failed, last successful id: ${lastMigrationId}`);
+    logger.warn(`Some migrations failed, last successful id: ${lastMigrationId}`);
   }
 };

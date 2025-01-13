@@ -1,5 +1,4 @@
-import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/core-products';
 import { Order, OrderPosition } from '@unchainedshop/core-orders';
@@ -48,6 +47,7 @@ export type IWarehousingAdapter = IBaseAdapter & {
 };
 
 export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 'version'> = {
+  ...BaseAdapter,
   orderIndex: 0,
 
   typeSupported: () => {
@@ -74,10 +74,5 @@ export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 've
 
       isInvalidateable: async () => true,
     };
-  },
-
-  log(message, { level = LogLevel.Debug, ...options } = {}) {
-    // eslint-disable-line
-    return log(message, { level, ...options });
   },
 };
