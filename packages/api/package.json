@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
