@@ -67,6 +67,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
       userId: req.session?.userId,
     };
     req.session.userId = null;
+    req.session.impersonatorId = null;
     await emit(API_EVENTS.API_LOGOUT, tokenObject);
     return true;
   };

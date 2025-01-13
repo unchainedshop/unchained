@@ -46,12 +46,15 @@ const addContext = async function middlewareWithContext(
 
     const context = getCurrentContextResolver();
 
-    const login: LoginFn = async (user: User) => {
+    const login: LoginFn = async (user: User, options = {}) => {
+      const { impersonator } = options;
+
       await new Promise((resolve, reject) => {
         (req as any).login(user, (error, result) => {
           if (error) {
             return reject(error);
           }
+          (req as any).session.impersonatorId = impersonator?._id;
           return resolve(result);
         });
       });
@@ -87,6 +90,7 @@ const addContext = async function middlewareWithContext(
           if (error) {
             return reject(error);
           }
+          (req as any).session.impersonatorId = null;
           return resolve(result);
         });
       });
@@ -107,6 +111,7 @@ const addContext = async function middlewareWithContext(
         logout,
         accessToken,
         userId: (req as any).user?._id,
+        impersonatorId: (req as any).session.impersonatorId,
       },
       req,
       res,
