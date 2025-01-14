@@ -86,3 +86,16 @@ TODO
 - Checkout via invoice
 
 TODO
+
+
+## Dependency Hell:
+
+Minimal v2 without optional and without dev (production setup):
+
+- 449 Packages in node_modules
+- 205M
+
+Minimal v3 without optional and without dev (production setup):
+
+- 245 Packages in node_modules
+- 76M

@@ -102,28 +102,33 @@ platform.
 
 ## Removed Module Functions
 
-`modules.products.prices.userPrice`: `services.products.simulateProductPricing`
+`modules.products.prices.userPrice` => `services.products.simulateProductPricing`
 
-`modules.orders.pricingSheet`:
+`modules.orders.pricingSheet` =>
 ```ts
+import { OrderPricingSheet } from '@unchainedshop/core';
 OrderPricingSheet(order);`
 ```
 
-`modules.orders.positions.pricingSheet`:
+`modules.orders.positions.pricingSheet` =>
 ```ts
+import { ProductPricingSheet } from '@unchainedshop/core';
 ProductPricingSheet({
   ...item,
   currency: order.currency,
 });`
 ```
 
-`modules.orders.delivery.pricingSheet`:
+
+`modules.orders.delivery.pricingSheet` =>
 ```ts
+import { DeliveryPricingSheet } from '@unchainedshop/core';
 DeliveryPricingSheet(delivery);`
 ```
 
-`modules.orders.payment.pricingSheet`:
+`modules.orders.payment.pricingSheet` =>
 ```ts
+import { PaymentPricingSheet } from '@unchainedshop/core';
 PaymentPricingSheet(payment);`
 ```
 
@@ -174,10 +179,32 @@ const actions = await PaymentDirector.actions(provider, {}, { modules });
 return (!actions.isPayLaterAllowed())
 ```
 
-`modules.messaging.renderToText` =>
-```ts
+`modules.messaging.renderToText` => Directly use literal strings or a templating library, for example [mustache](https://www.npmjs.com/package/mustache) or server-side React.
 
+`modules.orders.checkout` => `services.orders.checkoutOrder`
+
+
+## Changed Signatures
+
+### modules.orders.positions.addProductItem
+
+Thew argument got merged and instead of passsing objects you now only need to pass id's.
+
+```ts
+const orderPosition = await modules.orders.positions.addProductItem({
+    quantity,
+    configuration,
+    productId: product._id,
+    originalProductId: product._id, // or originalProduct._id if available,
+    orderId: order._id,
+  });
 ```
+
+Additionally, the module function does not resolve a ConfigurableProduct to the correct SimpleProduct if a configuration is passed. If you need that function, use:
+```ts
+const product = await modules.products.resolveOrderableProduct(originalProduct, { configuration });
+```
+
 
 ## Move away from registerLoginHandlers
 
@@ -188,16 +215,3 @@ The special account events have been migrated too. For account specific topics t
 - `USER_UPDATE_PASSWORD`
 - `USER_ACCOUNT_ACTION`
 
-## Benchmarks
-
-Dependency Hell:
-
-Minimal v2 without optional and without dev (production setup):
-
-- 449 Packages in node_modules
-- 205M
-
-Minimal v3 without optional and without dev (production setup):
-
-- 245 Packages in node_modules
-- 76M
