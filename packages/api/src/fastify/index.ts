@@ -194,6 +194,7 @@ export const connect = (
   fastify.route({
     url: BULK_IMPORT_API_PATH,
     method: ['POST'],
+    bodyLimit: 1024 * 1024 * 1024 * 5, // 5GB
     handler: bulkImportHandler,
   });
 };
