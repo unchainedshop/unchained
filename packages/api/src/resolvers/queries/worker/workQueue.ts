@@ -27,7 +27,7 @@ export default async function workQueue(
   },
   { modules, userId }: Context,
 ) {
-  log(`query workQueue ${limit} ${offset} [${status?.join(', ')}] ${JSON.stringify(created)}`, {
+  log(`query workQueue ${limit} ${offset} [${status?.join(', ') || ''}] ${JSON.stringify(created)}`, {
     userId,
   });
   return modules.worker.findWorkQueue({

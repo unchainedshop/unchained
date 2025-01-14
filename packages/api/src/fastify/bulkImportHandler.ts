@@ -27,7 +27,7 @@ const bulkImportHandler: RouteHandlerMethod = async (
 
     const file = await context.services.files.uploadFileFromStream({
       directoryName: 'bulk-import-streams',
-      rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req }),
+      rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req.raw }),
       meta: {},
     });
 

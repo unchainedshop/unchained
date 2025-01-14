@@ -3,7 +3,7 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function activeWorkTypes(root: never, _: any, { modules, userId }: Context) {
-  log(`query activeWorkTypes  `, { userId });
+  log(`query activeWorkTypes`, { userId });
 
   const typeList = await modules.worker.activeWorkTypes();
   const pluginTypes = WorkerDirector.getActivePluginTypes();

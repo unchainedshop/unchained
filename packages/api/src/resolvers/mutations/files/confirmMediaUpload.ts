@@ -9,7 +9,7 @@ export default async function confirmMediaUpload(
 ) {
   const { services, modules, userId } = context;
 
-  log(`mutation confirmMediaUpload `, { userId });
+  log(`mutation confirmMediaUpload`, { userId });
 
   const file = await modules.files.findFile({ fileId });
   if (!file) throw new FileNotFoundError({ fileId });

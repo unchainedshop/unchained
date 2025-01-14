@@ -7,7 +7,7 @@ export default async function workQueueCount(
   params: WorkQueueQuery,
   { modules, userId }: Context,
 ) {
-  log(`query workQueueCount [${params.status?.join(', ')}] ${JSON.stringify(params.created)}`, {
+  log(`query workQueueCount [${params.status?.join(', ') || ''}] ${JSON.stringify(params.created)}`, {
     userId,
   });
 

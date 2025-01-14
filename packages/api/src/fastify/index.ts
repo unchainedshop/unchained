@@ -191,10 +191,16 @@ export const connect = (
     handler: ercMetadataHandler,
   });
 
-  fastify.route({
-    url: BULK_IMPORT_API_PATH,
-    method: ['POST'],
-    bodyLimit: 1024 * 1024 * 1024 * 5, // 5GB
-    handler: bulkImportHandler,
+  fastify.register((s, opts, registered) => {
+    s.addContentTypeParser('*', function (req, payload, done) {
+      done(null);
+    });
+    s.route({
+      url: BULK_IMPORT_API_PATH,
+      method: ['POST'],
+      bodyLimit: 1024 * 1024 * 1024 * 5, // 5GB
+      handler: bulkImportHandler,
+    });
+    registered();
   });
 };
