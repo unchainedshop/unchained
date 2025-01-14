@@ -26,19 +26,6 @@ export default (fastify: FastifyInstance, { unchainedAPI }: { unchainedAPI: Unch
   connectCryptoToFastify(fastify, unchainedAPI);
 
   fastify.register((s, opts, registered) => {
-    // Disable JSON parsing!
-    // fastify.addContentTypeParser(
-    //   'application/json',
-    //   { parseAs: 'string', bodyLimit: 1024 * 1024 },
-    //   function (req, body, done) {
-    //     try {
-    //       done(null, body);
-    //     } catch (err) {
-    //       err.statusCode = 400;
-    //       done(err, undefined);
-    //     }
-    //   },
-    // );
     s.addContentTypeParser(
       'application/json',
       { parseAs: 'string', bodyLimit: 1024 * 1024 },
@@ -80,8 +67,6 @@ export default (fastify: FastifyInstance, { unchainedAPI }: { unchainedAPI: Unch
     method: 'GET',
     handler: saferpayHandler,
   });
-
-  // app.use(STRIPE_WEBHOOK_PATH, express.raw({ type: 'application/json' }), stripeHandler);
 
   configureGenerateOrderAutoscheduling();
 };

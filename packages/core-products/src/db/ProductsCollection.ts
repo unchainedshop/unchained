@@ -52,7 +52,7 @@ export interface ProductBundleItem {
 }
 
 export interface ProductPrice {
-  // TODO: Extends Price!
+  // TODO: Extends Price! but currently currencyCode/currency are conflicting
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode?: string;

@@ -6,12 +6,6 @@ import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:bulk-import');
 
-const errorHandler = (res) => (e) => {
-  logger.error(e.message);
-  res.status(503);
-  return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
-};
-
 const bulkImportHandler: RouteHandlerMethod = async (
   req: FastifyRequest & { unchainedContext: Context },
   res,
@@ -55,7 +49,9 @@ const bulkImportHandler: RouteHandlerMethod = async (
     res.header('Content-Type', 'application/json');
     return res.send(body);
   } catch (e) {
-    errorHandler(res)(e);
+    logger.error(e.message);
+    res.status(503);
+    return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
   }
 };
 

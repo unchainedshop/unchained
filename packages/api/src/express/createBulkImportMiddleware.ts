@@ -5,12 +5,6 @@ import { Context } from '../context.js';
 
 const logger = createLogger('unchained:bulk-import');
 
-const errorHandler = (res) => (e) => {
-  logger.error(e.message);
-  res.writeHead(503);
-  res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
-};
-
 const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.writeHead(404);
@@ -61,6 +55,9 @@ export default async function bulkImportMiddleware(
     res.writeHead(200);
     res.end(JSON.stringify(work));
   } catch (e) {
-    errorHandler(res)(e);
+    logger.error(e.message);
+    res.writeHead(503);
+    res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    return;
   }
 }

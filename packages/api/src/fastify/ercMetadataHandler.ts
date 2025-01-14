@@ -6,12 +6,6 @@ const logger = createLogger('unchained:erc-metadata');
 
 const { ROOT_URL = 'http://localhost:4010' } = process.env;
 
-const errorHandler = (res) => (e) => {
-  logger.error(e.message);
-  res.status(503);
-  return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
-};
-
 const notFoundHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.status(404);
@@ -45,7 +39,9 @@ const ercMetadataHandler: RouteHandlerMethod = async (
     res.header('Content-Type', 'application/json');
     return res.send(body);
   } catch (e) {
-    return errorHandler(res)(e);
+    logger.error(e.message);
+    res.status(503);
+    return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
   }
 };
 

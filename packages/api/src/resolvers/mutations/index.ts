@@ -318,5 +318,5 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout,
   ),
-  removeUserProductReviews, // TODO!
+  removeUserProductReviews: acl(actions.updateUser)(removeUserProductReviews),
 };
