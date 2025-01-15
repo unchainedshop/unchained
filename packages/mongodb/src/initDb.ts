@@ -1,6 +1,7 @@
 import { Db, MongoClient } from 'mongodb';
 
 let zstdEnabled = false;
+let mongod;
 
 try {
   // eslint-disable-next-line
@@ -11,26 +12,25 @@ try {
   /* */
 }
 
-const { mkdir } = await import('node:fs/promises');
-
-const { MongoMemoryServer } = await import('mongodb-memory-server');
-try {
-  await mkdir(`${process.cwd()}/.db`);
-} catch {
-  /* */
-}
-const mongod = MongoMemoryServer.create({
-  instance: {
-    dbPath: `${process.cwd()}/.db`,
-    storageEngine: 'wiredTiger',
-    port: parseInt(process.env.PORT, 10) + 1,
-  },
-}).catch(() => {
-  // Drop error
-  /* */
-});
-
 export const startDb = async () => {
+  const { mkdir } = await import('node:fs/promises');
+  const { MongoMemoryServer } = await import('mongodb-memory-server');
+  try {
+    await mkdir(`${process.cwd()}/.db`);
+  } catch {
+    /* */
+  }
+  mongod = MongoMemoryServer.create({
+    instance: {
+      dbPath: `${process.cwd()}/.db`,
+      storageEngine: 'wiredTiger',
+      port: parseInt(process.env.PORT, 10) + 1,
+    },
+  }).catch(() => {
+    // Drop error
+    /* */
+  });
+
   const mongoInstance = await mongod;
   if (!mongoInstance) {
     throw new Error(
