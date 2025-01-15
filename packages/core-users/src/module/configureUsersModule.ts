@@ -7,6 +7,7 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
+  insensitiveTrimmedRegexOperator,
 } from '@unchainedshop/mongodb';
 import {
   User,
@@ -19,21 +20,9 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
 import addMigrations from './addMigrations.js';
-import { userSettings, UserSettingsOptions } from '../users-settings.js';
+import { UserRegistrationData, userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
-
-export interface UserData {
-  email?: string;
-  guest?: boolean;
-  initialPassword?: boolean;
-  lastBillingAddress?: User['lastBillingAddress'];
-  password: string | null;
-  webAuthnPublicKeyCredentials?: any;
-  profile?: UserProfile;
-  roles?: Array<string>;
-  username?: string;
-}
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -119,12 +108,12 @@ export const configureUsersModule = async ({
 
     async findUserByUsername(username: string): Promise<User> {
       if (!username) return null;
-      return Users.findOne({ username }, {});
+      return Users.findOne({ username: insensitiveTrimmedRegexOperator(username) }, {});
     },
 
     async findUserByEmail(email: string): Promise<User> {
       if (!email) return null;
-      return Users.findOne({ 'emails.address': { $regex: email, $options: 'i' } }, {});
+      return Users.findOne({ 'emails.address': insensitiveTrimmedRegexOperator(email) }, {});
     },
 
     async findUnverifiedEmailToken(plainToken: string): Promise<{
@@ -157,7 +146,7 @@ export const configureUsersModule = async ({
       const updated = await Users.updateOne(
         {
           _id: userId,
-          emails: { $elemMatch: { address: { $regex: address, $options: 'i' }, verified: false } },
+          emails: { $elemMatch: { address: insensitiveTrimmedRegexOperator(address), verified: false } },
         },
         {
           $set: {
@@ -165,7 +154,7 @@ export const configureUsersModule = async ({
           },
           $pull: {
             'services.email.verificationTokens': {
-              address: { $regex: address, $options: 'i' },
+              address: insensitiveTrimmedRegexOperator(address),
             },
           },
         },
@@ -276,7 +265,13 @@ export const configureUsersModule = async ({
 
     // Mutations
     async createUser(
+      rawUserData: UserRegistrationData,
       {
+        skipMessaging,
+        skipPasswordEnrollment,
+      }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
+    ): Promise<string> {
+      const {
         password,
         email,
         username,
@@ -284,13 +279,7 @@ export const configureUsersModule = async ({
         roles,
         webAuthnPublicKeyCredentials,
         ...userData
-      }: UserData,
-      {
-        skipMessaging,
-        skipPasswordEnrollment,
-      }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
-    ): Promise<string> {
-      const normalizedUserData = await userSettings.validateNewUser(userData);
+      } = await userSettings.validateNewUser(rawUserData);
 
       const webAuthnService =
         webAuthnPublicKeyCredentials &&
@@ -315,12 +304,14 @@ export const configureUsersModule = async ({
         services.webAuthn = [webAuthnService];
       }
 
-      const doc = {
-        ...normalizedUserData,
-        _id: normalizedUserData._id || generateDbObjectId(),
+      const doc: User = {
+        ...userData,
+        _id: userData._id || generateDbObjectId(),
         roles: roles || [],
         initialPassword: Boolean(initialPassword),
         services,
+        guest: Boolean(userData.guest),
+        pushSubscriptions: userData.pushSubscriptions || [],
         emails: email ? [{ address: email, verified: false }] : [],
         created: new Date(),
       };
@@ -388,7 +379,7 @@ export const configureUsersModule = async ({
         throw new Error(`E-Mail address ${address} is invalid`, { cause: 'EMAIL_INVALID' });
       }
       await this.updateUser(
-        { _id: userId, 'emails.address': { $not: { $regex: address, $options: 'i' } } },
+        { _id: userId, 'emails.address': { $not: insensitiveTrimmedRegexOperator(address) } },
         {
           $push: {
             emails: {
@@ -402,10 +393,10 @@ export const configureUsersModule = async ({
 
     async removeEmail(userId: string, address: string): Promise<void> {
       await this.updateUser(
-        { _id: userId, 'emails.address': { $regex: address, $options: 'i' } },
+        { _id: userId, 'emails.address': insensitiveTrimmedRegexOperator(address) },
         {
           $pull: {
-            emails: { address: { $regex: address, $options: 'i' } },
+            emails: { address: insensitiveTrimmedRegexOperator(address) },
           },
         },
       );
@@ -522,6 +513,18 @@ export const configureUsersModule = async ({
       const updatedUser = await this.setPassword(resetToken.userId, newPassword);
       if (updatedUser) {
         // Now invalidate the reset token
+        await Users.updateOne(
+          {
+            _id: resetToken.userId,
+          },
+          {
+            $pull: {
+              'services.password.reset': {
+                token: resetToken.token,
+              },
+            },
+          },
+        );
         await emit('USER_ACCOUNT_ACTION', {
           action: 'password-resetted',
           userId: updatedUser._id,
@@ -584,7 +587,7 @@ export const configureUsersModule = async ({
 
     markDeleted: async (userId: string): Promise<User> => {
       await db.collection('sessions').deleteMany({
-        session: { $regex: `"user":"${userId}"` },
+        session: insensitiveTrimmedRegexOperator(`"user":"${userId}"`),
       });
       const user = await Users.findOneAndUpdate(
         { _id: userId },

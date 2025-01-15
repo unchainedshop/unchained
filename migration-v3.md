@@ -26,7 +26,6 @@ import {
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
-import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 ```
 
@@ -34,7 +33,6 @@ Add
 
 ```js
 import cookie from "cookie";
-import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/lib/express/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
@@ -50,7 +48,6 @@ const engine = await startPlatform({
     plugins: [
         // Install a landing page plugin based on NODE_ENV
         ApolloServerPluginCacheControl({ calculateHttpHeaders: false }),
-        responseCachePlugin({...}),
         ApolloServerPluginDrainHttpServer({ httpServer }),
         ApolloServerPluginLandingPageGraphiQLPlayground({
             shouldPersistHeaders: true,
@@ -75,19 +72,11 @@ to:
 
 ```js
 const engine = await startPlatform({
-  plugins: [
-    useResponseCache({
-      ttl: 0,
-      session(req) {
-        const auth = req.headers.get('authorization');
-        const cookies = cookie.parse(req.headers.get('cookie') || '');
-        return auth || cookies[process.env.UNCHAINED_COOKIE_NAME] || null;
-      },
-      enabled() {
-        return process.env.NODE_ENV === 'production';
-      },
-    }),
-  ],
+  options: {
+    users: {
+      autoMessagingAfterUserCreation: false
+    }
+  }
 });
 connect(app, engine);
 connectDefaultPluginsToExpress(app, engine);
@@ -183,6 +172,7 @@ return (!actions.isPayLaterAllowed())
 
 `modules.orders.checkout` => `services.orders.checkoutOrder`
 
+`modules.ordes.initProviders` => 
 
 ## Changed Signatures
 

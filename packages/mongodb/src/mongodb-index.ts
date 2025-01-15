@@ -12,7 +12,7 @@ export { buildDbIndexes } from './build-db-indexes.js';
 export { findPreservingIds } from './find-preserving-ids.js';
 export { buildSortOptions } from './build-sort-option.js';
 export { findLocalizedText } from './find-localized-text.js';
-export { emailRegexOperator } from './email-regex-operator.js';
+export { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.js';
 
 export { mongodb };
 

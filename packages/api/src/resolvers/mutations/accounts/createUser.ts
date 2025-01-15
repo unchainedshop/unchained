@@ -1,4 +1,4 @@
-import { UserData } from '@unchainedshop/core-users';
+import { UserRegistrationData } from '@unchainedshop/core-users';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import {
@@ -10,7 +10,7 @@ import {
   PasswordInvalidError,
 } from '../../../errors.js';
 
-export default async function createUser(root: never, params: UserData, context: Context) {
+export default async function createUser(root: never, params: UserRegistrationData, context: Context) {
   const { modules, userId } = context;
 
   log('mutation createUser', { email: params.email, username: params.username, userId });

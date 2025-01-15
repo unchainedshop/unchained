@@ -1,11 +1,17 @@
-import { mongodb } from '@unchainedshop/mongodb';
+import { insensitiveTrimmedRegexOperator, mongodb } from '@unchainedshop/mongodb';
 import { User } from './db/UsersCollection.js';
+
+export interface UserRegistrationData extends Partial<User> {
+  email?: string;
+  password: string | null;
+  webAuthnPublicKeyCredentials?: any;
+}
 export interface UserSettingsOptions {
   mergeUserCartsOnLogin?: boolean;
   autoMessagingAfterUserCreation?: boolean;
   validateEmail?: (email: string) => Promise<boolean>;
   validateUsername?: (username: string) => Promise<boolean>;
-  validateNewUser?: (user: Partial<User>) => Promise<User>;
+  validateNewUser?: (user: UserRegistrationData) => Promise<UserRegistrationData>;
   validatePassword?: (password: string) => Promise<boolean>;
 }
 export interface UserSettings {
@@ -13,7 +19,7 @@ export interface UserSettings {
   autoMessagingAfterUserCreation: boolean;
   validateEmail: (email: string) => Promise<boolean>;
   validateUsername: (username: string) => Promise<boolean>;
-  validateNewUser: (user: Partial<User>) => Promise<User>;
+  validateNewUser: (user: UserRegistrationData) => Promise<UserRegistrationData>;
   validatePassword: (password: string) => Promise<boolean>;
   configureSettings: (options: UserSettingsOptions, db: mongodb.Db) => void;
 }
@@ -41,25 +47,28 @@ export const userSettings: UserSettings = {
     const defaultMergeUserCartsOnLogin = true;
 
     const defaultValidateEmail = async (rawEmail: string) => {
-      const email = rawEmail.toLowerCase().trim();
-      if (!email?.includes?.('@')) return false;
+      if (!rawEmail?.includes?.('@')) return false;
       const emailAlreadyExists = await db
         .collection('users')
-        .countDocuments({ 'emails.address': { $regex: email, $options: 'i' } }, { limit: 1 });
+        .countDocuments({ 'emails.address': insensitiveTrimmedRegexOperator(rawEmail) }, { limit: 1 });
       if (emailAlreadyExists) return false;
       return true;
     };
     const defaultValidateUsername = async (rawUsername: string) => {
-      const username = rawUsername.toLowerCase().trim();
-      if (username?.length < 3) return false;
+      if (rawUsername?.length < 3) return false;
       const usernameAlreadyExists = await db
         .collection('users')
-        .countDocuments({ username: { $regex: username, $options: 'i' } }, { limit: 1 });
+        .countDocuments({ username: insensitiveTrimmedRegexOperator(rawUsername) }, { limit: 1 });
       if (usernameAlreadyExists) return false;
       return true;
     };
-    const defaultValidateNewUser = async (user: User) => {
-      return user;
+    const defaultValidateNewUser = async (user: UserRegistrationData) => {
+      return {
+        ...user,
+        username: user.username?.trim().toLowerCase(),
+        email: user.email?.trim().toLowerCase(),
+        password: user.password ?? null,
+      };
     };
 
     const defaultValidatePassword = async (password: string) => {

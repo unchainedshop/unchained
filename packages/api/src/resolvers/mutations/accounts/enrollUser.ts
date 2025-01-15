@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
 
-import { UserData } from '@unchainedshop/core-users';
+import { UserRegistrationData } from '@unchainedshop/core-users';
 import {
   AuthOperationFailedError,
   EmailAlreadyExistsError,
@@ -10,7 +10,7 @@ import {
   UsernameOrEmailRequiredError,
 } from '../../../errors.js';
 
-export default async function enrollUser(root: never, params: UserData, context: Context) {
+export default async function enrollUser(root: never, params: UserRegistrationData, context: Context) {
   const { modules } = context;
 
   log('mutation enrollUser', { email: params.email, userId: context.userId });
