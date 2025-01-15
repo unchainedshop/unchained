@@ -125,7 +125,6 @@ export default [
     }
 
     type ProductCatalogPrice @cacheControl(maxAge: 60) {
-      _id: ID!
       isTaxable: Boolean!
       isNetPrice: Boolean!
       country: Country!
