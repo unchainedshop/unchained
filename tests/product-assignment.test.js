@@ -26,6 +26,83 @@ test.describe('Product: Assignments', async () => {
   });
 
   test.describe('mutation.addProductAssignment for admin user should', async () => {
+    test('Throw error when incomplete/invalid vectors is passed', async () => {
+      const { errors } = await graphqlFetchAsAdmin(
+        {
+          query: /* GraphQL */ `
+            mutation AddProductAssignment(
+              $proxyId: ID!
+              $productId: ID!
+              $vectors: [ProductAssignmentVectorInput!]!
+            ) {
+              addProductAssignment(
+                proxyId: $proxyId
+                productId: $productId
+                vectors: $vectors
+              ) {
+                _id
+                sequence
+                status
+                tags
+                created
+                updated
+                published
+                texts {
+                  _id
+                }
+                media {
+                  _id
+                }
+                reviews {
+                  _id
+                }
+                siblings {
+                  _id
+                }
+                ... on ConfigurableProduct {
+                  products {
+                    _id
+                  }
+                  assortmentPaths {
+                    links {
+                      link {
+                        _id
+                        parent {
+                          _id
+                          productAssignments {
+                            _id
+                            product {
+                              _id
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  variations {
+                    _id
+                    key
+                    texts {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            productId: SimpleProduct._id,
+            proxyId: ProxyProduct._id,
+            vectors: [
+              { key: 'non-existing', value: 'text-variant-a' },            
+            ],
+          },
+        },
+      );
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ConfigurationVectorInvalid',
+      });
+    });
     test('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
       const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
