@@ -8,6 +8,7 @@ import {
   SimpleProduct,
   ConfigurableProduct,
   PlanProduct,
+  ProxyProduct,
 } from './seeds/products.js';
 
 let graphqlFetchAsAdmin;
@@ -23,7 +24,7 @@ describe('ProductAssignment', () => {
 
   describe('mutation.addProductAssignment for admin user should', () => {
     it('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
-      const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin(
+      const {data: {addProductAssignment},  errors } = await graphqlFetchAsAdmin(
         {
           query: /* GraphQL */ `
             mutation AddProductAssignment(
@@ -88,18 +89,92 @@ describe('ProductAssignment', () => {
           `,
           variables: {
             productId: SimpleProduct._id,
-            proxyId: ConfigurableProduct._id,
+            proxyId: ProxyProduct._id,
             vectors: [
-              { key: 'key-1', value: 'value-1' },
-              { key: 'key-2', value: 'value-2' },
-              { key: 'key-3', value: 'value-3' },
+              { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
             ],
           },
         },
       );
+      expect(addProductAssignment.products?.some((p) => p._id === SimpleProduct._id)).toBe(true);
+    });
 
-      expect(addProductAssignment.products?.[0]).toMatchObject({
-        _id: SimpleProduct._id,
+    it('Throw error when incomplete/invalid vectors is passed', async () => {
+      const { errors } = await graphqlFetchAsAdmin(
+        {
+          query: /* GraphQL */ `
+            mutation AddProductAssignment(
+              $proxyId: ID!
+              $productId: ID!
+              $vectors: [ProductAssignmentVectorInput!]!
+            ) {
+              addProductAssignment(
+                proxyId: $proxyId
+                productId: $productId
+                vectors: $vectors
+              ) {
+                _id
+                sequence
+                status
+                tags
+                created
+                updated
+                published
+                texts {
+                  _id
+                }
+                media {
+                  _id
+                }
+                reviews {
+                  _id
+                }
+                siblings {
+                  _id
+                }
+                ... on ConfigurableProduct {
+                  products {
+                    _id
+                  }
+                  assortmentPaths {
+                    links {
+                      link {
+                        _id
+                        parent {
+                          _id
+                          productAssignments {
+                            _id
+                            product {
+                              _id
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  variations {
+                    _id
+                    key
+                    texts {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            productId: SimpleProduct._id,
+            proxyId: ProxyProduct._id,
+            vectors: [
+              { key: 'non-existing', value: 'text-variant-a' },            
+            ],
+          },
+        },
+      );
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ConfigurationVectorInvalid',
       });
     });
 
@@ -124,9 +199,9 @@ describe('ProductAssignment', () => {
           productId: SimpleProduct._id,
           proxyId: PlanProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
+            
           ],
         },
       });
