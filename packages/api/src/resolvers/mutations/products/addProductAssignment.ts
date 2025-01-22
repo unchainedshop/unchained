@@ -29,7 +29,10 @@ const extractVariationMatrix = (variations = []) => {
 
 const combinationExists = (matrix, combination) => {
   return matrix.some((variation) => {
-    return Object.entries(combination).every(([key, value]) => variation[key] === value);
+    return (
+      Object.keys(variation).length === Object.keys(combination).length && // Ensure both have the same number of keys
+      Object.entries(combination).every(([key, value]) => variation[key] === value)
+    );
   });
 };
 

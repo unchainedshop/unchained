@@ -92,7 +92,8 @@ describe('ProductAssignment', () => {
             proxyId: ProxyProduct._id,
             vectors: [
               { key: 'text-variant', value: 'text-variant-a' },
-            { key: 'color-variant', value: 'color-variant-red' },
+              { key: 'color-variant', value: 'color-variant-red' },
+            
             ],
           },
         },
@@ -100,7 +101,7 @@ describe('ProductAssignment', () => {
       expect(addProductAssignment.products?.some((p) => p._id === SimpleProduct._id)).toBe(true);
     });
 
-    it('Throw error when incomplete/invalid vectors is passed', async () => {
+    it('Throw error when incomplete vectors is passed', async () => {
       const { errors } = await graphqlFetchAsAdmin(
         {
           query: /* GraphQL */ `
@@ -168,7 +169,86 @@ describe('ProductAssignment', () => {
             productId: SimpleProduct._id,
             proxyId: ProxyProduct._id,
             vectors: [
-              { key: 'non-existing', value: 'text-variant-a' },            
+              { key: 'text-variant', value: 'text-variant-a' },         
+            ],
+          },
+        },
+      );
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ConfigurationVectorInvalid',
+      });
+    });
+
+    it('Throw error when invalid vectors is passed', async () => {
+      const { errors } = await graphqlFetchAsAdmin(
+        {
+          query: /* GraphQL */ `
+            mutation AddProductAssignment(
+              $proxyId: ID!
+              $productId: ID!
+              $vectors: [ProductAssignmentVectorInput!]!
+            ) {
+              addProductAssignment(
+                proxyId: $proxyId
+                productId: $productId
+                vectors: $vectors
+              ) {
+                _id
+                sequence
+                status
+                tags
+                created
+                updated
+                published
+                texts {
+                  _id
+                }
+                media {
+                  _id
+                }
+                reviews {
+                  _id
+                }
+                siblings {
+                  _id
+                }
+                ... on ConfigurableProduct {
+                  products {
+                    _id
+                  }
+                  assortmentPaths {
+                    links {
+                      link {
+                        _id
+                        parent {
+                          _id
+                          productAssignments {
+                            _id
+                            product {
+                              _id
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  variations {
+                    _id
+                    key
+                    texts {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            productId: SimpleProduct._id,
+            proxyId: ProxyProduct._id,
+            vectors: [
+              { key: 'invalid-text-variant', value: 'text-variant-a' },     
+              { key: 'invalid-color-variant', value: 'color-variant-red' },    
             ],
           },
         },
@@ -234,9 +314,8 @@ describe('ProductAssignment', () => {
           productId: 'non-existin-product-id',
           proxyId: ConfigurableProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
           ],
         },
       });
@@ -267,9 +346,8 @@ describe('ProductAssignment', () => {
           productId: ConfigurableProduct._id,
           proxyId: 'non-exsisting-proxy-id',
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
           ],
         },
       });
@@ -299,9 +377,8 @@ describe('ProductAssignment', () => {
           productId: '',
           proxyId: ConfigurableProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
           ],
         },
       });
@@ -332,9 +409,8 @@ describe('ProductAssignment', () => {
           productId: SimpleProduct._id,
           proxyId: '',
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
           ],
         },
       });
@@ -366,9 +442,8 @@ describe('ProductAssignment', () => {
           productId: SimpleProduct._id,
           proxyId: ConfigurableProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
           ],
         },
       });
@@ -401,9 +476,8 @@ describe('ProductAssignment', () => {
           productId: SimpleProduct._id,
           proxyId: ConfigurableProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'text-variant', value: 'text-variant-a' },
+            { key: 'color-variant', value: 'color-variant-red' },
           ],
         },
       });
