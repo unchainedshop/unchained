@@ -589,12 +589,6 @@ export const ProxyProduct = {
         },
         productId: ProxyPlanProduct1._id,
       },
-      {
-        vector: {
-          'color-variant': 'color-variant-blue',
-        },
-        productId: ProxyPlanProduct2._id,
-      },
     ],
   },
 };
