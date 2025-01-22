@@ -1946,7 +1946,7 @@ describe('Products', () => {
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 75000000,
+          amount: 5000000,
           currency: 'CHF',
         },
       });
@@ -2102,7 +2102,7 @@ describe('Products', () => {
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 75000000,
+          amount: 5000000,
           currency: "CHF",
         },
       });
