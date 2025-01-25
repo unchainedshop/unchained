@@ -156,6 +156,10 @@ export async function processOrderService(
         orderDeliveryId: order.deliveryId,
       });
 
+      // TODO: What happens if this THROWS?
+      // Tokenization would be skipped?
+      // Enrollments will not be there?
+      // Quotations would not fulfil?
       await DeliveryDirector.sendOrderDelivery(orderDelivery, deliveryContext, { modules: this });
 
       const orderPositions = await this.orders.positions.findOrderPositions({ orderId });
