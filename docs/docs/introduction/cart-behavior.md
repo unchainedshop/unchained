@@ -89,7 +89,7 @@ If any of the above actions throw because of your own code in for ex. a `Warehou
 
 Make sure to build these actions in a way that is asynchronous and forgiving so that this step is not dependent on potentially unavailable resources.
 
-If you want to send the order to an ERP system with your own delivery plugin for example, consider returning `false` and create a work queue item.
+If you want to send the order to an ERP system with your own delivery plugin for example, consider returning `false` and create a work queue item. It will also make your checkouts fast as hell as a side-effect 😁
 :::
 
 # Cart Behavior
