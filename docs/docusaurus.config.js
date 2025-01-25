@@ -41,7 +41,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          routeBasePath: '/docs', // Serve the docs at the site's root
+          routeBasePath: '/src/docs', // Serve the docs at the site's root
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl: 'https://github.com/unchainedshop/unchained/tree/main/docs',
@@ -53,17 +53,6 @@ const config = {
       }),
     ],
   ],
-  plugins: [
-    [
-      require.resolve('@easyops-cn/docusaurus-search-local'),
-      {
-        hashed: true,
-        docsRouteBasePath: '/docs/api',
-      },
-    ],
-    '@graphql-markdown/docusaurus',
-  ],
-
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
