@@ -7,9 +7,21 @@ sidebar_label: Carts
 
 # Carts
 
-In this chapter, you will learn how Unchained reacts to Cart changes.
+In this chapter, you will learn what a cart in Unchained contains and how Unchained reacts to Cart changes.
 
 ## Order Context
+
+Every order has a `billingAddress` and a `contact`, both have to be set in order to do a checkout. It's up to you as a developer to define which fields have to be provided in order for you to process the checkout. For example if you only need a single phone number but no address and no e-mail address, this is valid:
+
+```graphql
+mutation {
+  updateCart(contact: {telNumber: "+41414114141"}, billingAddress: {}) {
+    _id
+  }
+}
+```
+
+Each order also has a `meta` context which is an arbitrary JSON object stored in the database that can be updated through `updateCart`. It can store various configurations required for custom plugins. This could be anything. If your checkout process involves an additional `comment` input field for example, that comment could be passed as meta context. Because this information is accessible by payment and delivery providers, available payment methods can be made dependendent on that data.
 
 ## Payment Provider selection
 
