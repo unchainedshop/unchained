@@ -7,7 +7,19 @@ sidebar_label: Carts
 
 # Carts
 
-In this chapter, you will learn what a cart in Unchained contains and how Unchained reacts to Cart changes.
+As you have learned already, in Unchained Engine, a cart is an order in initial `OPEN` state.
+
+When using the cart mutation API's, Unchained uses the `findOrInitCart` service to find or create a cart. It does that following this logic:
+
+First Unchained determines the shop country based on the locale provided or fallback to default country. Then it tries to find an `OPEN` order for that country. If an existing order has been found, that one will be used as the cart.
+
+If no order has been found, Unchained creates a new order for that user, providing:
+- Country
+- Currency
+- Billing address of the last order if possible
+- Contact information of the last order if possible
+
+Because billing address and contact information could be undefined, before you can checkout, you have to make sure that order context is set and that the cart has add at least one order position.
 
 ## Order Context
 
