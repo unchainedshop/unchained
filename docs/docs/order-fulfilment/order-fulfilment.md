@@ -1,13 +1,11 @@
 ---
-sidebar_position: 2
-title: Orders and Carts
-description: Learn about how carts and orders work
-sidebar_label: Orders and Carts
+sidebar_position: 6
+title: Order Fulfilment
+description: Learn about how carts transition to orders and finalize
+sidebar_label: Order Fulfilment
 ---
 
-# Orders and Carts
-
-## Fulfilmment Process
+# Order Fulfilment
 
 The fulfilment process in Unchained Engine involves several key steps to ensure that orders are processed efficiently and accurately. This document provides a high-level overview of the process.
 
@@ -27,7 +25,7 @@ An Order starts it's life with a status of `null` indicating it's a cart. A cart
 
 Carts by default only exist when at least one cart mutation has been called (created and re-used on demand), before that `Query.me.cart` is `null`. This behavior can be customized.
 
-With every cart mutation, prices and delivery dates get re-calculated. Reading a cart is side-effect free. More about this topic can be read further below.
+With every cart mutation, prices and delivery dates get re-calculated. Reading a cart is side-effect free. More about this topic can be read the next chapter [Cart Behavior](./cart-behavior.md).
 
 ### `OPEN` => `PENDING` (Checkout)
 
@@ -68,6 +66,18 @@ If an order confirmation is not beeing blocked by the plugins, Unchained will do
 1. Tell the payment plugin it can confirm the payment (payment could have been only reserved until now).
 3. Finally, the order will go into status `CONFIRMED` and also persist this status in the db.
  
+
+### `PENDING` => `REJECTED` (Rejection)
+
+An order can be rejected if it is persisted in `PENDING` state. This is usually done through a manual API call like `Mutation.rejectOrder`.
+
+It first hands this action over to the `PaymentDirector`. The PaymentDirector calls the method `cancel()` of the payment adapter plugin in charge.
+
+If cancel throws, order will stay in status `PENDING` and the process is interrupted.
+
+Else, the order will be persisted in final status `REJECTED`.
+
+
  ### `CONFIRMED` => `FULLFILLED` (Fullfilment)
 
 The system now proceeds with delivery. It first hands this over to the `DeliveryDirector` which tries to initiate and complete delivery.
@@ -91,32 +101,3 @@ Make sure to build these actions in a way that is asynchronous and forgiving so 
 
 If you want to send the order to an ERP system with your own delivery plugin for example, consider returning `false` and create a work queue item. It will also make your checkouts fast as hell as a side-effect 😁
 :::
-
-# Cart Behavior
-
-In Unchained, you can add products and quotations to carts, but only products will remain in the cart in
-the end. When adding products to the cart, they are transformed according to the following rules:
-
-**Products:**
-
-- Adding a SimpleProduct or BundleProduct adds the product to the cart without transformation.
-- Exploding a BundleProduct removes it from the cart and adds its parts instead.
-- Adding a ConfigurableProduct resolves to a concrete product if enough variation parameters are
-  provided. Otherwise, the operation fails. The variation configuration is stored on the resolved item
-  along with user-provided parameters.
-
-When one product leads to another, the source productId is saved in `orderPosition.originalProductId`, maintaining a
-reference for UX purposes.
-
-**Quotations:** When adding a Quotation to the cart, the actual product is resolved and added. The
-quotation plugin system transforms a `quotationConfiguration` into a `productConfiguration`, and the
-source quotationId is saved in `orderPosition.originalProductId`.
-
-**Chaining Operations:**
-
-1. `addCartQuotation` is called with quotation Y.
-2. Quotation Y resolves to configurable product X with a specific configuration.
-3. The configuration is handed to the vector logic to find a distinct concrete product Z.
-4. Bundle product Z is resolved.
-
-The cart then looks like this: 1 x Bundle Z (e.g., a piece of furniture)

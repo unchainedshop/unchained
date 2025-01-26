@@ -1,12 +1,8 @@
 ---
 sidebar_position: 1
-title: Core Values
-sidebar_label: Core Values
+title: System Design
+sidebar_label: System Design
 ---
-
-:::info
-System Design of Unchained Engine
-:::
 
 **Free and Open Source Software**
 
