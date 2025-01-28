@@ -45,7 +45,7 @@ These options are available:
   - `typeDefs`:  Object (GraphQL Schema that gets merged with the default schema)
   - `schema`:  Object (GraphQL Schema that gets merged with the default schema)
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
-  - `context`: Special function to extend the underlying [GraphQL context](https://the-guild.dev/graphql/yoga-server/docs/features/context). Check the [Keycloak Example](https://github.com/unchainedshop/unchained/blob/master/examples/keycloak/boot.ts) for how you could use it to add custom Auth.
+  - `context`: Special function to extend the underlying [GraphQL context](https://the-guild.dev/graphql/yoga-server/docs/features/context). Check the [OIDC Example](https://github.com/unchainedshop/unchained/blob/master/examples/oidc/boot.ts) for how you could use it to add custom Auth.
   - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details 
   - `plugins`: Optional 
   - `rolesOptions`: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html): Enables you to customize the existing roles and actions, adjusting fine-grained permissions.

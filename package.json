@@ -58,7 +58,7 @@
     "examples/kitchensink",
     "examples/kitchensink-express",
     "examples/minimal",
-    "examples/keycloak",
+    "examples/oidc",
     "examples/ticketing"
   ],
   "scripts": {

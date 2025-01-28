@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/example-keycloak",
+  "name": "@unchainedshop/example-oidc",
   "description": "Keycloak Example",
   "private": true,
   "version": "3.0.0",
@@ -30,8 +30,8 @@
     "clean": "tsc -b --clean",
     "build": "tsc -b",
     "start": "node --env-file .env.defaults lib/boot.js",
-    "dev:run": "node --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
-    "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
+    "dev:run": "node --env-file .env --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
+    "dev": "nodemon --env-file .env --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

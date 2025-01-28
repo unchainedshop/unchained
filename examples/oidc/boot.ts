@@ -4,7 +4,8 @@ import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fas
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import seed from './seed.js';
 import Fastify from 'fastify';
-import setupKeycloak from './keycloak.js';
+import setupZitadel from './zitadel.js';
+// import setupKeycloak from './keycloak.js';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -14,7 +15,7 @@ const fastify = Fastify({
 
 try {
   // It's very important to await this, else the fastify-session plugin will not work
-  const context = await setupKeycloak(fastify);
+  const context = await setupZitadel(fastify);
 
   const platform = await startPlatform({
     modules: baseModules,
