@@ -42,6 +42,15 @@ const exitOnMissingEnvironmentVariables = () => {
   }
 };
 
+const existOnInvalidEnvironmentVariables = () => {
+  if ((process.env?.UNCHAINED_TOKEN_SECRET || '').length < 32) {
+    defaultLogger.error(
+      'UNCHAINED_TOKEN_SECRET must be assigned a string that have 32 or greater length',
+    );
+    process.exit(1);
+  }
+};
+
 const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   if (options?.disableWorker) return false;
   return !UNCHAINED_DISABLE_WORKER;
@@ -63,6 +72,7 @@ export const startPlatform = async ({
   db: mongodb.Db;
 }> => {
   exitOnMissingEnvironmentVariables();
+  existOnInvalidEnvironmentVariables();
 
   const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);
 
