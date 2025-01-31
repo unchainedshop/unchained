@@ -68,7 +68,7 @@ export const Token = {
 
   accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
     const { modules } = requestContext;
-    await checkAction(requestContext, actions.updateToken, [undefined, { tokenId: token._id }]);
+    await checkAction(requestContext, actions.updateToken, [token, params]);
     // This generates a hash that is stable until ownership is changed and allows accessing token
     // data and operations
     return modules.warehousing.buildAccessKeyForToken(token._id);

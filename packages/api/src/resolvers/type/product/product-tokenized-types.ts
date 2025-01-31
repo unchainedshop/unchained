@@ -87,7 +87,7 @@ export const TokenizedProduct = {
   },
 
   async tokens(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    await checkAction(requestContext, actions.viewTokens, [product, params]);
 
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,

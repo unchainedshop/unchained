@@ -1,4 +1,6 @@
+import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { Context } from '@unchainedshop/types/api.js';
+import { Product } from '@unchainedshop/types/products.js';
 
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
@@ -9,7 +11,12 @@ export const all = (role, actions) => {
     return false;
   };
 
-  const isOwnedToken = async (_: never, { tokenId }: { tokenId: string }, context: Context) => {
+  const isOwnedToken = async (
+    root: null | Product | TokenSurrogate,
+    params: { tokenId?: string } | null,
+    context: Context,
+  ) => {
+    const tokenId = params?.tokenId || ('chainTokenId' in root && root._id) || null;
     const { modules, userId, user } = context;
 
     const token = await modules.warehousing.findToken({ tokenId });
