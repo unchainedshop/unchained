@@ -9,8 +9,10 @@ export const all = (role, actions) => {
     return false;
   };
 
-  const isOwnedToken = async (_: never, { tokenId }: { tokenId: string }, context: Context) => {
+  const isOwnedToken = async (_: never, params: { tokenId: string } | null, context: Context) => {
     const { modules, userId, user } = context;
+
+    const tokenId = params?.tokenId || (root && 'chainTokenId' in root && root._id) || null;
 
     const token = await modules.warehousing.findToken({ tokenId });
     if (!token) return true;

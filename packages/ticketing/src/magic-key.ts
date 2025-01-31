@@ -17,9 +17,11 @@ const isMagicKeyValidForOrder = async (
 
 const isMagicKeyValidForToken = async (
   obj: any,
-  { tokenId }: { tokenId: string },
+  params: { tokenId: string } | null,
   { modules, getHeader }: Context & TicketingAPI,
 ) => {
+  const tokenId = params?.tokenId || (root && 'chainTokenId' in root && root._id) || null;
+
   const token = await modules.warehousing.findToken({ tokenId });
   // always return true if tokenId leads to nothing to show potentially allowed actions
   if (!token) return true;
