@@ -16,7 +16,7 @@ const isMagicKeyValidForOrder = async (
 };
 
 const isMagicKeyValidForToken = async (
-  obj: any,
+  root: any,
   params: { tokenId: string } | null,
   { modules, getHeader }: Context & TicketingAPI,
 ) => {
