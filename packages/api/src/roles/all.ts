@@ -16,7 +16,7 @@ export const all = (role, actions) => {
     params: { tokenId?: string } | null,
     context: Context,
   ) => {
-    const tokenId = params?.tokenId || ('chainTokenId' in root && root._id) || null;
+    const tokenId = params?.tokenId || (root && 'chainTokenId' in root && root._id) || null;
     const { modules, userId, user } = context;
 
     const token = await modules.warehousing.findToken({ tokenId });
