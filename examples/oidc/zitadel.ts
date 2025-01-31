@@ -38,6 +38,7 @@ export default async function setupZitadel(app: FastifyInstance) {
     credentials: {
       client: {
         id: UNCHAINED_ZITADEL_CLIENT_ID,
+        secret: '',
       },
     },
     startRedirectPath: '/login',
