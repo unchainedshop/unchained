@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -34,21 +34,21 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "^3.0.0",
-    "@unchainedshop/core": "^3.0.0",
-    "@unchainedshop/events": "^3.0.0",
-    "@unchainedshop/file-upload": "^3.0.0",
-    "@unchainedshop/logger": "^3.0.0",
-    "@unchainedshop/mongodb": "^3.0.0",
-    "@unchainedshop/plugins": "^3.0.0",
-    "@unchainedshop/roles": "^3.0.0",
-    "@unchainedshop/utils": "^3.0.0",
+    "@unchainedshop/api": "^3.1.0",
+    "@unchainedshop/core": "^3.1.0",
+    "@unchainedshop/events": "^3.1.0",
+    "@unchainedshop/file-upload": "^3.1.0",
+    "@unchainedshop/logger": "^3.1.0",
+    "@unchainedshop/mongodb": "^3.1.0",
+    "@unchainedshop/plugins": "^3.1.0",
+    "@unchainedshop/roles": "^3.1.0",
+    "@unchainedshop/utils": "^3.1.0",
     "mustache": "^4.2.0",
     "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.10.5",
+    "@types/node": "^22.13.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3"
