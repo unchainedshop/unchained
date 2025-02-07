@@ -1,3 +1,19 @@
+# Unchained Engine v3.1
+
+## Minor
+- Platform: Add OIDC Connect Support to Admin UI with `singleSignOnURL` configurability
+- Platform: Improve Typing for Boot Code
+- API: Expose `externalLinks` and `singleSignOnURL` in `ShopInfo`
+- Logger: Reducing Logging to show important events only
+- Plugins: Update Stripe
+- Examples: Add unified OIDC example with working Keycloak and Zitadel configs
+
+## Patch
+- Fix Cart Migration Regression
+- Fix Bulk Import Regression
+- Fix `ProductCatalogPrice` still had an _id
+- Fix Magic Key not considerin the root obj in roles
+
 # Unchained Engine v3.0 ("Odi")
 
 We are thrilled to announce Unchained Engine v3.0, 5 years after the first version. We started with an overloaded framework approach using Meteor and gradually removed dependency by dependency, getting closer to the metal and in-line with today's standards. Unchained Engine...
