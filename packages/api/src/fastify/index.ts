@@ -192,6 +192,7 @@ export const connect = (
   });
 
   fastify.register((s, opts, registered) => {
+    s.removeAllContentTypeParsers();
     s.addContentTypeParser('*', function (req, payload, done) {
       done(null);
     });
