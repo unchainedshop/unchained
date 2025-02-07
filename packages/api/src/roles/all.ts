@@ -9,7 +9,7 @@ export const all = (role, actions) => {
     return false;
   };
 
-  const isOwnedToken = async (_: never, params: { tokenId: string } | null, context: Context) => {
+  const isOwnedToken = async (root: any, params: { tokenId: string } | null, context: Context) => {
     const { modules, userId, user } = context;
 
     const tokenId = params?.tokenId || (root && 'chainTokenId' in root && root._id) || null;
