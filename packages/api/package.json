@@ -33,7 +33,7 @@
   "peerDependencies": {
     "@fastify/cookie": ">= 11.0 < 12",
     "@fastify/session": ">= 11.0 < 12",
-    "@metamask/eth-sig-util": ">= 8.1 < 9",
+    "@ethereumjs/util": ">= 8 < 10",
     "connect-mongo": ">= 5.1.0 < 6",
     "express": ">= 5.0 < 6",
     "express-session": ">= 1.18 < 2",
@@ -48,7 +48,7 @@
     "connect-mongo": {
       "optional": false
     },
-    "@metamask/eth-sig-util": {
+    "@ethereumjs/util": {
       "optional": true
     },
     "@fastify/cookie": {
@@ -86,7 +86,7 @@
   "devDependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
-    "@metamask/eth-sig-util": "^8.2.0",
+    "@ethereumjs/util": "^9.1.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.1",
     "express": "^5.0.1",

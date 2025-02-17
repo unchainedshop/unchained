@@ -18,16 +18,21 @@ export default async function verifyWeb3Address(
     throw new UserWeb3AddressNotFoundError({ userId, address });
   }
 
-  const msg = `0x${Buffer.from(foundCredentials.nonce, 'utf8').toString('hex')}`;
-
   // eslint-disable-next-line
   // @ts-ignore
-  const { recoverPersonalSignature } = await import('@metamask/eth-sig-util');
+  const { bufferToHex, fromRpcSig, ecrecover, hashPersonalMessage, publicToAddress } = await import(
+    '@ethereumjs/util'
+  );
 
-  const recoveredAddr = recoverPersonalSignature({
-    data: msg,
-    signature: hash,
-  });
+  const messageBuffer = Buffer.from(foundCredentials.nonce, 'utf8');
+
+  const messageHash = hashPersonalMessage(messageBuffer);
+
+  const sigParams = fromRpcSig(hash);
+  const publicKey = ecrecover(messageHash, sigParams.v, sigParams.r, sigParams.s);
+
+  const sender = publicToAddress(publicKey);
+  const recoveredAddr = bufferToHex(sender);
 
   const signatureCorrectForAddress =
     recoveredAddr.toLowerCase() === foundCredentials.address.toLowerCase();
