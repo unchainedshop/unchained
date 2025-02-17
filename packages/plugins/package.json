@@ -135,12 +135,12 @@
     }
   },
   "devDependencies": {
-    "@aws-sdk/client-eventbridge": "^3.743.0",
+    "@aws-sdk/client-eventbridge": "^3.749.0",
     "@breejs/later": "^4.2.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@redis/client": "^1.6.0",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.4",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.7",
     "ethers": "^6.13.5",
@@ -157,7 +157,7 @@
     "stripe": "^17.6.0",
     "tiny-secp256k1": "^2.2.3",
     "ts-jest": "^29.2.5",
-    "twilio": "^5.4.3",
+    "twilio": "^5.4.4",
     "typescript": "^5.7.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

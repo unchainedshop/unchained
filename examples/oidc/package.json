@@ -35,17 +35,17 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
-    "@fastify/oauth2": "^8.1.1",
+    "@fastify/oauth2": "^8.1.2",
     "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^3.1.0",
     "@unchainedshop/plugins": "^3.1.0",
     "fastify": "^5.2.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.4",
     "mongodb-memory-server": "^10.1.3",
     "nodemon": "^3.1.9",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }

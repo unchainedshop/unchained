@@ -31,9 +31,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
+    "@ethereumjs/util": ">= 8 < 10",
     "@fastify/cookie": ">= 11.0 < 12",
     "@fastify/session": ">= 11.0 < 12",
-    "@ethereumjs/util": ">= 8 < 10",
     "connect-mongo": ">= 5.1.0 < 6",
     "express": ">= 5.0 < 6",
     "express-session": ">= 1.18 < 2",
@@ -84,11 +84,11 @@
     "p-memoize": "^7.1.1"
   },
   "devDependencies": {
+    "@ethereumjs/util": "^9.1.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
-    "@ethereumjs/util": "^9.1.0",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.4",
     "express": "^5.0.1",
     "express-session": "^1.18.1",
     "fastify": "^5.2.1",
