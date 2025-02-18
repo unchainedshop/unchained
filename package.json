@@ -76,8 +76,8 @@
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "npm run clean --workspaces",
     "build": "npm run prepublishOnly --workspaces --if-present",
-    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --ci --forceExit --config ./packages/unit-jest.config.js",
-    "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --watch --config ./packages/unit-jest.config.js"
+    "test:unit": "npm run test --workspaces --if-present",
+    "test:unit-watch": "npm run test:watch --workspaces --if-present"
   },
   "devDependencies": {
     "@apollo/client": "^3.13.1",

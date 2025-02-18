@@ -9,8 +9,8 @@
     "build": "tsc -b",
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
+    "test": "tsx --test",
+    "test:watch": "tsx --test --watch"
   },
   "repository": {
     "type": "git",
