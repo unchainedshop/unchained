@@ -1,13 +1,15 @@
+import { describe, it } from 'node:test';
 import { buildFindSelector } from './configureCountriesModule.js';
+import assert from 'node:assert';
 
 describe('buildFindSelector', () => {
   it('should return correct filter object', () => {
-    expect(buildFindSelector({ includeInactive: true, queryString: 'hello world' })).toEqual({
+    assert.deepStrictEqual(buildFindSelector({ includeInactive: true, queryString: 'hello world' }), {
       deleted: null,
       $text: { $search: 'hello world' },
     });
-    expect(buildFindSelector({ includeInactive: true })).toEqual({ deleted: null });
-    expect(buildFindSelector({ queryString: 'hello world' })).toEqual({
+    assert.deepStrictEqual(buildFindSelector({ includeInactive: true }), { deleted: null });
+    assert.deepStrictEqual(buildFindSelector({ queryString: 'hello world' }), {
       deleted: null,
       $text: { $search: 'hello world' },
       isActive: true,
