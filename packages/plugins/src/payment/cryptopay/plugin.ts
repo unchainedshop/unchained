@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { BIP32Factory } from 'bip32';
+import bs58check from 'bs58check';
 import * as ecc from 'tiny-secp256k1';
 import { networks, payments } from 'bitcoinjs-lib';
 import { createLogger } from '@unchainedshop/logger';
@@ -18,9 +19,37 @@ const {
   CRYPTOPAY_SECRET,
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
-  CRYPTOPAY_BTC_TESTNET,
   CRYPTOPAY_DERIVATION_START = '0',
 } = process.env;
+
+const resolvePath = (prefix) => {
+  if (prefix === 'x') return `m/44'/0'`;
+  if (prefix === 'y') return `m/49'/0'`;
+  if (prefix === 'z') return `m/84'/0'`;
+  if (prefix === 't') return `m/44'/1'`;
+  if (prefix === 'u') return `m/49'/1'`;
+  if (prefix === 'v') return `m/84'/1'`;
+  return `m`;
+};
+
+const resolveNetwork = (prefix) => {
+  if (['x', 'y', 'z'].includes(prefix)) return networks.bitcoin;
+  return networks.testnet;
+};
+
+function convertExtendedPublicKey(z) {
+  const derivationPath = resolvePath(z.slice(0, 1));
+  const network = resolveNetwork(z.slice(0, 1));
+  // https://github.com/satoshilabs/slips/blob/master/slip-0132.md
+  let data = bs58check.decode(z);
+  data = data.slice(4);
+  data = Buffer.concat([Buffer.from('0488b21e', 'hex'), data]);
+  return {
+    xpub: bs58check.encode(data),
+    network,
+    derivationPath,
+  };
+}
 
 enum CryptopayCurrencies { // eslint-disable-line
   BTC = 'BTC',
@@ -40,9 +69,9 @@ const getDerivationPath = (currency: CryptopayCurrencies, index: number): string
   if (currency === CryptopayCurrencies.ETH) {
     return `m/44'/60'/0'/0/${address}`;
   }
-  if (currency === CryptopayCurrencies.BTC) {
-    return `m/44'/0'/0'/0/${address}`;
-  }
+  // if (currency === CryptopayCurrencies.BTC) {
+  //   return `m/44'/0'/0'/0/${address}`;
+  // }
   return `0/${address}`;
 };
 
@@ -153,14 +182,13 @@ const Cryptopay: IPaymentAdapter = {
 
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
-          const network = CRYPTOPAY_BTC_TESTNET ? networks.testnet : networks.bitcoin;
+          const { xpub, network } = convertExtendedPublicKey(CRYPTOPAY_BTC_XPUB);
           const bip32 = BIP32Factory(ecc);
-          const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
+          const hardenedMaster = bip32.fromBase58(xpub, network);
           const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.BTC,
           );
-          const derivationPath = getDerivationPath(CryptopayCurrencies.BTC, btcDerivationNumber);
-          const child = hardenedMaster.derivePath(derivationPath);
+          const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
             address: payments.p2pkh({
@@ -178,11 +206,9 @@ const Cryptopay: IPaymentAdapter = {
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
           );
-          const derivationPath = getDerivationPath(CryptopayCurrencies.ETH, ethDerivationNumber);
-          const cleanedForHD = derivationPath.split('/').slice(-2).join('/');
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
-            address: hardenedMaster.derivePath(cleanedForHD).address,
+            address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
           });
         }
 

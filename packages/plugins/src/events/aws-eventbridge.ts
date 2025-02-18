@@ -1,24 +1,27 @@
 import { EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
-import { EventBridgeClient, PutEventsCommand, PutEventsRequestEntry } from '@aws-sdk/client-eventbridge';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:eventbridge');
 
-const EventBridgeEventEmitter = ({ region, source, busName }): EmitAdapter => {
+const EventBridgeEventEmitter = async ({ region, source, busName }): Promise<EmitAdapter> => {
+  // eslint-disable-next-line
+  // @ts-expect-error
+  const { EventBridgeClient, PutEventsCommand } = await import('@aws-sdk/client-eventbridge');
   const ebClient = new EventBridgeClient({ region });
 
   return {
     publish: (eventName, payload) => {
-      const entry: PutEventsRequestEntry = {
-        Source: source,
-        DetailType: eventName,
-        EventBusName: busName,
-        Detail: JSON.stringify(payload),
-      };
       ebClient
         .send(
           new PutEventsCommand({
-            Entries: [entry],
+            Entries: [
+              {
+                Source: source,
+                DetailType: eventName,
+                EventBusName: busName,
+                Detail: JSON.stringify(payload),
+              },
+            ],
           }),
         )
         .catch((e) => {
@@ -33,11 +36,10 @@ const EventBridgeEventEmitter = ({ region, source, busName }): EmitAdapter => {
 
 const { EVENT_BRIDGE_REGION, EVENT_BRIDGE_SOURCE, EVENT_BRIDGE_BUS_NAME } = process.env;
 if (EVENT_BRIDGE_REGION && EVENT_BRIDGE_SOURCE && EVENT_BRIDGE_BUS_NAME) {
-  setEmitAdapter(
-    EventBridgeEventEmitter({
-      source: EVENT_BRIDGE_SOURCE,
-      region: EVENT_BRIDGE_REGION,
-      busName: EVENT_BRIDGE_BUS_NAME,
-    }),
-  );
+  const eventBridgeAdapter = await EventBridgeEventEmitter({
+    source: EVENT_BRIDGE_SOURCE,
+    region: EVENT_BRIDGE_REGION,
+    busName: EVENT_BRIDGE_BUS_NAME,
+  });
+  setEmitAdapter(eventBridgeAdapter);
 }
