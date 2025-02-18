@@ -1,4 +1,3 @@
-import clone from 'lodash.clone';
 import { has } from './utils/has.js';
 import { isFunction } from './utils/isFunction.js';
 
@@ -164,7 +163,7 @@ export class Role implements RoleInterface {
     let helperFn = func;
 
     if (!isFunction(helperFn)) {
-      const clonedValue = clone(helperFn);
+      const clonedValue = structuredClone(helperFn);
       helperFn = () => {
         return clonedValue;
       };
@@ -189,7 +188,7 @@ export class Role implements RoleInterface {
     }
     let allowFn = allow;
     if (!isFunction(allowFn)) {
-      const clonedValue = clone(allowFn);
+      const clonedValue = structuredClone(allowFn);
       allowFn = () => {
         return clonedValue;
       };

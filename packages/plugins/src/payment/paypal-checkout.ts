@@ -12,6 +12,7 @@ try {
   // eslint-disable-next-line
   // @ts-ignore
   checkoutNodeJssdk = await import('@paypal/checkout-server-sdk');
+  // TODO: npm warn deprecated @paypal/checkout-server-sdk@1.0.3: Package no longer supported. The author suggests using the @paypal/paypal-server-sdk package instead: https://www.npmjs.com/package/@paypal/paypal-server-sdk. Contact Support at https://www.npmjs.com/support for more info.
 } catch {
   /* */
 }

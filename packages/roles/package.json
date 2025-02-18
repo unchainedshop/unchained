@@ -30,11 +30,7 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
-  "dependencies": {
-    "lodash.clone": "4.5.0"
-  },
   "devDependencies": {
-    "@types/lodash.clone": "^4.5.9",
     "@types/node": "^22.13.4",
     "typescript": "^5.7.3"
   }
