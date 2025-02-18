@@ -19,20 +19,22 @@ Please see our [Contribution Guidelines](/contributing.md).
 
 ### Prerequisites
 
-- Node.js >22 (see [.nvmrc](.nvmrc))
+- Node.js >=22 (see [.nvmrc](.nvmrc)) 
 
-### Run the example
+### Create an example project
+
+```
+npm init @unchainedshop
+```
+
+Then navigate to http://localhost:4000/ to view the welcome screen. You can login with: 
+user: admin@unchained.local
+password: password
+
+### Contribute
 
 ```bash
 git clone https://github.com/unchainedshop/unchained.git
 npm install
-npm run build
-cd examples/kitchensink
-npm run build
-npm start
+npm run dev
 ```
-
-1. Navigate to http://localhost:4000/ to view the welcome screen. You can login with: user:
-   admin@unchained.local / password: password
-
-2. Navigate to http://localhost:4010/graphql to view the GraphQL Playground
