@@ -1,5 +1,8 @@
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
+
 describe('MessagingDirector', () => {
   it('Stub', () => {
-    expect(true).toBe(true);
+    assert(true);
   });
 });

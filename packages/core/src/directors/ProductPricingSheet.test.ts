@@ -1,3 +1,5 @@
+import { beforeEach, describe, it } from 'node:test';
+import assert from 'node:assert';
 import { ProductPricingSheet } from './ProductPricingSheet.js';
 
 const TAX = { category: 'TAX', amount: 50, isNetPrice: false, isTaxable: false };
@@ -40,90 +42,90 @@ describe('ProductPricingSheet', () => {
   });
 
   it('should return an object that implements the IProductPricingSheet interface', () => {
-    expect(pricingSheet).toBeDefined();
-    expect(pricingSheet.quantity).toEqual(2);
-    expect(pricingSheet.currency).toEqual('CHF');
-    expect(typeof pricingSheet.addItem).toBe('function');
-    expect(typeof pricingSheet.addDiscount).toBe('function');
-    expect(typeof pricingSheet.addTax).toBe('function');
-    expect(typeof pricingSheet.taxSum).toBe('function');
-    expect(typeof pricingSheet.unitPrice).toBe('function');
-    expect(typeof pricingSheet.discountPrices).toBe('function');
+    assert(pricingSheet);
+    assert.equal(pricingSheet.quantity, 2);
+    assert.equal(pricingSheet.currency, 'CHF');
+    assert.equal(typeof pricingSheet.addItem, 'function');
+    assert.equal(typeof pricingSheet.addDiscount, 'function');
+    assert.equal(typeof pricingSheet.addTax, 'function');
+    assert.equal(typeof pricingSheet.taxSum, 'function');
+    assert.equal(typeof pricingSheet.unitPrice, 'function');
+    assert.equal(typeof pricingSheet.discountPrices, 'function');
   });
 
   it('gross() should return the GROSS sum of all ProductPricingCalculation', () => {
-    expect(pricingSheet.gross()).toEqual(535);
+    assert.equal(pricingSheet.gross(), 535);
   });
 
   it('net() should return the NET sum of all ProductPricingCalculation (i.e before TAX)', () => {
-    expect(pricingSheet.net()).toEqual(460);
+    assert.equal(pricingSheet.net(), 460);
   });
 
   describe('total()', () => {
     it('should return sum of all ProductPricingCalculations ', () => {
-      expect(pricingSheet.total()).toEqual({ amount: 535, currency: 'CHF' });
-      expect(pricingSheet.total()).toEqual({ amount: pricingSheet.gross(), currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total(), { amount: 535, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total(), { amount: pricingSheet.gross(), currency: 'CHF' });
     });
 
     it('should return sum of all ProductPricingCalculations ', () => {
-      expect(pricingSheet.total({ useNetPrice: true })).toEqual({ amount: 460, currency: 'CHF' });
-      expect(pricingSheet.total({ useNetPrice: true })).toEqual({
+      assert.deepEqual(pricingSheet.total({ useNetPrice: true }), { amount: 460, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ useNetPrice: true }), {
         amount: pricingSheet.net(),
         currency: 'CHF',
       });
     });
 
     it('should return sum of all ProductPricingCalculations for the provided category ', () => {
-      expect(pricingSheet.total({ category: 'ITEM' })).toEqual({ amount: 400, currency: 'CHF' });
-      expect(pricingSheet.total({ category: 'DISCOUNT' })).toEqual({ amount: 60, currency: 'CHF' });
-      expect(pricingSheet.total({ category: 'TAX' })).toEqual({ amount: 75, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ category: 'ITEM' }), { amount: 400, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ category: 'DISCOUNT' }), { amount: 60, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ category: 'TAX' }), { amount: 75, currency: 'CHF' });
     });
   });
 
   describe('isValid()', () => {
     it('should return true if there is at least 1 registered ProductPricingCalculation ', () => {
-      expect(pricingSheet.isValid()).toEqual(true);
+      assert.equal(pricingSheet.isValid(), true);
     });
     it('should return false if there is no registered ProductPricingCalculation ', () => {
       const sheet = ProductPricingSheet({ ...pricingSheetParams, calculation: [] });
-      expect(sheet.isValid()).toEqual(false);
+      assert.equal(sheet.isValid(), false);
     });
   });
 
   describe('getRawPricingSheet', () => {
     it('should return all registered ProductPricingCalculation', () => {
-      expect(pricingSheet.getRawPricingSheet()).toEqual(calculations);
+      assert.deepEqual(pricingSheet.getRawPricingSheet(), calculations);
     });
   });
 
   describe('taxSum', () => {
     it('should return the sum of TAX calculation registered on the adapter', () => {
-      expect(pricingSheet.taxSum()).toEqual(75);
+      assert.equal(pricingSheet.taxSum(), 75);
     });
   });
 
   describe('unitPrice', () => {
     it('should return the GROSS sum for a  product price useNetPrice:false', () => {
-      expect(pricingSheet.unitPrice({ useNetPrice: false })).toEqual({ amount: 268, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.unitPrice({ useNetPrice: false }), { amount: 268, currency: 'CHF' });
     });
 
     it('should return the NET sum for a product price when useNetPrice:true', () => {
-      expect(pricingSheet.unitPrice({ useNetPrice: true })).toEqual({ amount: 230, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.unitPrice({ useNetPrice: true }), { amount: 230, currency: 'CHF' });
     });
   });
 
   describe('discountPrices', () => {
     it('should return the sum of all discounts registered on the price sheet based on discountId', () => {
-      expect(pricingSheet.discountPrices('for-all')).toEqual([
+      assert.deepEqual(pricingSheet.discountPrices('for-all'), [
         { amount: 40, currency: 'CHF', discountId: 'for-all' },
       ]);
-      expect(pricingSheet.discountPrices('special')).toEqual([
+      assert.deepEqual(pricingSheet.discountPrices('special'), [
         { amount: 20, currency: 'CHF', discountId: 'special' },
       ]);
     });
 
     it('should return empty array if discount with the provided discountId is not found', () => {
-      expect(pricingSheet.discountPrices('non-existing')).toEqual([]);
+      assert.deepEqual(pricingSheet.discountPrices('non-existing'), []);
     });
   });
 });

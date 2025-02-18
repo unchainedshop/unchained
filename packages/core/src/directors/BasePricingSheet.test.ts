@@ -1,4 +1,6 @@
+import { describe, it } from 'node:test';
 import { resolveRatioAndTaxDivisorForPricingSheet } from './BasePricingSheet';
+import assert from 'node:assert';
 
 describe('resolveRatioAndTaxDivisorForPricingSheet', () => {
   it('total is 0 and pricing is provided', () => {
@@ -8,7 +10,7 @@ describe('resolveRatioAndTaxDivisorForPricingSheet', () => {
       net: () => 10,
     };
     const result = resolveRatioAndTaxDivisorForPricingSheet(pricing, 0);
-    expect(result).toEqual({ ratio: 1, taxDivisor: 1 });
+    assert.deepStrictEqual(result, { ratio: 1, taxDivisor: 1 });
   });
 
   it('gross - tax is 0', () => {
@@ -18,7 +20,7 @@ describe('resolveRatioAndTaxDivisorForPricingSheet', () => {
       net: () => 0,
     };
     const result = resolveRatioAndTaxDivisorForPricingSheet(pricing, 20);
-    expect(result).toEqual({ ratio: 0, taxDivisor: 0 });
+    assert.deepStrictEqual(result, { ratio: 0, taxDivisor: 0 });
   });
 
   it('gross - tax is not 0', () => {
@@ -28,7 +30,7 @@ describe('resolveRatioAndTaxDivisorForPricingSheet', () => {
       net: () => 10,
     };
     const result = resolveRatioAndTaxDivisorForPricingSheet(pricing, 20);
-    expect(result).toEqual({ ratio: 1, taxDivisor: 2 });
+    assert.deepStrictEqual(result, { ratio: 1, taxDivisor: 2 });
   });
 
   it('taxSum is 0', () => {
@@ -38,6 +40,6 @@ describe('resolveRatioAndTaxDivisorForPricingSheet', () => {
       net: () => 20,
     };
     const result = resolveRatioAndTaxDivisorForPricingSheet(pricing, 20);
-    expect(result).toEqual({ ratio: 1, taxDivisor: 1 });
+    assert.deepStrictEqual(result, { ratio: 1, taxDivisor: 1 });
   });
 });

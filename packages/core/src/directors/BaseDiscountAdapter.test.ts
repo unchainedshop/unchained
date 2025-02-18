@@ -1,49 +1,52 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { BaseDiscountAdapter } from './BaseDiscountAdapter.js';
 
 describe('BaseDiscountAdapter instantiation', () => {
   const adapter = BaseDiscountAdapter;
   const context = null as any;
   it('should initialize with default values', async () => {
-    expect(adapter.orderIndex).toEqual(0);
-    expect(adapter.log).toEqual(expect.any(Function));
-    expect(await adapter.isManualAdditionAllowed('')).toEqual(false);
-    expect(await adapter.isManualRemovalAllowed()).toEqual(false);
-    expect(await adapter.actions(context)).toEqual({
-      isValidForSystemTriggering: expect.any(Function),
-      reserve: expect.any(Function),
-      release: expect.any(Function),
-      isValidForCodeTriggering: expect.any(Function),
-      discountForPricingAdapterKey: expect.any(Function),
-    });
+    assert.equal(adapter.orderIndex, 0);
+    assert.equal(typeof adapter.log, 'function');
+    assert.equal(await adapter.isManualAdditionAllowed(''), false);
+    assert.equal(await adapter.isManualRemovalAllowed(), false);
+    assert.deepStrictEqual(Object.keys(await adapter.actions(context)), [
+      'isValidForSystemTriggering',
+      'reserve',
+      'release',
+      'isValidForCodeTriggering',
+      'discountForPricingAdapterKey',
+    ]);
   });
 
   describe('actions', () => {
     it('isValidForSystemTriggering', async () => {
       const result = await adapter.actions(context);
-      expect(await result.isValidForSystemTriggering()).toEqual(false);
+      assert.equal(await result.isValidForSystemTriggering(), false);
     });
 
     it('reserve', async () => {
       const result = await adapter.actions(context);
-      expect(await result.reserve({ code: '' })).toEqual({});
+      assert.deepEqual(await result.reserve({ code: '' }), {});
     });
 
     it('release', async () => {
       const result = await adapter.actions(context);
-      expect(await result.release()).toEqual(null);
+      assert.equal(await result.release(), null);
     });
 
     it('isValidForCodeTriggering', async () => {
       const result = await adapter.actions(context);
-      expect(await result.isValidForCodeTriggering({ code: '' })).toEqual(false);
+      assert.equal(await result.isValidForCodeTriggering({ code: '' }), false);
     });
 
     it('discountForPricingAdapterKey', async () => {
       const result = await adapter.actions(context);
       const calculationSheet = {};
-      expect(
+      assert.equal(
         await result.discountForPricingAdapterKey({ calculationSheet, pricingAdapterKey: 'key' } as any),
-      ).toEqual(null);
+        null,
+      );
     });
   });
 });
