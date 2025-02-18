@@ -15,12 +15,7 @@ import { CryptopayModule } from './module.js';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 
-const {
-  CRYPTOPAY_SECRET,
-  CRYPTOPAY_BTC_XPUB,
-  CRYPTOPAY_ETH_XPUB,
-  CRYPTOPAY_DERIVATION_START = '0',
-} = process.env;
+const { CRYPTOPAY_SECRET, CRYPTOPAY_BTC_XPUB, CRYPTOPAY_ETH_XPUB } = process.env;
 
 const resolvePath = (prefix) => {
   if (prefix === 'x') return `m/44'/0'`;
@@ -61,18 +56,6 @@ type CryptopayAddress = {
   address: string;
   currencyConversionRate?: number;
   currencyConversionExpiryDate?: Date;
-};
-
-const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
-  // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
-  const address = `${(parseInt(CRYPTOPAY_DERIVATION_START, 10) || 0) + index}`;
-  if (currency === CryptopayCurrencies.ETH) {
-    return `m/44'/60'/0'/0/${address}`;
-  }
-  // if (currency === CryptopayCurrencies.BTC) {
-  //   return `m/44'/0'/0'/0/${address}`;
-  // }
-  return `0/${address}`;
 };
 
 const Cryptopay: IPaymentAdapter = {
@@ -191,8 +174,8 @@ const Cryptopay: IPaymentAdapter = {
           const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
-            address: payments.p2pkh({
-              pubkey: child.publicKey,
+            address: payments.p2wpkh({
+              pubkey: child.publicKey as Buffer,
               network,
             }).address,
           });

@@ -25,7 +25,6 @@ You have to set `CRYPTOPAY_SECRET`, `CRYPTOPAY_BTC_XPUB` (if you want to accept 
 | `CRYPTOPAY_SECRET`        |                                        | Shared secret for communication with the payment gateway. Has to be equal to `unchained.secret` in the payment gateway configuration (`cryptopay.yaml`). |
 | `CRYPTOPAY_WEBHOOK_PATH`  | `/payment/cryptopay`                   | The path that is used for the payment webhook. Has to correspond to the path in `unchained.transaction-webhook-url` of the payment gateway configuration (`cryptopay.yaml`). |
 | `CRYPTOPAY_BTC_XPUB`      |                                        | Extended Bitcoin public key. |
-| `CRYPTOPAY_BTC_TESTNET`   | `false`                                | Denotes whether the extended public key is a testnet public key. |
 | `CRYPTOPAY_ETH_XPUB`      |                                        | Extended Ethereum public key. |
 | `CRYPTOPAY_MAX_RATE_AGE`  | `360`                                  | Maximum age of an exchange rate (in seconds) such that it is still considered for the conversion. |
 

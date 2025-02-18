@@ -34,7 +34,6 @@ const startAndWaitForApp = async () => {
             'tpubDDsGg7jiaNfukcctBwCogVUqdfU7p7X4Uoge2FNCk64YD6THTBxdGahRuAq9uuJxFErJuihg7RdgbG3YHW5AgT17f7m6MAQjauiUAPJytQG',
           CRYPTOPAY_ETH_XPUB:
             'xpub6DWGtXnV4tfoCvDZyao1zh4664ZZ7hw2TFgGiKskeAZ1ga2Uen8epiDQzaHYrFkn2X5wf6sbTgpHqsNzaTuGstEhmN2nR2szqGyoWuiYHrf',
-          CRYPTOPAY_BTC_TESTNET: '1',
           SAFERPAY_CUSTOMER_ID: '274656',
           SAFERPAY_USER: 'API_274656_75522257',
         },
