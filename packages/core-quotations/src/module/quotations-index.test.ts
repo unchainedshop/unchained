@@ -1,23 +1,25 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { buildFindSelector } from './configureQuotationsModule.js';
 
 describe('Quotation', () => {
   describe('buildFindSelector', () => {
     it('Return correct filter object when passed no argument', () => {
-      expect(buildFindSelector({})).toEqual({});
+      assert.deepStrictEqual(buildFindSelector({}), {});
     });
 
     it('Return correct filter object when passed queryString and userId', () => {
-      expect(buildFindSelector({ queryString: 'hello world', userId: 'admin-id' })).toEqual({
+      assert.deepStrictEqual(buildFindSelector({ queryString: 'hello world', userId: 'admin-id' }), {
         userId: 'admin-id',
         $text: { $search: 'hello world' },
       });
     });
 
     it('Return correct filter object when passed userId', () => {
-      expect(buildFindSelector({ userId: 'admin-id' })).toEqual({ userId: 'admin-id' });
+      assert.deepStrictEqual(buildFindSelector({ userId: 'admin-id' }), { userId: 'admin-id' });
     });
     it('Return correct filter object when passed queryString', () => {
-      expect(buildFindSelector({ queryString: 'hello world' })).toEqual({
+      assert.deepStrictEqual(buildFindSelector({ queryString: 'hello world' }), {
         $text: { $search: 'hello world' },
       });
     });

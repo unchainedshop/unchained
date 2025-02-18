@@ -1,19 +1,21 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { resolveBestCountry, resolveBestSupported, slugify, systemLocale } from './utils-index.js';
 import generateHashId from './generate-random-hash.js';
 
 describe('Utils', () => {
   it('Locale', () => {
-    expect(systemLocale).toBeDefined();
-    expect(resolveBestCountry).toBeInstanceOf(Function);
-    expect(resolveBestSupported).toBeInstanceOf(Function);
+    assert.ok(systemLocale);
+    assert.equal(typeof resolveBestCountry, 'function');
+    assert.equal(typeof resolveBestSupported, 'function');
   });
 
   describe('generateHashId', () => {
-    it('should create a random hash ', () => {
+    it('should create a random hash', () => {
       const result = generateHashId();
 
-      expect(typeof result).toBe('string');
-      expect(result).toMatch(/^[A-Z0-9]+$/);
+      assert.equal(typeof result, 'string');
+      assert.match(result, /^[A-Z0-9]+$/);
     });
   });
 
@@ -24,7 +26,7 @@ describe('Utils', () => {
 
       const result = slugify(text);
 
-      expect(result).toEqual(expected);
+      assert.equal(result, expected);
     });
 
     it('with a string containing special characters', () => {
@@ -33,7 +35,7 @@ describe('Utils', () => {
 
       const result = slugify(text);
 
-      expect(result).toEqual(expected);
+      assert.equal(result, expected);
     });
 
     it('with a string containing multiple spaces', () => {
@@ -42,7 +44,7 @@ describe('Utils', () => {
 
       const result = slugify(text);
 
-      expect(result).toEqual(expected);
+      assert.equal(result, expected);
     });
 
     it('with a string containing only special characters (leave underscore)', () => {
@@ -51,7 +53,7 @@ describe('Utils', () => {
 
       const result = slugify(text);
 
-      expect(result).toEqual(expected);
+      assert.equal(result, expected);
     });
   });
 });

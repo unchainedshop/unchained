@@ -1,33 +1,36 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { buildFindSelector } from './configureFiltersModule.js';
 
 describe('buildFindSelector', () => {
   it('Return correct filter object when passed no argument', () => {
-    expect(buildFindSelector({})).toEqual({ isActive: true });
+    assert.deepStrictEqual(buildFindSelector({}), { isActive: true });
   });
 
   it('Return correct filter object when inactive is set to true', () => {
-    expect(buildFindSelector({ includeInactive: true })).toEqual({});
+    assert.deepStrictEqual(buildFindSelector({ includeInactive: true }), {});
   });
 
   it('Return correct filter object when passed filterIds and queryString', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({ filterIds: ['filter-1', 'filter-2'], queryString: 'Hello world' }),
-    ).toEqual({
-      isActive: true,
-      _id: { $in: ['filter-1', 'filter-2'] },
-      $text: { $search: 'Hello world' },
-    });
+      {
+        isActive: true,
+        _id: { $in: ['filter-1', 'filter-2'] },
+        $text: { $search: 'Hello world' },
+      },
+    );
   });
 
   it('Return correct filter object when passed filterIds', () => {
-    expect(buildFindSelector({ filterIds: ['filter-1', 'filter-2'] })).toEqual({
+    assert.deepStrictEqual(buildFindSelector({ filterIds: ['filter-1', 'filter-2'] }), {
       isActive: true,
       _id: { $in: ['filter-1', 'filter-2'] },
     });
   });
 
-  it('Return correct filter object when passed  queryString', () => {
-    expect(buildFindSelector({ queryString: 'Hello world' })).toEqual({
+  it('Return correct filter object when passed queryString', () => {
+    assert.deepStrictEqual(buildFindSelector({ queryString: 'Hello world' }), {
       isActive: true,
       $text: { $search: 'Hello world' },
     });

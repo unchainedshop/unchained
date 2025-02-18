@@ -1,3 +1,5 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { parseQueryArray } from './parseQueryArray.js';
 
 describe('parseQueryArray', () => {
@@ -5,14 +7,14 @@ describe('parseQueryArray', () => {
     const query = [];
     const expected = {};
     const result = parseQueryArray(query);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 
   it('parses array with one key-value pair', () => {
     const query = [{ key: 'foo', value: 'bar' }];
     const expected = { foo: ['bar'] };
     const result = parseQueryArray(query);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 
   it('parses array with multiple key-value pairs', () => {
@@ -22,7 +24,7 @@ describe('parseQueryArray', () => {
     ];
     const expected = { foo: ['bar'], baz: ['qux'] };
     const result = parseQueryArray(query);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 
   it('parses array with multiple values for the same key', () => {
@@ -32,6 +34,6 @@ describe('parseQueryArray', () => {
     ];
     const expected = { foo: ['bar', 'baz'] };
     const result = parseQueryArray(query);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 });

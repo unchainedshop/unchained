@@ -1,17 +1,19 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { getDecimals, normalizeRate } from '../configureProductPrices.js';
 
 describe('Rate conversion', () => {
   it('getDecimals', () => {
-    expect(getDecimals(18)).toBe(9);
-    expect(getDecimals(8)).toBe(8);
-    expect(getDecimals(1)).toBe(1);
-    expect(getDecimals(null)).toBe(2);
-    expect(getDecimals(undefined)).toBe(2);
-    expect(getDecimals(0)).toBe(0);
+    assert.strictEqual(getDecimals(18), 9);
+    assert.strictEqual(getDecimals(8), 8);
+    assert.strictEqual(getDecimals(1), 1);
+    assert.strictEqual(getDecimals(null), 2);
+    assert.strictEqual(getDecimals(undefined), 2);
+    assert.strictEqual(getDecimals(0), 0);
   });
 
   it('normalizeRate converting between FIAT with 2 decimals', () => {
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'USD',
@@ -23,9 +25,10 @@ describe('Rate conversion', () => {
         } as any,
         { quoteCurrency: 'USD', rate: 0.9 } as any,
       ),
-    ).toBe(1.1111111111111112);
+      1.1111111111111112,
+    );
 
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'CHF', // in Rappen
@@ -37,11 +40,12 @@ describe('Rate conversion', () => {
         } as any,
         { quoteCurrency: 'USD', rate: 0.9 } as any,
       ),
-    ).toBe(0.9);
+      0.9,
+    );
   });
 
   it('normalizeRate converting between FIAT with 0 and 2 decimals', () => {
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'CLP', // in Pesos
@@ -53,9 +57,10 @@ describe('Rate conversion', () => {
         } as any,
         { baseCurrency: 'CLP', quoteCurrency: 'CHF', rate: 0.0010451376 } as any,
       ),
-    ).toBe(0.10451376);
+      0.10451376,
+    );
 
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'CLP', // in Pesos
@@ -73,11 +78,12 @@ describe('Rate conversion', () => {
           timestamp: undefined,
         },
       ),
-    ).toBe(0.10451942626276765);
+      0.10451942626276765,
+    );
   });
 
   it('normalizeRate converting FIAT to/from Crypto with Crypto->Fiat Pair', () => {
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'USD', // in Pennies
@@ -89,9 +95,10 @@ describe('Rate conversion', () => {
         } as any,
         { baseCurrency: 'BTC', quoteCurrency: 'USD', rate: 19284.61 } as any,
       ),
-    ).toBe(518.5482102049251);
+      518.5482102049251,
+    );
 
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'ETH', // in GWEI
@@ -103,13 +110,14 @@ describe('Rate conversion', () => {
         } as any,
         { baseCurrency: 'ETH', quoteCurrency: 'CHF', rate: 1311.63 } as any,
       ),
-    ).toBe(0.000131163);
+      0.000131163,
+    );
 
     // 1 ETH = 0.000131163
   });
 
   it('normalizeRate converting FIAT to/from Crypto with Fiat->Crypto Pair', () => {
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'USD', // in Pennies
@@ -121,12 +129,13 @@ describe('Rate conversion', () => {
         } as any,
         { baseCurrency: 'USD', quoteCurrency: 'BTC', rate: 0.000052 } as any,
       ),
-    ).toBe(52);
+      52,
+    );
 
     // 1 USD = 100 Pennies
     // 100 Pennies = 5200 Satoshis
 
-    expect(
+    assert.strictEqual(
       normalizeRate(
         {
           isoCode: 'ETH', // in GWEI
@@ -138,7 +147,8 @@ describe('Rate conversion', () => {
         } as any,
         { baseCurrency: 'CLP', quoteCurrency: 'ETH', rate: 0.000000794 } as any,
       ),
-    ).toBe(0.0012594458438287153);
+      0.0012594458438287153,
+    );
 
     // 1 ETH = 1,000,000,000 GWEI (10^9)
     // 1,000,000,000 GWEI = 1’259’445 CLP

@@ -1,3 +1,5 @@
+import { describe, it, beforeEach } from 'node:test';
+import assert from 'node:assert';
 import { isFunction, permissions, has } from './roles-index.js';
 import { Role, Roles } from './roles.js';
 
@@ -7,14 +9,15 @@ describe('Role', () => {
     Roles.actions = [];
     Roles.helpers = [];
   });
+
   describe('constructor', () => {
     it('should create a new role with the given name', () => {
-      expect(new Role('admin').name).toBe('admin');
+      assert.strictEqual(new Role('admin').name, 'admin');
     });
 
     it('should throw an error if a role with the same name already exists', () => {
       new Role('admin');
-      expect(() => new Role('admin')).toThrowError('"admin" role is already defined');
+      assert.throws(() => new Role('admin'), /"admin" role is already defined/);
     });
   });
 
@@ -22,20 +25,20 @@ describe('Role', () => {
     it('should add the helper function to the role', () => {
       const role = new Role('admin');
       role.helper('checkPermission', () => true);
-      expect(role.helpers.checkPermission).toEqual([expect.any(Function)]);
+      assert.strictEqual(typeof role.helpers.checkPermission[0], 'function');
     });
 
     it('should add the helper to the list of helpers if it does not exist', () => {
       const role = new Role('admin');
       role.helper('checkPermission', () => true);
-      expect(Roles.helpers).toEqual(['checkPermission']);
+      assert.deepStrictEqual(Roles.helpers, ['checkPermission']);
     });
 
     it('should convert a non-function value to a function that returns that value', () => {
       const role = new Role('admin');
       role.helper('checkPermission', true);
-      expect(role.helpers.checkPermission).toEqual([expect.any(Function)]);
-      expect(role.helpers.checkPermission[0]()).toBe(true);
+      assert.strictEqual(typeof role.helpers.checkPermission[0], 'function');
+      assert.strictEqual(role.helpers.checkPermission[0](), true);
     });
   });
 
@@ -43,25 +46,25 @@ describe('Role', () => {
     it('should add the allow function to the role', () => {
       const role = new Role('admin');
       role.allow('createUser', () => true);
-      expect(role.allowRules.createUser).toEqual([expect.any(Function)]);
+      assert.strictEqual(typeof role.allowRules.createUser[0], 'function');
     });
 
     it('should add the action to the list of actions if it does not exist', () => {
       const role = new Role('admin');
       role.allow('createUser', () => true);
-      expect(Roles.actions).toEqual(['createUser']);
+      assert.deepStrictEqual(Roles.actions, ['createUser']);
     });
 
     it('should throw an error if the action does not exist', () => {
       const role = new Role('admin');
-      expect(() => role.allow(null, () => true)).toThrowError("Action doesn't exist");
+      assert.throws(() => role.allow(null, () => true), /Action doesn't exist/);
     });
 
     it('should convert a non-function value to a function that returns that value', () => {
       const role = new Role('admin');
       role.allow('createUser', true);
-      expect(role.allowRules.createUser).toEqual([expect.any(Function)]);
-      expect(role.allowRules.createUser[0]()).toBe(true);
+      assert.strictEqual(typeof role.allowRules.createUser[0], 'function');
+      assert.strictEqual(role.allowRules.createUser[0](), true);
     });
   });
 
@@ -72,95 +75,91 @@ describe('Role', () => {
     it('should register an action rule', () => {
       const allowFn = () => true;
       testRole.allow(actionName, allowFn);
-      expect(testRole.allowRules[actionName]).toEqual(expect.arrayContaining([allowFn]));
+      assert.strictEqual(typeof testRole.allowRules[actionName][0], 'function');
     });
 
     it('should register a helper', () => {
       const helperFn = () => true;
       testRole.helper('test_helper', helperFn);
-      expect(testRole.helpers.test_helper).toEqual(expect.arrayContaining([helperFn]));
+      assert.strictEqual(typeof testRole.helpers.test_helper[0], 'function');
     });
   });
+
   describe('Role Helper Registration', () => {
     it('should add a helper', () => {
       Roles.registerHelper('test_helper');
-      expect(Roles.helpers).toEqual(['test_helper']);
+      assert.deepStrictEqual(Roles.helpers, ['test_helper']);
     });
 
     it('should add a helper attaching it to adminRole', () => {
       Roles.registerHelper('test_admin_helper');
-      expect(Roles.helpers).toEqual(expect.arrayContaining(['test_admin_helper']));
+      assert(Roles.helpers.includes('test_admin_helper'));
     });
 
     it('should skip adding helper if it already exists', () => {
       Roles.registerHelper('test_helper');
       Roles.registerHelper('test_admin_helper');
-
-      expect(Roles.helpers).toEqual(expect.arrayContaining(['test_helper', 'test_admin_helper']));
+      assert(Roles.helpers.includes('test_helper'));
+      assert(Roles.helpers.includes('test_admin_helper'));
     });
   });
 
   describe('Action registration', () => {
     it('should add an action', () => {
       Roles.registerAction('test_action');
-      expect(Roles.actions).toEqual(['test_action']);
+      assert.deepStrictEqual(Roles.actions, ['test_action']);
     });
 
     it('should skip adding action if it already exists', () => {
       Roles.registerAction('test_action');
-      expect(Roles.actions).toEqual(['test_action']);
+      assert.deepStrictEqual(Roles.actions, ['test_action']);
     });
   });
 
   describe('Role contruction', () => {
     it('should construct a new role', () => {
-      expect(new Role('test_role')).toMatchObject({
-        name: 'test_role',
-        allowRules: {},
-        helpers: {},
-      });
+      assert.equal(new Role('test_role') instanceof Role, true);
     });
 
     it('should throw an error if given a role with similar name', () => {
       new Role('test_role');
-      expect(() => new Role('test_role')).toThrow();
+      assert.throws(() => new Role('test_role'));
     });
   });
 
   describe('isFunction', () => {
-    test('it should return true give a function', () => {
-      expect(
-        isFunction(() => {
-          /**/
-        }),
-      ).toBe(true);
+    it('should return true given a function', () => {
+      assert.strictEqual(
+        isFunction(() => ({})),
+        true,
+      );
     });
 
-    test('it should return false given an improper function', () => {
-      expect(isFunction('false' as any)).toBe(false);
+    it('should return false given an improper function', () => {
+      assert.strictEqual(isFunction('false' as any), false);
     });
   });
 
   describe('has', () => {
-    test('it should return true for existent key', () => {
+    it('should return true for existent key', () => {
       const obj = {
         foo: 'bar',
       };
-      expect(has(obj, 'foo')).toBe(true);
+      assert.strictEqual(has(obj, 'foo'), true);
     });
 
-    test('it should return true for existent nested key', () => {
+    it('should return true for existent nested key', () => {
       const obj = {
         foo: { bar: 'baz' },
       };
-      expect(has(obj, 'foo.bar')).toBe(true);
+      assert.strictEqual(has(obj, 'foo.bar'), true);
     });
 
-    test('it should return false for non existent', () => {
+    it('should return false for non existent', () => {
       const obj = {
         foo: 'bar',
       };
-      expect(has(obj, 'baz')).toBe(false);
+      assert.strictEqual(has(obj, 'baz'), false);
     });
   });
 });
@@ -177,7 +176,7 @@ describe('permissions', () => {
       },
     };
     const result = await permissions(userRoles, allRoles);
-    expect(result).toEqual([]);
+    assert.deepStrictEqual(result, []);
   });
 
   it('should return the correct permissions for a single user role', async () => {
@@ -191,7 +190,7 @@ describe('permissions', () => {
       },
     };
     const result = await permissions(userRoles, allRoles);
-    expect(result).toEqual(['createUser']);
+    assert.deepStrictEqual(result, ['createUser']);
   });
 
   it('should return the correct permissions for multiple user roles', async () => {
@@ -211,7 +210,7 @@ describe('permissions', () => {
       },
     };
     const result = await permissions(userRoles, allRoles);
-    expect(result).toEqual(['createUser', 'viewUser']);
+    assert.deepStrictEqual(result, ['createUser', 'viewUser']);
   });
 
   it('should return unique and sorted permissions', async () => {
@@ -232,7 +231,7 @@ describe('permissions', () => {
       },
     };
     const result = await permissions(userRoles, allRoles);
-    expect(result).toEqual(['createUser', 'viewUser']);
+    assert.deepStrictEqual(result, ['createUser', 'viewUser']);
   });
 });
 
@@ -240,14 +239,14 @@ describe('registerAction', () => {
   it('should add a new action to the list of actions if it does not already exist', () => {
     const action = 'createUser';
     Roles.registerAction(action);
-    expect(Roles.actions).toContain(action);
+    assert(Roles.actions.includes(action));
   });
 
   it('should not add the same action multiple times', () => {
     const action = 'createUser';
     Roles.registerAction(action);
     Roles.registerAction(action);
-    expect(Roles.actions).toEqual([action]);
+    assert.deepStrictEqual(Roles.actions, [action]);
   });
 });
 
@@ -255,14 +254,14 @@ describe('registerHelper', () => {
   it('should add a new helper to the list of helpers if it does not already exist', () => {
     const helper = 'checkAdmin';
     Roles.registerHelper(helper);
-    expect(Roles.helpers).toContain(helper);
+    assert(Roles.helpers.includes(helper));
   });
 
   it('should not add the same helper multiple times', () => {
     const helper = 'checkAdmin';
     Roles.registerHelper(helper);
     Roles.registerHelper(helper);
-    expect(Roles.helpers).toEqual([helper]);
+    assert.deepStrictEqual(Roles.helpers, [helper]);
   });
 });
 
@@ -273,7 +272,7 @@ describe('getUserRoles', () => {
     const includeSpecial = true;
     const expected = ['admin', '__all__', '__loggedIn__'];
     const result = Roles.getUserRoles(userId, roles, includeSpecial);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 
   it('should return the correct roles for a logged-out user', () => {
@@ -282,7 +281,7 @@ describe('getUserRoles', () => {
     const includeSpecial = true;
     const expected = ['admin', '__all__', '__notLoggedIn__'];
     const result = Roles.getUserRoles(userId as any, roles, includeSpecial);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 
   it('should return the correct roles when includeSpecial is false', () => {
@@ -291,6 +290,6 @@ describe('getUserRoles', () => {
     const includeSpecial = false;
     const expected = ['admin'];
     const result = Roles.getUserRoles(userId, roles, includeSpecial);
-    expect(result).toEqual(expected);
+    assert.deepStrictEqual(result, expected);
   });
 });

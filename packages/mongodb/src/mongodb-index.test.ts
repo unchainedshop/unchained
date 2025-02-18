@@ -1,9 +1,11 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { SortDirection } from '@unchainedshop/utils';
 import { buildSortOptions, generateDbObjectId } from './mongodb-index.js';
 
 describe('Mongo', () => {
   it('Init', () => {
-    expect(true).toBeTruthy();
+    assert(true);
   });
 
   describe('buildSortOptions', () => {
@@ -12,27 +14,27 @@ describe('Mongo', () => {
         { key: 'name', value: SortDirection.ASC },
         { key: 'age', value: SortDirection.DESC },
       ];
-      expect(buildSortOptions(sort)).toEqual({ name: 1, age: -1 });
+      assert.deepStrictEqual(buildSortOptions(sort), { name: 1, age: -1 });
     });
   });
 
   describe('generateDbObjectId', () => {
     it('generateDbObjectId with default digits', () => {
       const result = generateDbObjectId();
-      expect(typeof result).toBe('string');
-      expect(result.length).toBe(24);
+      assert.strictEqual(typeof result, 'string');
+      assert.strictEqual(result.length, 24);
     });
 
     it('generateDbObjectId with odd digits', () => {
       const result = generateDbObjectId(23);
-      expect(typeof result).toBe('string');
-      expect(result.length).toBe(23);
+      assert.strictEqual(typeof result, 'string');
+      assert.strictEqual(result.length, 23);
     });
 
     it('generateDbObjectId with even digits', () => {
       const result = generateDbObjectId(24);
-      expect(typeof result).toBe('string');
-      expect(result.length).toBe(24);
+      assert.strictEqual(typeof result, 'string');
+      assert.strictEqual(result.length, 24);
     });
   });
 });

@@ -1,28 +1,31 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { buildFindSelector } from './configureUsersModule.js';
 
 describe('buildFindSelector', () => {
   it('Return the correct filter when no parameter is passed', () => {
-    expect(buildFindSelector({})).toEqual({ deleted: null, guest: { $in: [false, null] } });
+    assert.deepStrictEqual(buildFindSelector({}), { deleted: null, guest: { $in: [false, null] } });
   });
   it('Return the correct filter when no parameter is passed queryString and includeGuest: true', () => {
-    expect(buildFindSelector({ queryString: 'Hello world', includeGuests: true })).toEqual({
+    assert.deepStrictEqual(buildFindSelector({ queryString: 'Hello world', includeGuests: true }), {
       deleted: null,
       $text: { $search: 'Hello world' },
     });
   });
 
   it('Should include additional user field selector in addition too queryString and includeGuests', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         queryString: 'Hello world',
         includeGuests: false,
         'profile.displayName': 'mikael',
       }),
-    ).toEqual({
-      'profile.displayName': 'mikael',
-      deleted: null,
-      guest: { $in: [false, null] },
-      $text: { $search: 'Hello world' },
-    });
+      {
+        'profile.displayName': 'mikael',
+        deleted: null,
+        guest: { $in: [false, null] },
+        $text: { $search: 'Hello world' },
+      },
+    );
   });
 });

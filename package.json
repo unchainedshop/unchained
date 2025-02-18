@@ -76,8 +76,8 @@
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "npm run clean --workspaces",
     "build": "npm run prepublishOnly --workspaces --if-present",
-    "test:unit": "npm run test --workspaces --if-present",
-    "test:unit-watch": "npm run test:watch --workspaces --if-present"
+    "test:unit": "cd packages && tsx --test",
+    "test:unit-watch": "cd packages && tsx --test --watch"
   },
   "devDependencies": {
     "@apollo/client": "^3.13.1",
@@ -97,6 +97,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.5.1",
     "ts-jest": "^29.2.5",
+    "tsx": "^4.19.2",
     "typedoc": "^0.27.7",
     "typescript": "^5.7.3",
     "workspaces-run": "^1.0.2"

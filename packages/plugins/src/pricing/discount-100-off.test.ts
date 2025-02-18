@@ -1,37 +1,41 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { HundredOff } from './discount-100-off.js';
 
 describe('HundredOff', () => {
   it('isManualAdditionAllowed', async () => {
     let x;
-    expect(await HundredOff.isManualAdditionAllowed(x)).toBeTruthy();
+    assert.strictEqual(await HundredOff.isManualAdditionAllowed(x), true);
   });
   it('isManualRemovalAllowed', async () => {
-    expect(await HundredOff.isManualRemovalAllowed()).toBeTruthy();
+    assert.strictEqual(await HundredOff.isManualRemovalAllowed(), true);
   });
   it('isValidForSystemTriggering', async () => {
     const context = {};
     const actions = await HundredOff.actions({ context } as any);
-    expect(await actions.isValidForSystemTriggering()).toBeFalsy();
+    assert.strictEqual(await actions.isValidForSystemTriggering(), false);
   });
   it('isValidForCodeTriggering', async () => {
     const context = {};
     const actions = await HundredOff.actions({ context } as any);
-    expect(await actions.isValidForCodeTriggering({ code: '100OFF' })).toBeTruthy();
-    expect(await actions.isValidForCodeTriggering({ code: 'wrongcode' })).toBeFalsy();
+    assert.strictEqual(await actions.isValidForCodeTriggering({ code: '100OFF' }), true);
+    assert.strictEqual(await actions.isValidForCodeTriggering({ code: 'wrongcode' }), false);
   });
 
   it('discountForPricingAdapterKey', async () => {
     const context = {};
     const actions = await HundredOff.actions({ context } as any);
-    expect(
+    assert.deepStrictEqual(
       actions.discountForPricingAdapterKey({
         pricingAdapterKey: 'shop.unchained.pricing.order-discount',
       } as any),
-    ).toEqual({ fixedRate: 10000 });
-    expect(
+      { fixedRate: 10000 },
+    );
+    assert.strictEqual(
       actions.discountForPricingAdapterKey({
         pricingAdapterKey: 'shop.unchained.pricing.other-discount',
       } as any),
-    ).toBeNull();
+      null,
+    );
   });
 });

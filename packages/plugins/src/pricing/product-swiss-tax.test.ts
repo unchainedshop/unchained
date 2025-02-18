@@ -1,47 +1,54 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
+
 import { getTaxRate, isDeliveryAddressInSwitzerland } from './product-swiss-tax.js';
 
 describe('ProductSwissTax', () => {
   describe('getTaxRate', () => {
     it('default rate', () => {
-      expect(
+      assert.strictEqual(
         getTaxRate({
           product: {} as any,
           order: {} as any,
         } as any),
-      ).toBe(0.081);
+        0.081,
+      );
     });
 
     it('reduced rate', () => {
-      expect(
+      assert.strictEqual(
         getTaxRate({
           product: {
             tags: ['swiss-tax-category:reduced'],
           },
           order: {},
         } as any),
-      ).toBe(0.026);
+        0.026,
+      );
     });
 
     it('special rate', () => {
-      expect(
+      assert.strictEqual(
         getTaxRate({
           product: {
             tags: ['swiss-tax-category:special'],
           },
           order: {},
         } as any),
-      ).toBe(0.038);
+        0.038,
+      );
     });
 
     it('default rate', () => {
-      expect(
+      assert.strictEqual(
         getTaxRate({
           product: {
             tags: ['swiss-tax-category:default'],
           },
           order: {},
         } as any),
-      ).toBe(0.081);
+        0.081,
+      );
     });
   });
 
@@ -50,12 +57,12 @@ describe('ProductSwissTax', () => {
       modules: {
         orders: {
           deliveries: {
-            findDelivery: import.meta.jest.fn(async ({ orderDeliveryId }) => {
+            findDelivery: async ({ orderDeliveryId }) => {
               if (orderDeliveryId === 'CH' || orderDeliveryId === 'LI')
                 return { context: { address: { countryCode: 'CH' } } };
               if (orderDeliveryId === null) return { context: { address: null } };
               return { context: { address: { countryCode: 'RT' } } };
-            }),
+            },
           },
         },
       },
@@ -66,26 +73,29 @@ describe('ProductSwissTax', () => {
       country: 'CH',
     };
     it('Should return true when passed country code CH', async () => {
-      expect(
+      assert.strictEqual(
         await isDeliveryAddressInSwitzerland({ ...context, country: 'ch', order: null } as any),
-      ).toBe(true);
+        true,
+      );
     });
 
     it('Should return true when passed country code LI', async () => {
-      expect(
+      assert.strictEqual(
         await isDeliveryAddressInSwitzerland({ ...context, country: 'LI', order: null } as any),
-      ).toBe(true);
+        true,
+      );
     });
 
     it('Should return false when country is neither CH nor LI and order is null', async () => {
-      expect(
+      assert.strictEqual(
         await isDeliveryAddressInSwitzerland({ ...context, country: 'ET', order: null } as any),
-      ).toBe(false);
+        false,
+      );
     });
 
     it('Order should take precedence over country parameter', async () => {
       // not CH or LI order so returns false
-      expect(
+      assert.strictEqual(
         await isDeliveryAddressInSwitzerland({
           ...context,
           country: 'CH',
@@ -94,11 +104,12 @@ describe('ProductSwissTax', () => {
             billingAddress: { countryCode: 'ET' },
           },
         } as any),
-      ).toBe(false);
+        false,
+      );
     });
 
     it('If order is not from CH and LI but billingAddress is, it should take precedence over country ', async () => {
-      expect(
+      assert.strictEqual(
         await isDeliveryAddressInSwitzerland({
           ...context,
           country: 'IT',
@@ -107,11 +118,12 @@ describe('ProductSwissTax', () => {
             billingAddress: { countryCode: 'CH' },
           },
         } as any),
-      ).toBe(true);
+        true,
+      );
     });
 
     it('Should return false if billingAddress is neither CH or LI and order does not have address', async () => {
-      expect(
+      assert.strictEqual(
         await isDeliveryAddressInSwitzerland({
           ...context,
           country: null,
@@ -120,7 +132,8 @@ describe('ProductSwissTax', () => {
             billingAddress: { countryCode: 'HH' },
           },
         } as any),
-      ).toBe(false);
+        false,
+      );
     });
   });
 });

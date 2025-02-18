@@ -1,23 +1,25 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { buildFindSelector } from './configureLanguagesModule.js';
 
 describe('buildFindSelector', () => {
   it('Return correct filter object when passed no argument', () => {
-    expect(buildFindSelector({})).toEqual({ deleted: null, isActive: true });
+    assert.deepStrictEqual(buildFindSelector({}), { deleted: null, isActive: true });
   });
 
   it('Return correct filter object includeInactive is set to true', () => {
-    expect(buildFindSelector({ includeInactive: true })).toEqual({ deleted: null });
+    assert.deepStrictEqual(buildFindSelector({ includeInactive: true }), { deleted: null });
   });
 
-  it('Return correct filter object when passed  includeInactive, queryString', () => {
-    expect(buildFindSelector({ includeInactive: true, queryString: 'hello world' })).toEqual({
+  it('Return correct filter object when passed includeInactive, queryString', () => {
+    assert.deepStrictEqual(buildFindSelector({ includeInactive: true, queryString: 'hello world' }), {
       deleted: null,
       $text: { $search: 'hello world' },
     });
   });
 
   it('Return correct filter object when passed queryString', () => {
-    expect(buildFindSelector({ queryString: 'hello world' })).toEqual({
+    assert.deepStrictEqual(buildFindSelector({ queryString: 'hello world' }), {
       deleted: null,
       isActive: true,
       $text: { $search: 'hello world' },

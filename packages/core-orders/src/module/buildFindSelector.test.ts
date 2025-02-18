@@ -1,3 +1,5 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { OrderStatus } from '../db/OrdersCollection.js';
 import { buildFindByIdSelector as buildFindByIdSelectorForDelivery } from './configureOrderDeliveriesModule.js';
 import { buildFindOrderDiscountByIdSelector } from './configureOrderDiscountsModule.js';
@@ -11,50 +13,54 @@ import buildFindSelectorForOrder from './buildFindSelector.js';
 describe('OrderPosition', () => {
   describe('buildFindSelector', () => {
     it('Return filter object when passed no argument', () => {
-      expect(buildFindSelectorForOrder({})).toEqual({ status: { $ne: null } });
+      assert.deepStrictEqual(buildFindSelectorForOrder({}), { status: { $ne: null } });
     });
 
-    it('Return filter object when passed no argument includeCarts, queryString, status, userId and (status should take precedence over includeCarts', () => {
-      expect(
+    it('Return filter object when passed includeCarts, queryString, status, userId and (status should take precedence over includeCarts)', () => {
+      assert.deepStrictEqual(
         buildFindSelectorForOrder({
           includeCarts: false,
           queryString: 'hello world',
           status: [OrderStatus.CONFIRMED],
           userId: 'admin-id',
         }),
-      ).toEqual({
-        userId: 'admin-id',
-        status: {
-          $in: ['CONFIRMED'],
+        {
+          userId: 'admin-id',
+          status: {
+            $in: ['CONFIRMED'],
+          },
+          $text: { $search: 'hello world' },
         },
-        $text: { $search: 'hello world' },
-      });
+      );
     });
 
-    it('Return filter object when passed no argument includeCarts, queryString, userId ', () => {
-      expect(
+    it('Return filter object when passed includeCarts, queryString, userId', () => {
+      assert.deepStrictEqual(
         buildFindSelectorForOrder({
           includeCarts: true,
           queryString: 'hello world',
           userId: 'admin-id',
         }),
-      ).toEqual({
-        userId: 'admin-id',
-
-        $text: { $search: 'hello world' },
-      });
+        {
+          userId: 'admin-id',
+          $text: { $search: 'hello world' },
+        },
+      );
     });
 
-    it('Return filter object when passed no argument queryString, userId ', () => {
-      expect(buildFindSelectorForOrder({ queryString: 'hello world', userId: 'admin-id' })).toEqual({
-        userId: 'admin-id',
-        $text: { $search: 'hello world' },
-        status: { $ne: null },
-      });
+    it('Return filter object when passed queryString, userId', () => {
+      assert.deepStrictEqual(
+        buildFindSelectorForOrder({ queryString: 'hello world', userId: 'admin-id' }),
+        {
+          userId: 'admin-id',
+          $text: { $search: 'hello world' },
+          status: { $ne: null },
+        },
+      );
     });
 
-    it('Return filter object when passed no argument queryString ', () => {
-      expect(buildFindSelectorForOrder({ queryString: 'hello world' })).toEqual({
+    it('Return filter object when passed queryString', () => {
+      assert.deepStrictEqual(buildFindSelectorForOrder({ queryString: 'hello world' }), {
         $text: { $search: 'hello world' },
         status: { $ne: null },
       });
@@ -65,7 +71,7 @@ describe('OrderPosition', () => {
 describe('OrderDelivery', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindByIdSelectorForDelivery('order-delivery-id')).toEqual({
+      assert.deepStrictEqual(buildFindByIdSelectorForDelivery('order-delivery-id'), {
         _id: 'order-delivery-id',
       });
     });
@@ -75,7 +81,7 @@ describe('OrderDelivery', () => {
 describe('OrderDiscount', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindOrderDiscountByIdSelector('order-discount-id')).toEqual({
+      assert.deepStrictEqual(buildFindOrderDiscountByIdSelector('order-discount-id'), {
         _id: 'order-discount-id',
       });
     });
@@ -85,16 +91,21 @@ describe('OrderDiscount', () => {
 describe('OrderPayment', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindOrderPaymentByIdSelector('order-payment-id')).toEqual({ _id: 'order-payment-id' });
+      assert.deepStrictEqual(buildFindOrderPaymentByIdSelector('order-payment-id'), {
+        _id: 'order-payment-id',
+      });
     });
   });
 
   describe('buildFindByContextDataSelector', () => {
     it('Return correct db context field selector object', () => {
-      expect(buildFindByContextDataSelector({ first: 'first value', second: 'second value' })).toEqual({
-        'context.first': 'first value',
-        'context.second': 'second value',
-      });
+      assert.deepStrictEqual(
+        buildFindByContextDataSelector({ first: 'first value', second: 'second value' }),
+        {
+          'context.first': 'first value',
+          'context.second': 'second value',
+        },
+      );
     });
   });
 });
@@ -102,7 +113,7 @@ describe('OrderPayment', () => {
 describe('OrderPosition', () => {
   describe('buildFindByIdSelector', () => {
     it('Return correct db _id selector', () => {
-      expect(buildFindOrderPositionByIdSelector('order-position-id')).toEqual({
+      assert.deepStrictEqual(buildFindOrderPositionByIdSelector('order-position-id'), {
         _id: 'order-position-id',
       });
     });

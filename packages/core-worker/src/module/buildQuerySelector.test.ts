@@ -1,13 +1,15 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { WorkStatus } from '../worker-index.js';
 import { buildQuerySelector } from './configureWorkerModule.js';
 
 describe('Worker', () => {
   describe('buildQuerySelector', () => {
     it('Return correct filter object when passed no argument', () => {
-      expect(buildQuerySelector({})).toEqual({ deleted: { $exists: false } });
+      assert.deepStrictEqual(buildQuerySelector({}), { deleted: { $exists: false } });
     });
 
-    it('Return correct filter object  when passed create, queryString, scheduled, status, types & workId', () => {
+    it('Return correct filter object when passed create, queryString, scheduled, status, types & workId', () => {
       const selector = buildQuerySelector({
         created: {
           start: new Date('2022-12-04T17:13:09.285Z'),
@@ -22,7 +24,7 @@ describe('Worker', () => {
         types: ['EMAIL'],
         workId: 'work-id',
       });
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         $or: [
           {
@@ -55,7 +57,7 @@ describe('Worker', () => {
         types: ['EMAIL'],
         workId: 'work-id',
       });
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         $or: [
           {
@@ -83,7 +85,7 @@ describe('Worker', () => {
         types: ['EMAIL'],
         workId: 'work-id',
       });
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         $or: [
           {
@@ -106,7 +108,7 @@ describe('Worker', () => {
         types: ['EMAIL'],
         workId: 'work-id',
       });
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         $or: [
           {
@@ -121,7 +123,7 @@ describe('Worker', () => {
 
     it('Return correct filter object when passed types & workId', () => {
       const selector = buildQuerySelector({ types: ['EMAIL'], workId: 'work-id' });
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         deleted: { $exists: false },
         type: { $in: ['EMAIL'] },
@@ -130,19 +132,19 @@ describe('Worker', () => {
 
     it('Return correct filter object when passed workId', () => {
       const selector = buildQuerySelector({ workId: 'work-id' });
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         deleted: { $exists: false },
       });
     });
 
-    it('Create  start should be set to start  of unix timestamp if created.start not provided', () => {
+    it('Create start should be set to start of unix timestamp if created.start not provided', () => {
       const selector = buildQuerySelector({
         workId: 'work-id',
         created: { end: new Date('2022-12-04T17:13:09.285Z') },
       });
 
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         deleted: { $exists: false },
         created: {
@@ -152,32 +154,32 @@ describe('Worker', () => {
       });
     });
 
-    it('Create  start should be set to start or unix timestamp if created.end not provided', () => {
+    it('Create start should be set to start or unix timestamp if created.end not provided', () => {
       const selector = buildQuerySelector({
         workId: 'work-id',
         created: { start: new Date('2022-12-04T17:13:09.285Z') },
       });
 
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         deleted: { $exists: false },
         created: { $gte: new Date('2022-12-04T17:13:09.285Z') },
       });
 
-      expect(buildQuerySelector({ workId: 'work-id', created: {} })).toEqual({
+      assert.deepStrictEqual(buildQuerySelector({ workId: 'work-id', created: {} }), {
         _id: 'work-id',
         deleted: { $exists: false },
         created: { $gte: new Date(0) },
       });
     });
 
-    it('scheduled  start should be set to start  of unix timestamp if scheduled.start not provided', () => {
+    it('scheduled start should be set to start of unix timestamp if scheduled.start not provided', () => {
       const selector = buildQuerySelector({
         workId: 'work-id',
         scheduled: { end: new Date('2022-12-04T17:13:09.285Z') },
       });
 
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         deleted: { $exists: false },
         scheduled: {
@@ -193,13 +195,13 @@ describe('Worker', () => {
         scheduled: { start: new Date('2022-12-04T17:13:09.285Z') },
       });
 
-      expect(selector).toEqual({
+      assert.deepStrictEqual(selector, {
         _id: 'work-id',
         deleted: { $exists: false },
         scheduled: { $gte: new Date('2022-12-04T17:13:09.285Z') },
       });
 
-      expect(buildQuerySelector({ workId: 'work-id', scheduled: {} })).toEqual({
+      assert.deepStrictEqual(buildQuerySelector({ workId: 'work-id', scheduled: {} }), {
         _id: 'work-id',
         deleted: { $exists: false },
         scheduled: { $gte: new Date(0) },

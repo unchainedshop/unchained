@@ -1,48 +1,52 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { HalfPrice } from './discount-half-price.js';
 
 describe('HalfPrice', () => {
   it('isManualAdditionAllowed', async () => {
-    expect(await HalfPrice.isManualAdditionAllowed('')).toBeFalsy();
+    assert.strictEqual(await HalfPrice.isManualAdditionAllowed(''), false);
   });
 
   it('isManualRemovalAllowed', async () => {
-    expect(await HalfPrice.isManualRemovalAllowed()).toBeFalsy();
+    assert.strictEqual(await HalfPrice.isManualRemovalAllowed(), false);
   });
 
   it('isValidForSystemTriggering', async () => {
     const context = {
       modules: {
         users: {
-          findUserById: import.meta.jest.fn(() => Promise.resolve({ tags: ['half-price'] })),
+          findUserById: async () => ({ tags: ['half-price'] }),
         },
       },
       order: { userId: 'user-id' },
     };
     const actions = await HalfPrice.actions({ context } as any);
-    expect(await actions.isValidForSystemTriggering()).toBeTruthy();
+    assert.strictEqual(await actions.isValidForSystemTriggering(), true);
 
-    context.modules.users.findUserById.mockImplementationOnce(() => Promise.resolve({ tags: [] }));
-    expect(await actions.isValidForSystemTriggering()).toBeFalsy();
+    context.modules.users.findUserById = async () => ({ tags: [] });
+    assert.strictEqual(await actions.isValidForSystemTriggering(), false);
   });
+
   it('discountForPricingAdapterKey', async () => {
     const context = {};
     const actions = await HalfPrice.actions({ context } as any);
-    expect(
+    assert.deepStrictEqual(
       actions.discountForPricingAdapterKey({
         pricingAdapterKey: 'shop.unchained.pricing.product-discount',
       } as any),
-    ).toEqual({ rate: 0.5 });
-    expect(
+      { rate: 0.5 },
+    );
+    assert.strictEqual(
       actions.discountForPricingAdapterKey({
         pricingAdapterKey: 'shop.unchained.pricing.other-discount',
       } as any),
-    ).toBeNull();
+      null,
+    );
   });
 
   it('isValidForCodeTriggering', async () => {
     const context = {};
     const actions = await HalfPrice.actions({ context } as any);
-
-    expect(await actions.isValidForCodeTriggering({ code: '' })).toBeFalsy();
+    assert.strictEqual(await actions.isValidForCodeTriggering({ code: '' }), false);
   });
 });

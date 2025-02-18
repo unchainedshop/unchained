@@ -1,3 +1,5 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { rangeMatcher } from '../enrollments/licensed.js';
 
 describe('rangeMatcher', () => {
@@ -13,24 +15,24 @@ describe('rangeMatcher', () => {
   it('matches correctly when the date is within the range', () => {
     const range = { start: yesterday, end: tomorrow };
     const matcher = rangeMatcher(now);
-    expect(matcher(range)).toBe(true);
+    assert.strictEqual(matcher(range), true);
   });
 
   it('does not match when the date is before the start of the range', () => {
     const range = { start: tomorrow, end: tomorrow };
     const matcher = rangeMatcher(yesterday);
-    expect(matcher(range)).toBe(false);
+    assert.strictEqual(matcher(range), false);
   });
 
   it('does not match when the date is after the end of the range', () => {
     const range = { start: yesterday, end: yesterday };
     const matcher = rangeMatcher(tomorrow);
-    expect(matcher(range)).toBe(false);
+    assert.strictEqual(matcher(range), false);
   });
 
   it('matches correctly when the date is not provided', () => {
     const range = { start: yesterdayTimestamp, end: tomorrowTimestamp };
     const matcher = rangeMatcher();
-    expect(matcher(range)).toBe(true);
+    assert.strictEqual(matcher(range), true);
   });
 });

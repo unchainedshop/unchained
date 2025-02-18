@@ -1,5 +1,7 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 describe('Product', () => {
   it('Product', () => {
-    expect(true).toBeTruthy();
+    assert(true);
   });
 });
