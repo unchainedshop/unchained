@@ -5,6 +5,8 @@ import {
   fillToSameLengthArray,
   fillUp,
 } from './zipTreeByDeepness.js';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 
 describe('divideTreeByLevels', () => {
   it('should return the expected result', () => {
@@ -24,7 +26,7 @@ describe('divideTreeByLevels', () => {
       },
     ];
 
-    expect(divideTreeByLevels(array)).toEqual(expected);
+    assert.deepStrictEqual(divideTreeByLevels(array), expected);
   });
 });
 
@@ -35,7 +37,7 @@ describe('fillUp', () => {
 
     const result = fillUp(arr, size);
 
-    expect(result).toEqual([1, 2, 3, null, null]);
+    assert.deepStrictEqual(result, [1, 2, 3, null, null]);
   });
 });
 
@@ -46,7 +48,7 @@ describe('fillToSameLengthArray', () => {
 
     const result = fillToSameLengthArray(a, b);
 
-    expect(result).toEqual([
+    assert.deepStrictEqual(result, [
       [1, 2, 3],
       [4, 5, null],
     ]);
@@ -61,6 +63,6 @@ describe('concatItemsByLevels', () => {
       { level: 1, items: ['e', 'f'] },
     ];
     const result = concatItemsByLevels(levelArray);
-    expect(result.length).toBe(2);
+    assert.equal(result.length, 2);
   });
 });

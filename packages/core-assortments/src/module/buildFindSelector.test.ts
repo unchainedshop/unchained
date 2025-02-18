@@ -1,11 +1,13 @@
+import { describe, it } from 'node:test';
 import { buildFindSelector } from './configureAssortmentsModule.js';
+import assert from 'node:assert';
 
 describe('buildFindSelector', () => {
   it('Return the correct filter when passed no argument', () => {
-    expect(buildFindSelector({})).toEqual({ isRoot: true, isActive: true, deleted: null });
+    assert.deepStrictEqual(buildFindSelector({}), { isRoot: true, isActive: true, deleted: null });
   });
   it('Return the correct filter when passed  queryString, assortmentId, assortmentSelector, includeInactive, includeLeaves, slugs, tags', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         queryString: 'hello world',
         assortmentIds: ['assortment-1', 'assortment-2'],
@@ -15,18 +17,19 @@ describe('buildFindSelector', () => {
         slugs: ['assortment-slug-1', 'assortment-slug-2'],
         tags: ['assortment-tag'],
       }),
-    ).toEqual({
-      sequence: 1,
-      _id: { $in: ['assortment-1', 'assortment-2'] },
-      slugs: { $in: ['assortment-slug-1', 'assortment-slug-2'] },
-      tags: { $all: ['assortment-tag'] },
-      deleted: null,
-      $text: { $search: 'hello world' },
-    });
+      {
+        sequence: 1,
+        _id: { $in: ['assortment-1', 'assortment-2'] },
+        slugs: { $in: ['assortment-slug-1', 'assortment-slug-2'] },
+        tags: { $all: ['assortment-tag'] },
+        deleted: null,
+        $text: { $search: 'hello world' },
+      },
+    );
   });
 
   it('Return the correct filter when passed  queryString, assortmentId, assortmentSelector, includeInactive, includeLeaves, slugs', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         queryString: 'hello world',
         assortmentIds: ['assortment-1', 'assortment-2'],
@@ -35,18 +38,19 @@ describe('buildFindSelector', () => {
         includeLeaves: true,
         slugs: ['assortment-slug-1', 'assortment-slug-2'],
       }),
-    ).toEqual({
-      sequence: 1,
-      deleted: null,
+      {
+        sequence: 1,
+        deleted: null,
 
-      _id: { $in: ['assortment-1', 'assortment-2'] },
-      slugs: { $in: ['assortment-slug-1', 'assortment-slug-2'] },
-      $text: { $search: 'hello world' },
-    });
+        _id: { $in: ['assortment-1', 'assortment-2'] },
+        slugs: { $in: ['assortment-slug-1', 'assortment-slug-2'] },
+        $text: { $search: 'hello world' },
+      },
+    );
   });
 
   it('Return the correct filter when passed  queryString, assortmentId, assortmentSelector, includeInactive, includeLeaves', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         queryString: 'hello world',
         assortmentIds: ['assortment-1', 'assortment-2'],
@@ -54,65 +58,64 @@ describe('buildFindSelector', () => {
         includeInactive: true,
         includeLeaves: true,
       }),
-    ).toEqual({
-      sequence: 1,
-      deleted: null,
-
-      _id: { $in: ['assortment-1', 'assortment-2'] },
-      $text: { $search: 'hello world' },
-    });
+      {
+        sequence: 1,
+        deleted: null,
+        _id: { $in: ['assortment-1', 'assortment-2'] },
+        $text: { $search: 'hello world' },
+      },
+    );
   });
 
   it('Return the correct filter when passed  queryString, assortmentId, assortmentSelector, includeInactive', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         queryString: 'hello world',
         assortmentIds: ['assortment-1', 'assortment-2'],
         assortmentSelector: { sequence: 1 },
         includeInactive: true,
       }),
-    ).toEqual({
-      sequence: 1,
-      deleted: null,
-
-      _id: { $in: ['assortment-1', 'assortment-2'] },
-      $text: { $search: 'hello world' },
-    });
+      {
+        sequence: 1,
+        deleted: null,
+        _id: { $in: ['assortment-1', 'assortment-2'] },
+        $text: { $search: 'hello world' },
+      },
+    );
   });
   it('Return the correct filter when passed  queryString, assortmentId, assortmentSelector', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         queryString: 'hello world',
         assortmentIds: ['assortment-1', 'assortment-2'],
         assortmentSelector: { sequence: 1 },
       }),
-    ).toEqual({
-      sequence: 1,
-      deleted: null,
-
-      _id: { $in: ['assortment-1', 'assortment-2'] },
-      $text: { $search: 'hello world' },
-    });
+      {
+        sequence: 1,
+        deleted: null,
+        _id: { $in: ['assortment-1', 'assortment-2'] },
+        $text: { $search: 'hello world' },
+      },
+    );
   });
 
   it('Return the correct filter when passed  assortmentId, assortmentSelector', () => {
-    expect(
+    assert.deepStrictEqual(
       buildFindSelector({
         assortmentIds: ['assortment-1', 'assortment-2'],
         assortmentSelector: { sequence: 1 },
       }),
-    ).toEqual({
-      sequence: 1,
-      deleted: null,
-
-      _id: { $in: ['assortment-1', 'assortment-2'] },
-    });
+      {
+        sequence: 1,
+        deleted: null,
+        _id: { $in: ['assortment-1', 'assortment-2'] },
+      },
+    );
   });
 
   it('Return the correct filter when passed  assortmentSelector', () => {
-    expect(buildFindSelector({ assortmentSelector: { sequence: 1 } })).toEqual({
+    assert.deepStrictEqual(buildFindSelector({ assortmentSelector: { sequence: 1 } }), {
       deleted: null,
-
       sequence: 1,
     });
   });
