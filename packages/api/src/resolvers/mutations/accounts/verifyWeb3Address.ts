@@ -4,7 +4,7 @@ import { Context } from '../../../context.js';
 
 export default async function verifyWeb3Address(
   root: never,
-  { address, hash }: { address: string; hash: string },
+  { address, hash }: { address: string; hash: `0x${string}` },
   { modules, userId, user }: Context,
 ) {
   log(`mutation verifyWeb3Address ${address} ${user.username}`, {
@@ -20,13 +20,11 @@ export default async function verifyWeb3Address(
 
   // eslint-disable-next-line
   // @ts-ignore
-  const { bufferToHex, fromRpcSig, ecrecover, hashPersonalMessage, publicToAddress } = await import(
-    '@ethereumjs/util'
-  );
+  const { bufferToHex, fromRpcSig, ecrecover, toBuffer, hashPersonalMessage, publicToAddress } =
+    await import('@ethereumjs/util');
 
-  const messageBuffer = Buffer.from(foundCredentials.nonce, 'utf8');
-
-  const messageHash = hashPersonalMessage(messageBuffer);
+  const message = `0x${Buffer.from(foundCredentials.nonce, 'utf8').toString('hex')}`;
+  const messageHash = hashPersonalMessage(toBuffer(message));
 
   const sigParams = fromRpcSig(hash);
   const publicKey = ecrecover(messageHash, sigParams.v, sigParams.r, sigParams.s);
@@ -34,10 +32,10 @@ export default async function verifyWeb3Address(
   const sender = publicToAddress(publicKey);
   const recoveredAddr = bufferToHex(sender);
 
-  const signatureCorrectForAddress =
+  const isSignatureCorrectForAddress =
     recoveredAddr.toLowerCase() === foundCredentials.address.toLowerCase();
 
-  if (!signatureCorrectForAddress) {
+  if (!isSignatureCorrectForAddress) {
     throw new UserWeb3AddressSignatureError({ userId, address: foundCredentials.address });
   }
 

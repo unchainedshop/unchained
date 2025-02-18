@@ -56,6 +56,7 @@
     "@redis/client": "1.x",
     "bip32": "4.x",
     "bitcoinjs-lib": ">= 6.1 <7",
+    "tiny-secp256k1": "2.x",
     "ethers": ">= 6.13 < 7",
     "expiry-map": "2.x",
     "express": "5.x",
@@ -67,7 +68,6 @@
     "p-memoize": "7.x",
     "postfinancecheckout": ">= 4.5.0",
     "stripe": "^17.4.0",
-    "tiny-secp256k1": "2.x",
     "twilio": "5.x",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"

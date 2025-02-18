@@ -35,11 +35,10 @@ type CryptopayAddress = {
 };
 
 const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
+  // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
   const address = `${(parseInt(CRYPTOPAY_DERIVATION_START, 10) || 0) + index}`;
   if (currency === CryptopayCurrencies.ETH) {
-    const pathComponents = ethers.defaultPath.split('/');
-    pathComponents[pathComponents.length - 1] = address;
-    return pathComponents.join('/');
+    return `m/44'/60'/0'/0/${address}`;
   }
   if (currency === CryptopayCurrencies.BTC) {
     return `m/44'/0'/0'/0/${address}`;
