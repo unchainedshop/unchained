@@ -1,29 +1,19 @@
-import { setupDatabase } from './helpers.js';
+import wait from './lib/wait.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { AllocatedWork, NewWork } from './seeds/work.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
-let adminClient;
-let normalClient;
-let anonymousClient;
+let graphqlFetchAsAdminUser;
+let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymousUser;
 let workId;
 
 describe('Worker Module', () => {
-  let adminUser;
-  let normalUser;
-  let anonymousUser;
-
   beforeAll(async () => {
-    // Setup database and clients
     await setupDatabase();
-    
-    // Create test users
-    adminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    normalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    anonymousUser = await createAnonymousGraphqlFetch();
-
-    // Login as admin user for permissions testing
-    beforeEach(async () => {
-      return adminUser.login();
+    graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('Happy path', () => {

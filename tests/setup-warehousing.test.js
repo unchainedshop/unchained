@@ -1,16 +1,18 @@
+import { test, before, describe } from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
-describe('setup warehousing providers', () => {
-  let graphqlFetch;
+let graphqlFetch;
 
-  beforeAll(async () => {
+describe('setup warehousing providers', async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
-  describe('Mutation.createWarehousingProvider', () => {
-    it('add a shipping warehousing provider', async () => {
+  describe('Mutation.createWarehousingProvider', async () => {
+    test('add a shipping warehousing provider', async () => {
       const {
         data: { createWarehousingProvider, errors },
       } = await graphqlFetch({
@@ -39,8 +41,8 @@ describe('setup warehousing providers', () => {
           },
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(createWarehousingProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(createWarehousingProvider, {
         configurationError: null,
         deleted: null,
         interface: {
@@ -51,8 +53,8 @@ describe('setup warehousing providers', () => {
     });
   });
 
-  describe('Mutation.updateWarehousingProvider', () => {
-    it('Update a warehousing provider', async () => {
+  describe('Mutation.updateWarehousingProvider', async () => {
+    test('Update a warehousing provider', async () => {
       const {
         data: { updateWarehousingProvider, errors },
       } = await graphqlFetch({
@@ -88,8 +90,8 @@ describe('setup warehousing providers', () => {
           },
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(updateWarehousingProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(updateWarehousingProvider, {
         configuration: [
           {
             key: 'gugus',
@@ -105,7 +107,7 @@ describe('setup warehousing providers', () => {
       });
     });
 
-    it('return not found error when passed non existing warehousingProviderid', async () => {
+    test('return not found error when passed non existing warehousingProviderid', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateWarehousingProvider(
@@ -132,10 +134,10 @@ describe('setup warehousing providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('WarehousingProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'WarehousingProviderNotFoundError');
     });
 
-    it('return error when passed invalid warehousingProviderid', async () => {
+    test('return error when passed invalid warehousingProviderid', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateWarehousingProvider(
@@ -162,12 +164,12 @@ describe('setup warehousing providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.removeWarehousingProvider', () => {
-    it('Remove a warehousing provider', async () => {
+  describe('Mutation.removeWarehousingProvider', async () => {
+    test('Remove a warehousing provider', async () => {
       const {
         data: { removeWarehousingProvider, errors },
       } = await graphqlFetch({
@@ -183,14 +185,13 @@ describe('setup warehousing providers', () => {
           warehousingProviderId: SimpleWarehousingProvider._id,
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(removeWarehousingProvider).toMatchObject({
-        deleted: expect.anything(),
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(removeWarehousingProvider, {
         _id: SimpleWarehousingProvider._id,
       });
     });
 
-    it('return not found error when passed non existing warehouseProviderId', async () => {
+    test('return not found error when passed non existing warehouseProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeWarehousingProvider($warehousingProviderId: ID!) {
@@ -204,10 +205,10 @@ describe('setup warehousing providers', () => {
           warehousingProviderId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('WarehousingProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'WarehousingProviderNotFoundError');
     });
 
-    it('return error when passed invalid warehouseProviderId', async () => {
+    test('return error when passed invalid warehouseProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeWarehousingProvider($warehousingProviderId: ID!) {
@@ -221,7 +222,7 @@ describe('setup warehousing providers', () => {
           warehousingProviderId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

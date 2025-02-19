@@ -1,3 +1,5 @@
+import { test } from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations.js';
@@ -6,16 +8,15 @@ import { SimpleProduct } from './seeds/products.js';
 let graphqlFetch;
 let graphqlAnonymousFetch;
 
-describe('TranslatedFilterTexts', () => {
-  beforeAll(async () => {
+test.describe('TranslatedFilterTexts', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
   });
 
-  describe('Query.quotations for admin should', () => {
-    it('return list of quotations', async () => {
-      import.meta.jest.setTimeout(10000);
+  test.describe('Query.quotations for admin should', async () => {
+    test('return list of quotations', async () => {
       const {
         data: { quotations },
       } = await graphqlFetch({
@@ -55,8 +56,8 @@ describe('TranslatedFilterTexts', () => {
         variables: {},
       });
 
-      expect(quotations.length).toEqual(2);
-      expect(quotations).toMatchObject([
+      assert.equal(quotations.length, 2);
+      assert.deepStrictEqual(quotations, [
         {
           quotationNumber: 'K271P03',
           status: 'PROCESSING',
@@ -70,8 +71,7 @@ describe('TranslatedFilterTexts', () => {
       ]);
     });
 
-    it('return list of searched quotations by quotation number', async () => {
-      import.meta.jest.setTimeout(10000);
+    test('return list of searched quotations by quotation number', async () => {
       const {
         data: { quotations },
       } = await graphqlFetch({
@@ -87,8 +87,8 @@ describe('TranslatedFilterTexts', () => {
           queryString: 'K271P03',
         },
       });
-      expect(quotations.length).toEqual(1);
-      expect(quotations).toMatchObject([
+      assert.equal(quotations.length, 1);
+      assert.deepStrictEqual(quotations, [
         {
           _id: ProcessingQuotation._id,
           quotationNumber: ProcessingQuotation.quotationNumber,
@@ -97,8 +97,8 @@ describe('TranslatedFilterTexts', () => {
     });
   });
 
-  describe('Query.quotations for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('Query.quotations for anonymous user should', async () => {
+    test('return error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query Quotations($limit: Int = 10, $offset: Int = 0) {
@@ -109,12 +109,12 @@ describe('TranslatedFilterTexts', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      assert.equal(errors[0]?.extensions.code, 'NoPermissionError');
     });
   });
 
-  describe('Query.quotationsCount for admin should', () => {
-    it('return total number of quotations', async () => {
+  test.describe('Query.quotationsCount for admin should', async () => {
+    test('return total number of quotations', async () => {
       const {
         data: { quotationsCount },
       } = await graphqlFetch({
@@ -125,12 +125,12 @@ describe('TranslatedFilterTexts', () => {
         `,
         variables: {},
       });
-      expect(quotationsCount).toEqual(2);
+      assert.equal(quotationsCount, 2);
     });
   });
 
-  describe('Query.quotationsCount for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Query.quotationsCount for anonymous user should', async () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query {
@@ -139,12 +139,12 @@ describe('TranslatedFilterTexts', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      assert.equal(errors[0]?.extensions.code, 'NoPermissionError');
     });
   });
 
-  describe('Query.quotation for admin user should', () => {
-    it('return single quotation when existing id passed', async () => {
+  test.describe('Query.quotation for admin user should', async () => {
+    test('return single quotation when existing id passed', async () => {
       const {
         data: { quotation },
       } = await graphqlFetch({
@@ -185,10 +185,10 @@ describe('TranslatedFilterTexts', () => {
           quotationId: ProposedQuotation._id,
         },
       });
-      expect(quotation._id).toEqual(ProposedQuotation._id);
+      assert.equal(quotation._id, ProposedQuotation._id);
     });
 
-    it('return error when invalid id ', async () => {
+    test('return error when invalid id ', async () => {
       const {
         data: { quotation },
         errors,
@@ -204,8 +204,8 @@ describe('TranslatedFilterTexts', () => {
           quotationId: '',
         },
       });
-      expect(quotation).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.equal(quotation, null);
+      assert.equal(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

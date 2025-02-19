@@ -11,3 +11,4 @@ tsconfig.tsbuildinfo
 /packages/*/lib
 /lib
 /env
+.aider*

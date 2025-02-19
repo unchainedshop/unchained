@@ -1,3 +1,5 @@
+import { test, before, describe } from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleWarehousingProvider } from './seeds/warehousings.js';
@@ -6,14 +8,14 @@ let graphqlFetch;
 let graphqlAnonymousFetch;
 
 describe('WarehousingProviders', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
   });
 
   describe('Query.warehousingProviders when loggedin should', () => {
-    it('return array of all warehousingProviders when type is not given', async () => {
+    test('return array of all warehousingProviders when type is not given', async () => {
       const {
         data: { warehousingProviders },
       } = await graphqlFetch({
@@ -38,7 +40,7 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(warehousingProviders).toMatchObject([
+      assert.deepStrictEqual(warehousingProviders, [
         {
           _id: SimpleWarehousingProvider._id,
           type: SimpleWarehousingProvider.type,
@@ -49,7 +51,7 @@ describe('WarehousingProviders', () => {
       ]);
     });
 
-    it('return list of warehousingProviders based on the given type', async () => {
+    test('return list of warehousingProviders based on the given type', async () => {
       const {
         data: { warehousingProviders },
       } = await graphqlFetch({
@@ -64,12 +66,12 @@ describe('WarehousingProviders', () => {
           type: 'PHYSICAL',
         },
       });
-      expect(warehousingProviders.length).toEqual(1);
+      assert.strictEqual(warehousingProviders.length, 1);
     });
   });
 
   describe('Query.warehousingProvidersCount when loggedin should', () => {
-    it('return total number of warehousing providers', async () => {
+    test('return total number of warehousing providers', async () => {
       const {
         data: { warehousingProvidersCount },
       } = await graphqlFetch({
@@ -80,10 +82,10 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(warehousingProvidersCount).toEqual(1);
+      assert.strictEqual(warehousingProvidersCount, 1);
     });
 
-    it('return total number of warehousingProviders based on the given type', async () => {
+    test('return total number of warehousingProviders based on the given type', async () => {
       const {
         data: { warehousingProvidersCount },
       } = await graphqlFetch({
@@ -96,12 +98,12 @@ describe('WarehousingProviders', () => {
           type: 'PHYSICAL',
         },
       });
-      expect(warehousingProvidersCount).toEqual(1);
+      assert.strictEqual(warehousingProvidersCount, 1);
     });
   });
 
   describe('Query.warehousingProvider when logged in should', () => {
-    it('return single warehousingProvider when ID is provided', async () => {
+    test('return single warehousingProvider when ID is provided', async () => {
       const {
         data: { warehousingProvider },
       } = await graphqlFetch({
@@ -128,10 +130,10 @@ describe('WarehousingProviders', () => {
           warehousingProviderId: SimpleWarehousingProvider._id,
         },
       });
-      expect(warehousingProvider._id).toEqual(SimpleWarehousingProvider._id);
+      assert.strictEqual(warehousingProvider._id, SimpleWarehousingProvider._id);
     });
 
-    it('return error when passed invalid warehousingProviderId ', async () => {
+    test('return error when passed invalid warehousingProviderId ', async () => {
       const {
         data: { warehousingProvider },
         errors,
@@ -147,13 +149,13 @@ describe('WarehousingProviders', () => {
           warehousingProviderId: '',
         },
       });
-      expect(warehousingProvider).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(warehousingProvider, null);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
   describe('Query.warehousingProviders for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query WarehousingProviders {
@@ -164,12 +166,12 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
   describe('Query.warehousingProvidersCount for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query {
@@ -178,7 +180,7 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 });

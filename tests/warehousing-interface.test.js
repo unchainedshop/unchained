@@ -1,16 +1,18 @@
+import { test, before, describe } from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
 
 describe('WarehousingInterfaces', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('For logged in users', () => {
-    it('should return list of warehousingInterfaces by type', async () => {
+    test('should return list of warehousingInterfaces by type', async () => {
       const {
         data: { warehousingInterfaces },
       } = await graphqlFetch({
@@ -27,7 +29,7 @@ describe('WarehousingInterfaces', () => {
           type: 'PHYSICAL',
         },
       });
-      expect(warehousingInterfaces).toMatchObject([
+      assert.deepStrictEqual(warehousingInterfaces, [
         {
           _id: 'shop.unchained.warehousing.store',
           label: 'Store',
@@ -37,7 +39,7 @@ describe('WarehousingInterfaces', () => {
   });
 
   describe('For Anonymous user', () => {
-    it('should return error', async () => {
+    test('should return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -52,7 +54,7 @@ describe('WarehousingInterfaces', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

@@ -1,17 +1,19 @@
+import { test } from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
 
 let graphqlFetch;
 
-describe('TranslatedFilterTexts', () => {
-  beforeAll(async () => {
+test.describe('TranslatedFilterTexts', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Query.translatedFilterTexts for admin user should', () => {
-    it('return array of translatedFilterTexts text when existing id is passed', async () => {
+  test.describe('Query.translatedFilterTexts for admin user should', async () => {
+    test('return array of translatedFilterTexts text when existing id is passed', async () => {
       const {
         data: { translatedFilterTexts },
       } = await graphqlFetch({
@@ -29,14 +31,14 @@ describe('TranslatedFilterTexts', () => {
           filterId: MultiChoiceFilter._id,
         },
       });
-      expect(translatedFilterTexts.length).toEqual(2);
-      expect(translatedFilterTexts).toMatchObject([
+      assert.equal(translatedFilterTexts.length, 2);
+      assert.deepStrictEqual(translatedFilterTexts, [
         { _id: 'german', locale: 'de', title: 'Special', subtitle: null },
         { _id: 'french', locale: 'fr', title: null, subtitle: null },
       ]);
     });
 
-    it('return empty array for non-existing id is passed', async () => {
+    test('return empty array for non-existing id is passed', async () => {
       const {
         data: { translatedFilterTexts },
       } = await graphqlFetch({
@@ -52,12 +54,12 @@ describe('TranslatedFilterTexts', () => {
         },
       });
 
-      expect(translatedFilterTexts.length).toEqual(0);
+      assert.equal(translatedFilterTexts.length, 0);
     });
   });
 
-  describe('Query.TranslatedFilterTexts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('Query.TranslatedFilterTexts for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -71,7 +73,7 @@ describe('TranslatedFilterTexts', () => {
           filterId: 'non-existing-id',
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

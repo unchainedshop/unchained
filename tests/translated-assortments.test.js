@@ -1,17 +1,19 @@
+import { test } from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
 
 let graphqlFetch;
 
-describe('TranslatedAssortmentsText', () => {
-  beforeAll(async () => {
+test.describe('TranslatedAssortmentsText', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Query.translatedAssortmentsText for admin user should', () => {
-    it('return list of assortment text when existing id is passed', async () => {
+  test.describe('Query.translatedAssortmentsText for admin user should', async () => {
+    test('return list of assortment text when existing id is passed', async () => {
       const {
         data: { translatedAssortmentTexts },
       } = await graphqlFetch({
@@ -31,8 +33,8 @@ describe('TranslatedAssortmentsText', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      expect(translatedAssortmentTexts.length).toEqual(2);
-      expect(translatedAssortmentTexts).toMatchObject([
+      assert.equal(translatedAssortmentTexts.length, 2);
+      assert.deepStrictEqual(translatedAssortmentTexts, [
         {
           _id: 'german',
           title: 'simple assortment de',
@@ -52,7 +54,7 @@ describe('TranslatedAssortmentsText', () => {
       ]);
     });
 
-    it('return empty array when non-existing id is passed', async () => {
+    test('return empty array when non-existing id is passed', async () => {
       const {
         data: { translatedAssortmentTexts },
       } = await graphqlFetch({
@@ -68,12 +70,12 @@ describe('TranslatedAssortmentsText', () => {
         },
       });
 
-      expect(translatedAssortmentTexts.length).toEqual(0);
+      assert.equal(translatedAssortmentTexts.length, 0);
     });
   });
 
-  describe('Query.translatedAssortmentTexts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('Query.translatedAssortmentTexts for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -87,7 +89,7 @@ describe('TranslatedAssortmentsText', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });
