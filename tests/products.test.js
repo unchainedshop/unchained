@@ -54,7 +54,6 @@ describe('Products', () => {
           texts: [{ title: 'Simple Product', locale: 'de' }],
         },
       });
-      console.log(result);
       const { data: { createProduct } = {} } = result;
       expect(createProduct).toMatchObject({
         tags: ['simple'],

@@ -1,10 +1,8 @@
-import teardownInMemoryMongoDB from '@shelf/jest-mongodb/lib/teardown.js';
 import { disconnect } from './helpers.js';
 
 async function cleanup() {
-  global.__SUBPROCESS_UNCHAINED__.unref();
-  global.__SUBPROCESS_UNCHAINED__.kill('SIGHUP');
-  return teardownInMemoryMongoDB();
+  global.__SUBPROCESS_UNCHAINED__.kill();
+  global.__MONGOD__.stop();
 }
 
 export default async function teardown(globalConfig) {

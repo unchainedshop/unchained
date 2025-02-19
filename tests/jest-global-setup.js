@@ -1,12 +1,29 @@
 import { spawn } from 'node:child_process';
 import dns from 'node:dns';
 import dotenv from 'dotenv-extended';
-import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup.js';
 import { wipeDatabase } from './helpers.js';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 dns.setDefaultResultOrder('ipv4first');
 
 dotenv.load();
+
+const setupInMemoryMongoDB = async () => {
+  global.__MONGOD__ = await MongoMemoryServer.create({
+    instance: {
+      dbName: 'test',
+      port: 4011,
+    },
+    binary: {
+      version: '8.0.1',
+      skipMD5: true,
+    },
+    spawn: {
+      detached: false,
+    },
+  });
+  process.env.MONGO_URL = `${global.__MONGOD__.getUri()}${global.__MONGOD__.opts.instance.dbName}`;
+};
 
 const startAndWaitForApp = async () => {
   return new Promise((resolve, reject) => {
@@ -16,7 +33,6 @@ const startAndWaitForApp = async () => {
         cwd: `${process.cwd()}/examples/kitchensink`,
         env: {
           ...process.env,
-          MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
           PORT: '4010',
           ROOT_URL: 'http://localhost:4010',
           NODE_ENV: 'development',

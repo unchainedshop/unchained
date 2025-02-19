@@ -21,7 +21,6 @@ ADD packages /source/
 ADD package* /source/
 ADD examples/kitchensink/package* /source/examples/kitchensink/
 ADD examples/minimal/package* /source/examples/minimal/
-ADD jest-mongodb-config.cjs /source/jest-mongodb-config.cjs
 
 ENV MONGOMS_VERSION=7.0.14
 ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
