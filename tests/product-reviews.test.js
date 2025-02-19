@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { SimpleProduct, SimpleProductReview } from './seeds/products.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
@@ -6,16 +8,16 @@ let graphqlFetch;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymusUser;
 
-describe('Products: Reviews', () => {
-  beforeAll(async () => {
+test.describe('Products: Reviews', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymusUser = createAnonymousGraphqlFetch();
   });
 
-  describe('Mutation.createProductReview', () => {
-    it('create a new product review', async () => {
+  test.describe('Mutation.createProductReview', async () => {
+    test('create a new product review', async () => {
       const { data: { createProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createProductReview($productId: ID!, $productReview: ProductReviewInput!) {
@@ -52,13 +54,9 @@ describe('Products: Reviews', () => {
           },
         },
       });
-      expect(createProductReview).toMatchObject({
-        author: {
-          username: 'admin',
-        },
-        product: {
-          _id: SimpleProduct._id,
-        },
+      assert.deepStrictEqual(createProductReview, {
+        author: { username: 'admin' },
+        product: { _id: SimpleProduct._id },
         rating: 5,
         title: 'Hello',
         review: 'World',
@@ -69,7 +67,7 @@ describe('Products: Reviews', () => {
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createProductReview($productId: ID!, $productReview: ProductReviewInput!) {
@@ -87,10 +85,10 @@ describe('Products: Reviews', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createProductReview($productId: ID!, $productReview: ProductReviewInput!) {
@@ -108,11 +106,12 @@ describe('Products: Reviews', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
-  describe('Mutation.updateProductReview', () => {
-    it('update a product review', async () => {
+
+  test.describe('Mutation.updateProductReview', async () => {
+    test('update a product review', async () => {
       const { data: { updateProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateProductReview($productReviewId: ID!, $productReview: ProductReviewInput!) {
@@ -148,7 +147,7 @@ describe('Products: Reviews', () => {
           },
         },
       });
-      expect(updateProductReview).toMatchObject({
+      assert.deepStrictEqual(updateProductReview, {
         author: {
           _id: SimpleProductReview.authorId,
         },
@@ -165,7 +164,7 @@ describe('Products: Reviews', () => {
       });
     });
 
-    it('return not found error when passed non existing productReviewId', async () => {
+    test('return not found error when passed non existing productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateProductReview($productReviewId: ID!, $productReview: ProductReviewInput!) {
@@ -182,10 +181,10 @@ describe('Products: Reviews', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
     });
 
-    it('return error when passed invalid productReviewId', async () => {
+    test('return error when passed invalid productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateProductReview($productReviewId: ID!, $productReview: ProductReviewInput!) {
@@ -202,11 +201,12 @@ describe('Products: Reviews', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
-  describe('Mutation.addProductReviewVote', () => {
-    it('upvote a review', async () => {
+
+  test.describe('Mutation.addProductReviewVote', async () => {
+    test('upvote a review', async () => {
       const { data: { addProductReviewVote } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addProductReviewVote(
@@ -229,7 +229,7 @@ describe('Products: Reviews', () => {
           type: 'UPVOTE',
         },
       });
-      expect(addProductReviewVote).toMatchObject({
+      assert.deepStrictEqual(addProductReviewVote, {
         upvotes: 1,
         downvotes: 0,
         ownVotes: [
@@ -240,7 +240,7 @@ describe('Products: Reviews', () => {
       });
     });
 
-    it('downvote same review', async () => {
+    test('downvote same review', async () => {
       const { data: { addProductReviewVote } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addProductReviewVote(
@@ -264,7 +264,7 @@ describe('Products: Reviews', () => {
           meta: {},
         },
       });
-      expect(addProductReviewVote).toMatchObject({
+      assert.deepStrictEqual(addProductReviewVote, {
         upvotes: 0,
         downvotes: 1,
         ownVotes: [
@@ -275,7 +275,7 @@ describe('Products: Reviews', () => {
       });
     });
 
-    it('return not found error when passed non existing productReviewId', async () => {
+    test('return not found error when passed non existing productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addProductReviewVote(
@@ -294,10 +294,10 @@ describe('Products: Reviews', () => {
           meta: {},
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
     });
 
-    it('return error when passed invalid productReviewId', async () => {
+    test('return error when passed invalid productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addProductReviewVote(
@@ -316,11 +316,12 @@ describe('Products: Reviews', () => {
           meta: {},
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
-  describe('Mutation.removeProductReviewVote', () => {
-    it('remove the downvote from the review', async () => {
+
+  test.describe('Mutation.removeProductReviewVote', async () => {
+    test('remove the downvote from the review', async () => {
       const { data: { removeProductReviewVote } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeProductReviewVote($productReviewId: ID!, $type: ProductReviewVoteType!) {
@@ -339,14 +340,14 @@ describe('Products: Reviews', () => {
           type: 'DOWNVOTE',
         },
       });
-      expect(removeProductReviewVote).toMatchObject({
+      assert.deepStrictEqual(removeProductReviewVote, {
         upvotes: 0,
         downvotes: 0,
         ownVotes: [],
       });
     });
 
-    it('return not found error when passed non existing productReviewId', async () => {
+    test('return not found error when passed non existing productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeProductReviewVote($productReviewId: ID!, $type: ProductReviewVoteType!) {
@@ -360,10 +361,10 @@ describe('Products: Reviews', () => {
           type: 'DOWNVOTE',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
     });
 
-    it('return error when passed invalid productReviewId', async () => {
+    test('return error when passed invalid productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeProductReviewVote($productReviewId: ID!, $type: ProductReviewVoteType!) {
@@ -377,11 +378,12 @@ describe('Products: Reviews', () => {
           type: 'DOWNVOTE',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
-  describe('Mutation.removeProductReview', () => {
-    it('remove a product review', async () => {
+
+  test.describe('Mutation.removeProductReview', async () => {
+    test('remove a product review', async () => {
       const { data: { removeProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeProductReview($productReviewId: ID!) {
@@ -395,10 +397,10 @@ describe('Products: Reviews', () => {
           productReviewId: SimpleProductReview._id,
         },
       });
-      expect(removeProductReview.deleted).toBeTruthy();
+      assert.strictEqual(removeProductReview.deleted, true);
     });
 
-    it('return not found error when passed non existing productReviewId', async () => {
+    test('return not found error when passed non existing productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeProductReview($productReviewId: ID!) {
@@ -412,10 +414,10 @@ describe('Products: Reviews', () => {
           productReviewId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
     });
 
-    it('return error when passed invalid productReviewId', async () => {
+    test('return error when passed invalid productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeProductReview($productReviewId: ID!) {
@@ -429,11 +431,12 @@ describe('Products: Reviews', () => {
           productReviewId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
-  describe('Product.reviews', () => {
-    it('product returns 1 review that is left', async () => {
+
+  test.describe('Product.reviews', async () => {
+    test('product returns 1 review that is left', async () => {
       const { data: { product: { reviews } } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query productReviews($productId: ID!) {
@@ -450,7 +453,7 @@ describe('Products: Reviews', () => {
           productId: SimpleProduct._id,
         },
       });
-      expect(reviews).toMatchObject([
+      assert.deepStrictEqual(reviews, [
         {
           title: 'Hello',
           rating: 5,
@@ -459,8 +462,8 @@ describe('Products: Reviews', () => {
     });
   });
 
-  describe('Query.productReviewsCount for admin user should', () => {
-    it('Returns total number of product reviews', async () => {
+  test.describe('Query.productReviewsCount for admin user should', async () => {
+    test('Returns total number of product reviews', async () => {
       const {
         data: { productReviewsCount },
       } = await graphqlFetch({
@@ -470,12 +473,12 @@ describe('Products: Reviews', () => {
           }
         `,
       });
-      expect(productReviewsCount).toEqual(1);
+      assert.strictEqual(productReviewsCount, 1);
     });
   });
 
-  describe('Query.productReviewsCount for logged in user should', () => {
-    it('Return NoPermissionError', async () => {
+  test.describe('Query.productReviewsCount for logged in user should', async () => {
+    test('Return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query {
@@ -483,12 +486,12 @@ describe('Products: Reviews', () => {
           }
         `,
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions.code, 'NoPermissionError');
     });
   });
 
-  describe('Query.productReviewsCount for anonymous user should', () => {
-    it('Return NoPermissionError', async () => {
+  test.describe('Query.productReviewsCount for anonymous user should', async () => {
+    test('Return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymusUser({
         query: /* GraphQL */ `
           query {
@@ -496,12 +499,12 @@ describe('Products: Reviews', () => {
           }
         `,
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions.code, 'NoPermissionError');
     });
   });
 
-  describe('Query.productReviews', () => {
-    it('product returns all reviews', async () => {
+  test.describe('Query.productReviews', async () => {
+    test('product returns all reviews', async () => {
       const { data: { productReviews } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query productReviews {
@@ -516,7 +519,7 @@ describe('Products: Reviews', () => {
           }
         `,
       });
-      expect(productReviews).toMatchObject([
+      assert.deepStrictEqual(productReviews, [
         {
           title: 'Hello',
           rating: 5,
@@ -527,8 +530,9 @@ describe('Products: Reviews', () => {
       ]);
     });
   });
-  describe('Query.productReview', () => {
-    it('return product review by its ID', async () => {
+
+  test.describe('Query.productReview', async () => {
+    test('return product review by its ID', async () => {
       const { data: { productReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query productReview($productReviewId: ID!) {
@@ -546,7 +550,7 @@ describe('Products: Reviews', () => {
           productReviewId: SimpleProductReview._id,
         },
       });
-      expect(productReview).toMatchObject({
+      assert.deepStrictEqual(productReview, {
         title: 'Title of my Review',
         rating: 1,
         product: {
@@ -555,7 +559,7 @@ describe('Products: Reviews', () => {
       });
     });
 
-    it('return error when passed invalid productReviewId', async () => {
+    test('return error when passed invalid productReviewId', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query productReview($productReviewId: ID!) {
@@ -573,8 +577,8 @@ describe('Products: Reviews', () => {
           productReviewId: '',
         },
       });
-      expect(data).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(data, null);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

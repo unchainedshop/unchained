@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import Stripe from 'stripe';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
@@ -10,8 +12,8 @@ let db;
 let graphqlFetch;
 
 if (STRIPE_SECRET) {
-  describe('Plugins: Stripe Payments', () => {
-    beforeAll(async () => {
+  test.describe('Plugins: Stripe Payments', async () => {
+    test.before(async () => {
       [db] = await setupDatabase();
       graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -67,9 +69,9 @@ if (STRIPE_SECRET) {
       });
     });
 
-    describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
+    test.describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', async () => {
       let idAndSecret;
-      it('Request a new client secret for the purpose of registration', async () => {
+      test('Request a new client secret for the purpose of registration', async () => {
         const { data: { signPaymentProviderForCredentialRegistration } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation signPaymentProviderForCredentialRegistration(
@@ -91,12 +93,14 @@ if (STRIPE_SECRET) {
           },
         });
 
-        expect(signPaymentProviderForCredentialRegistration).not.toBe('');
-        expect(signPaymentProviderForCredentialRegistration).not.toBe(null);
-        expect(signPaymentProviderForCredentialRegistration).not.toBe(undefined);
+        assert.ok(signPaymentProviderForCredentialRegistration);
+        assert.notStrictEqual(signPaymentProviderForCredentialRegistration, '');
+        assert.notStrictEqual(signPaymentProviderForCredentialRegistration, null);
+        assert.notStrictEqual(signPaymentProviderForCredentialRegistration, undefined);
         idAndSecret = signPaymentProviderForCredentialRegistration.split('_secret_');
-      }, 10000);
-      it('Confirm the setup intent', async () => {
+      });
+
+      test('Confirm the setup intent', async () => {
         const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
 
         const confirmedIntent = await stripe.setupIntents.confirm(idAndSecret[0], {
@@ -105,9 +109,7 @@ if (STRIPE_SECRET) {
           payment_method: 'pm_card_visa',
         });
 
-        expect(confirmedIntent).toMatchObject({
-          status: 'succeeded',
-        });
+        assert.deepStrictEqual(confirmedIntent.status, 'succeeded');
 
         const { data: { registerPaymentCredentials } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
@@ -130,13 +132,13 @@ if (STRIPE_SECRET) {
             },
           },
         });
-        expect(registerPaymentCredentials).toMatchObject({
+        assert.deepStrictEqual(registerPaymentCredentials, {
           isValid: true,
           isPreferred: true,
         });
-      }, 10000);
+      });
 
-      it('checkout with stored alias', async () => {
+      test('checkout with stored alias', async () => {
         const { data: { me } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
             query {
@@ -160,14 +162,12 @@ if (STRIPE_SECRET) {
         });
         const credentials = me?.paymentCredentials?.[0];
 
-        expect(credentials).toMatchObject({
+        assert.partialDeepStrictEqual(credentials, {
           isPreferred: true,
           isValid: true,
           meta: {
-            customer: expect.anything(),
             usage: 'off_session',
           },
-          token: expect.anything(),
           paymentProvider: { _id: 'stripe-payment-provider' },
           user: { _id: 'user' },
         });
@@ -204,8 +204,8 @@ if (STRIPE_SECRET) {
 
         const { addCartProduct, updateCart, checkoutCart } = data;
 
-        expect(addCartProduct).toMatchObject(expect.anything());
-        expect(updateCart).toMatchObject({
+        assert.ok(addCartProduct);
+        assert.deepStrictEqual(updateCart, {
           status: 'OPEN',
           payment: {
             provider: {
@@ -213,15 +213,15 @@ if (STRIPE_SECRET) {
             },
           },
         });
-        expect(checkoutCart).toMatchObject({
+        assert.deepStrictEqual(checkoutCart, {
           status: 'CONFIRMED',
         });
-      }, 10000);
+      });
     });
 
-    describe('Mutation.signPaymentProviderForCheckout (Stripe)', () => {
+    test.describe('Mutation.signPaymentProviderForCheckout (Stripe)', async () => {
       let idAndSecret;
-      it('Request a new client secret', async () => {
+      test('Request a new client secret', async () => {
         const { data: { signPaymentProviderForCheckout } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
@@ -237,12 +237,14 @@ if (STRIPE_SECRET) {
           },
         });
 
-        expect(signPaymentProviderForCheckout).not.toBe('');
-        expect(signPaymentProviderForCheckout).not.toBe(null);
-        expect(signPaymentProviderForCheckout).not.toBe(undefined);
+        assert.ok(signPaymentProviderForCheckout);
+        assert.notStrictEqual(signPaymentProviderForCheckout, '');
+        assert.notStrictEqual(signPaymentProviderForCheckout, null);
+        assert.notStrictEqual(signPaymentProviderForCheckout, undefined);
         idAndSecret = signPaymentProviderForCheckout.split('_secret_');
-      }, 10000);
-      it('Confirm the payment and checkout the order', async () => {
+      });
+
+      test('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
 
         const confirmedIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
@@ -251,9 +253,7 @@ if (STRIPE_SECRET) {
           payment_method: 'pm_card_visa',
         });
 
-        expect(confirmedIntent).toMatchObject({
-          status: 'succeeded',
-        });
+        assert.deepStrictEqual(confirmedIntent.status, 'succeeded');
 
         const { data: { checkoutCart } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
@@ -271,16 +271,14 @@ if (STRIPE_SECRET) {
             },
           },
         });
-        expect(checkoutCart).toMatchObject({
+        assert.deepStrictEqual(checkoutCart, {
           status: 'CONFIRMED',
         });
-      }, 10000);
+      });
     });
   });
 } else {
-  describe.skip('Plugins: Stripe Payments', () => {
-    it('Skipped because secret not set', async () => {
-      console.log('skipped'); // eslint-disable-line
-    });
+  test.skip('Plugins: Stripe Payments', () => {
+    console.log('skipped'); // eslint-disable-line
   });
 }

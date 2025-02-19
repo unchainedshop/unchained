@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
@@ -5,16 +7,17 @@ import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/product
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlAnonymousFetch;
-describe('ProductAssignment', () => {
-  beforeAll(async () => {
+
+test.describe('ProductAssignment', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
   });
 
-  describe('mutation.addProductAssignment for admin user should', () => {
-    it('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
+  test.describe('mutation.addProductAssignment for admin user should', async () => {
+    test('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
       const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -84,12 +87,12 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(addProductAssignment.products?.[0]).toMatchObject({
+      assert.deepStrictEqual(addProductAssignment.products?.[0], {
         _id: SimpleProduct._id,
       });
     });
 
-    it('return error when passed non CONFIGURABLE_PRODUCT type', async () => {
+    test('return error when passed non CONFIGURABLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -112,7 +115,7 @@ describe('ProductAssignment', () => {
           ],
         },
       });
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         proxyId: PlanProduct._id,
         code: 'ProductWrongTypeError',
         received: PlanProduct.type,
@@ -120,7 +123,7 @@ describe('ProductAssignment', () => {
       });
     });
 
-    it('return not found error when passed non existing product ID', async () => {
+    test('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -144,12 +147,12 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductNotFoundError',
       });
     });
 
-    it('return not found error when passed non existing proxy ID', async () => {
+    test('return not found error when passed non existing proxy ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -172,12 +175,12 @@ describe('ProductAssignment', () => {
           ],
         },
       });
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductNotFoundError',
       });
     });
 
-    it('return error when passed invalid product ID', async () => {
+    test('return error when passed invalid product ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -201,12 +204,12 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'InvalidIdError',
       });
     });
 
-    it('return error when passed invalid proxy ID', async () => {
+    test('return error when passed invalid proxy ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -229,14 +232,14 @@ describe('ProductAssignment', () => {
           ],
         },
       });
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'InvalidIdError',
       });
     });
   });
 
-  describe('mutation.addProductAssignment for logged in user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.addProductAssignment for logged in user should', async () => {
+    test('return error', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -260,14 +263,14 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });
   });
 
-  describe('mutation.addProductAssignment for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.addProductAssignment for anonymous user should', async () => {
+    test('return error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -291,14 +294,14 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });
   });
 
-  describe('mutation.removeProductAssignment for admin user should', () => {
-    it('Update proxy to a product when passed valid proxy  ID of CONFIGURABLE_PRODUCT type', async () => {
+  test.describe('mutation.removeProductAssignment for admin user should', async () => {
+    test('Update proxy to a product when passed valid proxy  ID of CONFIGURABLE_PRODUCT type', async () => {
       const { data: { removeProductAssignment } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
@@ -337,10 +340,10 @@ describe('ProductAssignment', () => {
           vectors: [{ key: 'key-3', value: 'value-3' }],
         },
       });
-      expect(removeProductAssignment._id).toBe(ConfigurableProduct._id);
+      assert.strictEqual(removeProductAssignment._id, ConfigurableProduct._id);
     });
 
-    it('return error when passed non CONFIGURABLE_PRODUCT type id', async () => {
+    test('return error when passed non CONFIGURABLE_PRODUCT type id', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
@@ -355,14 +358,14 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: SimpleProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
       });
     });
 
-    it('return not found error when passed non existing proxy  ID', async () => {
+    test('return not found error when passed non existing proxy  ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
@@ -377,12 +380,12 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductNotFoundError',
       });
     });
 
-    it('return error when passed invalid valid proxy  ID', async () => {
+    test('return error when passed invalid valid proxy  ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
@@ -396,14 +399,14 @@ describe('ProductAssignment', () => {
           vectors: [{ key: 'key-3', value: 'value-3' }],
         },
       });
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'InvalidIdError',
       });
     });
   });
 
-  describe('mutation.removeProductAssignment for normal user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeProductAssignment for normal user should', async () => {
+    test('return error', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
@@ -418,14 +421,14 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });
   });
 
-  describe('mutation.removeProductAssignment for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeProductAssignment for anonymous user should', async () => {
+    test('return error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
@@ -440,7 +443,7 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });

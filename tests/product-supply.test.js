@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
@@ -5,14 +7,14 @@ import { PlanProduct, SimpleProduct } from './seeds/products.js';
 let graphqlFetch;
 let db;
 
-describe('ProductsSupply', () => {
-  beforeAll(async () => {
+test.describe('ProductsSupply', async () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.updateProductSupply should for admin user', () => {
-    it('Update product supply successfuly when passed SIMPLE_PRODUCT type', async () => {
+  test.describe('mutation.updateProductSupply should for admin user', async () => {
+    test('Update product supply successfuly when passed SIMPLE_PRODUCT type', async () => {
       const { data: { updateProductSupply } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
@@ -58,9 +60,9 @@ describe('ProductsSupply', () => {
         },
       });
 
-      expect(updateProductSupply._id).toEqual(SimpleProduct._id);
+      assert.strictEqual(updateProductSupply._id, SimpleProduct._id);
       const updatedProduct = await db.collection('products').findOne({ _id: SimpleProduct._id });
-      expect(updatedProduct.supply).toEqual({
+      assert.deepStrictEqual(updatedProduct.supply, {
         weightInGram: 100,
         heightInMillimeters: 200,
         lengthInMillimeters: 300,
@@ -68,7 +70,7 @@ describe('ProductsSupply', () => {
       });
     });
 
-    it('return error when passed non SIMPLE_PRODUCT type', async () => {
+    test('return error when passed non SIMPLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
@@ -88,14 +90,14 @@ describe('ProductsSupply', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: 'PLAN_PRODUCT',
         required: 'SIMPLE_PRODUCT',
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
@@ -115,10 +117,10 @@ describe('ProductsSupply', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
@@ -138,12 +140,12 @@ describe('ProductsSupply', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateProductSupply for anonymous user', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateProductSupply for anonymous user', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -164,7 +166,7 @@ describe('ProductsSupply', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

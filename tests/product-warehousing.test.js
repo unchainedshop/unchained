@@ -1,17 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
-describe('ProductsWarehousing', () => {
-  beforeAll(async () => {
+test.describe('ProductsWarehousing', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.updateProductWarehousing should for admin user', () => {
-    it('Update product warehousing successfuly when passed SIMPLE_PRODUCT type', async () => {
+  test.describe('mutation.updateProductWarehousing should for admin user', async () => {
+    test('Update product warehousing successfuly when passed SIMPLE_PRODUCT type', async () => {
       const { data: { updateProductWarehousing } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(
@@ -62,14 +64,14 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(updateProductWarehousing).toMatchObject({
+      assert.deepStrictEqual(updateProductWarehousing, {
         _id: SimpleProduct._id,
         sku: 'SKU-100',
         baseUnit: 'Kg',
       });
     });
 
-    it('return error when passed non SIMPLE_PRODUCT type', async () => {
+    test('return error when passed non SIMPLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(
@@ -90,14 +92,14 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: PlanProduct.type,
         required: 'SIMPLE_PRODUCT',
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(
@@ -118,10 +120,10 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(
@@ -142,12 +144,12 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateProductWarehousing for anonymous user', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateProductWarehousing for anonymous user', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -169,7 +171,7 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

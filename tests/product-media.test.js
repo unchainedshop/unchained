@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
@@ -17,14 +19,14 @@ let graphqlFetch;
 const productMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
 const productMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
-describe('ProductsMedia', () => {
-  beforeAll(async () => {
+test.describe('ProductsMedia', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.prepareProductMediaUpload for admin user should', () => {
-    it('return a sign PUT url for media upload', async () => {
+  test.describe('Mutation.prepareProductMediaUpload for admin user should', async () => {
+    test('return a sign PUT url for media upload', async () => {
       const {
         data: { prepareProductMediaUpload },
       } = await graphqlFetch({
@@ -42,10 +44,10 @@ describe('ProductsMedia', () => {
           productId: SimpleProduct._id,
         },
       });
-      expect(prepareProductMediaUpload.putURL).not.toBe(null);
-    }, 10000);
+      assert.notStrictEqual(prepareProductMediaUpload.putURL, null);
+    });
 
-    it('upload file via PUT successfully', async () => {
+    test('upload file via PUT successfully', async () => {
       const {
         data: { prepareProductMediaUpload },
       } = await graphqlFetch({
@@ -68,10 +70,10 @@ describe('ProductsMedia', () => {
         url: prepareProductMediaUpload.putURL,
       });
 
-      expect(prepareProductMediaUpload.putURL).not.toBe(null);
-    }, 10000);
+      assert.notStrictEqual(prepareProductMediaUpload.putURL, null);
+    });
 
-    it('link uploaded media file with product media successfully', async () => {
+    test('link uploaded media file with product media successfully', async () => {
       const {
         data: { prepareProductMediaUpload },
       } = await graphqlFetch(
@@ -117,7 +119,7 @@ describe('ProductsMedia', () => {
           type: 'image/jpeg',
         },
       });
-      expect(confirmMediaUpload).toMatchObject({
+      assert.deepStrictEqual(confirmMediaUpload, {
         _id: prepareProductMediaUpload._id,
         name: 'test-media',
         type: 'image/jpeg',
@@ -126,8 +128,8 @@ describe('ProductsMedia', () => {
     });
   });
 
-  describe('mutation.reorderProductMedia for admin user should', () => {
-    it('update product media sortkey successfuly when provided valid media ID', async () => {
+  test.describe('mutation.reorderProductMedia for admin user should', async () => {
+    test('update product media sortkey successfuly when provided valid media ID', async () => {
       const { data: { reorderProductMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation ReorderProductmedia($sortKeys: [ReorderProductMediaInput!]!) {
@@ -154,10 +156,10 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(reorderProductMedia[0].sortKey).toEqual(11);
+      assert.strictEqual(reorderProductMedia[0].sortKey, 11);
     });
 
-    it('skiped any passed sort key passed with in-valid media ID', async () => {
+    test('skiped any passed sort key passed with in-valid media ID', async () => {
       const {
         data: { reorderProductMedia },
       } = await graphqlFetch({
@@ -185,12 +187,12 @@ describe('ProductsMedia', () => {
           ],
         },
       });
-      expect(reorderProductMedia.length).toEqual(0);
+      assert.strictEqual(reorderProductMedia.length, 0);
     });
   });
 
-  describe('mutation.reorderProductMedia for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.reorderProductMedia for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -211,12 +213,12 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.updateProductMediaTexts for admin user should', () => {
-    it('update product media text successfuly when provided valid media ID', async () => {
+  test.describe('mutation.updateProductMediaTexts for admin user should', async () => {
+    test('update product media text successfuly when provided valid media ID', async () => {
       const { data: { updateProductMediaTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
@@ -238,15 +240,15 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(updateProductMediaTexts[0]._id).not.toBe(null);
-      expect(updateProductMediaTexts[0]).toMatchObject({
+      assert.notStrictEqual(updateProductMediaTexts[0]._id, null);
+      assert.deepStrictEqual(updateProductMediaTexts[0], {
         locale: 'en',
         title: 'english title',
         subtitle: 'english title subtitle',
       });
     });
 
-    it('return not found error when passed non existing media ID', async () => {
+    test('return not found error when passed non existing media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
@@ -264,10 +266,10 @@ describe('ProductsMedia', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductMediaNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductMediaNotFoundError');
     });
 
-    it('return error when passed invalid media ID', async () => {
+    test('return error when passed invalid media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
@@ -285,12 +287,12 @@ describe('ProductsMedia', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateProductMediaTexts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateProductMediaTexts for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -314,12 +316,12 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.removeProductMedia for admin user should', () => {
-    it('remove product media successfuly when provided valid media ID', async () => {
+  test.describe('mutation.removeProductMedia for admin user should', async () => {
+    test('remove product media successfuly when provided valid media ID', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductMedia($productMediaId: ID!) {
@@ -361,10 +363,10 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductMediaNotFoundError');
-    }, 10000);
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductMediaNotFoundError');
+    });
 
-    it('return not found error when passed non existing productMediaId', async () => {
+    test('return not found error when passed non existing productMediaId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductMedia($productMediaId: ID!) {
@@ -378,10 +380,10 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductMediaNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductMediaNotFoundError');
     });
 
-    it('return error when passed invalid productMediaId', async () => {
+    test('return error when passed invalid productMediaId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductMedia($productMediaId: ID!) {
@@ -395,12 +397,12 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.removeProductMedia for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeProductMedia for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -416,7 +418,7 @@ describe('ProductsMedia', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

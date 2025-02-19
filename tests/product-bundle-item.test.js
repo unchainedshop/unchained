@@ -1,17 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct, SimpleProductBundle } from './seeds/products.js';
 
 let graphqlFetch;
 
-describe('ProductBundleItem', () => {
-  beforeAll(async () => {
+test.describe('ProductBundleItem', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.createProductBundleItem for admin user should', () => {
-    it('create product bundle item successfuly when passed BUNDLE_PRODUCT type', async () => {
+  test.describe('mutation.createProductBundleItem for admin user should', async () => {
+    test('create product bundle item successfuly when passed BUNDLE_PRODUCT type', async () => {
       const { data: { createProductBundleItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
@@ -68,13 +70,13 @@ describe('ProductBundleItem', () => {
         },
       });
 
-      expect(createProductBundleItem.bundleItems?.[0]).toMatchObject({
+      assert.deepStrictEqual(createProductBundleItem.bundleItems?.[0], {
         product: { _id: SimpleProduct._id },
         quantity: 100,
       });
     });
 
-    it('return error when passed non BUNDLE_PRODUCT type', async () => {
+    test('return error when passed non BUNDLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
@@ -91,14 +93,14 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: SimpleProduct.type,
         required: 'BUNDLE_PRODUCT',
       });
     });
 
-    it('return not found error when passed non existing product ID', async () => {
+    test('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
@@ -115,10 +117,10 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid product ID', async () => {
+    test('return error when passed invalid product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
@@ -135,10 +137,10 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return not found error when passed non existing bundle product ID', async () => {
+    test('return not found error when passed non existing bundle product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
@@ -155,10 +157,10 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid bundle product ID', async () => {
+    test('return error when passed invalid bundle product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
@@ -175,12 +177,12 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.createProductBundleItem for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.createProductBundleItem for anonymous user should', async () => {
+    test('return error', async () => {
       const graphQlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphQlAnonymousFetch({
         query: /* GraphQL */ `
@@ -198,12 +200,12 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.removeBundleItem for admin user should', () => {
-    it('remove product bundle item successfuly when passed BUNDLE_PRODUCT type', async () => {
+  test.describe('mutation.removeBundleItem for admin user should', async () => {
+    test('remove product bundle item successfuly when passed BUNDLE_PRODUCT type', async () => {
       const { data: { removeBundleItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveBundleItem($productId: ID!, $index: Int!) {
@@ -250,10 +252,10 @@ describe('ProductBundleItem', () => {
         },
       });
 
-      expect(removeBundleItem._id).toEqual(SimpleProductBundle._id);
+      assert.strictEqual(removeBundleItem._id, SimpleProductBundle._id);
     });
 
-    it('return error when passed non BUNDLE_PRODUCT type', async () => {
+    test('return error when passed non BUNDLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveBundleItem($productId: ID!, $index: Int!) {
@@ -268,14 +270,14 @@ describe('ProductBundleItem', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         productId: 'simpleproduct',
         received: 'SIMPLE_PRODUCT',
         required: 'BUNDLE_PRODUCT',
       });
     });
-    it('return not found error when passed non existing product ID', async () => {
+    test('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveBundleItem($productId: ID!, $index: Int!) {
@@ -290,10 +292,10 @@ describe('ProductBundleItem', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid product ID', async () => {
+    test('return error when passed invalid product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveBundleItem($productId: ID!, $index: Int!) {
@@ -308,12 +310,12 @@ describe('ProductBundleItem', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.removeBundleItem for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeBundleItem for anonymous user should', async () => {
+    test('return error', async () => {
       const graphQlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphQlAnonymousFetch({
         query: /* GraphQL */ `
@@ -328,7 +330,7 @@ describe('ProductBundleItem', () => {
           index: 0,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

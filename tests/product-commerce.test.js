@@ -1,17 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
-describe('ProductsCommerce', () => {
-  beforeAll(async () => {
+test.describe('ProductsCommerce', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.updateProductCommerce for admin user should ', () => {
-    it('Update product pricing successfuly', async () => {
+  test.describe('mutation.updateProductCommerce for admin user should', async () => {
+    test('Update product pricing successfuly', async () => {
       const { data: { updateProductCommerce } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
@@ -71,7 +73,7 @@ describe('ProductsCommerce', () => {
         },
       });
 
-      expect(updateProductCommerce).toMatchObject({
+      assert.deepStrictEqual(updateProductCommerce, {
         _id: SimpleProduct._id,
         catalogPrice: {
           amount: 100,
@@ -82,7 +84,7 @@ describe('ProductsCommerce', () => {
       });
     });
 
-    it('return not found error when attempting to update non existing product', async () => {
+    test('return not found error when attempting to update non existing product', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
@@ -108,10 +110,10 @@ describe('ProductsCommerce', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
@@ -137,12 +139,12 @@ describe('ProductsCommerce', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateProductCommerce for anonymous user', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateProductCommerce for anonymous user', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -169,7 +171,7 @@ describe('ProductsCommerce', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

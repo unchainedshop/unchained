@@ -1,17 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct, ProductVariations, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
-describe('ProductsVariation', () => {
-  beforeAll(async () => {
+test.describe('ProductsVariation', async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('query.translatedProductVariationTexts for admin user should', () => {
-    it('return list of product variation texts when provided valid ID', async () => {
+  test.describe('query.translatedProductVariationTexts for admin user should', async () => {
+    test('return list of product variation texts when provided valid ID', async () => {
       const { data: { translatedProductVariationTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query TranslatedProductVariationTexts(
@@ -33,8 +35,8 @@ describe('ProductsVariation', () => {
           productVariationId: ProductVariations[0]._id,
         },
       });
-      expect(translatedProductVariationTexts.length).toEqual(2);
-      expect(translatedProductVariationTexts).toMatchObject([
+      assert.equal(translatedProductVariationTexts.length, 2);
+      assert.deepStrictEqual(translatedProductVariationTexts, [
         {
           _id: 'product-color-variation-1-en-text',
           locale: 'en',
@@ -50,7 +52,7 @@ describe('ProductsVariation', () => {
       ]);
     });
 
-    it('return empty array when no match is found', async () => {
+    test('return empty array when no match is found', async () => {
       const { data: { translatedProductVariationTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query TranslatedProductVariationTexts(
@@ -69,12 +71,12 @@ describe('ProductsVariation', () => {
           productVariationId: 'invalid-product-id',
         },
       });
-      expect(translatedProductVariationTexts.length).toEqual(0);
+      assert.equal(translatedProductVariationTexts.length, 0);
     });
   });
 
-  describe('query.translatedProductVariationTexts for anonymous user should', () => {
-    it('return valid result', async () => {
+  test.describe('query.translatedProductVariationTexts for anonymous user should', async () => {
+    test('return valid result', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { data: { translatedProductVariationTexts } = {} } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -97,7 +99,7 @@ describe('ProductsVariation', () => {
           productVariationId: ProductVariations[1]._id,
         },
       });
-      expect(translatedProductVariationTexts).toMatchObject([
+      assert.deepStrictEqual(translatedProductVariationTexts, [
         {
           _id: 'product-text-variation-2-en-text',
           locale: 'en',
@@ -114,8 +116,8 @@ describe('ProductsVariation', () => {
     });
   });
 
-  describe('mutation.createProductVariation for admin user should', () => {
-    it('create product variation successfully when passed CONFIGURABLE_PRODUCT product type', async () => {
+  test.describe('mutation.createProductVariation for admin user should', async () => {
+    test('create product variation successfully when passed CONFIGURABLE_PRODUCT product type', async () => {
       const { data: { createProductVariation } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -153,7 +155,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(createProductVariation).toMatchObject({
+      assert.deepStrictEqual(createProductVariation, {
         texts: {
           title: 'product variation title',
         },
@@ -162,7 +164,7 @@ describe('ProductsVariation', () => {
       });
     });
 
-    it('return error when passed non CONFIGURABLE_PRODUCT product type', async () => {
+    test('return error when passed non CONFIGURABLE_PRODUCT product type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -185,14 +187,14 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: PlanProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
       });
     });
 
-    it('return error when passed non existing product ID', async () => {
+    test('return error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -214,10 +216,10 @@ describe('ProductsVariation', () => {
           texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
-      expect(errors[0]?.extensions.code).toEqual('ProductNotFoundError');
+      assert.equal(errors[0]?.extensions.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid product ID', async () => {
+    test('return error when passed invalid product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -239,12 +241,12 @@ describe('ProductsVariation', () => {
           texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
-      expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
+      assert.equal(errors[0]?.extensions.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.createProductVariation for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.createProductVariation for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -267,12 +269,12 @@ describe('ProductsVariation', () => {
           texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.createProductVariationOption for admin user should', () => {
-    it('create product variation option successfully', async () => {
+  test.describe('mutation.createProductVariationOption for admin user should', async () => {
+    test('create product variation option successfully', async () => {
       const { data: { createProductVariationOption } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
@@ -307,19 +309,20 @@ describe('ProductsVariation', () => {
           texts: [{ title: 'product variation option title', locale: 'de' }],
         },
       });
-      expect(createProductVariationOption._id).toBe(ProductVariations[0]._id);
-      expect(
+      assert.equal(createProductVariationOption._id, ProductVariations[0]._id);
+      assert.deepStrictEqual(
         createProductVariationOption.options[createProductVariationOption.options.length - 1],
-      ).toMatchObject({
-        _id: 'product-color-variation-1:key-1',
-        value: 'key-1',
-        texts: {
-          title: 'product variation option title',
+        {
+          _id: 'product-color-variation-1:key-1',
+          value: 'key-1',
+          texts: {
+            title: 'product variation option title',
+          },
         },
-      });
+      );
     });
 
-    it('return error when passed invalid product variation ID', async () => {
+    test('return error when passed invalid product variation ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
@@ -342,12 +345,12 @@ describe('ProductsVariation', () => {
           texts: [{ title: 'product variation option title', locale: 'de' }],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
+      assert.equal(errors[0]?.extensions?.code, 'ProductVariationNotFoundError');
     });
   });
 
-  describe('mutation.createProductVariationOption for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.createProductVariationOption for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -372,12 +375,12 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.updateProductVariationTexts for admin user should', () => {
-    it('update product variation option texts successfuly', async () => {
+  test.describe('mutation.updateProductVariationTexts for admin user should', async () => {
+    test('update product variation option texts successfuly', async () => {
       const { data: { updateProductVariationTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductVariationTexts(
@@ -409,14 +412,14 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(updateProductVariationTexts[0]._id).not.toBe(null);
-      expect(updateProductVariationTexts[0]).toMatchObject({
+      assert.notEqual(updateProductVariationTexts[0]._id, null);
+      assert.deepStrictEqual(updateProductVariationTexts[0], {
         locale: 'en',
         title: 'variation option 2 title',
       });
     });
 
-    it('return not found error when passed non existing product variationId', async () => {
+    test('return not found error when passed non existing product variationId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductVariationTexts(
@@ -444,10 +447,10 @@ describe('ProductsVariation', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
+      assert.equal(errors[0]?.extensions?.code, 'ProductVariationNotFoundError');
     });
 
-    it('return error when passed invalid productvariationId', async () => {
+    test('return error when passed invalid productvariationId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductVariationTexts(
@@ -475,12 +478,12 @@ describe('ProductsVariation', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.equal(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateProductVariationTexts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateProductVariationTexts for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -513,12 +516,12 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.removeProductVariationOption for admin user should', () => {
-    it('remove product variation option successfuly', async () => {
+  test.describe('mutation.removeProductVariationOption for admin user should', async () => {
+    test('remove product variation option successfuly', async () => {
       const { data: { removeProductVariationOption } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariationOption(
@@ -556,14 +559,15 @@ describe('ProductsVariation', () => {
           productVariationOptionValue: 'variation-option-1-value',
         },
       });
-      expect(removeProductVariationOption.options.length).toEqual(2);
-      expect(
+      assert.equal(removeProductVariationOption.options.length, 2);
+      assert.equal(
         removeProductVariationOption.options.filter((o) => o.value === 'variation-option-1-value')
           .length,
-      ).toEqual(0);
+        0,
+      );
     });
 
-    it('return error when passed invalid product variation ID', async () => {
+    test('return error when passed invalid product variation ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariationOption(
@@ -583,10 +587,10 @@ describe('ProductsVariation', () => {
           productVariationOptionValue: 'variation-option-2-value',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.equal(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return not found error when passed non existing product variation ID', async () => {
+    test('return not found error when passed non existing product variation ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariationOption(
@@ -606,12 +610,12 @@ describe('ProductsVariation', () => {
           productVariationOptionValue: 'variation-option-2-value',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
+      assert.equal(errors[0]?.extensions?.code, 'ProductVariationNotFoundError');
     });
   });
 
-  describe('mutation.removeProductVariationOption for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeProductVariationOption for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -633,12 +637,12 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.removeProductVariation for admin user should', () => {
-    it('remove product variation successfuly', async () => {
+  test.describe('mutation.removeProductVariation for admin user should', async () => {
+    test('remove product variation successfuly', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariation($productVariationId: ID!) {
@@ -675,10 +679,10 @@ describe('ProductsVariation', () => {
           productVariationId: ProductVariations[0]._id,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('ProductVariationNotFoundError');
+      assert.equal(errors[0].extensions?.code, 'ProductVariationNotFoundError');
     });
 
-    it('return not found error when passed non existing productVariationId', async () => {
+    test('return not found error when passed non existing productVariationId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariation($productVariationId: ID!) {
@@ -691,10 +695,10 @@ describe('ProductsVariation', () => {
           productVariationId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
+      assert.equal(errors[0]?.extensions?.code, 'ProductVariationNotFoundError');
     });
 
-    it('return error when passed invalid productVariationId', async () => {
+    test('return error when passed invalid productVariationId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariation($productVariationId: ID!) {
@@ -707,12 +711,12 @@ describe('ProductsVariation', () => {
           productVariationId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.equal(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.removeProductVariation for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeProductVariation for anonymous user should', async () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -726,7 +730,7 @@ describe('ProductsVariation', () => {
           productVariationId: ProductVariations[0]._id,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });
