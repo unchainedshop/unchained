@@ -17,7 +17,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
   describe('Plugins: Postfinance Checkout Payments', () => {
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a postfinance checkout provider
       await db.collection('payment-providers').findOrInsertOne({

@@ -8,14 +8,12 @@ let graphqlFetch;
 describe('AssortmentFilter', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.reorderAssortmentFilters for admin users should', () => {
     it('update sortkey value when passed valid assortment filter ID', async () => {
-      const {
-        data: { reorderAssortmentFilters },
-      } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentFilters($sortkeys: [ReorderAssortmentFilterInput!]!) {
             reorderAssortmentFilters(sortKeys: $sortkeys) {
@@ -40,7 +38,9 @@ describe('AssortmentFilter', () => {
           ],
         },
       });
-
+      const {
+        data: { reorderAssortmentFilters },
+      } = result;
       expect(reorderAssortmentFilters[0]).toEqual({
         _id: AssortmentFilters[0]._id,
         sortKey: 11,
@@ -77,7 +77,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.reorderAssortmentFilters for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -156,7 +156,7 @@ describe('AssortmentFilter', () => {
     });
 
     it('return error when passed filter ID that do not exist', async () => {
-      const { errors } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
             addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
@@ -170,6 +170,7 @@ describe('AssortmentFilter', () => {
           tags: ['assortment-filter-1'],
         },
       });
+      const { errors } = result;
       expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
     });
@@ -216,7 +217,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.addAssortmentFilter for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -319,7 +320,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.removeAssortmentFilter for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {

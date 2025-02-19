@@ -10,9 +10,9 @@ let graphqlAnonymousUserFetch;
 describe('Bookmark', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlNormalUserFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlAnonymousUserFetch = await createAnonymousGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlNormalUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlAnonymousUserFetch = createAnonymousGraphqlFetch();
   });
 
   describe('For admin user ', () => {

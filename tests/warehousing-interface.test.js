@@ -6,7 +6,7 @@ let graphqlFetch;
 describe('WarehousingInterfaces', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('For logged in users', () => {
@@ -38,7 +38,7 @@ describe('WarehousingInterfaces', () => {
 
   describe('For Anonymous user', () => {
     it('should return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query WarehousingInterfaces($type: WarehousingProviderType!) {

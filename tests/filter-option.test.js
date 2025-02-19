@@ -7,7 +7,7 @@ let graphqlFetch;
 describe('FilterOption', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.createFilterOption for admin users should', () => {
@@ -104,7 +104,7 @@ describe('FilterOption', () => {
 
   describe('mutation.createFilterOption for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
@@ -203,7 +203,7 @@ describe('FilterOption', () => {
 
   describe('mutation.removeFilterOption for anonymous users should', () => {
     it('return error when passed valid filter ID', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {

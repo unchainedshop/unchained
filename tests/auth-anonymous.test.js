@@ -8,8 +8,8 @@ let adminGraphqlFetch;
 describe('Auth for anonymous users', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createAnonymousGraphqlFetch();
-    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createAnonymousGraphqlFetch();
+    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.loginAsGuest', () => {

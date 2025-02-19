@@ -17,14 +17,14 @@ let graphqlFetchAsAnonymousUser;
 describe('Products', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
+    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.createProduct', () => {
     it('create a new product', async () => {
-      const { data: { createProduct } = {} } = await graphqlFetchAsAdmin({
+      const result = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation createProduct($product: CreateProductInput!, $texts: [ProductTextInput!]) {
             createProduct(product: $product, texts: $texts) {
@@ -54,6 +54,8 @@ describe('Products', () => {
           texts: [{ title: 'Simple Product', locale: 'de' }],
         },
       });
+      console.log(result);
+      const { data: { createProduct } = {} } = result;
       expect(createProduct).toMatchObject({
         tags: ['simple'],
         status: 'DRAFT',

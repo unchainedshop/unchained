@@ -8,7 +8,7 @@ let graphqlFetch;
 describe('User Bookmarks', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.createBookmark', () => {

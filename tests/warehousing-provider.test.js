@@ -8,8 +8,8 @@ let graphqlAnonymousFetch;
 describe('WarehousingProviders', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlAnonymousFetch = createAnonymousGraphqlFetch();
   });
 
   describe('Query.warehousingProviders when loggedin should', () => {

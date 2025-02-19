@@ -9,9 +9,9 @@ let graphqlFetchAsNormalUser;
 describe('Assortments', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('Query.assortments for admin user should', () => {
@@ -486,7 +486,7 @@ describe('Assortments', () => {
 
   describe('Query.searchAssortments for anonymous user should', () => {
     it('Return assortments', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: {
           searchAssortments: { assortments },
@@ -518,7 +518,7 @@ describe('Assortments', () => {
 
   describe('Query.assortments for anonymous user should', () => {
     it('return assortments', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: { assortments },
       } = await graphqlAnonymousFetch({
@@ -609,7 +609,7 @@ describe('Assortments', () => {
 
   describe('mutation.createAssortment for anonymous user should', () => {
     it('Return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation CreateAssortment(
@@ -747,7 +747,7 @@ describe('Assortments', () => {
 
   describe('mutation.updateAssortment for anonymous user should', () => {
     it('Return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
@@ -866,7 +866,7 @@ describe('Assortments', () => {
 
   describe('mutation.setBaseAssortment for anonymous user should', () => {
     it('Return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation SetBaseAssortment($assortmentId: ID!) {
@@ -996,7 +996,7 @@ describe('Assortments', () => {
 
   describe('mutation.removeAssortment for anonymous user should', () => {
     it('Return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortment($assortmentId: ID!) {

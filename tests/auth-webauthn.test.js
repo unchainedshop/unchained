@@ -5,7 +5,7 @@ let anonymousGraphqlFetch;
 describe('WebAuthn Flows', () => {
   beforeAll(async () => {
     await setupDatabase();
-    anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
+    anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.createWebAuthnCredentialCreationOptions', () => {

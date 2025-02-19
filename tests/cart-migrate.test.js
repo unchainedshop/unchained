@@ -10,7 +10,7 @@ let orderId;
 describe('Guest user cart migration', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
+    anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
 
   it('login as guest', async () => {
@@ -27,7 +27,7 @@ describe('Guest user cart migration', () => {
   });
 
   it('add a product to the cart', async () => {
-    loggedInGraphqlFetch = await createLoggedInGraphqlFetch(GUEST_TOKEN);
+    loggedInGraphqlFetch = createLoggedInGraphqlFetch(GUEST_TOKEN);
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation addCartProduct(

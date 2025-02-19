@@ -13,7 +13,7 @@ if (STRIPE_SECRET) {
   describe('Plugins: Stripe Payments', () => {
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a stripe provider
       await db.collection('payment-providers').findOrInsertOne({

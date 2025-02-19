@@ -8,9 +8,9 @@ let graphqlAnonymousFetch;
 describe('ProductAssignment', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlAnonymousFetch = createAnonymousGraphqlFetch();
   });
 
   describe('mutation.addProductAssignment for admin user should', () => {

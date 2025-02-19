@@ -13,7 +13,7 @@ const payrexxInstance = 'unchained-test';
 describe('Plugins: Payrexx Payments', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Add a payrexx provider
     await db.collection('payment-providers').findOrInsertOne({

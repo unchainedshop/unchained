@@ -7,7 +7,7 @@ let graphqlFetch;
 describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Query.translatedFilterTexts for admin user should', () => {
@@ -58,7 +58,7 @@ describe('TranslatedFilterTexts', () => {
 
   describe('Query.TranslatedFilterTexts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query TranslatedFilterTexts($filterId: ID!, $filterOptionValue: String) {

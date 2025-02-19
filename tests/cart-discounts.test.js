@@ -8,8 +8,8 @@ let adminGraphqlFetch;
 describe('Cart: Discounts', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.addCartDiscount', () => {

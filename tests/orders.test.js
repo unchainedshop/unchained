@@ -9,9 +9,9 @@ let graphqlFetchAsAnonymousUser;
 describe('Order: Management', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('Query.ordersCount for logged in user should', () => {

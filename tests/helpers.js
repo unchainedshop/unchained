@@ -1,5 +1,4 @@
 import { MongoClient, Collection } from 'mongodb';
-import { execute, toPromise, gql, createHttpLink } from '@apollo/client/core/index.js';
 import seedLocaleData from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
@@ -13,6 +12,7 @@ import seedAssortments from './seeds/assortments.js';
 import seedBookmarks from './seeds/bookmark.js';
 import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
+import { GraphQLClient } from 'graphql-request';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
   try {
@@ -66,37 +66,26 @@ export const wipeDatabase = async () => {
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
 };
 
-const convertLinkToFetch =
-  (link) =>
-  ({ query, ...operation }) =>
-    toPromise(
-      execute(link, {
-        query: gql(query),
-        ...operation,
-      }),
-    );
-
-export const createAnonymousGraphqlFetch = async () => {
-  const uri = 'http://localhost:4010/graphql';
-
-  const link = createHttpLink({
-    uri,
-    includeExtensions: true,
-  });
-  return convertLinkToFetch(link);
+export const createAnonymousGraphqlFetch = () => {
+  return createLoggedInGraphqlFetch(null);
 };
 
-export const createLoggedInGraphqlFetch = async (token = ADMIN_TOKEN) => {
-  const uri = 'http://localhost:4010/graphql';
-
-  const link = createHttpLink({
-    uri,
-    includeExtensions: true,
-    headers: {
-      authorization: token,
-    },
+export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
+  const client = new GraphQLClient('http://localhost:4010/graphql', {
+    errorPolicy: 'all',
   });
-  return convertLinkToFetch(link);
+
+  return async ({ query, headers, ...options }) =>
+    client.rawRequest({
+      query,
+      requestHeaders: token
+        ? {
+            authorization: token,
+            ...(headers || {}),
+          }
+        : headers,
+      ...options,
+    });
 };
 
 export const putFile = async (file, { url, type }) => {

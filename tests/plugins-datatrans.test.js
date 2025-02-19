@@ -13,7 +13,7 @@ describe('Plugins: Datatrans Payments', () => {
 
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Add a datatrans provider
     await db.collection('payment-providers').findOrInsertOne({

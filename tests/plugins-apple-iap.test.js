@@ -22,7 +22,7 @@ let graphqlFetch;
 describe('Plugins: Apple IAP Payments', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
     await db.collection('products').findOrInsertOne({
       ...SimpleProduct,

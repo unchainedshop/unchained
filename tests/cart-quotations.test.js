@@ -9,7 +9,7 @@ let graphqlFetch;
 describe('Cart: Quotations', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
   describe('Mutation.addCartQuotation', () => {

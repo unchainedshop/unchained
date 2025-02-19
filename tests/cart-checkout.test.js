@@ -7,7 +7,7 @@ let orderId;
 describe('Cart Checkout Flow', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.createCart', () => {

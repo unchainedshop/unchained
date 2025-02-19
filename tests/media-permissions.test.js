@@ -31,10 +31,10 @@ describe('Media Permissions', () => {
   let db;
   beforeAll(async () => {
     [db] = await setupDatabase();
-    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    loggedInGraphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-    anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
-    guestGraphqlFetch = await createLoggedInGraphqlFetch(GUEST_TOKEN);
+    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    loggedInGraphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    anonymousGraphqlFetch = createAnonymousGraphqlFetch();
+    guestGraphqlFetch = createLoggedInGraphqlFetch(GUEST_TOKEN);
   });
 
   describe('Mutation.prepareUserAvatarUpload for admin user should', () => {

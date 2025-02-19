@@ -7,9 +7,9 @@ let graphqlfetchAsAnonymousUser;
 describe('Heartbeat', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlfetchAsAnonymousUser = await createAnonymousGraphqlFetch();
+    graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlfetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('mutation.heartbeat for admin User should', () => {
