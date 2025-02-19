@@ -1,12 +1,14 @@
 import { setupDatabase, createAnonymousGraphqlFetch, createLoggedInGraphqlFetch } from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 describe('Auth for anonymous users', () => {
-  beforeAll(async () => {
+  before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -39,9 +41,9 @@ describe('Auth for anonymous users', () => {
       });
 
       const work = workQueue.filter(({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS');
-      expect(work).toHaveLength(0);
+      assert.strictEqual(work.length, 0);
 
-      expect(result.data.loginAsGuest).toMatchObject({});
+      assert.deepStrictEqual(result.data.loginAsGuest, {});
     });
 
     it('user has guest flag', async () => {
@@ -49,7 +51,7 @@ describe('Auth for anonymous users', () => {
       const user = await Users.findOne({
         guest: true,
       });
-      expect(user).toMatchObject({
+      assert.deepStrictEqual(user, {
         guest: true,
         emails: [
           {
@@ -102,7 +104,7 @@ describe('Auth for anonymous users', () => {
           },
         },
       });
-      expect(data.createUser).toMatchObject({
+      assert.deepStrictEqual(data.createUser, {
         user: {
           username: 'newuser',
           primaryEmail: {
@@ -134,7 +136,7 @@ describe('Auth for anonymous users', () => {
           }
         `,
       });
-      expect(loginWithPassword).toMatchObject({
+      assert.deepStrictEqual(loginWithPassword, {
         user: {
           _id: 'admin',
           username: 'admin',
@@ -144,7 +146,7 @@ describe('Auth for anonymous users', () => {
   });
 
   describe('Mutation.forgotPassword', () => {
-    beforeAll(async () => {
+    before(async () => {
       const Users = db.collection('users');
       const user = await Users.findOne({ _id: 'userthatforgetspasswords' });
       if (!user) {
@@ -172,14 +174,14 @@ describe('Auth for anonymous users', () => {
           }
         `,
       });
-      expect(forgotPassword).toEqual({
+      assert.deepStrictEqual(forgotPassword, {
         success: true,
       });
     });
   });
 
   describe('Mutation.resetPassword', () => {
-    beforeAll(async () => {
+    before(async () => {
       const Users = db.collection('users');
       const userCopy = {
         ...User,
@@ -216,7 +218,7 @@ describe('Auth for anonymous users', () => {
           }
         `,
       });
-      expect(forgotPassword).toEqual({
+      assert.deepStrictEqual(forgotPassword, {
         success: true,
       });
     });
@@ -247,7 +249,7 @@ describe('Auth for anonymous users', () => {
           token,
         },
       });
-      expect(resetPassword).toMatchObject({
+      assert.deepStrictEqual(resetPassword, {
         user: {
           _id: 'userthatforgetspasswords',
         },

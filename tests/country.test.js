@@ -1,17 +1,19 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { BaseCountry } from './seeds/locale-data.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('Country', () => {
-  beforeAll(async () => {
+test.describe('Country', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('For admin user ', () => {
-    it('Return country search result', async () => {
+  test.describe('For admin user ', () => {
+    test('Return country search result', async () => {
       const {
         data: { countries },
       } = await graphqlFetch({
@@ -27,8 +29,8 @@ describe('Country', () => {
           queryString: 'CH',
         },
       });
-      expect(countries.length).toEqual(1);
-      expect(countries).toMatchObject([
+      assert.strictEqual(countries.length, 1);
+      assert.deepStrictEqual(countries, [
         {
           _id: BaseCountry._id,
           isoCode: BaseCountry.isoCode,
@@ -36,7 +38,7 @@ describe('Country', () => {
       ]);
     });
 
-    it('Return empty array when no matching search result found', async () => {
+    test('Return empty array when no matching search result found', async () => {
       const {
         data: { countries },
       } = await graphqlFetch({
@@ -52,7 +54,7 @@ describe('Country', () => {
           queryString: 'wrong',
         },
       });
-      expect(countries.length).toEqual(0);
+      assert.strictEqual(countries.length, 0);
     });
   });
 });

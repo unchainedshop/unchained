@@ -2,6 +2,8 @@ import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
+import { before, describe, it } from 'node:test';
+import assert from 'node:assert';
 
 let db;
 let graphqlFetch;
@@ -11,7 +13,7 @@ describe('Plugins: Datatrans Payments', () => {
   const amount = '20000';
   const currency = 'CHF';
 
-  beforeAll(async () => {
+  before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -83,12 +85,12 @@ describe('Plugins: Datatrans Payments', () => {
       const { location, transactionId } = JSON.parse(signPaymentProviderForCredentialRegistration);
 
       const url = `https://pay.sandbox.datatrans.com/v1/start/${transactionId}`;
-      expect(location).toBe(url);
+      assert.strictEqual(location, url);
 
       const result = await fetch(url);
       const text = await result.text();
-      expect(text).not.toMatch(/incorrect request/);
-      expect(text).not.toMatch(/error/);
+      assert.notStrictEqual(text.match(/incorrect request/), null);
+      assert.notStrictEqual(text.match(/error/), null);
     });
   });
 
@@ -115,12 +117,12 @@ describe('Plugins: Datatrans Payments', () => {
       const { location, transactionId } = JSON.parse(signPaymentProviderForCheckout);
 
       const url = `https://pay.sandbox.datatrans.com/v1/start/${transactionId}`;
-      expect(location).toBe(url);
+      assert.strictEqual(location, url);
 
       const result = await fetch(url);
       const text = await result.text();
-      expect(text).not.toMatch(/incorrect request/);
-      expect(text).not.toMatch(/error/);
+      assert.notStrictEqual(text.match(/incorrect request/), null);
+      assert.notStrictEqual(text.match(/error/), null);
     });
   });
 
@@ -140,13 +142,13 @@ describe('Plugins: Datatrans Payments', () => {
         },
         body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
       });
-      expect(result.status).toBe(200);
+      assert.strictEqual(result.status, 200);
 
       const paymentCredential = await db
         .collection('payment_credentials')
         .findOne({ paymentProviderId });
 
-      expect(paymentCredential).not.toBe(null);
+      assert.notStrictEqual(paymentCredential, null);
     });
     it('mocks ingress accepted card_check webhook call with wrong signature', async () => {
       const paymentProviderId = 'd4d4d4d4d4';
@@ -164,7 +166,7 @@ describe('Plugins: Datatrans Payments', () => {
         body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
       });
 
-      expect(result.status).toBe(403);
+      assert.strictEqual(result.status, 403);
     });
 
     it('mocks ingress accepted payment webhook call with diff amount', async () => {
@@ -184,7 +186,7 @@ describe('Plugins: Datatrans Payments', () => {
         body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
       });
 
-      expect(result.status).toBe(500);
+      assert.strictEqual(result.status, 500);
     });
     it('mocks ingress accepted payment webhook call with correct currency/amount', async () => {
       const orderPaymentId = '1111112222';
@@ -202,13 +204,13 @@ describe('Plugins: Datatrans Payments', () => {
         body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
       });
 
-      expect(result.status).toBe(200);
+      assert.strictEqual(result.status, 200);
 
       const order = await db.collection('orders').findOne({ _id: 'datatrans-order' });
-      expect(order.status).toBe('CONFIRMED');
+      assert.strictEqual(order.status, 'CONFIRMED');
 
       const orderPayment = await db.collection('order_payments').findOne({ _id: orderPaymentId });
-      expect(orderPayment.status).toBe('PAID');
+      assert.strictEqual(orderPayment.status, 'PAID');
     });
   });
 
@@ -229,7 +231,7 @@ describe('Plugins: Datatrans Payments', () => {
         },
         body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
       });
-      expect(result.status).toBe(200);
+      assert.strictEqual(result.status, 200);
       const { data: { me } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -252,7 +254,7 @@ describe('Plugins: Datatrans Payments', () => {
         `,
       });
 
-      expect(me?.paymentCredentials?.[0]).toMatchObject({
+      assert.partialDeepStrictEqual(me?.paymentCredentials?.[0], {
         user: { _id: 'user' },
         paymentProvider: { _id: 'd4d4d4d4d4' },
         meta: {
@@ -263,7 +265,6 @@ describe('Plugins: Datatrans Payments', () => {
           language: 'de',
           type: 'card_check',
         },
-        token: expect.anything(),
         isValid: false,
         isPreferred: true,
       });
@@ -296,11 +297,11 @@ describe('Plugins: Datatrans Payments', () => {
           },
         },
       });
-      expect(addCartProduct).toMatchObject(expect.anything());
-      expect(updateCart).toMatchObject({
+      assert.ok(addCartProduct);
+      assert.deepStrictEqual(updateCart, {
         status: 'OPEN',
       });
-      expect(checkoutCart).toMatchObject({
+      assert.deepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
       });
     });
@@ -325,11 +326,11 @@ describe('Plugins: Datatrans Payments', () => {
           productId: 'simpleproduct',
         },
       });
-      expect(addCartProduct).toMatchObject(expect.anything());
-      expect(updateCart).toMatchObject({
+      assert.ok(addCartProduct);
+      assert.deepStrictEqual(updateCart, {
         status: 'OPEN',
       });
-      expect(checkoutCart).toMatchObject({
+      assert.deepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
       });
     });

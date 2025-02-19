@@ -1,16 +1,18 @@
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('DeliveryInterfaces', () => {
-  beforeAll(async () => {
+test.describe('DeliveryInterfaces', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('For logged in users', () => {
-    it('should return list of deliveryinterfaces by type', async () => {
+  test.describe('For logged in users', () => {
+    test('should return list of deliveryinterfaces by type', async () => {
       const {
         data: { deliveryInterfaces },
       } = await graphqlFetch({
@@ -27,7 +29,7 @@ describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-      expect(deliveryInterfaces).toMatchObject([
+      assert.deepStrictEqual(deliveryInterfaces, [
         {
           _id: 'shop.unchained.pick-mup',
         },
@@ -38,8 +40,8 @@ describe('DeliveryInterfaces', () => {
     });
   });
 
-  describe('For Anonymous user', () => {
-    it('should return error', async () => {
+  test.describe('For Anonymous user', () => {
+    test('should return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -53,7 +55,7 @@ describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-      expect(errors[0].extensions.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions.code, 'NoPermissionError');
     });
   });
 });

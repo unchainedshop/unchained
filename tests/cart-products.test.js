@@ -1,11 +1,13 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 let graphqlFetch;
 
 describe('Cart: Product Items', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
@@ -53,7 +55,7 @@ describe('Cart: Product Items', () => {
           configuration: [{ key: 'length', value: '5' }],
         },
       });
-      expect(addCartProduct).toMatchObject({
+      assert.deepStrictEqual(addCartProduct, {
         quantity: 2,
         total: {
           currency: 'CHF',
@@ -91,7 +93,7 @@ describe('Cart: Product Items', () => {
           productId: SimpleProduct._id,
         },
       });
-      expect(addCartProduct).toMatchObject({
+      assert.deepStrictEqual(addCartProduct, {
         quantity: 1,
       });
     });
@@ -113,7 +115,7 @@ describe('Cart: Product Items', () => {
           productId: 'non-existin-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
     it('return error when passed invalid productId', async () => {
@@ -133,7 +135,7 @@ describe('Cart: Product Items', () => {
           productId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -152,7 +154,7 @@ describe('Cart: Product Items', () => {
         `,
       });
 
-      expect(emptyCart).toMatchObject({
+      assert.deepStrictEqual(emptyCart, {
         items: [],
       });
     });
@@ -174,7 +176,7 @@ describe('Cart: Product Items', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('OrderWrongStatusError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderWrongStatusError');
     });
   });
 
@@ -214,7 +216,7 @@ describe('Cart: Product Items', () => {
           ],
         },
       });
-      expect(addMultipleCartProducts.items.pop()).toMatchObject({
+      assert.deepStrictEqual(addMultipleCartProducts.items.pop(), {
         quantity: 4,
         product: {
           _id: SimpleProduct._id,
@@ -256,7 +258,7 @@ describe('Cart: Product Items', () => {
           ],
         },
       });
-      expect(updateCartItem).toMatchObject({
+      assert.deepStrictEqual(updateCartItem, {
         _id: SimplePosition._id,
         quantity: 10,
         product: {
@@ -290,7 +292,7 @@ describe('Cart: Product Items', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
     it('return not found error when passed non existing itemId', async () => {
@@ -312,7 +314,7 @@ describe('Cart: Product Items', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('OrderItemNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderItemNotFoundError');
     });
   });
 
@@ -333,7 +335,7 @@ describe('Cart: Product Items', () => {
           itemId: SimplePosition._id,
         },
       });
-      expect(removeCartItem).toMatchObject({
+      assert.deepStrictEqual(removeCartItem, {
         _id: SimplePosition._id,
         product: {
           _id: SimpleProduct._id,
@@ -357,7 +359,7 @@ describe('Cart: Product Items', () => {
           itemId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('OrderItemNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderItemNotFoundError');
     });
 
     it('return error when passed invalid itemId', async () => {
@@ -376,7 +378,7 @@ describe('Cart: Product Items', () => {
           itemId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

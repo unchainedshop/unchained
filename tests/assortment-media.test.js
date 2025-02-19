@@ -9,6 +9,8 @@ import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments.js';
 import fs from 'node:fs';
 import crypto from 'crypto';
 import path from 'node:path';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 import { fileURLToPath } from 'node:url';
 
@@ -21,7 +23,7 @@ const assortmentMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets
 const assortmentMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
 describe('AssortmentMedia', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -45,7 +47,7 @@ describe('AssortmentMedia', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
+      assert.notStrictEqual(prepareAssortmentMediaUpload.putURL, null);
     }, 20000);
 
     it('upload file via PUT successfully', async () => {
@@ -67,7 +69,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
+      assert.notStrictEqual(prepareAssortmentMediaUpload.putURL, null);
       await putFile(assortmentMediaFile2, {
         url: prepareAssortmentMediaUpload.putURL,
       });
@@ -92,11 +94,12 @@ describe('AssortmentMedia', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      expect(assortment.media[1].file.name).toBe('test-media');
+      assert.strictEqual(assortment.media[1].file.name, 'test-media');
       const hash = crypto.createHash('sha256');
       const download = await (await fetch(assortment.media[1].file.url)).text();
       hash.update(download);
-      expect(hash.digest('hex')).toBe(
+      assert.strictEqual(
+        hash.digest('hex'),
         '5d3291cf26f878a23363c581ab4c124f65022d86089d3b532326b5705689743c',
       );
     }, 20000);
@@ -145,7 +148,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(confirmMediaUpload).toMatchObject({
+      assert.deepStrictEqual(confirmMediaUpload, {
         _id: prepareAssortmentMediaUpload._id,
         name: 'test-media',
         type: 'image/jpeg',
@@ -182,7 +185,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(reorderAssortmentMedia[0].sortKey).toEqual(11);
+      assert.strictEqual(reorderAssortmentMedia[0].sortKey, 11);
     });
 
     it('skiped any passed sort key passed with in-valid media ID', async () => {
@@ -213,7 +216,7 @@ describe('AssortmentMedia', () => {
           ],
         },
       });
-      expect(reorderAssortmentMedia.length).toEqual(0);
+      assert.strictEqual(reorderAssortmentMedia.length, 0);
     });
   });
 
@@ -239,7 +242,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -269,8 +272,8 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(updateAssortmentMediaTexts[0]._id).not.toBe(null);
-      expect(updateAssortmentMediaTexts[0]).toMatchObject({
+      assert.notStrictEqual(updateAssortmentMediaTexts[0]._id, null);
+      assert.deepStrictEqual(updateAssortmentMediaTexts[0], {
         locale: 'en',
         title: 'english title',
         subtitle: 'english title subtitle',
@@ -298,7 +301,7 @@ describe('AssortmentMedia', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentMediaNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentMediaNotFoundError');
     });
 
     it('return error when passed invalid media ID', async () => {
@@ -322,7 +325,7 @@ describe('AssortmentMedia', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -354,7 +357,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -403,7 +406,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentMediaNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentMediaNotFoundError');
     }, 99999);
 
     it('return not found error when passed non existing assortmentMediaId', async () => {
@@ -420,7 +423,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentMediaNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentMediaNotFoundError');
     });
 
     it('return error when passed invalid assortmentMediaId', async () => {
@@ -437,7 +440,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -458,7 +461,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

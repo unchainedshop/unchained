@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
@@ -19,8 +21,8 @@ import { AllEnrollmentIds } from './seeds/enrollments.js';
 let db;
 let graphqlFetch;
 
-describe('Plugins: Apple IAP Payments', () => {
-  beforeAll(async () => {
+test('Plugins: Apple IAP Payments', async (t) => {
+  await t.test('setup', async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -89,8 +91,8 @@ describe('Plugins: Apple IAP Payments', () => {
     });
   });
 
-  describe('Mutation.registerPaymentCredentials (Apple IAP)', () => {
-    it('store the receipt as payment credentials', async () => {
+  await t.test('Mutation.registerPaymentCredentials (Apple IAP)', async (t) => {
+    await t.test('store the receipt as payment credentials', async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials($transactionContext: JSON!, $paymentProviderId: ID!) {
@@ -111,13 +113,13 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentProviderId: 'iap-payment-provider',
         },
       });
-      expect(data?.registerPaymentCredentials).toMatchObject({
+      assert.deepStrictEqual(data?.registerPaymentCredentials, {
         isValid: true,
         isPreferred: true,
       });
-    }, 10000);
+    });
 
-    it('return not found error when passed non existing paymentProviderId', async () => {
+    await t.test('return not found error when passed non existing paymentProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials($transactionContext: JSON!, $paymentProviderId: ID!) {
@@ -136,10 +138,10 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentProviderId: 'non-existing',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('PaymentProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'PaymentProviderNotFoundError');
     });
 
-    it('return error when passed invalid paymentProviderId', async () => {
+    await t.test('return error when passed invalid paymentProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials($transactionContext: JSON!, $paymentProviderId: ID!) {
@@ -158,9 +160,10 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentProviderId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
-    it('checkout with stored receipt in credentials', async () => {
+
+    await t.test('checkout with stored receipt in credentials', async () => {
       const { data: { updateOrderPaymentGeneric, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkout($orderId: ID!, $orderPaymentId: ID!, $meta: JSON) {
@@ -182,15 +185,15 @@ describe('Plugins: Apple IAP Payments', () => {
           },
         },
       });
-      expect(updateOrderPaymentGeneric).toMatchObject({
+      assert.deepStrictEqual(updateOrderPaymentGeneric, {
         status: 'OPEN',
       });
-      expect(checkoutCart).toMatchObject({
+      assert.deepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
       });
-    }, 10000);
+    });
 
-    it('checking out again with the same transaction should fail', async () => {
+    await t.test('checking out again with the same transaction should fail', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkout($paymentContext: JSON, $paymentProviderId: ID!, $productId: ID!) {
@@ -221,12 +224,12 @@ describe('Plugins: Apple IAP Payments', () => {
         },
       });
 
-      expect(errors?.[0].extensions.code).toEqual('OrderCheckoutError');
-    }, 10000);
+      assert.strictEqual(errors?.[0].extensions.code, 'OrderCheckoutError');
+    });
   });
 
-  describe('Apple Store Server Notifications', () => {
-    it('notification_type = INITIAL_BUY', async () => {
+  await t.test('Apple Store Server Notifications', async (t) => {
+    await t.test('notification_type = INITIAL_BUY', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation prepareCart(
@@ -270,11 +273,12 @@ describe('Plugins: Apple IAP Payments', () => {
         duplex: 'half',
         body: JSON.stringify(initialBuy),
       });
-      expect(result.status).toBe(200);
+      assert.strictEqual(result.status, 200);
       const order = await db.collection('orders').findOne({ _id: 'iap-order2' });
-      expect(order.status).toBe('CONFIRMED');
-    }, 10000);
-    it('notification_type = DID_RECOVER should just store the current receipt', async () => {
+      assert.strictEqual(order.status, 'CONFIRMED');
+    });
+
+    await t.test('notification_type = DID_RECOVER should just store the current receipt', async () => {
       const result = await fetch('http://localhost:4010/payment/apple-iap', {
         method: 'POST',
         headers: {
@@ -283,31 +287,34 @@ describe('Plugins: Apple IAP Payments', () => {
         duplex: 'half',
         body: JSON.stringify(didRecover),
       });
-      expect(result.status).toBe(200);
+      assert.strictEqual(result.status, 200);
       const enrollment = await db.collection('enrollments').findOne({
         _id: {
           $nin: AllEnrollmentIds,
         },
       });
-      expect(enrollment?.status).toBe('ACTIVE');
-    }, 10000);
+      assert.strictEqual(enrollment?.status, 'ACTIVE');
+    });
 
-    it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment', async () => {
-      const result = await fetch('http://localhost:4010/payment/apple-iap', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        duplex: 'half',
-        body: JSON.stringify(didChangeRenewalStatus),
-      });
-      expect(result.status).toBe(200);
-      const enrollment = await db.collection('enrollments').findOne({
-        _id: {
-          $nin: AllEnrollmentIds,
-        },
-      });
-      expect(enrollment?.status).toBe('TERMINATED');
-    }, 10000);
+    await t.test(
+      'notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment',
+      async () => {
+        const result = await fetch('http://localhost:4010/payment/apple-iap', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          duplex: 'half',
+          body: JSON.stringify(didChangeRenewalStatus),
+        });
+        assert.strictEqual(result.status, 200);
+        const enrollment = await db.collection('enrollments').findOne({
+          _id: {
+            $nin: AllEnrollmentIds,
+          },
+        });
+        assert.strictEqual(enrollment?.status, 'TERMINATED');
+      },
+    );
   });
 });

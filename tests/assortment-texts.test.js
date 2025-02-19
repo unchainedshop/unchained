@@ -1,3 +1,5 @@
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
@@ -5,7 +7,7 @@ import { SimpleAssortment } from './seeds/assortments.js';
 let graphqlFetch;
 
 describe('AssortmentTexts', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -40,8 +42,8 @@ describe('AssortmentTexts', () => {
         },
       });
 
-      expect(updateAssortmentTexts.length).toEqual(1);
-      expect(updateAssortmentTexts[0]).toMatchObject(textRecord);
+      assert.strictEqual(updateAssortmentTexts.length, 1);
+      assert.deepStrictEqual(updateAssortmentTexts[0], textRecord);
     });
 
     it('return not found error when passed a non-existing ID', async () => {
@@ -67,7 +69,7 @@ describe('AssortmentTexts', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed invalid ID', async () => {
@@ -93,7 +95,7 @@ describe('AssortmentTexts', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -122,7 +124,7 @@ describe('AssortmentTexts', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

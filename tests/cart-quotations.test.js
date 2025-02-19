@@ -3,17 +3,19 @@ import { SimpleOrder } from './seeds/orders.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { ProposedQuotation } from './seeds/quotations.js';
 import { SimpleProduct } from './seeds/products.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('Cart: Quotations', () => {
-  beforeAll(async () => {
+test.describe('Cart: Quotations', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
-  describe('Mutation.addCartQuotation', () => {
-    it('add quotation to the cart', async () => {
+  test.describe('Mutation.addCartQuotation', () => {
+    test('add quotation to the cart', async () => {
       const { data: { addCartQuotation } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartQuotation($orderId: ID, $quotationId: ID!) {
@@ -52,7 +54,7 @@ describe('Cart: Quotations', () => {
           quotationId: ProposedQuotation._id,
         },
       });
-      expect(addCartQuotation).toMatchObject({
+      assert.deepStrictEqual(addCartQuotation, {
         product: { _id: SimpleProduct._id },
         order: { _id: SimpleOrder._id },
         quantity: 1,
@@ -64,7 +66,7 @@ describe('Cart: Quotations', () => {
       });
     });
 
-    it('return quantity low error when provided quantity that is less than 1', async () => {
+    test('return quantity low error when provided quantity that is less than 1', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartQuotation($orderId: ID, $quotationId: ID!, $quantity: Int) {
@@ -79,10 +81,10 @@ describe('Cart: Quotations', () => {
           quantity: 0,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('OrderQuantityTooLowError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderQuantityTooLowError');
     });
 
-    it('return not found error when non existing quotation Id is provided', async () => {
+    test('return not found error when non existing quotation Id is provided', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartQuotation($orderId: ID, $quotationId: ID!) {
@@ -96,10 +98,10 @@ describe('Cart: Quotations', () => {
           quotationId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'QuotationNotFoundError');
     });
 
-    it('return error when invalid quotation Id is provided', async () => {
+    test('return error when invalid quotation Id is provided', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartQuotation($orderId: ID, $quotationId: ID!) {
@@ -113,7 +115,7 @@ describe('Cart: Quotations', () => {
           quotationId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

@@ -1,13 +1,15 @@
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
 describe('Assortments', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
@@ -28,7 +30,7 @@ describe('Assortments', () => {
         `,
         variables: {},
       });
-      expect(assortments.length).toEqual(4);
+      assert.strictEqual(assortments.length, 4);
     });
 
     it('Return active assortments and include leaves', async () => {
@@ -109,7 +111,7 @@ describe('Assortments', () => {
           includeLeaves: true,
         },
       });
-      expect(result.data.assortments.length).toEqual(5);
+      assert.strictEqual(result.data.assortments.length, 5);
     });
 
     it('Return all assortments and without leaves', async () => {
@@ -139,7 +141,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortments.length).toEqual(8);
+      assert.strictEqual(assortments.length, 8);
     });
 
     it('Return all assortments and include leaves', async () => {
@@ -169,7 +171,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortments.length).toEqual(10);
+      assert.strictEqual(assortments.length, 10);
     });
 
     it('Search assortments by slug', async () => {
@@ -194,7 +196,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortments.length).toEqual(2);
+      assert.strictEqual(assortments.length, 2);
     });
   });
 
@@ -211,7 +213,7 @@ describe('Assortments', () => {
         variables: {},
       });
 
-      expect(assortmentsCount).toEqual(4);
+      assert.strictEqual(assortmentsCount, 4);
     });
 
     it('Return number of active assortments and include leaves', async () => {
@@ -227,7 +229,7 @@ describe('Assortments', () => {
           includeLeaves: true,
         },
       });
-      expect(assortmentsCount).toEqual(5);
+      assert.strictEqual(assortmentsCount, 5);
     });
 
     it('Return number assortments of without leaves including inactives', async () => {
@@ -245,7 +247,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortmentsCount).toEqual(8);
+      assert.strictEqual(assortmentsCount, 8);
     });
 
     it('Return number of all assortments and include leaves', async () => {
@@ -263,7 +265,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortmentsCount).toEqual(10);
+      assert.strictEqual(assortmentsCount, 10);
     });
   });
 
@@ -280,7 +282,7 @@ describe('Assortments', () => {
         variables: {},
       });
 
-      expect(assortmentsCount).toEqual(4);
+      assert.strictEqual(assortmentsCount, 4);
     });
   });
 
@@ -297,7 +299,7 @@ describe('Assortments', () => {
         variables: {},
       });
 
-      expect(assortmentsCount).toEqual(4);
+      assert.strictEqual(assortmentsCount, 4);
     });
   });
 
@@ -372,7 +374,7 @@ describe('Assortments', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      expect(assortment._id).toBe(SimpleAssortment[0]._id);
+      assert.strictEqual(assortment._id, SimpleAssortment[0]._id);
     });
 
     it('return single assortment based on slug', async () => {
@@ -391,7 +393,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment._id).toBe(SimpleAssortment[0]._id);
+      assert.strictEqual(assortment._id, SimpleAssortment[0]._id);
     });
 
     it('return error for non-existing id', async () => {
@@ -408,7 +410,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
     it('return error for non-existing slug', async () => {
@@ -425,7 +427,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
     it('return null when either id or slug are non-existing', async () => {
@@ -445,7 +447,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment).toBe(null);
+      assert.strictEqual(assortment, null);
     });
   });
 
@@ -475,8 +477,8 @@ describe('Assortments', () => {
         },
       });
 
-      expect(searchAssortments.assortmentsCount).toEqual(1);
-      expect(searchAssortments.assortments[0].texts).toMatchObject({
+      assert.strictEqual(searchAssortments.assortmentsCount, 1);
+      assert.deepStrictEqual(searchAssortments.assortments[0].texts, {
         _id: 'german',
         title: 'simple assortment de',
         description: 'text-de',
@@ -512,7 +514,7 @@ describe('Assortments', () => {
           queryString: 'simple-assortment',
         },
       });
-      expect(assortments.length).toBe(0);
+      assert.strictEqual(assortments.length, 0);
     });
   });
 
@@ -531,7 +533,7 @@ describe('Assortments', () => {
         `,
         variables: {},
       });
-      expect(assortments.length).toBe(4);
+      assert.strictEqual(assortments.length, 4);
     });
   });
 
@@ -601,9 +603,9 @@ describe('Assortments', () => {
           texts: [{ title: 'test assortment', locale: 'de' }],
         },
       });
-      expect(createAssortment.tags).toEqual(['test-assrtment-1', 'test-assortment-2']);
-      expect(createAssortment.isRoot).toBe(true);
-      expect(createAssortment.texts.title).toBe('test assortment');
+      assert.deepStrictEqual(createAssortment.tags, ['test-assrtment-1', 'test-assortment-2']);
+      assert.strictEqual(createAssortment.isRoot, true);
+      assert.strictEqual(createAssortment.texts.title, 'test assortment');
     });
   });
 
@@ -630,7 +632,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -697,9 +699,9 @@ describe('Assortments', () => {
           },
         },
       });
-      expect(updateAssortment.tags).toEqual(['test-assrtment-1', 'test-assortment-2']);
-      expect(updateAssortment.isRoot).toBe(false);
-      expect(updateAssortment.isActive).toBe(true);
+      assert.deepStrictEqual(updateAssortment.tags, ['test-assrtment-1', 'test-assortment-2']);
+      assert.strictEqual(updateAssortment.isRoot, false);
+      assert.strictEqual(updateAssortment.isActive, true);
     });
 
     it('return not found error when passed none existing assortment Id', async () => {
@@ -720,7 +722,7 @@ describe('Assortments', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed invalid assortment Id', async () => {
@@ -741,7 +743,7 @@ describe('Assortments', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -766,7 +768,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -828,7 +830,7 @@ describe('Assortments', () => {
           assortmentId: SimpleAssortment[1]._id,
         },
       });
-      expect(setBaseAssortment.isBase).toBe(true);
+      assert.strictEqual(setBaseAssortment.isBase, true);
     });
 
     it('return not found error when passed none existing assortment Id', async () => {
@@ -844,7 +846,7 @@ describe('Assortments', () => {
           assortmentId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed invalid assortment Id', async () => {
@@ -860,7 +862,7 @@ describe('Assortments', () => {
           assortmentId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -880,7 +882,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -958,7 +960,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment.deleted).not.toBe(null);
+      assert.notStrictEqual(assortment.deleted, null);
     });
 
     it('return error when passed none existing assortment Id', async () => {
@@ -975,7 +977,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors[0].extensions?.code, 'AssortmentNotFoundError');
     });
     it('return error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
@@ -990,7 +992,7 @@ describe('Assortments', () => {
           assortmentId: '',
         },
       });
-      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0].extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -1010,7 +1012,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

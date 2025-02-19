@@ -1,18 +1,20 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './lib/wait.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let db;
 let graphqlFetch;
 
-describe('Bulk Importer', () => {
-  beforeAll(async () => {
+test.describe('Bulk Importer', () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Import Products', () => {
-    it('adds 1 Product CREATE event and 1 UPDATE event, followed by DELETE & CREATE again', async () => {
+  test.describe('Import Products', () => {
+    test('adds 1 Product CREATE event and 1 UPDATE event, followed by DELETE & CREATE again', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
@@ -234,7 +236,7 @@ describe('Bulk Importer', () => {
           },
         },
       });
-      expect(addWork).toMatchObject({});
+      assert.deepStrictEqual(addWork, {});
 
       const Products = db.collection('products');
 
@@ -243,12 +245,12 @@ describe('Bulk Importer', () => {
         return !!product;
       }, 5000);
 
-      expect(result).toBe(true);
+      assert.strictEqual(result, true);
     }, 15000);
   });
 
-  describe('Import Filters', () => {
-    it('adds 1 CREATE and 1 UPDATE event', async () => {
+  test.describe('Import Filters', () => {
+    test('adds 1 CREATE and 1 UPDATE event', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
@@ -326,7 +328,7 @@ describe('Bulk Importer', () => {
         },
       });
 
-      expect(addWork).toMatchObject({});
+      assert.deepStrictEqual(addWork, {});
 
       const Filters = db.collection('filters');
 
@@ -335,12 +337,12 @@ describe('Bulk Importer', () => {
         return filter.isActive === false;
       }, 3000);
 
-      expect(result).toBe(true);
+      assert.strictEqual(result, true);
     }, 10000);
   });
 
-  describe('Import Assortments', () => {
-    it('adds 2 CREATE and 1 UPDATE event', async () => {
+  test.describe('Import Assortments', () => {
+    test('adds 2 CREATE and 1 UPDATE event', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
@@ -475,7 +477,7 @@ describe('Bulk Importer', () => {
         },
       });
 
-      expect(addWork).toMatchObject({});
+      assert.deepStrictEqual(addWork, {});
 
       const Assortments = db.collection('assortments');
       const AssortmentMedia = db.collection('assortment_media');
@@ -492,8 +494,8 @@ describe('Bulk Importer', () => {
         });
         return assortmentMedia?.tags.includes('small');
       }, 3000);
-      expect(updatedAssortmentMediaHasSmallTag).toBe(true);
-      expect(assortmentHasBaseTag).toBe(true);
+      assert.strictEqual(updatedAssortmentMediaHasSmallTag, true);
+      assert.strictEqual(assortmentHasBaseTag, true);
 
       const AssortmentProducts = db.collection('assortment_products');
 
@@ -504,7 +506,7 @@ describe('Bulk Importer', () => {
         return productLinksCount === 1;
       }, 3000);
 
-      expect(productLinkHasBeenReplaced).toBe(true);
+      assert.strictEqual(productLinkHasBeenReplaced, true);
     }, 10000);
   });
 });

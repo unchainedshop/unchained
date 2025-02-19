@@ -1,3 +1,5 @@
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentLinks } from './seeds/assortments.js';
@@ -5,7 +7,7 @@ import { SimpleAssortment, AssortmentLinks } from './seeds/assortments.js';
 let graphqlFetch;
 
 describe('AssortmentLink', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -40,7 +42,7 @@ describe('AssortmentLink', () => {
         },
       });
 
-      expect(reorderAssortmentLinks[0].sortKey).toEqual(11);
+      assert.strictEqual(reorderAssortmentLinks[0].sortKey, 11);
     });
 
     it('Skip any invalid assortment link provided', async () => {
@@ -68,8 +70,8 @@ describe('AssortmentLink', () => {
         },
       });
 
-      expect(reorderAssortmentLinks.length).toEqual(1);
-      expect(reorderAssortmentLinks[0]).toEqual({
+      assert.strictEqual(reorderAssortmentLinks.length, 1);
+      assert.deepStrictEqual(reorderAssortmentLinks[0], {
         _id: AssortmentLinks[0]._id,
       });
     });
@@ -96,8 +98,8 @@ describe('AssortmentLink', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -136,7 +138,7 @@ describe('AssortmentLink', () => {
         },
       });
 
-      expect(addAssortmentLink).toMatchObject({
+      assert.deepStrictEqual(addAssortmentLink, {
         parent: { _id: SimpleAssortment[0]._id },
         child: { _id: SimpleAssortment[3]._id },
         tags: ['assortment-link-test'],
@@ -166,8 +168,8 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed invalid parent assortment ID', async () => {
@@ -193,8 +195,8 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
     it('return not found error when passed non existing child assortment ID', async () => {
@@ -220,8 +222,8 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed invalid child assortment ID', async () => {
@@ -247,8 +249,8 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -279,8 +281,8 @@ describe('AssortmentLink', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -322,8 +324,8 @@ describe('AssortmentLink', () => {
           assortmentLinkId: AssortmentLinks[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentLinkNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentLinkNotFoundError');
     });
 
     it('return not found error when passed non existing assortmentLinkId', async () => {
@@ -339,8 +341,8 @@ describe('AssortmentLink', () => {
           assortmentLinkId: AssortmentLinks[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentLinkNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentLinkNotFoundError');
     });
 
     it('return error when passed invalid assortmentLinkId', async () => {
@@ -356,8 +358,8 @@ describe('AssortmentLink', () => {
           assortmentLinkId: '',
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -376,8 +378,8 @@ describe('AssortmentLink', () => {
           assortmentLinkId: AssortmentLinks[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

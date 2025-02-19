@@ -2,21 +2,23 @@ import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch 
 import { Admin, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { ConfigurableProduct } from './seeds/products.js';
 import { SimpleBookmarks } from './seeds/bookmark.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 let graphqlNormalUserFetch;
 let graphqlAnonymousUserFetch;
 
-describe('Bookmark', () => {
-  beforeAll(async () => {
+test.describe('Bookmark', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlNormalUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousUserFetch = createAnonymousGraphqlFetch();
   });
 
-  describe('For admin user ', () => {
-    it('return array of all current user bookmarks should ', async () => {
+  test.describe('For admin user ', () => {
+    test('return array of all current user bookmarks should ', async () => {
       const {
         data: {
           user: { bookmarks },
@@ -71,10 +73,10 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
-      expect(bookmarks.length).toEqual(2);
+      assert.strictEqual(bookmarks.length, 2);
     });
 
-    it('remove bookmark a product when provided valid product ID and false second argument', async () => {
+    test('remove bookmark a product when provided valid product ID and false second argument', async () => {
       const {
         data: { bookmark }, // eslint-disable-line
       } = await graphqlFetch({
@@ -117,7 +119,7 @@ describe('Bookmark', () => {
           bookmarked: false,
         },
       });
-      expect(bookmark).toMatchObject({
+      assert.deepStrictEqual(bookmark, {
         user: {
           _id: Admin._id,
         },
@@ -142,10 +144,10 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
-      expect(bookmarks.length).toEqual(1);
+      assert.strictEqual(bookmarks.length, 1);
     });
 
-    it('bookmark a product when provided valid product ID', async () => {
+    test('bookmark a product when provided valid product ID', async () => {
       const {
         data: { bookmark },
       } = await graphqlFetch({
@@ -188,7 +190,7 @@ describe('Bookmark', () => {
         },
       });
 
-      expect(bookmark).not.toBe(null);
+      assert.notStrictEqual(bookmark, null);
       const {
         data: {
           user: { bookmarks },
@@ -205,10 +207,10 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
-      expect(bookmarks.length).toEqual(2);
+      assert.strictEqual(bookmarks.length, 2);
     });
 
-    it('remove bookmark when provided valid bookmark ID', async () => {
+    test('remove bookmark when provided valid bookmark ID', async () => {
       const {
         data: { removeBookmark }, // eslint-disable-line
       } = await graphqlFetch({
@@ -263,12 +265,12 @@ describe('Bookmark', () => {
           bookmarkId: SimpleBookmarks[3]._id,
         },
       });
-      expect(errors[0].extensions.code).toEqual('BookmarkNotFoundError');
+      assert.strictEqual(errors[0].extensions.code, 'BookmarkNotFoundError');
     });
   });
 
-  describe('For normal user ', () => {
-    it('return array of all current user bookmarks should ', async () => {
+  test.describe('For normal user ', () => {
+    test('return array of all current user bookmarks should ', async () => {
       const {
         data: {
           user: { bookmarks },
@@ -285,10 +287,10 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
-      expect(bookmarks.length).toEqual(2);
+      assert.strictEqual(bookmarks.length, 2);
     });
 
-    it('remove bookmark a product when provided valid product ID and false second argument', async () => {
+    test('remove bookmark a product when provided valid product ID and false second argument', async () => {
       const {
         data: { bookmark }, // eslint-disable-line
       } = await graphqlNormalUserFetch({
@@ -321,10 +323,10 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
-      expect(bookmarks.length).toEqual(1);
+      assert.strictEqual(bookmarks.length, 1);
     });
 
-    it('bookmark a product when provided valid product ID', async () => {
+    test('bookmark a product when provided valid product ID', async () => {
       const {
         data: { bookmark },
       } = await graphqlNormalUserFetch({
@@ -342,10 +344,10 @@ describe('Bookmark', () => {
           productId: ConfigurableProduct._id,
         },
       });
-      expect(bookmark.product._id).toBe(ConfigurableProduct._id);
+      assert.strictEqual(bookmark.product._id, ConfigurableProduct._id);
     });
 
-    it('remove bookmark when provided valid bookmark ID', async () => {
+    test('remove bookmark when provided valid bookmark ID', async () => {
       const {
         data: { removeBookmark }, // eslint-disable-line
       } = await graphqlNormalUserFetch({
@@ -373,13 +375,13 @@ describe('Bookmark', () => {
           bookmarkId: SimpleBookmarks[3]._id,
         },
       });
-      expect(errors[0].extensions.code).toEqual('BookmarkNotFoundError');
+      assert.strictEqual(errors[0].extensions.code, 'BookmarkNotFoundError');
     });
   });
 
-  describe('For anonymous user ', () => {
-    it('bookmarking is not possible', async () => {
-      await expect(async () => {
+  test.describe('For anonymous user ', () => {
+    test('bookmarking is not possible', async () => {
+      await assert.rejects(async () => {
         const {
           data: { bookmark, error }, // eslint-disable-line
         } = await graphqlAnonymousUserFetch({
@@ -395,7 +397,7 @@ describe('Bookmark', () => {
             bookmarked: false,
           },
         });
-      }).rejects.toThrow();
+      });
     });
   });
 });

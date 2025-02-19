@@ -1,57 +1,47 @@
+import test from 'node:test';
+import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
-let graphqlFetch;
+// Global setup
+test.before(async () => {
+  await setupDatabase();
+});
 
-describe('PaymentInterface', () => {
-  beforeAll(async () => {
-    await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+test('For logged in users: should return list of paymentInterfaces by type', async () => {
+  const graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  const {
+    data: { paymentInterfaces },
+  } = await graphqlFetch({
+    query: /* GraphQL */ `
+      query PaymentInterfaces($type: PaymentProviderType!) {
+        paymentInterfaces(type: $type) {
+          _id
+          label
+          version
+        }
+      }
+    `,
+    variables: { type: 'INVOICE' },
   });
+  assert.notStrictEqual(paymentInterfaces.length, 0);
+  assert.deepStrictEqual(paymentInterfaces, [
+    { _id: 'shop.unchained.invoice' },
+    { _id: 'shop.unchained.invoice-prepaid' },
+  ]);
+});
 
-  describe('For logged in users', () => {
-    it('should return list of paymentInterfaces by type', async () => {
-      const {
-        data: { paymentInterfaces },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query PaymentInterfaces($type: PaymentProviderType!) {
-            paymentInterfaces(type: $type) {
-              _id
-              label
-              version
-            }
-          }
-        `,
-        variables: {
-          type: 'INVOICE',
-        },
-      });
-      expect(paymentInterfaces.length).not.toBe(0);
-      expect(paymentInterfaces).toMatchObject([
-        { _id: 'shop.unchained.invoice' },
-        { _id: 'shop.unchained.invoice-prepaid' },
-      ]);
-    });
+test('For Anonymous user: should return error', async () => {
+  const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+  const { errors } = await graphqlAnonymousFetch({
+    query: /* GraphQL */ `
+      query PaymentInterfaces($type: PaymentProviderType!) {
+        paymentInterfaces(type: $type) {
+          _id
+        }
+      }
+    `,
+    variables: { type: 'INVOICE' },
   });
-
-  describe('For Anonymous user', () => {
-    it('should return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
-      const { errors } = await graphqlAnonymousFetch({
-        query: /* GraphQL */ `
-          query PaymentInterfaces($type: PaymentProviderType!) {
-            paymentInterfaces(type: $type) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          type: 'INVOICE',
-        },
-      });
-
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
-    });
-  });
+  assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
 });

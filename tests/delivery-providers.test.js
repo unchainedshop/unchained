@@ -1,3 +1,5 @@
+import { before, describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
@@ -11,7 +13,7 @@ let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
 describe('DeliveryProviders', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
@@ -50,7 +52,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(deliveryProviders).toMatchObject([
+      assert.deepEqual(deliveryProviders, [
         {
           _id: SimpleDeliveryProvider._id,
           configurationError: null,
@@ -67,7 +69,7 @@ describe('DeliveryProviders', () => {
           type: 'PICKUP',
         },
       ]);
-      expect(deliveryProviders.every((d) => typeof d.isActive === 'boolean')).toBe(true);
+      assert(deliveryProviders.every((d) => typeof d.isActive === 'boolean'));
     });
 
     it('return list of deliveryProviders based on the given type', async () => {
@@ -85,7 +87,7 @@ describe('DeliveryProviders', () => {
           type: 'SHIPPING',
         },
       });
-      expect(deliveryProviders).toMatchObject([
+      assert.deepEqual(deliveryProviders, [
         { _id: SimpleDeliveryProvider._id },
         { _id: SendMailDeliveryProvider._id },
       ]);
@@ -104,7 +106,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(deliveryProvidersCount).toEqual(3);
+      assert.equal(deliveryProvidersCount, 3);
     });
 
     it('return total number of deliveryProviders based on the given type', async () => {
@@ -120,7 +122,7 @@ describe('DeliveryProviders', () => {
           type: 'SHIPPING',
         },
       });
-      expect(deliveryProvidersCount).toEqual(2);
+      assert.equal(deliveryProvidersCount, 2);
     });
   });
 
@@ -134,7 +136,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toBe('NoPermissionError');
+      assert.equal(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -148,7 +150,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toBe('NoPermissionError');
+      assert.equal(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -186,7 +188,7 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(deliveryProvider).toMatchObject({
+      assert.deepEqual(deliveryProvider, {
         _id: SimpleDeliveryProvider._id,
         type: 'SHIPPING',
         configurationError: null,
@@ -212,7 +214,7 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(deliveryProvider?.simulatedPrice?.currency).toEqual('CHF');
+      assert.equal(deliveryProvider?.simulatedPrice?.currency, 'CHF');
     });
 
     it('return value for simulatedPrice with value of currency argument passed to it', async () => {
@@ -234,7 +236,7 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(deliveryProvider?.simulatedPrice?.currency).toEqual('EUR');
+      assert.equal(deliveryProvider?.simulatedPrice?.currency, 'EUR');
     });
 
     it('return error when passed invalid deliveryProviderId', async () => {
@@ -253,8 +255,8 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: '',
         },
       });
-      expect(deliveryProvider).toBe(null);
-      expect(errors[0]?.extensions?.code).toBe('InvalidIdError');
+      assert.equal(deliveryProvider, null);
+      assert.equal(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -271,7 +273,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

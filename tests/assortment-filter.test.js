@@ -1,3 +1,5 @@
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentFilters } from './seeds/assortments.js';
@@ -6,7 +8,7 @@ import { MultiChoiceFilter } from './seeds/filters.js';
 let graphqlFetch;
 
 describe('AssortmentFilter', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -41,7 +43,7 @@ describe('AssortmentFilter', () => {
       const {
         data: { reorderAssortmentFilters },
       } = result;
-      expect(reorderAssortmentFilters[0]).toEqual({
+      assert.deepStrictEqual(reorderAssortmentFilters[0], {
         _id: AssortmentFilters[0]._id,
         sortKey: 11,
         tags: AssortmentFilters[0].tags,
@@ -71,7 +73,7 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(reorderAssortmentFilters.length).toEqual(0);
+      assert.strictEqual(reorderAssortmentFilters.length, 0);
     });
   });
 
@@ -96,8 +98,8 @@ describe('AssortmentFilter', () => {
           ],
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -128,7 +130,7 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(addAssortmentFilter).toMatchObject({
+      assert.deepStrictEqual(addAssortmentFilter, {
         tags: ['assortment-filter-1'],
         assortment: { _id: SimpleAssortment[0]._id },
         filter: { _id: MultiChoiceFilter._id },
@@ -151,8 +153,8 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed filter ID that do not exist', async () => {
@@ -171,8 +173,8 @@ describe('AssortmentFilter', () => {
         },
       });
       const { errors } = result;
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'FilterNotFoundError');
     });
 
     it('return error when passed invalid filter ID', async () => {
@@ -190,8 +192,8 @@ describe('AssortmentFilter', () => {
           tags: ['assortment-filter-1'],
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
     it('return error when passed invalid assortment ID', async () => {
@@ -210,8 +212,8 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -234,8 +236,8 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -277,8 +279,8 @@ describe('AssortmentFilter', () => {
           assortmentFilterId: AssortmentFilters[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentFilterNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentFilterNotFoundError');
     });
 
     it('return not found error when passed non existing assortmentFilterId', async () => {
@@ -295,8 +297,8 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentFilterNotFoundError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentFilterNotFoundError');
     });
 
     it('return error when passed non existing assortmentFilterId', async () => {
@@ -313,8 +315,8 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -341,8 +343,8 @@ describe('AssortmentFilter', () => {
           assortmentFilterId: AssortmentFilters[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors.length, 1);
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

@@ -1,19 +1,22 @@
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlfetchAsAnonymousUser;
-describe('Heartbeat', () => {
-  beforeAll(async () => {
+
+test.describe('Heartbeat', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlfetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
-  describe('mutation.heartbeat for admin User should', () => {
-    it('update user information successfully', async () => {
+  test.describe('mutation.heartbeat for admin User should', () => {
+    test('update user information successfully', async () => {
       const {
         data: { heartbeat },
       } = await graphqlFetchAsAdminUser({
@@ -88,7 +91,7 @@ describe('Heartbeat', () => {
         variables: {},
       });
 
-      expect(heartbeat).toMatchObject({
+      assert.deepStrictEqual(heartbeat, {
         _id: 'admin',
         username: 'admin',
         isGuest: false,
@@ -96,8 +99,8 @@ describe('Heartbeat', () => {
     });
   });
 
-  describe('mutation.heartbeat for normal User should', () => {
-    it('update user information succesfully', async () => {
+  test.describe('mutation.heartbeat for normal User should', () => {
+    test('update user information succesfully', async () => {
       const {
         data: { heartbeat },
       } = await graphqlFetchAsNormalUser({
@@ -112,7 +115,7 @@ describe('Heartbeat', () => {
         `,
         variables: {},
       });
-      expect(heartbeat).toMatchObject({
+      assert.deepStrictEqual(heartbeat, {
         _id: 'user',
         username: 'user',
         isGuest: false,
@@ -120,8 +123,8 @@ describe('Heartbeat', () => {
     });
   });
 
-  describe('mutation.heartbeat for anonymous User should', () => {
-    it('return UserNotFoundError', async () => {
+  test.describe('mutation.heartbeat for anonymous User should', () => {
+    test('return UserNotFoundError', async () => {
       const { errors } = await graphqlfetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation heartbeat {
@@ -132,7 +135,7 @@ describe('Heartbeat', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'UserNotFoundError');
     });
   });
 });

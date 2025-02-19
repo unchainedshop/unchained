@@ -1,3 +1,5 @@
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentProduct } from './seeds/assortments.js';
@@ -6,7 +8,7 @@ import { SimpleProduct } from './seeds/products.js';
 let graphqlFetch;
 
 describe('AssortmentProduct', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -41,7 +43,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(reorderAssortmentProducts[0].sortKey).toEqual(10);
+      assert.strictEqual(reorderAssortmentProducts[0].sortKey, 10);
     });
 
     it('return empty array when passed non-existing assortment product ID', async () => {
@@ -64,7 +66,7 @@ describe('AssortmentProduct', () => {
           ],
         },
       });
-      expect(reorderAssortmentProducts.length).toEqual(0);
+      assert.strictEqual(reorderAssortmentProducts.length, 0);
     });
   });
 
@@ -88,7 +90,7 @@ describe('AssortmentProduct', () => {
           ],
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -117,7 +119,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(data?.addAssortmentProduct).toMatchObject({
+      assert.deepStrictEqual(data?.addAssortmentProduct, {
         tags: ['assortment-product-et'],
         assortment: { _id: SimpleAssortment[1]._id },
         product: { _id: SimpleProduct._id },
@@ -148,7 +150,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
     it('return error when passed in-valid product id', async () => {
@@ -175,7 +177,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
     it('return not found error when passed non existing assortment id', async () => {
@@ -193,7 +195,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
     it('return error when passed in-valid assortment id', async () => {
@@ -211,7 +213,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -233,7 +235,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -270,7 +272,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentProductNotFoundError');
     });
 
     it('return not found error when passed non existing assortment product id', async () => {
@@ -287,7 +289,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentProductNotFoundError');
     });
 
     it('return error when passed invalid assortment product id', async () => {
@@ -304,7 +306,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
@@ -323,7 +325,7 @@ describe('AssortmentProduct', () => {
           assortmentProductId: AssortmentProduct._id,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

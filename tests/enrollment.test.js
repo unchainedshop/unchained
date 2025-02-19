@@ -4,21 +4,23 @@ import { SimplePaymentProvider } from './seeds/payments.js';
 import { PlanProduct } from './seeds/products.js';
 import { ActiveEnrollment, InitialEnrollment, TerminatedEnrollment } from './seeds/enrollments.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
-describe('Enrollments', () => {
-  beforeAll(async () => {
+test.describe('Enrollments', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
-  describe('Mutation.createCart (Enrollment)', () => {
-    it('checking out a plan product generates a new enrollment', async () => {
+  test.describe('Mutation.createCart (Enrollment)', () => {
+    test('checking out a plan product generates a new enrollment', async () => {
       const { data: { createCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation {
@@ -86,19 +88,19 @@ describe('Enrollments', () => {
           },
         },
       });
-      expect(checkoutCart).toMatchObject({
+      assert.deepStrictEqual(checkoutCart, {
         orderNumber: 'enrollmentCart',
         status: 'CONFIRMED',
         enrollment: {
-          _id: expect.anything(),
+          _id: assert.match(String),
           status: 'ACTIVE',
         },
       });
     });
   });
 
-  describe('Mutation.createEnrollment', () => {
-    it('create a new enrollment manually will not activate automatically because of missing order', async () => {
+  test.describe('Mutation.createEnrollment', () => {
+    test('create a new enrollment manually will not activate automatically because of missing order', async () => {
       const { data: { createEnrollment } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createEnrollment($plan: EnrollmentPlanInput!) {
@@ -162,7 +164,7 @@ describe('Enrollments', () => {
           },
         },
       });
-      expect(createEnrollment).toMatchObject({
+      assert.deepStrictEqual(createEnrollment, {
         status: 'INITIAL',
         plan: {
           product: {
@@ -174,7 +176,7 @@ describe('Enrollments', () => {
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createEnrollment($plan: EnrollmentPlanInput!) {
@@ -189,10 +191,10 @@ describe('Enrollments', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createEnrollment($plan: EnrollmentPlanInput!) {
@@ -207,12 +209,12 @@ describe('Enrollments', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.terminateEnrollment for admin user should', () => {
-    it('change ACTIVE enrollment status to TERMINATED', async () => {
+  test.describe('Mutation.terminateEnrollment for admin user should', () => {
+    test('change ACTIVE enrollment status to TERMINATED', async () => {
       const {
         data: { terminateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -260,10 +262,10 @@ describe('Enrollments', () => {
           enrollmentId: ActiveEnrollment._id,
         },
       });
-      expect(terminateEnrollment.status).toEqual('TERMINATED');
+      assert.strictEqual(terminateEnrollment.status, 'TERMINATED');
     });
 
-    it('return EnrollmentWrongStatusError when passed terminated enrollment ID', async () => {
+    test('return EnrollmentWrongStatusError when passed terminated enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation terminateEnrollment($enrollmentId: ID!) {
@@ -276,10 +278,10 @@ describe('Enrollments', () => {
           enrollmentId: TerminatedEnrollment._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('EnrollmentWrongStatusError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentWrongStatusError');
     });
 
-    it('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
+    test('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation terminateEnrollment($enrollmentId: ID!) {
@@ -292,10 +294,10 @@ describe('Enrollments', () => {
           enrollmentId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('EnrollmentNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentNotFoundError');
     });
 
-    it('return InvalidIdError when passed non invalid enrollment Id', async () => {
+    test('return InvalidIdError when passed non invalid enrollment Id', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation terminateEnrollment($enrollmentId: ID!) {
@@ -308,12 +310,12 @@ describe('Enrollments', () => {
           enrollmentId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.terminateEnrollment for normal user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.terminateEnrollment for normal user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation terminateEnrollment($enrollmentId: ID!) {
@@ -327,12 +329,12 @@ describe('Enrollments', () => {
           enrollmentId: ActiveEnrollment._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('Mutation.terminateEnrollment for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.terminateEnrollment for anonymous user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation terminateEnrollment($enrollmentId: ID!) {
@@ -346,12 +348,12 @@ describe('Enrollments', () => {
           enrollmentId: ActiveEnrollment._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('Mutation.updateEnrollment for admin user should', () => {
-    it('update enrollment details successfuly', async () => {
+  test.describe('Mutation.updateEnrollment for admin user should', () => {
+    test('update enrollment details successfuly', async () => {
       const {
         data: { updateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -438,7 +440,7 @@ describe('Enrollments', () => {
         },
       });
 
-      expect(updateEnrollment).toMatchObject({
+      assert.deepStrictEqual(updateEnrollment, {
         _id: InitialEnrollment._id,
         billingAddress: {
           firstName: 'Mikael Araya',
@@ -463,8 +465,8 @@ describe('Enrollments', () => {
     });
   });
 
-  describe('Mutation.updateEnrollment for normal user should', () => {
-    it('Update enrollment successfuly', async () => {
+  test.describe('Mutation.updateEnrollment for normal user should', () => {
+    test('Update enrollment successfuly', async () => {
       const {
         data: { updateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -514,7 +516,7 @@ describe('Enrollments', () => {
         },
       });
 
-      expect(updateEnrollment).toMatchObject({
+      assert.deepStrictEqual(updateEnrollment, {
         _id: InitialEnrollment._id,
         billingAddress: {
           firstName: 'Mikael Araya',
@@ -529,8 +531,8 @@ describe('Enrollments', () => {
     });
   });
 
-  describe('Mutation.updateEnrollment for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.updateEnrollment for anonymous user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation updateEnrollment(
@@ -569,12 +571,12 @@ describe('Enrollments', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('Mutation.activateEnrollment for admin user', () => {
-    it('change status of enrollment from INITIAL to ACTIVE', async () => {
+  test.describe('Mutation.activateEnrollment for admin user', () => {
+    test('change status of enrollment from INITIAL to ACTIVE', async () => {
       const {
         data: { activateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -599,13 +601,13 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment',
         },
       });
-      expect(activateEnrollment).toMatchObject({
+      assert.deepStrictEqual(activateEnrollment, {
         _id: InitialEnrollment._id,
         status: 'ACTIVE',
       });
     });
 
-    it('return EnrollmentWrongStatusError error when trying to activate ACTIVE enrollment', async () => {
+    test('return EnrollmentWrongStatusError error when trying to activate ACTIVE enrollment', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -618,10 +620,10 @@ describe('Enrollments', () => {
           enrollmentId: 'activeenrollment',
         },
       });
-      expect(errors[0]?.extensions.code).toEqual('EnrollmentWrongStatusError');
+      assert.strictEqual(errors[0]?.extensions.code, 'EnrollmentWrongStatusError');
     });
 
-    it('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
+    test('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -634,10 +636,10 @@ describe('Enrollments', () => {
           enrollmentId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions.code).toEqual('EnrollmentNotFoundError');
+      assert.strictEqual(errors[0]?.extensions.code, 'EnrollmentNotFoundError');
     });
 
-    it('return InvalidIdError when passed invalid enrollment ID', async () => {
+    test('return InvalidIdError when passed invalid enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -650,10 +652,10 @@ describe('Enrollments', () => {
           enrollmentId: '',
         },
       });
-      expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions.code, 'InvalidIdError');
     });
 
-    it('return unexpected error when passed invalid enrollment ID with non-suitable plugins', async () => {
+    test('return unexpected error when passed invalid enrollment ID with non-suitable plugins', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -666,12 +668,12 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment-wrong-plan',
         },
       });
-      expect(errors[0]?.message.includes('Unexpected error.')).toBe(true);
+      assert.strictEqual(errors[0]?.message.includes('Unexpected error.'), true);
     });
   });
 
-  describe('Mutation.activateEnrollment for normal user', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.activateEnrollment for normal user', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -684,12 +686,12 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('Mutation.activateEnrollment for anonymous user', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.activateEnrollment for anonymous user', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -702,12 +704,12 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('query.enrollments for admin user should', () => {
-    it('return list of enrollments', async () => {
+  test.describe('query.enrollments for admin user should', () => {
+    test('return list of enrollments', async () => {
       const {
         data: { enrollments },
       } = await graphqlFetchAsAdminUser({
@@ -762,10 +764,10 @@ describe('Enrollments', () => {
         `,
         variables: {},
       });
-      expect(enrollments.length > 0).toBe(true);
+      assert.strictEqual(enrollments.length > 0, true);
     });
 
-    it('return list of searched enrollments by enrollment number', async () => {
+    test('return list of searched enrollments by enrollment number', async () => {
       const {
         data: { enrollments },
       } = await graphqlFetchAsAdminUser({
@@ -781,10 +783,10 @@ describe('Enrollments', () => {
           queryString: 'initial',
         },
       });
-      expect(enrollments.length).toEqual(2);
+      assert.strictEqual(enrollments.length, 2);
     });
 
-    it('return number of enrollments specified by limit starting from a given offset', async () => {
+    test('return number of enrollments specified by limit starting from a given offset', async () => {
       const {
         data: { enrollments },
       } = await graphqlFetchAsAdminUser({
@@ -800,12 +802,12 @@ describe('Enrollments', () => {
           offset: 2,
         },
       });
-      expect(enrollments.length).toBe(1);
+      assert.strictEqual(enrollments.length, 1);
     });
   });
 
-  describe('query.enrollmentsCount for admin user should', () => {
-    it('return total number of enrollments', async () => {
+  test.describe('query.enrollmentsCount for admin user should', () => {
+    test('return total number of enrollments', async () => {
       const {
         data: { enrollmentsCount },
       } = await graphqlFetchAsAdminUser({
@@ -816,12 +818,12 @@ describe('Enrollments', () => {
         `,
         variables: {},
       });
-      expect(enrollmentsCount > 0).toBe(true);
+      assert.strictEqual(enrollmentsCount > 0, true);
     });
   });
 
-  describe('query.enrollmentsCount for Normal user should', () => {
-    it('return total number of enrollments', async () => {
+  test.describe('query.enrollmentsCount for Normal user should', () => {
+    test('return total number of enrollments', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query {
@@ -830,12 +832,12 @@ describe('Enrollments', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('query.enrollmentsCount for anonymous user should', () => {
-    it('return total number of enrollments', async () => {
+  test.describe('query.enrollmentsCount for anonymous user should', () => {
+    test('return total number of enrollments', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query {
@@ -844,12 +846,12 @@ describe('Enrollments', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('query.enrollments for normal user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('query.enrollments for normal user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query enrollments($limit: Int, $offset: Int) {
@@ -861,12 +863,12 @@ describe('Enrollments', () => {
         variables: {},
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('query.enrollments for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('query.enrollments for anonymous user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query enrollments($limit: Int, $offset: Int) {
@@ -878,12 +880,12 @@ describe('Enrollments', () => {
         variables: {},
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('query.enrollment for admin user should', () => {
-    it('return enrollment specified by Id', async () => {
+  test.describe('query.enrollment for admin user should', () => {
+    test('return enrollment specified by Id', async () => {
       const {
         data: { enrollment },
       } = await graphqlFetchAsAdminUser({
@@ -941,10 +943,10 @@ describe('Enrollments', () => {
         },
       });
 
-      expect(enrollment._id).toBe('activeenrollment');
+      assert.strictEqual(enrollment._id, 'activeenrollment');
     });
 
-    it('return expired true by (default) when asked for subsciprion with expiry date of past', async () => {
+    test('return expired true by (default) when asked for subsciprion with expiry date of past', async () => {
       const {
         data: { enrollment },
       } = await graphqlFetchAsAdminUser({
@@ -960,10 +962,10 @@ describe('Enrollments', () => {
           enrollmentId: 'expiredenrollment',
         },
       });
-      expect(enrollment.isExpired).toBe(true);
+      assert.strictEqual(enrollment.isExpired, true);
     });
 
-    it('return expired false by (default) when asked for subsciprion with expiry date in future', async () => {
+    test('return expired false by (default) when asked for subsciprion with expiry date in future', async () => {
       const {
         data: { enrollment },
       } = await graphqlFetchAsAdminUser({
@@ -979,10 +981,10 @@ describe('Enrollments', () => {
           enrollmentId: 'activeenrollment',
         },
       });
-      expect(enrollment.isExpired).toBe(false);
+      assert.strictEqual(enrollment.isExpired, false);
     });
 
-    it('return expired true when asked for enrollment with expiry date in future when referenceDate is even later', async () => {
+    test('return expired true when asked for enrollment with expiry date in future when referenceDate is even later', async () => {
       const {
         data: { enrollment },
       } = await graphqlFetchAsAdminUser({
@@ -999,10 +1001,10 @@ describe('Enrollments', () => {
           referenceDate: new Date('2030/09/12'),
         },
       });
-      expect(enrollment.isExpired).toBe(true);
+      assert.strictEqual(enrollment.isExpired, true);
     });
 
-    it('return InvalidIdError when passed invalid enrollment ID', async () => {
+    test('return InvalidIdError when passed invalid enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query enrollment($enrollmentId: ID!) {
@@ -1016,12 +1018,12 @@ describe('Enrollments', () => {
           enrollmentId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('query.enrollment for normal user', () => {
-    it('should return NoPermissionError', async () => {
+  test.describe('query.enrollment for normal user', () => {
+    test('should return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query enrollment($enrollmentId: ID!) {
@@ -1035,12 +1037,12 @@ describe('Enrollments', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('query.enrollment for anonymous user', () => {
-    it('should return NoPermissionError', async () => {
+  test.describe('query.enrollment for anonymous user', () => {
+    test('should return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query enrollment($enrollmentId: ID!) {
@@ -1054,7 +1056,7 @@ describe('Enrollments', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 });

@@ -1,12 +1,14 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 describe('Auth for logged in users', () => {
-  beforeAll(async () => {
+  before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -27,7 +29,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(me).toMatchObject({
+      assert.deepStrictEqual(me, {
         _id: User._id,
         profile: {
           gender: 'm',
@@ -48,7 +50,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(user).toMatchObject({
+      assert.deepStrictEqual(user, {
         _id: User._id,
       });
     });
@@ -66,7 +68,7 @@ describe('Auth for logged in users', () => {
           userId: Admin._id,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -81,7 +83,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(changePassword).toMatchObject({
+      assert.deepStrictEqual(changePassword, {
         success: true,
       });
     });
@@ -98,7 +100,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(sendVerificationEmail).toMatchObject({
+      assert.deepStrictEqual(sendVerificationEmail, {
         success: true,
       });
     });
@@ -113,12 +115,12 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(sendVerificationEmail).toEqual(null);
+      assert.strictEqual(sendVerificationEmail, null);
     });
   });
 
   describe('Mutation.verifyEmail', () => {
-    beforeAll(async () => {
+    before(async () => {
       const Users = db.collection('users');
       const userCopy = {
         ...User,
@@ -154,7 +156,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(sendVerificationEmail).toEqual({
+      assert.deepStrictEqual(sendVerificationEmail, {
         success: true,
       });
     });
@@ -184,7 +186,7 @@ describe('Auth for logged in users', () => {
           token,
         },
       });
-      expect(verifyEmail).toMatchObject({
+      assert.deepStrictEqual(verifyEmail, {
         user: {
           _id: 'userthatmustverifyemail',
         },
@@ -198,7 +200,7 @@ describe('Auth for logged in users', () => {
         _id: 'userthatmustverifyemail',
       });
 
-      expect(user.emails[0].verified).toEqual(true);
+      assert.strictEqual(user.emails[0].verified, true);
     });
   });
 
@@ -217,7 +219,7 @@ describe('Auth for logged in users', () => {
           username: 'admin-updated',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 
@@ -255,7 +257,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(logout).toMatchObject({
+      assert.deepStrictEqual(logout, {
         success: true,
       });
       const user = await Users.findOne({
@@ -266,7 +268,7 @@ describe('Auth for logged in users', () => {
           resume: { loginTokens },
         },
       } = user;
-      expect(loginTokens.length).toEqual(1);
+      assert.strictEqual(loginTokens.length, 1);
     });
 
     it.skip('log out userthatlogsout without explicit token', async () => {
@@ -305,7 +307,7 @@ describe('Auth for logged in users', () => {
           token: 'FWhglvqdNkNX80jZMJ61FvDUkKzCsESVfbui9H8Fg27',
         },
       });
-      expect(logout).toMatchObject({
+      assert.deepStrictEqual(logout, {
         success: true,
       });
       const user = await Users.findOne({
@@ -316,7 +318,7 @@ describe('Auth for logged in users', () => {
           resume: { loginTokens },
         },
       } = user;
-      expect(loginTokens.length).toEqual(1);
+      assert.strictEqual(loginTokens.length, 1);
     });
   });
 });

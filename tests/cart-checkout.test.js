@@ -1,17 +1,19 @@
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 let orderId;
 
-describe('Cart Checkout Flow', () => {
-  beforeAll(async () => {
+test.describe('Cart Checkout Flow', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
-  describe('Mutation.createCart', () => {
-    it('create a cart with a specific order number', async () => {
+  test.describe('Mutation.createCart', () => {
+    test('create a cart with a specific order number', async () => {
       const { data: { createCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -22,7 +24,7 @@ describe('Cart Checkout Flow', () => {
           }
         `,
       });
-      expect(createCart).toMatchObject({
+      assert.deepStrictEqual(createCart, {
         orderNumber: 'wishlist',
       });
 
@@ -30,8 +32,8 @@ describe('Cart Checkout Flow', () => {
     });
   });
 
-  describe('Mutation.addCartProduct', () => {
-    it('add a product to the cart', async () => {
+  test.describe('Mutation.addCartProduct', () => {
+    test('add a product to the cart', async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct($productId: ID!, $quantity: Int, $orderId: ID) {
@@ -47,14 +49,14 @@ describe('Cart Checkout Flow', () => {
           quantity: 1,
         },
       });
-      expect(addCartProduct).toMatchObject({
+      assert.deepStrictEqual(addCartProduct, {
         quantity: 1,
       });
     });
   });
 
-  describe('Mutation.updateCart', () => {
-    it('update the billingAddress', async () => {
+  test.describe('Mutation.updateCart', () => {
+    test('update the billingAddress', async () => {
       const { data: { updateCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCart($billingAddress: AddressInput, $orderId: ID) {
@@ -82,7 +84,7 @@ describe('Cart Checkout Flow', () => {
         },
       });
 
-      expect(updateCart).toMatchObject({
+      assert.deepStrictEqual(updateCart, {
         billingAddress: {
           firstName: 'Hallo',
           lastName: 'Velo',
@@ -92,7 +94,7 @@ describe('Cart Checkout Flow', () => {
       });
     });
 
-    it('update the contact', async () => {
+    test('update the contact', async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCart($meta: JSON, $contact: ContactInput, $orderId: ID) {
@@ -117,7 +119,7 @@ describe('Cart Checkout Flow', () => {
         },
       });
 
-      expect(data?.updateCart).toMatchObject({
+      assert.deepStrictEqual(data?.updateCart, {
         contact: {
           emailAddress: 'hello@unchained.local',
           telNumber: '+41999999999',
@@ -126,8 +128,8 @@ describe('Cart Checkout Flow', () => {
     });
   });
 
-  describe('Mutation.checkoutCart', () => {
-    it('checkout the cart with invoice', async () => {
+  test.describe('Mutation.checkoutCart', () => {
+    test('checkout the cart with invoice', async () => {
       const { data: { checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkoutCart($orderId: ID) {
@@ -143,13 +145,13 @@ describe('Cart Checkout Flow', () => {
         },
       });
 
-      expect(checkoutCart).toMatchObject({
+      assert.deepStrictEqual(checkoutCart, {
         orderNumber: 'wishlist',
         status: 'CONFIRMED',
       });
     });
 
-    it('return unchained order if trying to checkout the cart with invoice again', async () => {
+    test('return unchained order if trying to checkout the cart with invoice again', async () => {
       const { data: { checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkoutCart($orderId: ID) {
@@ -165,7 +167,7 @@ describe('Cart Checkout Flow', () => {
         },
       });
 
-      expect(checkoutCart).toMatchObject({
+      assert.deepStrictEqual(checkoutCart, {
         orderNumber: 'wishlist',
         status: 'CONFIRMED',
       });

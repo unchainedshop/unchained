@@ -1,17 +1,19 @@
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('FilterOption', () => {
-  beforeAll(async () => {
+test.describe('FilterOption', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.createFilterOption for admin users should', () => {
-    it('create filter option successfuly when passed valid filter ID', async () => {
+  test.describe('mutation.createFilterOption for admin users should', () => {
+    test('create filter option successfuly when passed valid filter ID', async () => {
       const {
         data: { createFilterOption },
       } = await graphqlFetch({
@@ -51,7 +53,7 @@ describe('FilterOption', () => {
           ],
         },
       });
-      expect(createFilterOption.options[createFilterOption.options.length - 1]).toMatchObject({
+      assert.deepStrictEqual(createFilterOption.options[createFilterOption.options.length - 1], {
         _id: 'multichoice-filter:test-filter-option',
         value: 'test-filter-option',
         texts: {
@@ -60,7 +62,7 @@ describe('FilterOption', () => {
       });
     });
 
-    it('return not found error when passed non existing filterId', async () => {
+    test('return not found error when passed non existing filterId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
@@ -80,10 +82,10 @@ describe('FilterOption', () => {
           ],
         },
       });
-      expect(errors[0].extensions?.code).toEqual('FilterNotFoundError');
+      assert.strictEqual(errors[0].extensions?.code, 'FilterNotFoundError');
     });
 
-    it('return error when passed invalid filterId', async () => {
+    test('return error when passed invalid filterId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
@@ -98,12 +100,12 @@ describe('FilterOption', () => {
           texts: [{ title: 'test-filter-option-title', locale: 'de' }],
         },
       });
-      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0].extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.createFilterOption for anonymous users should', () => {
-    it('return error', async () => {
+  test.describe('mutation.createFilterOption for anonymous users should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -124,12 +126,12 @@ describe('FilterOption', () => {
           ],
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.removeFilterOption for admin users should', () => {
-    it('remove filter option successfuly when passed valid filter ID', async () => {
+  test.describe('mutation.removeFilterOption for admin users should', () => {
+    test('remove filter option successfuly when passed valid filter ID', async () => {
       const {
         data: { removeFilterOption },
       } = await graphqlFetch({
@@ -160,13 +162,14 @@ describe('FilterOption', () => {
           filterOptionValue: 'test-filter-option',
         },
       });
-      expect(removeFilterOption.options.length).toEqual(3);
-      expect(removeFilterOption.options.filter((o) => o.value === 'test-filter-option').length).toEqual(
+      assert.strictEqual(removeFilterOption.options.length, 3);
+      assert.strictEqual(
+        removeFilterOption.options.filter((o) => o.value === 'test-filter-option').length,
         0,
       );
     });
 
-    it('return not found error when passed non existing filter ID', async () => {
+    test('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {
@@ -180,10 +183,10 @@ describe('FilterOption', () => {
           filterOptionValue: 'test-filter-option',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'FilterNotFoundError');
     });
 
-    it('return error when passed invalid filter ID', async () => {
+    test('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {
@@ -197,12 +200,12 @@ describe('FilterOption', () => {
           filterOptionValue: 'test-filter-option',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.removeFilterOption for anonymous users should', () => {
-    it('return error when passed valid filter ID', async () => {
+  test.describe('mutation.removeFilterOption for anonymous users should', () => {
+    test('return error when passed valid filter ID', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -217,7 +220,7 @@ describe('FilterOption', () => {
           filterOptionValue: 'test-filter-option',
         },
       });
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });

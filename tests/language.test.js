@@ -1,17 +1,19 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { BaseLanguage } from './seeds/locale-data.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('Language', () => {
-  beforeAll(async () => {
+test.describe('Language', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('For admin user ', () => {
-    it('Return language search result', async () => {
+  test.describe('For admin user ', () => {
+    test('Return language search result', async () => {
       const {
         data: { languages },
       } = await graphqlFetch({
@@ -27,8 +29,8 @@ describe('Language', () => {
           queryString: 'de',
         },
       });
-      expect(languages.length).toEqual(1);
-      expect(languages).toMatchObject([
+      assert.strictEqual(languages.length, 1);
+      assert.deepStrictEqual(languages, [
         {
           _id: BaseLanguage._id,
           isoCode: BaseLanguage.isoCode,
@@ -36,7 +38,7 @@ describe('Language', () => {
       ]);
     });
 
-    it('Return empty array when no matching search result found', async () => {
+    test('Return empty array when no matching search result found', async () => {
       const {
         data: { languages },
       } = await graphqlFetch({
@@ -52,7 +54,7 @@ describe('Language', () => {
           queryString: 'wrong',
         },
       });
-      expect(languages.length).toEqual(0);
+      assert.strictEqual(languages.length, 0);
     });
   });
 });

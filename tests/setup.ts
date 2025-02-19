@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import dns from 'node:dns';
 import dotenv from 'dotenv-extended';
-import { wipeDatabase } from './helpers.js';
+import { wipeDatabase, disconnect } from './helpers.js';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 dns.setDefaultResultOrder('ipv4first');
@@ -16,7 +16,7 @@ const setupInMemoryMongoDB = async () => {
     },
     binary: {
       version: '8.0.1',
-      skipMD5: true,
+      checkMD5: false,
     },
     spawn: {
       detached: false,
@@ -37,13 +37,13 @@ const startAndWaitForApp = async () => {
           ROOT_URL: 'http://localhost:4010',
           NODE_ENV: 'development',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
-          UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
+          UNCHAINED_DISABLE_EMAIL_INTERCEPTION: '1',
           EMAIL_WEBSITE_NAME: 'Unchained',
           EMAIL_WEBSITE_URL: 'http://localhost:4010',
           EMAIL_FROM: 'noreply@unchained.local',
           DATATRANS_SECRET: 'secret',
           DATATRANS_SIGN_KEY: '1337',
-          MOCK_APIS: 1,
+          MOCK_APIS: '1',
           APPLE_IAP_SHARED_SECRET: '71c41914012b4ad7be859f6c26432298',
           CRYPTOPAY_SECRET: 'secret',
           CRYPTOPAY_BTC_XPUB:
@@ -91,10 +91,39 @@ const startAndWaitForApp = async () => {
   });
 };
 
+async function cleanup() {
+  global.__SUBPROCESS_UNCHAINED__.kill();
+  global.__MONGOD__.stop();
+}
+
 export default async (globalConfig) => {
   if (!global.__SUBPROCESS_UNCHAINED__) {
-    await setupInMemoryMongoDB(globalConfig);
-    await startAndWaitForApp(globalConfig);
+    await setupInMemoryMongoDB();
+    await startAndWaitForApp();
     await wipeDatabase();
   }
+
+  async function teardown() {
+    if (!globalConfig.watch && !globalConfig.watchAll) {
+      try {
+        await disconnect();
+        await cleanup();
+      } catch {
+        /* */
+      }
+    }
+  }
+
+  // do something when app is closing
+  process.on('exit', teardown);
+
+  // catches ctrl+c event
+  process.on('SIGINT', teardown);
+
+  // catches "kill pid" (for example: nodemon restart)
+  process.on('SIGUSR1', teardown);
+  process.on('SIGUSR2', teardown);
+
+  // catches uncaught exceptions
+  process.on('uncaughtException', teardown);
 };

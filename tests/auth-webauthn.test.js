@@ -1,15 +1,17 @@
 import { setupDatabase, createAnonymousGraphqlFetch } from './helpers.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let anonymousGraphqlFetch;
 
-describe('WebAuthn Flows', () => {
-  beforeAll(async () => {
+test.describe('WebAuthn Flows', () => {
+  test.before(async () => {
     await setupDatabase();
     anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
 
-  describe('Mutation.createWebAuthnCredentialCreationOptions', () => {
-    it('create a webauthn credential', async () => {
+  test.describe('Mutation.createWebAuthnCredentialCreationOptions', () => {
+    test('create a webauthn credential', async () => {
       const { data: { createWebAuthnCredentialCreationOptions } = {} } = await anonymousGraphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -17,20 +19,20 @@ describe('WebAuthn Flows', () => {
           }
         `,
       });
-      expect(createWebAuthnCredentialCreationOptions).toMatchObject({
-        requestId: expect.any(Number),
+      assert.deepStrictEqual(createWebAuthnCredentialCreationOptions, {
+        requestId: assert.match(Number),
         rp: {},
         user: {},
-        challenge: expect.any(String),
-        pubKeyCredParams: expect.any(Array),
+        challenge: assert.match(String),
+        pubKeyCredParams: assert.match(Array),
       });
     });
 
-    it.todo('create a user with the previously created challenge');
+    test.todo('create a user with the previously created challenge');
   });
 
-  describe('Mutation.createWebAuthnCredentialRequestOptions', () => {
-    it('create a webauthn credential', async () => {
+  test.describe('Mutation.createWebAuthnCredentialRequestOptions', () => {
+    test('create a webauthn credential', async () => {
       const { data: { createWebAuthnCredentialRequestOptions } = {} } = await anonymousGraphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -38,23 +40,23 @@ describe('WebAuthn Flows', () => {
           }
         `,
       });
-      expect(createWebAuthnCredentialRequestOptions).toMatchObject({
-        requestId: expect.any(Number),
-        challenge: expect.any(String),
+      assert.deepStrictEqual(createWebAuthnCredentialRequestOptions, {
+        requestId: assert.match(Number),
+        challenge: assert.match(String),
       });
     });
   });
 
-  describe('Mutation.loginWithWebAuthn', () => {
-    it.todo('login with previously registered credentials');
+  test.describe('Mutation.loginWithWebAuthn', () => {
+    test.todo('login with previously registered credentials');
   });
-  describe('Mutation.addWebAuthnCredentials', () => {
-    it.todo('add webauthn device to admin user');
+  test.describe('Mutation.addWebAuthnCredentials', () => {
+    test.todo('add webauthn device to admin user');
   });
-  describe('Mutation.removeWebAuthnCredentials', () => {
-    it.todo('remove webauthn device from admin user');
+  test.describe('Mutation.removeWebAuthnCredentials', () => {
+    test.todo('remove webauthn device from admin user');
   });
-  describe('User.webAuthnCredentials', () => {
-    it.todo('see a list of registered devices');
+  test.describe('User.webAuthnCredentials', () => {
+    test.todo('see a list of registered devices');
   });
 });

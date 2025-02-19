@@ -1,12 +1,14 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { SimpleOrder, DiscountedDiscount } from './seeds/orders.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 let graphqlFetch;
 let adminGraphqlFetch;
 
 describe('Cart: Discounts', () => {
-  beforeAll(async () => {
+  before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -47,8 +49,8 @@ describe('Cart: Discounts', () => {
           orderId: SimpleOrder._id,
         },
       });
-      expect(addCartDiscount.order.total.amount).toBe(0);
-      expect(addCartDiscount).toMatchObject({
+      assert.strictEqual(addCartDiscount.order.total.amount, 0);
+      assert.deepStrictEqual(addCartDiscount, {
         code: 'HALFPRICE',
         discounted: [
           {
@@ -106,8 +108,8 @@ describe('Cart: Discounts', () => {
         },
       });
 
-      expect(addCartDiscount.order.total.amount).toBeLessThan(0);
-      expect(addCartDiscount).toMatchObject({
+      assert(addCartDiscount.order.total.amount < 0);
+      assert.deepStrictEqual(addCartDiscount, {
         code: '100off',
         discounted: [
           {
@@ -141,7 +143,7 @@ describe('Cart: Discounts', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderNotFoundError');
     });
   });
 
@@ -166,8 +168,8 @@ describe('Cart: Discounts', () => {
         },
       });
 
-      expect(removeCartDiscount.order.total.amount).toBe(0);
-      expect(removeCartDiscount).toMatchObject({
+      assert.strictEqual(removeCartDiscount.order.total.amount, 0);
+      assert.deepStrictEqual(removeCartDiscount, {
         code: '100OFF',
         order: {
           total: {},
@@ -189,7 +191,7 @@ describe('Cart: Discounts', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('OrderDiscountNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderDiscountNotFoundError');
     });
 
     it('return error when passed invalid discountId', async () => {
@@ -206,7 +208,7 @@ describe('Cart: Discounts', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

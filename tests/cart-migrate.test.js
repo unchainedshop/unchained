@@ -1,6 +1,8 @@
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { GUEST_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import { describe, it, before } from 'node:test';
 
 let db;
 let anonymousGraphqlFetch;
@@ -8,7 +10,7 @@ let loggedInGraphqlFetch;
 let orderId;
 
 describe('Guest user cart migration', () => {
-  beforeAll(async () => {
+  before(async () => {
     [db] = await setupDatabase();
     anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
@@ -23,7 +25,7 @@ describe('Guest user cart migration', () => {
         }
       `,
     });
-    expect(result.data.loginAsGuest).toMatchObject({});
+    assert.deepStrictEqual(result.data.loginAsGuest, {});
   });
 
   it('add a product to the cart', async () => {
@@ -66,7 +68,7 @@ describe('Guest user cart migration', () => {
       },
     });
     orderId = result.data.addCartProduct.order._id;
-    expect(result.data.addCartProduct).toMatchObject({
+    assert.deepStrictEqual(result.data.addCartProduct, {
       quantity: 2,
       total: {
         currency: 'CHF',
@@ -105,6 +107,6 @@ describe('Guest user cart migration', () => {
       userId: loginWithPassword.user._id,
       _id: orderId,
     });
-    expect(adminOrder).toMatchObject({});
+    assert.deepStrictEqual(adminOrder, {});
   });
 });

@@ -1,17 +1,19 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { BaseCurrency } from './seeds/locale-data.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('Currency', () => {
-  beforeAll(async () => {
+test.describe('Currency', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('For admin user ', () => {
-    it('Return currency search result', async () => {
+  test.describe('For admin user ', () => {
+    test('Return currency search result', async () => {
       const {
         data: { currencies },
       } = await graphqlFetch({
@@ -27,8 +29,8 @@ describe('Currency', () => {
           queryString: 'CHF',
         },
       });
-      expect(currencies.length).toEqual(1);
-      expect(currencies).toMatchObject([
+      assert.strictEqual(currencies.length, 1);
+      assert.deepStrictEqual(currencies, [
         {
           _id: BaseCurrency._id,
           isoCode: BaseCurrency.isoCode,
@@ -36,7 +38,7 @@ describe('Currency', () => {
       ]);
     });
 
-    it('Return empty array when no matching search result found', async () => {
+    test('Return empty array when no matching search result found', async () => {
       const {
         data: { currencies },
       } = await graphqlFetch({
@@ -52,7 +54,7 @@ describe('Currency', () => {
           queryString: 'wrong',
         },
       });
-      expect(currencies.length).toEqual(0);
+      assert.strictEqual(currencies.length, 0);
     });
   });
 });

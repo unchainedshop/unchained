@@ -1,21 +1,23 @@
 import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
-describe('Filters', () => {
-  beforeAll(async () => {
+test.describe('Filters', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
-  describe('Query.filters for admin user should', () => {
-    it('return list of active filters', async () => {
+  test.describe('Query.filters for admin user should', () => {
+    test('return list of active filters', async () => {
       const {
         data: { filters },
       } = await graphqlFetch({
@@ -50,10 +52,10 @@ describe('Filters', () => {
         `,
         variables: {},
       });
-      expect(filters.length).toEqual(0);
+      assert.strictEqual(filters.length, 0);
     });
 
-    it('Return list of matching search results', async () => {
+    test('Return list of matching search results', async () => {
       const {
         data: { filters },
       } = await graphqlFetch({
@@ -91,8 +93,8 @@ describe('Filters', () => {
         },
       });
 
-      expect(filters.length).toEqual(1);
-      expect(filters).toMatchObject([
+      assert.strictEqual(filters.length, 1);
+      assert.deepStrictEqual(filters, [
         {
           _id: 'multichoice-filter',
           updated: '2020-03-16T09:32:31.996Z',
@@ -114,7 +116,7 @@ describe('Filters', () => {
       ]);
     });
 
-    it('Return empty array when search is not found', async () => {
+    test('Return empty array when search is not found', async () => {
       const {
         data: { filters },
       } = await graphqlFetch({
@@ -130,10 +132,10 @@ describe('Filters', () => {
         },
       });
 
-      expect(filters.length).toEqual(0);
+      assert.strictEqual(filters.length, 0);
     });
 
-    it('return list of active and in-active filters', async () => {
+    test('return list of active and in-active filters', async () => {
       const {
         data: { filters },
       } = await graphqlFetch({
@@ -149,8 +151,8 @@ describe('Filters', () => {
           includeInactive: true,
         },
       });
-      expect(filters.length).toEqual(1);
-      expect(filters).toMatchObject([
+      assert.strictEqual(filters.length, 1);
+      assert.deepStrictEqual(filters, [
         {
           _id: expect.anything(),
           isActive: false,
@@ -159,8 +161,8 @@ describe('Filters', () => {
     });
   });
 
-  describe('Query.filtersCount for admin user should', () => {
-    it('return total number of active filters', async () => {
+  test.describe('Query.filtersCount for admin user should', () => {
+    test('return total number of active filters', async () => {
       const {
         data: { filtersCount },
       } = await graphqlFetch({
@@ -171,10 +173,10 @@ describe('Filters', () => {
         `,
         variables: {},
       });
-      expect(filtersCount).toEqual(0);
+      assert.strictEqual(filtersCount, 0);
     });
 
-    it('return total number of active and in-active filters', async () => {
+    test('return total number of active and in-active filters', async () => {
       const {
         data: { filtersCount },
       } = await graphqlFetch({
@@ -187,12 +189,12 @@ describe('Filters', () => {
           includeInactive: true,
         },
       });
-      expect(filtersCount).toEqual(1);
+      assert.strictEqual(filtersCount, 1);
     });
   });
 
-  describe('Query.filtersCount for normal user should', () => {
-    it('return total number of active filters', async () => {
+  test.describe('Query.filtersCount for normal user should', () => {
+    test('return total number of active filters', async () => {
       const {
         data: { filtersCount },
       } = await graphqlFetchAsNormalUser({
@@ -203,12 +205,12 @@ describe('Filters', () => {
         `,
         variables: {},
       });
-      expect(filtersCount).toEqual(0);
+      assert.strictEqual(filtersCount, 0);
     });
   });
 
-  describe('Query.filtersCount for Anonymous user should', () => {
-    it('return total number of active filters', async () => {
+  test.describe('Query.filtersCount for Anonymous user should', () => {
+    test('return total number of active filters', async () => {
       const {
         data: { filtersCount },
       } = await graphqlFetchAsAnonymousUser({
@@ -219,12 +221,12 @@ describe('Filters', () => {
         `,
         variables: {},
       });
-      expect(filtersCount).toEqual(0);
+      assert.strictEqual(filtersCount, 0);
     });
   });
 
-  describe('Query.filter for admin user should', () => {
-    it('return single filter for existing filter id', async () => {
+  test.describe('Query.filter for admin user should', () => {
+    test('return single filter for existing filter id', async () => {
       const {
         data: { filter },
       } = await graphqlFetch({
@@ -260,7 +262,7 @@ describe('Filters', () => {
           filterId: MultiChoiceFilter._id,
         },
       });
-      expect(filter).toMatchObject({
+      assert.deepStrictEqual(filter, {
         _id: MultiChoiceFilter._id,
         isActive: MultiChoiceFilter.isActive,
         type: MultiChoiceFilter.type,
@@ -268,7 +270,7 @@ describe('Filters', () => {
       });
     });
 
-    it('return error when passed invalid filterId', async () => {
+    test('return error when passed invalid filterId', async () => {
       const {
         data: { filter },
         errors,
@@ -284,13 +286,13 @@ describe('Filters', () => {
           filterId: '',
         },
       });
-      expect(filter).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(filter, null);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Query.Filters for anonymous user should', () => {
-    it('return empty array', async () => {
+  test.describe('Query.Filters for anonymous user should', () => {
+    test('return empty array', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: { filters },
@@ -304,12 +306,12 @@ describe('Filters', () => {
         `,
         variables: {},
       });
-      expect(filters.length).toBe(0);
+      assert.strictEqual(filters.length, 0);
     });
   });
 
-  describe('mutation.updateFilterTexts for admin user should', () => {
-    it('update filter texts successfully when passed valid filter ID', async () => {
+  test.describe('mutation.updateFilterTexts for admin user should', () => {
+    test('update filter texts successfully when passed valid filter ID', async () => {
       const {
         data: { updateFilterTexts },
       } = await graphqlFetch({
@@ -349,8 +351,8 @@ describe('Filters', () => {
         },
       });
 
-      expect(updateFilterTexts.length).toEqual(2);
-      expect(updateFilterTexts).toMatchObject([
+      assert.strictEqual(updateFilterTexts.length, 2);
+      assert.deepStrictEqual(updateFilterTexts, [
         {
           locale: 'en',
           title: 'english-filter-text',
@@ -364,7 +366,7 @@ describe('Filters', () => {
       ]);
     });
 
-    it('return not found error when passed non existing filter ID', async () => {
+    test('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateFilterTexts(
@@ -393,10 +395,10 @@ describe('Filters', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'FilterNotFoundError');
     });
 
-    it('return error when passed  invalid filter ID', async () => {
+    test('return error when passed  invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateFilterTexts(
@@ -425,12 +427,12 @@ describe('Filters', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateFilterTexts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateFilterTexts for anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -461,12 +463,12 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('Mutation.createFilter', () => {
-    it('create a new single choice filter', async () => {
+  test.describe('Mutation.createFilter', () => {
+    test('create a new single choice filter', async () => {
       const { data: { createFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createFilter($filter: CreateFilterInput!, $texts: [FilterTextInput!]) {
@@ -500,7 +502,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(createFilter).toMatchObject({
+      assert.deepStrictEqual(createFilter, {
         isActive: false,
         texts: {
           title: 'Mengeneinheit Filter',
@@ -549,7 +551,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(searchProducts).toMatchObject({
+      assert.deepStrictEqual(searchProducts, {
         productsCount: 1,
         filters: [
           {
@@ -568,8 +570,8 @@ describe('Filters', () => {
     });
   });
 
-  describe('mutation.updateFilter for admin User', () => {
-    it('should update filter successfuly when passed valid filter ID', async () => {
+  test.describe('mutation.updateFilter for admin User', () => {
+    test('should update filter successfuly when passed valid filter ID', async () => {
       const { data: { updateFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
@@ -605,13 +607,13 @@ describe('Filters', () => {
         },
       });
 
-      expect(updateFilter).toMatchObject({
+      assert.deepStrictEqual(updateFilter, {
         key: '999',
         isActive: true,
       });
     });
 
-    it('return not found error when passed non existing filter ID', async () => {
+    test('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
@@ -629,10 +631,10 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'FilterNotFoundError');
     });
 
-    it('return error when passed invalid filter ID', async () => {
+    test('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
@@ -650,12 +652,12 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.updateFilter for anonymous User', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateFilter for anonymous User', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -674,12 +676,12 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 
-  describe('mutation.removeFilter for admin User', () => {
-    it('should remove filter successfuly when passed valid filter ID', async () => {
+  test.describe('mutation.removeFilter for admin User', () => {
+    test('should remove filter successfuly when passed valid filter ID', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilter($filterId: ID!) {
@@ -725,10 +727,10 @@ describe('Filters', () => {
           filterId: MultiChoiceFilter._id,
         },
       });
-      expect(filter).toBe(null);
+      assert.strictEqual(filter, null);
     });
 
-    it('return not found error when passed non existing filter ID', async () => {
+    test('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilter($filterId: ID!) {
@@ -742,10 +744,10 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'FilterNotFoundError');
     });
 
-    it('return error when passed invalid filter ID', async () => {
+    test('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilter($filterId: ID!) {
@@ -759,12 +761,12 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.removeFilter for anonymous User', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeFilter for anonymous User', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -779,7 +781,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });
