@@ -1,16 +1,18 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
-describe('setup payment providers', () => {
+test.describe('setup payment providers', () => {
   let graphqlFetch;
 
-  beforeAll(async () => {
+  test.beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
-  describe('Mutation.createPaymentProvider', () => {
-    it('Add an invoice payment provider', async () => {
+  test.describe('Mutation.createPaymentProvider', () => {
+    test('Add an invoice payment provider', async () => {
       const {
         data: { createPaymentProvider, errors },
       } = await graphqlFetch({
@@ -39,8 +41,8 @@ describe('setup payment providers', () => {
           },
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(createPaymentProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(createPaymentProvider, {
         configuration: [],
         configurationError: null,
         deleted: null,
@@ -52,8 +54,8 @@ describe('setup payment providers', () => {
     });
   });
 
-  describe('Mutation.updatePaymentProvider', () => {
-    it('Update a payment provider', async () => {
+  test.describe('Mutation.updatePaymentProvider', () => {
+    test('Update a payment provider', async () => {
       const {
         data: { updatePaymentProvider, errors },
       } = await graphqlFetch({
@@ -89,8 +91,8 @@ describe('setup payment providers', () => {
           },
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(updatePaymentProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(updatePaymentProvider, {
         configuration: [
           {
             key: 'gugus',
@@ -106,7 +108,7 @@ describe('setup payment providers', () => {
       });
     });
 
-    it('return not found error when passed non existing paymentProviderId', async () => {
+    test('return not found error when passed non existing paymentProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updatePaymentProvider(
@@ -133,10 +135,10 @@ describe('setup payment providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('PaymentProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'PaymentProviderNotFoundError');
     });
 
-    it('return error when passed invalid paymentProviderId', async () => {
+    test('return error when passed invalid paymentProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updatePaymentProvider(
@@ -163,12 +165,12 @@ describe('setup payment providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.removePaymentProvider', () => {
-    it('Remove a payment provider', async () => {
+  test.describe('Mutation.removePaymentProvider', () => {
+    test('Remove a payment provider', async () => {
       const {
         data: { removePaymentProvider, errors },
       } = await graphqlFetch({
@@ -184,14 +186,14 @@ describe('setup payment providers', () => {
           paymentProviderId: SimplePaymentProvider._id,
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(removePaymentProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(removePaymentProvider, {
         deleted: expect.anything(),
         _id: SimplePaymentProvider._id,
       });
     });
 
-    it('return not found error when passed non existing paymentProviderId', async () => {
+    test('return not found error when passed non existing paymentProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removePaymentProvider($paymentProviderId: ID!) {
@@ -205,10 +207,10 @@ describe('setup payment providers', () => {
           paymentProviderId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('PaymentProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'PaymentProviderNotFoundError');
     });
 
-    it('return error when passed invalid paymentProviderId', async () => {
+    test('return error when passed invalid paymentProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removePaymentProvider($paymentProviderId: ID!) {
@@ -222,7 +224,7 @@ describe('setup payment providers', () => {
           paymentProviderId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

@@ -1,16 +1,18 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { SimpleDeliveryProvider } from './seeds/deliveries.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
-describe('setup delivery providers', () => {
+test.describe('setup delivery providers', () => {
   let graphqlFetch;
 
-  beforeAll(async () => {
+  test.beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
-  describe('Mutation.createDeliveryProvider', () => {
-    it('create a shipping delivery provider', async () => {
+  test.describe('Mutation.createDeliveryProvider', () => {
+    test('create a shipping delivery provider', async () => {
       const { data: { createDeliveryProvider, errors } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createDeliveryProvider($deliveryProvider: CreateDeliveryProviderInput!) {
@@ -37,8 +39,8 @@ describe('setup delivery providers', () => {
           },
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(createDeliveryProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(createDeliveryProvider, {
         configurationError: null,
         configuration: [],
         deleted: null,
@@ -50,8 +52,8 @@ describe('setup delivery providers', () => {
     });
   });
 
-  describe('Mutation.updateDeliveryProvider', () => {
-    it('Update a delivery provider', async () => {
+  test.describe('Mutation.updateDeliveryProvider', () => {
+    test('Update a delivery provider', async () => {
       const {
         data: { updateDeliveryProvider, errors },
       } = await graphqlFetch({
@@ -87,8 +89,8 @@ describe('setup delivery providers', () => {
           },
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(updateDeliveryProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(updateDeliveryProvider, {
         configuration: [
           {
             key: 'gugus',
@@ -104,7 +106,7 @@ describe('setup delivery providers', () => {
       });
     });
 
-    it('return not found error when passed non existing deliveryProviderId', async () => {
+    test('return not found error when passed non existing deliveryProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateDeliveryProvider(
@@ -131,10 +133,10 @@ describe('setup delivery providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('DeliverProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'DeliverProviderNotFoundError');
     });
 
-    it('return error when passed invalid deliveryProviderId', async () => {
+    test('return error when passed invalid deliveryProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateDeliveryProvider(
@@ -161,12 +163,12 @@ describe('setup delivery providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.removeDeliveryProvider', () => {
-    it('Remove a delivery provider', async () => {
+  test.describe('Mutation.removeDeliveryProvider', () => {
+    test('Remove a delivery provider', async () => {
       const {
         data: { removeDeliveryProvider, errors },
       } = await graphqlFetch({
@@ -182,14 +184,14 @@ describe('setup delivery providers', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(errors).toEqual(undefined);
-      expect(removeDeliveryProvider).toMatchObject({
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(removeDeliveryProvider, {
         deleted: expect.anything(),
         _id: SimpleDeliveryProvider._id,
       });
     });
 
-    it('return not found error when passed non existing deliveryProviderId', async () => {
+    test('return not found error when passed non existing deliveryProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeDeliveryProvider($deliveryProviderId: ID!) {
@@ -202,10 +204,10 @@ describe('setup delivery providers', () => {
           deliveryProviderId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('DeliverProviderNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'DeliverProviderNotFoundError');
     });
 
-    it('return error when passed invalid deliveryProviderId', async () => {
+    test('return error when passed invalid deliveryProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeDeliveryProvider($deliveryProviderId: ID!) {
@@ -218,7 +220,7 @@ describe('setup delivery providers', () => {
           deliveryProviderId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

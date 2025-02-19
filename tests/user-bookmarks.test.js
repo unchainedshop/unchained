@@ -1,18 +1,20 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { UnpublishedProduct, SimpleProduct, PlanProduct } from './seeds/products.js';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let db;
 let graphqlFetch;
 
-describe('User Bookmarks', () => {
-  beforeAll(async () => {
+test.describe('User Bookmarks', () => {
+  test.beforeAll(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.createBookmark', () => {
-    it('create a new bookmark for a specific user', async () => {
+  test.describe('Mutation.createBookmark', () => {
+    test('create a new bookmark for a specific user', async () => {
       const { data: { createBookmark } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createBookmark($productId: ID!, $userId: ID!) {
@@ -33,7 +35,7 @@ describe('User Bookmarks', () => {
           userId: User._id,
         },
       });
-      expect(createBookmark).toMatchObject({
+      assert.deepStrictEqual(createBookmark, {
         user: {
           _id: User._id,
         },
@@ -43,7 +45,7 @@ describe('User Bookmarks', () => {
       });
     });
 
-    it('return not found error when passed non existing productId ', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createBookmark($productId: ID!, $userId: ID!) {
@@ -61,10 +63,10 @@ describe('User Bookmarks', () => {
           userId: User._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId ', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createBookmark($productId: ID!, $userId: ID!) {
@@ -82,12 +84,12 @@ describe('User Bookmarks', () => {
           userId: User._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.removeBookmark', () => {
-    it('remove a bookmark', async () => {
+  test.describe('Mutation.removeBookmark', () => {
+    test('remove a bookmark', async () => {
       const Bookmarks = db.collection('bookmarks');
       const bookmark = await Bookmarks.findOne({ userId: User._id });
       await graphqlFetch({
@@ -115,10 +117,10 @@ describe('User Bookmarks', () => {
           bookmarkId: bookmark._id,
         },
       });
-      expect(errors[0].extensions?.code).toEqual('BookmarkNotFoundError');
+      assert.strictEqual(errors[0].extensions?.code, 'BookmarkNotFoundError');
     });
 
-    it('return not found error when passed non existin bookmarkId', async () => {
+    test('return not found error when passed non existing bookmarkId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeBookmark($bookmarkId: ID!) {
@@ -131,10 +133,10 @@ describe('User Bookmarks', () => {
           bookmarkId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('BookmarkNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'BookmarkNotFoundError');
     });
 
-    it('return error when passed invalid bookmarkId', async () => {
+    test('return error when passed invalid bookmarkId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeBookmark($bookmarkId: ID!) {
@@ -147,12 +149,12 @@ describe('User Bookmarks', () => {
           bookmarkId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.bookmark', () => {
-    it('create a new bookmark for logged in user', async () => {
+  test.describe('Mutation.bookmark', () => {
+    test('create a new bookmark for logged in user', async () => {
       const { data: { bookmark } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation bookmark($productId: ID!, $bookmarked: Boolean) {
@@ -173,7 +175,7 @@ describe('User Bookmarks', () => {
           bookmarked: true,
         },
       });
-      expect(bookmark).toMatchObject({
+      assert.deepStrictEqual(bookmark, {
         user: {
           _id: Admin._id,
         },
@@ -183,7 +185,7 @@ describe('User Bookmarks', () => {
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation bookmark($productId: ID!, $bookmarked: Boolean) {
@@ -197,10 +199,10 @@ describe('User Bookmarks', () => {
           bookmarked: true,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation bookmark($productId: ID!, $bookmarked: Boolean) {
@@ -214,12 +216,12 @@ describe('User Bookmarks', () => {
           bookmarked: true,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('User.bookmarks', () => {
-    it('returns 2 bookmarks', async () => {
+  test.describe('User.bookmarks', () => {
+    test('returns 2 bookmarks', async () => {
       const { data: { user: { bookmarks } } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query bookmarks($userId: ID!) {
@@ -237,8 +239,8 @@ describe('User Bookmarks', () => {
           userId: Admin._id,
         },
       });
-      expect(bookmarks.length).toEqual(2);
-      expect(bookmarks).toMatchObject([
+      assert.strictEqual(bookmarks.length, 2);
+      assert.deepStrictEqual(bookmarks, [
         { product: { _id: SimpleProduct._id } },
         { product: { _id: PlanProduct._id } },
       ]);
