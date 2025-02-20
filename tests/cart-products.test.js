@@ -1,19 +1,23 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
-let graphqlFetch;
+test.describe('Cart: Product Items', () => {
+  let graphqlFetch;
 
-describe('Cart: Product Items', () => {
-  before(async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
-  describe('Mutation.addCartProduct', () => {
-    it('add a product to the cart', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Mutation.addCartProduct', () => {
+    test('add a product to the cart', async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct(
@@ -76,7 +80,7 @@ describe('Cart: Product Items', () => {
       });
     });
 
-    it('add another product to the cart (with different config) should create new order item', async () => {
+    test('add another product to the cart (with different config) should create new order item', async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct($productId: ID!) {
@@ -98,7 +102,7 @@ describe('Cart: Product Items', () => {
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct($productId: ID!) {
@@ -118,7 +122,7 @@ describe('Cart: Product Items', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct($productId: ID!) {
@@ -139,8 +143,8 @@ describe('Cart: Product Items', () => {
     });
   });
 
-  describe('Mutation.emptyCart', () => {
-    it('clear the cart from items', async () => {
+  test.describe('Mutation.emptyCart', () => {
+    test('clear the cart from items', async () => {
       const { data: { emptyCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -159,7 +163,7 @@ describe('Cart: Product Items', () => {
       });
     });
 
-    it('return error if order is not mutable (confirmed)', async () => {
+    test('return error if order is not mutable (confirmed)', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation emptyCart($orderId: ID!) {
@@ -180,8 +184,8 @@ describe('Cart: Product Items', () => {
     });
   });
 
-  describe('Mutation.addMultipleCartProducts', () => {
-    it('add multiple products to the cart', async () => {
+  test.describe('Mutation.addMultipleCartProducts', () => {
+    test('add multiple products to the cart', async () => {
       const { data: { addMultipleCartProducts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addMultipleCartProducts($items: [OrderItemInput!]!) {
@@ -230,8 +234,8 @@ describe('Cart: Product Items', () => {
     });
   });
 
-  describe('Mutation.updateCartItem', () => {
-    it('update a cart item', async () => {
+  test.describe('Mutation.updateCartItem', () => {
+    test('update a cart item', async () => {
       const { data: { updateCartItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCartItem($itemId: ID!, $configuration: [ProductConfigurationParameterInput!]) {
@@ -273,7 +277,7 @@ describe('Cart: Product Items', () => {
       });
     });
 
-    it('return error when passed invalid itemId', async () => {
+    test('return error when passed invalid itemId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCartItem($itemId: ID!, $configuration: [ProductConfigurationParameterInput!]) {
@@ -295,7 +299,7 @@ describe('Cart: Product Items', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return not found error when passed non existing itemId', async () => {
+    test('return not found error when passed non existing itemId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCartItem($itemId: ID!, $configuration: [ProductConfigurationParameterInput!]) {
@@ -318,8 +322,8 @@ describe('Cart: Product Items', () => {
     });
   });
 
-  describe('Mutation.removeCartItem', () => {
-    it('remove a cart item', async () => {
+  test.describe('Mutation.removeCartItem', () => {
+    test('remove a cart item', async () => {
       const { data: { removeCartItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartItem($itemId: ID!) {
@@ -343,7 +347,7 @@ describe('Cart: Product Items', () => {
       });
     });
 
-    it('return not found error when passed non existing itemId', async () => {
+    test('return not found error when passed non existing itemId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartItem($itemId: ID!) {
@@ -362,7 +366,7 @@ describe('Cart: Product Items', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'OrderItemNotFoundError');
     });
 
-    it('return error when passed invalid itemId', async () => {
+    test('return error when passed invalid itemId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartItem($itemId: ID!) {

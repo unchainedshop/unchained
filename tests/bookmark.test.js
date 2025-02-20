@@ -1,4 +1,9 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { Admin, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { ConfigurableProduct } from './seeds/products.js';
 import { SimpleBookmarks } from './seeds/bookmark.js';
@@ -15,6 +20,10 @@ test.describe('Bookmark', () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlNormalUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousUserFetch = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('For admin user ', () => {

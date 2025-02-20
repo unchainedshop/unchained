@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   GenericPaymentCredential,
@@ -18,6 +23,10 @@ test.before(async () => {
   graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
   graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+});
+
+test.after(async () => {
+  await disconnect();
 });
 
 test('return total number of 3 paymentProvider when type is not given', async () => {

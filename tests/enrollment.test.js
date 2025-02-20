@@ -1,4 +1,9 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { PlanProduct } from './seeds/products.js';
@@ -17,6 +22,10 @@ test.describe('Enrollments', () => {
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createCart (Enrollment)', () => {

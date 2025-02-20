@@ -1,11 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
 // Global setup
 test.before(async () => {
   await setupDatabase();
+});
+
+test.after(async () => {
+  await disconnect();
 });
 
 test('For logged in users: should return list of paymentInterfaces by type', async () => {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders.js';
 
 let graphqlFetch;
@@ -8,6 +8,10 @@ let graphqlFetch;
 test.before(async () => {
   await setupDatabase();
   graphqlFetch = createLoggedInGraphqlFetch();
+});
+
+test.after(async () => {
+  await disconnect();
 });
 
 test('cannot remove an already submitted order', async () => {

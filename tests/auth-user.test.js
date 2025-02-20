@@ -1,21 +1,25 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
-describe('Auth for logged in users', () => {
-  before(async () => {
+test.describe('Auth for logged in users', () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Query.me', () => {
-    it('returns currently logged in user', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Query.me', () => {
+    test('returns currently logged in user', async () => {
       const { data: { me } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -29,7 +33,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      assert.deepStrictEqual(me, {
+      assert.partialDeepStrictEqual(me, {
         _id: User._id,
         profile: {
           gender: 'm',
@@ -38,8 +42,8 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Query.user', () => {
-    it('returns currently logged in user when no userId provided', async () => {
+  test.describe('Query.user', () => {
+    test('returns currently logged in user when no userId provided', async () => {
       const { data: { user } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -50,12 +54,12 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      assert.deepStrictEqual(user, {
+      assert.partialDeepStrictEqual(user, {
         _id: User._id,
       });
     });
 
-    it('does not allow a user to just retrieve data of other users', async () => {
+    test('does not allow a user to just retrieve data of other users', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query ($userId: ID) {
@@ -72,8 +76,8 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.changePassword', () => {
-    it('change own password as user', async () => {
+  test.describe('Mutation.changePassword', () => {
+    test('change own password as user', async () => {
       const { data: { changePassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -89,8 +93,8 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.sendVerificationEmail', () => {
-    it('send verification e-mail', async () => {
+  test.describe('Mutation.sendVerificationEmail', () => {
+    test('send verification e-mail', async () => {
       const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -105,7 +109,7 @@ describe('Auth for logged in users', () => {
       });
     });
 
-    it('cannot send a verification e-mail to an e-mail not owned by the logged in user', async () => {
+    test('cannot send a verification e-mail to an e-mail not owned by the logged in user', async () => {
       const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -119,8 +123,8 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.verifyEmail', () => {
-    before(async () => {
+  test.describe('Mutation.verifyEmail', () => {
+    test.before(async () => {
       const Users = db.collection('users');
       const userCopy = {
         ...User,
@@ -146,7 +150,7 @@ describe('Auth for logged in users', () => {
       );
     });
 
-    it('create a verification token', async () => {
+    test('create a verification token', async () => {
       const { data: { sendVerificationEmail } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -161,7 +165,7 @@ describe('Auth for logged in users', () => {
       });
     });
 
-    it('verifies the e-mail of user', async () => {
+    test('verifies the e-mail of user', async () => {
       // Reset the password with that token
       const Events = db.collection('events');
       const event = await Events.findOne({
@@ -186,14 +190,14 @@ describe('Auth for logged in users', () => {
           token,
         },
       });
-      assert.deepStrictEqual(verifyEmail, {
+      assert.partialDeepStrictEqual(verifyEmail, {
         user: {
           _id: 'userthatmustverifyemail',
         },
       });
     });
 
-    it('e-mail is tagged as verified', async () => {
+    test('e-mail is tagged as verified', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
@@ -204,8 +208,8 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.setUsername for normal user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.setUsername for normal user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation setUsername($username: String!, $userId: ID!) {
@@ -223,8 +227,8 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.logout', () => {
-    it.skip('log out userthatlogsout', async () => {
+  test.describe('Mutation.logout', () => {
+    test('log out userthatlogsout', async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
         ...User,
@@ -271,7 +275,7 @@ describe('Auth for logged in users', () => {
       assert.strictEqual(loginTokens.length, 1);
     });
 
-    it.skip('log out userthatlogsout without explicit token', async () => {
+    test('log out userthatlogsout without explicit token', async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
         ...User,

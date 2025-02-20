@@ -1,21 +1,25 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleOrder, DiscountedDiscount } from './seeds/orders.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
-let graphqlFetch;
-let adminGraphqlFetch;
+test.describe('Cart: Discounts', () => {
+  let graphqlFetch;
+  let adminGraphqlFetch;
 
-describe('Cart: Discounts', () => {
-  before(async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.addCartDiscount', () => {
-    it('add product discount to the cart', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Mutation.addCartDiscount', () => {
+    test('add product discount to the cart', async () => {
       const { data: { addCartDiscount } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartDiscount($orderId: ID) {
@@ -67,7 +71,7 @@ describe('Cart: Discounts', () => {
         },
       });
     });
-    it('add order discount to the cart', async () => {
+    test('add order discount to the cart', async () => {
       const { data: { addCartDiscount } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartDiscount($orderId: ID) {
@@ -129,7 +133,7 @@ describe('Cart: Discounts', () => {
       });
     });
 
-    it('return not found error when non existing orderId is provided', async () => {
+    test('return not found error when non existing orderId is provided', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation addCartDiscount($orderId: ID) {
@@ -147,8 +151,8 @@ describe('Cart: Discounts', () => {
     });
   });
 
-  describe('Mutation.removeCartDiscount', () => {
-    it('remove order discount from a cart', async () => {
+  test.describe('Mutation.removeCartDiscount', () => {
+    test('remove order discount from a cart', async () => {
       const { data: { removeCartDiscount } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartDiscount($discountId: ID!) {
@@ -177,7 +181,7 @@ describe('Cart: Discounts', () => {
       });
     });
 
-    it('return not found error when passed non existing discountId', async () => {
+    test('return not found error when passed non existing discountId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartDiscount($discountId: ID!) {
@@ -194,7 +198,7 @@ describe('Cart: Discounts', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'OrderDiscountNotFoundError');
     });
 
-    it('return error when passed invalid discountId', async () => {
+    test('return error when passed invalid discountId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartDiscount($discountId: ID!) {

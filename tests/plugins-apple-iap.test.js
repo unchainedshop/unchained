@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -21,11 +21,17 @@ import { AllEnrollmentIds } from './seeds/enrollments.js';
 let db;
 let graphqlFetch;
 
+test.before(async () => {
+  [db] = await setupDatabase();
+  graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+});
+
+test.after(async () => {
+  await disconnect();
+});
+
 test('Plugins: Apple IAP Payments', async (t) => {
   await t.test('setup', async () => {
-    [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-
     await db.collection('products').findOrInsertOne({
       ...SimpleProduct,
       _id: singleItemProductId,

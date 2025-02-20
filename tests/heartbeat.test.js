@@ -1,4 +1,9 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -13,6 +18,10 @@ test.describe('Heartbeat', () => {
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlfetchAsAnonymousUser = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('mutation.heartbeat for admin User should', () => {

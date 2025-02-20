@@ -1,16 +1,20 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './lib/wait.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let db;
-let graphqlFetch;
-
 test.describe('Bulk Importer', () => {
+  let db;
+  let graphqlFetch;
+
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Import Products', () => {

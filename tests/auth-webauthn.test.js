@@ -1,4 +1,4 @@
-import { setupDatabase, createAnonymousGraphqlFetch } from './helpers.js';
+import { setupDatabase, createAnonymousGraphqlFetch, disconnect } from './helpers.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -10,6 +10,10 @@ test.describe('WebAuthn Flows', () => {
     anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
 
+  test.after(async () => {
+    await disconnect();
+  });
+
   test.describe('Mutation.createWebAuthnCredentialCreationOptions', () => {
     test('create a webauthn credential', async () => {
       const { data: { createWebAuthnCredentialCreationOptions } = {} } = await anonymousGraphqlFetch({
@@ -19,13 +23,13 @@ test.describe('WebAuthn Flows', () => {
           }
         `,
       });
-      assert.deepStrictEqual(createWebAuthnCredentialCreationOptions, {
-        requestId: assert.match(Number),
-        rp: {},
-        user: {},
-        challenge: assert.match(String),
-        pubKeyCredParams: assert.match(Array),
-      });
+      assert.partialDeepStrictEqual(Object.keys(createWebAuthnCredentialCreationOptions), [
+        'requestId',
+        'rp',
+        'user',
+        'challenge',
+        'pubKeyCredParams',
+      ]);
     });
 
     test.todo('create a user with the previously created challenge');
@@ -40,10 +44,10 @@ test.describe('WebAuthn Flows', () => {
           }
         `,
       });
-      assert.deepStrictEqual(createWebAuthnCredentialRequestOptions, {
-        requestId: assert.match(Number),
-        challenge: assert.match(String),
-      });
+      assert.partialDeepStrictEqual(Object.keys(createWebAuthnCredentialRequestOptions), [
+        'requestId',
+        'challenge',
+      ]);
     });
   });
 

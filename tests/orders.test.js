@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createAnonymousGraphqlFetch, createLoggedInGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createAnonymousGraphqlFetch,
+  createLoggedInGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ConfirmedOrder, PendingOrder, SimpleOrder } from './seeds/orders.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
@@ -13,6 +18,10 @@ test.before(async () => {
   graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
   adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+});
+
+test.after(async () => {
+  await disconnect();
 });
 
 // Query.ordersCount for logged in user

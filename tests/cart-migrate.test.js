@@ -1,21 +1,30 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { GUEST_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
-let db;
-let anonymousGraphqlFetch;
-let loggedInGraphqlFetch;
-let orderId;
+test.describe('Guest user cart migration', () => {
+  let db;
+  let anonymousGraphqlFetch;
+  let loggedInGraphqlFetch;
+  let orderId;
 
-describe('Guest user cart migration', () => {
-  before(async () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
 
-  it('login as guest', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test('login as guest', async () => {
     const result = await anonymousGraphqlFetch({
       query: /* GraphQL */ `
         mutation {
@@ -28,7 +37,7 @@ describe('Guest user cart migration', () => {
     assert.deepStrictEqual(result.data.loginAsGuest, {});
   });
 
-  it('add a product to the cart', async () => {
+  test('add a product to the cart', async () => {
     loggedInGraphqlFetch = createLoggedInGraphqlFetch(GUEST_TOKEN);
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
@@ -89,7 +98,7 @@ describe('Guest user cart migration', () => {
     });
   });
 
-  it('check if cart contains product after normal login', async () => {
+  test('check if cart contains product after normal login', async () => {
     const { data: { loginWithPassword } = {} } = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation {

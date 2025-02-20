@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleOrder } from './seeds/orders.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { ProposedQuotation } from './seeds/quotations.js';
@@ -12,6 +12,10 @@ test.describe('Cart: Quotations', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.addCartQuotation', () => {

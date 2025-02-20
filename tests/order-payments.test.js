@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { PrePaidPaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePayment, GenericPayment } from './seeds/orders.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
@@ -14,6 +19,10 @@ test.before(async () => {
   graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
   graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+});
+
+test.after(async () => {
+  await disconnect();
 });
 
 test('admin: set order payment provider', async () => {

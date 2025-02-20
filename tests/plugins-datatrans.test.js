@@ -1,19 +1,19 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
-import { before, describe, it } from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert';
 
 let db;
 let graphqlFetch;
 
-describe('Plugins: Datatrans Payments', () => {
+test.describe('Plugins: Datatrans Payments', () => {
   const merchantId = '1100004624';
   const amount = '20000';
   const currency = 'CHF';
 
-  before(async () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -69,8 +69,12 @@ describe('Plugins: Datatrans Payments', () => {
     });
   });
 
-  describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
-    it('starts a new transaction and checks if it is valid', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
+    test('starts a new transaction and checks if it is valid', async () => {
       const { data: { signPaymentProviderForCredentialRegistration } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation signPaymentProviderForCredentialRegistration($paymentProviderId: ID!) {
@@ -94,8 +98,8 @@ describe('Plugins: Datatrans Payments', () => {
     });
   });
 
-  describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
-    it('starts a new transaction and checks if it is valid', { timeout: 10000 }, async () => {
+  test.describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
+    test('starts a new transaction and checks if it is valid', { timeout: 10000 }, async () => {
       const {
         data: { signPaymentProviderForCheckout },
       } = await graphqlFetch({
@@ -125,8 +129,8 @@ describe('Plugins: Datatrans Payments', () => {
     });
   });
 
-  describe('Datatrans Hooks', () => {
-    it('mocks ingress accepted card_check webhook call', async () => {
+  test.describe('Datatrans Hooks', () => {
+    test('mocks ingress accepted card_check webhook call', async () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
@@ -149,7 +153,7 @@ describe('Plugins: Datatrans Payments', () => {
 
       assert.notStrictEqual(paymentCredential, null);
     });
-    it('mocks ingress accepted card_check webhook call with wrong signature', async () => {
+    test('mocks ingress accepted card_check webhook call with wrong signature', async () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
@@ -168,7 +172,7 @@ describe('Plugins: Datatrans Payments', () => {
       assert.strictEqual(result.status, 403);
     });
 
-    it('mocks ingress accepted payment webhook call with diff amount', async () => {
+    test('mocks ingress accepted payment webhook call with diff amount', async () => {
       const orderPaymentId = '1111112222';
       const transactionId = 'payment_authorized_low_amount';
       const userId = User._id;
@@ -187,7 +191,7 @@ describe('Plugins: Datatrans Payments', () => {
 
       assert.strictEqual(result.status, 500);
     });
-    it('mocks ingress accepted payment webhook call with correct currency/amount', async () => {
+    test('mocks ingress accepted payment webhook call with correct currency/amount', async () => {
       const orderPaymentId = '1111112222';
       const transactionId = 'payment_authorized';
       const userId = User._id;
@@ -213,8 +217,8 @@ describe('Plugins: Datatrans Payments', () => {
     });
   });
 
-  describe('Checkout', () => {
-    it('checkout with stored alias', async () => {
+  test.describe('Checkout', () => {
+    test('checkout with stored alias', async () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
@@ -304,7 +308,7 @@ describe('Plugins: Datatrans Payments', () => {
         status: 'CONFIRMED',
       });
     });
-    it('checkout with preferred alias', async () => {
+    test('checkout with preferred alias', async () => {
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addAndCheckout($productId: ID!) {

@@ -1,23 +1,32 @@
-import { setupDatabase, createAnonymousGraphqlFetch, createLoggedInGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createAnonymousGraphqlFetch,
+  createLoggedInGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 let Users;
 
-describe('Auth for anonymous users', () => {
-  before(async () => {
+test.describe('Auth for anonymous users', () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     Users = db.collection('users');
   });
 
-  describe('Mutation.loginAsGuest', () => {
-    it('login as guest', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Mutation.loginAsGuest', () => {
+    test('login as guest', async () => {
       // ensure no e-mail verification gets sent
       const result = await graphqlFetch({
         query: /* GraphQL */ `
@@ -50,8 +59,8 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.createUser', () => {
-    it('create a new user', async () => {
+  test.describe('Mutation.createUser', () => {
+    test('create a new user', async () => {
       const birthday = new Date().toISOString().split('T')[0];
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -109,8 +118,8 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.loginWithPassword', () => {
-    it('login via username and password', async () => {
+  test.describe('Mutation.loginWithPassword', () => {
+    test('login via username and password', async () => {
       const { data: { loginWithPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -133,8 +142,8 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.forgotPassword', () => {
-    before(async () => {
+  test.describe('Mutation.forgotPassword', () => {
+    test.before(async () => {
       const user = await Users.findOne({ _id: 'userthatforgetspasswords' });
       if (!user) {
         await Users.insertOne({
@@ -151,7 +160,7 @@ describe('Auth for anonymous users', () => {
       }
     });
 
-    it('create a reset token', async () => {
+    test('create a reset token', async () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -167,8 +176,8 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.resetPassword', () => {
-    before(async () => {
+  test.describe('Mutation.resetPassword', () => {
+    test.before(async () => {
       const userCopy = {
         ...User,
         username: `${User.username}${Math.random()}`,
@@ -194,7 +203,7 @@ describe('Auth for anonymous users', () => {
       );
     });
 
-    it('create a reset token', async () => {
+    test('create a reset token', async () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -209,7 +218,7 @@ describe('Auth for anonymous users', () => {
       });
     });
 
-    it('change password with token from forgotPassword call', async () => {
+    test('change password with token from forgotPassword call', async () => {
       // Reset the password with that token
       const Events = db.collection('events');
       const event = await Events.findOne({

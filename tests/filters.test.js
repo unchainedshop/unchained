@@ -1,4 +1,9 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
 import assert from 'node:assert';
@@ -14,6 +19,10 @@ test.describe('Filters', () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Query.filters for admin user should', () => {

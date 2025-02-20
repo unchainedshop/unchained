@@ -1,15 +1,19 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let graphqlFetch;
-let orderId;
-
 test.describe('Cart Checkout Flow', () => {
+  let graphqlFetch;
+  let orderId;
+
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createCart', () => {

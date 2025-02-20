@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { BaseLanguage } from './seeds/locale-data.js';
 import assert from 'node:assert';
@@ -10,6 +10,10 @@ test.describe('Language', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('For admin user ', () => {
