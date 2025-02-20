@@ -19,7 +19,6 @@ const setupInMemoryMongoDB = async () => {
 const startAndWaitForApp = async () => {
   return new Promise((resolve, reject) => {
     try {
-      console.log({ ...process.env });
       global.__SUBPROCESS_UNCHAINED__ = spawn('npm', ['start'], {
         cwd: `${process.cwd()}/examples/kitchensink`,
         env: {

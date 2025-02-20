@@ -69,7 +69,7 @@
     "test:lint": "npm run lint --silent",
     "test:integration": "run-p -r integration-test:*",
     "test:unit": "cd packages && tsx --test",
-    "integration-test:start-engine": "tsx tests/setup.js",
+    "integration-test:start-engine": "tsx --env-file .env tests/setup.js",
     "integration-test:run-test": "wait-on tcp:4010 && tsx --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
