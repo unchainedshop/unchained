@@ -1,18 +1,27 @@
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import test from 'node:test';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
 
-let graphqlFetch;
+test.describe('AssortmentTexts', () => {
+  let graphqlFetch;
 
-describe('AssortmentTexts', () => {
-  before(async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.updateAssortmentTexts for admin users should', () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('mutation.updateAssortmentTexts for admin users should', () => {
     const textRecord = {
       locale: 'et',
       slug: 'slug-et',
@@ -20,7 +29,7 @@ describe('AssortmentTexts', () => {
       description: 'text-et',
       subtitle: 'subsimple assortment et',
     };
-    it('Update assortment texts successfuly when passed a valid assortment ID', async () => {
+    test('Update assortment texts successfuly when passed a valid assortment ID', async () => {
       const {
         data: { updateAssortmentTexts },
       } = await graphqlFetch({
@@ -43,10 +52,10 @@ describe('AssortmentTexts', () => {
       });
 
       assert.strictEqual(updateAssortmentTexts.length, 1);
-      assert.deepStrictEqual(updateAssortmentTexts[0], textRecord);
+      assert.partialDeepStrictEqual(updateAssortmentTexts[0], textRecord);
     });
 
-    it('return not found error when passed a non-existing ID', async () => {
+    test('return not found error when passed a non-existing ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts($assortmentId: ID!, $texts: [AssortmentTextInput!]!) {
@@ -72,7 +81,7 @@ describe('AssortmentTexts', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
-    it('return error when passed invalid ID', async () => {
+    test('return error when passed invalid ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts($assortmentId: ID!, $texts: [AssortmentTextInput!]!) {
@@ -99,8 +108,8 @@ describe('AssortmentTexts', () => {
     });
   });
 
-  describe('mutation.updateAssortmentTexts for anonymous users should', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateAssortmentTexts for anonymous users should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

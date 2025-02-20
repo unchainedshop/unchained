@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   putFile,
+  disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments.js';
@@ -10,26 +11,28 @@ import fs from 'node:fs';
 import crypto from 'crypto';
 import path from 'node:path';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
 import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let graphqlFetch;
-
 const assortmentMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
-
 const assortmentMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
-describe('AssortmentMedia', () => {
-  before(async () => {
+test.describe('AssortmentMedia', () => {
+  let graphqlFetch;
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.prepareAssortmentMediaUpload for admin user should', () => {
-    it('return a sign PUT url for media upload', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Mutation.prepareAssortmentMediaUpload for admin user should', () => {
+    test('return a sign PUT url for media upload', async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -50,7 +53,7 @@ describe('AssortmentMedia', () => {
       assert.notStrictEqual(prepareAssortmentMediaUpload.putURL, null);
     }, 20000);
 
-    it('upload file via PUT successfully', async () => {
+    test('upload file via PUT successfully', async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -104,7 +107,7 @@ describe('AssortmentMedia', () => {
       );
     }, 20000);
 
-    it('link uploaded media file with assortment media successfully', async () => {
+    test('link uploaded media file with assortment media successfully', async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -157,8 +160,8 @@ describe('AssortmentMedia', () => {
     }, 20000);
   });
 
-  describe('mutation.reorderAssortmentMedia for admin user should', () => {
-    it('update assortment media sortkey successfuly when provided valid media ID', async () => {
+  test.describe('mutation.reorderAssortmentMedia for admin user should', () => {
+    test('update assortment media sortkey successfuly when provided valid media ID', async () => {
       const { data: { reorderAssortmentMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentmedia($sortKeys: [ReorderAssortmentMediaInput!]!) {
@@ -188,7 +191,7 @@ describe('AssortmentMedia', () => {
       assert.strictEqual(reorderAssortmentMedia[0].sortKey, 11);
     });
 
-    it('skiped any passed sort key passed with in-valid media ID', async () => {
+    test('skiped any passed sort key passed with in-valid media ID', async () => {
       const {
         data: { reorderAssortmentMedia },
       } = await graphqlFetch({
@@ -220,8 +223,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.reorderAssortmentMedia for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.reorderAssortmentMedia for anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -246,8 +249,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.updateAssortmentMediaTexts for admin user should', () => {
-    it('update assortment media text successfuly when provided valid media ID', async () => {
+  test.describe('mutation.updateAssortmentMediaTexts for admin user should', () => {
+    test('update assortment media text successfuly when provided valid media ID', async () => {
       const { data: { updateAssortmentMediaTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
@@ -273,14 +276,14 @@ describe('AssortmentMedia', () => {
       });
 
       assert.notStrictEqual(updateAssortmentMediaTexts[0]._id, null);
-      assert.deepStrictEqual(updateAssortmentMediaTexts[0], {
+      assert.partialDeepStrictEqual(updateAssortmentMediaTexts[0], {
         locale: 'en',
         title: 'english title',
         subtitle: 'english title subtitle',
       });
     });
 
-    it('return not found error when passed non existing media ID', async () => {
+    test('return not found error when passed non existing media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
@@ -304,7 +307,7 @@ describe('AssortmentMedia', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentMediaNotFoundError');
     });
 
-    it('return error when passed invalid media ID', async () => {
+    test('return error when passed invalid media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
@@ -329,8 +332,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.updateAssortmentMediaTexts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.updateAssortmentMediaTexts for anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -361,8 +364,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.removeAssortmentMedia for admin user should', () => {
-    it('remove assortment media successfuly when provided valid media ID', async () => {
+  test.describe('mutation.removeAssortmentMedia for admin user should', () => {
+    test('remove assortment media successfuly when provided valid media ID', async () => {
       // eslint-disable-next-line no-unused-vars
 
       await graphqlFetch({
@@ -409,7 +412,7 @@ describe('AssortmentMedia', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentMediaNotFoundError');
     }, 99999);
 
-    it('return not found error when passed non existing assortmentMediaId', async () => {
+    test('return not found error when passed non existing assortmentMediaId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -426,7 +429,7 @@ describe('AssortmentMedia', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentMediaNotFoundError');
     });
 
-    it('return error when passed invalid assortmentMediaId', async () => {
+    test('return error when passed invalid assortmentMediaId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -444,8 +447,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.removeAssortmentMedia for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeAssortmentMedia for anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({

@@ -1,20 +1,29 @@
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import test from 'node:test';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentProduct } from './seeds/assortments.js';
 import { SimpleProduct } from './seeds/products.js';
 
-let graphqlFetch;
+test.describe('AssortmentProduct', () => {
+  let graphqlFetch;
 
-describe('AssortmentProduct', () => {
-  before(async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('mutation.reorderAssortmentProducts for admin user should', () => {
-    it('reorder assortment product successfuly when passed valid assortment product ID', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('mutation.reorderAssortmentProducts for admin user should', () => {
+    test('reorder assortment product successfuly when passed valid assortment product ID', async () => {
       const {
         data: { reorderAssortmentProducts },
       } = await graphqlFetch({
@@ -46,7 +55,7 @@ describe('AssortmentProduct', () => {
       assert.strictEqual(reorderAssortmentProducts[0].sortKey, 10);
     });
 
-    it('return empty array when passed non-existing assortment product ID', async () => {
+    test('return empty array when passed non-existing assortment product ID', async () => {
       const {
         data: { reorderAssortmentProducts },
       } = await graphqlFetch({
@@ -70,8 +79,8 @@ describe('AssortmentProduct', () => {
     });
   });
 
-  describe('mutation.reorderAssortmentProducts for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.reorderAssortmentProducts for anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -94,8 +103,8 @@ describe('AssortmentProduct', () => {
     });
   });
 
-  describe('mutation.addAssortmentProduct for admin user should', () => {
-    it('add assortment successfuly when passed valid assortment & product id', async () => {
+  test.describe('mutation.addAssortmentProduct for admin user should', () => {
+    test('add assortment successfuly when passed valid assortment & product id', async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
@@ -119,14 +128,14 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      assert.deepStrictEqual(data?.addAssortmentProduct, {
+      assert.partialDeepStrictEqual(data?.addAssortmentProduct, {
         tags: ['assortment-product-et'],
         assortment: { _id: SimpleAssortment[1]._id },
         product: { _id: SimpleProduct._id },
       });
     });
 
-    it('return not found error when passed non existing product id', async () => {
+    test('return not found error when passed non existing product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
@@ -153,7 +162,7 @@ describe('AssortmentProduct', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed in-valid product id', async () => {
+    test('return error when passed in-valid product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
@@ -180,7 +189,7 @@ describe('AssortmentProduct', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return not found error when passed non existing assortment id', async () => {
+    test('return not found error when passed non existing assortment id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
@@ -198,7 +207,7 @@ describe('AssortmentProduct', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
-    it('return error when passed in-valid assortment id', async () => {
+    test('return error when passed in-valid assortment id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
@@ -217,8 +226,8 @@ describe('AssortmentProduct', () => {
     });
   });
 
-  describe('mutation.addAssortmentProduct anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.addAssortmentProduct anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -239,8 +248,8 @@ describe('AssortmentProduct', () => {
     });
   });
 
-  describe('mutation.removeAssortmentProduct for admin user should', () => {
-    it('remove assortment product successfuly when passed valid assortment product id', async () => {
+  test.describe('mutation.removeAssortmentProduct for admin user should', () => {
+    test('remove assortment product successfuly when passed valid assortment product id', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
@@ -275,7 +284,7 @@ describe('AssortmentProduct', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentProductNotFoundError');
     });
 
-    it('return not found error when passed non existing assortment product id', async () => {
+    test('return not found error when passed non existing assortment product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
@@ -292,7 +301,7 @@ describe('AssortmentProduct', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentProductNotFoundError');
     });
 
-    it('return error when passed invalid assortment product id', async () => {
+    test('return error when passed invalid assortment product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
@@ -310,8 +319,8 @@ describe('AssortmentProduct', () => {
     });
   });
 
-  describe('mutation.removeAssortmentProduct for anonymous user should', () => {
-    it('return error', async () => {
+  test.describe('mutation.removeAssortmentProduct for anonymous user should', () => {
+    test('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

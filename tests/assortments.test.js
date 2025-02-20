@@ -1,23 +1,32 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
-let graphqlFetch;
-let graphqlFetchAsAnonymousUser;
-let graphqlFetchAsNormalUser;
+test.describe('Assortments', () => {
+  let graphqlFetch;
+  let graphqlFetchAsAnonymousUser;
+  let graphqlFetchAsNormalUser;
 
-describe('Assortments', () => {
-  before(async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
-  describe('Query.assortments for admin user should', () => {
-    it('Return the only active assortments when no argument passed', async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Query.assortments for admin user should', () => {
+    test('Return the only active assortments when no argument passed', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -33,7 +42,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortments.length, 4);
     });
 
-    it('Return active assortments and include leaves', async () => {
+    test('Return active assortments and include leaves', async () => {
       const result = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortments(
@@ -114,7 +123,7 @@ describe('Assortments', () => {
       assert.strictEqual(result.data.assortments.length, 5);
     });
 
-    it('Return all assortments and without leaves', async () => {
+    test('Return all assortments and without leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -144,7 +153,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortments.length, 8);
     });
 
-    it('Return all assortments and include leaves', async () => {
+    test('Return all assortments and include leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -174,7 +183,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortments.length, 10);
     });
 
-    it('Search assortments by slug', async () => {
+    test('Search assortments by slug', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -200,8 +209,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.assortmentsCount for admin user should', () => {
-    it('Return number of only active assortments when no argument passed', async () => {
+  test.describe('Query.assortmentsCount for admin user should', () => {
+    test('Return number of only active assortments when no argument passed', async () => {
       const {
         data: { assortmentsCount },
       } = await graphqlFetch({
@@ -216,7 +225,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortmentsCount, 4);
     });
 
-    it('Return number of active assortments and include leaves', async () => {
+    test('Return number of active assortments and include leaves', async () => {
       const {
         data: { assortmentsCount },
       } = await graphqlFetch({
@@ -232,7 +241,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortmentsCount, 5);
     });
 
-    it('Return number assortments of without leaves including inactives', async () => {
+    test('Return number assortments of without leaves including inactives', async () => {
       const {
         data: { assortmentsCount },
       } = await graphqlFetch({
@@ -250,7 +259,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortmentsCount, 8);
     });
 
-    it('Return number of all assortments and include leaves', async () => {
+    test('Return number of all assortments and include leaves', async () => {
       const {
         data: { assortmentsCount },
       } = await graphqlFetch({
@@ -269,8 +278,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.assortmentsCount for normal user should', () => {
-    it('Return number of only active assortments when no argument passed', async () => {
+  test.describe('Query.assortmentsCount for normal user should', () => {
+    test('Return number of only active assortments when no argument passed', async () => {
       const {
         data: { assortmentsCount },
       } = await graphqlFetchAsNormalUser({
@@ -286,8 +295,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.assortmentsCount for anonymous user should', () => {
-    it('Return number of only active assortments when no argument passed', async () => {
+  test.describe('Query.assortmentsCount for anonymous user should', () => {
+    test('Return number of only active assortments when no argument passed', async () => {
       const {
         data: { assortmentsCount },
       } = await graphqlFetchAsAnonymousUser({
@@ -303,8 +312,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.assortment for admin user should', () => {
-    it('return single assortment based on id', async () => {
+  test.describe('Query.assortment for admin user should', () => {
+    test('return single assortment based on id', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -377,7 +386,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortment._id, SimpleAssortment[0]._id);
     });
 
-    it('return single assortment based on slug', async () => {
+    test('return single assortment based on slug', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -396,7 +405,7 @@ describe('Assortments', () => {
       assert.strictEqual(assortment._id, SimpleAssortment[0]._id);
     });
 
-    it('return error for non-existing id', async () => {
+    test('return error for non-existing id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortment($assortmentId: ID, $slug: String) {
@@ -413,7 +422,7 @@ describe('Assortments', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return error for non-existing slug', async () => {
+    test('return error for non-existing slug', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortment($assortmentId: ID, $slug: String) {
@@ -430,7 +439,7 @@ describe('Assortments', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return null when either id or slug are non-existing', async () => {
+    test('return null when either id or slug are non-existing', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -451,8 +460,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.searchAssortments for admin user should', () => {
-    it('Return assortments successfuly', async () => {
+  test.describe('Query.searchAssortments for admin user should', () => {
+    test('Return assortments successfuly', async () => {
       const {
         data: { searchAssortments },
       } = await graphqlFetch({
@@ -486,8 +495,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.searchAssortments for anonymous user should', () => {
-    it('Return assortments', async () => {
+  test.describe('Query.searchAssortments for anonymous user should', () => {
+    test('Return assortments', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: {
@@ -518,8 +527,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.assortments for anonymous user should', () => {
-    it('return assortments', async () => {
+  test.describe('Query.assortments for anonymous user should', () => {
+    test('return assortments', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: { assortments },
@@ -537,8 +546,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.createAssortment for admin user should', () => {
-    it('Create assortment successfuly', async () => {
+  test.describe('mutation.createAssortment for admin user should', () => {
+    test('Create assortment successfuly', async () => {
       const {
         data: { createAssortment },
       } = await graphqlFetch({
@@ -609,8 +618,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.createAssortment for anonymous user should', () => {
-    it('Return error', async () => {
+  test.describe('mutation.createAssortment for anonymous user should', () => {
+    test('Return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -636,8 +645,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.updateAssortment for admin user should', () => {
-    it('update assortment successfuly when passed valid assortment Id', async () => {
+  test.describe('mutation.updateAssortment for admin user should', () => {
+    test('update assortment successfuly when passed valid assortment Id', async () => {
       const {
         data: { updateAssortment },
       } = await graphqlFetch({
@@ -704,7 +713,7 @@ describe('Assortments', () => {
       assert.strictEqual(updateAssortment.isActive, true);
     });
 
-    it('return not found error when passed none existing assortment Id', async () => {
+    test('return not found error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
@@ -725,7 +734,7 @@ describe('Assortments', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
-    it('return error when passed invalid assortment Id', async () => {
+    test('return error when passed invalid assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
@@ -747,8 +756,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.updateAssortment for anonymous user should', () => {
-    it('Return error', async () => {
+  test.describe('mutation.updateAssortment for anonymous user should', () => {
+    test('Return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -772,8 +781,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.setBaseAssortment for admin user should', () => {
-    it('change isBase property to true when passed valid assortment Id', async () => {
+  test.describe('mutation.setBaseAssortment for admin user should', () => {
+    test('change isBase property to true when passed valid assortment Id', async () => {
       const {
         data: { setBaseAssortment },
       } = await graphqlFetch({
@@ -833,7 +842,7 @@ describe('Assortments', () => {
       assert.strictEqual(setBaseAssortment.isBase, true);
     });
 
-    it('return not found error when passed none existing assortment Id', async () => {
+    test('return not found error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation SetBaseAssortment($assortmentId: ID!) {
@@ -849,7 +858,7 @@ describe('Assortments', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
     });
 
-    it('return error when passed invalid assortment Id', async () => {
+    test('return error when passed invalid assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation SetBaseAssortment($assortmentId: ID!) {
@@ -866,8 +875,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.setBaseAssortment for anonymous user should', () => {
-    it('Return error', async () => {
+  test.describe('mutation.setBaseAssortment for anonymous user should', () => {
+    test('Return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -886,8 +895,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.removeAssortment for admin user should', () => {
-    it('Remove assortment successfuly when passed valid assortment Id', async () => {
+  test.describe('mutation.removeAssortment for admin user should', () => {
+    test('Remove assortment successfuly when passed valid assortment Id', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortment($assortmentId: ID!) {
@@ -963,7 +972,7 @@ describe('Assortments', () => {
       assert.notStrictEqual(assortment.deleted, null);
     });
 
-    it('return error when passed none existing assortment Id', async () => {
+    test('return error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortment($assortmentId: ID!) {
@@ -979,7 +988,7 @@ describe('Assortments', () => {
 
       assert.strictEqual(errors[0].extensions?.code, 'AssortmentNotFoundError');
     });
-    it('return error when passed none existing assortment Id', async () => {
+    test('return error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortment($assortmentId: ID!) {
@@ -996,8 +1005,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('mutation.removeAssortment for anonymous user should', () => {
-    it('Return error', async () => {
+  test.describe('mutation.removeAssortment for anonymous user should', () => {
+    test('Return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

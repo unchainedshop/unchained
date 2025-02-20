@@ -64,20 +64,19 @@
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && mv ./typedocs ./docs/static/types",
     "lint": "eslint packages tests --fix --ext=js --ext=ts",
-    "pretest": "npm run lint --silent",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
-    "test": "tsx --test tests/*",
-    "test:ci": "npm run test:integration && npm run test:unit",
-    "test:integration": "tsx --env-file .env --test tests/*.test.*",
-    "test:watch": "tsx --test --watch tests/*",
+    "test": "run-p test:*",
+    "test:lint": "npm run lint --silent",
+    "test:integration": "run-p -r integration-test:*",
+    "test:unit": "cd packages && tsx --test",
+    "integration-test:start-engine": "tsx tests/setup.js",
+    "integration-test:run-test": "wait-on tcp:4010 && tsx --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "npm run clean --workspaces",
-    "build": "npm run prepublishOnly --workspaces --if-present",
-    "test:unit": "cd packages && tsx --test",
-    "test:unit-watch": "cd packages && tsx --test --watch"
+    "build": "npm run prepublishOnly --workspaces --if-present"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
@@ -96,6 +95,7 @@
     "tsx": "^4.19.3",
     "typedoc": "^0.27.7",
     "typescript": "^5.7.3",
+    "wait-on": "^8.0.2",
     "workspaces-run": "^1.0.2"
   },
   "trustedDependencies": [

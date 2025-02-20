@@ -34,13 +34,12 @@ export const disconnect = async () => {
 };
 
 export const connect = async () => {
-  const connectionUri = (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
-  connection = await MongoClient.connect(connectionUri);
+  connection = await MongoClient.connect('mongodb://0.0.0.0:4011');
 };
 
 export const setupDatabase = async () => {
   await connect();
-  const db = await connection.db(global.__MONGO_DB_NAME__);
+  const db = await connection.db('test');
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
 
@@ -63,7 +62,7 @@ export const setupDatabase = async () => {
 
 export const wipeDatabase = async () => {
   await connect();
-  const db = await connection.db(global.__MONGO_DB_NAME__);
+  const db = await connection.db('test');
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
 };
@@ -96,6 +95,9 @@ export const putFile = async (file, { url, type }) => {
     signal,
     method: 'PUT',
     body: file,
+    // eslint-disable-next-line
+    // @ts-expect-error
+    duplex: 'half',
     headers: type
       ? {
           'Content-Type': type,

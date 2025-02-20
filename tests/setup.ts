@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { wipeDatabase, disconnect } from './helpers.js';
+import { wipeDatabase, disconnect, setupDatabase } from './helpers.js';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const setupInMemoryMongoDB = async () => {
@@ -12,9 +12,6 @@ const setupInMemoryMongoDB = async () => {
       version: '8.0.1',
       checkMD5: false,
     },
-    // spawn: {
-    //   detached: false,
-    // },
   });
   process.env.MONGO_URL = `${global.__MONGOD__.getUri()}${global.__MONGOD__.opts.instance.dbName}`;
 };
@@ -22,8 +19,8 @@ const setupInMemoryMongoDB = async () => {
 const startAndWaitForApp = async () => {
   return new Promise((resolve, reject) => {
     try {
+      console.log({ ...process.env });
       global.__SUBPROCESS_UNCHAINED__ = spawn('npm', ['start'], {
-        // detached: true,
         cwd: `${process.cwd()}/examples/kitchensink`,
         env: {
           ...process.env,
@@ -69,9 +66,7 @@ const startAndWaitForApp = async () => {
       });
       global.__SUBPROCESS_UNCHAINED__.stderr.on('data', (data) => {
         const dataAsString = `${data}`;
-        if (process.env.DEBUG) {
-          console.warn(dataAsString); // eslint-disable-line
-        }
+        console.error(dataAsString); // eslint-disable-line
         if (dataAsString.indexOf("Can't listen") !== -1) {
           reject(dataAsString);
         }
@@ -89,10 +84,10 @@ if (!global.__SUBPROCESS_UNCHAINED__) {
   await setupInMemoryMongoDB();
   await startAndWaitForApp();
   await wipeDatabase();
+  await setupDatabase();
 }
 
 async function teardown() {
-  // if (!globalConfig.watch && !globalConfig.watchAll) {
   try {
     await disconnect();
     global.__SUBPROCESS_UNCHAINED__.kill();
@@ -100,7 +95,6 @@ async function teardown() {
   } catch {
     /* */
   }
-  // }
 }
 
 // do something when app is closing

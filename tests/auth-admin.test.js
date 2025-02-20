@@ -1,8 +1,13 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
 import assert from 'node:assert';
-import { describe, it, before } from 'node:test';
+import test from 'node:test';
 
 let db;
 let graphqlFetchAsAdminUser;
@@ -10,8 +15,8 @@ let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 let Users;
 
-describe('Auth for admin users', () => {
-  before(async () => {
+test.describe('Auth for admin users', () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
@@ -19,8 +24,12 @@ describe('Auth for admin users', () => {
     Users = db.collection('users');
   });
 
-  describe('Query.users', () => {
-    before(async () => {
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test.describe('Query.users', () => {
+    test.before(async () => {
       await Users.findOrInsertOne({
         ...User,
         _id: 'guest2',
@@ -35,7 +44,7 @@ describe('Auth for admin users', () => {
       });
     });
 
-    it('returns the 2 default users', async () => {
+    test('returns the 2 default users', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
@@ -51,7 +60,7 @@ describe('Auth for admin users', () => {
         { _id: 'user', name: 'user@unchained.local' },
       ]);
     });
-    it('returns 2 additional guest when using includeGuests', async () => {
+    test('returns 2 additional guest when using includeGuests', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
@@ -70,7 +79,7 @@ describe('Auth for admin users', () => {
       ]);
     });
 
-    it('returns users by queryString', async () => {
+    test('returns users by queryString', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query users($queryString: String) {
@@ -92,8 +101,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Query.user', () => {
-    before(async () => {
+  test.describe('Query.user', () => {
+    test.before(async () => {
       await Users.findOrInsertOne({
         ...User,
         _id: 'guest',
@@ -107,7 +116,7 @@ describe('Auth for admin users', () => {
       });
     });
 
-    it('returns foreign user by id', async () => {
+    test('returns foreign user by id', async () => {
       const { data: { user } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query user($userId: ID) {
@@ -121,14 +130,14 @@ describe('Auth for admin users', () => {
           userId: User._id,
         },
       });
-      assert.deepStrictEqual(user, {
+      assert.partialDeepStrictEqual(user, {
         _id: User._id,
       });
     });
   });
 
-  describe('Query.usersCount for admin user', () => {
-    it('returns the 2 default users', async () => {
+  test.describe('Query.usersCount for admin user', () => {
+    test('returns the 2 default users', async () => {
       const {
         data: { usersCount },
       } = await graphqlFetchAsAdminUser({
@@ -140,7 +149,7 @@ describe('Auth for admin users', () => {
       });
       assert.strictEqual(usersCount, 2);
     });
-    it('returns 3  when using includeGuests', async () => {
+    test('returns 3  when using includeGuests', async () => {
       const {
         data: { usersCount },
       } = await graphqlFetchAsAdminUser({
@@ -153,7 +162,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(usersCount, 4);
     });
 
-    it('returns 1 for queryString guest', async () => {
+    test('returns 1 for queryString guest', async () => {
       const {
         data: { usersCount },
       } = await graphqlFetchAsAdminUser({
@@ -170,8 +179,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Query.usersCount for anonymous user', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Query.usersCount for anonymous user', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query {
@@ -183,8 +192,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Query.usersCount for loged in user', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Query.usersCount for loged in user', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query {
@@ -196,8 +205,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.addEmail', () => {
-    it.todo('add an e-mail to a foreign user', async () => {
+  test.describe('Mutation.addEmail', () => {
+    test('add an e-mail to a foreign user', async () => {
       const email = 'newuser2@unchained.local';
       const { data: { addEmail } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -220,7 +229,6 @@ describe('Auth for admin users', () => {
       assert.partialDeepStrictEqual(addEmail, {
         _id: User._id,
         emails: [
-          {},
           {
             address: email,
             verified: false,
@@ -230,8 +238,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.removeEmail', () => {
-    it.todo('remove an e-mail of a foreign user', async () => {
+  test.describe('Mutation.removeEmail', () => {
+    test('remove an e-mail of a foreign user', async () => {
       const email = 'newuser2@unchained.local';
       const { data: { removeEmail } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -250,20 +258,13 @@ describe('Auth for admin users', () => {
           email,
         },
       });
-      assert.deepStrictEqual(removeEmail, {
-        _id: User._id,
-        emails: [
-          {
-            address: String,
-            verified: String,
-          },
-        ],
-      });
+
+      assert.ok(!removeEmail?.emails?.find((e) => e.address === email));
     });
   });
 
-  describe('Mutation.setUserTags', () => {
-    it('update the tags of myself as admin', async () => {
+  test.describe('Mutation.setUserTags', () => {
+    test('update the tags of myself as admin', async () => {
       const tags = ['new-tag'];
       const { data: { setUserTags } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -285,7 +286,7 @@ describe('Auth for admin users', () => {
       });
     });
 
-    it('return not found error when passed non existing userId', async () => {
+    test('return not found error when passed non existing userId', async () => {
       const tags = ['new-tag'];
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -304,7 +305,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'UserNotFoundError');
     });
 
-    it('return error when passed invalid userId', async () => {
+    test('return error when passed invalid userId', async () => {
       const tags = ['new-tag'];
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -324,8 +325,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.updateUserProfile', () => {
-    it('update the profile of a foreign user', async () => {
+  test.describe('Mutation.updateUserProfile', () => {
+    test('update the profile of a foreign user', async () => {
       const profile = {
         displayName: 'Administratörli',
         birthday: new Date('2037-01-02'),
@@ -372,8 +373,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.enrollUser', () => {
-    it('enroll a user without a password', async () => {
+  test.describe('Mutation.enrollUser', () => {
+    test('enroll a user without a password', async () => {
       const profile = {
         displayName: 'Admin3',
       };
@@ -399,7 +400,7 @@ describe('Auth for admin users', () => {
         },
       });
 
-      assert.deepStrictEqual(enrollUser, {
+      assert.partialDeepStrictEqual(enrollUser, {
         isInitialPassword: true,
         primaryEmail: {
           address: email,
@@ -420,7 +421,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(work.length, 1);
     }, 10000);
 
-    it('should fire off the enrollment email', async () => {
+    test('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
 
       const { data: { sendEnrollmentEmail } = {} } = await graphqlFetchAsAdminUser({
@@ -452,7 +453,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(work.length, 2);
     }, 10000);
 
-    it('enroll a user with pre-setting a password', async () => {
+    test('enroll a user with pre-setting a password', async () => {
       const profile = {
         displayName: 'Admin4',
       };
@@ -477,7 +478,7 @@ describe('Auth for admin users', () => {
           profile,
         },
       });
-      assert.deepStrictEqual(enrollUser, {
+      assert.partialDeepStrictEqual(enrollUser, {
         isInitialPassword: true,
         primaryEmail: {
           address: email,
@@ -487,8 +488,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.setPassword', () => {
-    it('set the password of a foreign user', async () => {
+  test.describe('Mutation.setPassword', () => {
+    test('set the password of a foreign user', async () => {
       const newPassword = 'new-passsword';
       const { data: { setPassword } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -509,8 +510,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.setUsername', () => {
-    it('set the username of a foreign user', async () => {
+  test.describe('Mutation.setUsername', () => {
+    test('set the username of a foreign user', async () => {
       const username = 'John Doe';
       const { data: { setUsername } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -532,8 +533,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.setRoles', () => {
-    it('set the roles of a foreign user', async () => {
+  test.describe('Mutation.setRoles', () => {
+    test('set the roles of a foreign user', async () => {
       const roles = ['admin'];
       const { data: { setRoles } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -555,7 +556,7 @@ describe('Auth for admin users', () => {
       });
     });
 
-    it('return error when passed invalid userId', async () => {
+    test('return error when passed invalid userId', async () => {
       const roles = ['admin'];
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -574,7 +575,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    it('return not found error when passed non-existing userId', async () => {
+    test('return not found error when passed non-existing userId', async () => {
       const roles = ['admin'];
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -594,8 +595,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.setUsername for admin user should', () => {
-    it('update guest username successuly for the specified user ID', async () => {
+  test.describe('Mutation.setUsername for admin user should', () => {
+    test('update guest username successuly for the specified user ID', async () => {
       const { data } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation setUsername($username: String!, $userId: ID!) {
@@ -613,7 +614,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(data?.setUsername.username, 'user-updated');
     });
 
-    it('return UserNotFoundError when passed non existing user ID', async () => {
+    test('return UserNotFoundError when passed non existing user ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation setUsername($username: String!, $userId: ID!) {
@@ -631,7 +632,7 @@ describe('Auth for admin users', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'UserNotFoundError');
     });
 
-    it('update username for the specified user ID', async () => {
+    test('update username for the specified user ID', async () => {
       const {
         data: { setUsername },
       } = await graphqlFetchAsAdminUser({
@@ -698,8 +699,8 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.setUsername for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.setUsername for anonymous user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation setUsername($username: String!, $userId: ID!) {

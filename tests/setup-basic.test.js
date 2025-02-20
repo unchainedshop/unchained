@@ -1,20 +1,24 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let db;
-let graphqlFetch;
-let Currencies;
-let Countries;
-let Languages;
-
 test.describe('basic setup of internationalization and localization context', () => {
+  let db;
+  let graphqlFetch;
+  let Currencies;
+  let Countries;
+  let Languages;
+
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
     Currencies = db.collection('currencies');
     Countries = db.collection('countries');
     Languages = db.collection('languages');
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('currencies', () => {
@@ -33,8 +37,9 @@ test.describe('basic setup of internationalization and localization context', ()
           }
         `,
       });
+      console.log('result', createCurrency, errors);
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(createCurrency, {
+      assert.partialDeepStrictEqual(createCurrency, {
         isoCode: 'BTC',
         isActive: true,
       });
@@ -63,7 +68,7 @@ test.describe('basic setup of internationalization and localization context', ()
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(updateCurrency, {
+      assert.partialDeepStrictEqual(updateCurrency, {
         isoCode: 'CHF',
         isActive: true,
       });
@@ -122,7 +127,7 @@ test.describe('basic setup of internationalization and localization context', ()
         `,
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(removeCurrency, {
+      assert.partialDeepStrictEqual(removeCurrency, {
         isoCode: 'LTC',
       });
       assert.strictEqual(await Currencies.countDocuments({ _id: 'ltc', deleted: null }), 0);
@@ -253,7 +258,7 @@ test.describe('basic setup of internationalization and localization context', ()
           }
         `,
       });
-      assert.deepStrictEqual(createCountry, {
+      assert.partialDeepStrictEqual(createCountry, {
         isoCode: 'NL',
         isActive: true,
         flagEmoji: '🇳🇱',
@@ -263,7 +268,6 @@ test.describe('basic setup of internationalization and localization context', ()
     });
 
     test('update a country', async () => {
-      const Currencies = db.collection('currencies');
       const country = await Countries.findOne();
       const currency = await Currencies.findOne();
 
@@ -291,7 +295,7 @@ test.describe('basic setup of internationalization and localization context', ()
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(updateCountry, {
+      assert.partialDeepStrictEqual(updateCountry, {
         isoCode: 'CH',
         isActive: true,
         defaultCurrency: { _id: currency._id, isoCode: currency.isoCode },
@@ -299,7 +303,6 @@ test.describe('basic setup of internationalization and localization context', ()
     });
 
     test('return error when passed invalid countryId', async () => {
-      const Currencies = db.collection('currencies');
       const currency = await Currencies.findOne();
 
       const { errors } = await graphqlFetch({
@@ -323,7 +326,6 @@ test.describe('basic setup of internationalization and localization context', ()
     });
 
     test('return not found error when passed non existing countryId', async () => {
-      const Currencies = db.collection('currencies');
       const currency = await Currencies.findOne();
 
       const { errors } = await graphqlFetch({
@@ -359,7 +361,7 @@ test.describe('basic setup of internationalization and localization context', ()
         `,
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(removeCountry, {
+      assert.partialDeepStrictEqual(removeCountry, {
         isoCode: 'US',
       });
       assert.strictEqual(await Countries.countDocuments({ _id: 'us', deleted: null }), 0);
@@ -479,7 +481,7 @@ test.describe('basic setup of internationalization and localization context', ()
           }
         `,
       });
-      assert.deepStrictEqual(createLanguage, {
+      assert.partialDeepStrictEqual(createLanguage, {
         isoCode: 'fr',
         isActive: true,
         isBase: false,
@@ -510,7 +512,7 @@ test.describe('basic setup of internationalization and localization context', ()
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(updateLanguage, {
+      assert.partialDeepStrictEqual(updateLanguage, {
         isoCode: 'de',
         isActive: true,
       });
@@ -569,7 +571,7 @@ test.describe('basic setup of internationalization and localization context', ()
         `,
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(removeLanguage, {
+      assert.partialDeepStrictEqual(removeLanguage, {
         isoCode: 'US',
       });
       assert.strictEqual(await Languages.countDocuments({ _id: 'en', deleted: null }), 0);
@@ -728,7 +730,7 @@ test.describe('basic setup of internationalization and localization context', ()
           }
         `,
       });
-      assert.deepStrictEqual(shopInfo, {
+      assert.partialDeepStrictEqual(shopInfo, {
         _id: 'root',
         language: {
           isoCode: 'de',

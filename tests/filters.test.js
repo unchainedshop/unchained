@@ -152,9 +152,8 @@ test.describe('Filters', () => {
         },
       });
       assert.strictEqual(filters.length, 1);
-      assert.deepStrictEqual(filters, [
+      assert.partialDeepStrictEqual(filters, [
         {
-          _id: expect.anything(),
           isActive: false,
         },
       ]);

@@ -24,11 +24,13 @@ describe('Auth for anonymous users', () => {
           mutation {
             loginAsGuest {
               _id
+              user {
+                isGuest
+              }
             }
           }
         `,
       });
-
       const { data: { workQueue } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -41,26 +43,10 @@ describe('Auth for anonymous users', () => {
         `,
         variables: {},
       });
-
       const work = workQueue.filter(({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS');
       assert.strictEqual(work.length, 0);
-
-      assert.deepStrictEqual(result.data.loginAsGuest, {});
-    });
-
-    it('user has guest flag', async () => {
-      const Users = db.collection('users');
-      const user = await Users.findOne({
-        guest: true,
-      });
-      assert.deepStrictEqual(user, {
-        guest: true,
-        emails: [
-          {
-            verified: false,
-          },
-        ],
-      });
+      assert.ok(result.data.loginAsGuest);
+      assert.ok(result.data.loginAsGuest?.user?.isGuest);
     });
   });
 
@@ -106,7 +92,7 @@ describe('Auth for anonymous users', () => {
           },
         },
       });
-      assert.deepStrictEqual(data.createUser, {
+      assert.partialDeepStrictEqual(data.createUser, {
         user: {
           username: 'newuser',
           primaryEmail: {
@@ -138,7 +124,7 @@ describe('Auth for anonymous users', () => {
           }
         `,
       });
-      assert.deepStrictEqual(loginWithPassword, {
+      assert.partialDeepStrictEqual(loginWithPassword, {
         user: {
           _id: 'admin',
           username: 'admin',
@@ -249,7 +235,7 @@ describe('Auth for anonymous users', () => {
           token,
         },
       });
-      assert.deepStrictEqual(resetPassword, {
+      assert.partialDeepStrictEqual(resetPassword, {
         user: {
           _id: 'userthatforgetspasswords',
         },
