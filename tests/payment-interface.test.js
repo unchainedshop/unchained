@@ -34,10 +34,8 @@ test('For logged in users: should return list of paymentInterfaces by type', asy
     variables: { type: 'INVOICE' },
   });
   assert.notStrictEqual(paymentInterfaces.length, 0);
-  assert.deepStrictEqual(paymentInterfaces, [
-    { _id: 'shop.unchained.invoice' },
-    { _id: 'shop.unchained.invoice-prepaid' },
-  ]);
+  assert.partialDeepStrictEqual(paymentInterfaces[0], { _id: 'shop.unchained.invoice' });
+  assert.partialDeepStrictEqual(paymentInterfaces[1], { _id: 'shop.unchained.invoice-prepaid' });
 });
 
 test('For Anonymous user: should return error', async () => {

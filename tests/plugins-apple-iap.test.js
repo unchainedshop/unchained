@@ -119,7 +119,7 @@ test('Plugins: Apple IAP Payments', async (t) => {
           paymentProviderId: 'iap-payment-provider',
         },
       });
-      assert.deepStrictEqual(data?.registerPaymentCredentials, {
+      assert.partialDeepStrictEqual(data?.registerPaymentCredentials, {
         isValid: true,
         isPreferred: true,
       });
@@ -191,10 +191,10 @@ test('Plugins: Apple IAP Payments', async (t) => {
           },
         },
       });
-      assert.deepStrictEqual(updateOrderPaymentGeneric, {
+      assert.partialDeepStrictEqual(updateOrderPaymentGeneric, {
         status: 'OPEN',
       });
-      assert.deepStrictEqual(checkoutCart, {
+      assert.partialDeepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
       });
     });

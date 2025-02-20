@@ -161,11 +161,9 @@ test.describe('Filters', () => {
         },
       });
       assert.strictEqual(filters.length, 1);
-      assert.partialDeepStrictEqual(filters, [
-        {
-          isActive: false,
-        },
-      ]);
+      assert.partialDeepStrictEqual(filters[0], {
+        isActive: false,
+      });
     });
   });
 
@@ -270,7 +268,7 @@ test.describe('Filters', () => {
           filterId: MultiChoiceFilter._id,
         },
       });
-      assert.deepStrictEqual(filter, {
+      assert.partialDeepStrictEqual(filter, {
         _id: MultiChoiceFilter._id,
         isActive: MultiChoiceFilter.isActive,
         type: MultiChoiceFilter.type,
@@ -360,18 +358,16 @@ test.describe('Filters', () => {
       });
 
       assert.strictEqual(updateFilterTexts.length, 2);
-      assert.deepStrictEqual(updateFilterTexts, [
-        {
-          locale: 'en',
-          title: 'english-filter-text',
-          subtitle: 'english-filter-text-subtitle',
-        },
-        {
-          locale: 'am',
-          title: 'amharic-filter-text',
-          subtitle: 'amharic-filter-text-subtitle',
-        },
-      ]);
+      assert.partialDeepStrictEqual(updateFilterTexts[0], {
+        locale: 'en',
+        title: 'english-filter-text',
+        subtitle: 'english-filter-text-subtitle',
+      });
+      assert.partialDeepStrictEqual(updateFilterTexts[1], {
+        locale: 'am',
+        title: 'amharic-filter-text',
+        subtitle: 'amharic-filter-text-subtitle',
+      });
     });
 
     test('return not found error when passed non existing filter ID', async () => {
@@ -510,7 +506,7 @@ test.describe('Filters', () => {
         },
       });
 
-      assert.deepStrictEqual(createFilter, {
+      assert.partialDeepStrictEqual(createFilter, {
         isActive: false,
         texts: {
           title: 'Mengeneinheit Filter',
@@ -559,7 +555,7 @@ test.describe('Filters', () => {
         },
       });
 
-      assert.deepStrictEqual(searchProducts, {
+      assert.partialDeepStrictEqual(searchProducts, {
         productsCount: 1,
         filters: [
           {
@@ -615,7 +611,7 @@ test.describe('Filters', () => {
         },
       });
 
-      assert.deepStrictEqual(updateFilter, {
+      assert.partialDeepStrictEqual(updateFilter, {
         key: '999',
         isActive: true,
       });

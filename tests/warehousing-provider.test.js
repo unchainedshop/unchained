@@ -1,6 +1,11 @@
 import { test, before, describe } from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
@@ -12,6 +17,10 @@ describe('WarehousingProviders', () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   describe('Query.warehousingProviders when loggedin should', () => {
@@ -40,15 +49,14 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      assert.deepStrictEqual(warehousingProviders, [
-        {
-          _id: SimpleWarehousingProvider._id,
-          type: SimpleWarehousingProvider.type,
-          configuration: [],
-          configurationError: null,
-          isActive: true,
-        },
-      ]);
+      assert.equal(warehousingProviders.length, 1);
+      assert.partialDeepStrictEqual(warehousingProviders[0], {
+        _id: SimpleWarehousingProvider._id,
+        type: SimpleWarehousingProvider.type,
+        configuration: [],
+        configurationError: null,
+        isActive: true,
+      });
     });
 
     test('return list of warehousingProviders based on the given type', async () => {

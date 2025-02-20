@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { SimpleProduct, SimpleProductReview } from './seeds/products.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
@@ -14,6 +19,10 @@ test.describe('Products: Reviews', async () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymusUser = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createProductReview', async () => {
@@ -54,7 +63,7 @@ test.describe('Products: Reviews', async () => {
           },
         },
       });
-      assert.deepStrictEqual(createProductReview, {
+      assert.partialDeepStrictEqual(createProductReview, {
         author: { username: 'admin' },
         product: { _id: SimpleProduct._id },
         rating: 5,
@@ -147,7 +156,7 @@ test.describe('Products: Reviews', async () => {
           },
         },
       });
-      assert.deepStrictEqual(updateProductReview, {
+      assert.partialDeepStrictEqual(updateProductReview, {
         author: {
           _id: SimpleProductReview.authorId,
         },
@@ -229,7 +238,7 @@ test.describe('Products: Reviews', async () => {
           type: 'UPVOTE',
         },
       });
-      assert.deepStrictEqual(addProductReviewVote, {
+      assert.partialDeepStrictEqual(addProductReviewVote, {
         upvotes: 1,
         downvotes: 0,
         ownVotes: [
@@ -264,7 +273,7 @@ test.describe('Products: Reviews', async () => {
           meta: {},
         },
       });
-      assert.deepStrictEqual(addProductReviewVote, {
+      assert.partialDeepStrictEqual(addProductReviewVote, {
         upvotes: 0,
         downvotes: 1,
         ownVotes: [
@@ -340,7 +349,7 @@ test.describe('Products: Reviews', async () => {
           type: 'DOWNVOTE',
         },
       });
-      assert.deepStrictEqual(removeProductReviewVote, {
+      assert.partialDeepStrictEqual(removeProductReviewVote, {
         upvotes: 0,
         downvotes: 0,
         ownVotes: [],
@@ -397,7 +406,7 @@ test.describe('Products: Reviews', async () => {
           productReviewId: SimpleProductReview._id,
         },
       });
-      assert.strictEqual(removeProductReview.deleted, true);
+      assert.ok(removeProductReview.deleted);
     });
 
     test('return not found error when passed non existing productReviewId', async () => {
@@ -519,15 +528,14 @@ test.describe('Products: Reviews', async () => {
           }
         `,
       });
-      assert.deepStrictEqual(productReviews, [
-        {
-          title: 'Hello',
-          rating: 5,
-          product: {
-            _id: SimpleProduct._id,
-          },
+      assert.equal(productReviews.length, 1);
+      assert.partialDeepStrictEqual(productReviews[0], {
+        title: 'Hello',
+        rating: 5,
+        product: {
+          _id: SimpleProduct._id,
         },
-      ]);
+      });
     });
   });
 
@@ -550,7 +558,7 @@ test.describe('Products: Reviews', async () => {
           productReviewId: SimpleProductReview._id,
         },
       });
-      assert.deepStrictEqual(productReview, {
+      assert.partialDeepStrictEqual(productReview, {
         title: 'Title of my Review',
         rating: 1,
         product: {

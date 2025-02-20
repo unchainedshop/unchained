@@ -100,7 +100,7 @@ test.describe('Heartbeat', () => {
         variables: {},
       });
 
-      assert.deepStrictEqual(heartbeat, {
+      assert.partialDeepStrictEqual(heartbeat, {
         _id: 'admin',
         username: 'admin',
         isGuest: false,

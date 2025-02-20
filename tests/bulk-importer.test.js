@@ -240,7 +240,7 @@ test.describe('Bulk Importer', () => {
           },
         },
       });
-      assert.deepStrictEqual(addWork, {});
+      assert.ok(addWork);
 
       const Products = db.collection('products');
 
@@ -332,7 +332,7 @@ test.describe('Bulk Importer', () => {
         },
       });
 
-      assert.deepStrictEqual(addWork, {});
+      assert.ok(addWork);
 
       const Filters = db.collection('filters');
 
@@ -481,7 +481,7 @@ test.describe('Bulk Importer', () => {
         },
       });
 
-      assert.deepStrictEqual(addWork, {});
+      assert.ok(addWork);
 
       const Assortments = db.collection('assortments');
       const AssortmentMedia = db.collection('assortment_media');

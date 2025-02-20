@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -80,6 +80,10 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
       orderNumber: 'saferpay2',
       paymentId: 'saferpay-payment2',
     });
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test('starts a new transaction and validates', { timeout: 10000 }, async () => {

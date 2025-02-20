@@ -38,7 +38,7 @@ test.describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-      assert.deepStrictEqual(deliveryInterfaces, [
+      assert.partialDeepStrictEqual(deliveryInterfaces, [
         {
           _id: 'shop.unchained.pick-mup',
         },

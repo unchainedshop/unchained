@@ -61,7 +61,7 @@ test.describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      assert.deepEqual(deliveryProviders, [
+      assert.partialDeepStrictEqual(deliveryProviders, [
         {
           _id: SimpleDeliveryProvider._id,
           configurationError: null,
@@ -197,7 +197,7 @@ test.describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      assert.deepEqual(deliveryProvider, {
+      assert.partialDeepStrictEqual(deliveryProvider, {
         _id: SimpleDeliveryProvider._id,
         type: 'SHIPPING',
         configurationError: null,

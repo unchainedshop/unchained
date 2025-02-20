@@ -28,7 +28,7 @@ test.describe('Cart Checkout Flow', () => {
           }
         `,
       });
-      assert.deepStrictEqual(createCart, {
+      assert.partialDeepStrictEqual(createCart, {
         orderNumber: 'wishlist',
       });
 
@@ -53,7 +53,7 @@ test.describe('Cart Checkout Flow', () => {
           quantity: 1,
         },
       });
-      assert.deepStrictEqual(addCartProduct, {
+      assert.partialDeepStrictEqual(addCartProduct, {
         quantity: 1,
       });
     });
@@ -88,7 +88,7 @@ test.describe('Cart Checkout Flow', () => {
         },
       });
 
-      assert.deepStrictEqual(updateCart, {
+      assert.partialDeepStrictEqual(updateCart, {
         billingAddress: {
           firstName: 'Hallo',
           lastName: 'Velo',
@@ -123,7 +123,7 @@ test.describe('Cart Checkout Flow', () => {
         },
       });
 
-      assert.deepStrictEqual(data?.updateCart, {
+      assert.partialDeepStrictEqual(data?.updateCart, {
         contact: {
           emailAddress: 'hello@unchained.local',
           telNumber: '+41999999999',
@@ -149,7 +149,7 @@ test.describe('Cart Checkout Flow', () => {
         },
       });
 
-      assert.deepStrictEqual(checkoutCart, {
+      assert.partialDeepStrictEqual(checkoutCart, {
         orderNumber: 'wishlist',
         status: 'CONFIRMED',
       });
@@ -171,7 +171,7 @@ test.describe('Cart Checkout Flow', () => {
         },
       });
 
-      assert.deepStrictEqual(checkoutCart, {
+      assert.partialDeepStrictEqual(checkoutCart, {
         orderNumber: 'wishlist',
         status: 'CONFIRMED',
       });

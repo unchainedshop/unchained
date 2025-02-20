@@ -1,6 +1,6 @@
 import { test, before, describe } from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
 let graphqlFetch;
@@ -9,6 +9,10 @@ describe('setup warehousing providers', async () => {
   before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   describe('Mutation.createWarehousingProvider', async () => {
@@ -42,7 +46,7 @@ describe('setup warehousing providers', async () => {
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(createWarehousingProvider, {
+      assert.partialDeepStrictEqual(createWarehousingProvider, {
         configurationError: null,
         deleted: null,
         interface: {
@@ -91,7 +95,7 @@ describe('setup warehousing providers', async () => {
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(updateWarehousingProvider, {
+      assert.partialDeepStrictEqual(updateWarehousingProvider, {
         configuration: [
           {
             key: 'gugus',

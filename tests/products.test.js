@@ -1,4 +1,9 @@
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   PlanProduct,
@@ -22,6 +27,10 @@ test.describe('Products', () => {
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createProduct', () => {
@@ -192,7 +201,7 @@ test.describe('Products', () => {
           productId: UnpublishedProduct._id,
         },
       });
-      assert.deepStrictEqual(data?.publishProduct, {
+      assert.partialDeepStrictEqual(data?.publishProduct, {
         _id: UnpublishedProduct._id,
         status: 'ACTIVE',
       });
@@ -437,7 +446,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.deepStrictEqual(updateProductPlan, {
+      assert.partialDeepStrictEqual(updateProductPlan, {
         _id: PlanProduct._id,
         plan: {
           usageCalculationType: 'METERED',

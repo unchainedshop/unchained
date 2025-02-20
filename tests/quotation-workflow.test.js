@@ -1,20 +1,23 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { ProcessingQuotation } from './seeds/quotations.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let graphqlFetch;
-let adminGraphqlFetch;
-
 test.describe('cart checkout', () => {
   let quotationId;
+  let graphqlFetch;
+  let adminGraphqlFetch;
 
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.requestQuotation', () => {
@@ -63,7 +66,7 @@ test.describe('cart checkout', () => {
         },
       });
       quotationId = requestQuotation._id;
-      assert.deepStrictEqual(requestQuotation, {
+      assert.partialDeepStrictEqual(requestQuotation, {
         user: {},
         product: {},
         status: 'REQUESTED',
@@ -158,7 +161,7 @@ test.describe('cart checkout', () => {
           quotationContext: { hello: 'world' },
         },
       });
-      assert.deepStrictEqual(verifyQuotation, {
+      assert.partialDeepStrictEqual(verifyQuotation, {
         status: 'PROCESSING',
         isExpired: false,
         fullfilled: null,
@@ -224,7 +227,7 @@ test.describe('cart checkout', () => {
         },
       });
       assert.ok(rejectQuotation.rejected);
-      assert.deepStrictEqual(rejectQuotation, {
+      assert.partialDeepStrictEqual(rejectQuotation, {
         status: 'REJECTED',
         isExpired: true,
         fullfilled: null,
@@ -288,7 +291,7 @@ test.describe('cart checkout', () => {
           quotationContext: { hello: 'car' },
         },
       });
-      assert.deepStrictEqual(makeQuotationProposal, {
+      assert.partialDeepStrictEqual(makeQuotationProposal, {
         status: 'PROPOSED',
         isExpired: false,
         fullfilled: null,

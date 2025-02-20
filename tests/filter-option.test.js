@@ -62,7 +62,7 @@ test.describe('FilterOption', () => {
           ],
         },
       });
-      assert.deepStrictEqual(createFilterOption.options[createFilterOption.options.length - 1], {
+      assert.partialDeepStrictEqual(createFilterOption.options[createFilterOption.options.length - 1], {
         _id: 'multichoice-filter:test-filter-option',
         value: 'test-filter-option',
         texts: {

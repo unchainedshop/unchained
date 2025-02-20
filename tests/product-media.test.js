@@ -5,6 +5,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   putFile,
+  disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { JpegProductMedia, SimpleProduct } from './seeds/products.js';
@@ -23,6 +24,10 @@ test.describe('ProductsMedia', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.prepareProductMediaUpload for admin user should', async () => {
@@ -241,7 +246,7 @@ test.describe('ProductsMedia', async () => {
       });
 
       assert.notStrictEqual(updateProductMediaTexts[0]._id, null);
-      assert.deepStrictEqual(updateProductMediaTexts[0], {
+      assert.partialDeepStrictEqual(updateProductMediaTexts[0], {
         locale: 'en',
         title: 'english title',
         subtitle: 'english title subtitle',

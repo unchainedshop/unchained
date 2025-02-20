@@ -128,7 +128,7 @@ test.describe('Bookmark', () => {
           bookmarked: false,
         },
       });
-      assert.deepStrictEqual(bookmark, {
+      assert.partialDeepStrictEqual(bookmark, {
         user: {
           _id: Admin._id,
         },

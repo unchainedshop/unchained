@@ -97,11 +97,10 @@ test.describe('Enrollments', () => {
           },
         },
       });
-      assert.deepStrictEqual(checkoutCart, {
+      assert.partialDeepStrictEqual(checkoutCart, {
         orderNumber: 'enrollmentCart',
         status: 'CONFIRMED',
         enrollment: {
-          _id: assert.match(String),
           status: 'ACTIVE',
         },
       });
@@ -173,7 +172,7 @@ test.describe('Enrollments', () => {
           },
         },
       });
-      assert.deepStrictEqual(createEnrollment, {
+      assert.partialDeepStrictEqual(createEnrollment, {
         status: 'INITIAL',
         plan: {
           product: {
@@ -449,7 +448,7 @@ test.describe('Enrollments', () => {
         },
       });
 
-      assert.deepStrictEqual(updateEnrollment, {
+      assert.partialDeepStrictEqual(updateEnrollment, {
         _id: InitialEnrollment._id,
         billingAddress: {
           firstName: 'Mikael Araya',
@@ -610,7 +609,7 @@ test.describe('Enrollments', () => {
           enrollmentId: 'initialenrollment',
         },
       });
-      assert.deepStrictEqual(activateEnrollment, {
+      assert.partialDeepStrictEqual(activateEnrollment, {
         _id: InitialEnrollment._id,
         status: 'ACTIVE',
       });

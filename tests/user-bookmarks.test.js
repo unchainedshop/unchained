@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { UnpublishedProduct, SimpleProduct, PlanProduct } from './seeds/products.js';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users.js';
 import assert from 'node:assert';
@@ -11,6 +11,10 @@ test.describe('User Bookmarks', () => {
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createBookmark', () => {
@@ -35,7 +39,7 @@ test.describe('User Bookmarks', () => {
           userId: User._id,
         },
       });
-      assert.deepStrictEqual(createBookmark, {
+      assert.partialDeepStrictEqual(createBookmark, {
         user: {
           _id: User._id,
         },
@@ -175,7 +179,7 @@ test.describe('User Bookmarks', () => {
           bookmarked: true,
         },
       });
-      assert.deepStrictEqual(bookmark, {
+      assert.partialDeepStrictEqual(bookmark, {
         user: {
           _id: Admin._id,
         },

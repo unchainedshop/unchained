@@ -1,4 +1,4 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -73,6 +73,10 @@ if (secretsSet) {
       paymentId: 'pfcheckout-payment2',
       status: 'CONFIRMED',
     });
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test(

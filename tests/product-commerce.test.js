@@ -1,15 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
-let graphqlFetch;
-
 test.describe('ProductsCommerce', async () => {
+  let graphqlFetch;
+
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('mutation.updateProductCommerce for admin user should', async () => {
@@ -73,7 +82,7 @@ test.describe('ProductsCommerce', async () => {
         },
       });
 
-      assert.deepStrictEqual(updateProductCommerce, {
+      assert.partialDeepStrictEqual(updateProductCommerce, {
         _id: SimpleProduct._id,
         catalogPrice: {
           amount: 100,

@@ -48,7 +48,7 @@ test.describe('Order: Deliveries', () => {
       },
     });
 
-    assert.deepStrictEqual(setOrderDeliveryProvider, {
+    assert.partialDeepStrictEqual(setOrderDeliveryProvider, {
       _id: SimpleOrder._id,
       delivery: {
         provider: {
@@ -128,7 +128,7 @@ test.describe('Order: Deliveries', () => {
         deliveryProviderId: SendMailDeliveryProvider._id,
       },
     });
-    assert.deepStrictEqual(setOrderDeliveryProvider, {
+    assert.partialDeepStrictEqual(setOrderDeliveryProvider, {
       _id: SimpleOrder._id,
       delivery: {
         provider: {
@@ -152,7 +152,7 @@ test.describe('Order: Deliveries', () => {
         deliveryProviderId: SendMailDeliveryProvider._id,
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'NoPermissionError',
     });
   });
@@ -203,7 +203,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(updateOrderDeliveryShipping, {
+    assert.partialDeepStrictEqual(updateOrderDeliveryShipping, {
       _id: SimpleDelivery._id,
       provider: {
         type: 'SHIPPING',
@@ -243,7 +243,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'InvalidIdError',
     });
   });
@@ -276,7 +276,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'OrderDeliveryNotFoundError',
     });
   });
@@ -309,7 +309,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       orderDeliveryId: PickupDelivery._id,
       code: 'OrderDeliveryTypeError',
       received: 'PICKUP',
@@ -349,7 +349,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(updateOrderDeliveryShipping, {
+    assert.partialDeepStrictEqual(updateOrderDeliveryShipping, {
       _id: SimpleDelivery._id,
       address: {
         firstName: 'Will',
@@ -386,7 +386,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'NoPermissionError',
     });
   });
@@ -429,7 +429,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(updateOrderDeliveryPickUp, {
+    assert.partialDeepStrictEqual(updateOrderDeliveryPickUp, {
       _id: PickupDelivery._id,
       provider: {
         type: 'PICKUP',
@@ -467,7 +467,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       orderDeliveryId: SimpleDelivery._id,
       code: 'OrderDeliveryTypeError',
       received: 'SHIPPING',
@@ -500,7 +500,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'InvalidIdError',
     });
   });
@@ -530,7 +530,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'OrderDeliveryNotFoundError',
     });
   });
@@ -564,7 +564,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(updateOrderDeliveryPickUp, {
+    assert.partialDeepStrictEqual(updateOrderDeliveryPickUp, {
       _id: PickupDelivery._id,
       activePickUpLocation: {
         _id: 'zurich',
@@ -598,7 +598,7 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.deepStrictEqual(errors[0]?.extensions, {
+    assert.partialDeepStrictEqual(errors[0]?.extensions, {
       code: 'NoPermissionError',
     });
   });

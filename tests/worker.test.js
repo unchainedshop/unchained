@@ -1,5 +1,10 @@
 import wait from './lib/wait.js';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { AllocatedWork, NewWork } from './seeds/work.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -16,6 +21,10 @@ test.describe('Worker Module', () => {
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Happy path', () => {
@@ -718,7 +727,7 @@ test.describe('Worker Module', () => {
       });
       delete NewWork.created;
       delete NewWork.scheduled;
-      assert.deepStrictEqual(work, NewWork);
+      assert.partialDeepStrictEqual(work, NewWork);
     });
 
     test('return work as null when passed non-existing work ID', async () => {

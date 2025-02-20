@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -9,6 +9,10 @@ test.describe('setup payment providers', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createPaymentProvider', () => {
@@ -42,7 +46,7 @@ test.describe('setup payment providers', () => {
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(createPaymentProvider, {
+      assert.partialDeepStrictEqual(createPaymentProvider, {
         configuration: [],
         configurationError: null,
         deleted: null,
@@ -92,7 +96,7 @@ test.describe('setup payment providers', () => {
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(updatePaymentProvider, {
+      assert.partialDeepStrictEqual(updatePaymentProvider, {
         configuration: [
           {
             key: 'gugus',

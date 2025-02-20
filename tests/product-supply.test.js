@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
 
@@ -11,6 +16,10 @@ test.describe('ProductsSupply', async () => {
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('mutation.updateProductSupply should for admin user', async () => {
@@ -90,7 +99,7 @@ test.describe('ProductsSupply', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: 'PLAN_PRODUCT',
         required: 'SIMPLE_PRODUCT',

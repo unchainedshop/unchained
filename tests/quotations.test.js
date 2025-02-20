@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations.js';
 import { SimpleProduct } from './seeds/products.js';
@@ -13,6 +18,10 @@ test.describe('TranslatedFilterTexts', async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Query.quotations for admin should', async () => {
@@ -57,18 +66,16 @@ test.describe('TranslatedFilterTexts', async () => {
       });
 
       assert.equal(quotations.length, 2);
-      assert.deepStrictEqual(quotations, [
-        {
-          quotationNumber: 'K271P03',
-          status: 'PROCESSING',
-          product: { _id: SimpleProduct._id },
-        },
-        {
-          quotationNumber: 'WGE9DLE7',
-          status: 'PROPOSED',
-          product: { _id: SimpleProduct._id },
-        },
-      ]);
+      assert.partialDeepStrictEqual(quotations[0], {
+        quotationNumber: 'K271P03',
+        status: 'PROCESSING',
+        product: { _id: SimpleProduct._id },
+      });
+      assert.partialDeepStrictEqual(quotations[1], {
+        quotationNumber: 'WGE9DLE7',
+        status: 'PROPOSED',
+        product: { _id: SimpleProduct._id },
+      });
     });
 
     test('return list of searched quotations by quotation number', async () => {

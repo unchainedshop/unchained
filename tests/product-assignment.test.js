@@ -1,19 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
-let graphqlFetchAsAdmin;
-let graphqlFetchAsNormalUser;
-let graphqlAnonymousFetch;
-
 test.describe('ProductAssignment', async () => {
+  let graphqlFetchAsAdmin;
+  let graphqlFetchAsNormalUser;
+  let graphqlAnonymousFetch;
+
   test.before(async () => {
     await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('mutation.addProductAssignment for admin user should', async () => {
@@ -147,7 +156,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductNotFoundError',
       });
     });
@@ -175,7 +184,7 @@ test.describe('ProductAssignment', async () => {
           ],
         },
       });
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductNotFoundError',
       });
     });
@@ -204,7 +213,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'InvalidIdError',
       });
     });
@@ -232,7 +241,7 @@ test.describe('ProductAssignment', async () => {
           ],
         },
       });
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'InvalidIdError',
       });
     });
@@ -263,7 +272,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });
@@ -294,7 +303,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });
@@ -358,7 +367,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: SimpleProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
@@ -380,7 +389,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductNotFoundError',
       });
     });
@@ -399,7 +408,7 @@ test.describe('ProductAssignment', async () => {
           vectors: [{ key: 'key-3', value: 'value-3' }],
         },
       });
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'InvalidIdError',
       });
     });
@@ -421,7 +430,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });
@@ -443,7 +452,7 @@ test.describe('ProductAssignment', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'NoPermissionError',
       });
     });

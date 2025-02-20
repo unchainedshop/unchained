@@ -1,4 +1,4 @@
-import { setupDatabase, createAnonymousGraphqlFetch } from './helpers.js';
+import { setupDatabase, createAnonymousGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -9,6 +9,10 @@ test.describe('public queries', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test('products', async () => {
@@ -65,7 +69,7 @@ test.describe('public queries', () => {
     });
 
     assert.strictEqual(errors, undefined);
-    assert.deepStrictEqual(data.productCatalogPrices[0], {
+    assert.partialDeepStrictEqual(data.productCatalogPrices[0], {
       amount: 10000,
       currency: {
         isoCode: 'CHF',

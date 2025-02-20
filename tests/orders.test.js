@@ -120,16 +120,14 @@ test('Query.orders for logged in user should return array of current user orders
   });
 
   assert.strictEqual(orders.length, 2);
-  assert.deepStrictEqual(orders, [
-    {
-      _id: ConfirmedOrder._id,
-      status: ConfirmedOrder.status,
-    },
-    {
-      _id: PendingOrder._id,
-      status: PendingOrder.status,
-    },
-  ]);
+  assert.partialDeepStrictEqual(orders[0], {
+    _id: ConfirmedOrder._id,
+    status: ConfirmedOrder.status,
+  });
+  assert.partialDeepStrictEqual(orders[1], {
+    _id: PendingOrder._id,
+    status: PendingOrder.status,
+  });
 });
 
 test('Query.orders for logged in user should return single user order', async () => {

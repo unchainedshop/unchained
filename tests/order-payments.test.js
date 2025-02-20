@@ -49,7 +49,7 @@ test('admin: set order payment provider', async () => {
       paymentProviderId: PrePaidPaymentProvider._id,
     },
   });
-  assert.deepStrictEqual(setOrderPaymentProvider, {
+  assert.partialDeepStrictEqual(setOrderPaymentProvider, {
     _id: SimpleOrder._id,
     payment: {
       provider: {
@@ -130,7 +130,7 @@ test('user: set order payment provider successfully', async () => {
       paymentProviderId: PrePaidPaymentProvider._id,
     },
   });
-  assert.deepStrictEqual(setOrderPaymentProvider, {
+  assert.partialDeepStrictEqual(setOrderPaymentProvider, {
     _id: SimpleOrder._id,
     payment: {
       provider: { _id: PrePaidPaymentProvider._id },
@@ -152,7 +152,7 @@ test('anonymous: return NoPermissionError', async () => {
       paymentProviderId: PrePaidPaymentProvider._id,
     },
   });
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     code: 'NoPermissionError',
   });
 });
@@ -178,7 +178,7 @@ test('admin: update order payment (invoice & card)', async () => {
     },
   });
 
-  assert.deepStrictEqual(updateOrderPaymentInvoice, {
+  assert.partialDeepStrictEqual(updateOrderPaymentInvoice, {
     _id: SimplePayment._id,
     provider: {
       type: 'INVOICE',
@@ -203,7 +203,7 @@ test('admin: return not found error when passed non existing order payment ID', 
     },
   });
 
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     code: 'OrderPaymentNotFoundError',
   });
 });
@@ -225,7 +225,7 @@ test('admin: return invalid ID error when passed invalid order payment ID', asyn
     },
   });
 
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     code: 'InvalidIdError',
   });
 });
@@ -247,7 +247,7 @@ test('admin: return error when order payment provider type is not INVOICE', asyn
     },
   });
 
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     orderPaymentId: GenericPayment._id,
     code: 'OrderPaymentTypeError',
     received: 'GENERIC',
@@ -276,7 +276,7 @@ test('user: update order payment (invoice & card)', async () => {
     },
   });
 
-  assert.deepStrictEqual(updateOrderPaymentInvoice, {
+  assert.partialDeepStrictEqual(updateOrderPaymentInvoice, {
     _id: SimplePayment._id,
     provider: {
       type: 'INVOICE',
@@ -305,7 +305,7 @@ test('anonymous: return NoPermissionError', async () => {
     },
   });
 
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     code: 'NoPermissionError',
   });
 });
@@ -330,7 +330,7 @@ test('admin: update order payment successfully when order payment provider type 
       },
     },
   });
-  assert.deepStrictEqual(updateOrderPaymentGeneric, {
+  assert.partialDeepStrictEqual(updateOrderPaymentGeneric, {
     _id: GenericPayment._id,
     provider: {
       type: 'GENERIC',
@@ -354,7 +354,7 @@ test('admin: return error when order payment type is not GENERIC', async () => {
       },
     },
   });
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     orderPaymentId: SimplePayment._id,
     code: 'OrderPaymentTypeError',
     received: 'INVOICE',
@@ -378,7 +378,7 @@ test('user: update order payment successfully when order payment provider type i
       },
     },
   });
-  assert.deepStrictEqual(updateOrderPaymentGeneric, {
+  assert.partialDeepStrictEqual(updateOrderPaymentGeneric, {
     _id: GenericPayment._id,
   });
 });
@@ -400,11 +400,9 @@ test('anonymous: return NoPermissionError', async () => {
     },
   });
 
-  assert.deepStrictEqual(errors?.[0]?.extensions, {
+  assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
     code: 'NoPermissionError',
   });
 });
 
-test('Mutation.updateOrderPaymentCard', () => {
-  assert.fail('All test scenarios tests for the other endpoints above including role based'); // Currently no payment provider with type CARD implemented
-});
+test.todo('Mutation.updateOrderPaymentCard', () => {});

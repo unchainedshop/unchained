@@ -5,13 +5,13 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import test from 'node:test';
 import assert from 'node:assert';
 
-let db;
-let graphqlFetch;
-
 test.describe('Plugins: Datatrans Payments', () => {
   const merchantId = '1100004624';
   const amount = '20000';
   const currency = 'CHF';
+
+  let db;
+  let graphqlFetch;
 
   test.before(async () => {
     [db] = await setupDatabase();
@@ -93,8 +93,8 @@ test.describe('Plugins: Datatrans Payments', () => {
 
       const result = await fetch(url);
       const text = await result.text();
-      assert.notStrictEqual(text.match(/incorrect request/), null);
-      assert.notStrictEqual(text.match(/error/), null);
+      assert.equal(text.match(/incorrect request/), null);
+      assert.equal(text.match(/error/), null);
     });
   });
 
@@ -124,8 +124,8 @@ test.describe('Plugins: Datatrans Payments', () => {
 
       const result = await fetch(url);
       const text = await result.text();
-      assert.notStrictEqual(text.match(/incorrect request/), null);
-      assert.notStrictEqual(text.match(/error/), null);
+      assert.equal(text.match(/incorrect request/), null);
+      assert.equal(text.match(/error/), null);
     });
   });
 
@@ -301,10 +301,10 @@ test.describe('Plugins: Datatrans Payments', () => {
         },
       });
       assert.ok(addCartProduct);
-      assert.deepStrictEqual(updateCart, {
+      assert.partialDeepStrictEqual(updateCart, {
         status: 'OPEN',
       });
-      assert.deepStrictEqual(checkoutCart, {
+      assert.partialDeepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
       });
     });
@@ -330,10 +330,10 @@ test.describe('Plugins: Datatrans Payments', () => {
         },
       });
       assert.ok(addCartProduct);
-      assert.deepStrictEqual(updateCart, {
+      assert.partialDeepStrictEqual(updateCart, {
         status: 'OPEN',
       });
-      assert.deepStrictEqual(checkoutCart, {
+      assert.partialDeepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
       });
     });

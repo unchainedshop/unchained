@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -9,6 +9,10 @@ test.describe('setup delivery providers', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('Mutation.createDeliveryProvider', () => {
@@ -40,7 +44,7 @@ test.describe('setup delivery providers', () => {
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(createDeliveryProvider, {
+      assert.partialDeepStrictEqual(createDeliveryProvider, {
         configurationError: null,
         configuration: [],
         deleted: null,
@@ -90,7 +94,7 @@ test.describe('setup delivery providers', () => {
         },
       });
       assert.strictEqual(errors, undefined);
-      assert.deepStrictEqual(updateDeliveryProvider, {
+      assert.partialDeepStrictEqual(updateDeliveryProvider, {
         configuration: [
           {
             key: 'gugus',

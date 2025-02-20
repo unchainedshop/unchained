@@ -183,7 +183,7 @@ test('reject a pending order', async () => {
       orderId: PendingOrder._id,
     },
   });
-  assert.deepStrictEqual(rejectOrder, {
+  assert.partialDeepStrictEqual(rejectOrder, {
     _id: PendingOrder._id,
     status: 'REJECTED',
   });

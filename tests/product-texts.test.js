@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
@@ -10,6 +15,10 @@ test.describe('ProductText', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('mutation.updateProductTexts should for admin user', async () => {
@@ -46,7 +55,7 @@ test.describe('ProductText', async () => {
         },
       });
       assert.equal(updateProductTexts.length, 1);
-      assert.deepStrictEqual(updateProductTexts[0], textRecord);
+      assert.partialDeepStrictEqual(updateProductTexts[0], textRecord);
     });
 
     test('return not found error when passed non existing productId', async () => {

@@ -1,6 +1,11 @@
 import { test, before, describe } from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
@@ -9,6 +14,10 @@ describe('WarehousingInterfaces', () => {
   before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   describe('For logged in users', () => {
@@ -29,12 +38,11 @@ describe('WarehousingInterfaces', () => {
           type: 'PHYSICAL',
         },
       });
-      assert.deepStrictEqual(warehousingInterfaces, [
-        {
-          _id: 'shop.unchained.warehousing.store',
-          label: 'Store',
-        },
-      ]);
+      assert.equal(warehousingInterfaces.length, 1);
+      assert.partialDeepStrictEqual(warehousingInterfaces[0], {
+        _id: 'shop.unchained.warehousing.store',
+        label: 'Store',
+      });
     });
   });
 

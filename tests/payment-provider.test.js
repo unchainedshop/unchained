@@ -130,7 +130,7 @@ test('return single paymentProvider when ID is provided', async () => {
       paymentProviderId: SimplePaymentProvider._id,
     },
   });
-  assert.deepStrictEqual(paymentProvider, {
+  assert.partialDeepStrictEqual(paymentProvider, {
     _id: SimplePaymentProvider._id,
     type: SimplePaymentProvider.type,
     configurationError: null,
@@ -310,7 +310,7 @@ test('mark payment credential specified by ID as preferred for admin user', asyn
       paymentCredentialsId: PrePaidPaymentCredential._id,
     },
   });
-  assert.deepStrictEqual(markPaymentCredentialsPreferred, {
+  assert.partialDeepStrictEqual(markPaymentCredentialsPreferred, {
     _id: PrePaidPaymentCredential._id,
     isPreferred: true,
   });

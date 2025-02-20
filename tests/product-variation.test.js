@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct, ProductVariations, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
@@ -10,6 +15,10 @@ test.describe('ProductsVariation', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
   });
 
   test.describe('query.translatedProductVariationTexts for admin user should', async () => {
@@ -155,7 +164,7 @@ test.describe('ProductsVariation', async () => {
         },
       });
 
-      assert.deepStrictEqual(createProductVariation, {
+      assert.partialDeepStrictEqual(createProductVariation, {
         texts: {
           title: 'product variation title',
         },
@@ -187,7 +196,7 @@ test.describe('ProductsVariation', async () => {
         },
       });
 
-      assert.deepStrictEqual(errors?.[0]?.extensions, {
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongTypeError',
         received: PlanProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
@@ -413,7 +422,7 @@ test.describe('ProductsVariation', async () => {
       });
 
       assert.notEqual(updateProductVariationTexts[0]._id, null);
-      assert.deepStrictEqual(updateProductVariationTexts[0], {
+      assert.partialDeepStrictEqual(updateProductVariationTexts[0], {
         locale: 'en',
         title: 'variation option 2 title',
       });

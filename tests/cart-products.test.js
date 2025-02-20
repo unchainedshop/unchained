@@ -59,7 +59,7 @@ test.describe('Cart: Product Items', () => {
           configuration: [{ key: 'length', value: '5' }],
         },
       });
-      assert.deepStrictEqual(addCartProduct, {
+      assert.partialDeepStrictEqual(addCartProduct, {
         quantity: 2,
         total: {
           currency: 'CHF',
@@ -97,7 +97,7 @@ test.describe('Cart: Product Items', () => {
           productId: SimpleProduct._id,
         },
       });
-      assert.deepStrictEqual(addCartProduct, {
+      assert.partialDeepStrictEqual(addCartProduct, {
         quantity: 1,
       });
     });
@@ -158,7 +158,7 @@ test.describe('Cart: Product Items', () => {
         `,
       });
 
-      assert.deepStrictEqual(emptyCart, {
+      assert.partialDeepStrictEqual(emptyCart, {
         items: [],
       });
     });
@@ -220,7 +220,7 @@ test.describe('Cart: Product Items', () => {
           ],
         },
       });
-      assert.deepStrictEqual(addMultipleCartProducts.items.pop(), {
+      assert.partialDeepStrictEqual(addMultipleCartProducts.items.pop(), {
         quantity: 4,
         product: {
           _id: SimpleProduct._id,

@@ -58,7 +58,7 @@ test.describe('Cart: Quotations', () => {
           quotationId: ProposedQuotation._id,
         },
       });
-      assert.deepStrictEqual(addCartQuotation, {
+      assert.partialDeepStrictEqual(addCartQuotation, {
         product: { _id: SimpleProduct._id },
         order: { _id: SimpleOrder._id },
         quantity: 1,
