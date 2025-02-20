@@ -2,6 +2,7 @@
 
 Licensed under the EUPL 1.2
 
+[![Bundle Size](https://pkg-size.dev/badge/bundle/1604171)](https://pkg-size.dev/@unchainedshop/platform)
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
 
 ### **📖 [View Documentation](https://docs.unchained.shop)**
