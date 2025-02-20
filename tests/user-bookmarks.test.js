@@ -7,7 +7,7 @@ import test from 'node:test';
 let db;
 let graphqlFetch;
 
-test.describe('User Bookmarks', () => {
+test.describe('User: Bookmarks', () => {
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

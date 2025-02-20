@@ -11,7 +11,7 @@ import { MultiChoiceFilter } from './seeds/filters.js';
 
 let graphqlFetch;
 
-test.describe('TranslatedFilterTexts', async () => {
+test.describe('Filter: Translated Texts', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

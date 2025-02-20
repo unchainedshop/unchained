@@ -11,7 +11,7 @@ import { SimpleProduct, ProductVariations, ConfigurableProduct, PlanProduct } fr
 
 let graphqlFetch;
 
-test.describe('ProductsVariation', async () => {
+test.describe('Product: Variations', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

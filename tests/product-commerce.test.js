@@ -9,7 +9,7 @@ import {
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
-test.describe('ProductsCommerce', async () => {
+test.describe('Product: Commerce', async () => {
   let graphqlFetch;
 
   test.before(async () => {

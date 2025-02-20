@@ -73,6 +73,7 @@ test.describe('Guest user cart migration', () => {
       configuration: [
         {
           key: 'length',
+          value: '5',
         },
       ],
     });

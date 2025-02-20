@@ -12,7 +12,7 @@ import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 let graphqlFetch;
 let graphqlAnonymousFetch;
 
-describe('WarehousingProviders', () => {
+describe('Warehousing: Provider', () => {
   before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

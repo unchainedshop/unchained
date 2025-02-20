@@ -13,7 +13,7 @@ let graphqlFetch;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymusUser;
 
-test.describe('Products: Reviews', async () => {
+test.describe('Product: Reviews', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

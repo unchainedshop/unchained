@@ -11,8 +11,8 @@ const { STRIPE_SECRET } = process.env;
 let db;
 let graphqlFetch;
 
-if (STRIPE_SECRET) {
-  test.describe('Plugins: Stripe Payments', async () => {
+test.describe('Plugins: Stripe Payments', async () => {
+  if (STRIPE_SECRET) {
     test.before(async () => {
       [db] = await setupDatabase();
       graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
@@ -280,9 +280,7 @@ if (STRIPE_SECRET) {
         });
       });
     });
-  });
-} else {
-  test.skip('Plugins: Stripe Payments', () => {
-    console.log('skipped'); // eslint-disable-line
-  });
-}
+  } else {
+    test.skip('Secret not set', () => {});
+  }
+});

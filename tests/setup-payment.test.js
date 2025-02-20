@@ -3,7 +3,7 @@ import { SimplePaymentProvider } from './seeds/payments.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-test.describe('setup payment providers', () => {
+test.describe('Setup: Payment', () => {
   let graphqlFetch;
 
   test.before(async () => {

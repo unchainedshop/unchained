@@ -2,7 +2,7 @@ import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers
 import assert from 'node:assert';
 import test from 'node:test';
 
-test.describe('basic setup of internationalization and localization context', () => {
+test.describe('Setup: Basic Context', () => {
   let db;
   let graphqlFetch;
   let Currencies;
@@ -37,7 +37,6 @@ test.describe('basic setup of internationalization and localization context', ()
           }
         `,
       });
-      console.log('result', createCurrency, errors);
       assert.strictEqual(errors, undefined);
       assert.partialDeepStrictEqual(createCurrency, {
         isoCode: 'BTC',

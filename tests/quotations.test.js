@@ -13,7 +13,7 @@ import { SimpleProduct } from './seeds/products.js';
 let graphqlFetch;
 let graphqlAnonymousFetch;
 
-test.describe('TranslatedFilterTexts', async () => {
+test.describe('Quotations', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

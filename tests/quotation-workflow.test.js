@@ -5,7 +5,7 @@ import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-test.describe('cart checkout', () => {
+test.describe('Quotation: Workflow', () => {
   let quotationId;
   let graphqlFetch;
   let adminGraphqlFetch;

@@ -5,7 +5,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import test from 'node:test';
 import assert from 'node:assert';
 
-test.describe('Plugins: Datatrans Payments', () => {
+test.describe('Plugins: Datatrans', () => {
   const merchantId = '1100004624';
   const amount = '20000';
   const currency = 'CHF';

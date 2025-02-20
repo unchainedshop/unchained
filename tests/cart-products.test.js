@@ -75,6 +75,7 @@ test.describe('Cart: Product Items', () => {
         configuration: [
           {
             key: 'length',
+            value: '5',
           },
         ],
       });
@@ -228,6 +229,7 @@ test.describe('Cart: Product Items', () => {
         configuration: [
           {
             key: 'height',
+            value: '5',
           },
         ],
       });

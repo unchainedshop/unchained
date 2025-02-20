@@ -15,7 +15,7 @@ let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 let workId;
 
-test.describe('Worker Module', () => {
+test.describe('Work Queue', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);

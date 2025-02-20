@@ -54,21 +54,16 @@ test.describe('Cart: Discounts', () => {
         },
       });
       assert.strictEqual(addCartDiscount.order.total.amount, 0);
+
       assert.partialDeepStrictEqual(addCartDiscount, {
         code: 'HALFPRICE',
-        discounted: [
-          {
-            item: {},
-            total: {},
-          },
-        ],
-        order: {
-          discounts: [
-            {
-              code: 'HALFPRICE',
-            },
-          ],
-        },
+      });
+      assert.partialDeepStrictEqual(addCartDiscount.discounted[0], {
+        item: {},
+        total: {},
+      });
+      assert.partialDeepStrictEqual(addCartDiscount.order.discounts[0], {
+        code: 'HALFPRICE',
       });
     });
     test('add order discount to the cart', async () => {
@@ -115,21 +110,14 @@ test.describe('Cart: Discounts', () => {
       assert(addCartDiscount.order.total.amount < 0);
       assert.partialDeepStrictEqual(addCartDiscount, {
         code: '100off',
-        discounted: [
-          {
-            order: {},
-            orderDiscount: {},
-            total: {},
-          },
-        ],
-        order: {
-          discounts: [
-            {},
-            {
-              code: '100off',
-            },
-          ],
-        },
+      });
+      assert.partialDeepStrictEqual(addCartDiscount.discounted[0], {
+        order: {},
+        orderDiscount: {},
+        total: {},
+      });
+      assert.partialDeepStrictEqual(addCartDiscount.order.discounts.pop(), {
+        code: '100off',
       });
     });
 

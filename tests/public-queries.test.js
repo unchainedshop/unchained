@@ -5,7 +5,7 @@ import test from 'node:test';
 
 let graphqlFetch;
 
-test.describe('public queries', () => {
+test.describe('Public Queries', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();

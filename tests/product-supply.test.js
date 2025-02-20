@@ -12,7 +12,7 @@ import { PlanProduct, SimpleProduct } from './seeds/products.js';
 let graphqlFetch;
 let db;
 
-test.describe('ProductsSupply', async () => {
+test.describe('Product: Supply', async () => {
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

@@ -10,7 +10,7 @@ import test from 'node:test';
 
 let graphqlFetch;
 
-test.describe('DeliveryInterfaces', () => {
+test.describe('Delivery: Interfaces', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -38,14 +38,16 @@ test.describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-      assert.partialDeepStrictEqual(deliveryInterfaces, [
-        {
-          _id: 'shop.unchained.pick-mup',
-        },
-        {
-          _id: 'shop.unchained.stores',
-        },
-      ]);
+
+      assert.equal(deliveryInterfaces.length, 2);
+
+      assert.partialDeepStrictEqual(deliveryInterfaces[0], {
+        _id: 'shop.unchained.pick-mup',
+      });
+
+      assert.partialDeepStrictEqual(deliveryInterfaces[1], {
+        _id: 'shop.unchained.stores',
+      });
     });
   });
 

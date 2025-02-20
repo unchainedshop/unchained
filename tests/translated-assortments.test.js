@@ -11,7 +11,7 @@ import { SimpleAssortment } from './seeds/assortments.js';
 
 let graphqlFetch;
 
-test.describe('TranslatedAssortmentsText', async () => {
+test.describe('Assortment: Translated Texts', async () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

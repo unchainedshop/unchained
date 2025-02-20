@@ -11,7 +11,7 @@ import test from 'node:test';
 
 let graphqlFetch;
 
-test.describe('FilterOption', () => {
+test.describe('Filter: Option', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

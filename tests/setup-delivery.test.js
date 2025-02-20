@@ -3,7 +3,7 @@ import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-test.describe('setup delivery providers', () => {
+test.describe('Setup: Delivery', () => {
   let graphqlFetch;
 
   test.before(async () => {

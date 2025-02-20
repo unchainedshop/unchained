@@ -5,7 +5,7 @@ import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
 let graphqlFetch;
 
-describe('setup warehousing providers', async () => {
+describe('Setup: Warehousing', async () => {
   before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();

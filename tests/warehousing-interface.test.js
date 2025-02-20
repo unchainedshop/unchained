@@ -10,7 +10,7 @@ import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
 
-describe('WarehousingInterfaces', () => {
+describe('Warehousing: Interfaces', () => {
   before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);

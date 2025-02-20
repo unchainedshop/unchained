@@ -17,7 +17,7 @@ let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
-test.describe('DeliveryProviders', () => {
+test.describe('Delivery: Providers', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -61,23 +61,27 @@ test.describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      assert.partialDeepStrictEqual(deliveryProviders, [
-        {
-          _id: SimpleDeliveryProvider._id,
-          configurationError: null,
-          type: 'SHIPPING',
-        },
-        {
-          _id: SendMailDeliveryProvider._id,
-          configurationError: null,
-          type: 'SHIPPING',
-        },
-        {
-          _id: PickupDeliveryProvider._id,
-          configurationError: null,
-          type: 'PICKUP',
-        },
-      ]);
+
+      assert.equal(deliveryProviders.length, 3);
+
+      assert.partialDeepStrictEqual(deliveryProviders[0], {
+        _id: SimpleDeliveryProvider._id,
+        type: 'SHIPPING',
+        configurationError: null,
+      });
+
+      assert.partialDeepStrictEqual(deliveryProviders[1], {
+        _id: SendMailDeliveryProvider._id,
+        type: 'SHIPPING',
+        configurationError: null,
+      });
+
+      assert.partialDeepStrictEqual(deliveryProviders[2], {
+        _id: PickupDeliveryProvider._id,
+        type: 'PICKUP',
+        configurationError: null,
+      });
+
       assert(deliveryProviders.every((d) => typeof d.isActive === 'boolean'));
     });
 

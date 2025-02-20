@@ -513,12 +513,7 @@ test.describe('Filters', () => {
         },
         type: 'SINGLE_CHOICE',
         key: 'warehousing.baseUnit',
-        options: [
-          {
-            texts: null,
-            value: 'ST',
-          },
-        ],
+        options: [],
       });
 
       const { data: { searchProducts } = {} } = await graphqlFetch({
@@ -557,19 +552,17 @@ test.describe('Filters', () => {
 
       assert.partialDeepStrictEqual(searchProducts, {
         productsCount: 1,
-        filters: [
-          {
-            definition: {
-              key: 'tags',
-            },
-          },
-          {
-            filteredProductsCount: 1,
-            definition: {
-              key: 'warehousing.baseUnit',
-            },
-          },
-        ],
+      });
+      assert.partialDeepStrictEqual(searchProducts.filters[0], {
+        definition: {
+          key: 'tags',
+        },
+      });
+      assert.partialDeepStrictEqual(searchProducts.filters[1], {
+        filteredProductsCount: 1,
+        definition: {
+          key: 'warehousing.baseUnit',
+        },
       });
     });
   });

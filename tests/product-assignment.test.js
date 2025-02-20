@@ -9,7 +9,7 @@ import {
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
-test.describe('ProductAssignment', async () => {
+test.describe('Product: Assignments', async () => {
   let graphqlFetchAsAdmin;
   let graphqlFetchAsNormalUser;
   let graphqlAnonymousFetch;
