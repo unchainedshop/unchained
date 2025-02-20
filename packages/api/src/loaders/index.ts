@@ -14,15 +14,34 @@ import {
 import { File } from '@unchainedshop/core-files';
 
 function getLocaleStrings(locale: string) {
-  const localeObj = new Intl.Locale(locale);
-  return [
-    ...new Set([
-      localeObj.baseName.toLowerCase(),
-      localeObj.language.toLowerCase(),
-      systemLocale.baseName.toLowerCase(),
-      systemLocale.language.toLowerCase(),
-    ]),
-  ];
+  try {
+    const localeObj = new Intl.Locale(locale);
+    return [
+      ...new Set([localeObj.baseName, localeObj.language, systemLocale.baseName, systemLocale.language]),
+    ];
+  } catch {
+    return [...new Set([systemLocale.baseName, systemLocale.language])];
+  }
+}
+
+function buildLocaleMap(
+  queries: Readonly<Array<{ locale: string }>>,
+  texts: Readonly<Array<{ locale?: string }>>,
+): Record<string, string[]> {
+  // key = texts.locale
+  // value = input query locale
+  const queryLocales: Array<any> = [...new Set(queries.map((q) => q.locale))];
+  const textLocales: Array<string> = [...new Set(texts.map((t) => t.locale))];
+  const localeMap = {};
+  for (const queryLocale of queryLocales) {
+    const potentialMatches = getLocaleStrings(queryLocale);
+    const matches = potentialMatches.filter((l) => textLocales.includes(l));
+    for (const match of matches) {
+      if (!localeMap[match]) localeMap[match] = [];
+      localeMap[match].push(queryLocale);
+    }
+  }
+  return localeMap;
 }
 
 const loaders = async (unchainedAPI: UnchainedCore) => {
@@ -56,18 +75,16 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
           },
         );
 
-        const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+        const localeMap = buildLocaleMap(queries, texts);
+
         const textsMap = {};
-        const localeMap = Object.fromEntries(
-          queryLocales.flatMap((queryLocale) => {
-            return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-          }),
-        );
         for (const text of texts) {
-          const locale = localeMap[text.locale.toLowerCase()];
-          textsMap[locale + text.assortmentId] = text;
+          const localesForText = localeMap[text.locale];
+          for (const locale of localesForText) {
+            textsMap[locale + text.assortmentId] = text;
+          }
         }
-        return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentId]);
+        return queries.map((q) => textsMap[q.locale + q.assortmentId]);
       },
     ),
 
@@ -86,18 +103,16 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
         },
       );
 
-      const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+      const localeMap = buildLocaleMap(queries, texts);
+
       const textsMap = {};
-      const localeMap = Object.fromEntries(
-        queryLocales.flatMap((queryLocale) => {
-          return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-        }),
-      );
       for (const text of texts) {
-        const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[locale + text.assortmentMediaId] = text;
+        const localesForText = localeMap[text.locale];
+        for (const locale of localesForText) {
+          textsMap[locale + text.assortmentMediaId] = text;
+        }
       }
-      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.assortmentMediaId]);
+      return queries.map((q) => textsMap[q.locale + q.assortmentMediaId]);
     }),
 
     assortmentMediasLoader: new DataLoader<{ assortmentId?: string }, AssortmentMediaType[]>(
@@ -260,18 +275,16 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
         },
       );
 
-      const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+      const localeMap = buildLocaleMap(queries, texts);
+
       const textsMap = {};
-      const localeMap = Object.fromEntries(
-        queryLocales.flatMap((queryLocale) => {
-          return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-        }),
-      );
       for (const text of texts) {
-        const locale = localeMap[text.locale.toLowerCase()];
-        textsMap[locale + text.filterId + text.filterOptionValue] = text;
+        const localesForText = localeMap[text.locale];
+        for (const locale of localesForText) {
+          textsMap[locale + text.filterId + text.filterOptionValue] = text;
+        }
       }
-      return queries.map((q) => textsMap[q.locale.toLowerCase() + q.filterId + q.filterOptionValue]);
+      return queries.map((q) => textsMap[q.locale + q.filterId + q.filterOptionValue]);
     }),
 
     productLoader: new DataLoader<{ productId: string }, Product>(async (queries) => {
@@ -321,18 +334,16 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
             },
           },
         );
-        const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+        const localeMap = buildLocaleMap(queries, texts);
+
         const textsMap = {};
-        const localeMap = Object.fromEntries(
-          queryLocales.flatMap((queryLocale) => {
-            return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-          }),
-        );
         for (const text of texts) {
-          const locale = localeMap[text.locale.toLowerCase()];
-          textsMap[locale + text.productId] = text;
+          const localesForText = localeMap[text.locale] || [];
+          for (const locale of localesForText) {
+            textsMap[locale + text.productId] = text;
+          }
         }
-        return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productId]);
+        return queries.map((q) => textsMap[q.locale + q.productId]);
       },
     ),
 
@@ -349,18 +360,16 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
           },
         );
 
-        const queryLocales = [...new Set(queries.map((q) => q.locale.toLowerCase()))];
+        const localeMap = buildLocaleMap(queries, texts);
+
         const textsMap = {};
-        const localeMap = Object.fromEntries(
-          queryLocales.flatMap((queryLocale) => {
-            return getLocaleStrings(queryLocale).map((locale) => [locale, queryLocale]);
-          }),
-        );
         for (const text of texts) {
-          const locale = localeMap[text.locale.toLowerCase()];
-          textsMap[locale + text.productMediaId] = text;
+          const localesForText = localeMap[text.locale] || [];
+          for (const locale of localesForText) {
+            textsMap[locale + text.productMediaId] = text;
+          }
         }
-        return queries.map((q) => textsMap[q.locale.toLowerCase() + q.productMediaId]);
+        return queries.map((q) => textsMap[q.locale + q.productMediaId]);
       },
     ),
 
