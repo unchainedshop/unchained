@@ -79,7 +79,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
 
         const textsMap = {};
         for (const text of texts) {
-          const localesForText = localeMap[text.locale];
+          const localesForText = localeMap[text.locale] || [];
           for (const locale of localesForText) {
             textsMap[locale + text.assortmentId] = text;
           }
@@ -107,7 +107,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
 
       const textsMap = {};
       for (const text of texts) {
-        const localesForText = localeMap[text.locale];
+        const localesForText = localeMap[text.locale] || [];
         for (const locale of localesForText) {
           textsMap[locale + text.assortmentMediaId] = text;
         }
@@ -279,7 +279,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
 
       const textsMap = {};
       for (const text of texts) {
-        const localesForText = localeMap[text.locale];
+        const localesForText = localeMap[text.locale] || [];
         for (const locale of localesForText) {
           textsMap[locale + text.filterId + text.filterOptionValue] = text;
         }
