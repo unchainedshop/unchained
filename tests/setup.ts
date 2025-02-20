@@ -1,12 +1,6 @@
 import { spawn } from 'node:child_process';
-import dns from 'node:dns';
-import dotenv from 'dotenv-extended';
 import { wipeDatabase, disconnect } from './helpers.js';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-
-dns.setDefaultResultOrder('ipv4first');
-
-dotenv.load();
 
 const setupInMemoryMongoDB = async () => {
   global.__MONGOD__ = await MongoMemoryServer.create({
@@ -18,9 +12,9 @@ const setupInMemoryMongoDB = async () => {
       version: '8.0.1',
       checkMD5: false,
     },
-    spawn: {
-      detached: false,
-    },
+    // spawn: {
+    //   detached: false,
+    // },
   });
   process.env.MONGO_URL = `${global.__MONGOD__.getUri()}${global.__MONGOD__.opts.instance.dbName}`;
 };
@@ -29,7 +23,7 @@ const startAndWaitForApp = async () => {
   return new Promise((resolve, reject) => {
     try {
       global.__SUBPROCESS_UNCHAINED__ = spawn('npm', ['start'], {
-        detached: true,
+        // detached: true,
         cwd: `${process.cwd()}/examples/kitchensink`,
         env: {
           ...process.env,
@@ -91,39 +85,33 @@ const startAndWaitForApp = async () => {
   });
 };
 
-async function cleanup() {
-  global.__SUBPROCESS_UNCHAINED__.kill();
-  global.__MONGOD__.stop();
+if (!global.__SUBPROCESS_UNCHAINED__) {
+  await setupInMemoryMongoDB();
+  await startAndWaitForApp();
+  await wipeDatabase();
 }
 
-export default async (globalConfig) => {
-  if (!global.__SUBPROCESS_UNCHAINED__) {
-    await setupInMemoryMongoDB();
-    await startAndWaitForApp();
-    await wipeDatabase();
+async function teardown() {
+  // if (!globalConfig.watch && !globalConfig.watchAll) {
+  try {
+    await disconnect();
+    global.__SUBPROCESS_UNCHAINED__.kill();
+    global.__MONGOD__.stop();
+  } catch {
+    /* */
   }
+  // }
+}
 
-  async function teardown() {
-    if (!globalConfig.watch && !globalConfig.watchAll) {
-      try {
-        await disconnect();
-        await cleanup();
-      } catch {
-        /* */
-      }
-    }
-  }
+// do something when app is closing
+process.on('exit', teardown);
 
-  // do something when app is closing
-  process.on('exit', teardown);
+// catches ctrl+c event
+process.on('SIGINT', teardown);
 
-  // catches ctrl+c event
-  process.on('SIGINT', teardown);
+// catches "kill pid" (for example: nodemon restart)
+process.on('SIGUSR1', teardown);
+process.on('SIGUSR2', teardown);
 
-  // catches "kill pid" (for example: nodemon restart)
-  process.on('SIGUSR1', teardown);
-  process.on('SIGUSR2', teardown);
-
-  // catches uncaught exceptions
-  process.on('uncaughtException', teardown);
-};
+// catches uncaught exceptions
+process.on('uncaughtException', teardown);

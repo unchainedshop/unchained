@@ -6,12 +6,14 @@ import { describe, it, before } from 'node:test';
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
+let Users;
 
 describe('Auth for anonymous users', () => {
   before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    Users = db.collection('users');
   });
 
   describe('Mutation.loginAsGuest', () => {
@@ -147,7 +149,6 @@ describe('Auth for anonymous users', () => {
 
   describe('Mutation.forgotPassword', () => {
     before(async () => {
-      const Users = db.collection('users');
       const user = await Users.findOne({ _id: 'userthatforgetspasswords' });
       if (!user) {
         await Users.insertOne({
@@ -182,7 +183,6 @@ describe('Auth for anonymous users', () => {
 
   describe('Mutation.resetPassword', () => {
     before(async () => {
-      const Users = db.collection('users');
       const userCopy = {
         ...User,
         username: `${User.username}${Math.random()}`,

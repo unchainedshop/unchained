@@ -9,21 +9,23 @@ import {
   ProxyProduct,
   ProxyPlanProduct1,
 } from './seeds/products.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
-describe('Products', () => {
-  beforeAll(async () => {
+test.describe('Products', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
-  describe('Mutation.createProduct', () => {
-    it('create a new product', async () => {
+  test.describe('Mutation.createProduct', () => {
+    test('create a new product', async () => {
       const result = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation createProduct($product: CreateProductInput!, $texts: [ProductTextInput!]) {
@@ -55,7 +57,7 @@ describe('Products', () => {
         },
       });
       const { data: { createProduct } = {} } = result;
-      expect(createProduct).toMatchObject({
+      assert.deepStrictEqual(createProduct, {
         tags: ['simple'],
         status: 'DRAFT',
         texts: {
@@ -67,8 +69,8 @@ describe('Products', () => {
     });
   });
 
-  describe('Mutation.unpublishProduct', () => {
-    it('unpublish product', async () => {
+  test.describe('Mutation.unpublishProduct', () => {
+    test('unpublish product', async () => {
       const { data: { unpublishProduct } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UnPublishProduct($productId: ID!) {
@@ -111,10 +113,10 @@ describe('Products', () => {
         },
       });
 
-      expect(unpublishProduct.published).toBe(null);
+      assert.strictEqual(unpublishProduct.published, null);
     });
 
-    it('return not found error for non-existing product id', async () => {
+    test('return not found error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UnpublishProduct($productId: ID!) {
@@ -127,10 +129,10 @@ describe('Products', () => {
           productId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error for invalid product id', async () => {
+    test('return error for invalid product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UnpublishProduct($productId: ID!) {
@@ -143,12 +145,12 @@ describe('Products', () => {
           productId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('mutation.publishProduct', () => {
-    it('publish product', async () => {
+  test.describe('mutation.publishProduct', () => {
+    test('publish product', async () => {
       const { data } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation PublishProduct($productId: ID!) {
@@ -190,13 +192,13 @@ describe('Products', () => {
           productId: UnpublishedProduct._id,
         },
       });
-      expect(data?.publishProduct).toMatchObject({
+      assert.deepStrictEqual(data?.publishProduct, {
         _id: UnpublishedProduct._id,
         status: 'ACTIVE',
       });
     });
 
-    it('return not found error for non-existing product id', async () => {
+    test('return not found error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation PublishProduct2($productId: ID!) {
@@ -209,10 +211,10 @@ describe('Products', () => {
           productId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error for non-existing product id', async () => {
+    test('return error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation PublishProduct2($productId: ID!) {
@@ -225,12 +227,12 @@ describe('Products', () => {
           productId: '',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.updateProduct should', () => {
-    it('update successfuly when passed valid product ID ', async () => {
+  test.describe('Mutation.updateProduct should', () => {
+    test('update successfuly when passed valid product ID ', async () => {
       const { data: { updateProduct } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateProduct($productId: ID!, $product: UpdateProductInput!) {
@@ -253,14 +255,14 @@ describe('Products', () => {
         },
       });
 
-      expect(updateProduct).toMatchObject({
+      assert.deepStrictEqual(updateProduct, {
         _id: 'simpleproduct',
         sequence: 1,
         tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
       });
     });
 
-    it('return not found error when passed non-existing product id', async () => {
+    test('return not found error when passed non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateProduct($productId: ID!, $product: UpdateProductInput!) {
@@ -280,10 +282,10 @@ describe('Products', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid product id', async () => {
+    test('return error when passed invalid product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateProduct($productId: ID!, $product: UpdateProductInput!) {
@@ -303,12 +305,12 @@ describe('Products', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.removeProduct should', () => {
-    it('remove product completely when passed valid product ID ', async () => {
+  test.describe('Mutation.removeProduct should', () => {
+    test('remove product completely when passed valid product ID ', async () => {
       const { data: { removeProduct } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -324,10 +326,10 @@ describe('Products', () => {
         },
       });
 
-      expect(removeProduct.status).toBe('DELETED');
+      assert.strictEqual(removeProduct.status, 'DELETED');
     });
 
-    it('return error when attempting to delete already removed product ', async () => {
+    test('return error when attempting to delete already removed product ', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -342,10 +344,10 @@ describe('Products', () => {
           productId: SimpleProductDraft._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return not found error when passed non-existing product id', async () => {
+    test('return not found error when passed non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -360,10 +362,10 @@ describe('Products', () => {
           productId: 'none-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid product id', async () => {
+    test('return error when passed invalid product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -377,12 +379,12 @@ describe('Products', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.updateProductPlan for admin user should', () => {
-    it('update product plan successfuly when passed PLAN_PRODUCT type', async () => {
+  test.describe('Mutation.updateProductPlan for admin user should', () => {
+    test('update product plan successfuly when passed PLAN_PRODUCT type', async () => {
       const { data: { updateProductPlan } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
@@ -435,7 +437,7 @@ describe('Products', () => {
         },
       });
 
-      expect(updateProductPlan).toMatchObject({
+      assert.deepStrictEqual(updateProductPlan, {
         _id: PlanProduct._id,
         plan: {
           usageCalculationType: 'METERED',
@@ -447,7 +449,7 @@ describe('Products', () => {
       });
     });
 
-    it('return error when passed non PLAN_PRODUCT type', async () => {
+    test('return error when passed non PLAN_PRODUCT type', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
@@ -468,14 +470,14 @@ describe('Products', () => {
         },
       });
 
-      expect(errors?.[0]?.extensions).toMatchObject({
+      assert.deepStrictEqual(errors?.[0]?.extensions, {
         code: 'ProductWrongStatusError',
         received: SimpleProduct.type,
         required: 'PLAN_PRODUCT',
       });
     });
 
-    it('return ProductNotFoundError when passed product ID that does not exist', async () => {
+    test('return ProductNotFoundError when passed product ID that does not exist', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
@@ -496,10 +498,10 @@ describe('Products', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return InvalidIdError when passed invalid product ID', async () => {
+    test('return InvalidIdError when passed invalid product ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
@@ -520,12 +522,12 @@ describe('Products', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.updateProductPlan for normal user should', () => {
-    it('return NoPermissionError', async () => {
+  test.describe('Mutation.updateProductPlan for normal user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
@@ -555,11 +557,12 @@ describe('Products', () => {
         },
       });
 
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions.code, 'NoPermissionError');
     });
   });
-  describe('Mutation.updateProductPlan for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+
+  test.describe('Mutation.updateProductPlan for anonymous user should', () => {
+    test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
@@ -579,12 +582,12 @@ describe('Products', () => {
           },
         },
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions.code, 'NoPermissionError');
     });
   });
 
-  describe('query.product for admin user should', () => {
-    it('return single product specified by the id', async () => {
+  test.describe('query.product for admin user should', () => {
+    test('return single product specified by the id', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -627,10 +630,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product._id).toEqual('simpleproduct');
+      assert.strictEqual(product._id, 'simpleproduct');
     });
 
-    it('return product price with the default price when no argument is passed to simulatedPrice  of SIMPLE_PRODUCT type', async () => {
+    test('return product price with the default price when no argument is passed to simulatedPrice  of SIMPLE_PRODUCT type', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -658,13 +661,13 @@ describe('Products', () => {
           productId: 'simpleproduct',
         },
       });
-      expect(product?.simulatedPrice).toMatchObject({
+      assert.deepStrictEqual(product?.simulatedPrice, {
         currency: 'CHF',
         amount: 10000,
       });
     });
 
-    it('return null when passed unsupported currency to simulatedPrice of SIMPLE_PRODUCT type', async () => {
+    test('return null when passed unsupported currency to simulatedPrice of SIMPLE_PRODUCT type', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -686,10 +689,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product?.simulatedPrice).toBe(null);
+      assert.strictEqual(product?.simulatedPrice, null);
     });
 
-    it('return product price with the default price when no argument is passed to simulatedPrice  of PLAN_PRODUCT type', async () => {
+    test('return product price with the default price when no argument is passed to simulatedPrice  of PLAN_PRODUCT type', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -710,13 +713,13 @@ describe('Products', () => {
           productId: 'plan-product',
         },
       });
-      expect(product?.simulatedPrice).toMatchObject({
+      assert.deepStrictEqual(product?.simulatedPrice, {
         currency: 'CHF',
         amount: 10000,
       });
     });
 
-    it('return null when passed unsupported currency to simulatedPrice of PLAN_PRODUCT type', async () => {
+    test('return null when passed unsupported currency to simulatedPrice of PLAN_PRODUCT type', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -738,10 +741,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product?.simulatedPrice).toBe(null);
+      assert.strictEqual(product?.simulatedPrice, null);
     });
 
-    it('return single product specified by id with single media file', async () => {
+    test('return single product specified by id with single media file', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -768,10 +771,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product.media.length).toEqual(1);
+      assert.strictEqual(product.media.length, 1);
     });
 
-    it('return single product specified by the id', async () => {
+    test('return single product specified by the id', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAdmin({
@@ -787,10 +790,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product._id).toEqual('simpleproduct');
+      assert.strictEqual(product._id, 'simpleproduct');
     });
 
-    it('return InvalidIdError error when passed neither productId or slug', async () => {
+    test('return InvalidIdError error when passed neither productId or slug', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query product($productId: ID, $slug: String) {
@@ -802,12 +805,12 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('query.product for normal user should', () => {
-    it('return single product specified by the id', async () => {
+  test.describe('query.product for normal user should', () => {
+    test('return single product specified by the id', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsNormalUser({
@@ -823,10 +826,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product._id).toEqual('simpleproduct');
+      assert.strictEqual(product._id, 'simpleproduct');
     });
 
-    it('return single product specified by id with single media file', async () => {
+    test('return single product specified by id with single media file', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsNormalUser({
@@ -853,10 +856,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product.media.length).toEqual(1);
+      assert.strictEqual(product.media.length, 1);
     });
 
-    it('return single product specified by the id', async () => {
+    test('return single product specified by the id', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsNormalUser({
@@ -872,10 +875,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product._id).toEqual('simpleproduct');
+      assert.strictEqual(product._id, 'simpleproduct');
     });
 
-    it('return InvalidIdError error when passed neither productId or slug', async () => {
+    test('return InvalidIdError error when passed neither productId or slug', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query product($productId: ID, $slug: String) {
@@ -887,12 +890,12 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('query.product for anonymous user should', () => {
-    it('return single product specified by the id', async () => {
+  test.describe('query.product for anonymous user should', () => {
+    test('return single product specified by the id', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAnonymousUser({
@@ -908,10 +911,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product._id).toEqual('simpleproduct');
+      assert.strictEqual(product._id, 'simpleproduct');
     });
 
-    it('return single product specified by id with single media file', async () => {
+    test('return single product specified by id with single media file', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAnonymousUser({
@@ -938,10 +941,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product.media.length).toEqual(1);
+      assert.strictEqual(product.media.length, 1);
     });
 
-    it('return single product specified by the id', async () => {
+    test('return single product specified by the id', async () => {
       const {
         data: { product },
       } = await graphqlFetchAsAnonymousUser({
@@ -957,10 +960,10 @@ describe('Products', () => {
         },
       });
 
-      expect(product._id).toEqual('simpleproduct');
+      assert.strictEqual(product._id, 'simpleproduct');
     });
 
-    it('return InvalidIdError error when passed neither productId or slug', async () => {
+    test('return InvalidIdError error when passed neither productId or slug', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query product($productId: ID, $slug: String) {
@@ -972,12 +975,12 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('query.products for admin user should', () => {
-    it('return list of products when no argument is passed', async () => {
+  test.describe('query.products for admin user should', () => {
+    test('return list of products when no argument is passed', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1029,10 +1032,10 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(10);
+      assert.strictEqual(products.length, 10);
     });
 
-    it('return only list of products that include a slug', async () => {
+    test('return only list of products that include a slug', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1060,10 +1063,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(3);
+      assert.strictEqual(products.length, 3);
     });
 
-    it('Search an product using product slug', async () => {
+    test('Search an product using product slug', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1094,10 +1097,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(2);
+      assert.strictEqual(products.length, 2);
     });
 
-    it('Search an product using product sku', async () => {
+    test('Search an product using product sku', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1127,10 +1130,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(4);
+      assert.strictEqual(products.length, 4);
     });
 
-    it('return only list of products that include the tags specified', async () => {
+    test('return only list of products that include the tags specified', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1158,10 +1161,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(3);
+      assert.strictEqual(products.length, 3);
     });
 
-    it('return number of product if limit is specified as argument', async () => {
+    test('return number of product if limit is specified as argument', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1189,10 +1192,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(1);
+      assert.strictEqual(products.length, 1);
     });
 
-    it('include draft/configurable products if includeDrafts argument is passed as true', async () => {
+    test('include draft/configurable products if includeDrafts argument is passed as true', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAdmin({
@@ -1221,13 +1224,13 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(10);
-      expect(products.filter((p) => p.status === 'DRAFT').length).not.toBe(0);
+      assert.strictEqual(products.length, 10);
+      assert.notStrictEqual(products.filter((p) => p.status === 'DRAFT').length, 0);
     });
   });
 
-  describe('query.productsCount for admin user should', () => {
-    it('return total number of products when no argument is passed', async () => {
+  test.describe('query.productsCount for admin user should', () => {
+    test('return total number of products when no argument is passed', async () => {
       const {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
@@ -1239,10 +1242,10 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(11);
+      assert.strictEqual(productsCount, 11);
     });
 
-    it('return only total number of products that include a slug', async () => {
+    test('return only total number of products that include a slug', async () => {
       const {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
@@ -1256,10 +1259,10 @@ describe('Products', () => {
         },
       });
 
-      expect(productsCount).toEqual(3);
+      assert.strictEqual(productsCount, 3);
     });
 
-    it('return only total number of products that include the tags specified', async () => {
+    test('return only total number of products that include the tags specified', async () => {
       const {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
@@ -1273,10 +1276,10 @@ describe('Products', () => {
         },
       });
 
-      expect(productsCount).toEqual(3);
+      assert.strictEqual(productsCount, 3);
     });
 
-    it('include draft products if includeDrafts argument is passed as true', async () => {
+    test('include draft products if includeDrafts argument is passed as true', async () => {
       const {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
@@ -1290,12 +1293,12 @@ describe('Products', () => {
         },
       });
 
-      expect(productsCount).toEqual(13);
+      assert.strictEqual(productsCount, 13);
     });
   });
 
-  describe('query.productsCount for anonymous user should', () => {
-    it('return total number of products when no argument is passed', async () => {
+  test.describe('query.productsCount for anonymous user should', () => {
+    test('return total number of products when no argument is passed', async () => {
       const {
         data: { productsCount },
       } = await graphqlFetchAsAnonymousUser({
@@ -1307,11 +1310,12 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(11);
+      assert.strictEqual(productsCount, 11);
     });
   });
-  describe('query.productsCount for normal user should', () => {
-    it('return total number of products when no argument is passed', async () => {
+
+  test.describe('query.productsCount for normal user should', () => {
+    test('return total number of products when no argument is passed', async () => {
       const {
         data: { productsCount },
       } = await graphqlFetchAsNormalUser({
@@ -1323,12 +1327,12 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(11);
+      assert.strictEqual(productsCount, 11);
     });
   });
 
-  describe('query.products for normal user should', () => {
-    it('return list of products when no argument is passed', async () => {
+  test.describe('query.products for normal user should', () => {
+    test('return list of products when no argument is passed', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsNormalUser({
@@ -1354,10 +1358,10 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(10);
+      assert.strictEqual(products.length, 10);
     });
 
-    it('return only list of products that include a slug', async () => {
+    test('return only list of products that include a slug', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsNormalUser({
@@ -1385,10 +1389,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(3);
+      assert.strictEqual(products.length, 3);
     });
 
-    it('return only list of products that include the tags specified', async () => {
+    test('return only list of products that include the tags specified', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsNormalUser({
@@ -1416,10 +1420,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(3);
+      assert.strictEqual(products.length, 3);
     });
 
-    it('return number of product if limit is specified as argument', async () => {
+    test('return number of product if limit is specified as argument', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsNormalUser({
@@ -1447,10 +1451,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(1);
+      assert.strictEqual(products.length, 1);
     });
 
-    it('return NoPermissionError if includeDrafts is set to true', async () => {
+    test('return NoPermissionError if includeDrafts is set to true', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
@@ -1476,10 +1480,10 @@ describe('Products', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
 
-    it('not return error if includeDrafts is set to false (default value)', async () => {
+    test('not return error if includeDrafts is set to false (default value)', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
@@ -1505,12 +1509,12 @@ describe('Products', () => {
         },
       });
 
-      expect(errors).toEqual(undefined);
+      assert.strictEqual(errors, undefined);
     });
   });
 
-  describe('query.products for anonymous user should', () => {
-    it('return list of products when no argument is passed', async () => {
+  test.describe('query.products for anonymous user should', () => {
+    test('return list of products when no argument is passed', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAnonymousUser({
@@ -1536,10 +1540,10 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(10);
+      assert.strictEqual(products.length, 10);
     });
 
-    it('return only list of products that include a slug', async () => {
+    test('return only list of products that include a slug', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAnonymousUser({
@@ -1567,10 +1571,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(3);
+      assert.strictEqual(products.length, 3);
     });
 
-    it('return only list of products that include the tags specified', async () => {
+    test('return only list of products that include the tags specified', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAnonymousUser({
@@ -1598,10 +1602,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(3);
+      assert.strictEqual(products.length, 3);
     });
 
-    it('return number of product if limit is specified as argument', async () => {
+    test('return number of product if limit is specified as argument', async () => {
       const {
         data: { products },
       } = await graphqlFetchAsAnonymousUser({
@@ -1629,10 +1633,10 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(1);
+      assert.strictEqual(products.length, 1);
     });
 
-    it('return NoPermissionError if includeDrafts is set to true', async () => {
+    test('return NoPermissionError if includeDrafts is set to true', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
@@ -1658,10 +1662,10 @@ describe('Products', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
 
-    it('not return error if includeDrafts is set to false (default value)', async () => {
+    test('not return error if includeDrafts is set to false (default value)', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
@@ -1687,12 +1691,12 @@ describe('Products', () => {
         },
       });
 
-      expect(errors).toEqual(undefined);
+      assert.strictEqual(errors, undefined);
     });
   });
 
-  describe('query.products.leveleCatalogPrice should', () => {
-    it('return catalog price list of a SIMPLE_PRODUCT product type  ', async () => {
+  test.describe('query.products.leveleCatalogPrice should', () => {
+    test('return catalog price list of a SIMPLE_PRODUCT product type  ', async () => {
       const {
         data: { product = [] },
       } = await graphqlFetchAsAdmin({
@@ -1722,10 +1726,10 @@ describe('Products', () => {
           productId: ProxySimpleProduct1._id,
         },
       });
-      expect(product.leveledCatalogPrices?.length).toEqual(3);
+      assert.strictEqual(product.leveledCatalogPrices?.length, 3);
     });
 
-    it('return catalog price list of a for PLAN_PRODUCT product type', async () => {
+    test('return catalog price list of a for PLAN_PRODUCT product type', async () => {
       const {
         data: { product = [] },
       } = await graphqlFetchAsAdmin({
@@ -1755,12 +1759,12 @@ describe('Products', () => {
           productId: ProxyPlanProduct1._id,
         },
       });
-      expect(product.leveledCatalogPrices?.length).toEqual(3);
+      assert.strictEqual(product.leveledCatalogPrices?.length, 3);
     });
   });
 
-  describe('query.products.simulatedPriceRange should', () => {
-    it('return minimum and maximum simulated price range of a configurable product', async () => {
+  test.describe('query.products.simulatedPriceRange should', () => {
+    test('return minimum and maximum simulated price range of a configurable product', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -1792,7 +1796,7 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
-      expect(product.simulatedPriceRange).toMatchObject({
+      assert.deepStrictEqual(product.simulatedPriceRange, {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
@@ -1808,7 +1812,7 @@ describe('Products', () => {
       });
     });
 
-    it('return minimum and maximum simulated price range of a configurable product based on quantity argument', async () => {
+    test('return minimum and maximum simulated price range of a configurable product based on quantity argument', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -1840,7 +1844,7 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
-      expect(product.simulatedPriceRange).toMatchObject({
+      assert.deepStrictEqual(product.simulatedPriceRange, {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
@@ -1856,7 +1860,7 @@ describe('Products', () => {
       });
     });
 
-    it('return minimum and maximum simulated price range of a configurable product based on vector argument', async () => {
+    test('return minimum and maximum simulated price range of a configurable product based on vector argument', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -1888,7 +1892,7 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
-      expect(product.simulatedPriceRange).toMatchObject({
+      assert.deepStrictEqual(product.simulatedPriceRange, {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
@@ -1905,8 +1909,8 @@ describe('Products', () => {
     });
   });
 
-  describe('query.products.catalogPriceRange should', () => {
-    it('return minimum and maximum catalog price range of a configurable product', async () => {
+  test.describe('query.products.catalogPriceRange should', () => {
+    test('return minimum and maximum catalog price range of a configurable product', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -1939,7 +1943,7 @@ describe('Products', () => {
         },
       });
 
-      expect(product.catalogPriceRange).toMatchObject({
+      assert.deepStrictEqual(product.catalogPriceRange, {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
@@ -1955,7 +1959,7 @@ describe('Products', () => {
       });
     });
 
-    it('return minimum and maximum catalog price range of a configurable product based on quantity argument', async () => {
+    test('return minimum and maximum catalog price range of a configurable product based on quantity argument', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -1987,7 +1991,7 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
-      expect(product.catalogPriceRange).toMatchObject({
+      assert.deepStrictEqual(product.catalogPriceRange, {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
@@ -2003,7 +2007,7 @@ describe('Products', () => {
       });
     });
 
-    it('return minimum and maximum catalog price range of a configurable product based on vector argument', async () => {
+    test('return minimum and maximum catalog price range of a configurable product based on vector argument', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2035,7 +2039,7 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
-      expect(product.catalogPriceRange).toMatchObject({
+      assert.deepStrictEqual(product.catalogPriceRange, {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,

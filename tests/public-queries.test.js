@@ -1,15 +1,17 @@
 import { setupDatabase, createAnonymousGraphqlFetch } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 
-describe('public queries', () => {
-  beforeAll(async () => {
+test.describe('public queries', () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
   });
 
-  it('products', async () => {
+  test('products', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
@@ -20,16 +22,16 @@ describe('public queries', () => {
       `,
     });
 
-    expect(errors).toEqual(undefined);
-    expect(data.products.length).toBeGreaterThan(0);
+    assert.strictEqual(errors, undefined);
+    assert.ok(data.products.length > 0);
 
     const [product] = data.products;
-    expect(product).toMatchObject({
+    assert.deepStrictEqual(product, {
       _id: SimpleProduct._id,
     });
   });
 
-  it('product', async () => {
+  test('product', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
@@ -40,14 +42,14 @@ describe('public queries', () => {
       `,
     });
 
-    expect(errors).toEqual(undefined);
+    assert.strictEqual(errors, undefined);
     const { product } = data;
-    expect(product).toMatchObject({
+    assert.deepStrictEqual(product, {
       _id: SimpleProduct._id,
     });
   });
 
-  it('query.productCatalogPrices', async () => {
+  test('query.productCatalogPrices', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
@@ -62,8 +64,8 @@ describe('public queries', () => {
       `,
     });
 
-    expect(errors).toEqual(undefined);
-    expect(data.productCatalogPrices[0]).toMatchObject({
+    assert.strictEqual(errors, undefined);
+    assert.deepStrictEqual(data.productCatalogPrices[0], {
       amount: 10000,
       currency: {
         isoCode: 'CHF',
@@ -71,7 +73,7 @@ describe('public queries', () => {
     });
   });
 
-  it('query.productCatalogPrices return error when passed invalid productId', async () => {
+  test('query.productCatalogPrices return error when passed invalid productId', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
@@ -86,11 +88,11 @@ describe('public queries', () => {
       `,
     });
 
-    expect(data).toEqual(null);
-    expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    assert.strictEqual(data, null);
+    assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
   });
 
-  it('translatedProductTexts', async () => {
+  test('translatedProductTexts', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
@@ -102,8 +104,8 @@ describe('public queries', () => {
       `,
     });
 
-    expect(errors).toEqual(undefined);
-    expect(data.translatedProductTexts).toMatchObject([
+    assert.strictEqual(errors, undefined);
+    assert.deepStrictEqual(data.translatedProductTexts, [
       {
         locale: 'de',
         slug: 'slug-de',
@@ -115,7 +117,7 @@ describe('public queries', () => {
     ]);
   });
 
-  it('translatedProductMediaTexts', async () => {
+  test('translatedProductMediaTexts', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
@@ -127,8 +129,8 @@ describe('public queries', () => {
       `,
     });
 
-    expect(errors).toEqual(undefined);
-    expect(data.translatedProductMediaTexts).toMatchObject([
+    assert.strictEqual(errors, undefined);
+    assert.deepStrictEqual(data.translatedProductMediaTexts, [
       {
         locale: 'de',
         title: 'product-media-title-de',

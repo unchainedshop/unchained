@@ -4,19 +4,20 @@ import test from 'node:test';
 
 let db;
 let graphqlFetch;
+let Currencies;
+let Countries;
+let Languages;
 
 test.describe('basic setup of internationalization and localization context', () => {
-  test.beforeAll(async () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
+    Currencies = db.collection('currencies');
+    Countries = db.collection('countries');
+    Languages = db.collection('languages');
   });
 
   test.describe('currencies', () => {
-    let Currencies;
-    test.beforeAll(() => {
-      Currencies = db.collection('currencies');
-    });
-
     test('add a currency', async () => {
       const {
         data: { createCurrency },
@@ -232,11 +233,6 @@ test.describe('basic setup of internationalization and localization context', ()
   });
 
   test.describe('countries', () => {
-    let Countries;
-    test.beforeAll(() => {
-      Countries = db.collection('countries');
-    });
-
     test('add a country', async () => {
       const {
         data: { createCountry },
@@ -469,11 +465,6 @@ test.describe('basic setup of internationalization and localization context', ()
   });
 
   test.describe('languages', () => {
-    let Languages;
-    test.beforeAll(() => {
-      Languages = db.collection('languages');
-    });
-
     test('add a language', async () => {
       const { data: { createLanguage } = {} } = await graphqlFetch({
         query: /* GraphQL */ `

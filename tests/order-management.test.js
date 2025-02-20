@@ -149,10 +149,6 @@ test('return error when passed invalid orderId', async () => {
   assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
 });
 
-test.before(async () => {
-  await setupDatabase();
-});
-
 test('cannot reject an already confirmed order', async () => {
   const { errors } = await graphqlFetch({
     query: /* GraphQL */ `

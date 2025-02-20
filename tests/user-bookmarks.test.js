@@ -8,7 +8,7 @@ let db;
 let graphqlFetch;
 
 test.describe('User Bookmarks', () => {
-  test.beforeAll(async () => {
+  test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });

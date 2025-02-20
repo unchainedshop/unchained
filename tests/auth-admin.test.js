@@ -2,25 +2,25 @@ import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch 
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
 import assert from 'node:assert';
-import { describe, it, beforeAll } from 'node:test';
+import { describe, it, before } from 'node:test';
 
 let db;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
+let Users;
 
 describe('Auth for admin users', () => {
-  beforeAll(async () => {
+  before(async () => {
     [db] = await setupDatabase();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    Users = db.collection('users');
   });
 
   describe('Query.users', () => {
-    beforeAll(async () => {
-      const Users = db.collection('users');
-
+    before(async () => {
       await Users.findOrInsertOne({
         ...User,
         _id: 'guest2',
@@ -93,8 +93,7 @@ describe('Auth for admin users', () => {
   });
 
   describe('Query.user', () => {
-    beforeAll(async () => {
-      const Users = db.collection('users');
+    before(async () => {
       await Users.findOrInsertOne({
         ...User,
         _id: 'guest',

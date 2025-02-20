@@ -14,6 +14,8 @@ import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
 import { GraphQLClient } from 'graphql-request';
 
+// eslint-disable-next-line
+// @ts-expect-error
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
   try {
     const { insertedId } = await this.insertOne(doc, ...args);
@@ -28,7 +30,7 @@ let connection;
 export const getConnection = () => connection;
 
 export const disconnect = async () => {
-  await connection.close();
+  await connection.close(true);
 };
 
 export const connect = async () => {
@@ -70,7 +72,7 @@ export const createAnonymousGraphqlFetch = () => {
   return createLoggedInGraphqlFetch(null);
 };
 
-export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
+export const createLoggedInGraphqlFetch = (token: string | null = ADMIN_TOKEN) => {
   const client = new GraphQLClient('http://localhost:4010/graphql', {
     errorPolicy: 'all',
   });
@@ -93,7 +95,6 @@ export const putFile = async (file, { url, type }) => {
   const response = await fetch(url, {
     signal,
     method: 'PUT',
-    duplex: 'half',
     body: file,
     headers: type
       ? {

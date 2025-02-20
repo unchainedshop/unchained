@@ -1,23 +1,24 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { ProcessingQuotation } from './seeds/quotations.js';
-
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import assert from 'node:assert';
+import test from 'node:test';
 
 let graphqlFetch;
 let adminGraphqlFetch;
 
-describe('cart checkout', () => {
+test.describe('cart checkout', () => {
   let quotationId;
 
-  beforeAll(async () => {
+  test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.requestQuotation', () => {
-    it('request a new quotation for a product', async () => {
+  test.describe('Mutation.requestQuotation', () => {
+    test('request a new quotation for a product', async () => {
       const { data: { requestQuotation } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation requestQuotation(
@@ -62,7 +63,7 @@ describe('cart checkout', () => {
         },
       });
       quotationId = requestQuotation._id;
-      expect(requestQuotation).toMatchObject({
+      assert.deepStrictEqual(requestQuotation, {
         user: {},
         product: {},
         status: 'REQUESTED',
@@ -86,7 +87,7 @@ describe('cart checkout', () => {
       });
     });
 
-    it('return not found error when passed non existing productId', async () => {
+    test('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation requestQuotation(
@@ -107,10 +108,10 @@ describe('cart checkout', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
     });
 
-    it('return error when passed invalid productId', async () => {
+    test('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation requestQuotation(
@@ -131,12 +132,12 @@ describe('cart checkout', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.verifyQuotation', () => {
-    it('verify the quotation as admin', async () => {
+  test.describe('Mutation.verifyQuotation', () => {
+    test('verify the quotation as admin', async () => {
       const { data: { verifyQuotation } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
@@ -157,7 +158,7 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'world' },
         },
       });
-      expect(verifyQuotation).toMatchObject({
+      assert.deepStrictEqual(verifyQuotation, {
         status: 'PROCESSING',
         isExpired: false,
         fullfilled: null,
@@ -165,7 +166,7 @@ describe('cart checkout', () => {
       });
     });
 
-    it('return not found error when passed non existing quotationId', async () => {
+    test('return not found error when passed non existing quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
@@ -179,10 +180,10 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'world' },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'QuotationNotFoundError');
     });
 
-    it('return error when passed invalid quotationId', async () => {
+    test('return error when passed invalid quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
@@ -196,12 +197,12 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'world' },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.rejectQuotation', () => {
-    it('reject the quotation as admin', async () => {
+  test.describe('Mutation.rejectQuotation', () => {
+    test('reject the quotation as admin', async () => {
       const { data: { rejectQuotation } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
@@ -222,15 +223,15 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'no world' },
         },
       });
-      expect(rejectQuotation.rejected).toBeTruthy();
-      expect(rejectQuotation).toMatchObject({
+      assert.ok(rejectQuotation.rejected);
+      assert.deepStrictEqual(rejectQuotation, {
         status: 'REJECTED',
         isExpired: true,
         fullfilled: null,
       });
     });
 
-    it('return not found when passed non existing quotationId', async () => {
+    test('return not found when passed non existing quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
@@ -244,10 +245,10 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'no world' },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'QuotationNotFoundError');
     });
 
-    it('return error when passed invalid quotationId', async () => {
+    test('return error when passed invalid quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
@@ -261,12 +262,12 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'no world' },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 
-  describe('Mutation.makeQuotationProposal', () => {
-    it('answer the quotation as admin', async () => {
+  test.describe('Mutation.makeQuotationProposal', () => {
+    test('answer the quotation as admin', async () => {
       const { data: { makeQuotationProposal } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation makeQuotationProposal($quotationId: ID!, $quotationContext: JSON) {
@@ -287,7 +288,7 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'car' },
         },
       });
-      expect(makeQuotationProposal).toMatchObject({
+      assert.deepStrictEqual(makeQuotationProposal, {
         status: 'PROPOSED',
         isExpired: false,
         fullfilled: null,
@@ -295,7 +296,7 @@ describe('cart checkout', () => {
       });
     });
 
-    it('return not found error when passed non existing quotationId', async () => {
+    test('return not found error when passed non existing quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation makeQuotationProposal($quotationId: ID!, $quotationContext: JSON) {
@@ -309,10 +310,10 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'car' },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'QuotationNotFoundError');
     });
 
-    it('return error when passed invalid quotationId', async () => {
+    test('return error when passed invalid quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation makeQuotationProposal($quotationId: ID!, $quotationContext: JSON) {
@@ -326,7 +327,7 @@ describe('cart checkout', () => {
           quotationContext: { hello: 'car' },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });
