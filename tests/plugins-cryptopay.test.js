@@ -7,7 +7,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SimpleProduct } from './seeds/products.js';
 import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, SHIBCurrency } from './seeds/cryptopay.js';
 
-test.describe('Plugins: Cryptopay', () => {
+test.describe.skip('Plugins: Cryptopay', () => {
   let db;
   let graphqlFetch;
 
@@ -140,191 +140,185 @@ test.describe('Plugins: Cryptopay', () => {
     await disconnect();
   });
 
-  test.skip('Plugins: Cryptopay Payments', async (t) => {
-    await t.test('Derive address for first order', async () => {
-      const { data } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
-            signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
-          }
-        `,
-        variables: {
-          orderPaymentId: 'cryptopay-payment',
+  test('Derive address for first order', async () => {
+    const { data } = await graphqlFetch({
+      query: /* GraphQL */ `
+        mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
+          signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
+        }
+      `,
+      variables: {
+        orderPaymentId: 'cryptopay-payment',
+      },
+    });
+    assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
+      { currency: 'BTC', address: BTC_DERIVATIONS[0] },
+      { currency: 'ETH', address: ETH_DERIVATIONS[0] },
+    ]);
+  });
+
+  test('Derive address for second order', async () => {
+    const { data } = await graphqlFetch({
+      query: /* GraphQL */ `
+        mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
+          signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
+        }
+      `,
+      variables: {
+        orderPaymentId: 'cryptopay-payment2',
+      },
+    });
+    assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
+      { currency: 'BTC', address: BTC_DERIVATIONS[1] },
+      { currency: 'ETH', address: ETH_DERIVATIONS[1] },
+    ]);
+  });
+
+  test('Immutable derivations: Address for order payments should not change', async () => {
+    const { data } = await graphqlFetch({
+      query: /* GraphQL */ `
+        mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
+          signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
+        }
+      `,
+      variables: {
+        orderPaymentId: 'cryptopay-payment',
+      },
+    });
+    assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
+      { currency: 'BTC', address: BTC_DERIVATIONS[0] },
+      { currency: 'ETH', address: ETH_DERIVATIONS[0] },
+    ]);
+  });
+
+  test('Payments Webhook (Cryptopay)', async () => {
+    // Setup addresses for tests
+    await db.collection('order_payments').updateOne(
+      { _id: 'cryptopay-payment' },
+      {
+        $set: {
+          context: [
+            { currency: 'BTC', address: BTC_DERIVATIONS[0] },
+            { currency: 'ETH', address: ETH_DERIVATIONS[0] },
+          ],
         },
+      },
+    );
+    await db.collection('order_payments').updateOne(
+      { _id: 'cryptopay-payment2' },
+      {
+        $set: {
+          context: [
+            { currency: 'BTC', address: BTC_DERIVATIONS[1] },
+            { currency: 'ETH', address: ETH_DERIVATIONS[1] },
+          ],
+        },
+      },
+    );
+
+    test('Invalid secret', async () => {
+      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        duplex: 'half',
+        body: JSON.stringify({
+          currency: 'BTC',
+          contract: null,
+          decimals: 8,
+          address: BTC_DERIVATIONS[0],
+          amount: 10 ** 8,
+          secret: 'invalid',
+        }),
       });
-      assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
-        { currency: 'BTC', address: BTC_DERIVATIONS[0] },
-        { currency: 'ETH', address: ETH_DERIVATIONS[0] },
-      ]);
+      assert.deepStrictEqual(await result.json(), { success: false });
+      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
+      assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
-    await t.test('Derive address for second order', async () => {
-      const { data } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
-            signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
-          }
-        `,
-        variables: {
-          orderPaymentId: 'cryptopay-payment2',
+    test('Pay too little for product with crypto prices', async () => {
+      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        duplex: 'half',
+        body: JSON.stringify({
+          currency: 'BTC',
+          contract: null,
+          decimals: 8,
+          address: BTC_DERIVATIONS[0],
+          amount: 5 ** 7,
+          secret: 'secret',
+        }),
       });
-      assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
-        { currency: 'BTC', address: BTC_DERIVATIONS[1] },
-        { currency: 'ETH', address: ETH_DERIVATIONS[1] },
-      ]);
+      assert.deepStrictEqual(await result.json(), { success: false });
+      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
+      assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
-    await t.test('Immutable derivations: Address for order payments should not change', async () => {
-      const { data } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
-            signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
-          }
-        `,
-        variables: {
-          orderPaymentId: 'cryptopay-payment',
+    test('Pay product with crypto prices', async () => {
+      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        duplex: 'half',
+        body: JSON.stringify({
+          currency: 'BTC',
+          contract: null,
+          decimals: 8,
+          address: BTC_DERIVATIONS[0],
+          amount: 10 ** 7,
+          secret: 'secret',
+        }),
       });
-      assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
-        { currency: 'BTC', address: BTC_DERIVATIONS[0] },
-        { currency: 'ETH', address: ETH_DERIVATIONS[0] },
-      ]);
+      assert.deepStrictEqual(await result.json(), { success: true });
+      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
+      assert.strictEqual(orderPayment.status, 'PAID');
     });
 
-    await t.test('Payments Webhook (Cryptopay)', async (t) => {
-      // Setup addresses for tests
-      await db.collection('order_payments').updateOne(
-        { _id: 'cryptopay-payment' },
-        {
-          $set: {
-            context: [
-              { currency: 'BTC', address: BTC_DERIVATIONS[0] },
-              { currency: 'ETH', address: ETH_DERIVATIONS[0] },
-            ],
-          },
+    test('Pay too little for converted prices', async () => {
+      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
-      await db.collection('order_payments').updateOne(
-        { _id: 'cryptopay-payment2' },
-        {
-          $set: {
-            context: [
-              { currency: 'BTC', address: BTC_DERIVATIONS[1] },
-              { currency: 'ETH', address: ETH_DERIVATIONS[1] },
-            ],
-          },
+        duplex: 'half',
+        body: JSON.stringify({
+          currency: 'ETH',
+          contract: SHIBCurrency.contractAddress,
+          decimals: 18,
+          address: ETH_DERIVATIONS[1],
+          amount: '1844337882700110748172344', // 50 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          secret: 'secret',
+        }),
+      });
+      assert.deepStrictEqual(await result.json(), { success: false });
+      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment2' });
+      assert.notStrictEqual(orderPayment.status, 'PAID');
+    });
+
+    test('Pay product with fiat prices in SHIB', async () => {
+      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
-
-      await t.test('Invalid secret', async () => {
-        const result = await fetch('http://localhost:4010/payment/cryptopay', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          duplex: 'half',
-          body: JSON.stringify({
-            currency: 'BTC',
-            contract: null,
-            decimals: 8,
-            address: BTC_DERIVATIONS[0],
-            amount: 10 ** 8,
-            secret: 'invalid',
-          }),
-        });
-        assert.deepStrictEqual(await result.json(), { success: false });
-        const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
-        assert.notStrictEqual(orderPayment.status, 'PAID');
+        duplex: 'half',
+        body: JSON.stringify({
+          currency: 'ETH',
+          contract: SHIBCurrency.contractAddress,
+          decimals: 18,
+          address: ETH_DERIVATIONS[1],
+          amount: '11857248247879012000000000', // 107.15 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          secret: 'secret',
+        }),
       });
-
-      await t.test('Pay too little for product with crypto prices', async () => {
-        const result = await fetch('http://localhost:4010/payment/cryptopay', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          duplex: 'half',
-          body: JSON.stringify({
-            currency: 'BTC',
-            contract: null,
-            decimals: 8,
-            address: BTC_DERIVATIONS[0],
-            amount: 5 ** 7,
-            secret: 'secret',
-          }),
-        });
-        assert.deepStrictEqual(await result.json(), { success: false });
-        const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
-        assert.notStrictEqual(orderPayment.status, 'PAID');
-      });
-
-      await t.test('Pay product with crypto prices', async () => {
-        const result = await fetch('http://localhost:4010/payment/cryptopay', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          duplex: 'half',
-          body: JSON.stringify({
-            currency: 'BTC',
-            contract: null,
-            decimals: 8,
-            address: BTC_DERIVATIONS[0],
-            amount: 10 ** 7,
-            secret: 'secret',
-          }),
-        });
-        assert.deepStrictEqual(await result.json(), { success: true });
-        const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
-        assert.strictEqual(orderPayment.status, 'PAID');
-      });
-
-      await t.test('Pay too little for converted prices', async () => {
-        const result = await fetch('http://localhost:4010/payment/cryptopay', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          duplex: 'half',
-          body: JSON.stringify({
-            currency: 'ETH',
-            contract: SHIBCurrency.contractAddress,
-            decimals: 18,
-            address: ETH_DERIVATIONS[1],
-            amount: '1844337882700110748172344', // 50 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
-            secret: 'secret',
-          }),
-        });
-        assert.deepStrictEqual(await result.json(), { success: false });
-        const orderPayment = await db
-          .collection('order_payments')
-          .findOne({ _id: 'cryptopay-payment2' });
-        assert.notStrictEqual(orderPayment.status, 'PAID');
-      });
-
-      await t.test('Pay product with fiat prices in SHIB', async () => {
-        const result = await fetch('http://localhost:4010/payment/cryptopay', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          duplex: 'half',
-          body: JSON.stringify({
-            currency: 'ETH',
-            contract: SHIBCurrency.contractAddress,
-            decimals: 18,
-            address: ETH_DERIVATIONS[1],
-            amount: '11857248247879012000000000', // 107.15 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
-            secret: 'secret',
-          }),
-        });
-        assert.deepStrictEqual(await result.json(), { success: true });
-        const orderPayment = await db
-          .collection('order_payments')
-          .findOne({ _id: 'cryptopay-payment2' });
-        assert.strictEqual(orderPayment.status, 'PAID');
-      });
+      assert.deepStrictEqual(await result.json(), { success: true });
+      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment2' });
+      assert.strictEqual(orderPayment.status, 'PAID');
     });
   });
 });

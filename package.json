@@ -63,10 +63,9 @@
   ],
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && mv ./typedocs ./docs/static/types",
-    "lint": "eslint packages tests --fix --ext=js --ext=ts",
-    "lint:ci": "eslint packages tests --ext=jsx --ext=js",
+    "lint": "eslint --fix --ext=js --ext=ts packages tests",
+    "pretest": "eslint --ext=js --ext=ts packages tests",
     "test": "run-p test:*",
-    "test:lint": "npm run lint --silent",
     "test:integration": "run-p -r integration-test:*",
     "test:unit": "cd packages && tsx --test",
     "integration-test:start-engine": "tsx --env-file .env tests/setup.js",

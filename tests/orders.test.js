@@ -121,14 +121,20 @@ test.describe('Order: Lists', () => {
     });
 
     assert.strictEqual(orders.length, 2);
-    assert.partialDeepStrictEqual(orders[0], {
-      _id: ConfirmedOrder._id,
-      status: ConfirmedOrder.status,
-    });
-    assert.partialDeepStrictEqual(orders[1], {
-      _id: PendingOrder._id,
-      status: PendingOrder.status,
-    });
+
+    assert.partialDeepStrictEqual(
+      orders.find((o) => o._id === PendingOrder._id),
+      {
+        status: PendingOrder.status,
+      },
+    );
+
+    assert.partialDeepStrictEqual(
+      orders.find((o) => o._id === ConfirmedOrder._id),
+      {
+        status: ConfirmedOrder.status,
+      },
+    );
   });
 
   test('Query.orders for logged in user should return single user order', async () => {

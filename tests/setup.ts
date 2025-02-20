@@ -65,7 +65,9 @@ const startAndWaitForApp = async () => {
       });
       global.__SUBPROCESS_UNCHAINED__.stderr.on('data', (data) => {
         const dataAsString = `${data}`;
-        console.error(dataAsString); // eslint-disable-line
+        if (process.env.DEBUG) {
+          console.error(dataAsString); // eslint-disable-line
+        }
         if (dataAsString.indexOf("Can't listen") !== -1) {
           reject(dataAsString);
         }
