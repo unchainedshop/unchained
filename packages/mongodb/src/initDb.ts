@@ -26,7 +26,8 @@ export const startDb = async () => {
       storageEngine: 'wiredTiger',
       port: parseInt(process.env.PORT, 10) + 1,
     },
-  }).catch(() => {
+  }).catch((e) => {
+    console.log(e);
     // Drop error
     /* */
   });

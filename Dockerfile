@@ -11,11 +11,11 @@ RUN apt update -y && apt install -y curl unzip && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && \
     chmod +x $NVM_DIR/nvm.sh && \
     . $NVM_DIR/nvm.sh && \
-    nvm install 22.10.0 && \
-    nvm alias default 22.10.0 && \
-    nvm use 22.10.0
+    nvm install 22.14.0 && \
+    nvm alias default 22.14.0 && \
+    nvm use 22.14.0
 
-ENV PATH=/root/.nvm/versions/node/v22.10.0/bin:$NVM_DIR:$PATH
+ENV PATH=/root/.nvm/versions/node/v22.14.0/bin:$NVM_DIR:$PATH
 
 ADD packages /source/
 ADD package* /source/

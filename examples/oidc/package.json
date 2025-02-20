@@ -29,9 +29,8 @@
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "node --env-file .env.defaults lib/boot.js",
-    "dev:run": "node --env-file .env --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
-    "dev": "nodemon --env-file .env --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
+    "start": "node --env-file .env.defaults --env-file-if-exists=.env lib/boot.js",
+    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --loader ts-node/esm --watch boot.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -44,7 +43,6 @@
   "devDependencies": {
     "@types/node": "^22.13.4",
     "mongodb-memory-server": "^10.1.3",
-    "nodemon": "^3.1.9",
     "prettier": "^3.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"

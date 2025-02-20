@@ -1,13 +1,4 @@
-import dotenv from 'dotenv-extended';
 import fs from 'node:fs';
-
-dotenv.load({
-  silent: Boolean(process.env.SUPPRESS_ENV_ERRORS),
-  errorOnRegex: !process.env.SUPPRESS_ENV_ERRORS,
-  errorOnMissing: false,
-  errorOnExtra: false,
-  includeProcessEnv: true,
-});
 
 // Load _FILE env's
 Object.entries(process.env)
