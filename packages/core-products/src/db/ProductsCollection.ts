@@ -134,12 +134,12 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     { index: { status: 1 } },
     { index: { tags: 1 } },
     { index: { 'warehousing.sku': 1 } },
-    {
-      index: { 'warehousing.sku': 'text', slugs: 'text' },
-      options: {
-        name: 'products_fulltext_search',
-      },
-    } as any,
+    // {
+    //   index: { 'warehousing.sku': 'text', slugs: 'text' },
+    //   options: {
+    //     name: 'products_fulltext_search',
+    //   },
+    // } as any,
   ]);
 
   // ProductTexts indexes
@@ -148,18 +148,18 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, productId: 1 } },
-    {
-      index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
-      options: {
-        weights: {
-          title: 8,
-          subtitle: 6,
-          vendor: 5,
-          brand: 4,
-        },
-        name: 'product_texts_fulltext_search',
-      },
-    },
+    // {
+    //   index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
+    //   options: {
+    //     weights: {
+    //       title: 8,
+    //       subtitle: 6,
+    //       vendor: 5,
+    //       brand: 4,
+    //     },
+    //     name: 'product_texts_fulltext_search',
+    //   },
+    // },
   ]);
 
   return {

@@ -38,17 +38,17 @@ export const FiltersCollection = async (db: mongodb.Db) => {
   await buildDbIndexes(Filters, [
     { index: { isActive: 1 } },
     { index: { key: 1 }, options: { unique: true } },
-    {
-      index: { _id: 'text', key: 'text', options: 'text' },
-      options: {
-        weights: {
-          _id: 8,
-          key: 6,
-          options: 5,
-        },
-        name: 'filters_fulltext_search',
-      },
-    },
+    // {
+    //   index: { _id: 'text', key: 'text', options: 'text' },
+    //   options: {
+    //     weights: {
+    //       _id: 8,
+    //       key: 6,
+    //       options: 5,
+    //     },
+    //     name: 'filters_fulltext_search',
+    //   },
+    // },
   ]);
 
   // FilterTexts indexes

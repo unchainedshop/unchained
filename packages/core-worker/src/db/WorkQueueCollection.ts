@@ -44,19 +44,19 @@ export const WorkQueueCollection = async (db: mongodb.Db) => {
     { index: { priority: -1 } },
     { index: { type: 1 } },
     { index: { originalWorkId: 1 } },
-    {
-      index: { originalWorkId: 'text', _id: 'text', worker: 'text', input: 'text', type: 'text' },
-      options: {
-        weights: {
-          _id: 8,
-          originalWorkId: 6,
-          type: 5,
-          worker: 4,
-          input: 2,
-        },
-        name: 'workqueue_fulltext_search',
-      },
-    },
+    // {
+    //   index: { originalWorkId: 'text', _id: 'text', worker: 'text', input: 'text', type: 'text' },
+    //   options: {
+    //     weights: {
+    //       _id: 8,
+    //       originalWorkId: 6,
+    //       type: 5,
+    //       worker: 4,
+    //       input: 2,
+    //     },
+    //     name: 'workqueue_fulltext_search',
+    //   },
+    // },
   ]);
 
   return WorkQueue;

@@ -11,16 +11,16 @@ export const CountriesCollection = async (db: mongodb.Db) => {
         deleted: 1,
       },
     },
-    {
-      index: { isoCode: 'text', _id: 'text' },
-      options: {
-        weights: {
-          _id: 8,
-          isoCode: 6,
-        },
-        name: 'countries_fulltext_search',
-      },
-    },
+    // {
+    //   index: { isoCode: 'text', _id: 'text' },
+    //   options: {
+    //     weights: {
+    //       _id: 8,
+    //       isoCode: 6,
+    //     },
+    //     name: 'countries_fulltext_search',
+    //   },
+    // },
   ]);
 
   return Countries;
