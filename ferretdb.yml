@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: ghcr.io/ferretdb/postgres-documentdb:17-0.102.0-ferretdb-2.0.0-rc.5
+    platform: linux/amd64
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:2.0.0-rc.5
+    restart: on-failure
+    ports:
+      - 27017:27017
+    environment:
+      - FERRETDB_POSTGRESQL_URL=postgres://username:password@postgres:5432/postgres
+
+networks:
+  default:
+    name: ferretdb
