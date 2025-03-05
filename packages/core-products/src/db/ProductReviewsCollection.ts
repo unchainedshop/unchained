@@ -30,19 +30,19 @@ export const ProductReviewsCollection = async (db: mongodb.Db) => {
   await buildDbIndexes(ProductReviews, [
     { index: { productId: 1 } },
     { index: { authorId: 1 } },
-    {
-      index: {
-        title: 'text',
-        review: 'text',
-      },
-      options: {
-        weights: {
-          title: 3,
-          review: 5,
-        },
-        name: 'productreview_fulltext_search',
-      },
-    },
+    // {
+    //   index: {
+    //     title: 'text',
+    //     review: 'text',
+    //   },
+    //   options: {
+    //     weights: {
+    //       title: 3,
+    //       review: 5,
+    //     },
+    //     name: 'productreview_fulltext_search',
+    //   },
+    // },
   ]);
 
   return {
