@@ -19,16 +19,16 @@ export const CurrenciesCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes<Currency>(Currencies, [
     { index: { isoCode: 1 }, options: { unique: true } },
-    {
-      index: { isoCode: 'text', _id: 'text' },
-      options: {
-        weights: {
-          _id: 8,
-          isoCode: 6,
-        },
-        name: 'currencies_fulltext_search',
-      },
-    },
+    // {
+    //   index: { isoCode: 'text', _id: 'text' },
+    //   options: {
+    //     weights: {
+    //       _id: 8,
+    //       isoCode: 6,
+    //     },
+    //     name: 'currencies_fulltext_search',
+    //   },
+    // },
     {
       index: {
         deleted: 1,
