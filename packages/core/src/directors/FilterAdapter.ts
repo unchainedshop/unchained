@@ -7,10 +7,6 @@ import { Modules } from '../modules.js';
 
 export type FilterInputText = { locale: string; title: string; subtitle?: string };
 
-export enum FilterError {
-  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
-}
-
 export type FilterContext = {
   filter?: Filter;
   searchQuery: SearchQuery;

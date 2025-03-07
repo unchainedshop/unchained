@@ -13,6 +13,7 @@ export { findPreservingIds } from './find-preserving-ids.js';
 export { buildSortOptions } from './build-sort-option.js';
 export { findLocalizedText } from './find-localized-text.js';
 export { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.js';
+export * from './documentdb-compat-mode.js';
 
 export { mongodb };
 

@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 
 export interface EnrollmentPeriod {
@@ -58,7 +58,7 @@ export const EnrollmentsCollection = async (db: mongodb.Db) => {
     { index: { productId: 1 } },
     { index: { status: 1 } },
     { index: { enrollmentNumber: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: {
         _id: 'text',
         userId: 'text',

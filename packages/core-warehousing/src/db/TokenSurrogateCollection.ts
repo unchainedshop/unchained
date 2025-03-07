@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 
 export type TokenSurrogate = {
   _id?: string;
@@ -45,7 +45,7 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
         orderPositionId: 1,
       },
     },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: {
         chainTokenId: 'text',
         userId: 'text',

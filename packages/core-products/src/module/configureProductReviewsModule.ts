@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/mongodb';
+import { assertDocumentDBCompatMode, ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -44,6 +44,7 @@ const buildFindSelector = ({
   };
 
   if (queryString) {
+    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 

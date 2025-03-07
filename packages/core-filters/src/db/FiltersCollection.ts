@@ -1,4 +1,9 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  buildDbIndexes,
+  TimestampFields,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 
 export enum FilterType {
   SWITCH = 'SWITCH',
@@ -38,7 +43,7 @@ export const FiltersCollection = async (db: mongodb.Db) => {
   await buildDbIndexes(Filters, [
     { index: { isActive: 1 } },
     { index: { key: 1 }, options: { unique: true } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { _id: 'text', key: 'text', options: 'text' },
       options: {
         weights: {
