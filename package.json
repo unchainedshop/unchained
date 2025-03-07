@@ -69,7 +69,7 @@
     "test:integration": "run-p -r integration-test:*",
     "test:unit": "cd packages && tsx --test",
     "integration-test:start-engine": "tsx --env-file-if-exists=.env tests/setup.js",
-    "integration-test:run-test": "wait-on tcp:4010 && tsx --no-warnings --test --test-concurrency=1 tests/*.test.*",
+    "integration-test:run-test": "wait-on tcp:4010 && tsx --env-file-if-exists=.env --no-warnings --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",
