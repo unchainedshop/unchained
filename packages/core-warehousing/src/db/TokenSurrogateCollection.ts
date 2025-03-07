@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 
 export type TokenSurrogate = {
   _id?: string;
@@ -45,28 +45,28 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
         orderPositionId: 1,
       },
     },
-    // {
-    //   index: {
-    //     chainTokenId: 'text',
-    //     userId: 'text',
-    //     productId: 'text',
-    //     _id: 'text',
-    //     walletAddress: 'text',
-    //     contractAddress: 'text',
-    //   } as any,
-    //   options: {
-    //     weights: {
-    //       _id: 9,
-    //       chainTokenId: 8,
-    //       userId: 3,
-    //       productId: 6,
-    //       contractAddress: 5,
-    //       walletAddress: 4,
-    //       status: 1,
-    //     },
-    //     name: 'token_fulltext_search',
-    //   },
-    // },
+    !isDocumentDBCompatModeEnabled() && {
+      index: {
+        chainTokenId: 'text',
+        userId: 'text',
+        productId: 'text',
+        _id: 'text',
+        walletAddress: 'text',
+        contractAddress: 'text',
+      } as any,
+      options: {
+        weights: {
+          _id: 9,
+          chainTokenId: 8,
+          userId: 3,
+          productId: 6,
+          contractAddress: 5,
+          walletAddress: 4,
+          status: 1,
+        },
+        name: 'token_fulltext_search',
+      },
+    },
   ]);
 
   return TokenSurrogates;
