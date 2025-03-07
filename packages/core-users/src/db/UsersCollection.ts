@@ -1,4 +1,11 @@
-import { TimestampFields, Address, Contact, mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import {
+  TimestampFields,
+  Address,
+  Contact,
+  mongodb,
+  buildDbIndexes,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 import { DateFilterInput } from '@unchainedshop/utils';
 
 export interface UserProfile {
@@ -121,33 +128,32 @@ export const UsersCollection = async (db: mongodb.Db) => {
         sparse: true,
       },
     },
-
-    // {
-    //   index: {
-    //     _id: 'text',
-    //     username: 'text',
-    //     'emails.address': 'text',
-    //     'profile.displayName': 'text',
-    //     'lastBillingAddress.firstName': 'text',
-    //     'lastBillingAddress.lastName': 'text',
-    //     'lastBillingAddress.company': 'text',
-    //     'lastBillingAddress.addressLine': 'text',
-    //     'lastBillingAddress.addressLine2': 'text',
-    //   } as any,
-    //   options: {
-    //     weights: {
-    //       _id: 9,
-    //       'emails.address': 7,
-    //       'profile.displayName': 5,
-    //       'lastBillingAddress.firstName': 3,
-    //       'lastBillingAddress.lastName': 3,
-    //       'lastBillingAddress.company': 1,
-    //       'lastBillingAddress.addressLine': 1,
-    //       'lastBillingAddress.addressLine2': 1,
-    //     },
-    //     name: 'user_fulltext_search',
-    //   },
-    // },
+    !isDocumentDBCompatModeEnabled() && {
+      index: {
+        _id: 'text',
+        username: 'text',
+        'emails.address': 'text',
+        'profile.displayName': 'text',
+        'lastBillingAddress.firstName': 'text',
+        'lastBillingAddress.lastName': 'text',
+        'lastBillingAddress.company': 'text',
+        'lastBillingAddress.addressLine': 'text',
+        'lastBillingAddress.addressLine2': 'text',
+      } as any,
+      options: {
+        weights: {
+          _id: 9,
+          'emails.address': 7,
+          'profile.displayName': 5,
+          'lastBillingAddress.firstName': 3,
+          'lastBillingAddress.lastName': 3,
+          'lastBillingAddress.company': 1,
+          'lastBillingAddress.addressLine': 1,
+          'lastBillingAddress.addressLine2': 1,
+        },
+        name: 'user_fulltext_search',
+      },
+    },
   ]);
 
   return Users;

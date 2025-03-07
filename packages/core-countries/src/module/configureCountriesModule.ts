@@ -1,4 +1,9 @@
-import { mongodb, TimestampFields, ModuleInput } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  TimestampFields,
+  ModuleInput,
+  assertDocumentDBCompatMode,
+} from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
@@ -26,7 +31,10 @@ export const buildFindSelector = ({
 }: CountryQuery) => {
   const selector: mongodb.Filter<Country> = { ...rest, deleted: null };
   if (!includeInactive) selector.isActive = true;
-  if (queryString) selector.$text = { $search: queryString };
+  if (queryString) {
+    assertDocumentDBCompatMode();
+    selector.$text = { $search: queryString };
+  }
   return selector;
 };
 

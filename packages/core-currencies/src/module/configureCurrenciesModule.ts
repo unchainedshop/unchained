@@ -4,6 +4,7 @@ import {
   buildSortOptions,
   generateDbObjectId,
   ModuleInput,
+  assertDocumentDBCompatMode,
   mongodb,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
@@ -23,7 +24,10 @@ export const buildFindSelector = ({
   };
   if (!includeInactive) selector.isActive = true;
   if (contractAddress) selector.contractAddress = contractAddress;
-  if (queryString) selector.$text = { $search: queryString };
+  if (queryString) {
+    assertDocumentDBCompatMode();
+    selector.$text = { $search: queryString };
+  }
   return selector;
 };
 

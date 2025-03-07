@@ -7,6 +7,7 @@ import {
   mongodb,
   generateDbObjectId,
   ModuleInput,
+  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import {
@@ -81,6 +82,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
+    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 

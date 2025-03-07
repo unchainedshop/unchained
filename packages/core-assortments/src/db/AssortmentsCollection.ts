@@ -1,4 +1,9 @@
-import { buildDbIndexes, mongodb, TimestampFields } from '@unchainedshop/mongodb';
+import {
+  buildDbIndexes,
+  isDocumentDBCompatModeEnabled,
+  mongodb,
+  TimestampFields,
+} from '@unchainedshop/mongodb';
 
 export type AssortmentProductIdCacheRecord = {
   _id?: string;
@@ -85,12 +90,12 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
-    // {
-    //   index: { slugs: 'text' },
-    //   options: {
-    //     name: 'assortments_fulltext_search',
-    //   },
-    // },
+    !isDocumentDBCompatModeEnabled() && {
+      index: { slugs: 'text' },
+      options: {
+        name: 'assortments_fulltext_search',
+      },
+    },
   ]);
 
   // AssortmentTexts indexes
@@ -99,16 +104,16 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
-    // {
-    //   index: { title: 'text', subtitle: 'text' },
-    //   options: {
-    //     weights: {
-    //       title: 8,
-    //       subtitle: 6,
-    //     },
-    //     name: 'assortments_texts_fulltext_search',
-    //   },
-    // },
+    !isDocumentDBCompatModeEnabled() && {
+      index: { title: 'text', subtitle: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
+        },
+        name: 'assortments_texts_fulltext_search',
+      },
+    },
   ]);
 
   // AssortmentProducts indexes

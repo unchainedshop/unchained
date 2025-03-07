@@ -1,5 +1,5 @@
 import { OrderQuery, Order } from '../db/OrdersCollection.js';
-import { mongodb } from '@unchainedshop/mongodb';
+import { assertDocumentDBCompatMode, mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: mongodb.Filter<Order> = {};
@@ -15,6 +15,7 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
   }
 
   if (queryString) {
+    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 

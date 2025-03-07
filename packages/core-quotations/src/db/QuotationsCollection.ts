@@ -1,4 +1,10 @@
-import { mongodb, buildDbIndexes, TimestampFields, LogFields } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  buildDbIndexes,
+  TimestampFields,
+  LogFields,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',
@@ -41,27 +47,27 @@ export const QuotationsCollection = async (db: mongodb.Db) => {
     { index: { userId: 1 } },
     { index: { productId: 1 } },
     { index: { status: 1 } },
-    // {
-    //   index: {
-    //     _id: 'text',
-    //     userId: 'text',
-    //     quotationNumber: 'text',
-    //     status: 'text',
-    //     'contact.telNumber': 'text',
-    //     'contact.emailAddress': 'text',
-    //   } as any,
-    //   options: {
-    //     weights: {
-    //       _id: 8,
-    //       userId: 3,
-    //       quotationNumber: 6,
-    //       'contact.telNumber': 5,
-    //       'contact.emailAddress': 4,
-    //       status: 1,
-    //     },
-    //     name: 'quotation_fulltext_search',
-    //   },
-    // },
+    !isDocumentDBCompatModeEnabled() && {
+      index: {
+        _id: 'text',
+        userId: 'text',
+        quotationNumber: 'text',
+        status: 'text',
+        'contact.telNumber': 'text',
+        'contact.emailAddress': 'text',
+      } as any,
+      options: {
+        weights: {
+          _id: 8,
+          userId: 3,
+          quotationNumber: 6,
+          'contact.telNumber': 5,
+          'contact.emailAddress': 4,
+          status: 1,
+        },
+        name: 'quotation_fulltext_search',
+      },
+    },
   ]);
 
   return Quotations;

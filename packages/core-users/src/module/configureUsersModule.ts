@@ -8,6 +8,7 @@ import {
   mongodb,
   generateDbObjectId,
   insensitiveTrimmedRegexOperator,
+  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import {
   User,
@@ -75,6 +76,7 @@ export const buildFindSelector = ({
     selector['lastLogin.timestamp'].$gte = new Date(lastLogin.start);
   }
   if (queryString) {
+    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
   return selector;

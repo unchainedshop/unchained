@@ -1,5 +1,11 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb, ModuleInput } from '@unchainedshop/mongodb';
+import {
+  generateDbFilterById,
+  generateDbObjectId,
+  mongodb,
+  ModuleInput,
+  assertDocumentDBCompatMode,
+} from '@unchainedshop/mongodb';
 import {
   WarehousingProvider,
   WarehousingProvidersCollection,
@@ -31,6 +37,7 @@ export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
 export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
   if (queryString) {
+    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 
