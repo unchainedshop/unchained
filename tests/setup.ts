@@ -3,6 +3,7 @@ import { wipeDatabase, disconnect, setupDatabase } from './helpers.js';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const setupInMemoryMongoDB = async () => {
+  if (process.env.MONGO_URL) return;
   global.__MONGOD__ = await MongoMemoryServer.create({
     instance: {
       dbName: 'test',
@@ -92,7 +93,10 @@ async function teardown() {
   try {
     await disconnect();
     global.__SUBPROCESS_UNCHAINED__.kill();
-    global.__MONGOD__.stop();
+
+    if (global.__MONGOD__) {
+      global.__MONGOD__.stop();
+    }
   } catch {
     /* */
   }

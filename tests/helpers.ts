@@ -34,7 +34,7 @@ export const disconnect = async () => {
 };
 
 export const connect = async () => {
-  connection = await MongoClient.connect('mongodb://0.0.0.0:4011');
+  connection = await MongoClient.connect(process.env.MONGO_URL || 'mongodb://0.0.0.0:4011');
 };
 
 export const setupDatabase = async () => {
