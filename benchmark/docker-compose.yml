@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    mem_limit: 2g
+    cpus: 2
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    mem_limit: 2g
+    cpus: 2
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailcrab:
+    image: marlonb/mailcrab
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    mem_limit: 2g
+    cpus: 2
+
+  unchained:
+    build:
+      context: ..
+      dockerfile: benchmark/unchained/Dockerfile
+    ports:
+      - "3000:3000"
+    mem_limit: 2g
+    cpus: 2
+    depends_on:
+      - mailcrab
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - UNCHAINED_SEED_PASSWORD=password
+      - UNCHAINED_CURRENCY=USD,CHF
+      - UNCHAINED_COUNTRY=US,CH
+      - UNCHAINED_LANG=en
+      - EMAIL_FROM=noreply@localhost
+      - UNCHAINED_MAIL_RECIPIENT=noreply@localhost
+
+  medusa:
+    build:
+      context: ..
+      dockerfile: benchmark/medusa/Dockerfile
+    ports:
+      - "9000:9000"
+    mem_limit: 2g
+    cpus: 2
+    depends_on:
+      - postgres
+      - redis
+      - mailcrab
+    environment:
+      - PORT=9000
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=supersecret
+      - COOKIE_SECRET=supersecret
+      - STORE_CORS=http://localhost:8000
+      - ADMIN_CORS=http://localhost:7000
+      - SMTP_HOST=mailcrab
+      - SMTP_PORT=1025
+      - SMTP_USER=noreply@localhost
+      - SMTP_PASS=noreply
+      - SMTP_FROM=noreply@localhost
+
+  vendure:
+    build:
+      context: ..
+      dockerfile: benchmark/vendure/Dockerfile
+    ports:
+      - "3001:3000"
+    mem_limit: 2g
+    cpus: 2
+    depends_on:
+      - postgres
+      - mailcrab
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=vendure
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - SUPERADMIN_USERNAME=admin
+      - SUPERADMIN_PASSWORD=admin
+      - SMTP_HOST=mailcrab
+      - SMTP_PORT=1025
+      - SMTP_USER=noreply@localhost
+      - SMTP_PASS=noreply
+      - SMTP_FROM=noreply@localhost

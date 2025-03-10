@@ -1,0 +1,25 @@
+{
+  "name": "vendure-benchmark",
+  "version": "1.0.0",
+  "description": "Benchmark for Vendure",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start:benchmark": "node dist/index.js --seedBenchmark",
+    "seed": "ts-node src/seed.ts"
+  },
+  "dependencies": {
+    "@vendure/admin-ui-plugin": "^3.1.1",
+    "@vendure/asset-server-plugin": "^3.1.1",
+    "@vendure/core": "^3.1.1",
+    "@vendure/email-plugin": "^3.1.1",
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^16.4.5",
+    "pg": "^8.11.3",
+    "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "ts-node": "^10.9.2"
+  }
+}

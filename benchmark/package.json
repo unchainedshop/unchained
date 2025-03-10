@@ -1,0 +1,21 @@
+{
+  "name": "ecommerce-benchmark",
+  "version": "1.0.0",
+  "description": "Benchmark for comparing Medusa, Vendure, and Unchained e-commerce platforms",
+  "type": "module",
+  "main": "scripts/benchmark.js",
+  "scripts": {
+    "benchmark": "node scripts/benchmark.js",
+    "benchmark:compose": "node scripts/benchmark.js --compose"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "autocannon": "^7.15.0",
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.3",
+    "ora": "^8.0.1"
+  }
+}
