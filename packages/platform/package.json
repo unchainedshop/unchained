@@ -48,8 +48,8 @@
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.13.10",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   }
 }

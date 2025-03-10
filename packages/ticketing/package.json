@@ -58,9 +58,9 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.13.10",
     "express": "^5.0.1",
     "fastify": "^5.2.1",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   }
 }
