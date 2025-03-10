@@ -32,8 +32,15 @@ Each platform is containerized with Docker, with the following setup:
    ```
 
 2. Run the benchmark:
+   
+   a. Using individual Docker containers (default):
    ```
    npm run benchmark
+   ```
+   
+   b. Using Docker Compose:
+   ```
+   npm run benchmark:compose
    ```
 
 The benchmark will:

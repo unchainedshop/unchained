@@ -991,4 +991,9 @@ async function main() {
   console.log(chalk.green.bold('\nBenchmark completed!'));
 }
 
-main().catch(console.error);
+// Check for --compose flag
+if (process.argv.includes('--compose')) {
+  runWithDockerCompose().catch(console.error);
+} else {
+  main().catch(console.error);
+}
