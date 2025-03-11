@@ -332,8 +332,8 @@ export type ProductsModule = {
       params: { proxyId: string; vectors: Array<ProductConfiguration> },
     ) => Promise<string>;
     removeAssignment: (
-      productId: string,
-      params: { vectors: Array<ProductConfiguration> },
+      proxyId: string,
+      params: { vectors: Array<ProductConfiguration>; productId: string },
     ) => Promise<number>;
   };
 

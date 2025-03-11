@@ -300,3 +300,8 @@ export const ImpersonatingAdminUserError = createError(
 export const FileNotFoundError = createError('FileNotFoundError', 'File not found');
 
 export const FileUploadExpiredError = createError('FileUploadExpired', 'File upload has expired');
+
+export const ConfigurationVectorInvalid = createError(
+  'ConfigurationVectorInvalid',
+  'Provider Configuration vector is invalid/incomplete please provide all available configuration vectors',
+);

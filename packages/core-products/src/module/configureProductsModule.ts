@@ -176,7 +176,6 @@ export const configureProductsModule = async ({
   ) => {
     const { proxy } = product;
     let filtered = [...(proxy.assignments || [])];
-
     vectors.forEach(({ key, value }) => {
       filtered = filtered.filter((assignment) => {
         if (assignment.vector[key] === value) {
@@ -264,7 +263,6 @@ export const configureProductsModule = async ({
 
     proxyAssignments: async (product, { includeInactive = false } = {}) => {
       const assignments = product.proxy?.assignments || [];
-
       const productIds = assignments.map(({ productId }) => productId);
       const selector: mongodb.Filter<Product> = {
         _id: { $in: productIds },
@@ -277,7 +275,6 @@ export const configureProductsModule = async ({
       })
         .map(({ _id }) => _id)
         .toArray();
-
       return assignments
         .filter(({ productId }) => {
           return supportedProductIds.includes(productId);
@@ -411,6 +408,14 @@ export const configureProductsModule = async ({
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
         });
+        // Check if a similar vector assignment already exists
+        const existingAssignment = await Products.findOne({
+          _id: proxyId,
+          'proxy.assignments.vector': vector,
+        });
+
+        if (existingAssignment) return;
+
         const modifier = {
           $set: {
             updated: new Date(),
@@ -430,7 +435,7 @@ export const configureProductsModule = async ({
         return proxyId;
       },
 
-      removeAssignment: async (productId, { vectors }) => {
+      removeAssignment: async (proxyId, { vectors, productId }) => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
@@ -445,9 +450,11 @@ export const configureProductsModule = async ({
             },
           },
         };
-        await Products.updateOne(generateDbFilterById(productId), modifier);
+        if (productId) modifier.$pull['proxy.assignments']['productId'] = productId;
 
-        await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
+        await Products.updateOne(generateDbFilterById(proxyId), modifier);
+
+        await emit('PRODUCT_REMOVE_ASSIGNMENT', { proxyId, productId });
 
         return vectors.length;
       },
