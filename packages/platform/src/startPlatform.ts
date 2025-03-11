@@ -45,7 +45,7 @@ const exitOnMissingEnvironmentVariables = () => {
 const existOnInvalidEnvironmentVariables = () => {
   if ((process.env?.UNCHAINED_TOKEN_SECRET || '').length < 32) {
     defaultLogger.error(
-      'UNCHAINED_TOKEN_SECRET must be assigned a string that have 32 or greater length',
+      'UNCHAINED_TOKEN_SECRET must be assigned a string that has a length of 32 or greater',
     );
     process.exit(1);
   }
