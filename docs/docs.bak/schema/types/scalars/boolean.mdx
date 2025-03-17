@@ -1,0 +1,65 @@
+---
+pagination_next: null
+pagination_prev: null
+id: boolean
+title: Boolean
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+The `Boolean` scalar type represents `true` or `false`.
+
+
+```graphql
+scalar Boolean
+```
+
+
+
+
+
+
+
+
+### Returned By
+
+[`removeUserProductReviews`](/schema/operations/mutations/remove-user-product-reviews.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`validateResetPasswordToken`](/schema/operations/queries/validate-reset-password-token.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`validateVerifyEmailToken`](/schema/operations/queries/validate-verify-email-token.mdx)  <Badge class="badge badge--secondary" text="query"/>
+
+### Member Of
+
+[`addPushSubscription`](/schema/operations/mutations/add-push-subscription.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`Assortment`](/schema/types/objects/assortment.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`assortments`](/schema/operations/queries/assortments.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`assortmentsCount`](/schema/operations/queries/assortments-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`bookmark`](/schema/operations/mutations/bookmark.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`countries`](/schema/operations/queries/countries.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`countriesCount`](/schema/operations/queries/countries-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`Country`](/schema/types/objects/country.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`CreateAssortmentInput`](/schema/types/inputs/create-assortment-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`currencies`](/schema/operations/queries/currencies.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`currenciesCount`](/schema/operations/queries/currencies-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`Currency`](/schema/types/objects/currency.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`DeliveryProvider`](/schema/types/objects/delivery-provider.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`DiscountInterface`](/schema/types/objects/discount-interface.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Enrollment`](/schema/types/objects/enrollment.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`EnrollmentPeriod`](/schema/types/objects/enrollment-period.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Filter`](/schema/types/objects/filter.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`filters`](/schema/operations/queries/filters.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`filtersCount`](/schema/operations/queries/filters-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`finishWork`](/schema/operations/mutations/finish-work.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`include`](/schema/operations/directives/include.mdx)  <Badge class="badge badge--secondary" text="directive"/><Bullet />[`Language`](/schema/types/objects/language.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`languages`](/schema/operations/queries/languages.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`languagesCount`](/schema/operations/queries/languages-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`LoadedFilter`](/schema/types/objects/loaded-filter.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`LoadedFilterOption`](/schema/types/objects/loaded-filter-option.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`orders`](/schema/operations/queries/orders.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`ordersCount`](/schema/operations/queries/orders-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`PaymentCredentials`](/schema/types/objects/payment-credentials.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`PaymentProvider`](/schema/types/objects/payment-provider.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Price`](/schema/types/objects/price.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`ProductCatalogPrice`](/schema/types/objects/product-catalog-price.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`products`](/schema/operations/queries/products.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`productsCount`](/schema/operations/queries/products-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`Quotation`](/schema/types/objects/quotation.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`removeUser`](/schema/operations/mutations/remove-user.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`searchAssortments`](/schema/operations/queries/search-assortments.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`searchProducts`](/schema/operations/queries/search-products.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`skip`](/schema/operations/directives/skip.mdx)  <Badge class="badge badge--secondary" text="directive"/><Bullet />[`SuccessResponse`](/schema/types/objects/success-response.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Token`](/schema/types/objects/token.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`UpdateAssortmentInput`](/schema/types/inputs/update-assortment-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateCountryInput`](/schema/types/inputs/update-country-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateCurrencyInput`](/schema/types/inputs/update-currency-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateFilterInput`](/schema/types/inputs/update-filter-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateLanguageInput`](/schema/types/inputs/update-language-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`UpdateProductCommercePricingInput`](/schema/types/inputs/update-product-commerce-pricing-input.mdx)  <Badge class="badge badge--secondary" text="input"/><Bullet />[`User`](/schema/types/objects/user.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`UserEmail`](/schema/types/objects/user-email.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`users`](/schema/operations/queries/users.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`usersCount`](/schema/operations/queries/users-count.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`WarehousingProvider`](/schema/types/objects/warehousing-provider.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Web3Address`](/schema/types/objects/web-3-address.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`Work`](/schema/types/objects/work.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`WorkOutput`](/schema/types/objects/work-output.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
