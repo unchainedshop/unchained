@@ -6,6 +6,7 @@ import {
   mongodb,
   generateDbObjectId,
   ModuleInput,
+  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption, Price } from '@unchainedshop/utils';
 import {
@@ -88,6 +89,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
+    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 

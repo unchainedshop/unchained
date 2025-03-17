@@ -1,4 +1,11 @@
-import { TimestampFields, Address, Contact, mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import {
+  TimestampFields,
+  Address,
+  Contact,
+  mongodb,
+  buildDbIndexes,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 import { DateFilterInput } from '@unchainedshop/utils';
 
 export interface UserProfile {
@@ -120,8 +127,7 @@ export const UsersCollection = async (db: mongodb.Db) => {
         sparse: true,
       },
     },
-
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: {
         _id: 'text',
         username: 'text',

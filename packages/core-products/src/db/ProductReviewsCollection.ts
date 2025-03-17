@@ -1,4 +1,9 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  buildDbIndexes,
+  TimestampFields,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',
@@ -30,7 +35,7 @@ export const ProductReviewsCollection = async (db: mongodb.Db) => {
   await buildDbIndexes(ProductReviews, [
     { index: { productId: 1 } },
     { index: { authorId: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: {
         title: 'text',
         review: 'text',

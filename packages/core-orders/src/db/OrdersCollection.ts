@@ -5,6 +5,7 @@ import {
   Contact,
   LogFields,
   TimestampFields,
+  isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 
 export enum OrderStatus {
@@ -51,7 +52,7 @@ export const OrdersCollection = async (db: mongodb.Db) => {
     { index: { userId: 1 } },
     { index: { status: 1 } },
     { index: { orderNumber: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: {
         _id: 'text',
         userId: 'text',

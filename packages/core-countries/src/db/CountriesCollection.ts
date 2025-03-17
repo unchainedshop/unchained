@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 import { Country } from '../countries-index.js';
 
 export const CountriesCollection = async (db: mongodb.Db) => {
@@ -11,7 +11,7 @@ export const CountriesCollection = async (db: mongodb.Db) => {
         deleted: 1,
       },
     },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { isoCode: 'text', _id: 'text' },
       options: {
         weights: {

@@ -1,4 +1,9 @@
-import { buildDbIndexes, mongodb, TimestampFields } from '@unchainedshop/mongodb';
+import {
+  buildDbIndexes,
+  isDocumentDBCompatModeEnabled,
+  mongodb,
+  TimestampFields,
+} from '@unchainedshop/mongodb';
 
 export type AssortmentProductIdCacheRecord = {
   _id?: string;
@@ -85,7 +90,7 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { slugs: 'text' },
       options: {
         name: 'assortments_fulltext_search',
@@ -99,7 +104,7 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { title: 'text', subtitle: 'text' },
       options: {
         weights: {

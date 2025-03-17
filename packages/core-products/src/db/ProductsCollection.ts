@@ -1,4 +1,9 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  buildDbIndexes,
+  TimestampFields,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 
 export enum ProductStatus {
   DRAFT = 'DRAFT',
@@ -136,12 +141,13 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     { index: { status: 1 } },
     { index: { tags: 1 } },
     { index: { 'warehousing.sku': 1 } },
-    {
-      index: { 'warehousing.sku': 'text', slugs: 'text' },
-      options: {
-        name: 'products_fulltext_search',
-      },
-    } as any,
+    !isDocumentDBCompatModeEnabled() &&
+      ({
+        index: { 'warehousing.sku': 'text', slugs: 'text' },
+        options: {
+          name: 'products_fulltext_search',
+        },
+      } as any),
   ]);
 
   // ProductTexts indexes
@@ -150,7 +156,7 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, productId: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
       options: {
         weights: {

@@ -1,4 +1,9 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import {
+  mongodb,
+  buildDbIndexes,
+  TimestampFields,
+  isDocumentDBCompatModeEnabled,
+} from '@unchainedshop/mongodb';
 
 export type Currency = {
   _id?: string;
@@ -19,7 +24,7 @@ export const CurrenciesCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes<Currency>(Currencies, [
     { index: { isoCode: 1 }, options: { unique: true } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { isoCode: 'text', _id: 'text' },
       options: {
         weights: {

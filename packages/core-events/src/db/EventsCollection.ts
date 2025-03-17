@@ -1,4 +1,4 @@
-import { mongodb } from '@unchainedshop/mongodb';
+import { isDocumentDBCompatModeEnabled, mongodb } from '@unchainedshop/mongodb';
 import { buildDbIndexes } from '@unchainedshop/mongodb';
 import { TimestampFields } from '@unchainedshop/mongodb';
 
@@ -20,7 +20,7 @@ export const EventsCollection = async (db: mongodb.Db) => {
       options: { expireAfterSeconds: TWO_DAYS_SEC, name: 'created' },
     },
     { index: { type: 1 }, options: { name: 'type' } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { _id: 'text', type: 'text' },
       options: {
         weights: {

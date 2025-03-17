@@ -13,7 +13,9 @@ const buildIndexes = <T>(
   indexes: Indexes<T>,
 ): Promise<Array<false | Error>> =>
   Promise.all(
-    indexes.map(async ({ index, options }) => {
+    indexes.map(async (indexOptions) => {
+      if (!indexOptions) return;
+      const { index, options } = indexOptions;
       try {
         await collection.createIndex(index, options);
         return false;

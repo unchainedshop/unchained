@@ -1,4 +1,4 @@
-import { TimestampFields } from '@unchainedshop/mongodb';
+import { isDocumentDBCompatModeEnabled, TimestampFields } from '@unchainedshop/mongodb';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 const ONE_DAY_IN_SECONDS = 86400;
@@ -44,7 +44,7 @@ export const WorkQueueCollection = async (db: mongodb.Db) => {
     { index: { priority: -1 } },
     { index: { type: 1 } },
     { index: { originalWorkId: 1 } },
-    {
+    !isDocumentDBCompatModeEnabled() && {
       index: { originalWorkId: 'text', _id: 'text', worker: 'text', input: 'text', type: 'text' },
       options: {
         weights: {

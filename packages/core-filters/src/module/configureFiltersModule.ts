@@ -6,6 +6,7 @@ import {
   buildSortOptions,
   generateDbObjectId,
   ModuleInput,
+  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.js';
 import { configureFilterTextsModule } from './configureFilterTextsModule.js';
@@ -30,7 +31,10 @@ export const buildFindSelector = ({
   if (filterIds) {
     selector._id = { $in: filterIds };
   }
-  if (queryString) (selector as any).$text = { $search: queryString };
+  if (queryString) {
+    assertDocumentDBCompatMode();
+    (selector as any).$text = { $search: queryString };
+  }
   return selector;
 };
 

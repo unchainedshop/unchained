@@ -14,6 +14,7 @@ import {
   Contact,
   generateDbObjectId,
   ModuleInput,
+  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
@@ -43,8 +44,10 @@ export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQue
   if (status) selector.status = { $in: status };
   if (userId) selector.userId = userId;
 
-  if (queryString) selector.$text = { $search: queryString };
-
+  if (queryString) {
+    assertDocumentDBCompatMode();
+    selector.$text = { $search: queryString };
+  }
   return selector;
 };
 
