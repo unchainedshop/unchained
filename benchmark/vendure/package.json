@@ -1,0 +1,22 @@
+{
+  "name": "vendure-benchmark",
+  "version": "1.0.0",
+  "description": "Vendure benchmark server",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@vendure/admin-ui-plugin": "^2.2.0",
+    "@vendure/asset-server-plugin": "^2.2.0",
+    "@vendure/core": "^2.2.0",
+    "@vendure/email-plugin": "^2.2.0",
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^16.4.5",
+    "pg": "^8.11.3",
+    "typescript": "^5.3.3"
+  }
+} 

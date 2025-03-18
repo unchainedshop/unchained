@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Mock SMTP Server
+  mailcrab:
+    image: marlonb/mailcrab:latest
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1080"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Vendure Mock Server
+  vendure:
+    build:
+      context: ./vendure
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Medusa Mock Server
+  medusa:
+    build:
+      context: ./medusa
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Unchained Mock Server
+  unchained:
+    build:
+      context: ./unchained
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Order Confirmation</h1>
+    <p>Dear {{ order.customer.firstName }} {{ order.customer.lastName }},</p>
+    <p>Thank you for your order! We're pleased to confirm that your order has been received and is being processed.</p>
+    
+    <h2>Order Details</h2>
+    <p><strong>Order Number:</strong> {{ order.code }}</p>
+    <p><strong>Order Date:</strong> {{ formatDate order.orderPlacedAt }}</p>
+    
+    <h2>Items Ordered</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each order.lines}}
+            <tr>
+                <td>{{ productVariant.name }}</td>
+                <td>{{ quantity }}</td>
+                <td>{{ formatMoney unitPrice }}</td>
+                <td>{{ formatMoney totalPrice }}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr class="total">
+                <td colspan="3">Subtotal</td>
+                <td>{{ formatMoney order.subTotal }}</td>
+            </tr>
+            <tr class="total">
+                <td colspan="3">Shipping</td>
+                <td>{{ formatMoney order.shipping }}</td>
+            </tr>
+            <tr class="total">
+                <td colspan="3">Total</td>
+                <td>{{ formatMoney order.total }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <h2>Shipping Address</h2>
+    <p>
+        {{ order.shippingAddress.fullName }}<br>
+        {{ order.shippingAddress.streetLine1 }}<br>
+        {{#if order.shippingAddress.streetLine2}}{{ order.shippingAddress.streetLine2 }}<br>{{/if}}
+        {{ order.shippingAddress.city }}, {{ order.shippingAddress.province }} {{ order.shippingAddress.postalCode }}<br>
+        {{ order.shippingAddress.country }}
+    </p>
+    
+    <p>If you have any questions about your order, please contact our customer service team.</p>
+    
+    <p>Thank you for shopping with us!</p>
+</body>
+</html> 

@@ -1,0 +1,32 @@
+{
+  "name": "unchained-benchmark",
+  "version": "1.0.0",
+  "description": "Unchained benchmark server",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@unchainedshop/api": "^3.1.2",
+    "@unchainedshop/core": "^3.1.2",
+    "@unchainedshop/core-assortments": "^3.1.2",
+    "@unchainedshop/core-countries": "^3.1.2",
+    "@unchainedshop/core-currencies": "^3.1.2",
+    "@unchainedshop/core-delivery": "^3.1.2",
+    "@unchainedshop/core-files": "^3.1.2",
+    "@unchainedshop/core-languages": "^3.1.2",
+    "@unchainedshop/core-orders": "^3.1.2",
+    "@unchainedshop/core-payment": "^3.1.2",
+    "@unchainedshop/core-products": "^3.1.2",
+    "@unchainedshop/core-users": "^3.1.2",
+    "@unchainedshop/platform": "^3.1.2",
+    "@unchainedshop/plugins": "^3.1.2",
+    "fastify": "^5.2.1",
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^5.1.1",
+    "mongodb": "^6.3.0",
+    "nodemailer": "^6.9.9"
+  }
+} 
