@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "3.1.2",
+  "version": "3.1.5",
   "main": "lib/filters-index.js",
   "types": "lib/filters-index.d.ts",
   "type": "module",
