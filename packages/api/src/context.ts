@@ -104,9 +104,8 @@ export const createContextResolver =
       ...unchainedConfig,
       ...localeContext,
       ...userContext,
+      ...abstractHttpServerContext,
       loaders,
       version: UNCHAINED_API_VERSION,
-      setHeader,
-      getHeader,
     };
   };
