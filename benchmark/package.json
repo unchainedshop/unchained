@@ -1,0 +1,19 @@
+{
+  "name": "ecommerce-benchmark",
+  "version": "1.0.0",
+  "description": "Benchmark test for Medusa, Vendure, and Unchained e-commerce platforms",
+  "type": "module",
+  "scripts": {
+    "seed": "node seeder.js",
+    "benchmark": "node benchmark.js",
+    "start": "npm run seed && npm run benchmark"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "autocannon": "^7.12.0",
+    "node-fetch": "^3.3.2"
+  }
+} 
