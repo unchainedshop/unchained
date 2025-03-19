@@ -1,24 +1,81 @@
 version: '3.8'
 
 services:
-  # Mock SMTP Server
-  mailcrab:
-    image: marlonb/mailcrab:latest
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vendure
     ports:
-      - "1025:1025"
-      - "1080:1080"
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1080"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
 
-  # Vendure Mock Server
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: unchained
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  mailcrab:
+    image: marlonb/mailcrab:latest
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1080/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
   vendure:
     build:
       context: ./vendure
@@ -26,14 +83,20 @@ services:
     ports:
       - "3001:3001"
     environment:
-      - PORT=3001
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vendure
+    depends_on:
+      - postgres
+      - mailcrab
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
 
-  # Medusa Mock Server
   medusa:
     build:
       context: ./medusa
@@ -41,14 +104,20 @@ services:
     ports:
       - "3002:3002"
     environment:
-      - PORT=3002
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa
+      - REDIS_URL=redis://redis:6379
+      - SMTP_HOST=mailcrab
+      - SMTP_PORT=1025
+    depends_on:
+      - postgres
+      - redis
+      - mailcrab
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
 
-  # Unchained Mock Server
   unchained:
     build:
       context: ./unchained
@@ -56,9 +125,21 @@ services:
     ports:
       - "3003:3003"
     environment:
-      - PORT=3003
+      - MONGODB_URI=mongodb://admin:admin@mongodb:27017/unchained?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - SMTP_HOST=mailcrab
+      - SMTP_PORT=1025
+    depends_on:
+      - mongodb
+      - redis
+      - mailcrab
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M 
+          memory: 512M
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  redis_data: 

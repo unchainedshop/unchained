@@ -5,304 +5,471 @@
 
 import fetch from 'node-fetch';
 import { faker } from '@faker-js/faker';
-import { writeFile } from 'fs/promises';
+import { writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Configuration
-const VENDORS = {
-  VENDURE: {
-    name: 'Vendure',
+// Configuration for each vendor
+const vendors = {
+  vendure: {
     baseUrl: 'http://localhost:3001',
-    adminEndpoint: '/admin-api',
+    shopApi: '/shop-api',
+    adminApi: '/admin-api',
+    auth: {
+      admin: null,
+    },
   },
-  MEDUSA: {
-    name: 'Medusa',
+  medusa: {
     baseUrl: 'http://localhost:3002',
-    adminEndpoint: '/admin',
+    shopApi: '/store',
+    adminApi: '/admin',
+    auth: {
+      admin: null,
+    },
   },
-  UNCHAINED: {
-    name: 'Unchained',
+  unchained: {
     baseUrl: 'http://localhost:3003',
-    adminEndpoint: '/graphql',
-  }
+    shopApi: '/graphql',
+    adminApi: '/graphql',
+    auth: {
+      admin: null,
+    },
+  },
 };
 
-// Data setup constants
+// Constants for data setup
 const NUM_PRODUCTS = 20000;
 const CURRENCIES = ['USD', 'CHF'];
-const COLORS = ['red', 'blue', 'green', 'yellow', 'black', 'white', 'purple', 'orange', 'pink', 'brown'];
-const ROOT_CATEGORIES = 5;
-const SUB_CATEGORIES_PER_CATEGORY = 10;
-const SUB_SUB_CATEGORIES_PER_SUB_CATEGORY = 10;
-const PRODUCTS_PER_CATEGORY = 40;
+const COLORS = ['red', 'blue', 'green', 'yellow', 'black', 'white'];
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-// Helper function to create a random product
-function createRandomProduct(categoryId, index) {
-  const title = faker.commerce.productName();
-  const subtitle = faker.commerce.productAdjective() + ' ' + faker.commerce.product();
-  const brand = faker.company.name();
-  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-  const size = Math.floor(Math.random() * 10) + 1;
-  const description = faker.lorem.paragraphs({ min: 1, max: 5 });
-  const numImages = Math.floor(Math.random() * 3) + 1;
-  const images = Array.from({ length: numImages }, () => 
-    faker.image.urlPicsumPhotos({ width: 800, height: 600 })
-  );
-  const tags = Array.from({ length: Math.floor(Math.random() * 5) + 1 }, () => 
-    faker.word.adjective()
-  );
-  const labels = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => 
-    faker.commerce.productMaterial()
-  );
-  
-  // Create USD and CHF prices
-  const basePrice = parseFloat(faker.commerce.price({ min: 10, max: 1000 }));
-  const prices = {
-    USD: basePrice,
-    CHF: basePrice * 0.9 // Simple conversion
-  };
-  
+// Category structure
+const CATEGORY_STRUCTURE = {
+  rootCategories: 5,
+  subCategoriesPerRoot: 10,
+  subSubCategoriesPerSub: 10,
+};
+
+// Helper function to create random product data
+function createRandomProduct() {
   return {
-    id: `product-${index}`,
-    title,
-    subtitle,
-    brand,
-    color,
-    size,
-    description,
-    images,
-    tags,
-    labels,
-    prices,
-    categoryId
+    name: faker.commerce.productName(),
+    description: faker.commerce.productDescription(),
+    price: faker.number.int({ min: 1000, max: 10000 }),
+    currency: faker.helpers.arrayElement(CURRENCIES),
+    color: faker.helpers.arrayElement(COLORS),
+    size: faker.helpers.arrayElement(SIZES),
+    images: Array(faker.number.int({ min: 1, max: 3 }))
+      .fill(null)
+      .map(() => faker.image.url()),
+    metadata: {
+      brand: faker.company.name(),
+      tags: faker.helpers.multiple(() => faker.word.sample(), { count: 3 }),
+      labels: faker.helpers.multiple(() => faker.word.sample(), { count: 2 }),
+    },
   };
 }
 
-// Helper function to create category structure
-function createCategoryStructure() {
-  let categoryId = 1;
+// Helper function to build category structure
+function buildCategoryStructure() {
   const categories = [];
-  
-  // Create root categories
-  for (let i = 0; i < ROOT_CATEGORIES; i++) {
+  for (let i = 0; i < CATEGORY_STRUCTURE.rootCategories; i++) {
     const rootCategory = {
-      id: `root-${i + 1}`,
       name: faker.commerce.department(),
-      level: 1,
-      children: []
+      subCategories: [],
     };
-    
-    // Create subcategories
-    for (let j = 0; j < SUB_CATEGORIES_PER_CATEGORY; j++) {
+    for (let j = 0; j < CATEGORY_STRUCTURE.subCategoriesPerRoot; j++) {
       const subCategory = {
-        id: `sub-${i + 1}-${j + 1}`,
-        name: faker.commerce.product(),
-        level: 2,
-        parent: rootCategory.id,
-        children: []
+        name: faker.commerce.department(),
+        subCategories: [],
       };
-      
-      // Create sub-subcategories
-      for (let k = 0; k < SUB_SUB_CATEGORIES_PER_SUB_CATEGORY; k++) {
-        const subSubCategory = {
-          id: `subsub-${i + 1}-${j + 1}-${k + 1}`,
-          name: faker.commerce.productAdjective() + ' ' + faker.commerce.product(),
-          level: 3,
-          parent: subCategory.id,
-          categoryId: categoryId++
-        };
-        
-        subCategory.children.push(subSubCategory);
+      for (let k = 0; k < CATEGORY_STRUCTURE.subSubCategoriesPerSub; k++) {
+        subCategory.subCategories.push({
+          name: faker.commerce.department(),
+        });
       }
-      
-      rootCategory.children.push(subCategory);
+      rootCategory.subCategories.push(subCategory);
     }
-    
     categories.push(rootCategory);
   }
-  
   return categories;
 }
 
 // Helper function to distribute products across categories
-function distributeProducts(categories) {
-  const products = [];
-  let productIndex = 1;
+function distributeProducts(products, categories) {
+  const productsPerLeaf = Math.floor(products.length / (categories.length * CATEGORY_STRUCTURE.subCategoriesPerRoot * CATEGORY_STRUCTURE.subSubCategoriesPerSub));
+  const distribution = [];
   
-  // Flatten the category structure to get all leaf categories
-  const leafCategories = [];
-  
-  categories.forEach(rootCategory => {
-    rootCategory.children.forEach(subCategory => {
-      subCategory.children.forEach(subSubCategory => {
-        leafCategories.push(subSubCategory);
+  categories.forEach(root => {
+    root.subCategories.forEach(sub => {
+      sub.subCategories.forEach(leaf => {
+        const categoryProducts = products.splice(0, productsPerLeaf);
+        distribution.push({
+          category: `${root.name} > ${sub.name} > ${leaf.name}`,
+          products: categoryProducts,
+        });
       });
     });
   });
-  
-  // Create products for each leaf category
-  leafCategories.forEach(category => {
-    for (let i = 0; i < PRODUCTS_PER_CATEGORY; i++) {
-      products.push(createRandomProduct(category.categoryId, productIndex++));
-    }
-  });
-  
-  return products;
+
+  return distribution;
 }
 
-// Seed Vendure with data
-async function seedVendure() {
-  console.log(`Seeding ${VENDORS.VENDURE.name}...`);
-  
-  try {
-    // In a real implementation, this would make API calls to create products and categories
-    // For this example, we'll just simulate it
-    console.log(`Would create ${NUM_PRODUCTS} products in Vendure`);
-    
-    // Example of how an API call might look
-    /*
-    const response = await fetch(`${VENDORS.VENDURE.baseUrl}${VENDORS.VENDURE.adminEndpoint}`, {
+// Platform-specific seeding functions
+async function seedVendure(products, categories) {
+  const headers = {
+    'Authorization': `Bearer ${vendors.vendure.auth.admin}`,
+    'Content-Type': 'application/json',
+  };
+
+  // Create categories
+  for (const root of categories) {
+    const rootCategory = await fetch(`${vendors.vendure.baseUrl}${vendors.vendure.adminApi}/taxonomies`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer admin-token'
-      },
+      headers,
+      body: JSON.stringify({
+        name: root.name,
+        code: root.name.toLowerCase().replace(/\s+/g, '-'),
+      }),
+    });
+
+    for (const sub of root.subCategories) {
+      const subCategory = await fetch(`${vendors.vendure.baseUrl}${vendors.vendure.adminApi}/taxonomies/${rootCategory.id}/terms`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          name: sub.name,
+          code: sub.name.toLowerCase().replace(/\s+/g, '-'),
+        }),
+      });
+
+      for (const leaf of sub.subCategories) {
+        await fetch(`${vendors.vendure.baseUrl}${vendors.vendure.adminApi}/taxonomies/${rootCategory.id}/terms/${subCategory.id}/terms`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            name: leaf.name,
+            code: leaf.name.toLowerCase().replace(/\s+/g, '-'),
+          }),
+        });
+      }
+    }
+  }
+
+  // Create products
+  for (const product of products) {
+    await fetch(`${vendors.vendure.baseUrl}${vendors.vendure.adminApi}/products`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        name: product.name,
+        description: product.description,
+        slug: product.name.toLowerCase().replace(/\s+/g, '-'),
+        variants: [{
+          name: 'Default',
+          price: product.price,
+          currency: product.currency,
+          options: [{
+            code: 'color',
+            value: product.color,
+          }, {
+            code: 'size',
+            value: product.size,
+          }],
+        }],
+        assets: product.images.map(url => ({
+          source: url,
+        })),
+        customFields: product.metadata,
+      }),
+    });
+  }
+}
+
+async function seedMedusa(products, categories) {
+  const headers = {
+    'Authorization': `Bearer ${vendors.medusa.auth.admin}`,
+    'Content-Type': 'application/json',
+  };
+
+  // Create categories
+  for (const root of categories) {
+    const rootCategory = await fetch(`${vendors.medusa.baseUrl}${vendors.medusa.adminApi}/collections`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        title: root.name,
+        handle: root.name.toLowerCase().replace(/\s+/g, '-'),
+      }),
+    });
+
+    for (const sub of root.subCategories) {
+      const subCategory = await fetch(`${vendors.medusa.baseUrl}${vendors.medusa.adminApi}/collections`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          title: sub.name,
+          handle: sub.name.toLowerCase().replace(/\s+/g, '-'),
+          parent_id: rootCategory.id,
+        }),
+      });
+
+      for (const leaf of sub.subCategories) {
+        await fetch(`${vendors.medusa.baseUrl}${vendors.medusa.adminApi}/collections`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            title: leaf.name,
+            handle: leaf.name.toLowerCase().replace(/\s+/g, '-'),
+            parent_id: subCategory.id,
+          }),
+        });
+      }
+    }
+  }
+
+  // Create products
+  for (const product of products) {
+    await fetch(`${vendors.medusa.baseUrl}${vendors.medusa.adminApi}/products`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        title: product.name,
+        description: product.description,
+        handle: product.name.toLowerCase().replace(/\s+/g, '-'),
+        status: 'published',
+        variants: [{
+          title: 'Default',
+          prices: [{
+            amount: product.price,
+            currency_code: product.currency.toLowerCase(),
+          }],
+          options: [{
+            title: 'Color',
+            values: [product.color],
+          }, {
+            title: 'Size',
+            values: [product.size],
+          }],
+        }],
+        images: product.images.map(url => ({
+          url,
+        })),
+        metadata: product.metadata,
+      }),
+    });
+  }
+}
+
+async function seedUnchained(products, categories) {
+  const headers = {
+    'Authorization': `Bearer ${vendors.unchained.auth.admin}`,
+    'Content-Type': 'application/json',
+  };
+
+  // Create categories
+  for (const root of categories) {
+    const rootCategory = await fetch(`${vendors.unchained.baseUrl}${vendors.unchained.adminApi}`, {
+      method: 'POST',
+      headers,
       body: JSON.stringify({
         query: `
-          mutation CreateProduct($input: CreateProductInput!) {
-            createProduct(input: $input) {
-              id
-              name
+          mutation {
+            createCategory(
+              name: "${root.name}"
+              slug: "${root.name.toLowerCase().replace(/\s+/g, '-')}"
+            ) {
+              _id
             }
           }
         `,
-        variables: {
-          input: {
-            name: "Product Name",
-            // Other properties
-          }
-        }
-      })
+      }),
     });
-    
-    const result = await response.json();
-    */
-    
-    return { success: true, message: 'Simulated Vendure seeding complete' };
-  } catch (error) {
-    console.error(`Error seeding ${VENDORS.VENDURE.name}:`, error);
-    return { success: false, error: error.toString() };
+
+    for (const sub of root.subCategories) {
+      const subCategory = await fetch(`${vendors.unchained.baseUrl}${vendors.unchained.adminApi}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          query: `
+            mutation {
+              createCategory(
+                name: "${sub.name}"
+                slug: "${sub.name.toLowerCase().replace(/\s+/g, '-')}"
+                parentId: "${rootCategory.data.createCategory._id}"
+              ) {
+                _id
+              }
+            }
+          `,
+        }),
+      });
+
+      for (const leaf of sub.subCategories) {
+        await fetch(`${vendors.unchained.baseUrl}${vendors.unchained.adminApi}`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            query: `
+              mutation {
+                createCategory(
+                  name: "${leaf.name}"
+                  slug: "${leaf.name.toLowerCase().replace(/\s+/g, '-')}"
+                  parentId: "${subCategory.data.createCategory._id}"
+                ) {
+                  _id
+                }
+              }
+            `,
+          }),
+        });
+      }
+    }
+  }
+
+  // Create products
+  for (const product of products) {
+    await fetch(`${vendors.unchained.baseUrl}${vendors.unchained.adminApi}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        query: `
+          mutation {
+            createProduct(
+              title: "${product.name}"
+              description: "${product.description}"
+              slug: "${product.name.toLowerCase().replace(/\s+/g, '-')}"
+              price: ${product.price}
+              currency: "${product.currency}"
+              variants: [{
+                title: "Default"
+                options: [{
+                  title: "Color"
+                  value: "${product.color}"
+                }, {
+                  title: "Size"
+                  value: "${product.size}"
+                }]
+              }]
+              media: ${JSON.stringify(product.images.map(url => ({
+                url,
+              })))}
+              meta: ${JSON.stringify(product.metadata)}
+            ) {
+              _id
+            }
+          }
+        `,
+      }),
+    });
   }
 }
 
-// Seed Medusa with data
-async function seedMedusa() {
-  console.log(`Seeding ${VENDORS.MEDUSA.name}...`);
-  
-  try {
-    // In a real implementation, this would make API calls to create products and categories
-    // For this example, we'll just simulate it
-    console.log(`Would create ${NUM_PRODUCTS} products in Medusa`);
-    
-    return { success: true, message: 'Simulated Medusa seeding complete' };
-  } catch (error) {
-    console.error(`Error seeding ${VENDORS.MEDUSA.name}:`, error);
-    return { success: false, error: error.toString() };
-  }
-}
-
-// Seed Unchained with data
-async function seedUnchained() {
-  console.log(`Seeding ${VENDORS.UNCHAINED.name}...`);
-  
-  try {
-    // In a real implementation, this would make API calls to create products and categories
-    // For this example, we'll just simulate it
-    console.log(`Would create ${NUM_PRODUCTS} products in Unchained`);
-    
-    return { success: true, message: 'Simulated Unchained seeding complete' };
-  } catch (error) {
-    console.error(`Error seeding ${VENDORS.UNCHAINED.name}:`, error);
-    return { success: false, error: error.toString() };
-  }
-}
-
-// Save product and category data to files
-async function saveTestData(categories, products) {
-  try {
-    const categoriesPath = join(__dirname, 'test-categories.json');
-    const productsPath = join(__dirname, 'test-products.json');
-    
-    await writeFile(categoriesPath, JSON.stringify(categories, null, 2));
-    console.log(`Categories saved to ${categoriesPath}`);
-    
-    await writeFile(productsPath, JSON.stringify(products, null, 2));
-    console.log(`Products saved to ${productsPath}`);
-  } catch (error) {
-    console.error('Error saving test data:', error);
-  }
-}
-
-// Helper to verify servers are running
-async function verifyServers() {
-  console.log('Verifying servers are running...');
-  
-  for (const [key, vendor] of Object.entries(VENDORS)) {
+// Helper function to authenticate with each platform
+async function authenticatePlatforms() {
+  for (const [name, vendor] of Object.entries(vendors)) {
     try {
-      console.log(`Checking ${vendor.name} at ${vendor.baseUrl}...`);
-      const response = await fetch(vendor.baseUrl, { method: 'GET' });
-      console.log(`${vendor.name} server status: ${response.status}`);
+      switch (name) {
+        case 'vendure':
+          const vendureLogin = await fetch(`${vendor.baseUrl}${vendor.adminApi}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: 'superadmin',
+              password: 'superadmin123',
+            }),
+          });
+          const vendureToken = await vendureLogin.json();
+          vendor.auth.admin = vendureToken.token;
+          break;
+
+        case 'medusa':
+          const medusaLogin = await fetch(`${vendor.baseUrl}${vendor.adminApi}/auth/token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: 'admin@medusa-test.com',
+              password: 'medusa',
+            }),
+          });
+          const medusaToken = await medusaLogin.json();
+          vendor.auth.admin = medusaToken.token;
+          break;
+
+        case 'unchained':
+          const unchainedLogin = await fetch(`${vendor.baseUrl}${vendor.adminApi}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: `
+                mutation {
+                  loginAsUser(
+                    email: "admin@unchained.local"
+                    password: "admin"
+                  ) {
+                    token
+                  }
+                }
+              `,
+            }),
+          });
+          const unchainedToken = await unchainedLogin.json();
+          vendor.auth.admin = unchainedToken.data.loginAsUser.token;
+          break;
+      }
     } catch (error) {
-      console.error(`Error connecting to ${vendor.name} server:`, error.message);
-      console.log(`Please make sure ${vendor.name} is running at ${vendor.baseUrl}`);
+      console.error(`Error authenticating with ${name}:`, error);
     }
   }
 }
 
-// Main function to seed all platforms
-async function seedAll() {
-  console.log('Starting e-commerce platform seeding...');
+// Helper function to verify servers are running
+async function verifyServers() {
+  for (const [name, vendor] of Object.entries(vendors)) {
+    try {
+      console.log(`Checking ${name} at ${vendor.baseUrl}...`);
+      const response = await fetch(vendor.baseUrl);
+      console.log(`${name} server status: ${response.status}`);
+    } catch (error) {
+      console.error(`Error checking ${name}:`, error);
+    }
+  }
+}
+
+// Main function to seed data
+async function seedData() {
+  console.log('Starting data seeding...');
   
-  // First verify servers are running
   await verifyServers();
-  
-  // Generate category structure
-  const categories = createCategoryStructure();
-  console.log(`Created ${categories.length} root categories with ${categories.length * SUB_CATEGORIES_PER_CATEGORY} subcategories and ${categories.length * SUB_CATEGORIES_PER_CATEGORY * SUB_SUB_CATEGORIES_PER_SUB_CATEGORY} sub-subcategories`);
-  
-  // Generate products
-  const products = distributeProducts(categories);
-  console.log(`Created ${products.length} products distributed across categories`);
-  
-  // Save test data to files
-  await saveTestData(categories, products);
-  
+  await authenticatePlatforms();
+
+  // Generate test data
+  console.log('Generating test data...');
+  const products = Array(NUM_PRODUCTS).fill(null).map(createRandomProduct);
+  const categories = buildCategoryStructure();
+  const distribution = distributeProducts(products, categories);
+
+  // Save test data for reference
+  writeFileSync('test-data.json', JSON.stringify({
+    products,
+    categories,
+    distribution,
+  }, null, 2));
+
   // Seed each platform
-  const results = {
-    vendure: await seedVendure(),
-    medusa: await seedMedusa(),
-    unchained: await seedUnchained()
-  };
-  
-  // Print results
-  console.log('\n--- Seeding Results ---\n');
-  for (const [platform, result] of Object.entries(results)) {
-    if (result.success) {
-      console.log(`${platform}: SUCCESS - ${result.message}`);
-    } else {
-      console.log(`${platform}: FAILED - ${result.error}`);
-    }
-  }
-  
-  console.log('\nSeeding completed!');
+  console.log('\nSeeding Vendure...');
+  await seedVendure(products, categories);
+
+  console.log('\nSeeding Medusa...');
+  await seedMedusa(products, categories);
+
+  console.log('\nSeeding Unchained...');
+  await seedUnchained(products, categories);
+
+  console.log('\nData seeding completed!');
 }
 
-// Run the seeder
-seedAll().catch(error => {
-  console.error('Seeding error:', error);
-  process.exit(1);
-}); 
+seedData().catch(console.error); 

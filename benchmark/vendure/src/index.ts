@@ -1,7 +1,10 @@
-import { bootstrap, JobQueueService } from '@vendure/core';
+import { bootstrap } from '@vendure/core';
+import { JobQueueService } from '@vendure/core';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { EmailPlugin } from '@vendure/email-plugin';
+import { DefaultSearchPlugin } from '@vendure/search-plugin';
+import { DefaultJobQueuePlugin } from '@vendure/job-queue-plugin';
 import { join } from 'path';
 import { ConnectionOptions } from 'typeorm';
 import { VendureConfig } from '@vendure/core';
@@ -17,46 +20,44 @@ const config: VendureConfig = {
     port: PORT,
     adminApiPath: 'admin-api',
     shopApiPath: 'shop-api',
-    adminApiPlayground: {
-      settings: { 'request.credentials': 'include' },
-    },
-    adminApiDebug: true,
-    shopApiPlayground: {
-      settings: { 'request.credentials': 'include' },
-    },
-    shopApiDebug: true,
+    adminApiPlayground: true,
+    shopApiPlayground: true,
   },
   authOptions: {
-    tokenMethod: ['bearer', 'cookie'],
+    tokenMethod: 'bearer',
     superadminCredentials: {
-      identifier: 'admin',
-      password: 'admin',
-    },
-    cookieOptions: {
-      secret: 'your-secret',
+      identifier: 'superadmin',
+      password: 'superadmin123',
     },
   },
   dbConnectionOptions: {
     type: 'postgres',
-    host: process.env.DB_HOST || 'postgres',
-    port: 5432,
-    username: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'vendure',
     synchronize: true,
+    logging: false,
+    database: process.env.POSTGRES_DB || 'vendure',
+    host: process.env.POSTGRES_HOST || 'postgres',
+    port: parseInt(process.env.POSTGRES_PORT || '5432'),
+    username: process.env.POSTGRES_USER || 'postgres',
+    password: process.env.POSTGRES_PASSWORD || 'postgres',
   },
   paymentOptions: {
     paymentMethodHandlers: [
       {
-        code: 'invoice-payment',
-        description: [{ languageCode: 'en', value: 'Pay by invoice' }],
+        code: 'invoice',
+        name: 'Invoice Payment',
+        description: 'Pay by invoice',
         args: {},
-        createPayment: (order, args, metadata) => {
+        createPayment: async (ctx, order, amount, args) => {
           return {
-            amount: order.total,
-            state: 'Settled',
-            transactionId: '12345',
-            metadata: metadata,
+            amount,
+            state: 'Authorized',
+            metadata: {},
+          };
+        },
+        settlePayment: async (ctx, order, payment) => {
+          return {
+            success: true,
+            metadata: {},
           };
         },
       },
@@ -66,12 +67,11 @@ const config: VendureConfig = {
     shippingCalculators: [
       {
         code: 'standard-shipping',
-        description: [{ languageCode: 'en', value: 'Standard Shipping' }],
-        args: {},
-        calculate: (order, args) => {
+        name: 'Standard Shipping',
+        description: 'Standard shipping method',
+        calculate: async (ctx, order, args) => {
           return {
-            price: 500,
-            priceWithTax: 500,
+            price: 1000,
             metadata: {},
           };
         },
@@ -81,26 +81,8 @@ const config: VendureConfig = {
   plugins: [
     AssetServerPlugin.init({
       route: 'assets',
-      assetUploadDir: join(__dirname, '../static/assets'),
-      storageStrategyFactory: () => {
-        return {
-          toAbsoluteUrl: (request, identifier) => {
-            return `${request.protocol}://${request.get('host')}/assets/${identifier}`;
-          },
-          writeFileFromBuffer: async (file) => {
-            // This is a placeholder - in a real implementation we would write the file to disk
-            return `${file.filename}-${Date.now()}`;
-          },
-          readFileToBuffer: async (identifier) => {
-            // This is a placeholder - in a real implementation we would read the file from disk
-            return Buffer.from('placeholder');
-          },
-          deleteFile: async (identifier) => {
-            // This is a placeholder - in a real implementation we would delete the file from disk
-            return true;
-          },
-        };
-      },
+      assetUploadDir: '/tmp/vendure/assets',
+      port: PORT,
     }),
     AdminUiPlugin.init({
       route: 'admin',
@@ -108,16 +90,25 @@ const config: VendureConfig = {
     }),
     EmailPlugin.init({
       devMode: true,
-      route: 'mailbox',
-      handlers: [],
-      templatePath: join(__dirname, '../static/email-templates'),
-      outputPath: join(__dirname, '../static/email-templates/output'),
-      globalTemplateVars: {
-        fromAddress: '"example" <noreply@example.com>',
-        verifyEmailAddressUrl: 'https://example.com/verify',
-        passwordResetUrl: 'https://example.com/reset-password',
-        changeEmailAddressUrl: 'https://example.com/verify-email-address-change'
+      route: 'email',
+      handlers: {
+        orderConfirmation: {
+          templateFile: 'order-confirmation.hbs',
+          subject: 'Order confirmation for {{ order.code }}',
+        },
       },
+      transport: {
+        type: 'smtp',
+        host: 'mailcrab',
+        port: 1025,
+      },
+    }),
+    DefaultSearchPlugin.init({
+      bufferUpdates: false,
+      indexPrefix: 'vendure',
+    }),
+    DefaultJobQueuePlugin.init({
+      useDatabaseForBuffer: true,
     }),
   ],
 };

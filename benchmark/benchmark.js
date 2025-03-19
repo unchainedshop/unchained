@@ -5,481 +5,232 @@
 
 import fetch from 'node-fetch';
 import autocannon from 'autocannon';
-import { promisify } from 'util';
-import { writeFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { writeFileSync } from 'fs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Configuration
-const VENDORS = {
-  VENDURE: {
-    name: 'Vendure',
+// Configuration for each vendor
+const vendors = {
+  vendure: {
     baseUrl: 'http://localhost:3001',
-    productEndpoint: '/shop-api',
-    categoryEndpoint: '/shop-api',
-    checkoutEndpoint: '/shop-api'
+    shopApi: '/shop-api',
+    adminApi: '/admin-api',
+    auth: {
+      shop: null, // Will be set after login
+      admin: null, // Will be set after login
+    },
   },
-  MEDUSA: {
-    name: 'Medusa',
+  medusa: {
     baseUrl: 'http://localhost:3002',
-    productEndpoint: '/store/products',
-    categoryEndpoint: '/store/product-categories', 
-    checkoutEndpoint: '/store/carts'
+    shopApi: '/store',
+    adminApi: '/admin',
+    auth: {
+      shop: null,
+      admin: null,
+    },
   },
-  UNCHAINED: {
-    name: 'Unchained',
+  unchained: {
     baseUrl: 'http://localhost:3003',
-    productEndpoint: '/graphql',
-    categoryEndpoint: '/graphql',
-    checkoutEndpoint: '/graphql'
-  }
+    shopApi: '/graphql',
+    adminApi: '/graphql',
+    auth: {
+      shop: null,
+      admin: null,
+    },
+  },
 };
 
 // Test parameters
-const DURATION = 30; // seconds
+const TEST_DURATION = 30; // seconds
 const CONNECTIONS = 10;
 const PIPELINING = 1;
 
-// Helper to run autocannon as a promise
-const runAutocannon = promisify((opts, cb) => {
-  autocannon(opts, (err, result) => {
-    if (err) {
-      cb(err);
-    } else {
-      cb(null, result);
-    }
-  });
-});
-
-// Function to test product listing performance
-async function testProductListing(vendor) {
-  console.log(`Testing product listing for ${vendor.name}...`);
-  
-  let endpoint, payload;
-  
-  // Prepare request based on vendor
-  if (vendor.name === 'Vendure') {
-    endpoint = `${vendor.baseUrl}${vendor.productEndpoint}`;
-    payload = {
-      query: `
-        query GetProducts {
-          products(options: { take: 20 }) {
-            items {
-              id
-              name
-              description
-              variants {
-                id
-                name
-                price
-              }
-            }
-            totalItems
-          }
-        }
-      `
-    };
-  } else if (vendor.name === 'Medusa') {
-    endpoint = `${vendor.baseUrl}${vendor.productEndpoint}?limit=20`;
-    payload = null; // GET request
-  } else if (vendor.name === 'Unchained') {
-    endpoint = `${vendor.baseUrl}${vendor.productEndpoint}`;
-    payload = {
-      query: `
-        query {
-          products(limit: 20) {
-            _id
-            texts {
-              title
-              subtitle
-              description
-            }
-            catalogPrice {
-              amount
-              currency
-            }
-          }
-        }
-      `
-    };
-  }
-
-  // Run benchmark
-  try {
-    const result = await runAutocannon({
-      url: endpoint,
-      method: payload ? 'POST' : 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: payload ? JSON.stringify(payload) : undefined,
-      duration: DURATION,
-      connections: CONNECTIONS,
-      pipelining: PIPELINING
-    });
-    
-    return {
-      vendor: vendor.name,
-      operation: 'Product Listing',
-      result
-    };
-  } catch (error) {
-    console.error(`Error testing ${vendor.name} product listing:`, error);
-    return {
-      vendor: vendor.name,
-      operation: 'Product Listing',
-      error: error.toString()
-    };
-  }
-}
-
-// Function to test category browsing performance
-async function testCategoryBrowsing(vendor) {
-  console.log(`Testing category browsing for ${vendor.name}...`);
-  
-  let endpoint, payload;
-  
-  // Prepare request based on vendor
-  if (vendor.name === 'Vendure') {
-    endpoint = `${vendor.baseUrl}${vendor.categoryEndpoint}`;
-    payload = {
-      query: `
-        query GetCategories {
-          collections {
-            items {
-              id
-              name
-              children {
-                id
-                name
-              }
-            }
-            totalItems
-          }
-        }
-      `
-    };
-  } else if (vendor.name === 'Medusa') {
-    endpoint = `${vendor.baseUrl}${vendor.categoryEndpoint}`;
-    payload = null; // GET request
-  } else if (vendor.name === 'Unchained') {
-    endpoint = `${vendor.baseUrl}${vendor.categoryEndpoint}`;
-    payload = {
-      query: `
-        query {
-          categories {
-            _id
-            texts {
-              title
-            }
-            children {
-              _id
-              texts {
-                title
-              }
-            }
-          }
-        }
-      `
-    };
-  }
-
-  // Run benchmark
-  try {
-    const result = await runAutocannon({
-      url: endpoint,
-      method: payload ? 'POST' : 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: payload ? JSON.stringify(payload) : undefined,
-      duration: DURATION,
-      connections: CONNECTIONS,
-      pipelining: PIPELINING
-    });
-    
-    return {
-      vendor: vendor.name,
-      operation: 'Category Browsing',
-      result
-    };
-  } catch (error) {
-    console.error(`Error testing ${vendor.name} category browsing:`, error);
-    return {
-      vendor: vendor.name,
-      operation: 'Category Browsing',
-      error: error.toString()
-    };
-  }
-}
-
-// Function to test faceted search performance
-async function testFacetedSearch(vendor) {
-  console.log(`Testing faceted search for ${vendor.name}...`);
-  
-  let endpoint, payload;
-  
-  // Prepare request based on vendor
-  if (vendor.name === 'Vendure') {
-    endpoint = `${vendor.baseUrl}${vendor.productEndpoint}`;
-    payload = {
-      query: `
-        query FilterProducts {
-          search(input: {
-            term: "",
-            facetValueFilters: [
-              { facetValueId: "1" }, # Assuming facetValueId 1 is for color=red
-              { facetValueId: "2" }  # Assuming facetValueId 2 is for size=5
-            ]
-          }) {
-            items {
-              productName
-              productVariantId
-              price {
-                value
-                currencyCode
-              }
-            }
-            totalItems
-            facetValues {
-              count
-              facetValue {
-                id
-                name
-                facet {
-                  name
-                }
-              }
-            }
-          }
-        }
-      `
-    };
-  } else if (vendor.name === 'Medusa') {
-    endpoint = `${vendor.baseUrl}${vendor.productEndpoint}?color=red&size=5`;
-    payload = null; // GET request
-  } else if (vendor.name === 'Unchained') {
-    endpoint = `${vendor.baseUrl}${vendor.productEndpoint}`;
-    payload = {
-      query: `
-        query {
-          products(
-            filter: {
-              color: "red",
-              size: 5
-            }
-          ) {
-            _id
-            texts {
-              title
-            }
-            catalogPrice {
-              amount
-              currency
-            }
-          }
-        }
-      `
-    };
-  }
-
-  // Run benchmark
-  try {
-    const result = await runAutocannon({
-      url: endpoint,
-      method: payload ? 'POST' : 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: payload ? JSON.stringify(payload) : undefined,
-      duration: DURATION,
-      connections: CONNECTIONS,
-      pipelining: PIPELINING
-    });
-    
-    return {
-      vendor: vendor.name,
-      operation: 'Faceted Search',
-      result
-    };
-  } catch (error) {
-    console.error(`Error testing ${vendor.name} faceted search:`, error);
-    return {
-      vendor: vendor.name,
-      operation: 'Faceted Search',
-      error: error.toString()
-    };
-  }
-}
-
-// Function to test checkout performance
-async function testCheckout(vendor) {
-  console.log(`Testing checkout for ${vendor.name}...`);
-  
-  let endpoint, payload;
-  
-  // Prepare request based on vendor
-  if (vendor.name === 'Vendure') {
-    endpoint = `${vendor.baseUrl}${vendor.checkoutEndpoint}`;
-    payload = {
-      query: `
-        mutation CreateOrder {
-          addItemToOrder(productVariantId: "1", quantity: 1) {
-            code
-            state
-            total
-          }
-          setOrderShippingAddress(input: {
-            fullName: "Test User",
-            streetLine1: "123 Test St",
-            city: "Test City",
-            postalCode: "12345",
-            countryCode: "US"
-          }) {
-            code
-          }
-          setOrderBillingAddress(input: {
-            fullName: "Test User",
-            streetLine1: "123 Test St",
-            city: "Test City",
-            postalCode: "12345",
-            countryCode: "US"
-          }) {
-            code
-          }
-          setOrderCustomerDetails(input: {
-            emailAddress: "test@example.com",
-            firstName: "Test",
-            lastName: "User"
-          }) {
-            code
-          }
-          transitionOrderToState(state: "ArrangingPayment") {
-            code
-            state
-          }
-          addPaymentToOrder(input: {
-            method: "invoice",
-            metadata: {}
-          }) {
-            code
-            state
-            total
-          }
-        }
-      `
-    };
-  } else if (vendor.name === 'Medusa') {
-    // For Medusa, we would need multiple requests for a checkout flow
-    // Simplified for benchmarking purposes
-    endpoint = `${vendor.baseUrl}${vendor.checkoutEndpoint}`;
-    payload = {
-      items: [{ variant_id: "1", quantity: 1 }],
-      email: "test@example.com",
-      shipping_address: {
-        first_name: "Test",
-        last_name: "User",
-        address_1: "123 Test St",
-        city: "Test City",
-        postal_code: "12345",
-        country_code: "us"
-      },
-      billing_address: {
-        first_name: "Test",
-        last_name: "User",
-        address_1: "123 Test St",
-        city: "Test City",
-        postal_code: "12345",
-        country_code: "us"
-      }
-    };
-  } else if (vendor.name === 'Unchained') {
-    endpoint = `${vendor.baseUrl}${vendor.checkoutEndpoint}`;
-    payload = {
-      query: `
-        mutation {
-          createOrder(
-            items: [{ productId: "1", quantity: 1 }]
-            contact: {
-              emailAddress: "test@example.com"
-            }
-            billingAddress: {
-              firstName: "Test"
-              lastName: "User"
-              addressLine: "123 Test St"
-              postalCode: "12345"
-              city: "Test City"
-              countryCode: "US"
-            }
-            paymentMethod: "INVOICE"
-          ) {
-            _id
-            status
-            total {
-              amount
-              currency
-            }
-          }
-        }
-      `
-    };
-  }
-
-  // Run benchmark
-  try {
-    const result = await runAutocannon({
-      url: endpoint,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload),
-      duration: DURATION,
-      connections: CONNECTIONS,
-      pipelining: PIPELINING
-    });
-    
-    return {
-      vendor: vendor.name,
-      operation: 'Checkout',
-      result
-    };
-  } catch (error) {
-    console.error(`Error testing ${vendor.name} checkout:`, error);
-    return {
-      vendor: vendor.name,
-      operation: 'Checkout',
-      error: error.toString()
-    };
-  }
-}
-
-// Helper for saving results
-async function saveResults(results) {
-  try {
-    const outputPath = join(__dirname, 'benchmark-results.json');
-    await writeFile(outputPath, JSON.stringify(results, null, 2));
-    console.log(`Results saved to ${outputPath}`);
-  } catch (error) {
-    console.error('Error saving results:', error);
-  }
-}
-
-// Helper to verify servers are running
-async function verifyServers() {
-  console.log('Verifying servers are running...');
-  
-  for (const [key, vendor] of Object.entries(VENDORS)) {
+// Helper function to authenticate with each platform
+async function authenticatePlatforms() {
+  for (const [name, vendor] of Object.entries(vendors)) {
     try {
-      console.log(`Checking ${vendor.name} at ${vendor.baseUrl}...`);
-      const response = await fetch(vendor.baseUrl, { method: 'GET' });
-      console.log(`${vendor.name} server status: ${response.status}`);
+      switch (name) {
+        case 'vendure':
+          // Login to Vendure admin
+          const vendureAdminLogin = await fetch(`${vendor.baseUrl}${vendor.adminApi}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: 'superadmin',
+              password: 'superadmin123',
+            }),
+          });
+          const vendureAdminToken = await vendureAdminLogin.json();
+          vendor.auth.admin = vendureAdminToken.token;
+
+          // Login to Vendure shop
+          const vendureShopLogin = await fetch(`${vendor.baseUrl}${vendor.shopApi}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: 'test@example.com',
+              password: 'test123',
+            }),
+          });
+          const vendureShopToken = await vendureShopLogin.json();
+          vendor.auth.shop = vendureShopToken.token;
+          break;
+
+        case 'medusa':
+          // Login to Medusa admin
+          const medusaAdminLogin = await fetch(`${vendor.baseUrl}${vendor.adminApi}/auth/token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: 'admin@medusa-test.com',
+              password: 'medusa',
+            }),
+          });
+          const medusaAdminToken = await medusaAdminLogin.json();
+          vendor.auth.admin = medusaAdminToken.token;
+
+          // Login to Medusa store
+          const medusaShopLogin = await fetch(`${vendor.baseUrl}${vendor.shopApi}/auth/token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: 'customer@example.com',
+              password: 'medusa',
+            }),
+          });
+          const medusaShopToken = await medusaShopLogin.json();
+          vendor.auth.shop = medusaShopToken.token;
+          break;
+
+        case 'unchained':
+          // Login to Unchained admin
+          const unchainedAdminLogin = await fetch(`${vendor.baseUrl}${vendor.adminApi}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: `
+                mutation {
+                  loginAsUser(
+                    email: "admin@unchained.local"
+                    password: "admin"
+                  ) {
+                    token
+                  }
+                }
+              `,
+            }),
+          });
+          const unchainedAdminToken = await unchainedAdminLogin.json();
+          vendor.auth.admin = unchainedAdminToken.data.loginAsUser.token;
+
+          // Login to Unchained shop
+          const unchainedShopLogin = await fetch(`${vendor.baseUrl}${vendor.shopApi}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: `
+                mutation {
+                  loginAsUser(
+                    email: "user@unchained.local"
+                    password: "user"
+                  ) {
+                    token
+                  }
+                }
+              `,
+            }),
+          });
+          const unchainedShopToken = await unchainedShopLogin.json();
+          vendor.auth.shop = unchainedShopToken.data.loginAsUser.token;
+          break;
+      }
     } catch (error) {
-      console.error(`Error connecting to ${vendor.name} server:`, error.message);
-      console.log(`Please make sure ${vendor.name} is running at ${vendor.baseUrl}`);
+      console.error(`Error authenticating with ${name}:`, error);
+    }
+  }
+}
+
+// Test functions for each operation
+async function testProductListing(vendor) {
+  const headers = {
+    'Authorization': `Bearer ${vendor.auth.shop}`,
+    'Content-Type': 'application/json',
+  };
+
+  const result = await autocannon({
+    url: `${vendor.baseUrl}${vendor.shopApi}/products`,
+    connections: CONNECTIONS,
+    duration: TEST_DURATION,
+    pipelining: PIPELINING,
+    headers,
+  });
+
+  return result;
+}
+
+async function testCategoryBrowsing(vendor) {
+  const headers = {
+    'Authorization': `Bearer ${vendor.auth.shop}`,
+    'Content-Type': 'application/json',
+  };
+
+  const result = await autocannon({
+    url: `${vendor.baseUrl}${vendor.shopApi}/collections`,
+    connections: CONNECTIONS,
+    duration: TEST_DURATION,
+    pipelining: PIPELINING,
+    headers,
+  });
+
+  return result;
+}
+
+async function testFacetedSearch(vendor) {
+  const headers = {
+    'Authorization': `Bearer ${vendor.auth.shop}`,
+    'Content-Type': 'application/json',
+  };
+
+  const result = await autocannon({
+    url: `${vendor.baseUrl}${vendor.shopApi}/products?filter=color:red`,
+    connections: CONNECTIONS,
+    duration: TEST_DURATION,
+    pipelining: PIPELINING,
+    headers,
+  });
+
+  return result;
+}
+
+async function testCheckout(vendor) {
+  const headers = {
+    'Authorization': `Bearer ${vendor.auth.shop}`,
+    'Content-Type': 'application/json',
+  };
+
+  const result = await autocannon({
+    url: `${vendor.baseUrl}${vendor.shopApi}/checkout`,
+    connections: CONNECTIONS,
+    duration: TEST_DURATION,
+    pipelining: PIPELINING,
+    headers,
+  });
+
+  return result;
+}
+
+// Helper function to save results
+function saveResults(results) {
+  writeFileSync('benchmark-results.json', JSON.stringify(results, null, 2));
+}
+
+// Helper function to verify servers are running
+async function verifyServers() {
+  for (const [name, vendor] of Object.entries(vendors)) {
+    try {
+      console.log(`Checking ${name} at ${vendor.baseUrl}...`);
+      const response = await fetch(vendor.baseUrl);
+      console.log(`${name} server status: ${response.status}`);
+    } catch (error) {
+      console.error(`Error checking ${name}:`, error);
     }
   }
 }
@@ -488,49 +239,58 @@ async function verifyServers() {
 async function runBenchmarks() {
   console.log('Starting e-commerce platform benchmark...');
   
-  // First verify servers are running
   await verifyServers();
-  
+  await authenticatePlatforms();
+
   const results = [];
-  
-  // Run tests for each vendor
-  for (const [key, vendor] of Object.entries(VENDORS)) {
-    console.log(`\n--- Testing ${vendor.name} ---\n`);
-    
-    // Test product listing
-    results.push(await testProductListing(vendor));
-    
-    // Test category browsing
-    results.push(await testCategoryBrowsing(vendor));
-    
-    // Test faceted search
-    results.push(await testFacetedSearch(vendor));
-    
-    // Test checkout
-    results.push(await testCheckout(vendor));
+
+  for (const [name, vendor] of Object.entries(vendors)) {
+    console.log(`\n--- Testing ${name} ---\n`);
+
+    console.log(`Testing product listing for ${name}...`);
+    const productListingResult = await testProductListing(vendor);
+    results.push({
+      vendor: name,
+      operation: 'Product Listing',
+      result: productListingResult,
+    });
+
+    console.log(`Testing category browsing for ${name}...`);
+    const categoryBrowsingResult = await testCategoryBrowsing(vendor);
+    results.push({
+      vendor: name,
+      operation: 'Category Browsing',
+      result: categoryBrowsingResult,
+    });
+
+    console.log(`Testing faceted search for ${name}...`);
+    const facetedSearchResult = await testFacetedSearch(vendor);
+    results.push({
+      vendor: name,
+      operation: 'Faceted Search',
+      result: facetedSearchResult,
+    });
+
+    console.log(`Testing checkout for ${name}...`);
+    const checkoutResult = await testCheckout(vendor);
+    results.push({
+      vendor: name,
+      operation: 'Checkout',
+      result: checkoutResult,
+    });
   }
-  
-  // Save and print results
-  await saveResults(results);
-  
-  // Print a summary
+
+  saveResults(results);
+
   console.log('\n--- Benchmark Summary ---\n');
   for (const result of results) {
-    if (result.error) {
-      console.log(`${result.vendor} - ${result.operation}: ERROR - ${result.error}`);
-    } else {
-      console.log(`${result.vendor} - ${result.operation}:`);
-      console.log(`  Requests/s: ${result.result.requests.average}`);
-      console.log(`  Latency: ${result.result.latency.average} ms`);
-      console.log(`  Throughput: ${Math.round(result.result.throughput.average / 1024)} KB/s`);
-    }
+    console.log(`${result.vendor} - ${result.operation}:`);
+    console.log(`  Requests/s: ${result.result.requests.average.toFixed(2)}`);
+    console.log(`  Latency: ${result.result.latency.average.toFixed(2)} ms`);
+    console.log(`  Throughput: ${(result.result.throughput.average / 1024).toFixed(2)} KB/s`);
   }
-  
+
   console.log('\nBenchmark completed!');
 }
 
-// Run the benchmarks
-runBenchmarks().catch(error => {
-  console.error('Benchmark error:', error);
-  process.exit(1);
-}); 
+runBenchmarks().catch(console.error); 
