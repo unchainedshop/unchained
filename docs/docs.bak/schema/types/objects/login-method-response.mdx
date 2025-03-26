@@ -1,0 +1,79 @@
+---
+pagination_next: null
+pagination_prev: null
+id: login-method-response
+title: LoginMethodResponse
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+Type returned when the user logs in
+
+
+```graphql
+type LoginMethodResponse {
+  _id: String!
+  tokenExpires: DateTimeISO!
+  user: User
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>LoginMethodResponse.<b>_id</b></code>](#)<Bullet />[`String!`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+Session ID
+
+
+#### [<code style={{ fontWeight: 'normal' }}>LoginMethodResponse.<b>tokenExpires</b></code>](#)<Bullet />[`DateTimeISO!`](/schema/types/scalars/date-time-iso.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+Expiration date for the token
+
+
+#### [<code style={{ fontWeight: 'normal' }}>LoginMethodResponse.<b>user</b></code>](#)<Bullet />[`User`](/schema/types/objects/user.mdx) <Badge class="badge badge--secondary" text="object"/> 
+The logged in user
+
+
+
+
+
+
+### Returned By
+
+[`createUser`](/schema/operations/mutations/create-user.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`impersonate`](/schema/operations/mutations/impersonate.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`loginAsGuest`](/schema/operations/mutations/login-as-guest.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`loginWithPassword`](/schema/operations/mutations/login-with-password.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`loginWithWebAuthn`](/schema/operations/mutations/login-with-web-authn.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`resetPassword`](/schema/operations/mutations/reset-password.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`stopImpersonation`](/schema/operations/mutations/stop-impersonation.mdx)  <Badge class="badge badge--secondary" text="mutation"/><Bullet />[`verifyEmail`](/schema/operations/mutations/verify-email.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
