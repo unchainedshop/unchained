@@ -23,10 +23,11 @@ export interface FilterAdapterActions {
     params: {
       assortmentIds: Array<string>;
     },
-    options?: {
+    options: {
       filterSelector: mongodb.Filter<Filter>;
       assortmentSelector: mongodb.Filter<Assortment>;
       sortStage: mongodb.FindOptions['sort'];
+      locale: Intl.Locale;
     },
   ) => Promise<Array<string>>;
 
@@ -34,10 +35,11 @@ export interface FilterAdapterActions {
     params: {
       productIds: Array<string>;
     },
-    options?: {
+    options: {
       filterSelector: mongodb.Filter<Filter>;
       productSelector: mongodb.Filter<Product>;
       sortStage: mongodb.FindOptions['sort'];
+      locale: Intl.Locale;
     },
   ) => Promise<Array<string>>;
 

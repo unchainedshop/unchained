@@ -22,8 +22,11 @@ export const parseQueryArray = (query: SearchFilterQuery): Record<string, Array<
   );
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
-  actions: (filterContext: FilterContext, unchainedAPI) => Promise<FilterAdapterActions>;
-  invalidateProductIdCache: (filter: Filter, unchainedAPI) => Promise<void>;
+  actions: (
+    filterContext: FilterContext,
+    unchainedAPI: { modules: Modules },
+  ) => Promise<FilterAdapterActions>;
+  invalidateProductIdCache: (filter: Filter, unchainedAPI: { modules: Modules }) => Promise<void>;
   findProductIds: (
     filter: Filter,
     { value }: { value?: boolean | string },
@@ -93,17 +96,17 @@ export const FilterDirector: IFilterDirector = {
         return reducedProductIds;
       },
 
-      searchAssortments: async (params) => {
+      searchAssortments: async (params, options) => {
         return reduceAdapters<Array<string>>(async (lastSearchPromise, adapter) => {
           const assortmentIds = await lastSearchPromise;
-          return adapter.searchAssortments({ assortmentIds });
+          return adapter.searchAssortments({ assortmentIds }, options);
         }, params.assortmentIds);
       },
 
-      searchProducts: async (params) => {
+      searchProducts: async (params, options) => {
         return reduceAdapters<Array<string>>(async (lastSearchPromise, adapter) => {
           const productIds = await lastSearchPromise;
-          return adapter.searchProducts({ productIds });
+          return adapter.searchProducts({ productIds }, options);
         }, params.productIds);
       },
 

@@ -16,7 +16,7 @@ export interface SearchAssortmentConfiguration extends SearchConfiguration {
 export async function searchAssortmentsService(
   this: Modules,
   searchQuery: SearchQuery,
-  { forceLiveCollection }: { forceLiveCollection?: boolean },
+  { forceLiveCollection, locale }: { forceLiveCollection?: boolean; locale: Intl.Locale },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 
@@ -30,6 +30,7 @@ export async function searchAssortmentsService(
     assortmentSelector,
     sortStage,
     forceLiveCollection,
+    locale,
   };
 
   const assortmentIds = await searchQuery.assortmentIds;

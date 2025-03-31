@@ -16,7 +16,7 @@ export interface SearchProductConfiguration extends SearchConfiguration {
 export async function searchProductsService(
   this: Modules,
   searchQuery: SearchQuery,
-  { forceLiveCollection }: { forceLiveCollection?: boolean },
+  { forceLiveCollection, locale }: { forceLiveCollection?: boolean; locale: Intl.Locale },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 
@@ -33,6 +33,7 @@ export async function searchProductsService(
     productSelector,
     sortStage,
     forceLiveCollection,
+    locale,
   };
 
   if (searchQuery.productIds?.length === 0) {

@@ -21,6 +21,7 @@ export interface SearchConfiguration {
   filterSelector: mongodb.Filter<Filter>;
   sortStage: mongodb.FindOptions['sort'];
   forceLiveCollection: boolean;
+  locale: Intl.Locale;
 }
 
 export type FilterQuery = {

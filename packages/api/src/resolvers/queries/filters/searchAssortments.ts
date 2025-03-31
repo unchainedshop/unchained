@@ -4,7 +4,7 @@ import { log } from '@unchainedshop/logger';
 import { QueryStringRequiredError } from '../../../errors.js';
 
 export default async function searchAssortments(root: never, query: SearchQuery, context: Context) {
-  const { services, userId } = context;
+  const { services, userId, localeContext } = context;
   const forceLiveCollection = false;
 
   log(`query search assortments ${JSON.stringify(query)}`, { userId });
@@ -13,5 +13,6 @@ export default async function searchAssortments(root: never, query: SearchQuery,
 
   return services.filters.searchAssortments(query, {
     forceLiveCollection,
+    locale: localeContext,
   });
 }
