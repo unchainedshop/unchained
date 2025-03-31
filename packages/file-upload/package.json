@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/file-upload",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "main": "lib/file-upload-index.js",
   "types": "lib/file-upload-index.d.ts",
   "type": "module",
@@ -31,13 +31,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^3.1.0",
-    "@unchainedshop/utils": "^3.1.0",
-    "base-x": "^5.0.0"
+    "@unchainedshop/logger": "^3.1.6",
+    "@unchainedshop/utils": "^3.1.6",
+    "base-x": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.4",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "@types/node": "^22.13.14",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -34,22 +34,22 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "^3.1.0",
-    "@unchainedshop/core": "^3.1.0",
-    "@unchainedshop/events": "^3.1.0",
-    "@unchainedshop/file-upload": "^3.1.0",
-    "@unchainedshop/logger": "^3.1.0",
-    "@unchainedshop/mongodb": "^3.1.0",
-    "@unchainedshop/plugins": "^3.1.0",
-    "@unchainedshop/roles": "^3.1.0",
-    "@unchainedshop/utils": "^3.1.0",
+    "@unchainedshop/api": "^3.1.6",
+    "@unchainedshop/core": "^3.1.6",
+    "@unchainedshop/events": "^3.1.6",
+    "@unchainedshop/file-upload": "^3.1.6",
+    "@unchainedshop/logger": "^3.1.6",
+    "@unchainedshop/mongodb": "^3.1.6",
+    "@unchainedshop/plugins": "^3.1.6",
+    "@unchainedshop/roles": "^3.1.6",
+    "@unchainedshop/utils": "^3.1.6",
     "mustache": "^4.2.0",
     "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.13.4",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "@types/node": "^22.13.14",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }
