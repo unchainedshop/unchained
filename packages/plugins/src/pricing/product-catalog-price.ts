@@ -22,9 +22,7 @@ export const resolveCurrency = pMemoize(
   },
   {
     cache: memoizeCache,
-    cacheKey(args) {
-      return `${args[0].currency}-${args[0].country}`;
-    },
+    cacheKey: ([{ currency, country }]) => `${currency}-${country}`,
   },
 );
 

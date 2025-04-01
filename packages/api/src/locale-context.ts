@@ -67,7 +67,7 @@ export const resolveDefaultContext = pMemoize(
   },
   {
     cache: memoizeCache,
-    cacheKey: (p: any) => [p.acceptLang, p.acceptCountry].join('-'),
+    cacheKey: ([{ acceptLang, acceptCountry }]) => `${acceptLang}-${acceptCountry}`,
   },
 );
 
