@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-oidc",
   "description": "Keycloak Example",
   "private": true,
-  "version": "3.1.6",
+  "version": "3.1.7",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -36,8 +36,8 @@
     "@fastify/cookie": "^11.0.2",
     "@fastify/oauth2": "^8.1.2",
     "@fastify/session": "^11.1.0",
-    "@unchainedshop/platform": "^3.1.6",
-    "@unchainedshop/plugins": "^3.1.6",
+    "@unchainedshop/platform": "^3.1.7",
+    "@unchainedshop/plugins": "^3.1.7",
     "fastify": "^5.2.2"
   },
   "devDependencies": {
