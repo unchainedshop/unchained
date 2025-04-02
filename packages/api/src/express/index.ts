@@ -169,6 +169,7 @@ export const connect = (
         client: (db as any).client,
         dbName: db.databaseName,
         collectionName: 'sessions',
+        touchAfter: 24 * 3600 /* 24 hours */,
       }),
       name,
       saveUninitialized: false,
