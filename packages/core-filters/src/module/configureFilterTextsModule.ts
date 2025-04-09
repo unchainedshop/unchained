@@ -72,7 +72,7 @@ export const configureFilterTextsModule = ({
     }: {
       filterId: string;
       filterOptionValue?: string;
-      locale?: string;
+      locale: string;
     }): Promise<FilterText> => {
       const parsedLocale = new Intl.Locale(locale);
 

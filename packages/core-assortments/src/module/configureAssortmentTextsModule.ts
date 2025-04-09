@@ -133,7 +133,7 @@ export const configureAssortmentTextsModule = ({
       locale,
     }: {
       assortmentId: string;
-      locale?: string;
+      locale: string;
     }): Promise<AssortmentText> => {
       const parsedLocale = new Intl.Locale(locale);
 

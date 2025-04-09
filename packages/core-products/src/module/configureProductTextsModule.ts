@@ -137,9 +137,9 @@ export const configureProductTextsModule = ({
       locale,
     }: {
       productId: string;
-      locale?: string;
+      locale: string;
     }): Promise<ProductText> => {
-      const parsedLocale = new Intl.Locale(locale);
+      const parsedLocale = new Intl.Locale(locale); // FIXME!
 
       const text = await findLocalizedText<ProductText>(ProductTexts, { productId }, parsedLocale);
 

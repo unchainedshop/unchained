@@ -50,7 +50,7 @@ export const AssortmentTypes = {
     });
   },
 
-  filterAssignments: async (obj: Assortment, _, { modules }: Context) => {
+  async filterAssignments(obj: Assortment, _, { modules }: Context) {
     // TODO: Loader & move default sort to module
     return modules.assortments.filters.findFilters(
       {
