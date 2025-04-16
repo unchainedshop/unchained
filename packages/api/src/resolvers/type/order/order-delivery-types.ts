@@ -10,6 +10,7 @@ const OrderDeliveryMap = {
 
 export const OrderDelivery = {
   __resolveType: async (obj: OrderDeliveryType, { modules }: Context) => {
+    // TODO: use loader
     const provider = await modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });

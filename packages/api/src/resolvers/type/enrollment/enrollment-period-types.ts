@@ -10,6 +10,7 @@ type EnrollmentPeriodHelperTypes = {
 
 export const EnrollmentPeriod: EnrollmentPeriodHelperTypes = {
   order: async (period, _, { modules }) => {
+    // TODO: use loader
     return modules.orders.findOrder({ orderId: period.orderId });
   },
 };

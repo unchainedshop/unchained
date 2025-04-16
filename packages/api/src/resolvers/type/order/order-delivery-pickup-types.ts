@@ -17,6 +17,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
   activePickUpLocation: async (orderDelivery, _, requestContext) => {
     const { orderPickUpLocationId } = orderDelivery.context || {};
 
+    // TODO: use loader
     const provider = await requestContext.modules.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
@@ -30,6 +31,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
   },
 
   pickUpLocations: async (obj, _, context) => {
+    // TODO: use loader
     const provider = await context.modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });
@@ -50,6 +52,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
 
   discounts: async (obj, _, context) => {
     const { modules } = context;
+    // TODO: use loader
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
 
     const pricing = DeliveryPricingSheet({

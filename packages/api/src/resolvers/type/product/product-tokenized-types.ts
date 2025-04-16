@@ -47,6 +47,7 @@ export const TokenizedProduct = {
     const { modules, services } = requestContext;
     const { referenceDate } = params;
 
+    // TODO: use loader?
     const deliveryProviders = await modules.delivery.findProviders({});
 
     return services.products.simulateProductInventory({
@@ -59,6 +60,7 @@ export const TokenizedProduct = {
   async tokens(product: Product, params: never, requestContext: Context) {
     await checkAction(requestContext, actions.viewTokens, [undefined, params]);
 
+    // TODO: use loader?
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,
     });

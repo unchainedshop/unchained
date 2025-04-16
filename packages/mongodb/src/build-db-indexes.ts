@@ -1,17 +1,14 @@
-import { Collection, Document, CreateIndexesOptions, IndexDirection } from 'mongodb';
+import { Collection, Document, CreateIndexesOptions, IndexSpecification } from 'mongodb';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:mongodb');
 
-export type Indexes<T extends Document> = Array<{
-  index: { [key in keyof T]?: IndexDirection }; // TODO: Support key with object path (e.g. 'product.proxy.assignments')
+export type Indexes = Array<{
+  index: IndexSpecification;
   options?: CreateIndexesOptions;
 }>;
 
-const buildIndexes = <T>(
-  collection: Collection<T>,
-  indexes: Indexes<T>,
-): Promise<Array<false | Error>> =>
+const buildIndexes = <T>(collection: Collection<T>, indexes: Indexes): Promise<Array<false | Error>> =>
   Promise.all(
     indexes.map(async ({ index, options }) => {
       try {
@@ -26,7 +23,7 @@ const buildIndexes = <T>(
 
 export const buildDbIndexes = async <T extends Document>(
   collection: Collection<T>,
-  indexes: Indexes<T>,
+  indexes: Indexes,
 ) => {
   let success = true;
   const buildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);

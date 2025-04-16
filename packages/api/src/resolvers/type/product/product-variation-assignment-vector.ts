@@ -18,6 +18,7 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
   _id: ({ product, key, value }) => `${product._id}:${key}=${value}`,
 
   option: async (obj, _, { modules }) => {
+    // TODO: use loader?
     const productVariation = await modules.products.variations.findProductVariationByKey({
       key: obj.key,
       productId: obj.product._id,
@@ -29,6 +30,7 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
   },
 
   variation: (obj, _, { modules }) => {
+    // TODO: use loader?
     return modules.products.variations.findProductVariationByKey({
       productId: obj?.product?._id,
       key: obj?.key,

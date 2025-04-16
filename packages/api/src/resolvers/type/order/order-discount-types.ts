@@ -37,10 +37,12 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
   },
 
   order: async (obj, _, { modules }) => {
+    // TODO: use loader
     return modules.orders.findOrder({ orderId: obj.orderId });
   },
 
   total: async (obj, _, context) => {
+    // TODO: use loader
     const order = await context.modules.orders.findOrder({
       orderId: obj.orderId,
     });
@@ -48,6 +50,7 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
   },
 
   discounted: async (obj, _, context) => {
+    // TODO: use loader
     const order = await context.modules.orders.findOrder({
       orderId: obj.orderId,
     });

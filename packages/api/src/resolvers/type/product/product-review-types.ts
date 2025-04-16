@@ -17,6 +17,7 @@ export interface ProductReviewHelperTypes {
 }
 export const ProductReview: ProductReviewHelperTypes = {
   author: async (obj, _, { modules }) => {
+    // TODO: use loader
     return modules.users.findUserById(obj.authorId);
   },
 

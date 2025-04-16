@@ -15,10 +15,12 @@ export interface PaymentCredentialsHelperTypes {
 }
 export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async user(obj, _, { modules }) {
+    // TODO: use loader
     return modules.users.findUserById(obj.userId);
   },
 
   async paymentProvider(obj, _, { modules }) {
+    // TODO: use loader
     return modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
@@ -27,6 +29,7 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async isValid(obj, _, requestContext) {
     const { modules, userId } = requestContext;
 
+    // TODO: use loader
     const paymentProvider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });

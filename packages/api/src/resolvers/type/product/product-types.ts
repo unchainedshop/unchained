@@ -78,6 +78,7 @@ export const Product = {
     },
     { modules }: Context,
   ): Promise<Array<ProductReview>> {
+    // TODO: use loader?
     return modules.products.reviews.findProductReviews({
       productId: product._id,
       limit,
@@ -96,6 +97,7 @@ export const Product = {
     return modules.products.reviews.count({ ...params, productId: product._id });
   },
 
+  // TODO: slow!
   async siblings(
     product: ProductType,
     params: {

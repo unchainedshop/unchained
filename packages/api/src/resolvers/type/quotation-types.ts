@@ -17,8 +17,10 @@ type QuotationHelperTypes = {
 };
 
 export const Quotation: QuotationHelperTypes = {
+  // TODO: use loader
   country: async (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
 
+  // TODO: use loader
   currency: async (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currency }),
 
   isExpired: (obj, { referenceDate }, { modules }) =>
@@ -33,5 +35,6 @@ export const Quotation: QuotationHelperTypes = {
 
   status: (obj, _, { modules }) => modules.quotations.normalizedStatus(obj),
 
+  // TODO: use loader
   user: (obj, _, { modules }) => modules.users.findUserById(obj.userId),
 };

@@ -26,9 +26,11 @@ export const ProductCatalogPrice: ProductCatalogPriceHelperTypes = {
     return isNetPrice || false;
   },
   country: async ({ countryCode }, _, { modules }) => {
+    // TODO: use loader
     return modules.countries.findCountry({ isoCode: countryCode });
   },
   currency: async ({ currencyCode }, _, { modules }) => {
+    // TODO: use loader
     return modules.currencies.findCurrency({ isoCode: currencyCode });
   },
 };

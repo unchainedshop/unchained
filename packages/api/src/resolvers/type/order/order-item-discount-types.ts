@@ -7,6 +7,7 @@ export const OrderItemDiscount = {
   },
 
   orderDiscount: async (obj: OrderPositionDiscount, _, { modules }: Context) => {
+    // TODO: use loader
     return modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
     });

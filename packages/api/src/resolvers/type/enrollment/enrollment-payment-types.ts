@@ -10,6 +10,7 @@ type EnrollmentPaymentHelperTypes = {
 
 export const EnrollmentPayment: EnrollmentPaymentHelperTypes = {
   provider: async ({ paymentProviderId }, _, { modules }) => {
+    // TODO: use loader
     return modules.payment.paymentProviders.findProvider({
       paymentProviderId,
     });

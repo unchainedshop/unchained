@@ -11,6 +11,7 @@ import { ProductPricingSheet } from '@unchainedshop/core';
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
   const { modules } = context;
 
+  // TODO: use loader
   const order = await modules.orders.findOrder({
     orderId: orderPosition.orderId,
   });
@@ -53,12 +54,16 @@ export const OrderItem = {
     }>
   > {
     const scheduling = orderPosition.scheduling || [];
+    // TODO: use loader
     const order = await modules.orders.findOrder({ orderId: orderPosition.orderId });
     const { countryCode, userId } = order;
 
+    // TODO: use loader
     const orderDelivery = await modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
     });
+
+    // TODO: use loader
     const deliveryProvider = await modules.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
@@ -68,6 +73,7 @@ export const OrderItem = {
 
     return Promise.all(
       scheduling.map(async (schedule) => {
+        // TODO: use loader
         const warehousingProvider = await modules.warehousing.findProvider({
           warehousingProviderId: schedule.warehousingProviderId,
         });
@@ -90,6 +96,7 @@ export const OrderItem = {
   },
 
   async order(orderPosition: OrderPosition, _, { modules }: Context): Promise<Order> {
+    // TODO: use loader
     return modules.orders.findOrder({ orderId: orderPosition.orderId });
   },
 
@@ -109,6 +116,7 @@ export const OrderItem = {
 
   async quotation(orderPosition: OrderPosition, _, { modules }: Context): Promise<Quotation> {
     if (!orderPosition.quotationId) return null;
+    // TODO: use loader
     return modules.quotations.findQuotation({ quotationId: orderPosition.quotationId });
   },
 
@@ -143,6 +151,7 @@ export const OrderItem = {
     params: never,
     { modules }: Context,
   ): Promise<Array<TokenSurrogate>> {
+    // TODO: use loader?
     return modules.warehousing.findTokens({
       orderPositionId: orderPosition._id,
     });

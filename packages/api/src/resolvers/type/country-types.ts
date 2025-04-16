@@ -14,6 +14,7 @@ export interface CountryHelperTypes {
 export const Country: CountryHelperTypes = {
   defaultCurrency: async (country, _, { modules }) => {
     if (country.defaultCurrencyCode) {
+      // TODO: use loader
       return modules.currencies.findCurrency({
         isoCode: country.defaultCurrencyCode,
       });

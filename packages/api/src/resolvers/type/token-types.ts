@@ -7,11 +7,13 @@ import { WarehousingDirector } from '@unchainedshop/core';
 
 export const Token = {
   product: async (token: TokenSurrogate, params: never, { modules }: Context) => {
+    // TODO: use loader
     return modules.products.findProduct({ productId: token.productId });
   },
 
   user: async (token: TokenSurrogate, params: never, { modules }: Context) => {
     if (!token.userId) return null;
+    // TODO: use loader
     return modules.users.findUserById(token.userId);
   },
 
@@ -19,6 +21,7 @@ export const Token = {
     if (token.walletAddress && !token.userId) {
       return TokenStatus.DECENTRALIZED;
     }
+    // TODO: use loader?
     const workItems = await modules.worker.findWorkQueue({
       types: ['EXPORT_TOKEN'],
       status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
@@ -33,8 +36,10 @@ export const Token = {
     context: Context,
   ) => {
     const { modules } = context;
+    // TODO: use loader
     const product = await modules.products.findProduct({ productId: token.productId });
 
+    // TODO: use loader
     const virtualProviders = await context.modules.warehousing.findProviders({
       type: WarehousingProviderType.VIRTUAL,
     });
@@ -54,8 +59,10 @@ export const Token = {
 
   isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
     const { modules } = context;
+    // TODO: use loader
     const product = await modules.products.findProduct({ productId: token.productId });
 
+    // TODO: use loader
     const virtualProviders = await context.modules.warehousing.findProviders({
       type: WarehousingProviderType.VIRTUAL,
     });

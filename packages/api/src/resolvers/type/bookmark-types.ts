@@ -20,6 +20,7 @@ export const Bookmark: BookmarkHelperTypes = {
   },
 
   user: async (obj, _, { modules }) => {
+    // TODO: use loader
     return modules.users.findUserById(obj.userId);
   },
 };

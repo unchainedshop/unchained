@@ -32,36 +32,43 @@ export const Order = {
   },
 
   async currency(order: OrderType, _, { modules }: Context): Promise<Currency> {
+    // TODO: use loader
     return modules.currencies.findCurrency({ isoCode: order.currency });
   },
 
   async country(order: OrderType, _, { modules }: Context): Promise<Country> {
+    // TODO: use loader
     return modules.countries.findCountry({ isoCode: order.countryCode });
   },
 
   async discounts(order: OrderType, _, { modules }: Context): Promise<Array<OrderDiscount>> {
+    // TODO: use loader?
     return modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
   },
 
   async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery> {
+    // TODO: use loader
     return modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
     });
   },
 
   async enrollment(order: OrderType, _, { modules }: Context): Promise<Enrollment> {
+    // TODO: use loader
     return modules.enrollments.findEnrollment({
       orderId: order._id,
     });
   },
 
   async items(order: OrderType, _, { modules }: Context): Promise<Array<OrderPosition>> {
+    // TODO: use loader?
     return modules.orders.positions.findOrderPositions({
       orderId: order._id,
     });
   },
 
   async payment(order: OrderType, _, { modules }: Context): Promise<OrderPayment> {
+    // TODO: use loader
     return modules.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });
@@ -87,6 +94,7 @@ export const Order = {
   },
 
   async user(order: OrderType, _, { modules }: Context): Promise<User> {
+    // TODO: use loader
     return modules.users.findUserById(order.userId);
   },
 };

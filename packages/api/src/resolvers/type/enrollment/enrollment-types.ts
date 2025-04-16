@@ -27,9 +27,12 @@ export const Enrollment: EnrollmentHelperTypes = {
     };
   },
 
+  // TODO: use loader
   country: (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
 
+  // TODO: use loader
   currency: (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currencyCode }),
 
+  // TODO: use loader
   user: (obj, _, { modules }) => modules.users.findUserById(obj.userId),
 };

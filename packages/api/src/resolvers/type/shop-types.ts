@@ -19,9 +19,11 @@ export const Shop: ShopHelperTypes = {
   },
 
   language: async (_root, _params, { localeContext, modules }) => {
+    // TODO: use loader
     return modules.languages.findLanguage({ isoCode: localeContext.language });
   },
   country: async (_root, _params, { countryContext, modules }) => {
+    // TODO: use loader
     return modules.countries.findCountry({ isoCode: countryContext });
   },
 
