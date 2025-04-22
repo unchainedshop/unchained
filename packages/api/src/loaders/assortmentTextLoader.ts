@@ -3,7 +3,7 @@ import { AssortmentText } from '@unchainedshop/core-assortments';
 import DataLoader from 'dataloader';
 import { buildLocaleMap } from './utils.js';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(async (queries) => {
     const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 

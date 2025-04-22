@@ -2,7 +2,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { AssortmentProduct } from '@unchainedshop/core-assortments';
 import DataLoader from 'dataloader';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ assortmentId: string; productId: string }, AssortmentProduct>(async (queries) => {
     const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 

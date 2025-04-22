@@ -15,8 +15,9 @@ import productTextLoader from './productTextLoader.js';
 import productMediaTextLoader from './productMediaTextLoader.js';
 import productMediasLoader from './productMediasLoader.js';
 import fileLoader from './fileLoader.js';
+import userLoader from './userLoader.js';
 
-const loaders = async (unchainedAPI: UnchainedCore) => {
+const loaders = (unchainedAPI: UnchainedCore) => {
   return {
     assortmentLoader: assortmentLoader(unchainedAPI),
     assortmentTextLoader: assortmentTextLoader(unchainedAPI),
@@ -37,6 +38,8 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
     productMediasLoader: productMediasLoader(unchainedAPI),
 
     fileLoader: fileLoader(unchainedAPI),
+
+    userLoader: userLoader(unchainedAPI),
   };
 };
 

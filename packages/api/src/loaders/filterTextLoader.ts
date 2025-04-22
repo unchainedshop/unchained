@@ -3,7 +3,7 @@ import DataLoader from 'dataloader';
 import { buildLocaleMap } from './utils.js';
 import { FilterText } from '@unchainedshop/core-filters';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ filterId: string; filterOptionValue?: string; locale: string }, FilterText>(
     async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];

@@ -2,7 +2,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { File } from '@unchainedshop/core-files';
 import DataLoader from 'dataloader';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ fileId: string }, File>(async (queries) => {
     const fileIds = [...new Set(queries.map((q) => q.fileId).filter(Boolean))]; // you don't need lodash, _.unique my ass
 

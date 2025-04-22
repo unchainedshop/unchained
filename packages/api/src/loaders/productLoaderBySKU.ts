@@ -2,7 +2,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { Product } from '@unchainedshop/core-products';
 import DataLoader from 'dataloader';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ sku: string }, Product>(async (queries) => {
     const skus = [...new Set(queries.map((q) => q.sku).filter(Boolean))]; // you don't need lodash, _.unique my ass
 

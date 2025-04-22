@@ -2,7 +2,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { AssortmentLink } from '@unchainedshop/core-assortments';
 import DataLoader from 'dataloader';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ parentAssortmentId: string; childAssortmentId: string }, AssortmentLink>(
     async (queries) => {
       const parentAssortmentIds = [...new Set(queries.map((q) => q.parentAssortmentId).filter(Boolean))];

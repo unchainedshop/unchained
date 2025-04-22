@@ -83,7 +83,7 @@ export const createContextResolver =
     logout,
   }) => {
     const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
-    const loaders = await instantiateLoaders(unchainedAPI);
+    const loaders = instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
     const userContext: UnchainedUserContext = { login, logout, impersonatorId };
 

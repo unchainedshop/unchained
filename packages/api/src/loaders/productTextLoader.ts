@@ -3,7 +3,7 @@ import DataLoader from 'dataloader';
 import { buildLocaleMap } from './utils.js';
 import { ProductText } from '@unchainedshop/core-products';
 
-export default async (unchainedAPI: UnchainedCore) =>
+export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ productId: string; locale: string }, ProductText>(async (queries) => {
     const productIds = [...new Set(queries.map((q) => q.productId))].filter(Boolean);
     const texts = await unchainedAPI.modules.products.texts.findTexts(
