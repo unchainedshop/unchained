@@ -237,14 +237,12 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
         locale,
       }: {
         productMediaId: string;
-        locale: string;
+        locale: Intl.Locale;
       }): Promise<ProductMediaText> => {
-        const parsedLocale = new Intl.Locale(locale);
-
         const text = await findLocalizedText<ProductMediaText>(
           ProductMediaTexts,
           { productMediaId },
-          parsedLocale,
+          locale,
         );
 
         return text;

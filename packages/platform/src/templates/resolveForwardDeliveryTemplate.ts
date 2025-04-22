@@ -31,7 +31,7 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
     {
       shopName: EMAIL_WEBSITE_NAME,
       shopUrl: EMAIL_WEBSITE_URL,
-      orderDetails: await transformOrderToText({ order, locale: systemLocale.baseName }, context),
+      orderDetails: await transformOrderToText({ order, locale: systemLocale }, context),
     },
     undefined,
     { escape: (t) => t },

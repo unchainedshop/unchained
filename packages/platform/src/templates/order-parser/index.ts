@@ -36,7 +36,7 @@ Total: {{summary.prices.gross}}
 `;
 
 export const transformOrderToText = async (
-  { order, locale }: { order: Order; locale: string },
+  { order, locale }: { order: Order; locale: Intl.Locale },
   context: UnchainedCore,
 ) => {
   return mustache.render(

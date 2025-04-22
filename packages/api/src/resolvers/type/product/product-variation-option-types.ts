@@ -23,9 +23,9 @@ export const ProductVariationOption: ProductVariationOptionHelperTypes = {
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
     // TODO: use loader
     return modules.products.variations.texts.findLocalizedVariationText({
-      locale: forceLocale || localeContext.baseName,
       productVariationId: obj._id,
       productVariationOptionValue: obj.productVariationOption,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : localeContext,
     });
   },
 };

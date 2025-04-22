@@ -72,17 +72,15 @@ export const configureFilterTextsModule = ({
     }: {
       filterId: string;
       filterOptionValue?: string;
-      locale: string;
+      locale: Intl.Locale;
     }): Promise<FilterText> => {
-      const parsedLocale = new Intl.Locale(locale);
-
       const text = await findLocalizedText(
         FilterTexts,
         {
           filterId,
           filterOptionValue: filterOptionValue || { $eq: null },
         },
-        parsedLocale,
+        locale,
       );
 
       return text;

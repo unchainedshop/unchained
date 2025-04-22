@@ -259,18 +259,16 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
         productVariationOptionValue,
         locale,
       }: {
-        locale: string;
+        locale: Intl.Locale;
         productVariationId: string;
         productVariationOptionValue?: string;
       }): Promise<ProductVariationText> => {
-        const parsedLocale = new Intl.Locale(locale);
-
         const selector: mongodb.Filter<ProductVariationText> = { productVariationId };
         selector.productVariationOptionValue = productVariationOptionValue ?? { $eq: null };
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,
           selector,
-          parsedLocale,
+          locale,
         );
 
         return text;

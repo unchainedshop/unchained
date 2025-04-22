@@ -7,7 +7,7 @@ type PriceFormatter = ({ amount, currency }: { amount: number; currency: string 
 
 export const getOrderPositionsData = async (
   order: Order,
-  params: { locale: string; useNetPrice?: boolean; format?: PriceFormatter },
+  params: { locale: Intl.Locale; useNetPrice?: boolean; format?: PriceFormatter },
   context: UnchainedCore,
 ) => {
   const { modules } = context;

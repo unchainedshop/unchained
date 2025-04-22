@@ -32,7 +32,7 @@ export const ProductVariation: ProductVariationHelperTypes = {
     // TODO: use loader
     return modules.products.variations.texts.findLocalizedVariationText({
       productVariationId: obj._id,
-      locale: forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : localeContext,
     });
   },
 };

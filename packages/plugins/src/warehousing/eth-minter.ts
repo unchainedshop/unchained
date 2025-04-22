@@ -119,7 +119,7 @@ const ETHMinter: IWarehousingAdapter = {
         const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
         const text = await modules.products.texts.findLocalizedText({
           productId: product._id,
-          locale: locale?.baseName || systemLocale.baseName,
+          locale: locale || systemLocale,
         });
 
         const name = `${text.title} #${chainTokenId}`;

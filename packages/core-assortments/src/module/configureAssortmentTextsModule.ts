@@ -133,16 +133,9 @@ export const configureAssortmentTextsModule = ({
       locale,
     }: {
       assortmentId: string;
-      locale: string;
+      locale: Intl.Locale;
     }): Promise<AssortmentText> => {
-      const parsedLocale = new Intl.Locale(locale);
-
-      const text = await findLocalizedText<AssortmentText>(
-        AssortmentTexts,
-        { assortmentId },
-        parsedLocale,
-      );
-
+      const text = await findLocalizedText<AssortmentText>(AssortmentTexts, { assortmentId }, locale);
       return text;
     },
 

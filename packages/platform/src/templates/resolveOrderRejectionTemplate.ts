@@ -31,7 +31,7 @@ export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId,
     {
       shopName: EMAIL_WEBSITE_NAME,
       shopUrl: EMAIL_WEBSITE_URL,
-      orderDetails: await transformOrderToText({ order, locale }, context),
+      orderDetails: await transformOrderToText({ order, locale: new Intl.Locale(locale) }, context),
     },
     undefined,
     { escape: (t) => t },
