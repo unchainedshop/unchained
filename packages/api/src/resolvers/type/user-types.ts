@@ -170,7 +170,6 @@ export const User: UserHelperTypes = {
   bookmarks: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
 
-    // TODO: use loader?
     return context.modules.bookmarks.findBookmarksByUserId(user._id);
   },
 
@@ -191,7 +190,6 @@ export const User: UserHelperTypes = {
         return service.verified ? [service.address] : [];
       }) || [];
 
-    // TODO: use loader?
     return context.modules.warehousing.findTokensForUser({
       userId: user._id,
       walletAddresses,
@@ -210,7 +208,6 @@ export const User: UserHelperTypes = {
   async enrollments(user, params, context) {
     await checkAction(context, viewUserEnrollments, [user, params]);
 
-    // TODO: use loader?
     return context.modules.enrollments.findEnrollments({
       ...(params || {}),
       userId: user._id,
@@ -237,7 +234,6 @@ export const User: UserHelperTypes = {
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);
 
-    // TODO: use loader?
     return context.modules.orders.findOrders({
       ...(params || {}),
       userId: user._id,
@@ -247,7 +243,6 @@ export const User: UserHelperTypes = {
   paymentCredentials: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
 
-    // TODO: use loader?
     return context.modules.payment.paymentCredentials.findPaymentCredentials(
       { ...params.selector, userId: user._id },
       {
@@ -270,7 +265,6 @@ export const User: UserHelperTypes = {
   quotations: async (user, params, context) => {
     await checkAction(context, viewUserQuotations, [user, params]);
 
-    // TODO: use loader?
     return context.modules.quotations.findQuotations({
       ...(params || {}),
       userId: user._id,
@@ -289,7 +283,6 @@ export const User: UserHelperTypes = {
     const { modules } = context;
     await checkAction(context, viewUserProductReviews, [user, params]);
 
-    // TODO: use loader?
     return modules.products.reviews.findProductReviews({
       ...(params || {}),
       authorId: user._id,

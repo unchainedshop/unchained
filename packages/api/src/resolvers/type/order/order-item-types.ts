@@ -151,7 +151,6 @@ export const OrderItem = {
     params: never,
     { modules }: Context,
   ): Promise<Array<TokenSurrogate>> {
-    // TODO: use loader?
     return modules.warehousing.findTokens({
       orderPositionId: orderPosition._id,
     });

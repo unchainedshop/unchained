@@ -51,7 +51,7 @@ export const Product = {
     { loaders, modules }: Context,
   ): Promise<Array<ProductMedia>> {
     if (params.offset || params.tags) {
-      // TODO: Use a loader?
+      // TODO: use loader?
       return modules.products.media.findProductMedias({
         productId: product._id,
         ...params,

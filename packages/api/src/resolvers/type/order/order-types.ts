@@ -40,7 +40,6 @@ export const Order = {
   },
 
   async discounts(order: OrderType, _, { modules }: Context): Promise<Array<OrderDiscount>> {
-    // TODO: use loader?
     return modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
   },
 
@@ -52,21 +51,18 @@ export const Order = {
   },
 
   async enrollment(order: OrderType, _, { modules }: Context): Promise<Enrollment> {
-    // TODO: use loader
     return modules.enrollments.findEnrollment({
       orderId: order._id,
     });
   },
 
   async items(order: OrderType, _, { modules }: Context): Promise<Array<OrderPosition>> {
-    // TODO: use loader?
     return modules.orders.positions.findOrderPositions({
       orderId: order._id,
     });
   },
 
   async payment(order: OrderType, _, { modules }: Context): Promise<OrderPayment> {
-    // TODO: use loader
     return modules.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });

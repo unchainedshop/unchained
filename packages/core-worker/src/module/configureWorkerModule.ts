@@ -539,7 +539,7 @@ export const configureWorkerModule = async ({
         }
         return result.value;
       } catch {
-        /* TODO: 
+        /* TODO: Conflicting deleted work problem
         If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
         we should permanently remove the conflicting deleted work 
         and retry the findOneAndUpdate call.
