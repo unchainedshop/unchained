@@ -24,12 +24,12 @@ const configureCryptopayModule = ({ db }) => {
   const mapOrderPaymentToWalletAddress = async ({
     addressId,
     contract,
-    currency,
+    currencyCode,
     orderPaymentId,
   }: {
     addressId: string;
     contract: string;
-    currency: string;
+    currencyCode: string;
     orderPaymentId: string;
   }): Promise<CryptopayTransaction> => {
     await CryptoTransactions.updateOne(
@@ -40,7 +40,7 @@ const configureCryptopayModule = ({ db }) => {
         $setOnInsert: {
           _id: addressId.toLowerCase(),
           contract,
-          currency,
+          currencyCode,
           decimals: null,
           mostRecentBlockHeight: 0,
           blockHeight: 0,
@@ -75,14 +75,14 @@ const configureCryptopayModule = ({ db }) => {
     blockHeight,
     amount,
     contract,
-    currency,
+    currencyCode,
     decimals,
   }: {
     addressId: string;
     blockHeight: number;
     amount: string;
     contract: string;
-    currency: string;
+    currencyCode: string;
     decimals: number;
   }): Promise<CryptopayTransaction> => {
     await CryptoTransactions.updateOne(
@@ -92,7 +92,7 @@ const configureCryptopayModule = ({ db }) => {
       {
         $setOnInsert: {
           _id: addressId.toLowerCase(),
-          currency,
+          currencyCode,
           contract,
           created: new Date(),
         },

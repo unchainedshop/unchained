@@ -52,7 +52,7 @@ enum CryptopayCurrencies { // eslint-disable-line
 }
 
 type CryptopayAddress = {
-  currency: CryptopayCurrencies;
+  currencyCode: CryptopayCurrencies;
   address: string;
   currencyConversionRate?: number;
   currencyConversionExpiryDate?: Date;
@@ -99,11 +99,11 @@ const Cryptopay: IPaymentAdapter = {
       cryptoAddresses: CryptopayAddress[],
     ) => {
       return Promise.all(
-        cryptoAddresses.map(async ({ address, currency }) =>
+        cryptoAddresses.map(async ({ address, currencyCode }) =>
           modules.cryptopay.mapOrderPaymentToWalletAddress({
             addressId: address,
             contract: null,
-            currency,
+            currencyCode,
             orderPaymentId,
           }),
         ),
@@ -153,10 +153,10 @@ const Cryptopay: IPaymentAdapter = {
           const existingAddressesWithNewExpiration = await setConversionRates(
             order.currencyCode,
             existingAddresses.map(
-              ({ _id, currency }) =>
+              ({ _id, currencyCode }) =>
                 ({
                   address: _id,
-                  currency,
+                  currencyCode,
                 }) as CryptopayAddress,
             ),
           );
@@ -173,7 +173,7 @@ const Cryptopay: IPaymentAdapter = {
           );
           const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
           cryptoAddresses.push({
-            currency: CryptopayCurrencies.BTC,
+            currencyCode: CryptopayCurrencies.BTC,
             address: payments.p2wpkh({
               pubkey: child.publicKey as Buffer,
               network,
@@ -190,7 +190,7 @@ const Cryptopay: IPaymentAdapter = {
             CryptopayCurrencies.ETH,
           );
           cryptoAddresses.push({
-            currency: CryptopayCurrencies.ETH,
+            currencyCode: CryptopayCurrencies.ETH,
             address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
           });
         }
@@ -220,9 +220,9 @@ const Cryptopay: IPaymentAdapter = {
         });
         const totalAmount = BigInt(pricing?.total({ useNetPrice: false }).amount);
 
-        if (walletForOrderPayment.currency !== order.currencyCode) {
+        if (walletForOrderPayment.currencyCode !== order.currencyCode) {
           const baseCurrency = await modules.currencies.findCurrency({
-            isoCode: walletForOrderPayment.currency,
+            isoCode: walletForOrderPayment.currencyCode,
           });
           const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currencyCode });
 

@@ -27,14 +27,14 @@ const cryptopayHandler: RouteHandlerMethod = async (
     }
 
     if (wallet) {
-      const { address, blockHeight, amount, contract, decimals, currency } = wallet;
+      const { address, blockHeight, amount, contract, decimals, currencyCode } = wallet;
       const { orderPaymentId } = await modules.cryptopay.updateWalletAddress({
         addressId: address,
         blockHeight,
         amount,
         contract,
         decimals,
-        currency,
+        currencyCode,
       });
       const orderPayment =
         orderPaymentId &&

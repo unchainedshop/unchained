@@ -6,7 +6,7 @@ export type CryptopayTransaction = {
   blockHeight: number;
   mostRecentBlockHeight: number;
   amount: mongodb.Decimal128;
-  currency: string;
+  currencyCode: string;
   decimals: number;
   contract: string;
   orderPaymentId?: string;
