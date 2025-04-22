@@ -12,7 +12,7 @@ import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:api');
 
 export interface UnchainedLocaleContext {
-  countryContext: string;
+  countryCode: string;
   localeContext: Intl.Locale;
   currencyCode: string;
 }
@@ -48,16 +48,16 @@ export const resolveDefaultContext = pMemoize(
       supportedLocaleStrings,
       systemLocale.baseName,
     );
-    const countryContext = resolveBestCountry(localeContext.region, acceptCountry, countries);
+    const countryCode = resolveBestCountry(localeContext.region, acceptCountry, countries);
 
-    const countryObject = countries.find((country) => country.isoCode === countryContext);
+    const countryObject = countries.find((country) => country.isoCode === countryCode);
     const currencyCode = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
-    logger.debug(`Locale Context: Resolved ${localeContext.baseName} ${countryContext} ${currencyCode}`);
+    logger.debug(`Locale Context: Resolved ${localeContext.baseName} ${countryCode} ${currencyCode}`);
 
     const newContext: UnchainedLocaleContext = {
       localeContext,
-      countryContext,
+      countryCode,
       currencyCode,
     };
 

@@ -70,25 +70,25 @@ describe('ProductSwissTax', () => {
         deliveryId: 'CH',
         billingAddress: { countryCode: 'LI' },
       },
-      country: 'CH',
+      countryCode: 'CH',
     };
     it('Should return true when passed country code CH', async () => {
       assert.strictEqual(
-        await isDeliveryAddressInSwitzerland({ ...context, country: 'ch', order: null } as any),
+        await isDeliveryAddressInSwitzerland({ ...context, countryCode: 'ch', order: null } as any),
         true,
       );
     });
 
     it('Should return true when passed country code LI', async () => {
       assert.strictEqual(
-        await isDeliveryAddressInSwitzerland({ ...context, country: 'LI', order: null } as any),
+        await isDeliveryAddressInSwitzerland({ ...context, countryCode: 'LI', order: null } as any),
         true,
       );
     });
 
     it('Should return false when country is neither CH nor LI and order is null', async () => {
       assert.strictEqual(
-        await isDeliveryAddressInSwitzerland({ ...context, country: 'ET', order: null } as any),
+        await isDeliveryAddressInSwitzerland({ ...context, countryCode: 'ET', order: null } as any),
         false,
       );
     });
@@ -98,7 +98,7 @@ describe('ProductSwissTax', () => {
       assert.strictEqual(
         await isDeliveryAddressInSwitzerland({
           ...context,
-          country: 'CH',
+          countryCode: 'CH',
           order: {
             deliveryId: 'ET',
             billingAddress: { countryCode: 'ET' },
@@ -112,7 +112,7 @@ describe('ProductSwissTax', () => {
       assert.strictEqual(
         await isDeliveryAddressInSwitzerland({
           ...context,
-          country: 'IT',
+          countryCode: 'IT',
           order: {
             deliveryId: null,
             billingAddress: { countryCode: 'CH' },

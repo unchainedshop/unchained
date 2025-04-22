@@ -8,7 +8,7 @@ export async function simulateProductPricingService(
   pricingContext: {
     product: Product;
     user: User;
-    country: string;
+    countryCode: string;
     currencyCode: string;
     quantity: number;
     configuration?: Array<ProductConfiguration>;

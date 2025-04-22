@@ -54,7 +54,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
 
     return {
       ...unchainedAPI,
-      country: order.countryCode,
+      countryCode: order.countryCode,
       currencyCode,
       discounts,
       order,

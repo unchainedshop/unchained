@@ -57,13 +57,13 @@ export const ConfigurableProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPriceRange> {
-    const { countryContext, modules } = requestContext;
+    const { countryCode, modules } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
     return modules.products.prices.catalogPriceRange(product, {
       quantity,
       vectors,
       includeInactive,
-      country: countryContext,
+      countryCode,
       currencyCode,
     });
   },
@@ -104,7 +104,7 @@ export const ConfigurableProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPriceRange> {
-    const { countryContext, modules, services } = requestContext;
+    const { countryCode, modules, services } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
     const products = await modules.products.proxyProducts(product, vectors, {
@@ -117,7 +117,7 @@ export const ConfigurableProduct = {
           const pricingContext = {
             product: proxyProduct,
             user: requestContext.user,
-            country: countryContext,
+            countryCode,
             currencyCode,
             quantity,
           };

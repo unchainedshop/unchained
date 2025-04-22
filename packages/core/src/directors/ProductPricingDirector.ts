@@ -15,7 +15,7 @@ export type ProductPricingContext =
   | {
       currencyCode: string;
       quantity: number;
-      country?: string;
+      countryCode?: string;
       discounts?: Array<OrderDiscount>;
       order?: Order;
       product?: Product;
@@ -66,7 +66,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
 
       return {
         ...unchainedAPI,
-        country: order.countryCode,
+        countryCode: order.countryCode,
         currencyCode,
         discounts,
         order,
@@ -79,7 +79,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
 
     return {
       ...unchainedAPI,
-      country: context.country,
+      countryCode: context.countryCode,
       currencyCode,
       discounts: [],
       order: context.order,

@@ -22,7 +22,7 @@ export default async function checkoutCart(
   const order = await services.orders.findOrInitCart({
     orderId: forceOrderId,
     user,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId: forceOrderId });
 

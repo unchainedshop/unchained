@@ -83,7 +83,7 @@ export const OrderItem = {
           deliveryProvider,
           product,
           quantity: orderPosition.quantity,
-          country: countryCode,
+          countryCode,
           userId,
           // referenceDate,
         };

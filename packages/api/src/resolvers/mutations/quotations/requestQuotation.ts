@@ -7,7 +7,7 @@ export default async function requestQuotation(
   params: { productId: string; configuration: Array<{ key: string; value: string }> },
   context: Context,
 ) {
-  const { countryContext, currencyCode, modules, services, userId } = context;
+  const { countryCode, currencyCode, modules, services, userId } = context;
   const { productId, configuration } = params;
 
   log(`mutation requestQuotation ${productId} ${configuration ? JSON.stringify(configuration) : ''}`, {
@@ -22,8 +22,8 @@ export default async function requestQuotation(
   const newQuotation = await modules.quotations.create({
     userId,
     productId,
-    countryCode: countryContext,
-    currencyCode: currencyCode,
+    countryCode,
+    currencyCode,
     configuration,
   });
 

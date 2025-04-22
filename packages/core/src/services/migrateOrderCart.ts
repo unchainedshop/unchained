@@ -7,20 +7,20 @@ export async function migrateOrderCartsService(
     fromUserId,
     toUserId,
     shouldMerge,
-    countryContext,
+    countryCode,
   }: {
     fromUserId: string;
     toUserId: string;
     shouldMerge: boolean;
-    countryContext: string;
+    countryCode: string;
   },
 ) {
   const fromCart = await this.orders.cart({
-    countryCode: countryContext,
+    countryCode,
     userId: fromUserId,
   });
   const toCart = await this.orders.cart({
-    countryCode: countryContext,
+    countryCode,
     userId: toUserId,
   });
 

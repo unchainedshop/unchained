@@ -5,15 +5,15 @@ import { systemLocale } from '@unchainedshop/utils';
 export default function addMigrations(repository: MigrationRepository) {
   repository?.register({
     id: 20230719105000,
-    name: 'Rename user.lastLogin.countryContext to user.lastLogin.countryCode',
+    name: 'Rename user.lastLogin.countryCode to user.lastLogin.countryCode',
     up: async () => {
       const Users = await UsersCollection(repository.db);
       await Users.updateMany(
         {
-          'lastLogin.countryContext': { $exists: true },
+          'lastLogin.countryCode': { $exists: true },
         },
         {
-          $rename: { 'lastLogin.countryContext': 'lastLogin.countryCode' },
+          $rename: { 'lastLogin.countryCode': 'lastLogin.countryCode' },
         },
       );
     },

@@ -16,7 +16,7 @@ export default async function createCart(
   return services.orders.nextUserCart({
     user,
     orderNumber,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
     forceCartCreation: true,
   });
 }

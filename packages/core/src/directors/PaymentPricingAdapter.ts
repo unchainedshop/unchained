@@ -18,7 +18,7 @@ export interface PaymentPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
-  country?: string;
+  countryCode?: string;
   currency?: string;
   user: User;
   orderPayment: OrderPayment;

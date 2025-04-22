@@ -13,7 +13,7 @@ import { User } from '@unchainedshop/core-users';
 
 export type PaymentPricingContext =
   | {
-      country?: string;
+      countryCode?: string;
       currencyCode?: string;
       user: User;
       order: Order;
@@ -61,7 +61,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
 
       return {
         ...unchainedAPI,
-        country: order.countryCode,
+        countryCode: order.countryCode,
         currencyCode,
         order,
         provider,
@@ -74,7 +74,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
 
     return {
       ...unchainedAPI,
-      country: context.country,
+      countryCode: context.countryCode,
       currencyCode: context.currencyCode,
       order: context.order,
       provider: context.provider,

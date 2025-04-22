@@ -17,7 +17,7 @@ const impersonate = async (root, { userId }, context: Context) => {
 
   await context.services.orders.nextUserCart({
     user: userToImpersonate,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
   });
 
   return context.login(userToImpersonate, {

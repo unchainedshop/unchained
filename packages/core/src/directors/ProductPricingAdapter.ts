@@ -12,7 +12,7 @@ import { Modules } from '../modules.js';
 import { User } from '@unchainedshop/core-users';
 
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
-  country: string;
+  countryCode: string;
   currencyCode: string;
   product: Product;
   quantity: number;

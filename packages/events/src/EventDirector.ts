@@ -7,7 +7,7 @@ export type RawPayloadType<T> = {
   context: {
     userAgent?: string;
     language?: string;
-    country?: string;
+    countryCode?: string;
     remoteAddress?: string;
     referer?: string;
     origin?: string;
@@ -19,13 +19,19 @@ export interface EmitAdapter {
   subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;
 }
 
-export type ContextNormalizerFunction = (context: any) => RawPayloadType<any>['context'];
+export type ContextNormalizerFunction = (context: {
+  localeContext: Intl.Locale;
+  getHeader: any;
+  remoteAddress: string;
+  req: any;
+  userId: string;
+}) => RawPayloadType<any>['context'];
 
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   return {
     userAgent: context?.getHeader?.('user-agent'),
-    language: context?.localeContext?.code,
-    country: context?.localeContext?.country,
+    language: context?.localeContext?.language,
+    countryCode: context?.localeContext?.region,
     remoteAddress: context?.remoteAddress,
     referer: context?.req?.headers?.referer,
     origin: context?.req?.headers?.origin,

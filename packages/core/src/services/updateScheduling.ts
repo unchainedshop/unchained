@@ -41,7 +41,7 @@ export async function updateSchedulingService(
             delivery: deliveryProvider,
             order,
             userId,
-            country: countryCode,
+            countryCode,
             referenceDate: order.ordered,
             quantity: orderPosition.quantity,
           };

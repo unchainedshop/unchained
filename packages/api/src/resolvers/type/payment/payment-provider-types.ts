@@ -28,13 +28,13 @@ export const PaymentProvider = {
     { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext },
     requestContext: Context,
   ) {
-    const { modules, countryContext: country, user } = requestContext;
+    const { modules, countryCode, user } = requestContext;
 
     // TODO: use loader
     const order = await modules.orders.findOrder({ orderId });
     const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
     const pricingContext = {
-      country,
+      countryCode,
       currencyCode,
       provider: paymentProvider,
       order,
@@ -56,7 +56,7 @@ export const PaymentProvider = {
     return {
       amount: orderPrice.amount,
       currencyCode: orderPrice.currencyCode,
-      countryCode: country,
+      countryCode,
       isTaxable: pricing.taxSum() > 0,
       isNetPrice: useNetPrice,
     };

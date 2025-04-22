@@ -19,8 +19,12 @@ const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryPro
   return taxCategory.rate(order?.ordered);
 };
 
-const isDeliveryAddressInSwitzerland = ({ orderDelivery, order, country = null }) => {
-  let countryCode = country?.toUpperCase().trim() || order.countryCode;
+const isDeliveryAddressInSwitzerland = ({
+  orderDelivery,
+  order,
+  countryCode: forceCountryCode = null,
+}) => {
+  let countryCode = forceCountryCode?.toUpperCase().trim() || order.countryCode;
 
   const address = orderDelivery?.context?.address || order?.billingAddress;
 

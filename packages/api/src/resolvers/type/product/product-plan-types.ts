@@ -14,10 +14,10 @@ export const PlanProduct = {
     { quantity, currencyCode: forcedCurrencyCode }: { quantity?: number; currencyCode?: string },
     requestContext: Context,
   ): Promise<ProductPrice> {
-    const { modules, countryContext } = requestContext;
+    const { modules, countryCode } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
     return modules.products.prices.price(product, {
-      country: countryContext,
+      countryCode,
       currencyCode,
       quantity,
     });
@@ -38,13 +38,13 @@ export const PlanProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPrice> {
-    const { countryContext, user, services } = requestContext;
+    const { countryCode, user, services } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
     const pricingContext = {
       product: obj,
       user,
-      country: countryContext,
+      countryCode,
       currencyCode,
       quantity,
       configuration,
@@ -73,9 +73,9 @@ export const PlanProduct = {
       price: ProductPrice;
     }>
   > {
-    const { countryContext, modules } = requestContext;
+    const { countryCode, modules } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
-    return modules.products.prices.catalogPricesLeveled(obj, { currencyCode, country: countryContext });
+    return modules.products.prices.catalogPricesLeveled(obj, { currencyCode, countryCode });
   },
 
   salesUnit({ commerce }: ProductType): string {

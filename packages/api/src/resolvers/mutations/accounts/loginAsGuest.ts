@@ -24,10 +24,10 @@ export default async function loginAsGuest(root: never, _: any, context: Context
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
     locale: context.localeContext.baseName,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
   });
 
-  await context.services.orders.nextUserCart({ user, countryCode: context.countryContext });
+  await context.services.orders.nextUserCart({ user, countryCode: context.countryCode });
 
   return context.login(user);
 }

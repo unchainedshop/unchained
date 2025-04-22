@@ -10,13 +10,13 @@ export async function migrateUserDataService(userIdBeforeLogin: string, userId: 
     fromUserId: userIdBeforeLogin,
     toUserId: userId,
     shouldMerge: userSettings.mergeUserCartsOnLogin,
-    countryContext: userBeforeLogin?.lastLogin?.countryCode || user?.lastLogin?.countryCode,
+    countryCode: userBeforeLogin?.lastLogin?.countryCode || user?.lastLogin?.countryCode,
   });
 
   await migrateBookmarksService.bind(this)({
     fromUserId: userIdBeforeLogin,
     toUserId: userId,
     shouldMerge: userSettings.mergeUserCartsOnLogin,
-    countryContext: userBeforeLogin?.lastLogin?.countryCode || user?.lastLogin?.countryCode,
+    countryCode: userBeforeLogin?.lastLogin?.countryCode || user?.lastLogin?.countryCode,
   });
 }

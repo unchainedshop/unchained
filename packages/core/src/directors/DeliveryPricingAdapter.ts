@@ -37,7 +37,7 @@ export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & 
 };
 
 export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext {
-  country?: string;
+  countryCode?: string;
   currencyCode?: string;
   provider: DeliveryProvider;
   providerContext?: any;

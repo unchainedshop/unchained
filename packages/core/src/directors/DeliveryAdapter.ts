@@ -30,7 +30,7 @@ export interface DeliveryAdapterActions {
 }
 
 export interface DeliveryContext {
-  country?: string;
+  countryCode?: string;
   deliveryProvider?: DeliveryProvider;
   order?: Order;
   orderDelivery?: OrderDelivery;

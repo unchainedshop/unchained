@@ -17,7 +17,7 @@ export default async function stopImpersonation(root: never, _, context: Context
 
   await context.services.orders.nextUserCart({
     user: impersonator,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
   });
 
   return context.login(impersonator);

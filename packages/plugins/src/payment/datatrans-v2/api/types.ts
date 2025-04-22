@@ -9,7 +9,7 @@ export type Address = {
   street2?: string;
   zipCode?: string;
   city?: string;
-  country?: string;
+  countryCode?: string;
 };
 
 export type BillingAddress = Address & {

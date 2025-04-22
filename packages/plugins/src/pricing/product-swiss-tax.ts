@@ -24,10 +24,10 @@ export const getTaxRate = (context: ProductPricingAdapterContext) => {
 
 export const isDeliveryAddressInSwitzerland = async ({
   order,
-  country,
+  countryCode: forceCountryCode,
   modules,
 }: ProductPricingAdapterContext & { modules: UnchainedCore['modules'] }) => {
-  let countryCode = country?.toUpperCase().trim();
+  let countryCode = forceCountryCode?.toUpperCase().trim() || order.countryCode;
 
   if (order) {
     const orderDelivery = await modules.orders.deliveries.findDelivery({

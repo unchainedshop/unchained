@@ -15,7 +15,7 @@ import type { OrderDelivery } from '@unchainedshop/core-orders';
 export type DeliveryPricingContext =
   | {
       currencyCode: string;
-      country?: string;
+      countryCode?: string;
       provider: DeliveryProvider;
       providerContext?: any;
       order: Order;
@@ -59,7 +59,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
 
       return {
         ...unchainedAPI,
-        country: order.countryCode,
+        countryCode: order.countryCode,
         currencyCode,
         order,
         provider,
@@ -72,7 +72,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
 
     return {
       ...unchainedAPI,
-      country: context.country,
+      countryCode: context.countryCode,
       currencyCode: context.currencyCode,
       order: context.order,
       provider: context.provider,

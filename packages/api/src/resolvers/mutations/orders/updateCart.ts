@@ -22,7 +22,7 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   let order = await services.orders.findOrInitCart({
     orderId,
     user,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });

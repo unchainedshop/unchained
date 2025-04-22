@@ -14,7 +14,7 @@ export async function migrateBookmarksService(
     fromUserId: string;
     toUserId: string;
     shouldMerge: boolean;
-    countryContext: string;
+    countryCode: string;
   },
 ) {
   const fromBookmarks = await this.bookmarks.findBookmarks({ userId: fromUserId });

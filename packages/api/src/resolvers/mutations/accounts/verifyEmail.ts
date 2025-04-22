@@ -20,14 +20,14 @@ export default async function verifyEmail(root: never, { token }: { token: any }
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
     locale: context.localeContext.baseName,
-    countryCode: context.countryContext,
+    countryCode: context.countryCode,
   });
 
   if (context.userId) {
     await context.services.users.migrateUserData(context.userId, user._id);
   }
 
-  await context.services.orders.nextUserCart({ user, countryCode: context.countryContext });
+  await context.services.orders.nextUserCart({ user, countryCode: context.countryCode });
 
   return context.login(user);
 }

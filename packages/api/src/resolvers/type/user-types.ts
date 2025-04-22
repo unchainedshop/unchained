@@ -175,10 +175,10 @@ export const User: UserHelperTypes = {
   },
 
   async cart(user, params, context) {
-    const { modules, countryContext } = context;
+    const { modules, countryCode } = context;
     await checkAction(context, viewUserOrders, [user, params]);
     return modules.orders.cart({
-      countryCode: countryContext,
+      countryCode,
       orderNumber: params.orderNumber,
       userId: user._id,
     });
@@ -202,9 +202,8 @@ export const User: UserHelperTypes = {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     const userLocale = context.modules.users.userLocale(user);
 
-    // TODO: use loader
-    return context.modules.countries.findCountry({
-      isoCode: userLocale.region?.toUpperCase(),
+    return context.loaders.countryLoader.load({
+      isoCode: userLocale.region,
     });
   },
 

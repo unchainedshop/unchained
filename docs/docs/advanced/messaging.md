@@ -84,7 +84,7 @@ the work.
 
 ```typescript
 const someResolver =  async (root, params, context: AppContext) => {
-  const { modules, userId, countryContext } = context;
+  const { modules, userId, countryCode } = context;
 
   await modules.worker.addWork(
     {

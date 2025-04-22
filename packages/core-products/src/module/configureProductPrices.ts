@@ -57,10 +57,10 @@ export const configureProductPricesModule = ({
   const catalogPrice = async (
     product: Product,
     {
-      country: countryCode,
+      countryCode,
       currencyCode,
       quantity = 1,
-    }: { country: string; currencyCode?: string; quantity?: number },
+    }: { countryCode: string; currencyCode?: string; quantity?: number },
   ): Promise<ProductPrice> => {
     const pricing = getPriceLevels({
       product,
@@ -100,10 +100,10 @@ export const configureProductPricesModule = ({
         quantity = 0,
         vectors = [],
         includeInactive = false,
-        country,
+        countryCode,
         currencyCode,
       }: {
-        country: string;
+        countryCode: string;
         currencyCode: string;
         includeInactive?: boolean;
         quantity?: number;
@@ -118,7 +118,7 @@ export const configureProductPricesModule = ({
         await Promise.all(
           products.map((proxyProduct) =>
             catalogPrice(proxyProduct, {
-              country,
+              countryCode,
               quantity,
               currencyCode,
             }),
@@ -141,7 +141,7 @@ export const configureProductPricesModule = ({
 
     catalogPricesLeveled: async (
       product: Product,
-      { currencyCode, country: countryCode }: { currencyCode: string; country: string },
+      { currencyCode, countryCode }: { currencyCode: string; countryCode: string },
     ): Promise<
       Array<{
         minQuantity: number;

@@ -23,7 +23,7 @@ export const ProductPriceRateConversion: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, quantity, currencyCode: targetCurrency } = params.context;
+        const { product, countryCode, quantity, currencyCode: targetCurrency } = params.context;
 
         const { calculation = [] } = params.calculationSheet;
         if (calculation?.length) {
@@ -33,7 +33,7 @@ export const ProductPriceRateConversion: IProductPricingAdapter = {
         }
 
         const productPrice = await modules.products.prices.price(product, {
-          country,
+          countryCode,
           quantity,
         });
 
