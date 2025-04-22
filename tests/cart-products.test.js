@@ -29,18 +29,18 @@ test.describe('Cart: Product Items', () => {
               _id
               quantity
               total {
-                currency
+                currencyCode
                 amount
               }
               taxes: total(category: TAX) {
-                currency
+                currencyCode
                 amount
               }
               product {
                 _id
               }
               unitPrice {
-                currency
+                currencyCode
                 amount
               }
               order {
@@ -62,7 +62,7 @@ test.describe('Cart: Product Items', () => {
       assert.partialDeepStrictEqual(addCartProduct, {
         quantity: 2,
         total: {
-          currency: 'CHF',
+          currencyCode: 'CHF',
           amount: 20000,
         },
         taxes: {

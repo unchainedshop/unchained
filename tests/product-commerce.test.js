@@ -59,7 +59,7 @@ test.describe('Product: Commerce', async () => {
                   amount
                   isTaxable
                   isNetPrice
-                  currency
+                  currencyCode
                 }
               }
             }
@@ -88,7 +88,7 @@ test.describe('Product: Commerce', async () => {
           amount: 100,
           isTaxable: true,
           isNetPrice: false,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });

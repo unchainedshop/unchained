@@ -47,11 +47,11 @@ test.describe('Products', () => {
               ... on SimpleProduct {
                 catalogPrice {
                   amount
-                  currency
+                  currencyCode
                 }
                 simulatedPrice {
                   amount
-                  currency
+                  currencyCode
                 }
               }
             }
@@ -654,13 +654,13 @@ test.describe('Products', () => {
               ... on SimpleProduct {
                 simulatedPrice {
                   amount
-                  currency
+                  currencyCode
                 }
                 catalogPrice {
                   isTaxable
                   isNetPrice
                   amount
-                  currency
+                  currencyCode
                 }
               }
             }
@@ -671,7 +671,7 @@ test.describe('Products', () => {
         },
       });
       assert.deepStrictEqual(product?.simulatedPrice, {
-        currency: 'CHF',
+        currencyCode: 'CHF',
         amount: 10000,
       });
     });
@@ -687,7 +687,7 @@ test.describe('Products', () => {
               ... on SimpleProduct {
                 simulatedPrice(currency: "ETB") {
                   amount
-                  currency
+                  currencyCode
                 }
               }
             }
@@ -712,7 +712,7 @@ test.describe('Products', () => {
               ... on PlanProduct {
                 simulatedPrice {
                   amount
-                  currency
+                  currencyCode
                 }
               }
             }
@@ -723,7 +723,7 @@ test.describe('Products', () => {
         },
       });
       assert.deepStrictEqual(product?.simulatedPrice, {
-        currency: 'CHF',
+        currencyCode: 'CHF',
         amount: 10000,
       });
     });
@@ -739,7 +739,7 @@ test.describe('Products', () => {
               ... on PlanProduct {
                 simulatedPrice(currency: "ETB") {
                   amount
-                  currency
+                  currencyCode
                 }
               }
             }
@@ -1724,7 +1724,7 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -1757,7 +1757,7 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -1788,13 +1788,13 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                   maxPrice {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -1810,13 +1810,13 @@ test.describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 500000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 30000000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });
@@ -1836,13 +1836,13 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                   maxPrice {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -1858,13 +1858,13 @@ test.describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 400000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 75000000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });
@@ -1884,13 +1884,13 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                   maxPrice {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -1906,13 +1906,13 @@ test.describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 1500000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 10000000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });
@@ -1934,13 +1934,13 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                   maxPrice {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -1957,13 +1957,13 @@ test.describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 500000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 30000000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });
@@ -1983,13 +1983,13 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                   maxPrice {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -2005,13 +2005,13 @@ test.describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 400000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 75000000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });
@@ -2031,13 +2031,13 @@ test.describe('Products', () => {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                   maxPrice {
                     isTaxable
                     isNetPrice
                     amount
-                    currency
+                    currencyCode
                   }
                 }
               }
@@ -2053,13 +2053,13 @@ test.describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 1500000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 10000000,
-          currency: 'CHF',
+          currencyCode: 'CHF',
         },
       });
     });

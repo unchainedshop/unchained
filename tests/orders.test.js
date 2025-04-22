@@ -202,7 +202,7 @@ test.describe('Order: Lists', () => {
               _id
               simulatedPrice {
                 amount
-                currency
+                currencyCode
               }
             }
           }
@@ -213,7 +213,7 @@ test.describe('Order: Lists', () => {
       },
     });
     assert.deepStrictEqual(order.supportedDeliveryProviders?.[0]?.simulatedPrice, {
-      currency: 'CHF',
+      currencyCode: 'CHF',
       amount: 0,
     });
   });
@@ -230,7 +230,7 @@ test.describe('Order: Lists', () => {
               _id
               simulatedPrice(currency: "EUR") {
                 amount
-                currency
+                currencyCode
               }
             }
           }

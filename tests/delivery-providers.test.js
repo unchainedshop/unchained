@@ -54,7 +54,7 @@ test.describe('Delivery: Providers', () => {
                 isTaxable
                 isNetPrice
                 amount
-                currency
+                currencyCode
               }
             }
           }
@@ -192,7 +192,7 @@ test.describe('Delivery: Providers', () => {
                 isTaxable
                 isNetPrice
                 amount
-                currency
+                currencyCode
               }
             }
           }
@@ -218,7 +218,7 @@ test.describe('Delivery: Providers', () => {
               _id
               simulatedPrice {
                 amount
-                currency
+                currencyCode
               }
             }
           }
@@ -240,7 +240,7 @@ test.describe('Delivery: Providers', () => {
               _id
               simulatedPrice(currency: "EUR") {
                 amount
-                currency
+                currencyCode
               }
             }
           }

@@ -30,11 +30,11 @@ test.describe('Guest user cart migration', () => {
             _id
             quantity
             total {
-              currency
+              currencyCode
               amount
             }
             taxes: total(category: TAX) {
-              currency
+              currencyCode
               amount
             }
             product {
@@ -60,7 +60,7 @@ test.describe('Guest user cart migration', () => {
     assert.partialDeepStrictEqual(result.data.addCartProduct, {
       quantity: 2,
       total: {
-        currency: 'CHF',
+        currencyCode: 'CHF',
         amount: 20000,
       },
       taxes: {

@@ -40,11 +40,11 @@ test.describe('Cart: Quotations', () => {
               }
               unitPrice {
                 amount
-                currency
+                currencyCode
               }
               total {
                 amount
-                currency
+                currencyCode
               }
               configuration {
                 key
