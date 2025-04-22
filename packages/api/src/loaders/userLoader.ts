@@ -7,6 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const userIds = [...new Set(queries.map((q) => q.userId).filter(Boolean))]; // you don't need lodash, _.unique my ass
 
     const users = await unchainedAPI.modules.users.findUsers({
+      includeGuests: true,
       _id: { $in: userIds },
     });
 

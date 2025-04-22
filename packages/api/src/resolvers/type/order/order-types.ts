@@ -31,14 +31,12 @@ export const Order = {
     });
   },
 
-  async currency(order: OrderType, _, { modules }: Context): Promise<Currency> {
-    // TODO: use loader
-    return modules.currencies.findCurrency({ isoCode: order.currencyCode });
+  async currency(order: OrderType, _, { loaders }: Context): Promise<Currency> {
+    return loaders.currencyLoader.load({ isoCode: order.currencyCode });
   },
 
-  async country(order: OrderType, _, { modules }: Context): Promise<Country> {
-    // TODO: use loader
-    return modules.countries.findCountry({ isoCode: order.countryCode });
+  async country(order: OrderType, _, { loaders }: Context): Promise<Country> {
+    return loaders.countryLoader.load({ isoCode: order.countryCode });
   },
 
   async discounts(order: OrderType, _, { modules }: Context): Promise<Array<OrderDiscount>> {

@@ -16,6 +16,8 @@ import productMediaTextLoader from './productMediaTextLoader.js';
 import productMediasLoader from './productMediasLoader.js';
 import fileLoader from './fileLoader.js';
 import userLoader from './userLoader.js';
+import countryLoader from './countryLoader.js';
+import currencyLoader from './currencyLoader.js';
 
 const loaders = (unchainedAPI: UnchainedCore) => {
   return {
@@ -40,6 +42,10 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     fileLoader: fileLoader(unchainedAPI),
 
     userLoader: userLoader(unchainedAPI),
+
+    countryLoader: countryLoader(unchainedAPI),
+
+    currencyLoader: currencyLoader(unchainedAPI),
   };
 };
 

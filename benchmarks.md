@@ -79,14 +79,12 @@ Result: ~ 30-45ms (uncached)
 ## Fetch 10 Categories and 2 levels deep sub-categories with title and cover (Mega Menu)
 
 
-TODO
 
 ## Checkout Flow
 - Add a product to the cart
 - Set billing address
 - Checkout via invoice
 
-TODO
 
 
 ## Dependency Hell:

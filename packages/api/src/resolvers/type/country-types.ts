@@ -12,12 +12,9 @@ export interface CountryHelperTypes {
 }
 
 export const Country: CountryHelperTypes = {
-  defaultCurrency: async (country, _, { modules }) => {
+  defaultCurrency: async (country, _, { loaders }) => {
     if (country.defaultCurrencyCode) {
-      // TODO: use loader
-      return modules.currencies.findCurrency({
-        isoCode: country.defaultCurrencyCode,
-      });
+      return loaders.currencyLoader.load({ isoCode: country.defaultCurrencyCode });
     }
     return null;
   },

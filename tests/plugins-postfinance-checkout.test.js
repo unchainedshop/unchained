@@ -294,7 +294,7 @@ test.describe('Plugins: Postfinance Checkout', () => {
         };
 
         // Call function that is called by webhook with modified transaction to mock response
-        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule); // TODO: Fix this test
+        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule); // FIXME: Fix this test
         assert.strictEqual(hookRes, true);
       },
     );
@@ -333,7 +333,7 @@ test.describe('Plugins: Postfinance Checkout', () => {
         };
 
         // Call function that is called by webhook with modified transaction to mock response
-        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule); // TODO: Fix this test
+        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule); // FIXME: Fix this test
         assert.strictEqual(hookRes, false);
       },
     );

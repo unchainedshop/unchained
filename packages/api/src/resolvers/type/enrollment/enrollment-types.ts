@@ -27,12 +27,7 @@ export const Enrollment: EnrollmentHelperTypes = {
     };
   },
 
-  // TODO: use loader
-  country: async (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
-
-  // TODO: use loader
-  currency: async (obj, _, { modules }) =>
-    modules.currencies.findCurrency({ isoCode: obj.currencyCode }),
-
+  country: async (obj, _, { loaders }) => loaders.currencyLoader.load({ isoCode: obj.countryCode }),
+  currency: async (obj, _, { loaders }) => loaders.currencyLoader.load({ isoCode: obj.currencyCode }),
   user: async (obj, _, { loaders }) => loaders.userLoader.load({ userId: obj.userId }),
 };

@@ -273,8 +273,7 @@ const Cryptopay: IPaymentAdapter = {
           } and addresses ${JSON.stringify(foundWalletsWithBalances)}`,
         );
 
-        /*
-        TODO:
+        /* TODO: Crypto Handling
 
         1. Check that generated crypto addresses are unique and no order payments share the same crypto address, only repeat when derivations completely exhausted.
         2. When derivation path get's close to "exhaustedness" (95%), send a special e-mail alert to tell the user should generate a new xpub.

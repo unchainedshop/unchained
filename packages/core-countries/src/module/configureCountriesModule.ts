@@ -13,15 +13,19 @@ export type Country = {
   defaultCurrencyCode?: string;
 } & TimestampFields;
 
-export type CountryQuery = {
+export type CountryQuery = mongodb.Filter<Country> & {
   includeInactive?: boolean;
   queryString?: string;
 };
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
-export const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
-  const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: null };
+export const buildFindSelector = ({
+  includeInactive = false,
+  queryString = '',
+  ...rest
+}: CountryQuery) => {
+  const selector: mongodb.Filter<Country> = { ...rest, deleted: null };
   if (!includeInactive) selector.isActive = true;
   if (queryString) selector.$text = { $search: queryString };
   return selector;

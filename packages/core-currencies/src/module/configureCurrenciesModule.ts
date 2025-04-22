@@ -4,6 +4,7 @@ import {
   buildSortOptions,
   generateDbObjectId,
   ModuleInput,
+  mongodb,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { CurrenciesCollection, Currency, CurrencyQuery } from '../db/CurrenciesCollection.js';
@@ -14,8 +15,10 @@ export const buildFindSelector = ({
   includeInactive = false,
   contractAddress,
   queryString,
+  ...rest
 }: CurrencyQuery) => {
-  const selector: { isActive?: true; deleted: null; contractAddress?: string; $text?: any } = {
+  const selector: mongodb.Filter<Currency> = {
+    ...rest,
     deleted: null,
   };
   if (!includeInactive) selector.isActive = true;

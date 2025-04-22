@@ -8,7 +8,7 @@ export type Currency = {
   decimals?: number;
 } & TimestampFields;
 
-export type CurrencyQuery = {
+export type CurrencyQuery = mongodb.Filter<Currency> & {
   includeInactive?: boolean;
   contractAddress?: string;
   queryString?: string;
