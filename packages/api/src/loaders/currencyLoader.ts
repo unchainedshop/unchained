@@ -13,7 +13,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const currencyMap = {};
     for (const currency of currencies) {
-      currencyMap[currency._id] = currency;
+      currencyMap[currency.isoCode] = currency;
     }
 
     return queries.map((q) => currencyMap[q.isoCode]);

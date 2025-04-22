@@ -13,7 +13,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const countryMap = {};
     for (const country of countries) {
-      countryMap[country._id] = country;
+      countryMap[country.isoCode] = country;
     }
 
     return queries.map((q) => countryMap[q.isoCode]);
