@@ -35,6 +35,5 @@ export const Quotation: QuotationHelperTypes = {
 
   status: (obj, _, { modules }) => modules.quotations.normalizedStatus(obj),
 
-  // TODO: use loader
-  user: (obj, _, { modules }) => modules.users.findUserById(obj.userId),
+  user: async (obj, _, { loaders }) => loaders.userLoader.load({ userId: obj.userId }),
 };

@@ -4,10 +4,11 @@ import { Context } from '../../../context.js';
 export default async function impersonator(
   root: never,
   params: any,
-  { userId, modules, impersonatorId }: Context,
+  { userId, loaders, impersonatorId }: Context,
 ) {
   log(`query impersonator`, { userId });
 
   if (!impersonatorId) return null;
-  return modules.users.findUserById(impersonatorId);
+
+  return loaders.userLoader.load({ userId: impersonatorId });
 }

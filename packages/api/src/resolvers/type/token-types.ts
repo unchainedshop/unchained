@@ -6,15 +6,13 @@ import { actions } from '../../roles/index.js';
 import { WarehousingDirector } from '@unchainedshop/core';
 
 export const Token = {
-  product: async (token: TokenSurrogate, params: never, { modules }: Context) => {
-    // TODO: use loader
-    return modules.products.findProduct({ productId: token.productId });
+  product: async (token: TokenSurrogate, params: never, { loaders }: Context) => {
+    return loaders.productLoader.load({ productId: token.productId });
   },
 
-  user: async (token: TokenSurrogate, params: never, { modules }: Context) => {
+  user: async (token: TokenSurrogate, params: never, { loaders }: Context) => {
     if (!token.userId) return null;
-    // TODO: use loader
-    return modules.users.findUserById(token.userId);
+    return loaders.userLoader.load({ userId: token.userId });
   },
 
   status: async (token: TokenSurrogate, params: never, { modules }: Context) => {
@@ -35,9 +33,8 @@ export const Token = {
     { forceLocale }: { forceLocale: string },
     context: Context,
   ) => {
-    const { modules } = context;
-    // TODO: use loader
-    const product = await modules.products.findProduct({ productId: token.productId });
+    const { loaders } = context;
+    const product = await loaders.productLoader.load({ productId: token.productId });
 
     // TODO: use loader
     const virtualProviders = await context.modules.warehousing.findProviders({
@@ -58,9 +55,8 @@ export const Token = {
   },
 
   isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
-    const { modules } = context;
-    // TODO: use loader
-    const product = await modules.products.findProduct({ productId: token.productId });
+    const { loaders } = context;
+    const product = await loaders.productLoader.load({ productId: token.productId });
 
     // TODO: use loader
     const virtualProviders = await context.modules.warehousing.findProviders({

@@ -16,9 +16,8 @@ export interface ProductReviewHelperTypes {
   ownVotes: HelperType<never, Promise<Array<ProductVote>>>;
 }
 export const ProductReview: ProductReviewHelperTypes = {
-  author: async (obj, _, { modules }) => {
-    // TODO: use loader
-    return modules.users.findUserById(obj.authorId);
+  author: async (obj, _, { loaders }) => {
+    return loaders.userLoader.load({ userId: obj.authorId });
   },
 
   product: async (review, _, { loaders }) => {

@@ -93,8 +93,7 @@ export const Order = {
     return null;
   },
 
-  async user(order: OrderType, _, { modules }: Context): Promise<User> {
-    // TODO: use loader
-    return modules.users.findUserById(order.userId);
+  async user(order: OrderType, _, { loaders }: Context): Promise<User> {
+    return loaders.userLoader.load({ userId: order.userId });
   },
 };

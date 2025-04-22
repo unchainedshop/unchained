@@ -41,7 +41,6 @@ export const Product = {
     );
   },
 
-  // TODO: Use a loader!
   async media(
     product: ProductType,
     params: {
@@ -52,6 +51,7 @@ export const Product = {
     { loaders, modules }: Context,
   ): Promise<Array<ProductMedia>> {
     if (params.offset || params.tags) {
+      // TODO: Use a loader?
       return modules.products.media.findProductMedias({
         productId: product._id,
         ...params,

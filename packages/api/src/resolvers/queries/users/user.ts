@@ -4,8 +4,9 @@ import { Context } from '../../../context.js';
 export default async function user(
   root: never,
   params: { userId?: string },
-  { modules, userId }: Context,
+  { loaders, userId }: Context,
 ) {
   log(`query user ${params.userId}`, { Id: userId });
-  return modules.users.findUserById(params.userId || userId);
+
+  return loaders.userLoader.load({ userId: params.userId || userId });
 }

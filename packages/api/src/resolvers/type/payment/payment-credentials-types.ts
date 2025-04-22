@@ -14,9 +14,8 @@ export interface PaymentCredentialsHelperTypes {
   isValid: HelperType<never, Promise<boolean>>;
 }
 export const PaymentCredentials: PaymentCredentialsHelperTypes = {
-  async user(obj, _, { modules }) {
-    // TODO: use loader
-    return modules.users.findUserById(obj.userId);
+  async user(obj, _, { loaders }) {
+    return loaders.userLoader.load({ userId: obj.userId });
   },
 
   async paymentProvider(obj, _, { modules }) {
