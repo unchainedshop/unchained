@@ -35,7 +35,7 @@ export async function createEnrollmentFromCheckoutService(
     billingAddress: order.billingAddress,
     contact: order.contact,
     countryCode: order.countryCode,
-    currencyCode: order.currency,
+    currencyCode: order.currencyCode,
     delivery: {
       deliveryProviderId: delivery.deliveryProviderId,
       context: delivery.context,

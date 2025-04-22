@@ -32,8 +32,8 @@ export const orderIsPaid = async (
 ): Promise<boolean> => {
   const pricing = OrderPricingSheet({
     calculation: order.calculation,
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   });
   const totalAmount = pricing.total({ useNetPrice: false }).amount / 100;
-  return transactionIsPaid(transaction, order.currency, totalAmount);
+  return transactionIsPaid(transaction, order.currencyCode, totalAmount);
 };

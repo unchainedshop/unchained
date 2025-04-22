@@ -34,7 +34,7 @@ export const OrderGlobalDiscount = {
   ) {
     return {
       amount: obj.amount,
-      currency: obj.currency,
+      currencyCode: obj.currencyCode,
     };
   },
 };

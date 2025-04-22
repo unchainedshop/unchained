@@ -25,17 +25,17 @@ export const PaymentProvider = {
 
   async simulatedPrice(
     paymentProvider: PaymentProviderType,
-    { currency: currencyCode, orderId, useNetPrice, context: providerContext },
+    { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext },
     requestContext: Context,
   ) {
     const { modules, countryContext: country, user } = requestContext;
 
     // TODO: use loader
     const order = await modules.orders.findOrder({ orderId });
-    const currency = currencyCode || order?.currency || requestContext.currencyContext;
+    const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
     const pricingContext = {
       country,
-      currency,
+      currencyCode,
       provider: paymentProvider,
       order,
       providerContext,
@@ -50,12 +50,12 @@ export const PaymentProvider = {
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;
-      currency: string;
+      currencyCode: string;
     };
 
     return {
       amount: orderPrice.amount,
-      currencyCode: orderPrice.currency,
+      currencyCode: orderPrice.currencyCode,
       countryCode: country,
       isTaxable: pricing.taxSum() > 0,
       isNetPrice: useNetPrice,

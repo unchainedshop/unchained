@@ -9,7 +9,7 @@ export async function simulateProductPricingService(
     product: Product;
     user: User;
     country: string;
-    currency: string;
+    currencyCode: string;
     quantity: number;
     configuration?: Array<ProductConfiguration>;
   },

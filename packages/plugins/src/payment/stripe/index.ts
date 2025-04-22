@@ -90,7 +90,7 @@ const Stripe: IPaymentAdapter = {
         if (orderPayment) {
           const pricing = OrderPricingSheet({
             calculation: order.calculation,
-            currency: order.currency,
+            currencyCode: order.currencyCode,
           });
           const { userId, name, email } = await getUserData(order?.userId);
           const paymentIntent = await createOrderPaymentIntent(
@@ -121,7 +121,7 @@ const Stripe: IPaymentAdapter = {
         const { userId, name, email } = await getUserData(order?.userId);
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
 
         const paymentIntentObject = paymentIntentId
@@ -137,10 +137,10 @@ const Stripe: IPaymentAdapter = {
               },
             );
 
-        const { currency, amount } = pricing.total({ useNetPrice: false });
+        const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
         if (
-          paymentIntentObject.currency !== currency.toLowerCase() ||
+          paymentIntentObject.currency !== currencyCode.toLowerCase() ||
           paymentIntentObject.amount !== Math.round(amount)
         ) {
           throw new Error('The price has changed since the intent has been created');

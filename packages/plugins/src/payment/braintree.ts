@@ -119,12 +119,12 @@ const BraintreeDirect: IPaymentAdapter = {
         const address = order.billingAddress;
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
         const rounded = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
         const saleRequest = {
           amount: rounded / 100,
-          merchantAccountId: order.currency,
+          merchantAccountId: order.currencyCode,
           paymentMethodNonce: paypalPaymentMethodNonce,
           orderId: order.orderNumber || order._id,
           shipping: address

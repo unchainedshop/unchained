@@ -16,8 +16,8 @@ export const Price = {
   isNetPrice({ isNetPrice }: PriceType) {
     return isNetPrice || false;
   },
-  currency(obj: PriceType) {
-    return obj?.currencyCode || obj?.currency;
+  currencyCode(obj: PriceType) {
+    return obj?.currencyCode;
   },
   amount(obj: PriceType) {
     if (obj.amount) {

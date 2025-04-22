@@ -21,9 +21,8 @@ export type SortOption = {
 };
 
 export interface Price {
-  // TODO: currency instead of currencyCode? really?
   amount: number;
-  currency: string;
+  currencyCode: string;
 }
 
 export interface PricingCalculation {

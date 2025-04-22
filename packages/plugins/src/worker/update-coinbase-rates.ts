@@ -3,7 +3,7 @@ import later from '@breejs/later';
 import { ProductPriceRate } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
-const getExchangeRates = async (base) => {
+const getExchangeRates = async (base): Promise<{ currency: string; rates: Record<string, string> }> => {
   return fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
     method: 'GET',
   })
@@ -28,10 +28,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
 
       const currencyCodes = currencies.map((currency) => currency.isoCode);
 
-      const {
-        currency: baseCurrency,
-        rates: pairs,
-      }: { currency: string; rates: Record<string, string> } = await getExchangeRates(currencyCode);
+      const { currency: baseCurrency, rates: pairs } = await getExchangeRates(currencyCode);
       const timestamp = new Date();
 
       // five minutes

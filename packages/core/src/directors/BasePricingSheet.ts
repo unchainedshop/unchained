@@ -2,7 +2,7 @@ import { PricingCalculation } from '@unchainedshop/utils';
 export interface PricingDiscount {
   discountId: string;
   amount: number;
-  currency: string;
+  currencyCode: string;
 }
 
 export interface IPricingSheet<Calculation extends PricingCalculation>
@@ -13,7 +13,7 @@ export interface IPricingSheet<Calculation extends PricingCalculation>
 
 export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   calculation: Array<Calculation>;
-  currency?: string;
+  currencyCode?: string;
   quantity?: number;
 
   getRawPricingSheet: () => Array<Calculation>;
@@ -25,7 +25,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   sum: (filter?: Partial<Calculation>) => number;
   total: (params?: { category?: string; discountId?: string; useNetPrice?: boolean }) => {
     amount: number;
-    currency: string;
+    currencyCode: string;
   };
 
   taxSum: (filter?: Partial<Calculation>) => number;
@@ -35,7 +35,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 
 export interface PricingSheetParams<Calculation extends PricingCalculation> {
   calculation?: Array<Calculation>;
-  currency?: string;
+  currencyCode?: string;
   quantity?: number;
 }
 
@@ -44,7 +44,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
 ): IBasePricingSheet<Calculation> => {
   const pricingSheet: IBasePricingSheet<Calculation> = {
     calculation: params.calculation || [],
-    currency: params.currency,
+    currencyCode: params.currencyCode,
     quantity: params.quantity,
 
     getRawPricingSheet() {
@@ -84,7 +84,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
 
       return {
         amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmountForCategory),
-        currency: this.currency,
+        currencyCode: this.currencyCode,
       };
     },
 

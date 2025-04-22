@@ -131,7 +131,7 @@ const Cryptopay: IPaymentAdapter = {
         if (!context.order) return true;
         // if (
         //   !Object.values(CryptopayCurrencies).includes(
-        //     context.order.currency as CryptopayCurrencies,
+        //     context.order.currencyCode as CryptopayCurrencies,
         //   )
         // )
         //   return false;
@@ -151,7 +151,7 @@ const Cryptopay: IPaymentAdapter = {
         if (existingAddresses.length) {
           // Do not derive addresses a second time for order payment, return existing addresses
           const existingAddressesWithNewExpiration = await setConversionRates(
-            order.currency,
+            order.currencyCode,
             existingAddresses.map(
               ({ _id, currency }) =>
                 ({
@@ -195,7 +195,10 @@ const Cryptopay: IPaymentAdapter = {
           });
         }
 
-        const cryptoAddressesWithExpiration = await setConversionRates(order.currency, cryptoAddresses);
+        const cryptoAddressesWithExpiration = await setConversionRates(
+          order.currencyCode,
+          cryptoAddresses,
+        );
         await updateTransactionsWithOrderPaymentId(orderPayment._id, cryptoAddresses);
         return JSON.stringify(cryptoAddressesWithExpiration);
       },
@@ -213,15 +216,15 @@ const Cryptopay: IPaymentAdapter = {
 
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
         const totalAmount = BigInt(pricing?.total({ useNetPrice: false }).amount);
 
-        if (walletForOrderPayment.currency !== order.currency) {
+        if (walletForOrderPayment.currency !== order.currencyCode) {
           const baseCurrency = await modules.currencies.findCurrency({
             isoCode: walletForOrderPayment.currency,
           });
-          const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currency });
+          const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currencyCode });
 
           const { /* min, */ max } = await modules.products.prices.rates.getRateRange(
             baseCurrency,
@@ -266,7 +269,7 @@ const Cryptopay: IPaymentAdapter = {
 
         logger.info(
           `Cryptopay Plugin: No confirmed payments found for currency ${
-            order.currency
+            order.currencyCode
           } and addresses ${JSON.stringify(foundWalletsWithBalances)}`,
         );
 

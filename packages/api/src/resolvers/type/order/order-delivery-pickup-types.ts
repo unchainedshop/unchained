@@ -57,7 +57,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
 
     const pricing = DeliveryPricingSheet({
       calculation: obj.calculation,
-      currency: order.currency,
+      currencyCode: order.currencyCode,
     });
 
     if (pricing.isValid()) {

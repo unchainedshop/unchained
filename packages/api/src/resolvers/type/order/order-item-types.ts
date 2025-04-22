@@ -17,7 +17,7 @@ const getPricingSheet = async (orderPosition: OrderPosition, context: Context) =
   });
   return ProductPricingSheet({
     calculation: orderPosition.calculation,
-    currency: order.currency,
+    currencyCode: order.currencyCode,
     quantity: orderPosition.quantity,
   });
 };

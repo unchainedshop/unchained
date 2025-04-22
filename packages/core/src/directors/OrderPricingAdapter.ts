@@ -17,7 +17,7 @@ import { User } from '@unchainedshop/core-users';
 import { Modules } from '../modules.js';
 
 export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
-  currency?: string;
+  currencyCode?: string;
   discounts: Array<OrderDiscount>;
   order: Order;
   orderDelivery: OrderDelivery;
@@ -44,9 +44,9 @@ export const OrderPricingAdapter: IOrderPricingAdapter = {
 
   actions: (params) => {
     const { context } = params;
-    const { currency } = context;
+    const { currencyCode } = context;
     const baseActions = basePricingAdapter.actions(params);
-    const resultSheet = OrderPricingSheet({ currency });
+    const resultSheet = OrderPricingSheet({ currencyCode });
 
     return {
       ...baseActions,

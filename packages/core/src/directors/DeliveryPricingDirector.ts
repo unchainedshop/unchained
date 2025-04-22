@@ -14,14 +14,14 @@ import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export type DeliveryPricingContext =
   | {
-      currency: string;
+      currencyCode: string;
       country?: string;
       provider: DeliveryProvider;
       providerContext?: any;
       order: Order;
       user: User;
     }
-  | { currency: string; item: OrderDelivery };
+  | { currencyCode: string; item: OrderDelivery };
 
 export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   DeliveryPricingContext,
@@ -45,7 +45,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
     const { modules } = unchainedAPI;
 
     if ('item' in context) {
-      const { item, currency } = context;
+      const { item, currencyCode } = context;
       const order = await modules.orders.findOrder({
         orderId: item.orderId,
       });
@@ -60,7 +60,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
       return {
         ...unchainedAPI,
         country: order.countryCode,
-        currency,
+        currencyCode,
         order,
         provider,
         user,
@@ -73,7 +73,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
     return {
       ...unchainedAPI,
       country: context.country,
-      currency: context.currency,
+      currencyCode: context.currencyCode,
       order: context.order,
       provider: context.provider,
       user: context.user,
@@ -86,7 +86,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
   calculationSheet(pricingContext, calculation) {
     return DeliveryPricingSheet({
       calculation,
-      currency: pricingContext.currency,
+      currencyCode: pricingContext.currencyCode,
     });
   },
 };

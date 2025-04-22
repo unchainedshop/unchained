@@ -19,7 +19,7 @@ export const OrderPaymentDiscount = {
   total(orderDelivery: Price & { discountId: string; item: OrderPayment }) {
     return {
       amount: orderDelivery.amount,
-      currency: orderDelivery.currency,
+      currencyCode: orderDelivery.currencyCode,
     };
   },
 };

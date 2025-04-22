@@ -22,7 +22,7 @@ const generateOrder = async (
   const { orderPositions, ...configuration } = params;
   let order = await modules.orders.create({
     userId: enrollment.userId,
-    currency: enrollment.currencyCode,
+    currencyCode: enrollment.currencyCode,
     countryCode: enrollment.countryCode,
     contact: enrollment.contact,
     billingAddress: enrollment.billingAddress,

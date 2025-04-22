@@ -38,7 +38,7 @@ export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & 
 
 export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext {
   country?: string;
-  currency?: string;
+  currencyCode?: string;
   provider: DeliveryProvider;
   providerContext?: any;
   order: Order;
@@ -68,9 +68,9 @@ export const DeliveryPricingAdapter: IDeliveryPricingAdapter = {
 
   actions: (params) => {
     const { context } = params;
-    const { currency } = context;
+    const { currencyCode } = context;
     const baseActions = basePricingAdapter.actions(params);
-    const resultSheet = DeliveryPricingSheet({ currency });
+    const resultSheet = DeliveryPricingSheet({ currencyCode });
 
     return {
       ...baseActions,

@@ -89,7 +89,7 @@ export const ProductPricingSheet = (
       const amount = unitPriceParams?.useNetPrice ? this.net() : this.gross();
       return {
         amount: Math.round(amount / (this.quantity ?? 1)),
-        currency: this.currency,
+        currencyCode: this.currencyCode,
       };
     },
 
@@ -113,7 +113,7 @@ export const ProductPricingSheet = (
           return {
             discountId,
             amount: Math.round(amount),
-            currency: basePricingSheet.currency,
+            currencyCode: basePricingSheet.currencyCode,
           };
         })
         .filter(Boolean);

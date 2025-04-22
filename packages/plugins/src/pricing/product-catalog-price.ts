@@ -13,12 +13,10 @@ const memoizeCache = new ExpiryMap(NODE_ENV === 'production' ? 1000 * 60 : 100);
 
 export const resolveCurrency = pMemoize(
   async (context) => {
-    const { country, currency: forcedCurrency, modules } = context;
+    const { country, currencyCode: forcedCurrency, modules } = context;
     const countryObject = await modules.countries.findCountry({ isoCode: country });
     const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
-    const currency =
-      forcedCurrency || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
-    return currency;
+    return forcedCurrency || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
   },
   {
     cache: memoizeCache,
@@ -46,8 +44,8 @@ export const ProductPrice: IProductPricingAdapter = {
 
       calculate: async () => {
         const { product, country, quantity, modules } = params.context;
-        const currency = await resolveCurrency(params.context);
-        const price = await modules.products.prices.price(product, { country, currency, quantity });
+        const currencyCode = await resolveCurrency(params.context);
+        const price = await modules.products.prices.price(product, { country, currencyCode, quantity });
         if (price) {
           const itemTotal = price.amount * quantity;
           pricingAdapter.resultSheet().addItem({

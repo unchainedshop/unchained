@@ -16,7 +16,7 @@ export const OrderDeliveryDiscount = {
   total(obj: OrderDeliveryDiscountType) {
     return {
       amount: obj.amount,
-      currency: obj.currency,
+      currencyCode: obj.currencyCode,
     };
   },
 };

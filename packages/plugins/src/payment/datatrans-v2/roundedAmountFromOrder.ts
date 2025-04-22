@@ -1,14 +1,14 @@
 import { OrderPricingSheet } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 
-const roundedAmountFromOrder = (order: Order): { currency: string; amount: number } => {
+const roundedAmountFromOrder = (order: Order): { currencyCode: string; amount: number } => {
   const pricing = OrderPricingSheet({
     calculation: order.calculation,
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   });
-  const { currency, amount } = pricing.total({ useNetPrice: false });
+  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
   return {
-    currency,
+    currencyCode,
     amount: Math.round(amount),
   };
 };

@@ -122,11 +122,11 @@ export const createOrderPaymentIntent = async (
   const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
   const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
 
-  const { currency, amount } = pricing.total({ useNetPrice: false });
+  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
-    currency: currency.toLowerCase(),
+    currency: currencyCode.toLowerCase(),
     description,
     statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter

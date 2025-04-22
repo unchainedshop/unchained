@@ -89,11 +89,11 @@ const Datatrans: IPaymentAdapter = {
 
       const pricingForOrderPayment = PaymentPricingSheet({
         calculation: orderPayment.calculation,
-        currency: order.currency,
+        currencyCode: order.currencyCode,
       });
       const pricing = OrderPricingSheet({
         calculation: order.calculation,
-        currency: order.currency,
+        currencyCode: order.currencyCode,
       });
 
       const { amount: total } = pricing.total({ useNetPrice: false });
@@ -128,12 +128,12 @@ const Datatrans: IPaymentAdapter = {
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
       const userId = order?.userId || context?.userId;
       const refno2 = userId;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currencyCode, amount } = roundedAmountFromOrder(order);
       const splits = await getMarketplaceSplits();
       const result = await api().authorize({
         ...arbitraryFields,
         amount,
-        currency,
+        currency: currencyCode,
         refno,
         refno2,
         autoSettle: false,
@@ -158,12 +158,12 @@ const Datatrans: IPaymentAdapter = {
       ...arbitraryFields
     }): Promise<string> => {
       const { order } = context;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currencyCode, amount } = roundedAmountFromOrder(order);
       const result = await api().authorizeAuthenticated({
         ...arbitraryFields,
         transactionId,
         amount,
-        currency,
+        currency: currencyCode,
         refno,
         refno2,
         autoSettle: false,
@@ -174,14 +174,14 @@ const Datatrans: IPaymentAdapter = {
 
     const isTransactionAmountValid = (transaction: StatusResponseSuccess): boolean => {
       const { order } = context;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currencyCode, amount } = roundedAmountFromOrder(order);
       if (
-        transaction.currency !== currency ||
+        transaction.currency !== currencyCode ||
         (transaction.detail.authorize as any)?.amount !== amount
       ) {
         logger.info(
-          `currency: ${transaction.currency} === ${currency} => ${
-            transaction.currency === currency
+          `currency: ${transaction.currency} === ${currencyCode} => ${
+            transaction.currency === currencyCode
           }, amount: ${(transaction.detail.authorize as any)?.amount} === ${amount} => ${
             (transaction.detail.authorize as any)?.amount === amount
           }`,
@@ -208,14 +208,14 @@ const Datatrans: IPaymentAdapter = {
 
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
       const { order } = context;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currencyCode, amount } = roundedAmountFromOrder(order);
       const splits = await getMarketplaceSplits();
       const result = await api().settle({
         transactionId,
         amount,
         refno,
         refno2,
-        currency,
+        currency: currencyCode,
         marketplace: splits.length
           ? {
               splits,
@@ -263,12 +263,14 @@ const Datatrans: IPaymentAdapter = {
         );
         const userId = order?.userId || context?.userId;
         const refno2 = userId;
-        const price: { amount?: number; currency?: string } = order ? roundedAmountFromOrder(order) : {};
+        const price: { amount?: number; currencyCode?: string } = order
+          ? roundedAmountFromOrder(order)
+          : {};
 
         if (useSecureFields) {
           const result = await api().secureFields({
             ...arbitraryFields,
-            currency: price.currency || 'CHF',
+            currency: price.currencyCode || 'CHF',
             refno,
             refno2,
             customer: {
@@ -281,7 +283,7 @@ const Datatrans: IPaymentAdapter = {
         }
         const result = await api().init({
           ...arbitraryFields,
-          currency: price.currency || 'CHF',
+          currency: price.currencyCode || 'CHF',
           refno,
           refno2,
           customer: {

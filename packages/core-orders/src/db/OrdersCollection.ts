@@ -23,7 +23,7 @@ export type Order = {
   contact?: Contact;
   context?: any;
   countryCode: string;
-  currency: string;
+  currencyCode: string;
   deliveryId?: string;
   fullfilled?: Date;
   ordered?: Date;

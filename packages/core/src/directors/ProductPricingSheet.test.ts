@@ -34,7 +34,7 @@ describe('ProductPricingSheet', () => {
 
   const pricingSheetParams = {
     calculation: calculations,
-    currency: 'CHF',
+    currencyCode: 'CHF',
     quantity: 2,
   };
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe('ProductPricingSheet', () => {
   it('should return an object that implements the IProductPricingSheet interface', () => {
     assert(pricingSheet);
     assert.equal(pricingSheet.quantity, 2);
-    assert.equal(pricingSheet.currency, 'CHF');
+    assert.equal(pricingSheet.currencyCode, 'CHF');
     assert.equal(typeof pricingSheet.addItem, 'function');
     assert.equal(typeof pricingSheet.addDiscount, 'function');
     assert.equal(typeof pricingSheet.addTax, 'function');
@@ -63,22 +63,25 @@ describe('ProductPricingSheet', () => {
 
   describe('total()', () => {
     it('should return sum of all ProductPricingCalculations ', () => {
-      assert.deepEqual(pricingSheet.total(), { amount: 535, currency: 'CHF' });
-      assert.deepEqual(pricingSheet.total(), { amount: pricingSheet.gross(), currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total(), { amount: 535, currencyCode: 'CHF' });
+      assert.deepEqual(pricingSheet.total(), { amount: pricingSheet.gross(), currencyCode: 'CHF' });
     });
 
     it('should return sum of all ProductPricingCalculations ', () => {
-      assert.deepEqual(pricingSheet.total({ useNetPrice: true }), { amount: 460, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ useNetPrice: true }), { amount: 460, currencyCode: 'CHF' });
       assert.deepEqual(pricingSheet.total({ useNetPrice: true }), {
         amount: pricingSheet.net(),
-        currency: 'CHF',
+        currencyCode: 'CHF',
       });
     });
 
     it('should return sum of all ProductPricingCalculations for the provided category ', () => {
-      assert.deepEqual(pricingSheet.total({ category: 'ITEM' }), { amount: 400, currency: 'CHF' });
-      assert.deepEqual(pricingSheet.total({ category: 'DISCOUNT' }), { amount: 60, currency: 'CHF' });
-      assert.deepEqual(pricingSheet.total({ category: 'TAX' }), { amount: 75, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ category: 'ITEM' }), { amount: 400, currencyCode: 'CHF' });
+      assert.deepEqual(pricingSheet.total({ category: 'DISCOUNT' }), {
+        amount: 60,
+        currencyCode: 'CHF',
+      });
+      assert.deepEqual(pricingSheet.total({ category: 'TAX' }), { amount: 75, currencyCode: 'CHF' });
     });
   });
 
@@ -106,21 +109,27 @@ describe('ProductPricingSheet', () => {
 
   describe('unitPrice', () => {
     it('should return the GROSS sum for a  product price useNetPrice:false', () => {
-      assert.deepEqual(pricingSheet.unitPrice({ useNetPrice: false }), { amount: 268, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.unitPrice({ useNetPrice: false }), {
+        amount: 268,
+        currencyCode: 'CHF',
+      });
     });
 
     it('should return the NET sum for a product price when useNetPrice:true', () => {
-      assert.deepEqual(pricingSheet.unitPrice({ useNetPrice: true }), { amount: 230, currency: 'CHF' });
+      assert.deepEqual(pricingSheet.unitPrice({ useNetPrice: true }), {
+        amount: 230,
+        currencyCode: 'CHF',
+      });
     });
   });
 
   describe('discountPrices', () => {
     it('should return the sum of all discounts registered on the price sheet based on discountId', () => {
       assert.deepEqual(pricingSheet.discountPrices('for-all'), [
-        { amount: 40, currency: 'CHF', discountId: 'for-all' },
+        { amount: 40, currencyCode: 'CHF', discountId: 'for-all' },
       ]);
       assert.deepEqual(pricingSheet.discountPrices('special'), [
-        { amount: 20, currency: 'CHF', discountId: 'special' },
+        { amount: 20, currencyCode: 'CHF', discountId: 'special' },
       ]);
     });
 

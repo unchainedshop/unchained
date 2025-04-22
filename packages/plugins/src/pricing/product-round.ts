@@ -6,7 +6,7 @@ import {
 
 interface PriceRoundSettings {
   defaultPrecision: number;
-  roundTo: (value: number, precision: number, currency: string) => number;
+  roundTo: (value: number, precision: number, currencyCode: string) => number;
 }
 
 export const ProductRound: IProductPricingAdapter & {
@@ -41,7 +41,7 @@ export const ProductRound: IProductPricingAdapter & {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { currency } = params.context;
+        const { currencyCode } = params.context;
         const { defaultPrecision, roundTo } = ProductRound.settings;
         const { calculation = [] } = params.calculationSheet;
 
@@ -49,7 +49,7 @@ export const ProductRound: IProductPricingAdapter & {
           pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
 
           calculation.forEach((item) => {
-            const newAmount = roundTo(item.amount, defaultPrecision, currency);
+            const newAmount = roundTo(item.amount, defaultPrecision, currencyCode);
             pricingAdapter.resultSheet().calculation.push({
               ...item,
               amount: newAmount,

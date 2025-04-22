@@ -17,7 +17,7 @@ export interface DeliveryProviderHelperTypes {
   configurationError: HelperType<never, Promise<DeliveryError>>;
   simulatedPrice: HelperType<
     {
-      currency?: string;
+      currencyCode?: string;
       orderId: string;
       useNetPrice?: boolean;
       context: any;
@@ -55,17 +55,17 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
 
   async simulatedPrice(
     deliveryProvider,
-    { currency: currencyCode, orderId, useNetPrice, context: providerContext },
+    { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext },
     requestContext,
   ) {
     const { modules, countryContext: country, user } = requestContext;
 
     // TODO: use loader
     const order = await modules.orders.findOrder({ orderId });
-    const currency = currencyCode || order?.currency || requestContext.currencyContext;
+    const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
     const pricingContext = {
       country,
-      currency,
+      currencyCode,
       provider: deliveryProvider,
       order,
       providerContext,
@@ -80,12 +80,12 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;
-      currency: string;
+      currencyCode: string;
     };
 
     return {
       amount: orderPrice.amount,
-      currencyCode: orderPrice.currency,
+      currencyCode: orderPrice.currencyCode,
       countryCode: country,
       isTaxable: pricing.taxSum() > 0,
       isNetPrice: useNetPrice,

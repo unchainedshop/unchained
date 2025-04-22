@@ -190,16 +190,16 @@ export const configureQuotationsModule = async ({
     // Mutations
     create: async ({
       countryCode,
-      currency,
+      currencyCode,
       ...quotationData
-    }: QuotationData & { currency: string }): Promise<Quotation> => {
+    }: QuotationData & { currencyCode: string }): Promise<Quotation> => {
       const { insertedId: quotationId } = await Quotations.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
         ...quotationData,
         configuration: quotationData.configuration || [],
         countryCode,
-        currency,
+        currencyCode,
         log: [],
         status: QuotationStatus.REQUESTED,
       });

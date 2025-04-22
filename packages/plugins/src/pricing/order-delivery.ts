@@ -29,7 +29,7 @@ export const OrderDelivery: IOrderPricingAdapter = {
         if (!orderDelivery) return null;
         const pricing = DeliveryPricingSheet({
           calculation: orderDelivery.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
         const tax = pricing.taxSum();
         const shipping = pricing.gross();

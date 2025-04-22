@@ -90,13 +90,13 @@ export default [
         quantity: Int = 0
         vectors: [ProductAssignmentVectorInput!]
         includeInactive: Boolean = false
-        currency: String
+        currencyCode: String
       ): PriceRange
       simulatedPriceRange(
         quantity: Int
         vectors: [ProductAssignmentVectorInput!]
         includeInactive: Boolean = false
-        currency: String
+        currencyCode: String
         useNetPrice: Boolean = false
       ): PriceRange @cacheControl(scope: PRIVATE)
 

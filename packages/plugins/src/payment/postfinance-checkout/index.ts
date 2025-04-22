@@ -105,13 +105,13 @@ const PostfinanceCheckout: IPaymentAdapter = {
         const completionMode = adapter.getCompletionMode();
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
 
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const transaction = new PostFinanceCheckout.model.TransactionCreate();
         const userId = order?.userId || context?.userId;
-        transaction.currency = order.currency;
+        transaction.currency = order.currencyCode;
         transaction.metaData = {
           orderPaymentId: orderPayment._id,
         };
@@ -219,7 +219,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         const refund = transaction.state === PostFinanceCheckout.model.TransactionState.FULFILL;
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
 
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;

@@ -14,7 +14,7 @@ const getRedirects = () => {
 };
 
 export const mapOrderDataToGatewayObject = ({ order, orderPayment, pricing }, options = {}) => {
-  const { currency, amount } = pricing.total({ useNetPrice: false });
+  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
   const customerData = {};
   if (order.contact?.emailAddress) {
@@ -29,7 +29,7 @@ export const mapOrderDataToGatewayObject = ({ order, orderPayment, pricing }, op
 
   const gatewayObject = {
     amount: Math.round(amount),
-    currency: currency.toUpperCase(),
+    currency: currencyCode.toUpperCase(),
     purpose: encodeURIComponent(`${process.env.EMAIL_WEBSITE_NAME || 'Unchained'} #${order._id}`),
     reservation: true,
     skipResultPage: true,

@@ -30,7 +30,7 @@ const OrderItems: IOrderPricingAdapter = {
           (current, orderPosition) => {
             const pricing = ProductPricingSheet({
               calculation: orderPosition.calculation,
-              currency: order.currency,
+              currencyCode: order.currencyCode,
               quantity: orderPosition.quantity,
             });
             const tax = pricing.taxSum();

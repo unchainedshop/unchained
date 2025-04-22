@@ -16,7 +16,7 @@ export const OrderItemDiscount = {
   total(obj: OrderPositionDiscount) {
     return {
       amount: obj.amount,
-      currency: obj.currency,
+      currencyCode: obj.currencyCode,
     };
   },
 };

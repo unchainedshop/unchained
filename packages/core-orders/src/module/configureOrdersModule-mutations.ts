@@ -15,7 +15,7 @@ export interface OrderMutations {
     billingAddress?: Address;
     contact?: Contact;
     countryCode: string;
-    currency: string;
+    currencyCode: string;
     orderNumber?: string;
     originEnrollmentId?: string;
   }) => Promise<Order>;
@@ -49,7 +49,7 @@ export const configureOrderModuleMutations = ({
   registerEvents(ORDER_EVENTS);
 
   return {
-    create: async ({ userId, orderNumber, currency, countryCode, billingAddress, contact }) => {
+    create: async ({ userId, orderNumber, currencyCode, countryCode, billingAddress, contact }) => {
       const { insertedId: orderId } = await Orders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -57,7 +57,7 @@ export const configureOrderModuleMutations = ({
         billingAddress,
         contact,
         userId,
-        currency,
+        currencyCode,
         countryCode,
         calculation: [],
         log: [],

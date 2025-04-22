@@ -13,7 +13,7 @@ import {
 
 export type ProductPricingContext =
   | {
-      currency: string;
+      currencyCode: string;
       quantity: number;
       country?: string;
       discounts?: Array<OrderDiscount>;
@@ -23,7 +23,7 @@ export type ProductPricingContext =
       user?: User;
     }
   | {
-      currency: string;
+      currencyCode: string;
       quantity: number;
       item: OrderPosition;
     };
@@ -48,7 +48,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
 
   async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;
-    const { quantity = 1, currency } = context;
+    const { quantity = 1, currencyCode } = context;
 
     if ('item' in context) {
       const { item } = context;
@@ -67,7 +67,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
       return {
         ...unchainedAPI,
         country: order.countryCode,
-        currency,
+        currencyCode,
         discounts,
         order,
         product,
@@ -80,7 +80,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
     return {
       ...unchainedAPI,
       country: context.country,
-      currency,
+      currencyCode,
       discounts: [],
       order: context.order,
       product: context.product,
@@ -93,7 +93,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
   calculationSheet(pricingContext, calculation) {
     return ProductPricingSheet({
       calculation,
-      currency: pricingContext.currency,
+      currencyCode: pricingContext.currencyCode,
       quantity: pricingContext.quantity ?? 1,
     });
   },

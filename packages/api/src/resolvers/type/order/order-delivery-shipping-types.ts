@@ -35,7 +35,7 @@ export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
     const pricing = DeliveryPricingSheet({
       calculation: obj.calculation,
-      currency: order.currency,
+      currencyCode: order.currencyCode,
     });
     if (pricing.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!

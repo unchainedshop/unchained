@@ -58,9 +58,9 @@ export const configureProductPricesModule = ({
     product: Product,
     {
       country: countryCode,
-      currency: currencyCode,
+      currencyCode,
       quantity = 1,
-    }: { country: string; currency?: string; quantity?: number },
+    }: { country: string; currencyCode?: string; quantity?: number },
   ): Promise<ProductPrice> => {
     const pricing = getPriceLevels({
       product,
@@ -101,10 +101,10 @@ export const configureProductPricesModule = ({
         vectors = [],
         includeInactive = false,
         country,
-        currency,
+        currencyCode,
       }: {
         country: string;
-        currency: string;
+        currencyCode: string;
         includeInactive?: boolean;
         quantity?: number;
         vectors: Array<ProductConfiguration>;
@@ -120,7 +120,7 @@ export const configureProductPricesModule = ({
             catalogPrice(proxyProduct, {
               country,
               quantity,
-              currency,
+              currencyCode,
             }),
           ),
         )
@@ -141,7 +141,7 @@ export const configureProductPricesModule = ({
 
     catalogPricesLeveled: async (
       product: Product,
-      { currency: currencyCode, country: countryCode }: { currency: string; country: string },
+      { currencyCode, country: countryCode }: { currencyCode: string; country: string },
     ): Promise<
       Array<{
         minQuantity: number;

@@ -7,7 +7,7 @@ import {
 
 interface PriceRoundSettings {
   defaultPrecision: number;
-  roundTo: (value: number, precision: number, currency: string) => number;
+  roundTo: (value: number, precision: number, currencyCode: string) => number;
 }
 
 export const OrderPriceRound: IOrderPricingAdapter & {
@@ -39,11 +39,11 @@ export const OrderPriceRound: IOrderPricingAdapter & {
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
 
-    const calculateDifference = (amount: number, currency: string) => {
+    const calculateDifference = (amount: number, currencyCode: string) => {
       const roundedAmount = OrderPriceRound.settings.roundTo(
         amount,
         OrderPriceRound.settings.defaultPrecision,
-        currency,
+        currencyCode,
       );
       return roundedAmount - amount;
     };
@@ -52,7 +52,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { currency } = params.context;
+        const { currencyCode } = params.context;
 
         const { amount: deliveryAmount } = params.calculationSheet.total({
           category: OrderPricingRowCategory.Delivery,
@@ -60,7 +60,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
         });
         if (deliveryAmount) {
           pricingAdapter.resultSheet().addDelivery({
-            amount: calculateDifference(deliveryAmount, currency),
+            amount: calculateDifference(deliveryAmount, currencyCode),
             taxAmount: 0,
             meta: {
               adapter: OrderPriceRound.key,
@@ -74,7 +74,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
         });
         if (discountAmount) {
           pricingAdapter.resultSheet().addDiscount({
-            amount: calculateDifference(discountAmount, currency),
+            amount: calculateDifference(discountAmount, currencyCode),
             taxAmount: 0,
             meta: {
               adapter: OrderPriceRound.key,
@@ -89,7 +89,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
         });
         if (itemsAmount) {
           pricingAdapter.resultSheet().addItems({
-            amount: calculateDifference(itemsAmount, currency),
+            amount: calculateDifference(itemsAmount, currencyCode),
             taxAmount: 0,
             meta: {
               adapter: OrderPriceRound.key,
@@ -103,7 +103,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
         });
         if (paymentAmount) {
           pricingAdapter.resultSheet().addPayment({
-            amount: calculateDifference(paymentAmount, currency),
+            amount: calculateDifference(paymentAmount, currencyCode),
             taxAmount: 0,
             meta: {
               adapter: OrderPriceRound.key,
@@ -115,7 +115,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           category: OrderPricingRowCategory.Taxes,
         });
         if (taxesAmount) {
-          const taxDifference = calculateDifference(taxesAmount, currency);
+          const taxDifference = calculateDifference(taxesAmount, currencyCode);
           pricingAdapter.resultSheet().calculation.push({
             category: OrderPricingRowCategory.Taxes,
             amount: taxDifference,

@@ -80,7 +80,7 @@ export const PaymentPricingSheet = (
           return {
             discountId,
             amount: Math.round(amount),
-            currency: basePricingSheet.currency,
+            currencyCode: basePricingSheet.currencyCode,
           };
         })
         .filter(Boolean);

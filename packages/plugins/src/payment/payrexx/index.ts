@@ -59,7 +59,7 @@ const Payrexx: IPaymentAdapter = {
           // Order Checkout signing (One-time payment)
           const pricing = OrderPricingSheet({
             calculation: order.calculation,
-            currency: order.currency,
+            currencyCode: order.currencyCode,
           });
           const gatewayObject = mapOrderDataToGatewayObject(
             { order, orderPayment, pricing },
@@ -183,9 +183,9 @@ const Payrexx: IPaymentAdapter = {
 
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
-        const { currency, amount } = pricing.total({ useNetPrice: false });
+        const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
         if (
           // gatewayObject.status === 'authorized' || // authorized is only used for tokenization!
@@ -194,7 +194,7 @@ const Payrexx: IPaymentAdapter = {
         ) {
           try {
             if (
-              gatewayObject.currency !== currency.toUpperCase() ||
+              gatewayObject.currency !== currencyCode.toUpperCase() ||
               gatewayObject.amount !== Math.round(amount)
             ) {
               throw new Error('The price has changed since the intent has been created');

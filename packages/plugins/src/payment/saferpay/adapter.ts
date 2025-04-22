@@ -100,7 +100,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
         }
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
 
@@ -115,7 +115,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
           Payment: {
             Amount: {
               Value: totalAmount.toString(),
-              CurrencyCode: order.currency,
+              CurrencyCode: order.currencyCode,
             },
             OrderId: order._id,
             Description: transactionContext.description || 'Bestellung',
@@ -160,7 +160,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
         }
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
         const totalAmount = pricing.total({ useNetPrice: false }).amount;
 
@@ -176,7 +176,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
         const success =
           !paymentPageAssert.ErrorMessage &&
           paymentPageAssert.Transaction.Amount.Value === totalAmount.toString() &&
-          paymentPageAssert.Transaction.Amount.CurrencyCode === order.currency &&
+          paymentPageAssert.Transaction.Amount.CurrencyCode === order.currencyCode &&
           (paymentPageAssert.Transaction.Status === 'AUTHORIZED' ||
             paymentPageAssert.Transaction.Status === 'CAPTURED');
         if (success) {

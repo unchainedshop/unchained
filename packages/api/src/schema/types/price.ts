@@ -4,7 +4,7 @@ export default [
       isTaxable: Boolean!
       isNetPrice: Boolean!
       amount: Int!
-      currency: String!
+      currencyCode: String!
     }
 
     type PriceRange @cacheControl(maxAge: 60) {

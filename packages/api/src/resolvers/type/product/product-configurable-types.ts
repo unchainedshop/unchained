@@ -47,10 +47,10 @@ export const ConfigurableProduct = {
     {
       quantity,
       vectors,
-      currency: forcedCurrencyCode,
+      currencyCode: forcedCurrencyCode,
       includeInactive,
     }: {
-      currency?: string;
+      currencyCode?: string;
       includeInactive: boolean;
       quantity: number;
       vectors: Array<ProductConfiguration>;
@@ -58,13 +58,13 @@ export const ConfigurableProduct = {
     requestContext: Context,
   ): Promise<ProductPriceRange> {
     const { countryContext, modules } = requestContext;
-    const currencyCode = forcedCurrencyCode || requestContext.currencyContext;
+    const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
     return modules.products.prices.catalogPriceRange(product, {
       quantity,
       vectors,
       includeInactive,
       country: countryContext,
-      currency: currencyCode,
+      currencyCode,
     });
   },
 
@@ -90,13 +90,13 @@ export const ConfigurableProduct = {
   async simulatedPriceRange(
     product: ProductType,
     {
-      currency: forcedCurrencyCode,
+      currencyCode: forcedCurrencyCode,
       quantity,
       useNetPrice,
       vectors,
       includeInactive,
     }: {
-      currency?: string;
+      currencyCode?: string;
       includeInactive: boolean;
       quantity?: number;
       vectors: Array<ProductConfiguration>;
@@ -105,7 +105,7 @@ export const ConfigurableProduct = {
     requestContext: Context,
   ): Promise<ProductPriceRange> {
     const { countryContext, modules, services } = requestContext;
-    const currency = forcedCurrencyCode || requestContext.currencyContext;
+    const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
     const products = await modules.products.proxyProducts(product, vectors, {
       includeInactive,
@@ -118,7 +118,7 @@ export const ConfigurableProduct = {
             product: proxyProduct,
             user: requestContext.user,
             country: countryContext,
-            currency,
+            currencyCode,
             quantity,
           };
 
@@ -130,7 +130,7 @@ export const ConfigurableProduct = {
             ...unitPrice,
             isNetPrice: useNetPrice,
             isTaxable: pricing.taxSum() > 0,
-            currencyCode: pricing.currency,
+            currencyCode: pricing.currencyCode,
           };
         }),
       )

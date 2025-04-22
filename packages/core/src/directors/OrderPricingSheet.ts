@@ -112,7 +112,7 @@ export const OrderPricingSheet = (
 
       return {
         amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmount),
-        currency: this.currency,
+        currencyCode: this.currencyCode,
       };
     },
 
@@ -136,7 +136,7 @@ export const OrderPricingSheet = (
           return {
             discountId,
             amount: Math.round(amount),
-            currency: basePricingSheet.currency,
+            currencyCode: basePricingSheet.currencyCode,
           };
         })
         .filter(Boolean);

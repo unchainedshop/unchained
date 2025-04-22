@@ -90,7 +90,7 @@ const PaypalCheckout: IPaymentAdapter = {
 
           const pricing = OrderPricingSheet({
             calculation: order.calculation,
-            currency: order.currency,
+            currencyCode: order.currencyCode,
           });
           const ourTotal = (pricing.total({ useNetPrice: false }).amount / 100).toFixed(2);
           const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;

@@ -14,14 +14,14 @@ import { User } from '@unchainedshop/core-users';
 export type PaymentPricingContext =
   | {
       country?: string;
-      currency?: string;
+      currencyCode?: string;
       user: User;
       order: Order;
       provider: PaymentProvider;
       providerContext?: any;
     }
   | {
-      currency: string;
+      currencyCode: string;
       item: OrderPayment;
     };
 
@@ -47,7 +47,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
     const { modules } = unchainedAPI;
 
     if ('item' in context) {
-      const { item, currency } = context;
+      const { item, currencyCode } = context;
       const order = await modules.orders.findOrder({
         orderId: item.orderId,
       });
@@ -62,7 +62,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
       return {
         ...unchainedAPI,
         country: order.countryCode,
-        currency,
+        currencyCode,
         order,
         provider,
         user,
@@ -75,7 +75,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
     return {
       ...unchainedAPI,
       country: context.country,
-      currency: context.currency,
+      currencyCode: context.currencyCode,
       order: context.order,
       provider: context.provider,
       user: context.user,
@@ -88,7 +88,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
   calculationSheet(pricingContext, calculation) {
     return PaymentPricingSheet({
       calculation,
-      currency: pricingContext.currency,
+      currencyCode: pricingContext.currencyCode,
     });
   },
 };

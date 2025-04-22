@@ -48,7 +48,7 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
           resolveRatioAndTaxDivisorForPricingSheet(
             ProductPricingSheet({
               calculation: orderPosition.calculation,
-              currency: order.currency,
+              currencyCode: order.currencyCode,
               quantity: orderPosition.quantity,
             }),
             totalAmountOfItems,
@@ -58,7 +58,7 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
         const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
           DeliveryPricingSheet({
             calculation: orderDelivery.calculation || [],
-            currency: order.currency,
+            currencyCode: order.currencyCode,
           }),
           totalAmountOfPaymentAndDelivery,
         );
@@ -66,7 +66,7 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
         const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
           PaymentPricingSheet({
             calculation: orderPayment.calculation || [],
-            currency: order.currency,
+            currencyCode: order.currencyCode,
           }),
           totalAmountOfPaymentAndDelivery,
         );

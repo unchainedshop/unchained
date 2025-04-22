@@ -1,6 +1,6 @@
-export const priceToString = ({ amount, currency }: { amount: number; currency: string }) => {
+export const priceToString = ({ amount, currencyCode }: { amount: number; currencyCode: string }) => {
   const fixedPrice = amount / 100;
-  return `${currency} ${fixedPrice}`;
+  return `${currencyCode} ${fixedPrice}`;
 };
 
 export default priceToString;

@@ -21,7 +21,8 @@ export const Quotation: QuotationHelperTypes = {
   country: async (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
 
   // TODO: use loader
-  currency: async (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currency }),
+  currency: async (obj, _, { modules }) =>
+    modules.currencies.findCurrency({ isoCode: obj.currencyCode }),
 
   isExpired: (obj, { referenceDate }, { modules }) =>
     modules.quotations.isExpired(obj, { referenceDate }),

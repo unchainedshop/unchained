@@ -42,7 +42,7 @@ const OrderItemsDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
           resolveRatioAndTaxDivisorForPricingSheet(
             ProductPricingSheet({
               calculation: orderPosition.calculation,
-              currency: order.currency,
+              currencyCode: order.currencyCode,
               quantity: orderPosition.quantity,
             }),
             totalAmountOfItems,

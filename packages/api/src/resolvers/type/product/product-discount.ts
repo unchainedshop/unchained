@@ -19,7 +19,7 @@ export const ProductDiscount = {
     if (productDiscount.total) {
       return {
         amount: total.amount,
-        currency: total.currency,
+        currencyCode: total.currencyCode,
       };
     }
     return null;

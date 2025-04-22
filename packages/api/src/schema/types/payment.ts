@@ -50,8 +50,12 @@ export default [
       configuration: JSON
       configurationError: PaymentProviderError
       isActive: Boolean
-      simulatedPrice(currency: String, useNetPrice: Boolean = false, orderId: ID, context: JSON): Price
-        @cacheControl(scope: PRIVATE, maxAge: 10)
+      simulatedPrice(
+        currencyCode: String
+        useNetPrice: Boolean = false
+        orderId: ID
+        context: JSON
+      ): Price @cacheControl(scope: PRIVATE, maxAge: 10)
     }
   `,
 ];

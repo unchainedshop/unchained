@@ -13,10 +13,10 @@ export default [
       published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
-      catalogPrice(quantity: Int = 1, currency: String): Price
-      leveledCatalogPrices(currency: String): [PriceLevel!]!
+      catalogPrice(quantity: Int = 1, currencyCode: String): Price
+      leveledCatalogPrices(currencyCode: String): [PriceLevel!]!
       simulatedPrice(
-        currency: String
+        currencyCode: String
         useNetPrice: Boolean = false
         quantity: Int = 1
         configuration: [ProductConfigurationParameterInput!]

@@ -33,7 +33,7 @@ export const Order = {
 
   async currency(order: OrderType, _, { modules }: Context): Promise<Currency> {
     // TODO: use loader
-    return modules.currencies.findCurrency({ isoCode: order.currency });
+    return modules.currencies.findCurrency({ isoCode: order.currencyCode });
   },
 
   async country(order: OrderType, _, { modules }: Context): Promise<Country> {
@@ -84,7 +84,7 @@ export const Order = {
   total(order: OrderType, params: { category: string; useNetPrice: boolean }): Price {
     const pricing = OrderPricingSheet({
       calculation: order.calculation,
-      currency: order.currency,
+      currencyCode: order.currencyCode,
     });
 
     if (pricing.isValid()) {

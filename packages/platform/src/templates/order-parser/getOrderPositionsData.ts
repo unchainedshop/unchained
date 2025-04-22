@@ -3,7 +3,7 @@ import { Order } from '@unchainedshop/core-orders';
 import { ProductPricingSheet } from '@unchainedshop/core';
 import { ch } from '@unchainedshop/utils';
 
-type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
+type PriceFormatter = ({ amount, currencyCode }: { amount: number; currencyCode: string }) => string;
 
 export const getOrderPositionsData = async (
   order: Order,
@@ -25,7 +25,7 @@ export const getOrderPositionsData = async (
 
       const positionPricing = ProductPricingSheet({
         calculation: orderPosition.calculation,
-        currency: order.currency,
+        currencyCode: order.currencyCode,
         quantity: orderPosition.quantity,
       });
 

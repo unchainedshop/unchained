@@ -24,7 +24,7 @@ export async function calculateDiscountTotalService(
   });
   const orderDeliveryDiscountSum = DeliveryPricingSheet({
     calculation: orderDelivery.calculation || [],
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   }).total({ category: DeliveryPricingRowCategory.Discount, discountId: orderDiscountId });
 
   // Payment discounts
@@ -33,7 +33,7 @@ export async function calculateDiscountTotalService(
   });
   const orderPaymentDiscountSum = PaymentPricingSheet({
     calculation: orderPayment.calculation || [],
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   }).total({ category: PaymentPricingRowCategory.Discount, discountId: orderDiscountId });
 
   // Position discounts
@@ -43,7 +43,7 @@ export async function calculateDiscountTotalService(
   const orderPositionDiscounts = orderPositions.map((orderPosition) =>
     ProductPricingSheet({
       calculation: orderPosition.calculation || [],
-      currency: order.currency,
+      currencyCode: order.currencyCode,
       quantity: orderPosition.quantity,
     }).total({
       category: ProductPricingRowCategory.Discount,
@@ -54,7 +54,7 @@ export async function calculateDiscountTotalService(
   // order discounts
   const orderDiscountSum = OrderPricingSheet({
     calculation: order.calculation,
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   }).total({ category: OrderPricingRowCategory.Discounts, discountId: orderDiscountId });
 
   const prices = [
@@ -66,6 +66,6 @@ export async function calculateDiscountTotalService(
   const amount = prices.reduce((oldValue, price) => oldValue + (price || 0), 0);
   return {
     amount,
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   };
 }

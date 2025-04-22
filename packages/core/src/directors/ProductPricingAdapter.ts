@@ -13,7 +13,7 @@ import { User } from '@unchainedshop/core-users';
 
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
-  currency: string;
+  currencyCode: string;
   product: Product;
   quantity: number;
   configuration: Array<ProductConfiguration>;
@@ -39,9 +39,9 @@ export const ProductPricingAdapter: IProductPricingAdapter = {
 
   actions: (params) => {
     const { context } = params;
-    const { currency, quantity } = context;
+    const { currencyCode, quantity } = context;
     const baseActions = basePricingAdapter.actions(params);
-    const resultSheet = ProductPricingSheet({ currency, quantity });
+    const resultSheet = ProductPricingSheet({ currencyCode, quantity });
 
     return {
       ...baseActions,

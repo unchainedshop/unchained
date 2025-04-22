@@ -20,7 +20,7 @@ export async function discountedEntitiesService(
 
   const deliveryPricingSheet = DeliveryPricingSheet({
     calculation: orderDelivery.calculation || [],
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   });
   const orderDeliveryDiscounts = deliveryPricingSheet
     .discountPrices(orderDiscount._id)
@@ -35,7 +35,7 @@ export async function discountedEntitiesService(
   });
   const paymentPricingSheet = PaymentPricingSheet({
     calculation: orderPayment.calculation || [],
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   });
   const orderPaymentDiscounts = paymentPricingSheet
     .discountPrices(orderDiscount._id)
@@ -51,7 +51,7 @@ export async function discountedEntitiesService(
   const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
     ProductPricingSheet({
       calculation: orderPosition.calculation,
-      currency: order.currency,
+      currencyCode: order.currencyCode,
       quantity: orderPosition.quantity,
     })
       .discountPrices(orderDiscount._id)
@@ -64,7 +64,7 @@ export async function discountedEntitiesService(
   // order discounts
   const orderDiscounts = OrderPricingSheet({
     calculation: order.calculation || [],
-    currency: order.currency,
+    currencyCode: order.currencyCode,
   })
     .discountPrices(orderDiscount._id)
     .map((discount) => ({ order, ...discount }));

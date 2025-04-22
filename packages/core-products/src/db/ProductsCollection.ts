@@ -1,4 +1,5 @@
 import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { Price } from '@unchainedshop/utils';
 
 export enum ProductStatus {
   DRAFT = 'DRAFT',
@@ -51,13 +52,10 @@ export interface ProductBundleItem {
   configuration: Array<ProductConfiguration>;
 }
 
-export interface ProductPrice {
-  // TODO: Extends Price! but currently currencyCode/currency are conflicting
+export interface ProductPrice extends Price {
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode?: string;
-  currencyCode: string;
-  amount: number;
   maxQuantity?: number;
 }
 

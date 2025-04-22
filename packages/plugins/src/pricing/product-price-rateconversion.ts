@@ -23,7 +23,7 @@ export const ProductPriceRateConversion: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, quantity, currency: targetCurrency } = params.context;
+        const { product, country, quantity, currencyCode: targetCurrency } = params.context;
 
         const { calculation = [] } = params.calculationSheet;
         if (calculation?.length) {

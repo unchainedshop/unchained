@@ -67,9 +67,9 @@ export const PaymentPricingAdapter: IPricingAdapter<
 
   actions: (params) => {
     const { context } = params;
-    const { currency } = context.order;
+    const { currencyCode } = context.order;
     const baseActions = basePricingAdapter.actions(params);
-    const resultSheet = PaymentPricingSheet({ currency });
+    const resultSheet = PaymentPricingSheet({ currencyCode });
 
     return {
       ...baseActions,

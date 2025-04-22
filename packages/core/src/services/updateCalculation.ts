@@ -73,7 +73,7 @@ export async function updateCalculationService(this: Modules, orderId: string) {
     orderPositions.map(async (orderPosition) => {
       const positionCalculation = await ProductPricingDirector.rebuildCalculation(
         {
-          currency: order.currency,
+          currencyCode: order.currencyCode,
           quantity: orderPosition.quantity,
           item: orderPosition,
           configuration: orderPosition.configuration,
@@ -90,7 +90,7 @@ export async function updateCalculationService(this: Modules, orderId: string) {
   if (orderDelivery) {
     const deliveryCalculation = await DeliveryPricingDirector.rebuildCalculation(
       {
-        currency: order.currency,
+        currencyCode: order.currencyCode,
         item: orderDelivery,
       },
       { modules: this },
@@ -106,7 +106,7 @@ export async function updateCalculationService(this: Modules, orderId: string) {
   if (orderPayment) {
     const paymentCalculation = await PaymentPricingDirector.rebuildCalculation(
       {
-        currency: order.currency,
+        currencyCode: order.currencyCode,
         item: orderPayment,
       },
       { modules: this },
@@ -121,7 +121,7 @@ export async function updateCalculationService(this: Modules, orderId: string) {
   });
 
   const calculation = await OrderPricingDirector.rebuildCalculation(
-    { currency: order.currency, order, orderPositions, orderDelivery, orderPayment },
+    { currencyCode: order.currencyCode, order, orderPositions, orderDelivery, orderPayment },
     { modules: this },
   );
 

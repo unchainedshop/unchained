@@ -11,14 +11,14 @@ export const PlanProduct = {
 
   async catalogPrice(
     product: ProductType,
-    { quantity, currency: forcedCurrencyCode }: { quantity?: number; currency?: string },
+    { quantity, currencyCode: forcedCurrencyCode }: { quantity?: number; currencyCode?: string },
     requestContext: Context,
   ): Promise<ProductPrice> {
     const { modules, countryContext } = requestContext;
-    const currency = forcedCurrencyCode || requestContext.currencyContext;
+    const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
     return modules.products.prices.price(product, {
       country: countryContext,
-      currency,
+      currencyCode,
       quantity,
     });
   },
@@ -26,26 +26,26 @@ export const PlanProduct = {
   async simulatedPrice(
     obj: ProductType,
     {
-      currency: forcedCurrencyCode,
+      currencyCode: forcedCurrencyCode,
       quantity,
       useNetPrice,
       configuration,
     }: {
       quantity?: number;
-      currency?: string;
+      currencyCode?: string;
       useNetPrice?: boolean;
       configuration?: Array<ProductConfiguration>;
     },
     requestContext: Context,
   ): Promise<ProductPrice> {
     const { countryContext, user, services } = requestContext;
-    const currency = forcedCurrencyCode || requestContext.currencyContext;
+    const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
     const pricingContext = {
       product: obj,
       user,
       country: countryContext,
-      currency,
+      currencyCode,
       quantity,
       configuration,
     };
@@ -58,13 +58,13 @@ export const PlanProduct = {
       ...unitPrice,
       isNetPrice: useNetPrice,
       isTaxable: pricing.taxSum() > 0,
-      currencyCode: pricing.currency,
+      currencyCode: pricing.currencyCode,
     };
   },
 
   async leveledCatalogPrices(
     obj: ProductType,
-    { currency: forcedCurrencyCode }: { currency?: string },
+    { currencyCode: forcedCurrencyCode }: { currencyCode?: string },
     requestContext: Context,
   ): Promise<
     Array<{
@@ -74,8 +74,8 @@ export const PlanProduct = {
     }>
   > {
     const { countryContext, modules } = requestContext;
-    const currency = forcedCurrencyCode || requestContext.currencyContext;
-    return modules.products.prices.catalogPricesLeveled(obj, { currency, country: countryContext });
+    const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
+    return modules.products.prices.catalogPricesLeveled(obj, { currencyCode, country: countryContext });
   },
 
   salesUnit({ commerce }: ProductType): string {

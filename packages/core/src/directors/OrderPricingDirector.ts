@@ -11,7 +11,7 @@ import {
 import { Order, OrderDelivery, OrderPayment, OrderPosition } from '@unchainedshop/core-orders';
 
 export interface OrderPricingContext {
-  currency: string;
+  currencyCode: string;
   order: Order;
   orderDelivery: OrderDelivery;
   orderPositions: Array<OrderPosition>;
@@ -45,7 +45,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
 
   buildPricingContext: async (context, unchainedAPI) => {
     const { modules } = unchainedAPI;
-    const { order, currency } = context;
+    const { order, currencyCode } = context;
 
     const user = await modules.users.findUserById(order.userId);
     const discounts = await modules.orders.discounts.findOrderDiscounts({
@@ -55,7 +55,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
     return {
       ...unchainedAPI,
       country: order.countryCode,
-      currency,
+      currencyCode,
       discounts,
       order,
       orderDelivery: context.orderDelivery,
@@ -68,7 +68,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
   calculationSheet(pricingContext, calculation) {
     return OrderPricingSheet({
       calculation,
-      currency: pricingContext.currency,
+      currencyCode: pricingContext.currencyCode,
     });
   },
 };

@@ -30,7 +30,7 @@ const OrderPayment: IOrderPricingAdapter = {
 
         const pricing = PaymentPricingSheet({
           calculation: orderPayment.calculation,
-          currency: order.currency,
+          currencyCode: order.currencyCode,
         });
         const tax = pricing.taxSum();
         const paymentFees = pricing.gross();

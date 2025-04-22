@@ -20,7 +20,7 @@ export type Quotation = {
   configuration?: Array<{ key: string; value: string }>;
   context?: any;
   countryCode?: string;
-  currency?: string;
+  currencyCode?: string;
   expires?: Date;
   fullfilled?: Date;
   meta?: any;
