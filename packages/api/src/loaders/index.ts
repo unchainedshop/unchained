@@ -12,6 +12,7 @@ import {
   AssortmentMediaText,
 } from '@unchainedshop/core-assortments';
 import { File } from '@unchainedshop/core-files';
+import buildTextMap from './buildTextMap.js';
 
 function getLocaleStrings(locale: string) {
   try {
@@ -76,14 +77,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
         );
 
         const localeMap = buildLocaleMap(queries, texts);
-
-        const textsMap = {};
-        for (const text of texts) {
-          const localesForText = localeMap[text.locale] || [];
-          for (const locale of localesForText) {
-            textsMap[locale + text.assortmentId] = text;
-          }
-        }
+        const textsMap = buildTextMap(localeMap, texts, (text) => text.assortmentId);
         return queries.map((q) => textsMap[q.locale + q.assortmentId]);
       },
     ),
@@ -104,14 +98,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
       );
 
       const localeMap = buildLocaleMap(queries, texts);
-
-      const textsMap = {};
-      for (const text of texts) {
-        const localesForText = localeMap[text.locale] || [];
-        for (const locale of localesForText) {
-          textsMap[locale + text.assortmentMediaId] = text;
-        }
-      }
+      const textsMap = buildTextMap(localeMap, texts, (text) => text.assortmentMediaId);
       return queries.map((q) => textsMap[q.locale + q.assortmentMediaId]);
     }),
 
@@ -276,14 +263,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
       );
 
       const localeMap = buildLocaleMap(queries, texts);
-
-      const textsMap = {};
-      for (const text of texts) {
-        const localesForText = localeMap[text.locale] || [];
-        for (const locale of localesForText) {
-          textsMap[locale + text.filterId + text.filterOptionValue] = text;
-        }
-      }
+      const textsMap = buildTextMap(localeMap, texts, (text) => text.filterId + text.filterOptionValue);
       return queries.map((q) => textsMap[q.locale + q.filterId + q.filterOptionValue]);
     }),
 
@@ -335,14 +315,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
           },
         );
         const localeMap = buildLocaleMap(queries, texts);
-
-        const textsMap = {};
-        for (const text of texts) {
-          const localesForText = localeMap[text.locale] || [];
-          for (const locale of localesForText) {
-            textsMap[locale + text.productId] = text;
-          }
-        }
+        const textsMap = buildTextMap(localeMap, texts, (text) => text.productId);
         return queries.map((q) => textsMap[q.locale + q.productId]);
       },
     ),
@@ -361,14 +334,7 @@ const loaders = async (unchainedAPI: UnchainedCore) => {
         );
 
         const localeMap = buildLocaleMap(queries, texts);
-
-        const textsMap = {};
-        for (const text of texts) {
-          const localesForText = localeMap[text.locale] || [];
-          for (const locale of localesForText) {
-            textsMap[locale + text.productMediaId] = text;
-          }
-        }
+        const textsMap = buildTextMap(localeMap, texts, (text) => text.productMediaId);
         return queries.map((q) => textsMap[q.locale + q.productMediaId]);
       },
     ),
