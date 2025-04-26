@@ -2,6 +2,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import DataLoader from 'dataloader';
 import { buildLocaleMap } from './utils.js';
+import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ assortmentMediaId: string; locale: string }, AssortmentMediaText>(async (queries) => {
@@ -17,13 +18,7 @@ export default (unchainedAPI: UnchainedCore) =>
     );
 
     const localeMap = buildLocaleMap(queries, texts);
+    const textsMap = buildTextMap(localeMap, texts, (text) => text.assortmentMediaId);
 
-    const textsMap = {};
-    for (const text of texts) {
-      const localesForText = localeMap[text.locale] || [];
-      for (const locale of localesForText) {
-        textsMap[locale + text.assortmentMediaId] = text;
-      }
-    }
     return queries.map((q) => textsMap[q.locale + q.assortmentMediaId]);
   });
