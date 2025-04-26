@@ -2,6 +2,7 @@ import { UnchainedCore } from '@unchainedshop/core';
 import DataLoader from 'dataloader';
 import { buildLocaleMap } from './utils.js';
 import { FilterText } from '@unchainedshop/core-filters';
+import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ filterId: string; filterOptionValue?: string; locale: string }, FilterText>(
@@ -18,14 +19,8 @@ export default (unchainedAPI: UnchainedCore) =>
       );
 
       const localeMap = buildLocaleMap(queries, texts);
+      const textsMap = buildTextMap(localeMap, texts, (text) => text.filterId + text.filterOptionValue);
 
-      const textsMap = {};
-      for (const text of texts) {
-        const localesForText = localeMap[text.locale] || [];
-        for (const locale of localesForText) {
-          textsMap[locale + text.filterId + text.filterOptionValue] = text;
-        }
-      }
       return queries.map((q) => textsMap[q.locale + q.filterId + q.filterOptionValue]);
     },
   );
