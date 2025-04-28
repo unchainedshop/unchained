@@ -15,6 +15,7 @@ export interface UnchainedLocaleContext {
   countryCode: string;
   localeContext: Intl.Locale;
   currencyCode: string;
+  defaultCurrencyCodes: Record<string, string>;
 }
 const { NODE_ENV } = process.env;
 
@@ -36,6 +37,10 @@ export const resolveDefaultContext = pMemoize(
 
     const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
 
+    const defaultCurrencyCodes = Object.fromEntries(
+      countries.map((c) => [c.isoCode, c.defaultCurrencyCode]),
+    );
+
     const supportedLocaleStrings: Array<string> = languages.reduce((accumulator, language) => {
       const added = countries.map((country) => {
         return `${language.isoCode}-${country.isoCode}`;
@@ -50,8 +55,7 @@ export const resolveDefaultContext = pMemoize(
     );
     const countryCode = resolveBestCountry(localeContext.region, acceptCountry, countries);
 
-    const countryObject = countries.find((country) => country.isoCode === countryCode);
-    const currencyCode = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
+    const currencyCode = resolveBestCurrency(defaultCurrencyCodes[countryCode], currencies);
 
     logger.debug(`Locale Context: Resolved ${localeContext.baseName} ${countryCode} ${currencyCode}`);
 
@@ -59,6 +63,7 @@ export const resolveDefaultContext = pMemoize(
       localeContext,
       countryCode,
       currencyCode,
+      defaultCurrencyCodes,
     };
 
     return newContext;

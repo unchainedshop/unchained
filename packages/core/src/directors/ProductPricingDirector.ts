@@ -14,8 +14,8 @@ import {
 export type ProductPricingContext =
   | {
       currencyCode: string;
+      countryCode: string;
       quantity: number;
-      countryCode?: string;
       discounts?: Array<OrderDiscount>;
       order?: Order;
       product?: Product;

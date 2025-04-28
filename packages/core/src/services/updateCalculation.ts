@@ -76,7 +76,6 @@ export async function updateCalculationService(this: Modules, orderId: string) {
           currencyCode: order.currencyCode,
           quantity: orderPosition.quantity,
           item: orderPosition,
-          configuration: orderPosition.configuration,
         },
         { modules: this },
       );

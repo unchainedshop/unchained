@@ -2,29 +2,7 @@ import {
   ProductPricingDirector,
   ProductPricingAdapter,
   IProductPricingAdapter,
-  ProductPricingAdapterContext,
 } from '@unchainedshop/core';
-import { Modules } from '@unchainedshop/core/lib/modules.js';
-import { resolveBestCurrency } from '@unchainedshop/utils';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
-
-const { NODE_ENV } = process.env;
-
-const memoizeCache = new ExpiryMap(NODE_ENV === 'production' ? 1000 * 60 : 100); // Cached values expire after 10 seconds
-
-export const resolveCurrency = pMemoize(
-  async (context: ProductPricingAdapterContext & { modules: Modules }) => {
-    const { countryCode, currencyCode: forcedCurrencyCode, modules } = context;
-    const countryObject = await modules.countries.findCountry({ isoCode: countryCode });
-    const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
-    return forcedCurrencyCode || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
-  },
-  {
-    cache: memoizeCache,
-    cacheKey: ([{ currencyCode, countryCode }]) => `${currencyCode}-${countryCode}`,
-  },
-);
 
 export const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -45,8 +23,7 @@ export const ProductPrice: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, countryCode, quantity, modules } = params.context;
-        const currencyCode = await resolveCurrency(params.context);
+        const { product, countryCode, currencyCode, quantity, modules } = params.context;
         const price = await modules.products.prices.price(product, {
           countryCode,
           currencyCode,
