@@ -89,7 +89,7 @@ export const ConfigurableProduct = {
   async simulatedPriceRange(
     product: ProductType,
     {
-      currencyCode,
+      currencyCode: forcedCurrencyCode,
       quantity,
       useNetPrice,
       vectors,
@@ -104,6 +104,8 @@ export const ConfigurableProduct = {
     requestContext: Context,
   ): Promise<ProductPriceRange> {
     const { countryCode, modules, services } = requestContext;
+
+    const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
     const products = await modules.products.proxyProducts(product, vectors, {
       includeInactive,
