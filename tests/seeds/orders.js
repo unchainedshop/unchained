@@ -5,7 +5,7 @@ export const SimpleOrder = {
   created: new Date('2019-10-11T11:52:25.433+0000'),
   status: null,
   userId: 'user',
-  currency: 'CHF',
+  currencyCode: 'CHF',
   countryCode: 'CH',
   contact: {
     emailAddress: 'info@unchained.local',

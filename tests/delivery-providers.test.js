@@ -227,7 +227,7 @@ test.describe('Delivery: Providers', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      assert.equal(deliveryProvider?.simulatedPrice?.currency, 'CHF');
+      assert.equal(deliveryProvider?.simulatedPrice?.currencyCode, 'CHF');
     });
 
     test('return value for simulatedPrice with value of currency argument passed to it', async () => {
@@ -238,7 +238,7 @@ test.describe('Delivery: Providers', () => {
           query DeliveryProvider($deliveryProviderId: ID!) {
             deliveryProvider(deliveryProviderId: $deliveryProviderId) {
               _id
-              simulatedPrice(currency: "EUR") {
+              simulatedPrice(currencyCode: "EUR") {
                 amount
                 currencyCode
               }
@@ -249,7 +249,7 @@ test.describe('Delivery: Providers', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      assert.equal(deliveryProvider?.simulatedPrice?.currency, 'EUR');
+      assert.equal(deliveryProvider?.simulatedPrice?.currencyCode, 'EUR');
     });
 
     test('return error when passed invalid deliveryProviderId', async () => {

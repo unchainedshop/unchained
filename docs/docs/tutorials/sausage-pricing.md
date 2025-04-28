@@ -98,7 +98,7 @@ class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
   }
 
   async calculate() {
-    const { currency, quantity } = this.context
+    const { currencyCode, quantity } = this.context
     try {
       const response = await fetch(
         'https://community-open-weather-map.p.rapidapi.com/weather?q=zurich,ch&units=metric',
@@ -117,7 +117,7 @@ class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
           if (temp > SAUSAGE_THRESHOLD_CELSIUS) {
             console.log('🌭 -> High season, sausage pricy!!') // eslint-disable-line
             this.result.addItem({
-              currency,
+              currencyCode,
               amount: 100 * quantity,
               isTaxable: true,
               isNetPrice: true,

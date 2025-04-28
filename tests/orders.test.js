@@ -228,7 +228,7 @@ test.describe('Order: Lists', () => {
             _id
             supportedDeliveryProviders {
               _id
-              simulatedPrice(currency: "EUR") {
+              simulatedPrice(currencyCode: "EUR") {
                 amount
                 currencyCode
               }
@@ -241,7 +241,7 @@ test.describe('Order: Lists', () => {
       },
     });
 
-    assert.strictEqual(order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency, 'EUR');
+    assert.strictEqual(order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currencyCode, 'EUR');
   });
 
   // Query.orders for anonymous user

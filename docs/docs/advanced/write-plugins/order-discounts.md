@@ -105,7 +105,7 @@ if (pricingAdapterKey === 'shop.unchained.artwork-discount') {
 
       const currentPricingSheet = new OrderPricingSheet({
         calculation,
-        currency: this.context?.order.currency,
+        currencyCode: this.context?.order.currencyCode,
       });
 
       const maximumDiscountableAmount = currentPricingSheet.total(

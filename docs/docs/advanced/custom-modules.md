@@ -30,7 +30,7 @@ const myModule = {
         const selector = generateDbFilterById(cartId)
         Orders.updateOne(selector, {
           $set: {
-            currency,
+            currencyCode,
             context: { currency },
           },
         })

@@ -33,12 +33,12 @@ class ProductPriceRound extends ProductPricingAdapter {
 
   static orderIndex = 2;
 
-  static isActivatedFor({ product, currency }) {
+  static isActivatedFor({ product, currencyCode }) {
     return true;
   }
 
   async calculate() {
-    const { currency, quantity } = this.context;
+    const { currencyCode, quantity } = this.context;
     const { calculation = [] } = this.calculation;
 
     if (calculation?.length) {

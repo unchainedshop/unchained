@@ -685,7 +685,7 @@ test.describe('Products', () => {
             product(productId: $productId, slug: $slug) {
               _id
               ... on SimpleProduct {
-                simulatedPrice(currency: "ETB") {
+                simulatedPrice(currencyCode: "ETB") {
                   amount
                   currencyCode
                 }
@@ -737,7 +737,7 @@ test.describe('Products', () => {
             product(productId: $productId, slug: $slug) {
               _id
               ... on PlanProduct {
-                simulatedPrice(currency: "ETB") {
+                simulatedPrice(currencyCode: "ETB") {
                   amount
                   currencyCode
                 }

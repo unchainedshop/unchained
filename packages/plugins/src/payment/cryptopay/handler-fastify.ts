@@ -74,8 +74,8 @@ const cryptopayHandler: RouteHandlerMethod = async (
     }
 
     if (ping) {
-      const { blockHeight, currency } = ping;
-      await modules.cryptopay.updateMostRecentBlock(currency, blockHeight);
+      const { blockHeight, currencyCode } = ping;
+      await modules.cryptopay.updateMostRecentBlock(currencyCode, blockHeight);
     }
 
     reply.status(200);

@@ -70,8 +70,8 @@ const cryptopayHandler = async (req, res) => {
       }
 
       if (ping) {
-        const { blockHeight, currency } = ping;
-        await modules.cryptopay.updateMostRecentBlock(currency, blockHeight);
+        const { blockHeight, currencyCode } = ping;
+        await modules.cryptopay.updateMostRecentBlock(currencyCode, blockHeight);
       }
 
       res.writeHead(200);

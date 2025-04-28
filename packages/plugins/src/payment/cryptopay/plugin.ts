@@ -77,7 +77,7 @@ const Cryptopay: IPaymentAdapter = {
       const updatedAddresses = await Promise.all(
         existingAddresses.map(async (addressData) => {
           const targetCurrencyObj = await modules.currencies.findCurrency({
-            isoCode: addressData.currency,
+            isoCode: addressData.currencyCode,
           });
           if (!targetCurrencyObj?.isActive) return null;
           const rateData = await modules.products.prices.rates.getRate(

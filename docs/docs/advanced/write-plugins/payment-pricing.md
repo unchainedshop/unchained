@@ -60,7 +60,7 @@ export const ShopCommission: IPaymentPricingAdapter = {
           const totalValueOfGoods = orderPositions.reduce((current, orderPosition) => {
             const pricing = ProductPricingSheet({
               calculation: orderPosition.calculation,
-              currency: context.order.currency,
+              currencyCode: context.order.currencyCode,
               quantity: orderPosition.quantity,
             });
             const items = pricing.gross();

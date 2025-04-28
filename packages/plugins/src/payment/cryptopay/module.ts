@@ -8,10 +8,10 @@ const configureCryptopayModule = ({ db }) => {
     return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
-  const updateMostRecentBlock = async (currency: string, blockHeight: number): Promise<void> => {
+  const updateMostRecentBlock = async (currencyCode: string, blockHeight: number): Promise<void> => {
     await CryptoTransactions.updateMany(
       {
-        currency,
+        currencyCode,
       },
       {
         $set: {
