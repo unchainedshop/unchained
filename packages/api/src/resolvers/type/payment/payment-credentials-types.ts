@@ -19,7 +19,7 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   },
 
   async paymentProvider(obj, _, { modules }) {
-    // TODO: use loader
+    // TODO: use payment provider loader
     return modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
@@ -28,7 +28,7 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async isValid(obj, _, requestContext) {
     const { modules, userId } = requestContext;
 
-    // TODO: use loader
+    // TODO: use payment provider loader
     const paymentProvider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });

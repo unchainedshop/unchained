@@ -17,7 +17,7 @@ export const OrderPaymentInvoice: OrderPaymentInvoiceHelperTypes = {
   },
 
   provider: async (obj, _, { modules }) => {
-    // TODO: use loader
+    // TODO: use payment provider loader
     return modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
@@ -25,7 +25,7 @@ export const OrderPaymentInvoice: OrderPaymentInvoiceHelperTypes = {
 
   discounts: async (obj, _, context) => {
     const { modules } = context;
-    // TODO: use loader
+    // TODO: use order loader
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
     const pricing = PaymentPricingSheet({
       calculation: obj.calculation,

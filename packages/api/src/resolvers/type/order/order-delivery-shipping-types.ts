@@ -30,7 +30,7 @@ export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
 
   discounts: async (obj, _, context) => {
     const { modules } = context;
-    // TODO: use loader
+    // TODO: use order loader
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
     const pricing = DeliveryPricingSheet({
       calculation: obj.calculation,

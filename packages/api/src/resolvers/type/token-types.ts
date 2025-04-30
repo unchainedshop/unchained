@@ -36,7 +36,7 @@ export const Token = {
     const { loaders } = context;
     const product = await loaders.productLoader.load({ productId: token.productId });
 
-    // TODO: use loader
+    // TODO: use warehousing provider loader
     const virtualProviders = await context.modules.warehousing.findProviders({
       type: WarehousingProviderType.VIRTUAL,
     });
@@ -58,7 +58,7 @@ export const Token = {
     const { loaders } = context;
     const product = await loaders.productLoader.load({ productId: token.productId });
 
-    // TODO: use loader
+    // TODO: use warehousing provider loader
     const virtualProviders = await context.modules.warehousing.findProviders({
       type: WarehousingProviderType.VIRTUAL,
     });

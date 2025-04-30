@@ -21,7 +21,7 @@ export const ProductVariationOption: ProductVariationOptionHelperTypes = {
   },
 
   texts: async (obj, { forceLocale }, { modules, locale }) => {
-    // TODO: use loader
+    // TODO: use variation text loader
     return modules.products.variations.texts.findLocalizedVariationText({
       productVariationId: obj._id,
       productVariationOptionValue: obj.productVariationOption,

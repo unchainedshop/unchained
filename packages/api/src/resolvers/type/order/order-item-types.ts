@@ -11,7 +11,7 @@ import { ProductPricingSheet } from '@unchainedshop/core';
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
   const { modules } = context;
 
-  // TODO: use loader
+  // TODO: use order loader
   const order = await modules.orders.findOrder({
     orderId: orderPosition.orderId,
   });
@@ -95,7 +95,7 @@ export const OrderItem = {
   },
 
   async order(orderPosition: OrderPosition, _, { modules }: Context): Promise<Order> {
-    // TODO: use loader
+    // TODO: use order loader
     return modules.orders.findOrder({ orderId: orderPosition.orderId });
   },
 
@@ -115,7 +115,7 @@ export const OrderItem = {
 
   async quotation(orderPosition: OrderPosition, _, { modules }: Context): Promise<Quotation> {
     if (!orderPosition.quotationId) return null;
-    // TODO: use loader
+    // TODO: use quotation loader
     return modules.quotations.findQuotation({ quotationId: orderPosition.quotationId });
   },
 

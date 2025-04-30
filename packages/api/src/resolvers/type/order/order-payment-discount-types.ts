@@ -11,7 +11,7 @@ export const OrderPaymentDiscount = {
     _,
     { modules }: Context,
   ) =>
-    // TODO: use loader
+    // TODO: use order discount loader
     modules.orders.discounts.findOrderDiscount({
       discountId: orderDelivery.discountId,
     }),
