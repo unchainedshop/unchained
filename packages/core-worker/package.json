@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-worker",
-  "version": "3.1.7",
+  "version": "4.0.0-rc.1",
   "main": "lib/worker-index.js",
   "types": "lib/worker-index.d.ts",
   "type": "module",
