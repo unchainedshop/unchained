@@ -49,12 +49,14 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 
 export const buildFindSelector = ({
   includeGuests,
+  includeDeleted,
   queryString,
   emailVerified,
   lastLogin,
   ...rest
 }: UserQuery) => {
-  const selector: mongodb.Filter<User> = { ...rest, deleted: null };
+  const selector: mongodb.Filter<User> = { ...rest };
+  if (!includeDeleted) selector.deleted = null;
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (emailVerified === true) {
     selector['emails.verified'] = true;

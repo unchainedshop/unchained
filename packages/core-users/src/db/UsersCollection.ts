@@ -53,6 +53,7 @@ export type User = {
 
 export type UserQuery = mongodb.Filter<User> & {
   includeGuests?: boolean;
+  includeDeleted?: boolean;
   queryString?: string;
   emailVerified?: boolean;
   lastLogin?: DateFilterInput;

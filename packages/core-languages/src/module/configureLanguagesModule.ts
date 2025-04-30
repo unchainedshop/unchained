@@ -11,15 +11,15 @@ import { systemLocale } from '@unchainedshop/utils';
 import { Language, LanguagesCollection } from '../db/LanguagesCollection.js';
 import { UpdateFilter } from 'mongodb';
 
-export type LanguageQuery = {
+export type LanguageQuery = mongodb.Filter<Language> & {
   includeInactive?: boolean;
   queryString?: string;
 };
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
-export const buildFindSelector = ({ includeInactive = false, queryString }: LanguageQuery) => {
-  const selector: { isActive?: true; deleted?: Date; $text?: any } = { deleted: null };
+export const buildFindSelector = ({ includeInactive = false, queryString, ...rest }: LanguageQuery) => {
+  const selector: mongodb.Filter<Language> = { deleted: null, ...rest };
   if (!includeInactive) selector.isActive = true;
   if (queryString) {
     selector.$text = { $search: queryString };

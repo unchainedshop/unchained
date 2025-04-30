@@ -217,11 +217,7 @@ export const User: UserHelperTypes = {
   language: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     const userLocale = context.modules.users.userLocale(user);
-
-    // TODO: use loader
-    return context.modules.languages.findLanguage({
-      isoCode: userLocale.language,
-    });
+    return context.loaders.languageLoader.load({ isoCode: userLocale.language });
   },
 
   allowedActions: async (user, params, context) => {
