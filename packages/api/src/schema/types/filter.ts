@@ -24,7 +24,7 @@ export default [
 
     type FilterTexts @cacheControl(maxAge: 180) {
       _id: ID!
-      locale: Locale
+      locale: Locale!
       title: String
       subtitle: String
     }

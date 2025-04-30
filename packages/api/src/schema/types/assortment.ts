@@ -2,7 +2,7 @@ export default [
   /* GraphQL */ `
     type AssortmentMediaTexts @cacheControl(maxAge: 180) {
       _id: ID!
-      locale: Locale
+      locale: Locale!
       title: String
       subtitle: String
     }
@@ -89,7 +89,7 @@ export default [
 
     type AssortmentTexts @cacheControl(maxAge: 180) {
       _id: ID!
-      locale: Locale
+      locale: Locale!
       slug: String
       title: String
       subtitle: String
