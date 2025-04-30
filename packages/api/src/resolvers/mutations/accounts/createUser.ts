@@ -32,13 +32,11 @@ export default async function createUser(root: never, params: UserRegistrationDa
       {},
     );
 
-    let user = await modules.users.findUserById(newUserId);
-
-    user = await context.modules.users.updateHeartbeat(user._id, {
+    const user = await context.modules.users.updateHeartbeat(newUserId, {
       remoteAddress: context.remoteAddress,
       remotePort: context.remotePort,
       userAgent: context.getHeader('user-agent'),
-      locale: context.localeContext.baseName,
+      locale: context.locale.baseName,
       countryCode: context.countryCode,
     });
 

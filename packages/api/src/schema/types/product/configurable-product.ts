@@ -21,13 +21,13 @@ export default [
 
     type ProductVariationOption @cacheControl(maxAge: 180) {
       _id: ID!
-      texts(forceLocale: String): ProductVariationTexts
+      texts(forceLocale: Locale): ProductVariationTexts
       value: String
     }
 
     type ProductVariation @cacheControl(maxAge: 180) {
       _id: ID!
-      texts(forceLocale: String): ProductVariationTexts
+      texts(forceLocale: Locale): ProductVariationTexts
       type: ProductVariationType
       key: String
       options: [ProductVariationOption!]
@@ -71,7 +71,7 @@ export default [
       updated: DateTime
       published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
-      texts(forceLocale: String): ProductTexts
+      texts(forceLocale: Locale): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

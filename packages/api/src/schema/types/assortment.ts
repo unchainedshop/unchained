@@ -12,7 +12,7 @@ export default [
       tags: [LowerCaseString!]
       file: Media
       sortKey: Int!
-      texts(forceLocale: String): AssortmentMediaTexts
+      texts(forceLocale: Locale): AssortmentMediaTexts
     }
 
     """
@@ -29,7 +29,7 @@ export default [
       sequence: Int!
       tags: [LowerCaseString!]
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [AssortmentMedia!]!
-      texts(forceLocale: String): AssortmentTexts
+      texts(forceLocale: Locale): AssortmentTexts
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
       linkedAssortments: [AssortmentLink!]
@@ -59,7 +59,7 @@ export default [
     """
     type AssortmentPathLink @cacheControl(maxAge: 180) {
       assortmentId: ID!
-      assortmentTexts(forceLocale: String): AssortmentTexts!
+      assortmentTexts(forceLocale: Locale): AssortmentTexts!
       link: AssortmentLink
     }
 

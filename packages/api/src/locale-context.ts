@@ -13,9 +13,8 @@ const logger = createLogger('unchained:api');
 
 export interface UnchainedLocaleContext {
   countryCode: string;
-  localeContext: Intl.Locale;
+  locale: Intl.Locale;
   currencyCode: string;
-  defaultCurrencyCodes: Record<string, string>;
 }
 const { NODE_ENV } = process.env;
 
@@ -48,22 +47,16 @@ export const resolveDefaultContext = pMemoize(
       return accumulator.concat(added);
     }, []);
 
-    const localeContext = resolveBestSupported(
-      acceptLang,
-      supportedLocaleStrings,
-      systemLocale.baseName,
-    );
-    const countryCode = resolveBestCountry(localeContext.region, acceptCountry, countries);
-
+    const locale = resolveBestSupported(acceptLang, supportedLocaleStrings, systemLocale.baseName);
+    const countryCode = resolveBestCountry(locale.region, acceptCountry, countries);
     const currencyCode = resolveBestCurrency(defaultCurrencyCodes[countryCode], currencies);
 
-    logger.debug(`Locale Context: Resolved ${localeContext.baseName} ${countryCode} ${currencyCode}`);
+    logger.debug(`Locale Context: Resolved ${locale.baseName} ${countryCode} ${currencyCode}`);
 
     const newContext: UnchainedLocaleContext = {
-      localeContext,
+      locale,
       countryCode,
       currencyCode,
-      defaultCurrencyCodes,
     };
 
     return newContext;

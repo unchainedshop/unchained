@@ -143,10 +143,11 @@ export const Product = {
     },
     requestContext: Context,
   ): Promise<ProductText> {
-    const { localeContext, loaders } = requestContext;
+    const { locale, loaders } = requestContext;
+    console.log('forceLocale', forceLocale);
     return loaders.productTextLoader.load({
       productId: product._id,
-      locale: forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
   },
 };

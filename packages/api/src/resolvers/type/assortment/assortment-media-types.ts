@@ -11,10 +11,10 @@ export interface AssortmentMediaHelperTypes {
 
 export const AssortmentMedia: AssortmentMediaHelperTypes = {
   async texts(obj, { forceLocale }, requestContext) {
-    const { localeContext, loaders } = requestContext;
+    const { locale, loaders } = requestContext;
     return loaders.assortmentMediaTextLoader.load({
       assortmentMediaId: obj._id,
-      locale: forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
   },
 

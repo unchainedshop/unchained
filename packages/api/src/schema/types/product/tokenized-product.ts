@@ -31,7 +31,7 @@ export default [
       updated: DateTime
       published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
-      texts(forceLocale: String): ProductTexts
+      texts(forceLocale: Locale): ProductTexts
       catalogPrice(quantity: Int = 1, currencyCode: String): Price
       leveledCatalogPrices(currencyCode: String): [PriceLevel!]!
       simulatedPrice(
@@ -41,7 +41,7 @@ export default [
         configuration: [ProductConfigurationParameterInput!]
       ): Price @cacheControl(scope: PRIVATE, maxAge: 10)
       simulatedStocks(referenceDate: Timestamp): [Stock!] @cacheControl(scope: PRIVATE, maxAge: 10)
-      assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
+      assortmentPaths(forceLocale: Locale): [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID
         limit: Int = 10

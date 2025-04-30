@@ -17,11 +17,11 @@ export const Filter: FilterHelperTypes = {
   },
 
   async texts(obj, { forceLocale }, requestContext) {
-    const { localeContext, loaders } = requestContext;
+    const { locale, loaders } = requestContext;
     return loaders.filterTextLoader.load({
       filterId: obj._id,
       filterOptionValue: null,
-      locale: forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
   },
 };

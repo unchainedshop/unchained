@@ -28,11 +28,11 @@ export const ProductVariation: ProductVariationHelperTypes = {
     }));
   },
 
-  texts: async (obj, { forceLocale }, { modules, localeContext }) => {
+  texts: async (obj, { forceLocale }, { modules, locale }) => {
     // TODO: use loader
     return modules.products.variations.texts.findLocalizedVariationText({
       productVariationId: obj._id,
-      locale: forceLocale ? new Intl.Locale(forceLocale) : localeContext,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
   },
 };

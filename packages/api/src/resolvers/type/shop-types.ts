@@ -18,8 +18,8 @@ export const Shop: ShopHelperTypes = {
     return 'root';
   },
 
-  language: async (_root, _params, { localeContext, loaders }) => {
-    return loaders.languageLoader.load({ isoCode: localeContext.language });
+  language: async (_root, _params, { locale, loaders }) => {
+    return loaders.languageLoader.load({ isoCode: locale.language });
   },
   country: async (_root, _params, { countryCode, loaders }) => {
     return loaders.countryLoader.load({ isoCode: countryCode });

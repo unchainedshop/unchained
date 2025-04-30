@@ -44,10 +44,10 @@ export interface UserHelperTypes {
   created: HelperType<any, Date>;
   updated: HelperType<any, Date>;
   deleted: HelperType<any, Date>;
-  avatar: HelperType<{ localeContext: Intl.Locale }, File>;
+  avatar: HelperType<{ locale: Intl.Locale }, File>;
   bookmarks: HelperType<any, Array<Bookmark>>;
   cart: HelperType<{ orderNumber?: string }, Order>;
-  country: HelperType<{ localeContext: Intl.Locale }, Country>;
+  country: HelperType<{ locale: Intl.Locale }, Country>;
   emails: HelperType<any, Array<string>>;
   enrollments: HelperType<
     {
@@ -61,7 +61,7 @@ export interface UserHelperTypes {
   >;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
-  language: HelperType<{ localeContext: Intl.Locale }, Language>;
+  language: HelperType<{ locale: Intl.Locale }, Language>;
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;

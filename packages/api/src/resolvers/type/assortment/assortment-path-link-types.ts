@@ -13,12 +13,12 @@ export const AssortmentPathLink = {
 
   assortmentTexts: async (
     { childAssortmentId }: AssortmentLink,
-    params: { forceLocale?: string },
-    { loaders, localeContext }: Context,
+    { forceLocale }: { forceLocale?: string },
+    { loaders, locale }: Context,
   ) => {
     const text = await loaders.assortmentTextLoader.load({
       assortmentId: childAssortmentId,
-      locale: params.forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
     return text;
   },

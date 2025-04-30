@@ -23,18 +23,17 @@ const ercMetadataMiddleware: RequestHandler = async (
       return methodWrongHandler(res);
     }
 
-    const { services, localeContext } = req.unchainedContext;
+    const { services, locale } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);
     const parsedPath = path.parse(url.pathname);
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
 
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
-    const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;
 
     const ercMetadata = await services.warehousing.ercMetadata({
       productId,
-      locale,
+      locale: tokenFileName ? new Intl.Locale(localeOrTokenFilename) : locale,
       chainTokenId: parsedPath.name,
     });
 

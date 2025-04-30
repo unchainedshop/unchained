@@ -124,7 +124,7 @@ const ETHMinter: IWarehousingAdapter = {
 
         const name = `${text.title} #${chainTokenId}`;
 
-        const isDefaultLanguageActive = locale ? locale?.language === systemLocale.language : true;
+        const isDefaultLanguageActive = locale ? locale.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
           ? {
               uri: `${ROOT_URL}/erc-metadata/${product._id}/{locale}/${tokenId}.json`,

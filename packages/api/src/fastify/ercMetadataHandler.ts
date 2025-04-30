@@ -17,17 +17,16 @@ const ercMetadataHandler: RouteHandlerMethod = async (
   res,
 ) => {
   try {
-    const { services, localeContext } = req.unchainedContext;
+    const { services, locale } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);
 
     if (!url.pathname.toLowerCase().endsWith('.json')) throw new Error('Invalid ERC Metadata URI');
 
     const { productId, localeOrTokenFilename, tokenFileName } = req.params as any;
-    const locale = tokenFileName ? new Intl.Locale(localeOrTokenFilename) : localeContext;
 
     const ercMetadata = await services.warehousing.ercMetadata({
       productId,
-      locale,
+      locale: tokenFileName ? new Intl.Locale(localeOrTokenFilename) : locale,
       chainTokenId: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
     });
 

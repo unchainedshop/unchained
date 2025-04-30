@@ -104,10 +104,10 @@ export const AssortmentTypes = {
   },
 
   async texts(obj: Assortment, { forceLocale }: { forceLocale?: string }, requestContext: Context) {
-    const { localeContext, loaders } = requestContext;
+    const { locale, loaders } = requestContext;
     return loaders.assortmentTextLoader.load({
       assortmentId: obj._id,
-      locale: forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
   },
 
@@ -134,7 +134,7 @@ export const AssortmentTypes = {
     return services.filters.searchProducts(
       { ...query, productIds, filterIds },
       {
-        locale: requestContext.localeContext,
+        locale: requestContext.locale,
       },
     );
   },

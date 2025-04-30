@@ -11,10 +11,10 @@ export interface ProductMediaHelperTypes {
 
 export const ProductMedia: ProductMediaHelperTypes = {
   async texts(obj, { forceLocale }, requestContext) {
-    const { localeContext, loaders } = requestContext;
+    const { locale, loaders } = requestContext;
     return loaders.productMediaTextLoader.load({
       productMediaId: obj._id,
-      locale: forceLocale || localeContext.baseName,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : locale,
     });
   },
 

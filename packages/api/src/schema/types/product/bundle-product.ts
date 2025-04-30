@@ -12,7 +12,7 @@ export default [
       updated: DateTime
       published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
-      texts(forceLocale: String): ProductTexts
+      texts(forceLocale: Locale): ProductTexts
       bundleItems: [ProductBundleItem!]
       reviews(
         limit: Int = 10

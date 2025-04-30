@@ -5,7 +5,7 @@ import { buildLocaleMap } from './utils.js';
 import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
-  new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(async (queries) => {
+  new DataLoader<{ assortmentId: string; locale: Intl.Locale }, AssortmentText>(async (queries) => {
     const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
     const texts = await unchainedAPI.modules.assortments.texts.findTexts(

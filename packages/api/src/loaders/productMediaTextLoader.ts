@@ -5,7 +5,7 @@ import { ProductMediaText } from '@unchainedshop/core-products';
 import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
-  new DataLoader<{ productMediaId: string; locale: string }, ProductMediaText>(async (queries) => {
+  new DataLoader<{ productMediaId: string; locale: Intl.Locale }, ProductMediaText>(async (queries) => {
     const productMediaIds = [...new Set(queries.map((q) => q.productMediaId).filter(Boolean))];
 
     const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts(

@@ -5,7 +5,7 @@ import { ProductText } from '@unchainedshop/core-products';
 import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
-  new DataLoader<{ productId: string; locale: string }, ProductText>(async (queries) => {
+  new DataLoader<{ productId: string; locale: Intl.Locale }, ProductText>(async (queries) => {
     const productIds = [...new Set(queries.map((q) => q.productId))].filter(Boolean);
     const texts = await unchainedAPI.modules.products.texts.findTexts(
       { productId: { $in: productIds } },

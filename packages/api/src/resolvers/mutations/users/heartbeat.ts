@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../../errors.js';
 export default async function heartbeat(
   root: never,
   _: any,
-  { countryCode, localeContext, modules, remoteAddress, remotePort, userId, getHeader }: Context,
+  { countryCode, locale, modules, remoteAddress, remotePort, userId, getHeader }: Context,
 ) {
   log(`mutation heartbeat`, { userId });
 
@@ -17,7 +17,7 @@ export default async function heartbeat(
 
   const user = await modules.users.updateHeartbeat(userId, {
     countryCode,
-    locale: localeContext.baseName,
+    locale: locale.baseName,
     remoteAddress,
     remotePort,
     userAgent: getHeader('user-agent'),

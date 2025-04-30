@@ -10,7 +10,7 @@ export default [
       isBase: Boolean
       defaultCurrency: Currency
       flagEmoji: String
-      name(forceLocale: String): String
+      name(forceLocale: Locale): String
     }
   `,
 ];

@@ -98,11 +98,7 @@ export const configureFiltersModule = async ({
     },
 
     // Mutations
-    create: async ({
-      type,
-      isActive = false,
-      ...filterData
-    }: Filter & { title: string; locale: string }): Promise<Filter> => {
+    create: async ({ type, isActive = false, ...filterData }: Filter): Promise<Filter> => {
       const { insertedId: filterId } = await Filters.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),

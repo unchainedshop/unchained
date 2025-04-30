@@ -59,7 +59,7 @@ export default [
       walletAddress: String
       chainId: String
       chainTokenId: String
-      ercMetadata(forceLocale: String): JSON
+      ercMetadata(forceLocale: Locale): JSON
     }
   `,
 ];

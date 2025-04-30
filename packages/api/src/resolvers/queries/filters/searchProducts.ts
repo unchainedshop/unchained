@@ -15,7 +15,7 @@ export default async function searchProducts(
   },
   context: Context,
 ) {
-  const { modules, services, userId, localeContext } = context;
+  const { modules, services, userId, locale } = context;
   const forceLiveCollection = false;
   const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
     query;
@@ -33,7 +33,7 @@ export default async function searchProducts(
     });
     return services.filters.searchProducts(
       { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
-      { forceLiveCollection, locale: localeContext },
+      { forceLiveCollection, locale: locale },
     );
   }
 
@@ -41,6 +41,6 @@ export default async function searchProducts(
 
   return services.filters.searchProducts(
     { queryString, includeInactive, filterQuery, ...rest },
-    { forceLiveCollection, locale: localeContext },
+    { forceLiveCollection, locale: locale },
   );
 }

@@ -1,10 +1,9 @@
 import { systemLocale } from '@unchainedshop/utils';
 
-export function getLocaleStrings(locale: string) {
+export function getLocaleStrings(locale: Intl.Locale) {
   try {
-    const localeObj = new Intl.Locale(locale);
     return [
-      ...new Set([localeObj.baseName, localeObj.language, systemLocale.baseName, systemLocale.language]),
+      ...new Set([locale.baseName, locale.language, systemLocale.baseName, systemLocale.language]),
     ];
   } catch {
     return [...new Set([systemLocale.baseName, systemLocale.language])];
@@ -12,12 +11,16 @@ export function getLocaleStrings(locale: string) {
 }
 
 export function buildLocaleMap(
-  queries: Readonly<Array<{ locale: string }>>,
+  queries: Readonly<Array<{ locale: Intl.Locale }>>,
   texts: Readonly<Array<{ locale?: string }>>,
 ): Record<string, string[]> {
   // key = texts.locale
   // value = input query locale
-  const queryLocales: Array<any> = [...new Set(queries.map((q) => q.locale))];
+
+  const queryLocales = Object.values(
+    Object.fromEntries(queries.map((q) => [q.locale.baseName, q.locale])),
+  );
+
   const textLocales: Array<string> = [...new Set(texts.map((t) => t.locale))];
   const localeMap = {};
   for (const queryLocale of queryLocales) {

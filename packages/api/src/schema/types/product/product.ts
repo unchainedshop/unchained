@@ -35,7 +35,7 @@ export default [
       tags: [LowerCaseString!]
       file: Media
       sortKey: Int!
-      texts(forceLocale: String): ProductMediaTexts
+      texts(forceLocale: Locale): ProductMediaTexts
     }
 
     type ProductTexts @cacheControl(maxAge: 180) {
@@ -61,7 +61,7 @@ export default [
       created: DateTime
       updated: DateTime
       published: DateTime
-      texts(forceLocale: String): ProductTexts
+      texts(forceLocale: Locale): ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
       reviews(
         limit: Int = 10

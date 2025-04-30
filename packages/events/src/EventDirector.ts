@@ -4,47 +4,17 @@ const logger = createLogger('unchained:events');
 
 export type RawPayloadType<T> = {
   payload: T;
-  context: {
-    userAgent?: string;
-    language?: string;
-    countryCode?: string;
-    remoteAddress?: string;
-    referer?: string;
-    origin?: string;
-    userId?: string;
-  };
 };
 export interface EmitAdapter {
   publish(eventName: string, data: RawPayloadType<Record<string, any>>): void;
   subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;
 }
 
-export type ContextNormalizerFunction = (context: {
-  localeContext: Intl.Locale;
-  getHeader: any;
-  remoteAddress: string;
-  req: any;
-  userId: string;
-}) => RawPayloadType<any>['context'];
-
-export const defaultNormalizer: ContextNormalizerFunction = (context) => {
-  return {
-    userAgent: context?.getHeader?.('user-agent'),
-    language: context?.localeContext?.language,
-    countryCode: context?.localeContext?.region,
-    remoteAddress: context?.remoteAddress,
-    referer: context?.req?.headers?.referer,
-    origin: context?.req?.headers?.origin,
-    userId: context?.userId,
-  };
-};
-
 const RegisteredEventsSet = new Set();
 const RegisteredCallbacksSet = new Set();
 
 let Adapter: EmitAdapter; // Public (customizable)
 let HistoryAdapter: EmitAdapter; // (Per default: Core-events adapter to write into DB)
-let ContextNormalizer = defaultNormalizer;
 
 export const EventDirector = {
   registerEvents: (events: string[]): void => {
@@ -55,10 +25,6 @@ export const EventDirector = {
 
   getRegisteredEvents: (): string[] => {
     return Array.from(RegisteredEventsSet) as string[];
-  },
-
-  setContextNormalizer: (fn: ContextNormalizerFunction): void => {
-    ContextNormalizer = fn;
   },
 
   setEmitAdapter: (adapter: EmitAdapter): void => {
@@ -74,8 +40,6 @@ export const EventDirector = {
   getEmitHistoryAdapter: (): EmitAdapter => HistoryAdapter,
 
   emit: async (eventName: string, data?: Record<string, any>): Promise<void> => {
-    const extractedContext = ContextNormalizer(null);
-
     if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
 
@@ -83,12 +47,10 @@ export const EventDirector = {
 
     Adapter?.publish(eventName, {
       payload,
-      context: extractedContext,
     });
 
     HistoryAdapter?.publish(eventName, {
       payload,
-      context: extractedContext,
     });
 
     logger.debug(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);

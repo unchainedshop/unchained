@@ -46,7 +46,7 @@ export const Token = {
       {
         product,
         token,
-        locale: forceLocale ? new Intl.Locale(forceLocale) : context.localeContext,
+        locale: forceLocale ? new Intl.Locale(forceLocale) : context.locale,
         quantity: token?.quantity || 1,
         referenceDate: new Date(),
       },

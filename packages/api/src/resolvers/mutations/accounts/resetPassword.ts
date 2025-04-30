@@ -23,7 +23,7 @@ export default async function resetPassword(
       remoteAddress: context.remoteAddress,
       remotePort: context.remotePort,
       userAgent: context.getHeader('user-agent'),
-      locale: context.localeContext.baseName,
+      locale: context.locale.baseName,
       countryCode: context.countryCode,
     });
 

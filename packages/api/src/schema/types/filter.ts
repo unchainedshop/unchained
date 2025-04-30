@@ -31,7 +31,7 @@ export default [
 
     type FilterOption @cacheControl(maxAge: 180) {
       _id: ID!
-      texts(forceLocale: String): FilterTexts
+      texts(forceLocale: Locale): FilterTexts
       value: String
     }
 
@@ -40,7 +40,7 @@ export default [
       updated: DateTime
       created: DateTime
       isActive: Boolean
-      texts(forceLocale: String): FilterTexts
+      texts(forceLocale: Locale): FilterTexts
       type: FilterType
       key: String
       options: [FilterOption!]

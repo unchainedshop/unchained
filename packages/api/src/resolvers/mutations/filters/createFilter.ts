@@ -8,14 +8,10 @@ export default async function createFilter(
   { filter, texts }: { filter: Filter; texts: FilterInputText[] },
   context: Context,
 ) {
-  const { modules, localeContext, userId } = context;
+  const { modules, userId } = context;
   log('mutation createFilter', { userId });
 
-  const newFilter = await modules.filters.create({
-    ...filter,
-    title: '',
-    locale: localeContext.language,
-  });
+  const newFilter = await modules.filters.create(filter);
 
   await FilterDirector.invalidateProductIdCache(newFilter, context);
 

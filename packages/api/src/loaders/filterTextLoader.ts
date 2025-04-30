@@ -5,7 +5,7 @@ import { FilterText } from '@unchainedshop/core-filters';
 import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
-  new DataLoader<{ filterId: string; filterOptionValue?: string; locale: string }, FilterText>(
+  new DataLoader<{ filterId: string; filterOptionValue?: string; locale: Intl.Locale }, FilterText>(
     async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 

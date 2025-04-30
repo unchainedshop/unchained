@@ -12,7 +12,7 @@ export default [
       updated: DateTime
       published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
-      texts(forceLocale: String): ProductTexts
+      texts(forceLocale: Locale): ProductTexts
       catalogPrice(quantity: Int = 1, currencyCode: String): Price
       leveledCatalogPrices(currencyCode: String): [PriceLevel!]!
       simulatedPrice(

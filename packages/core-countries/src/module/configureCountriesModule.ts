@@ -91,8 +91,8 @@ export const configureCountriesModule = async ({
       return !!countryCount;
     },
 
-    name(country: Country, language: string) {
-      return new Intl.DisplayNames([language], { type: 'region', fallback: 'code' }).of(country.isoCode);
+    name(country: Country, locale: Intl.Locale) {
+      return new Intl.DisplayNames([locale], { type: 'region', fallback: 'code' }).of(country.isoCode);
     },
 
     flagEmoji(country: Country) {
