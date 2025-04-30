@@ -51,7 +51,6 @@ export const Product = {
     { loaders, modules }: Context,
   ): Promise<Array<ProductMedia>> {
     if (params.offset || params.tags) {
-      // TODO: use loader?
       return modules.products.media.findProductMedias({
         productId: product._id,
         ...params,
@@ -78,7 +77,6 @@ export const Product = {
     },
     { modules }: Context,
   ): Promise<Array<ProductReview>> {
-    // TODO: use loader?
     return modules.products.reviews.findProductReviews({
       productId: product._id,
       limit,

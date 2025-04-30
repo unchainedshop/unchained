@@ -10,9 +10,8 @@ const OrderPaymentMap = {
 };
 
 export const OrderPayment = {
-  __resolveType: async (obj: OrderPaymentType, { modules }: Context) => {
-    // TODO: use payment provider loader
-    const provider = await modules.payment.paymentProviders.findProvider({
+  __resolveType: async (obj: OrderPaymentType, { loaders }: Context) => {
+    const provider = await loaders.paymentProviderLoader.load({
       paymentProviderId: obj.paymentProviderId,
     });
 

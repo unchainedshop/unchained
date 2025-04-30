@@ -16,9 +16,8 @@ export const OrderPaymentInvoice: OrderPaymentInvoiceHelperTypes = {
     return modules.orders.payments.normalizedStatus(obj);
   },
 
-  provider: async (obj, _, { modules }) => {
-    // TODO: use payment provider loader
-    return modules.payment.paymentProviders.findProvider({
+  provider: async (obj, _, { loaders }) => {
+    return loaders.paymentProviderLoader.load({
       paymentProviderId: obj.paymentProviderId,
     });
   },

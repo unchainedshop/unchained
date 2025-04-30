@@ -78,7 +78,6 @@ export const ConfigurableProduct = {
     },
     { modules }: Context,
   ): Promise<Array<ProductVariation>> {
-    // TODO: use loader?
     return modules.products.variations.findProductVariations({
       productId: product._id,
       limit,

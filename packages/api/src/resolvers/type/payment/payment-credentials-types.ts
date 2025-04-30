@@ -18,18 +18,15 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
     return loaders.userLoader.load({ userId: obj.userId });
   },
 
-  async paymentProvider(obj, _, { modules }) {
-    // TODO: use payment provider loader
-    return modules.payment.paymentProviders.findProvider({
+  async paymentProvider(obj, _, { loaders }) {
+    return loaders.paymentProviderLoader.load({
       paymentProviderId: obj.paymentProviderId,
     });
   },
 
   async isValid(obj, _, requestContext) {
-    const { modules, userId } = requestContext;
-
-    // TODO: use payment provider loader
-    const paymentProvider = await modules.payment.paymentProviders.findProvider({
+    const { loaders, userId } = requestContext;
+    const paymentProvider = await loaders.paymentProviderLoader.load({
       paymentProviderId: obj.paymentProviderId,
     });
     const actions = await PaymentDirector.actions(

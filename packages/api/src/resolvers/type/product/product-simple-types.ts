@@ -23,7 +23,7 @@ export const SimpleProduct = {
     const { referenceDate, quantity } = params;
     const { services, modules } = requestContext;
 
-    // TODO: use loader?
+    // TODO: use delivery providers loader?
     const deliveryProviders = await modules.delivery.findProviders({});
 
     return services.products.simulateProductDispatching({
@@ -51,7 +51,7 @@ export const SimpleProduct = {
     const { modules, services } = requestContext;
     const { referenceDate, deliveryProviderType } = params;
 
-    // TODO: use loader?
+    // TODO: use delivery providers loader?
     const deliveryProviders = await modules.delivery.findProviders({
       type: deliveryProviderType,
     });

@@ -28,8 +28,6 @@ export const Work: WorkHelperTypes = {
 
   original: async (obj, _, { modules }) => {
     if (!obj.originalWorkId) return null;
-
-    // TODO: use work loader?
     return modules.worker.findWork({ workId: obj.originalWorkId });
   },
 
