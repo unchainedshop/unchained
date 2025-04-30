@@ -9,8 +9,9 @@ type EnrollmentDeliveryHelperTypes = {
 };
 
 export const EnrollmentDelivery: EnrollmentDeliveryHelperTypes = {
-  provider: async ({ deliveryProviderId }, _, { modules }) => {
-    // TODO: use loader
-    return modules.delivery.findProvider({ deliveryProviderId });
+  provider: async ({ deliveryProviderId }, _, { loaders }) => {
+    return loaders.deliveryProviderLoader.load({
+      deliveryProviderId,
+    });
   },
 };

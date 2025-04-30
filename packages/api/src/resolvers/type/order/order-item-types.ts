@@ -54,17 +54,16 @@ export const OrderItem = {
     }>
   > {
     const scheduling = orderPosition.scheduling || [];
-    // TODO: use loader
+    // TODO: use order loader
     const order = await modules.orders.findOrder({ orderId: orderPosition.orderId });
     const { countryCode, userId } = order;
 
-    // TODO: use loader
+    // TODO: use order delivery loader
     const orderDelivery = await modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
     });
 
-    // TODO: use loader
-    const deliveryProvider = await modules.delivery.findProvider({
+    const deliveryProvider = await loaders.deliveryProviderLoader.load({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
     const product = await loaders.productLoader.load({
@@ -73,7 +72,7 @@ export const OrderItem = {
 
     return Promise.all(
       scheduling.map(async (schedule) => {
-        // TODO: use loader
+        // TODO: use warehousing provider loader
         const warehousingProvider = await modules.warehousing.findProvider({
           warehousingProviderId: schedule.warehousingProviderId,
         });

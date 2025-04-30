@@ -60,7 +60,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
   ) {
     const { modules, countryCode, user } = requestContext;
 
-    // TODO: use loader
+    // TODO: use order loader
     const order = await modules.orders.findOrder({ orderId });
     const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
     const pricingContext = {

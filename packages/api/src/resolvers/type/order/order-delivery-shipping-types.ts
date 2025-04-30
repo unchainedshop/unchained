@@ -22,9 +22,8 @@ export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
     return modules.orders.deliveries.normalizedStatus(obj);
   },
 
-  provider: async (obj, _, { modules }) => {
-    // TODO: use loader
-    return modules.delivery.findProvider({
+  provider: async (obj, _, { loaders }) => {
+    return loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,
     });
   },

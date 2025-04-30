@@ -17,8 +17,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
   activePickUpLocation: async (orderDelivery, _, requestContext) => {
     const { orderPickUpLocationId } = orderDelivery.context || {};
 
-    // TODO: use loader
-    const provider = await requestContext.modules.delivery.findProvider({
+    const provider = await requestContext.loaders.deliveryProviderLoader.load({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
     const director = await DeliveryDirector.actions(
@@ -31,8 +30,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
   },
 
   pickUpLocations: async (obj, _, context) => {
-    // TODO: use loader
-    const provider = await context.modules.delivery.findProvider({
+    const provider = await context.loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,
     });
     const director = await DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
@@ -40,8 +38,8 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
     return director.pickUpLocations();
   },
 
-  provider: async (obj, _, { modules }) => {
-    return modules.delivery.findProvider({
+  provider: async (obj, _, { loaders }) => {
+    return loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,
     });
   },
@@ -52,7 +50,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
 
   discounts: async (obj, _, context) => {
     const { modules } = context;
-    // TODO: use loader
+    // TODO: use order loader
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
 
     const pricing = DeliveryPricingSheet({

@@ -103,12 +103,10 @@ export const DeliveryDirector: IDeliveryDirector = {
     const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
-    const deliveryProviderId = deliveryProvider._id;
     const address = orderDelivery.context?.address || order || order.billingAddress;
-    const provider = await await unchainedAPI.modules.delivery.findProvider({ deliveryProviderId });
 
     const adapter = await DeliveryDirector.actions(
-      provider,
+      deliveryProvider,
       {
         order,
         orderDelivery,

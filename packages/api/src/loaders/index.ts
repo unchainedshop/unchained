@@ -19,6 +19,8 @@ import userLoader from './userLoader.js';
 import countryLoader from './countryLoader.js';
 import currencyLoader from './currencyLoader.js';
 import languageLoader from './languageLoader.js';
+import deliveryProviderLoader from './deliveryProviderLoader.js';
+import paymentProviderLoader from './paymentProviderLoader.js';
 
 const loaders = (unchainedAPI: UnchainedCore) => {
   return {
@@ -49,6 +51,10 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     currencyLoader: currencyLoader(unchainedAPI),
 
     languageLoader: languageLoader(unchainedAPI),
+
+    deliveryProviderLoader: deliveryProviderLoader(unchainedAPI),
+
+    paymentProviderLoader: paymentProviderLoader(unchainedAPI),
   };
 };
 
