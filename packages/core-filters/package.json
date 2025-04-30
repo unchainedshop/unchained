@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.1.7",
-    "@unchainedshop/logger": "^3.1.7",
-    "@unchainedshop/mongodb": "^3.1.7",
-    "@unchainedshop/utils": "^3.1.7",
+    "@unchainedshop/events": "^4.0.0-rc.1",
+    "@unchainedshop/logger": "^4.0.0-rc.1",
+    "@unchainedshop/mongodb": "^4.0.0-rc.1",
+    "@unchainedshop/utils": "^4.0.0-rc.1",
     "expiry-map": "^2.0.0",
     "p-memoize": "^7.1.1"
   },

@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^3.1.7",
+    "@unchainedshop/logger": "^4.0.0-rc.1",
     "hashids": "^2.3.0",
     "resolve-accept-language": "^3.1.11"
   },

@@ -31,9 +31,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.1.7",
-    "@unchainedshop/file-upload": "^3.1.7",
-    "@unchainedshop/utils": "^3.1.7"
+    "@unchainedshop/events": "^4.0.0-rc.1",
+    "@unchainedshop/file-upload": "^4.0.0-rc.1",
+    "@unchainedshop/utils": "^4.0.0-rc.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.14",

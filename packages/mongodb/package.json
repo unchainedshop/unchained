@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/utils": "^3.1.7"
+    "@unchainedshop/utils": "^4.0.0-rc.1"
   },
   "peerDependencies": {
     "@mongodb-js/zstd": ">= 2.0 < 3",
