@@ -2,18 +2,17 @@ import { getEmitHistoryAdapter, setEmitHistoryAdapter, EmitAdapter } from '@unch
 import { RawPayloadType } from '@unchainedshop/events';
 
 export const configureEventHistoryAdapter = (
-  createFn: ({ type, payload, context }: RawPayloadType<any> & { type: string }) => Promise<unknown>,
+  createFn: ({ type, payload }: RawPayloadType<any> & { type: string }) => Promise<unknown>,
 ) => {
   if (!getEmitHistoryAdapter()) {
     const adapter: EmitAdapter = {
       subscribe: () => {
         // Do nothing
       },
-      publish: async (eventName, { payload, context = {} }) => {
+      publish: async (eventName, { payload }) => {
         await createFn({
           type: eventName,
           payload,
-          context,
         });
       },
     };

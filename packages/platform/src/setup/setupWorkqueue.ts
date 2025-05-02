@@ -1,24 +1,24 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { EventListenerWorker } from '@unchainedshop/plugins/worker/EventListenerWorker.js';
-import { IntervalWorker, IntervalWorkerParams } from '@unchainedshop/plugins/worker/IntervalWorker.js';
-import { FailedRescheduler, IScheduler } from '@unchainedshop/plugins/worker/FailedRescheduler.js';
-import { IWorker } from '@unchainedshop/plugins/worker/BaseWorker.js';
+import {
+  EventListenerWorker,
+  FailedRescheduler,
+  FailedReschedulerParams,
+  IntervalWorker,
+  IntervalWorkerParams,
+  IScheduler,
+  IWorker,
+  UnchainedCore,
+} from '@unchainedshop/core';
 import { runMigrations } from '../migrations/runMigrations.js';
 import { MigrationRepository } from '@unchainedshop/mongodb';
-import { WorkData } from '@unchainedshop/core-worker';
 
 export type WorkQueueQueueManager = IWorker<any> | IScheduler<any>;
-export interface SetupWorkqueueOptions {
+export interface SetupWorkqueueOptions extends IntervalWorkerParams, FailedReschedulerParams {
   enabledQueueManagers?: Array<WorkQueueQueueManager>;
   invalidateProviders?: boolean;
   providerInvalidationMaxAgeDays?: number;
   assignCartForUsers?: boolean;
   disableWorker?: boolean;
-  batchCount?: number;
-  schedule?: IntervalWorkerParams['schedule'];
-  workerId?: string;
   skipInvalidationOnStartup?: boolean;
-  transformRetry?: (workData: WorkData) => Promise<WorkData | null>;
 }
 
 const {

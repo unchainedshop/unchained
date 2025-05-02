@@ -140,6 +140,7 @@
   },
   "devDependencies": {
     "@breejs/later": "^4.2.0",
+    "@types/breejs__later": "^4.1.5",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@redis/client": "^1.6.0",
     "@types/express": "^5.0.1",

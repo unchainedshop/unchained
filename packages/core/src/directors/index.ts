@@ -42,6 +42,10 @@ export * from './WarehousingAdapter.js';
 
 export * from './WorkerAdapter.js';
 export * from './WorkerDirector.js';
+export * from './EventListenerWorker.js';
+export * from './IntervalWorker.js';
+export * from './FailedRescheduler.js';
+export * from './BaseWorker.js';
 
 export * from './QuotationAdapter.js';
 export * from './QuotationDirector.js';
