@@ -3,10 +3,7 @@ import { subscribe } from '@unchainedshop/events';
 import { Work, WorkData, WorkerEventTypes } from '@unchainedshop/core-worker';
 
 export interface FailedReschedulerParams {
-  retryInput?: (
-    workData: WorkData,
-    priorInput: Record<string, any>,
-  ) => Promise<Record<string, any> | null>;
+  transformRetry?: (workData: WorkData) => Promise<WorkData | null>;
 }
 
 export type IScheduler<P> = {
@@ -28,7 +25,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
   label: 'Reschedule failed works',
   version: '1.0.0',
 
-  actions: ({ retryInput }, unchainedAPI) => {
+  actions: ({ transformRetry }, unchainedAPI) => {
     const handleFinishedWork = async ({ payload: work }: { payload: Work }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
@@ -48,22 +45,18 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
           }`,
         );
 
-        const workData: WorkData = {
+        const newWorkData = {
           type: work.type,
           priority: work.priority,
           originalWorkId: work.originalWorkId || work._id,
           retries: work.retries - 1,
           timeout: work.timeout,
+          input: work.input,
           scheduled,
         };
-
-        if (retryInput) {
-          workData.input = await retryInput(workData, work.input);
-        } else {
-          workData.input = work.input;
-        }
-
-        unchainedAPI.modules.worker.addWork(workData);
+        await unchainedAPI.modules.worker.addWork(
+          transformRetry ? await transformRetry(newWorkData) : newWorkData,
+        );
       }
     };
 

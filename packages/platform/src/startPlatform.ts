@@ -4,10 +4,8 @@ import { initDb, mongodb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
-import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
 import { setupUploadHandlers } from './setup/setupUploadHandlers.js';
-import { SetupCartsOptions, setupCarts } from './setup/setupCarts.js';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
@@ -20,7 +18,7 @@ export type PlatformOptions = {
     handlers?: Record<string, BulkImportHandler>;
   };
   rolesOptions?: IRoleOptionConfig;
-  workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions & { skipInvalidationOnStartup?: boolean };
+  workQueueOptions?: SetupWorkqueueOptions;
 } & Omit<UnchainedCoreOptions, 'bulkImporter' | 'migrationRepository' | 'db'> &
   Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 
@@ -31,8 +29,6 @@ const REQUIRED_ENV_VARIABLES = [
   'ROOT_URL',
   'UNCHAINED_TOKEN_SECRET',
 ];
-
-const { UNCHAINED_DISABLE_WORKER } = process.env;
 
 const exitOnMissingEnvironmentVariables = () => {
   const failedEnv = REQUIRED_ENV_VARIABLES.filter((key) => !process.env[key]);
@@ -51,13 +47,6 @@ const existOnInvalidEnvironmentVariables = () => {
   }
 };
 
-const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
-  if (options?.disableWorker) return false;
-  return !UNCHAINED_DISABLE_WORKER;
-};
-
-export const queueWorkers: Array<any> = [];
-
 export const startPlatform = async ({
   modules,
   services,
@@ -73,8 +62,6 @@ export const startPlatform = async ({
 }> => {
   exitOnMissingEnvironmentVariables();
   existOnInvalidEnvironmentVariables();
-
-  const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);
 
   const configuredRoles = roles.configureRoles(rolesOptions);
 
@@ -95,37 +82,28 @@ export const startPlatform = async ({
     options,
   });
 
-  if (isWorkQueueEnabled) {
-    await runMigrations({ migrationRepository, unchainedAPI });
-  }
-
-  // Setup accountsjs specific extensions and event handlers
+  // Setup Accounts specific extensions and event handlers
   setupAccounts(unchainedAPI);
 
-  // Setup email templates
+  // Setup E-Mail Templates
   setupTemplates(unchainedAPI);
 
-  // Setup file upload handlers
+  // Setup File Upload Handlers
   setupUploadHandlers(unchainedAPI);
 
-  // Start the graphQL server
+  // Start GraphQL Server
   const graphqlHandler = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
     ...arbitraryAPIServerConfiguration,
   });
 
-  // Setup work queues for scheduled work
-  if (isWorkQueueEnabled) {
-    const handlers = setupWorkqueue(unchainedAPI, workQueueOptions);
-    handlers.forEach((handler) => queueWorkers.push(handler));
-    await setupCarts(unchainedAPI, workQueueOptions);
-  }
-
-  // Setup filter cache
-  if (!workQueueOptions?.skipInvalidationOnStartup) {
-    setImmediate(() => unchainedAPI.services.filters.invalidateFilterCache());
-  }
+  // Setup Work Queue
+  await setupWorkqueue({
+    unchainedAPI,
+    migrationRepository,
+    ...workQueueOptions,
+  });
 
   const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
     with: { type: 'json' },
