@@ -4,7 +4,6 @@ import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unc
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
-import addMigrations from '../migrations/addMigrations.js';
 
 export type Country = {
   _id?: string;
@@ -31,14 +30,8 @@ export const buildFindSelector = ({
   return selector;
 };
 
-export const configureCountriesModule = async ({
-  db,
-  migrationRepository,
-}: ModuleInput<Record<string, never>>) => {
+export const configureCountriesModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(COUNTRY_EVENTS);
-
-  // Migration
-  addMigrations(migrationRepository);
 
   const Countries = await CountriesCollection(db);
 

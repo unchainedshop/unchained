@@ -15,8 +15,9 @@ import { configureOrderPaymentsModule, OrderPaymentsModule } from './configureOr
 import { configureOrderPositionsModule, OrderPositionsModule } from './configureOrderPositionsModule.js';
 import { configureOrderModuleMutations, OrderMutations } from './configureOrdersModule-mutations.js';
 import { configureOrdersModuleQueries, OrderQueries } from './configureOrdersModule-queries.js';
-
 import { emit, registerEvents } from '@unchainedshop/events';
+
+import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
 
 export type OrdersModule = OrderQueries &
   OrderMutations & {
@@ -49,8 +50,12 @@ const ORDER_EVENTS: string[] = [
 
 export const configureOrdersModule = async ({
   db,
+  migrationRepository,
   options: orderOptions = {},
 }: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule> => {
+  // Migration v3 -> v4
+  renameCurrencyCode(migrationRepository);
+
   registerEvents(ORDER_EVENTS);
 
   ordersSettings.configureSettings(orderOptions);

@@ -9,7 +9,6 @@ import {
   ModuleInput,
 } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import addMigrations from '../migrations/addMigrations.js';
 import {
   Assortment,
   AssortmentLink,
@@ -93,7 +92,6 @@ export const buildFindSelector = ({
 
 export const configureAssortmentsModule = async ({
   db,
-  migrationRepository,
   options: assortmentOptions = {},
 }: ModuleInput<AssortmentsSettingsOptions>) => {
   // Events
@@ -101,9 +99,6 @@ export const configureAssortmentsModule = async ({
 
   // Settings
   await assortmentsSettings.configureSettings(assortmentOptions, db);
-
-  // Migration
-  addMigrations(migrationRepository);
 
   // Collections & Mutations
   const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =

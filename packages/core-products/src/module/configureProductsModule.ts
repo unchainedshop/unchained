@@ -23,7 +23,6 @@ import { configureProductReviewsModule } from './configureProductReviewsModule.j
 import { configureProductTextsModule } from './configureProductTextsModule.js';
 import { configureProductVariationsModule } from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
-import addMigrations from '../migrations/addMigrations.js';
 
 export type ProductQuery = {
   queryString?: string;
@@ -105,14 +104,11 @@ export const buildFindSelector = ({
 export const configureProductsModule = async ({
   db,
   options: productsOptions = {},
-  migrationRepository,
 }: ModuleInput<ProductsSettingsOptions>) => {
   registerEvents(PRODUCT_EVENTS);
   await productsSettings.configureSettings(productsOptions);
 
   const { Products, ProductTexts } = await ProductsCollection(db);
-
-  addMigrations(migrationRepository);
 
   /*
    * Product sub entities

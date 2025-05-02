@@ -11,6 +11,8 @@ import {
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-settings.js';
 
+import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
+
 export type QuotationQuery = {
   userId?: string;
   queryString?: string;
@@ -38,8 +40,12 @@ export const buildFindSelector = (query: QuotationQuery = {}) => {
 
 export const configureQuotationsModule = async ({
   db,
+  migrationRepository,
   options: quotationsOptions = {},
 }: ModuleInput<QuotationsSettingsOptions>) => {
+  // Migration v3 -> v4
+  renameCurrencyCode(migrationRepository);
+
   registerEvents(QUOTATION_EVENTS);
 
   quotationsSettings.configureSettings(quotationsOptions);

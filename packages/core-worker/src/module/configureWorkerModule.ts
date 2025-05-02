@@ -15,7 +15,6 @@ import {
   SortOption,
 } from '@unchainedshop/utils';
 import { Work, WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.js';
-import addMigrations from './migrations/addMigrations.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -188,13 +187,7 @@ const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
   }) as unknown as WorkerReport[];
 };
 
-export const configureWorkerModule = async ({
-  db,
-  migrationRepository,
-  options,
-}: ModuleInput<WorkerSettingsOptions>) => {
-  addMigrations(migrationRepository);
-
+export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerSettingsOptions>) => {
   registerEvents(Object.values(WorkerEventTypes));
 
   const WorkQueue = await WorkQueueCollection(db);

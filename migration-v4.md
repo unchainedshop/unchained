@@ -10,7 +10,8 @@ We have removed the ambigouity about the currency iso codes. Before it was not c
 - All queries and mutations that had a country input or field are renamed to **countryCode** unless it's a Country object itself
 - The context.currencyContext has been renamed to **context.currencyCode**
 - The context.countryContext has been renamed to **context.countryCode**
-- A migration renames currency to currencyCode in: `Orders`, `Quotations`
+- The context.localeContext has been renamed to **context.locale**
+- A migration renames currency to currencyCode in: `Orders`, `Quotations`, `CryptopayTransaction`
 
 Developer tasks:
 - Migrations actually missing
