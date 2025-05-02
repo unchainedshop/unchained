@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-worker",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0-rc.2",
   "main": "lib/worker-index.js",
   "types": "lib/worker-index.d.ts",
   "type": "module",
@@ -31,8 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.0.0-rc.1",
-    "@unchainedshop/utils": "^4.0.0-rc.1"
+    "@unchainedshop/logger": "^4.0.0-rc.2",
+    "@unchainedshop/utils": "^4.0.0-rc.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.14",
