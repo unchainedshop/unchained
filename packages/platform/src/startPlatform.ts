@@ -85,7 +85,7 @@ export const startPlatform = async ({
   // Setup Accounts specific extensions and event handlers
   setupAccounts(unchainedAPI);
 
-  // Setup E-Mail Templates
+  // Setup Messaging Templates
   setupTemplates(unchainedAPI);
 
   // Setup File Upload Handlers

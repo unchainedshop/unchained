@@ -1,3 +1,10 @@
+# Unchained Engine v4.0.0
+
+## Major
+
+- Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
+- Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).
+
 # Unchained Engine v3.1
 
 ## Minor
