@@ -12,3 +12,4 @@ tsconfig.tsbuildinfo
 /lib
 /env
 .aider*
+/data

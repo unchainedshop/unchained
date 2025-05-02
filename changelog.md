@@ -1,7 +1,10 @@
 # Unchained Engine v4.0.0
 
+This release brings you Beta FerretDB and cloud hosted MongoDB support (AWS / Azure) via the DocumentDB SDK. You can now run Unchained against a PostgresSQL database: https://ferretdb.com. Be warned, the performance penalty is quite big currently. And, you can't use `queryString` arguments currently in queries like `searchProducts` or `countries`.
+
 ## Major
 
+- DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
 - Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
 - Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).
 
