@@ -1,8 +1,7 @@
 import { ethers } from 'ethers';
-import { BIP32Factory } from 'bip32';
-import bs58check from 'bs58check';
-import * as ecc from 'tiny-secp256k1';
-import { networks, payments } from 'bitcoinjs-lib';
+import { HDKey } from '@scure/bip32';
+import { p2wpkh, NETWORK, TEST_NETWORK } from '@scure/btc-signer';
+
 import { createLogger } from '@unchainedshop/logger';
 import {
   IPaymentAdapter,
@@ -28,23 +27,9 @@ const resolvePath = (prefix) => {
 };
 
 const resolveNetwork = (prefix) => {
-  if (['x', 'y', 'z'].includes(prefix)) return networks.bitcoin;
-  return networks.testnet;
+  if (['x', 'y', 'z'].includes(prefix)) return NETWORK;
+  return TEST_NETWORK;
 };
-
-function convertExtendedPublicKey(z) {
-  const derivationPath = resolvePath(z.slice(0, 1));
-  const network = resolveNetwork(z.slice(0, 1));
-  // https://github.com/satoshilabs/slips/blob/master/slip-0132.md
-  let data = bs58check.decode(z);
-  data = data.slice(4);
-  data = Buffer.concat([Buffer.from('0488b21e', 'hex'), data]);
-  return {
-    xpub: bs58check.encode(data),
-    network,
-    derivationPath,
-  };
-}
 
 enum CryptopayCurrencies { // eslint-disable-line
   BTC = 'BTC',
@@ -165,19 +150,20 @@ const Cryptopay: IPaymentAdapter = {
 
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
-          const { xpub, network } = convertExtendedPublicKey(CRYPTOPAY_BTC_XPUB);
-          const bip32 = BIP32Factory(ecc);
-          const hardenedMaster = bip32.fromBase58(xpub, network);
+          const derivationPath = resolvePath(CRYPTOPAY_BTC_XPUB.slice(0, 1));
+
+          const hardenedMaster = HDKey.fromExtendedKey(CRYPTOPAY_BTC_XPUB);
+          hardenedMaster.wipePrivateData();
+
           const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.BTC,
           );
-          const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
+          const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`);
+
+          const network = resolveNetwork(CRYPTOPAY_BTC_XPUB.slice(0, 1));
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.BTC,
-            address: payments.p2wpkh({
-              pubkey: child.publicKey as Buffer,
-              network,
-            }).address,
+            address: p2wpkh(child.publicKey /* hex.decode( as string)*/, network).address,
           });
         }
         if (CRYPTOPAY_ETH_XPUB) {

@@ -39,8 +39,8 @@
     "@unchainedshop/core-payment": "^4.0.0-rc.2",
     "@unchainedshop/platform": "^4.0.0-rc.2",
     "@unchainedshop/plugins": "^4.0.0-rc.2",
-    "bip32": "5.0.0-rc.0",
-    "bitcoinjs-lib": "^6.1.7",
+    "@scure/bip32": "1.7.0",
+    "@scure/btc-signer": "^1.8.0",
     "ethers": "^6.13.5",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
@@ -51,7 +51,6 @@
     "passport": "^0.7.0",
     "postfinancecheckout": "^4.7.0",
     "stripe": "^17.7.0",
-    "tiny-secp256k1": "^2.2.3",
     "twilio": "^5.5.1",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
