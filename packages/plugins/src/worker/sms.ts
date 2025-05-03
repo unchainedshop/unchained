@@ -40,11 +40,11 @@ const SmsWorkerPlugin: IWorkerAdapter<
     }
 
     try {
-      const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;      
+      const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64')}`,
+          Authorization: `Basic ${Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64')}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
@@ -53,9 +53,9 @@ const SmsWorkerPlugin: IWorkerAdapter<
           To: to,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         return {
           success: false,
@@ -65,7 +65,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
           },
         };
       }
-      
+
       return {
         success: true,
         result: {
