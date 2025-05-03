@@ -67,7 +67,6 @@
     "p-memoize": "7.x",
     "postfinancecheckout": ">= 4.5.0",
     "stripe": "^17.4.0",
-    "twilio": "5.x",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
   },
@@ -120,9 +119,6 @@
     "stripe": {
       "optional": true
     },
-    "twilio": {
-      "optional": true
-    },
     "web-push": {
       "optional": true
     },
@@ -151,7 +147,6 @@
     "postfinancecheckout": "^4.7.0",
     "stripe": "^17.7.0",
     "tsx": "^4.19.3",
-    "twilio": "^5.5.1",
     "typescript": "^5.8.2",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

@@ -51,7 +51,6 @@
     "passport": "^0.7.0",
     "postfinancecheckout": "^4.7.0",
     "stripe": "^17.7.0",
-    "twilio": "^5.5.1",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   },
