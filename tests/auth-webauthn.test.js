@@ -41,10 +41,10 @@ test.describe('WebAuthn Flows', () => {
           }
         `,
       });
-      assert.partialDeepStrictEqual(Object.keys(createWebAuthnCredentialRequestOptions), [
-        'requestId',
-        'challenge',
-      ]);
+      assert.partialDeepStrictEqual(
+        Object.keys(createWebAuthnCredentialRequestOptions).sort(),
+        ['requestId', 'challenge'].sort(),
+      );
     });
   });
 
