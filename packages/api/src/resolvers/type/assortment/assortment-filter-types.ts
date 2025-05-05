@@ -8,7 +8,7 @@ export const AssortmentFilter = {
     });
   },
 
-  async filters(obj: AssortmentFilterType, _, { loaders }: Context) {
+  async filter(obj: AssortmentFilterType, _, { loaders }: Context) {
     return loaders.filterLoader.load({
       filterId: obj.filterId,
     });
