@@ -34,7 +34,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
       // five minutes
       const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
 
-      const rates: Array<ProductPriceRate> = Object.entries(pairs)
+      const rates: ProductPriceRate[] = Object.entries(pairs)
         .map(([quoteCurrency, rate]) => {
           return {
             baseCurrency,

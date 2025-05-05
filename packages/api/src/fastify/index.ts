@@ -51,17 +51,16 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     const tokenObject = {
       _id: req.session.sessionId,
       userId: user._id,
-      // eslint-disable-next-line
+
       tokenExpires: new Date((req as any).session.cookie._expires),
     };
     await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
-    /* eslint-disable-next-line */
+
     (user as any)._inLoginMethodResponse = true;
     return { user, ...tokenObject };
   };
 
   const logout: LogoutFn = async function logout() {
-    /* eslint-disable-line */
     const tokenObject = {
       _id: (req as any).session.sessionId,
       userId: req.session?.userId,

@@ -17,7 +17,7 @@ export enum GatewayObjectStatus {
   uncaptured = '_',
 }
 
-export type GatewayObject = {
+export interface GatewayObject {
   status: GatewayObjectStatus;
   currency: string;
   amount: number;
@@ -27,7 +27,7 @@ export type GatewayObject = {
       id: string;
     }[];
   }[];
-};
+}
 
 export type TransactionObject = any;
 

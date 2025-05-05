@@ -16,10 +16,10 @@ export type ProductPricingContext =
       currencyCode: string;
       countryCode: string;
       quantity: number;
-      discounts?: Array<OrderDiscount>;
+      discounts?: OrderDiscount[];
       order?: Order;
       product?: Product;
-      configuration?: Array<ProductConfiguration>;
+      configuration?: ProductConfiguration[];
       user?: User;
     }
   | {

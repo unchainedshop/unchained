@@ -1,13 +1,13 @@
 import accounting from 'accounting';
 
-type PriceType = {
+export interface PriceType {
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode?: string;
   currencyCode?: string;
   currency?: string;
   amount: number;
-};
+}
 
 export const Price = {
   isTaxable({ isTaxable }: PriceType) {

@@ -119,7 +119,7 @@ export const configureOrderDeliveriesModule = ({
 
     updateCalculation: async <T extends PricingCalculation>(
       orderDeliveryId: string,
-      calculation: Array<T>,
+      calculation: T[],
     ): Promise<OrderDelivery> => {
       return OrderDeliveries.findOneAndUpdate(
         { _id: orderDeliveryId },

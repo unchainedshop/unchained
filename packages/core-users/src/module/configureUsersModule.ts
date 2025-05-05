@@ -203,7 +203,7 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
     },
 
     async findUser(
-      query: UserQuery & { sort?: Array<SortOption> },
+      query: UserQuery & { sort?: SortOption[] },
       findOptions?: mongodb.FindOptions,
     ): Promise<User> {
       const selector = buildFindSelector(query);
@@ -215,10 +215,10 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
       offset,
       ...query
     }: UserQuery & {
-      sort?: Array<SortOption>;
+      sort?: SortOption[];
       limit?: number;
       offset?: number;
-    }): Promise<Array<User>> {
+    }): Promise<User[]> {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const selector = buildFindSelector({ ...query });
 
@@ -448,7 +448,7 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
       });
     },
 
-    addRoles: async (userId: string, roles: Array<string>): Promise<number> => {
+    addRoles: async (userId: string, roles: string[]): Promise<number> => {
       const selector = generateDbFilterById(userId);
       const updateResult = await Users.updateOne(selector, {
         $addToSet: { roles: { $each: roles } },
@@ -719,7 +719,7 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
       return updatedUser;
     },
 
-    updateRoles: async (_id: string, roles: Array<string>): Promise<User> => {
+    updateRoles: async (_id: string, roles: string[]): Promise<User> => {
       const modifier = {
         $set: {
           updated: new Date(),
@@ -737,7 +737,7 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
       return user;
     },
 
-    updateTags: async (_id: string, tags: Array<string>): Promise<User> => {
+    updateTags: async (_id: string, tags: string[]): Promise<User> => {
       const modifier = {
         $set: {
           updated: new Date(),

@@ -5,7 +5,7 @@ export type ProductMedia = {
   mediaId: string;
   productId: string;
   sortKey: number;
-  tags: Array<string>;
+  tags: string[];
   meta?: any;
 } & TimestampFields;
 

@@ -14,7 +14,7 @@ export type OrderDelivery = {
   delivered?: Date;
   status: OrderDeliveryStatus | null;
   context?: any;
-  calculation: Array<any>;
+  calculation: any[];
 } & LogFields &
   TimestampFields;
 

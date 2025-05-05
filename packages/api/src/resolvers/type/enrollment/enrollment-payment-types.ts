@@ -1,15 +1,8 @@
 import { Context } from '../../../context.js';
-import { PaymentProvider } from '@unchainedshop/core-payment';
 import { Enrollment } from '@unchainedshop/core-enrollments';
 
-type HelperType<T> = (enrollmentPayment: Enrollment['payment'], _: never, context: Context) => T;
-
-type EnrollmentPaymentHelperTypes = {
-  provider: HelperType<Promise<PaymentProvider>>;
-};
-
-export const EnrollmentPayment: EnrollmentPaymentHelperTypes = {
-  provider: async ({ paymentProviderId }, _, { loaders }) => {
+export const EnrollmentPayment = {
+  provider: async ({ paymentProviderId }: Enrollment['payment'], _: never, { loaders }: Context) => {
     return loaders.paymentProviderLoader.load({
       paymentProviderId,
     });

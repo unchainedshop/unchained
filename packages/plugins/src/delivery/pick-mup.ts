@@ -22,7 +22,6 @@ const fetchPickMupLocations = async (key: string, idsFilter?: string) => {
   const { stores = [] } = result || {};
   return stores.flatMap(({ markets = [], location = {}, id }) => {
     return markets.map(({ full_name: fullName }) => {
-      // eslint-disable-line
       const {
         geo: { lat, lon },
         zip,
@@ -90,7 +89,6 @@ const PickMup: IDeliveryAdapter = {
       },
 
       configurationError: () => {
-        // eslint-disable-line
         if (!getKey()) {
           return DeliveryError.INCOMPLETE_CONFIGURATION;
         }

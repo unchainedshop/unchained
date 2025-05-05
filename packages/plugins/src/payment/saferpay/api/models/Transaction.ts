@@ -1,6 +1,6 @@
 export type TransactionStatus = 'AUTHORIZED' | 'CANCELED' | 'CAPTURED' | 'PENDING';
 
-export type TransactionAmount = {
+export interface TransactionAmount {
   Value: string;
   CurrencyCode: string;
-};
+}

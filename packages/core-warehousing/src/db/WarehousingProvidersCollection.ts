@@ -5,7 +5,7 @@ export enum WarehousingProviderType {
   VIRTUAL = 'VIRTUAL',
 }
 
-export type WarehousingConfiguration = Array<{ key: string; value: string }>;
+export type WarehousingConfiguration = { key: string; value: string }[];
 
 export type WarehousingProvider = {
   _id?: string;

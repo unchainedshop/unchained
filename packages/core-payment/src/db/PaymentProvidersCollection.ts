@@ -6,10 +6,10 @@ export enum PaymentProviderType {
   GENERIC = 'GENERIC',
 }
 
-export type PaymentConfiguration = Array<{
+export type PaymentConfiguration = {
   key: string;
   value: string | null;
-}>;
+}[];
 
 export type PaymentProvider = {
   _id?: string;

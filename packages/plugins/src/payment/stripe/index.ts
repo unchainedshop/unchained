@@ -132,7 +132,7 @@ const Stripe: IPaymentAdapter = {
                 customer: paymentCredentials.meta?.customer,
                 confirm: true,
                 payment_method: paymentCredentials.token,
-                payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
+                payment_method_types: paymentCredentials.meta?.payment_method_types,
                 // payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
               },
             );

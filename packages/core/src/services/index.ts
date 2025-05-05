@@ -62,9 +62,7 @@ function bindMethodsToModules(modules: Modules) {
   };
 }
 
-export interface ServiceInterface {
-  (this: Modules, ...args: any[]): Promise<any> | any;
-}
+export type ServiceInterface = (this: Modules, ...args: any[]) => Promise<any> | any;
 
 export type Bound<T extends ServiceInterface> = OmitThisParameter<T>;
 

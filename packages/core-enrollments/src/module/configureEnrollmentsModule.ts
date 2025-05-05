@@ -19,11 +19,11 @@ import {
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 
-export type EnrollmentQuery = {
-  status?: Array<EnrollmentStatus>;
+export interface EnrollmentQuery {
+  status?: EnrollmentStatus[];
   userId?: string;
   queryString?: string;
-};
+}
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',
@@ -167,9 +167,9 @@ export const configureEnrollmentsModule = async ({
     }: EnrollmentQuery & {
       limit?: number;
       offset?: number;
-      sort?: Array<SortOption>;
-    }): Promise<Array<Enrollment>> => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.ASC }];
+      sort?: SortOption[];
+    }): Promise<Enrollment[]> => {
+      const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.ASC }];
       const enrollments = Enrollments.find(buildFindSelector(query), {
         skip: offset,
         limit,

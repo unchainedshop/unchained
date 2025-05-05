@@ -146,7 +146,7 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     passTypeIdentifier,
     deviceLibraryIdentifier,
     passesUpdatedSince,
-  ): Promise<Array<File>> => {
+  ): Promise<File[]> => {
     const selector = {
       $or: [
         {
@@ -237,9 +237,9 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
   };
 };
 
-export type TicketingModule = {
+export interface TicketingModule {
   passes: Awaited<ReturnType<typeof configurePasses>>;
-};
+}
 
 export default {
   passes: {

@@ -36,6 +36,6 @@ export default {
   },
 };
 
-export type SaferpayTransactionsModule = {
+export interface SaferpayTransactionsModule {
   saferpayTransactions: Awaited<ReturnType<typeof configureSaferpayTransactionsModule>>;
-};
+}

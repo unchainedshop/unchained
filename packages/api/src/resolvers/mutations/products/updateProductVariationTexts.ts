@@ -8,7 +8,7 @@ export default async function F(
   params: {
     productVariationId: string;
     productVariationOptionValue?: string;
-    texts: Array<ProductVariationText>;
+    texts: ProductVariationText[];
   },
   { modules, userId }: Context,
 ) {

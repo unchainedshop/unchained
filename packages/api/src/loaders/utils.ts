@@ -11,8 +11,8 @@ export function getLocaleStrings(locale: Intl.Locale) {
 }
 
 export function buildLocaleMap(
-  queries: Readonly<Array<{ locale: Intl.Locale }>>,
-  texts: Readonly<Array<{ locale?: string }>>,
+  queries: readonly { locale: Intl.Locale }[],
+  texts: readonly { locale?: string }[],
 ): Record<string, string[]> {
   // key = texts.locale
   // value = input query locale
@@ -21,7 +21,7 @@ export function buildLocaleMap(
     Object.fromEntries(queries.map((q) => [q.locale.baseName, q.locale])),
   );
 
-  const textLocales: Array<string> = [...new Set(texts.map((t) => t.locale))];
+  const textLocales: string[] = [...new Set(texts.map((t) => t.locale))];
   const localeMap = {};
   for (const queryLocale of queryLocales) {
     const potentialMatches = getLocaleStrings(queryLocale);

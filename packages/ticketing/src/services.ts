@@ -28,8 +28,8 @@ export default {
   },
 };
 
-export type TicketingServices = {
+export interface TicketingServices {
   ticketing: {
     cancelTicketsForProduct: Bound<typeof cancelTicketsForProduct>;
   };
-};
+}

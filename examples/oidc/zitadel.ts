@@ -95,7 +95,6 @@ export default async function setupZitadel(app: FastifyInstance) {
         if (!user) {
           await request.unchainedContext.modules.users.createUser(
             {
-              // eslint-disable-next-line
               // @ts-ignore WE KNOW THAT WE CAN SET THAT FIELD
               _id: userId,
               username: usernameAvailable ? preferred_username : sub,
@@ -113,7 +112,6 @@ export default async function setupZitadel(app: FastifyInstance) {
             { skipMessaging: true, skipPasswordEnrollment: true },
           );
         }
-        // eslint-disable-next-line
         // @ts-ignore
         request.session.zitadel = accessToken.token;
         return reply.redirect('http://localhost:4010/graphql');
@@ -126,7 +124,6 @@ export default async function setupZitadel(app: FastifyInstance) {
   );
 
   return (contextResolver: UnchainedContextResolver) => async (props, req) => {
-    // eslint-disable-next-line
     const zitadelInstance = (app as any).zitadel as FastifyOAuth2.OAuth2Namespace;
     const context = await contextResolver(props);
     if (context.user || !req.session.zitadel) return context;
@@ -155,7 +152,6 @@ export default async function setupZitadel(app: FastifyInstance) {
         user,
         logout: async () => {
           const tokenObject = {
-            // eslint-disable-next-line
             _id: (req as any).session.sessionId,
             userId: user._id,
           };

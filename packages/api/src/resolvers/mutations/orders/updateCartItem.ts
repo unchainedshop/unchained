@@ -14,7 +14,7 @@ export default async function updateCartItem(
   params: {
     itemId: string;
     quantity?: number;
-    configuration?: Array<{ key: string; value: string }>;
+    configuration?: { key: string; value: string }[];
   },
   context: Context,
 ) {

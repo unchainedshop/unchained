@@ -1,25 +1,20 @@
 import { Context } from '../../../context.js';
-import { FilterOption as FilterOptionType, FilterText } from '@unchainedshop/core-filters';
+import { FilterOption as FilterOptionType } from '@unchainedshop/core-filters';
 
-type HelperType<P, T> = (filterOption: FilterOptionType, params: P, context: Context) => T;
-
-type FilterOptionHelperTypes = {
-  _id: HelperType<never, string>;
-  texts: HelperType<{ forceLocale?: string }, Promise<FilterText>>;
-  value: HelperType<never, string>;
-};
-
-export const FilterOption: FilterOptionHelperTypes = {
-  _id(obj) {
+export const FilterOption = {
+  _id(obj: FilterOptionType) {
     return `${obj._id}:${obj.filterOption}`;
   },
 
-  value(obj) {
+  value(obj: FilterOptionType) {
     return obj.filterOption;
   },
 
-  async texts(obj, { forceLocale }, requestContext) {
-    const { locale, loaders } = requestContext;
+  async texts(
+    obj: FilterOptionType,
+    { forceLocale }: { forceLocale?: string },
+    { locale, loaders }: Context,
+  ) {
     return loaders.filterTextLoader.load({
       filterId: obj._id,
       filterOptionValue: obj.filterOption,

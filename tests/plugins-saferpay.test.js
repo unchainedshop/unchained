@@ -212,6 +212,8 @@ test.describe('Plugins: Worldline/Saferpay', () => {
       assert.strictEqual(orderPayment.status, 'PAID');
     });
   } else {
-    test.skip('Secret not set', () => {});
+    test.skip('Secret not set', () => {
+      /* */
+    });
   }
 });

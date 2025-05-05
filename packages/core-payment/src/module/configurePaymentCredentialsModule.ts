@@ -75,7 +75,7 @@ export const configurePaymentCredentialsModule = (
     findPaymentCredentials: async (
       query: mongodb.Filter<PaymentCredentialsType>,
       options?: mongodb.FindOptions,
-    ): Promise<Array<PaymentCredentialsType>> => {
+    ): Promise<PaymentCredentialsType[]> => {
       const credentials = await PaymentCredentials.find(query, options).toArray();
       return credentials;
     },
@@ -86,9 +86,8 @@ export const configurePaymentCredentialsModule = (
       _id,
       token,
       ...meta
-    }: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> & {
-      [x: string]: any;
-    }): Promise<string> => {
+    }: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> &
+      Record<string, any>): Promise<string> => {
       const insertedId = _id || generateDbObjectId();
       const result = await PaymentCredentials.updateOne(
         _id

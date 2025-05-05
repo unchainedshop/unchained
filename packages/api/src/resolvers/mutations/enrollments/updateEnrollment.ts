@@ -5,7 +5,7 @@ import { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
 import { Address, Contact } from '@unchainedshop/mongodb';
 
-type UpdateEnrollmentParams = {
+interface UpdateEnrollmentParams {
   enrollmentId: string;
   contact?: Contact;
   plan: EnrollmentPlan;
@@ -13,7 +13,7 @@ type UpdateEnrollmentParams = {
   payment?: Enrollment['payment'];
   delivery?: Enrollment['delivery'];
   meta?: any;
-};
+}
 export default async function updateEnrollment(
   root: never,
   params: UpdateEnrollmentParams,

@@ -2,7 +2,6 @@ import { Context } from '../context.js';
 
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
-    // eslint-disable-next-line
     if (root && root._inLoginMethodResponse) {
       return true;
     }

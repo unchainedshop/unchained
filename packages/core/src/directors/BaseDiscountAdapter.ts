@@ -53,7 +53,7 @@ export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label
     // if you return false, this discount will
     // get removed from the order before any price calculation
     // takes place.
-    // eslint-disable-next-line
+
     isValidForSystemTriggering: async () => {
       return false;
     },

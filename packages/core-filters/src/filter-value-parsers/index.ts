@@ -2,7 +2,7 @@ import { FilterType } from '../db/FiltersCollection.js';
 import createRangeFilterParser from './range.js';
 import createSwitchFilterParser from './switch.js';
 
-export type FilterParser = (values: Array<string>, allKeys: Array<string>) => Array<string | undefined>;
+export type FilterParser = (values: string[], allKeys: string[]) => (string | undefined)[];
 
 export default (type): FilterParser => {
   switch (type) {

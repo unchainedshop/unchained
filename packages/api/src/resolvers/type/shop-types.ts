@@ -10,7 +10,7 @@ export interface ShopHelperTypes {
   _id: () => string;
   country: HelperType<Country>;
   language: HelperType<Language>;
-  userRoles: HelperType<Array<string>>;
+  userRoles: HelperType<string[]>;
 }
 
 export const Shop: ShopHelperTypes = {

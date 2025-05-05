@@ -11,16 +11,16 @@ import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
 
-export type EventReport = {
+export interface EventReport {
   emitCount: number;
   type: string;
-};
+}
 
-export type EventQuery = {
-  types?: Array<string>;
+export interface EventQuery {
+  types?: string[];
   queryString?: string;
   created?: Date;
-};
+}
 
 export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   const selector: { type?: any; $text?: any; created?: any } = {};
@@ -67,9 +67,9 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
     }: EventQuery & {
       limit?: number;
       offset?: number;
-      sort?: Array<SortOption>;
-    }): Promise<Array<Event>> => {
-      const defaultSort = [{ key: 'created', value: SortDirection.DESC }] as Array<SortOption>;
+      sort?: SortOption[];
+    }): Promise<Event[]> => {
+      const defaultSort = [{ key: 'created', value: SortDirection.DESC }] as SortOption[];
       return Events.find(buildFindSelector(query), {
         skip: offset,
         limit,

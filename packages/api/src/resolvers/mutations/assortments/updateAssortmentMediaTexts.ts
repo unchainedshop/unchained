@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 
 export default async function updateAssortmentMediaTexts(
   root: never,
-  { texts, assortmentMediaId }: { texts: Array<AssortmentMediaText>; assortmentMediaId: string },
+  { texts, assortmentMediaId }: { texts: AssortmentMediaText[]; assortmentMediaId: string },
   { modules, userId }: Context,
 ) {
   log(`mutation updateAssortmentMediaTexts ${assortmentMediaId}`, {

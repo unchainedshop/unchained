@@ -53,23 +53,20 @@
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": ">= 3.714 < 4",
     "@paypal/checkout-server-sdk": "1.x",
-    "@redis/client": "1.x",
-    "bip32": "^5.0.0-rc.0",
-    "bitcoinjs-lib": ">= 6.1 <7",
-    "bs58check": "^4.0.0",
+    "@redis/client": ">= 1 < 6",
+    "@scure/bip32": ">= 1.7 < 2",
+    "@scure/btc-signer": ">= 1.8 < 2",
     "ethers": ">= 6.13 < 7",
     "expiry-map": "2.x",
     "express": ">= 5 < 6",
     "fastify": ">= 5.2 < 6",
-    "mime-types": ">= 3 < 4",
+    "mime-types": ">= 2 < 4",
     "minio": "8.x",
-    "nodemailer": ">= 6.9 < 7",
+    "nodemailer": ">= 6.9 < 8",
     "open": "10.x",
     "p-memoize": "7.x",
     "postfinancecheckout": ">= 4.5.0",
-    "stripe": "^17.4.0",
-    "tiny-secp256k1": "2.x",
-    "twilio": "5.x",
+    "stripe": ">= 17 < 19",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
   },
@@ -83,13 +80,10 @@
     "@redis/client": {
       "optional": true
     },
-    "bip32": {
+    "@scure/bip32": {
       "optional": true
     },
-    "bitcoinjs-lib": {
-      "optional": true
-    },
-    "bs58check": {
+    "@scure/btc-signer": {
       "optional": true
     },
     "ethers": {
@@ -125,12 +119,6 @@
     "stripe": {
       "optional": true
     },
-    "tiny-secp256k1": {
-      "optional": true
-    },
-    "twilio": {
-      "optional": true
-    },
     "web-push": {
       "optional": true
     },
@@ -140,29 +128,26 @@
   },
   "devDependencies": {
     "@breejs/later": "^4.2.0",
-    "@types/breejs__later": "^4.1.5",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@redis/client": "^1.6.0",
+    "@redis/client": "^5.0.1",
+    "@scure/bip32": "^1.7.0",
+    "@scure/btc-signer": "^1.8.0",
+    "@types/breejs__later": "^4.1.5",
     "@types/express": "^5.0.1",
-    "@types/node": "^22.13.14",
-    "bip32": "^5.0.0-rc.0",
-    "bitcoinjs-lib": "^6.1.7",
-    "bs58check": "^4.0.0",
-    "ethers": "^6.13.5",
+    "@types/node": "^22.15.3",
+    "ethers": "^6.13.7",
     "expiry-map": "^2.0.0",
     "express": "^5.1.0",
-    "fastify": "^5.2.2",
-    "mime-types": "^3.0.0",
+    "fastify": "^5.3.2",
+    "mime-types": "^3.0.1",
     "minio": "^8.0.5",
-    "nodemailer": "^6.10.0",
-    "open": "^10.1.0",
+    "nodemailer": "^7.0.2",
+    "open": "^10.1.2",
     "p-memoize": "^7.1.1",
     "postfinancecheckout": "^4.7.0",
-    "stripe": "^17.7.0",
-    "tiny-secp256k1": "^2.2.3",
-    "tsx": "^4.19.3",
-    "twilio": "^5.5.1",
-    "typescript": "^5.8.2",
+    "stripe": "^18.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   }

@@ -10,10 +10,10 @@ export enum PaymentError {
   WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
 }
 
-export type ChargeResult = {
+export interface ChargeResult {
   transactionId?: string;
   [key: string]: any;
-};
+}
 
 export type PaymentChargeActionResult = ChargeResult & {
   credentials?: {

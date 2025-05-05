@@ -5,9 +5,9 @@ import {
 } from '@unchainedshop/core-quotations';
 import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 
-export type QuotationContext = {
+export interface QuotationContext {
   quotation?: Quotation;
-};
+}
 
 export interface QuotationAdapterActions {
   configurationError: () => QuotationError;

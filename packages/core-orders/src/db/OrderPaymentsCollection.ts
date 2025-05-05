@@ -15,7 +15,7 @@ export type OrderPayment = {
   transactionId?: string;
   paymentProviderId?: string;
   status?: OrderPaymentStatus | null;
-  calculation?: Array<any>;
+  calculation?: any[];
 } & LogFields &
   TimestampFields;
 

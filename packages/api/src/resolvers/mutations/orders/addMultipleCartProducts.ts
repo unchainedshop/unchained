@@ -12,11 +12,11 @@ export default async function addMultipleCartProducts(
   root: never,
   params: {
     orderId: string;
-    items: Array<{
+    items: {
       productId: string;
       quantity: number;
-      configuration?: Array<{ key: string; value: string }>;
-    }>;
+      configuration?: { key: string; value: string }[];
+    }[];
   },
   context: Context,
 ) {

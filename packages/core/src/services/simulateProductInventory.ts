@@ -19,7 +19,7 @@ export async function simulateProductInventoryService(
   },
 ) {
   return deliveryProviders.reduce<
-    Promise<Array<WarehousingContext & EstimatedStock & { warehousingProvider: WarehousingProvider }>>
+    Promise<(WarehousingContext & EstimatedStock & { warehousingProvider: WarehousingProvider })[]>
   >(async (oldResult, deliveryProvider) => {
     const result = await oldResult;
 

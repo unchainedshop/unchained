@@ -18,11 +18,11 @@ export type WorkScheduleConfiguration = Pick<
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
-  getActivePluginTypes: (options?: { external?: boolean }) => Array<string>;
+  getActivePluginTypes: (options?: { external?: boolean }) => string[];
   getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
   disableAutoscheduling: (scheduleId: string) => void;
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
-  getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
+  getAutoSchedules: () => [string, WorkScheduleConfiguration][];
   doWork: (work: Work, unchainedAPI) => Promise<WorkResult>;
   processNextWork: (unchainedAPI: { modules: Modules }, workerId?: string) => Promise<Work>;
 };

@@ -3,7 +3,7 @@ import { log } from '@unchainedshop/logger';
 
 export default async function allocateWork(
   root: never,
-  { types, worker }: { types?: Array<string>; worker?: string },
+  { types, worker }: { types?: string[]; worker?: string },
   { modules, userId }: Context,
 ) {
   log(`mutation allocateWork ${(types || []).join(',')} ${worker}`, {

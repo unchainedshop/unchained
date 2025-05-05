@@ -42,11 +42,11 @@ export const configureFilesModule = async ({
     findFiles: async (
       selector: mongodb.Filter<File>,
       options?: mongodb.FindOptions<File>,
-    ): Promise<Array<File>> => {
+    ): Promise<File[]> => {
       return Files.find(selector, options).toArray();
     },
 
-    deleteMany: async (fileIds: Array<string>): Promise<number> => {
+    deleteMany: async (fileIds: string[]): Promise<number> => {
       const deletionResult = await Files.deleteMany({ _id: { $in: fileIds } });
       return deletionResult.deletedCount;
     },

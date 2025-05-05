@@ -2,15 +2,15 @@ import { DeliveryProvider } from './db/DeliveryProvidersCollection.js';
 
 export type FilterProviders<Order = unknown, UnchainedAPI = unknown> = (
   params: {
-    providers: Array<DeliveryProvider>;
+    providers: DeliveryProvider[];
     order: Order;
   },
   unchainedAPI: UnchainedAPI,
-) => Promise<Array<DeliveryProvider>>;
+) => Promise<DeliveryProvider[]>;
 
 export type DetermineDefaultProvider<Order = unknown, UnchainedAPI = unknown> = (
   params: {
-    providers: Array<DeliveryProvider>;
+    providers: DeliveryProvider[];
     order: Order;
   },
   unchainedAPI: UnchainedAPI,

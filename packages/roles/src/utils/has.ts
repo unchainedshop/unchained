@@ -1,4 +1,4 @@
-export const has = (obj: { [key: string]: any }, key: string): boolean => {
+export const has = (obj: Record<string, any>, key: string): boolean => {
   const keyParts = key.split('.');
 
   return (

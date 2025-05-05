@@ -31,12 +31,12 @@ export const configureAssortmentFiltersModule = ({
         assortmentId: string;
       },
       options?: mongodb.FindOptions<AssortmentFilter>,
-    ): Promise<Array<AssortmentFilter>> => {
+    ): Promise<AssortmentFilter[]> => {
       const filters = AssortmentFilters.find({ assortmentId }, options);
       return filters.toArray();
     },
 
-    findFilterIds: async ({ assortmentId }: { assortmentId: string }): Promise<Array<string>> => {
+    findFilterIds: async ({ assortmentId }: { assortmentId: string }): Promise<string[]> => {
       const filters = AssortmentFilters.find(
         { assortmentId },
         {
@@ -137,11 +137,11 @@ export const configureAssortmentFiltersModule = ({
     updateManualOrder: async ({
       sortKeys,
     }: {
-      sortKeys: Array<{
+      sortKeys: {
         assortmentFilterId: string;
         sortKey: number;
-      }>;
-    }): Promise<Array<AssortmentFilter>> => {
+      }[];
+    }): Promise<AssortmentFilter[]> => {
       const changedAssortmentFilterIds = await Promise.all(
         sortKeys.map(async ({ assortmentFilterId, sortKey }) => {
           await AssortmentFilters.updateOne(generateDbFilterById(assortmentFilterId), {

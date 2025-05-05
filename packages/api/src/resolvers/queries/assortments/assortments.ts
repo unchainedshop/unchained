@@ -8,7 +8,7 @@ export default async function assortments(
   params: AssortmentQuery & {
     limit?: number;
     offset?: number;
-    sort?: Array<SortOption>;
+    sort?: SortOption[];
   },
   { modules, userId }: Context,
 ) {

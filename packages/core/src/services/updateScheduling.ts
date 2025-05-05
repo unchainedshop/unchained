@@ -60,5 +60,5 @@ export async function updateSchedulingService(
 
       return this.orders.positions.updateScheduling(orderPosition._id, scheduling);
     }),
-  )) as Array<OrderPosition>;
+  )) as OrderPosition[];
 }

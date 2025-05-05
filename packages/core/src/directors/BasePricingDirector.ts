@@ -25,15 +25,9 @@ export type IPricingDirector<
     unchainedAPI: Context,
   ) => Promise<PricingAdapterContext>;
 
-  rebuildCalculation: (
-    pricingContext: PricingContext,
-    unchainedAPI: Context,
-  ) => Promise<Array<Calculation>>;
+  rebuildCalculation: (pricingContext: PricingContext, unchainedAPI: Context) => Promise<Calculation[]>;
 
-  calculationSheet: (
-    pricingContext: PricingContext,
-    calculation: Array<Calculation>,
-  ) => PricingAdapterSheet;
+  calculationSheet: (pricingContext: PricingContext, calculation: Calculation[]) => PricingAdapterSheet;
 };
 
 export const BasePricingDirector = <
@@ -76,7 +70,7 @@ export const BasePricingDirector = <
     async rebuildCalculation(this: typeof director, pricingContext, unchainedAPI) {
       const context = await this.buildPricingContext(pricingContext, unchainedAPI);
 
-      let calculation: Array<Calculation> = [];
+      let calculation: Calculation[] = [];
 
       const Adapters = baseDirector.getAdapters({
         adapterFilter: (Adapter) => {
@@ -88,7 +82,7 @@ export const BasePricingDirector = <
         const resolvedCalculation = await previousPromise;
         if (!resolvedCalculation) return null;
 
-        const discounts: Array<Discount<any>> = await Promise.all(
+        const discounts: Discount<any>[] = await Promise.all(
           context.discounts.map(async (orderDiscount) => {
             const order = await unchainedAPI.modules.orders.findOrder({
               orderId: orderDiscount.orderId,

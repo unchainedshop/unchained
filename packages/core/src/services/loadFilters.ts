@@ -5,7 +5,7 @@ import { FilterDirector } from '../directors/FilterDirector.js';
 export async function loadFiltersService(
   this: Modules,
   searchQuery: SearchQuery,
-  { productIds, forceLiveCollection }: { productIds: Array<string>; forceLiveCollection: boolean },
+  { productIds, forceLiveCollection }: { productIds: string[]; forceLiveCollection: boolean },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
   const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));

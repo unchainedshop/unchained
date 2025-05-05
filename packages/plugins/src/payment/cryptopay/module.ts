@@ -126,6 +126,6 @@ export default {
   },
 };
 
-export type CryptopayModule = {
+export interface CryptopayModule {
   cryptopay: ReturnType<typeof configureCryptopayModule>;
-};
+}

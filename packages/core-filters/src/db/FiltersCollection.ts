@@ -17,7 +17,7 @@ export type Filter = {
   isActive?: boolean;
   key: string;
   meta?: any;
-  options: Array<string>;
+  options: string[];
   type: FilterType;
 } & TimestampFields;
 
@@ -29,11 +29,11 @@ export type FilterText = {
   title?: string;
 } & TimestampFields;
 
-export type FilterProductIdCacheRecord = {
+export interface FilterProductIdCacheRecord {
   filterId: string;
   filterOptionValue?: string;
   productIds: string[];
-};
+}
 
 export const FiltersCollection = async (db: mongodb.Db) => {
   const Filters = db.collection<Filter>('filters');

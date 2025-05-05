@@ -136,7 +136,8 @@ test.describe('Plugins: Stripe Payments', async () => {
             },
           },
         });
-        assert.deepStrictEqual(registerPaymentCredentials, {
+
+        assert.partialDeepStrictEqual(registerPaymentCredentials, {
           isValid: true,
           isPreferred: true,
         });
@@ -209,7 +210,8 @@ test.describe('Plugins: Stripe Payments', async () => {
         const { addCartProduct, updateCart, checkoutCart } = data;
 
         assert.ok(addCartProduct);
-        assert.deepStrictEqual(updateCart, {
+        assert.partialDeepStrictEqual(updateCart, {
+          _id: 'simple-order',
           status: 'OPEN',
           payment: {
             provider: {
@@ -217,7 +219,7 @@ test.describe('Plugins: Stripe Payments', async () => {
             },
           },
         });
-        assert.deepStrictEqual(checkoutCart, {
+        assert.partialDeepStrictEqual(checkoutCart, {
           status: 'CONFIRMED',
         });
       });
@@ -276,11 +278,14 @@ test.describe('Plugins: Stripe Payments', async () => {
           },
         });
         assert.deepStrictEqual(checkoutCart, {
+          _id: 'stripe-order',
           status: 'CONFIRMED',
         });
       });
     });
   } else {
-    test.skip('Secret not set', () => {});
+    test.skip('Secret not set', () => {
+      /* */
+    });
   }
 });

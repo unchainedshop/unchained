@@ -18,7 +18,7 @@ export enum OrderStatus {
 export type Order = {
   _id?: string;
   billingAddress?: Address;
-  calculation: Array<any>;
+  calculation: any[];
   confirmed?: Date;
   rejected?: Date;
   contact?: Contact;
@@ -36,13 +36,13 @@ export type Order = {
 } & LogFields &
   TimestampFields;
 
-export type OrderQuery = {
+export interface OrderQuery {
   includeCarts?: boolean;
   orderStatus?: OrderStatus[];
   queryString?: string;
   status?: OrderStatus[];
   userId?: string;
-};
+}
 
 export const OrdersCollection = async (db: mongodb.Db) => {
   const Orders = db.collection<Order>('orders');

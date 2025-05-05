@@ -62,18 +62,17 @@ const addContext = async function middlewareWithContext(
       const tokenObject = {
         _id: (req as any).sessionID,
         userId: user._id,
-        /* eslint-disable-next-line */
+
         tokenExpires: new Date((req as any).session?.cookie._expires),
       };
 
       await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
 
-      /* eslint-disable-next-line */
       (user as any)._inLoginMethodResponse = true;
       return { user, ...tokenObject };
     };
 
-    const logout: LogoutFn = async (sessionId) => { /* eslint-disable-line */
+    const logout: LogoutFn = async (sessionId) => {
       // TODO: this should only logout an explicitly provided session if sessionID
       // has been provided
       // express-session destroy

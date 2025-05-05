@@ -13,7 +13,7 @@ export interface ProductReviewHelperTypes {
   author: HelperType<never, Promise<User>>;
   product: HelperType<never, Promise<Product>>;
   voteCount: HelperType<{ type: ProductReviewVoteType }, number>;
-  ownVotes: HelperType<never, Promise<Array<ProductVote>>>;
+  ownVotes: HelperType<never, Promise<ProductVote[]>>;
 }
 export const ProductReview: ProductReviewHelperTypes = {
   author: async (obj, _, { loaders }) => {

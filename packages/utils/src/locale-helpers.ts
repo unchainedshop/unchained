@@ -6,7 +6,7 @@ export const systemLocale = new Intl.Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNT
 
 export const resolveBestSupported = (
   acceptLanguage: string,
-  supportedLocales: Array<string>,
+  supportedLocales: string[],
   fallbackLocale: string,
 ): Intl.Locale => {
   const { match } = resolveAcceptLanguage(acceptLanguage || '', supportedLocales, fallbackLocale, {
@@ -18,7 +18,7 @@ export const resolveBestSupported = (
 export const resolveBestCountry = (
   localeCountry: string,
   shopCountry: string,
-  countries: Array<{ isoCode: string }>,
+  countries: { isoCode: string }[],
 ) => {
   if (shopCountry) {
     const resolvedCountry = countries.reduce<string>((lastResolved, country) => {
@@ -34,7 +34,7 @@ export const resolveBestCountry = (
   return localeCountry || systemLocale.region;
 };
 
-export const resolveBestCurrency = (localeCurrency: string, currencies: Array<{ isoCode: string }>) => {
+export const resolveBestCurrency = (localeCurrency: string, currencies: { isoCode: string }[]) => {
   if (localeCurrency) {
     const resolvedCurrency = currencies.find((currency) => currency.isoCode === localeCurrency);
     if (resolvedCurrency) {

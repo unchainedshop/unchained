@@ -1,4 +1,4 @@
-export type Address = {
+export interface Address {
   gender?: 'female' | 'male';
   title?: string;
   name?: string;
@@ -10,7 +10,7 @@ export type Address = {
   zipCode?: string;
   city?: string;
   countryCode?: string;
-};
+}
 
 export type BillingAddress = Address & {
   countrySubdivision?: string;
@@ -40,14 +40,14 @@ export type Customer = Address & {
   ipAddress?: string;
 };
 
-export type Order = {
+export interface Order {
   articles: Record<string, unknown>;
   taxAmount: number;
   shippingAmount: number;
   discountAmount: number;
-};
+}
 
-export type DT2015Configuration = {
+export interface DT2015Configuration {
   brandColor: string;
   textColor: 'white' | 'black';
   logoType: 'circle' | 'rectangle' | 'none';
@@ -57,7 +57,7 @@ export type DT2015Configuration = {
   logoSrc: string;
   initialView: 'list' | 'grid';
   brandTitle: string;
-};
+}
 
 export type SupportedLanguage =
   | 'de'
@@ -129,7 +129,7 @@ export type TransactionStatusCode =
   | 'transmitted'
   | 'failed';
 
-export type ResponseError = {
+export interface ResponseError {
   error: {
     code:
       | 'UNKNOWN_ERROR'
@@ -157,19 +157,19 @@ export type ResponseError = {
       | 'INVALID_SETUP';
     message: string;
   };
-};
+}
 
-type Split = {
+interface Split {
   subMerchantId: string;
   amount: number;
   commission: number;
-};
+}
 
-export type Marketplace = {
+export interface Marketplace {
   splits: Split[];
-};
+}
 
-export type InitRequestPayload = {
+export interface InitRequestPayload {
   endpoint: string;
   secret: string;
   merchantId: string;
@@ -222,21 +222,21 @@ export type InitRequestPayload = {
     rememberMe?: 'true' | 'checked';
     returnMobileToken?: boolean;
   };
-};
+}
 
-export type InitResponseSuccess = {
+export interface InitResponseSuccess {
   transactionId: string;
   mobileToken?: string;
   WEC?: Record<string, unknown>;
   ['3D']?: Record<string, unknown>;
   location?: string;
-};
+}
 
-export type StatusRequestPayload = {
+export interface StatusRequestPayload {
   transactionId: string;
-};
+}
 
-export type StatusResponseSuccess = {
+export interface StatusResponseSuccess {
   transactionId: string;
   type: TransactionType;
   status: TransactionStatusCode;
@@ -265,20 +265,20 @@ export type StatusResponseSuccess = {
   SCX?: Record<string, unknown>;
   history: Record<string, unknown>[];
   ep2?: Record<string, unknown>;
-};
+}
 
-export type SecureFieldsRequestPayload = {
+export interface SecureFieldsRequestPayload {
   currency: string;
   returnUrl?: string;
   amount?: number;
   ['3D']?: Record<string, unknown>;
-};
+}
 
-export type SecureFieldsResponseSuccess = {
+export interface SecureFieldsResponseSuccess {
   transactionId: string;
-};
+}
 
-export type AuthorizeRequestPayload = {
+export interface AuthorizeRequestPayload {
   amount: number;
   currency: string;
   refno: string;
@@ -303,14 +303,14 @@ export type AuthorizeRequestPayload = {
   SWB?: Record<string, unknown>;
   airlineData?: Record<string, unknown>;
   marketplace?: Marketplace;
-};
+}
 
-export type AuthorizeResponseSuccess = {
+export interface AuthorizeResponseSuccess {
   transactionId: string;
   acquirerAuthorizationCode?: string;
-};
+}
 
-export type AuthorizeAuthenticatedRequestPayload = {
+export interface AuthorizeAuthenticatedRequestPayload {
   transactionId: string;
   refno: string;
   amount?: number;
@@ -319,13 +319,13 @@ export type AuthorizeAuthenticatedRequestPayload = {
   autoSettle?: boolean;
   CDM?: Record<string, unknown>;
   ['3D']?: Record<string, unknown>;
-};
+}
 
-export type AuthorizeAuthenticatedResponseSuccess = {
+export interface AuthorizeAuthenticatedResponseSuccess {
   acquirerAuthorizationCode: string;
-};
+}
 
-export type ValidateRequestPayload = {
+export interface ValidateRequestPayload {
   currency: string;
   refno: string;
   refno2?: string;
@@ -336,14 +336,14 @@ export type ValidateRequestPayload = {
   PAY?: Record<string, unknown>;
   APL?: Record<string, unknown>;
   ESY?: Record<string, unknown>;
-};
+}
 
-export type ValidateResponseSuccess = {
+export interface ValidateResponseSuccess {
   transactionId: string;
   acquirerAuthorizationCode?: string;
-};
+}
 
-export type SettleRequestPayload = {
+export interface SettleRequestPayload {
   transactionId: string;
   amount: number;
   currency: string;
@@ -352,12 +352,12 @@ export type SettleRequestPayload = {
   airlineData?: Record<string, unknown>;
   marketplace?: Marketplace;
   extensions?: Record<string, string>;
-};
+}
 
-export type CancelRequestPayload = {
+export interface CancelRequestPayload {
   transactionId: string;
   refno: string;
-};
+}
 
 export type InitResponse = InitResponseSuccess | ResponseError;
 

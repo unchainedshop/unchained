@@ -40,7 +40,7 @@ export const resolveDefaultContext = pMemoize(
       countries.map((c) => [c.isoCode, c.defaultCurrencyCode]),
     );
 
-    const supportedLocaleStrings: Array<string> = languages.reduce((accumulator, language) => {
+    const supportedLocaleStrings: string[] = languages.reduce((accumulator, language) => {
       const added = countries.map((country) => {
         return `${language.isoCode}-${country.isoCode}`;
       });

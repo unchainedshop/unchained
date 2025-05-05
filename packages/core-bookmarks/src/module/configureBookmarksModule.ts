@@ -24,20 +24,20 @@ export const configureBookmarksModule = async ({ db }: ModuleInput<Record<string
 
   return {
     // Queries
-    findBookmarksByUserId: async (userId: string): Promise<Array<Bookmark>> =>
+    findBookmarksByUserId: async (userId: string): Promise<Bookmark[]> =>
       Bookmarks.find({ userId }).toArray(),
     findBookmarkById: async (bookmarkId: string): Promise<Bookmark> => {
       const filter = generateDbFilterById(bookmarkId);
       return Bookmarks.findOne(filter, {});
     },
-    findBookmarks: async (query: mongodb.Filter<Bookmark>): Promise<Array<Bookmark>> =>
+    findBookmarks: async (query: mongodb.Filter<Bookmark>): Promise<Bookmark[]> =>
       Bookmarks.find(query).toArray(),
 
     // Mutations
     replaceUserId: async (
       fromUserId: string,
       toUserId: string,
-      bookmarkIds?: Array<string>,
+      bookmarkIds?: string[],
     ): Promise<number> => {
       const selector: mongodb.Filter<Bookmark> = { userId: fromUserId };
       if (bookmarkIds) {

@@ -1,4 +1,4 @@
-export type EmailTemplateType = {
+export interface EmailTemplateType {
   type: 'EMAIL';
   input: {
     from: string;
@@ -7,7 +7,7 @@ export type EmailTemplateType = {
     subject: string;
     text: string;
     html?: string;
-    attachments?: Array<
+    attachments?: (
       | { filename: string; path: string }
       | {
           filename: string;
@@ -16,28 +16,28 @@ export type EmailTemplateType = {
           encoding: string;
         }
       | { href: string; filename: string }
-    >;
+    )[];
   };
-};
+}
 
-export type SMSTemplateType = {
+export interface SMSTemplateType {
   type: 'SMS';
   input: {
     from: string;
     to: string;
     text: string;
   };
-};
+}
 
-export type ArbitraryTemplateType = {
+export interface ArbitraryTemplateType {
   type: string;
   input: any;
-};
+}
 
-export type TemplateResolver<T = { [x: string]: any }> = (
+export type TemplateResolver<T = Record<string, any>> = (
   params: { template: string } & T,
   unchainedAPI,
-) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
+) => Promise<(EmailTemplateType | SMSTemplateType | ArbitraryTemplateType)[]>;
 
 const TemplateResolvers = new Map<string, TemplateResolver>();
 

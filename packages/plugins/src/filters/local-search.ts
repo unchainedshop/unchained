@@ -42,7 +42,6 @@ const LocalSearch: IFilterAdapter = {
         return products.map(({ productId }) => productId);
       },
 
-      // eslint-disable-next-line
       searchAssortments: async ({ assortmentIds }) => {
         const { queryString } = params.searchQuery;
 

@@ -1,6 +1,6 @@
 type ArrayElement<T> = T extends (infer U)[] ? U : never;
 
-export default function buildTextMap<T extends Array<{ locale?: string }>>(
+export default function buildTextMap<T extends { locale?: string }[]>(
   localeMap: Record<string, string[]>,
   texts: Readonly<T>,
   buildId: (item: ArrayElement<T>) => string,

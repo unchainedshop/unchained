@@ -60,7 +60,7 @@ export const configureFilterTextsModule = ({
     findTexts: async (
       selector: mongodb.Filter<FilterText>,
       options?: mongodb.FindOptions,
-    ): Promise<Array<FilterText>> => {
+    ): Promise<FilterText[]> => {
       const texts = FilterTexts.find(selector, options);
       return texts.toArray();
     },
@@ -89,8 +89,8 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (
       params: { filterId: string; filterOptionValue?: string },
-      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
-    ): Promise<Array<FilterText>> => {
+      texts: Omit<FilterText, 'filterId' | 'filterOptionValue'>[],
+    ): Promise<FilterText[]> => {
       const filterTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
       );

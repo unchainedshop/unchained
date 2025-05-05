@@ -46,22 +46,22 @@ export interface WorkerSettingsOptions {
   blacklistedVariables?: string[];
 }
 
-export type WorkerReport = {
+export interface WorkerReport {
   type: string;
   newCount: number;
   errorCount: number;
   successCount: number;
   startCount: number;
   deleteCount: number;
-};
+}
 
-export type WorkQueueQuery = {
+export interface WorkQueueQuery {
   created?: { end?: Date; start?: Date };
-  types?: Array<string>;
-  status: Array<WorkStatus>;
+  types?: string[];
+  status: WorkStatus[];
   queryString?: string;
   scheduled?: { end?: Date; start?: Date };
-};
+}
 
 const WORK_STATUS_FILTER_MAP = {
   [WorkStatus.DELETED]: { deleted: { $exists: true } },
@@ -97,10 +97,10 @@ export const buildQuerySelector = ({
 }: mongodb.Filter<Work> & {
   created?: { end?: Date; start?: Date };
   scheduled?: { end?: Date; start?: Date };
-  status?: Array<WorkStatus>;
+  status?: WorkStatus[];
   workId?: string;
   queryString?: string;
-  types?: Array<string>;
+  types?: string[];
 }) => {
   const statusQuery = {
     $or: Object.entries(WORK_STATUS_FILTER_MAP).reduce(
@@ -155,7 +155,7 @@ const convertFilterMapToPipelineBranches = () => {
   });
 };
 
-const defaultSort: Array<{ key: string; value: SortDirection }> = [
+const defaultSort: { key: string; value: SortDirection }[] = [
   { key: 'started', value: SortDirection.DESC },
   { key: 'priority', value: SortDirection.DESC },
   { key: 'originalWorkId', value: SortDirection.ASC },
@@ -202,7 +202,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
     types,
     worker = UNCHAINED_WORKER_ID,
   }: {
-    types: Array<string>;
+    types: string[];
     worker: string;
   }): Promise<Work> => {
     // Find a work item that is scheduled for now and is not started.
@@ -290,7 +290,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
 
     workerId: UNCHAINED_WORKER_ID,
 
-    activeWorkTypes: async (): Promise<Array<string>> => {
+    activeWorkTypes: async (): Promise<string[]> => {
       const typeList = await WorkQueue.aggregate([{ $group: { _id: '$type' } }]).toArray();
       return typeList.map((t) => t._id as string);
     },
@@ -310,10 +310,10 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       sort,
       ...selectorOptions
     }: WorkQueueQuery & {
-      sort?: Array<SortOption>;
+      sort?: SortOption[];
       limit?: number;
       skip?: number;
-    }): Promise<Array<Work>> => {
+    }): Promise<Work[]> => {
       const selector = buildQuerySelector(selectorOptions);
       return WorkQueue.find(selector, {
         skip,
@@ -576,10 +576,10 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       worker = UNCHAINED_WORKER_ID,
       referenceDate,
     }: {
-      types: Array<string>;
+      types: string[];
       worker: string;
       referenceDate: Date;
-    }): Promise<Array<Work>> => {
+    }): Promise<Work[]> => {
       const workQueue = await WorkQueue.find(
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],
@@ -611,7 +611,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       types,
       dateRange,
     }: {
-      types?: Array<string>;
+      types?: string[];
       dateRange?: DateFilterInput;
     }): Promise<WorkerReport[]> => {
       const pipeline = [];

@@ -7,8 +7,8 @@
     "build": "",
     "prepublishOnly": "npm run clean && npm run build"
   },
-  "dependencies": {
-    "@types/node": "^22.13.14",
-    "typescript": "^5.8.2"
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
   }
 }

@@ -3,13 +3,13 @@ import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/
 import buildFindSelector from './buildFindSelector.js';
 import { Order, OrderQuery } from '../db/OrdersCollection.js';
 
-export type OrderReport = {
+export interface OrderReport {
   newCount: number;
   checkoutCount: number;
   rejectCount: number;
   confirmCount: number;
   fulfillCount: number;
-};
+}
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {
@@ -100,11 +100,11 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       }: OrderQuery & {
         limit?: number;
         offset?: number;
-        sort?: Array<SortOption>;
+        sort?: SortOption[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<Order>> => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
+    ): Promise<Order[]> => {
+      const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.DESC }];
       const findOptions: mongodb.FindOptions = {
         skip: offset,
         limit,

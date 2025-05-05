@@ -23,13 +23,10 @@ test.describe('WebAuthn Flows', () => {
           }
         `,
       });
-      assert.partialDeepStrictEqual(Object.keys(createWebAuthnCredentialCreationOptions), [
-        'requestId',
-        'rp',
-        'user',
-        'challenge',
-        'pubKeyCredParams',
-      ]);
+      assert.partialDeepStrictEqual(
+        Object.keys(createWebAuthnCredentialCreationOptions).sort(),
+        ['requestId', 'rp', 'user', 'challenge', 'pubKeyCredParams'].sort(),
+      );
     });
 
     test.todo('create a user with the previously created challenge');
@@ -44,10 +41,10 @@ test.describe('WebAuthn Flows', () => {
           }
         `,
       });
-      assert.partialDeepStrictEqual(Object.keys(createWebAuthnCredentialRequestOptions), [
-        'requestId',
-        'challenge',
-      ]);
+      assert.partialDeepStrictEqual(
+        Object.keys(createWebAuthnCredentialRequestOptions).sort(),
+        ['requestId', 'challenge'].sort(),
+      );
     });
   });
 

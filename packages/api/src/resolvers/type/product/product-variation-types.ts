@@ -13,10 +13,10 @@ export type HelperType<P, T> = (
 export interface ProductVariationHelperTypes {
   options: HelperType<
     never,
-    Array<{
+    {
       _id: string;
       productVariationOption: string;
-    }>
+    }[]
   >;
   texts: HelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
 }

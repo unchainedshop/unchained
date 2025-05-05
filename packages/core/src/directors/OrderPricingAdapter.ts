@@ -18,10 +18,10 @@ import { Modules } from '../modules.js';
 
 export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   currencyCode?: string;
-  discounts: Array<OrderDiscount>;
+  discounts: OrderDiscount[];
   order: Order;
   orderDelivery: OrderDelivery;
-  orderPositions: Array<OrderPosition>;
+  orderPositions: OrderPosition[];
   orderPayment: OrderPayment;
   user: User;
 }

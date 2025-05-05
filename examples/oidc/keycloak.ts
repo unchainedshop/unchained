@@ -81,7 +81,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
         if (!user) {
           await request.unchainedContext.modules.users.createUser(
             {
-              // eslint-disable-next-line
               // @ts-ignore WE KNOW THAT WE CAN SET THAT FIELD
               _id: userId,
               username: usernameAvailable ? preferred_username : sub,
@@ -99,7 +98,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
             { skipMessaging: true, skipPasswordEnrollment: true },
           );
         }
-        // eslint-disable-next-line
         // @ts-ignore
         request.session.keycloak = accessToken.token;
         return reply.redirect('http://localhost:3000/');
@@ -112,7 +110,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
   );
 
   return (contextResolver: UnchainedContextResolver) => async (props, req) => {
-    // eslint-disable-next-line
     const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
     const context = await contextResolver(props);
     if (context.user || !req.session.keycloak) return context;
@@ -150,7 +147,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
         user,
         logout: async () => {
           const tokenObject = {
-            // eslint-disable-next-line
             _id: (req as any).session.sessionId,
             userId: user._id,
           };

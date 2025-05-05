@@ -1,12 +1,12 @@
 import { Context } from '../../context.js';
 import { SearchConfiguration } from '@unchainedshop/core-filters';
 
-type SearchResultData = {
+export interface SearchResultData {
   searchConfiguration: SearchConfiguration & { productSelector: any };
-  totalProductIds: Array<string>;
-  aggregatedTotalProductIds: Array<string>;
-  aggregatedFilteredProductIds: Array<string>;
-};
+  totalProductIds: string[];
+  aggregatedTotalProductIds: string[];
+  aggregatedFilteredProductIds: string[];
+}
 
 export const ProductSearchResult = {
   productsCount: async (

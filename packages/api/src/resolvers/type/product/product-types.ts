@@ -20,9 +20,9 @@ export const Product = {
     },
     { modules, loaders }: Context,
   ): Promise<
-    Array<{
-      links: Array<AssortmentPathLink>;
-    }>
+    {
+      links: AssortmentPathLink[];
+    }[]
   > {
     return modules.assortments.breadcrumbs(
       {
@@ -46,10 +46,10 @@ export const Product = {
     params: {
       limit: number;
       offset: number;
-      tags?: Array<string>;
+      tags?: string[];
     },
     { loaders, modules }: Context,
-  ): Promise<Array<ProductMedia>> {
+  ): Promise<ProductMedia[]> {
     if (params.offset || params.tags) {
       return modules.products.media.findProductMedias({
         productId: product._id,
@@ -73,10 +73,10 @@ export const Product = {
       queryString?: string;
       limit?: number;
       offset?: number;
-      sort?: Array<SortOption>;
+      sort?: SortOption[];
     },
     { modules }: Context,
-  ): Promise<Array<ProductReview>> {
+  ): Promise<ProductReview[]> {
     return modules.products.reviews.findProductReviews({
       productId: product._id,
       limit,
@@ -105,7 +105,7 @@ export const Product = {
       includeInactive: boolean;
     },
     { modules }: Context,
-  ): Promise<Array<typeof product>> {
+  ): Promise<(typeof product)[]> {
     const { assortmentId, limit, offset, includeInactive = false } = params;
 
     const productId = product._id;

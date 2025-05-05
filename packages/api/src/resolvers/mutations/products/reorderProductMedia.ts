@@ -3,7 +3,7 @@ import { Context } from '../../../context.js';
 
 export default async function reorderProductMedia(
   root: never,
-  params: { sortKeys: Array<{ productMediaId: string; sortKey: number }> },
+  params: { sortKeys: { productMediaId: string; sortKey: number }[] },
   { modules, userId }: Context,
 ) {
   const { sortKeys = [] } = params;

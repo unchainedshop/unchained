@@ -5,7 +5,7 @@ import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateProductMediaTexts(
   root: never,
-  { productMediaId, texts }: { productMediaId: string; texts: Array<ProductMediaText> },
+  { productMediaId, texts }: { productMediaId: string; texts: ProductMediaText[] },
   { modules, userId }: Context,
 ) {
   log(`mutation updateProductMediaTexts ${productMediaId}`, { userId });

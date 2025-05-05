@@ -12,7 +12,7 @@ export async function discountedEntitiesService(
   this: Modules,
   order: Order,
   orderDiscount: OrderDiscount,
-): Promise<Array<OrderPricingDiscount>> {
+): Promise<OrderPricingDiscount[]> {
   // Delivery discounts
   const orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,

@@ -5,7 +5,7 @@ export interface OrderSettingsOrderPositionValidation<Product = unknown> {
   order: Order;
   product: Product;
   quantityDiff?: number;
-  configuration?: Array<{ key: string; value: string }>;
+  configuration?: { key: string; value: string }[];
 }
 
 export interface OrdersSettingsOptions {

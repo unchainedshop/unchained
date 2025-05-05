@@ -4,7 +4,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function requestQuotation(
   root: never,
-  params: { productId: string; configuration: Array<{ key: string; value: string }> },
+  params: { productId: string; configuration: { key: string; value: string }[] },
   context: Context,
 ) {
   const { countryCode, currencyCode, modules, services, userId } = context;

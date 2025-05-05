@@ -50,7 +50,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.13.14",
-    "typescript": "^5.8.2"
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
   }
 }

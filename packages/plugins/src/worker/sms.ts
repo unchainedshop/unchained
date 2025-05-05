@@ -1,15 +1,6 @@
 import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
-import Twilio from 'twilio';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
-
-/* Potential: no need for twilio npm
-curl -X POST "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json" \
---data-urlencode "From=+15017122661" \
---data-urlencode "Body=Hi there" \
---data-urlencode "To=+15558675310" \
--u $TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN
-*/
 
 const SmsWorkerPlugin: IWorkerAdapter<
   {
@@ -49,25 +40,36 @@ const SmsWorkerPlugin: IWorkerAdapter<
     }
 
     try {
-      const client = Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-      const { sid, errorMessage } = await client.messages.create({
-        body: text,
-        from: from || TWILIO_SMS_FROM,
-        to,
+      const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64')}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          Body: text || '',
+          From: from || TWILIO_SMS_FROM,
+          To: to,
+        }),
       });
-      if (errorMessage) {
+
+      const data = await response.json();
+
+      if (!response.ok) {
         return {
           success: false,
           error: {
             name: 'TWILIO_ERROR',
-            message: errorMessage.toString(),
+            message: data.message || 'Failed to send SMS',
           },
         };
       }
+
       return {
         success: true,
         result: {
-          sid,
+          sid: data.sid,
         },
         error: null,
       };

@@ -17,7 +17,7 @@ export interface OrderDiscountHelperTypes {
     }>
   >;
 
-  discounted: HelperType<never, Promise<Array<OrderPricingDiscount>>>;
+  discounted: HelperType<never, Promise<OrderPricingDiscount[]>>;
   order: HelperType<never, Promise<Order>>;
   total: HelperType<never, Promise<Price>>;
 }

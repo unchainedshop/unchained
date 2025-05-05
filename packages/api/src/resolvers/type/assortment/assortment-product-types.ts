@@ -4,10 +4,10 @@ import { Product } from '@unchainedshop/core-products';
 
 type HelperType<T> = (assortmentProduct: AssortmentProductType, _: never, context: Context) => T;
 
-export type AssortmentProductHelperTypes = {
+export interface AssortmentProductHelperTypes {
   assortment: HelperType<Promise<Assortment>>;
   product: HelperType<Promise<Product>>;
-};
+}
 
 export const AssortmentProduct: AssortmentProductHelperTypes = {
   assortment: async (obj, _, { loaders }) => {

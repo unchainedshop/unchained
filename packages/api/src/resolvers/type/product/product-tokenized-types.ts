@@ -38,11 +38,11 @@ export const TokenizedProduct = {
     },
     requestContext: Context,
   ): Promise<
-    Array<{
+    {
       deliveryProvider?: DeliveryProvider;
       warehousingProvider?: WarehousingProvider;
       quantity?: number;
-    }>
+    }[]
   > {
     const { modules, services } = requestContext;
     const { referenceDate } = params;

@@ -73,7 +73,7 @@ export const AssortmentTypes = {
     params: {
       limit: number;
       offset: number;
-      tags?: Array<string>;
+      tags?: string[];
     },
     { modules, loaders }: Context,
   ) {

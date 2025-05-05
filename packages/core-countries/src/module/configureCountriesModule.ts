@@ -68,10 +68,10 @@ export const configureCountriesModule = async ({ db }: ModuleInput<Record<string
       }: CountryQuery & {
         limit?: number;
         offset?: number;
-        sort?: Array<SortOption>;
+        sort?: SortOption[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<Country>> => {
+    ): Promise<Country[]> => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const countries = Countries.find(buildFindSelector(query), {
         skip: offset,

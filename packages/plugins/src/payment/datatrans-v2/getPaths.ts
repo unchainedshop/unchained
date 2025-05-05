@@ -8,13 +8,13 @@ const {
   DATATRANS_RETURN_PATH = '/datatrans/return',
 } = process.env;
 
-type Paths = {
+interface Paths {
   postUrl: string;
   cancelUrl: string;
   successUrl: string;
   errorUrl: string;
   returnUrl: string;
-};
+}
 
 export default (): Paths => ({
   postUrl: `${ROOT_URL}${DATATRANS_WEBHOOK_PATH}`,

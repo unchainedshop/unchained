@@ -5,17 +5,17 @@ const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
 const DIRECTION_ASCENDING = 'ASC';
 
-export type SearchFilterQuery = Array<{ key: string; value?: string }>;
+export type SearchFilterQuery = { key: string; value?: string }[];
 
-export type SearchQuery = {
-  assortmentIds?: Array<string>;
-  filterIds?: Array<string>;
+export interface SearchQuery {
+  assortmentIds?: string[];
+  filterIds?: string[];
   filterQuery?: SearchFilterQuery;
   includeInactive?: boolean;
   orderBy?: string;
-  productIds?: Array<string>;
+  productIds?: string[];
   queryString?: string;
-};
+}
 export interface SearchConfiguration {
   searchQuery?: SearchQuery;
   filterSelector: mongodb.Filter<Filter>;
@@ -24,11 +24,11 @@ export interface SearchConfiguration {
   locale: Intl.Locale;
 }
 
-export type FilterQuery = {
-  filterIds?: Array<string>;
+export interface FilterQuery {
+  filterIds?: string[];
   queryString?: string;
   includeInactive?: boolean;
-};
+}
 
 const normalizeDirection = (textualInput) => {
   if (textualInput === DIRECTION_ASCENDING) {

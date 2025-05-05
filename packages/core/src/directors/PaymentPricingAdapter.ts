@@ -24,7 +24,7 @@ export interface PaymentPricingAdapterContext extends BasePricingAdapterContext 
   orderPayment: OrderPayment;
   order: Order;
   provider: PaymentProvider;
-  discounts: Array<OrderDiscount>;
+  discounts: OrderDiscount[];
 }
 
 export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {

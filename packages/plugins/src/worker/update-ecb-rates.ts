@@ -3,7 +3,7 @@ import later from '@breejs/later';
 import { xml2json } from 'xml-js';
 import { ProductPriceRate } from '@unchainedshop/core-products';
 
-const getExchangeRates = async (): Promise<Array<{ currency: string; rate: string }>> => {
+const getExchangeRates = async (): Promise<{ currency: string; rate: string }[]> => {
   return fetch(`https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`, {
     method: 'GET',
   })
@@ -50,7 +50,7 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
           },
         };
 
-      const rates: Array<ProductPriceRate> = data
+      const rates: ProductPriceRate[] = data
         .map((d) => {
           return {
             baseCurrency,

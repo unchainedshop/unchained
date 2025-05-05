@@ -48,7 +48,7 @@ export const configurePaymentProvidersModule = (
     findProviders: async (
       query: mongodb.Filter<PaymentProvider>,
       options: mongodb.FindOptions = { sort: { created: 1 } },
-    ): Promise<Array<PaymentProvider>> => {
+    ): Promise<PaymentProvider[]> => {
       const providers = PaymentProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },

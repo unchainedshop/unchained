@@ -4,19 +4,19 @@ import makeMongoDBCache from './product-cache/mongodb.js';
 export interface FiltersSettingsOptions {
   setCachedProductIds?: (
     filterId: string,
-    productIds: Array<string>,
-    productIdsMap: Record<string, Array<string>>,
+    productIds: string[],
+    productIdsMap: Record<string, string[]>,
   ) => Promise<number>;
-  getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
+  getCachedProductIds?: (filterId: string) => Promise<[string[], Record<string, string[]>]>;
 }
 
 export interface FiltersSettings {
   setCachedProductIds?: (
     filterId: string,
-    productIds: Array<string>,
-    productIdsMap: Record<string, Array<string>>,
+    productIds: string[],
+    productIdsMap: Record<string, string[]>,
   ) => Promise<number>;
-  getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
+  getCachedProductIds?: (filterId: string) => Promise<[string[], Record<string, string[]>]>;
   configureSettings: (options: FiltersSettingsOptions, db: mongodb.Db) => void;
 }
 

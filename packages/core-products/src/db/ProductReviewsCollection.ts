@@ -26,7 +26,7 @@ export type ProductReview = {
   title?: string;
   review?: string;
   meta?: any;
-  votes: Array<ProductVote>;
+  votes: ProductVote[];
 } & TimestampFields;
 
 export const ProductReviewsCollection = async (db: mongodb.Db) => {
