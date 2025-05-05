@@ -284,6 +284,8 @@ test.describe('Plugins: Stripe Payments', async () => {
       });
     });
   } else {
-    test.skip('Secret not set', () => {});
+    test.skip('Secret not set', () => {
+      /* */
+    });
   }
 });

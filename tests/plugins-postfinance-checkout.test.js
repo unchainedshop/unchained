@@ -383,6 +383,8 @@ test.describe('Plugins: Postfinance Checkout', () => {
       },
     );
   } else {
-    test.skip('Secret not set', () => {});
+    test.skip('Secret not set', () => {
+      /* */
+    });
   }
 });

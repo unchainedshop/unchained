@@ -405,6 +405,4 @@ test.describe('Order: Payments', () => {
       code: 'NoPermissionError',
     });
   });
-
-  test.todo('Mutation.updateOrderPaymentCard', () => {});
 });
