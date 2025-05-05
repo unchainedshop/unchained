@@ -366,8 +366,6 @@ test.describe('AssortmentMedia', () => {
 
   test.describe('mutation.removeAssortmentMedia for admin user should', () => {
     test('remove assortment media successfuly when provided valid media ID', async () => {
-       
-
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {

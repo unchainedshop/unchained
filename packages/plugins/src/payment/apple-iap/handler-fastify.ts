@@ -33,7 +33,7 @@ export const appleIAPHandler: RouteHandlerMethod = async (
       throw new Error('shared secret not valid');
     }
 
-      const transactions = responseBody?.unified_receipt?.latest_receipt_info;  
+    const transactions = responseBody?.unified_receipt?.latest_receipt_info;
     const latestTransaction = transactions[0];
 
     if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
@@ -48,7 +48,7 @@ export const appleIAPHandler: RouteHandlerMethod = async (
 
       const order = await services.orders.checkoutOrder(orderPayment.orderId, {
         paymentContext: {
-                receiptData: responseBody?.unified_receipt?.latest_receipt,  
+          receiptData: responseBody?.unified_receipt?.latest_receipt,
         },
       });
       const orderId = order._id;
@@ -86,7 +86,7 @@ export const appleIAPHandler: RouteHandlerMethod = async (
 
       await services.orders.registerPaymentCredentials(enrollment.payment.paymentProviderId, {
         transactionContext: {
-              receiptData: responseBody?.unified_receipt?.latest_receipt,  
+          receiptData: responseBody?.unified_receipt?.latest_receipt,
         },
         userId: enrollment.userId,
       });

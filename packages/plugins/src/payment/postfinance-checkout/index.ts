@@ -66,9 +66,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         );
       },
 
-       
       configurationError() {
-         
         if (
           !PFCHECKOUT_SPACE_ID ||
           !PFCHECKOUT_USER_ID ||

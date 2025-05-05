@@ -68,9 +68,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
         return config.find((item) => item.key === 'terminalId')?.value;
       },
 
-       
       configurationError() {
-         
         if (
           !SAFERPAY_BASE_URL ||
           !SAFERPAY_CUSTOMER_ID ||

@@ -44,7 +44,7 @@ const streamPayloadToBulkImporter = async (
     { highWaterMark: 100, lowWaterMark: 5 },
   );
 
-  for await (const event of eventIterator) {  
+  for await (const event of eventIterator) {
     await bulkImporter.prepare(event, unchainedAPI);
   }
 

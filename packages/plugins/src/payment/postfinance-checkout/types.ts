@@ -1,10 +1,10 @@
-export enum IntegrationModes {  
+export enum IntegrationModes {
   PaymentPage = 'PaymentPage',
   Lightbox = 'Lightbox',
   iFrame = 'iFrame',
 }
 
-export enum CompletionModes {  
+export enum CompletionModes {
   Immediate = 'Immediate',
   Deferred = 'Deferred',
 }

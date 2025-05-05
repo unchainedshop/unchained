@@ -26,7 +26,6 @@ const AppleIAP: IPaymentAdapter = {
       ...PaymentAdapter.actions(params, context),
 
       configurationError() {
-         
         if (!APPLE_IAP_SHARED_SECRET) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
@@ -38,23 +37,19 @@ const AppleIAP: IPaymentAdapter = {
         return false;
       },
 
-       
       isPayLaterAllowed() {
         return false;
       },
 
-       
       async sign() {
         throw new Error('Apple IAP does not support payment signing');
       },
 
-       
       async validate() {
         // once registered receipt transactions are valid by default!
         return true;
       },
 
-       
       async register(transactionContext) {
         const { receiptData } = transactionContext;
 
@@ -62,13 +57,13 @@ const AppleIAP: IPaymentAdapter = {
           receiptData,
           password: APPLE_IAP_SHARED_SECRET,
         });
-        const { status, latest_receipt_info: latestReceiptInfo } = response;  
+        const { status, latest_receipt_info: latestReceiptInfo } = response;
 
         if (status === 0) {
           logger.debug('Apple IAP Plugin: Receipt validated and updated for the user');
-          const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1];  
+          const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1];
           return {
-            token: latestTransaction.web_order_line_item_id,  
+            token: latestTransaction.web_order_line_item_id,
             latestReceiptInfo,
           };
         }
@@ -79,7 +74,6 @@ const AppleIAP: IPaymentAdapter = {
         return null;
       },
 
-       
       async charge(transactionContext) {
         const { meta, paymentCredentials, receiptData } = transactionContext || {};
         const { transactionIdentifier } = meta || {};
@@ -100,10 +94,9 @@ const AppleIAP: IPaymentAdapter = {
         }
 
         const transactions =
-          receiptResponse?.latest_receipt_info ||  
-          paymentCredentials?.meta?.latestReceiptInfo;
+          receiptResponse?.latest_receipt_info || paymentCredentials?.meta?.latestReceiptInfo;
         const matchedTransaction = transactions?.find(
-          (transaction) => transaction?.transaction_id === transactionIdentifier,  
+          (transaction) => transaction?.transaction_id === transactionIdentifier,
         );
         if (!matchedTransaction) {
           throw new Error(
@@ -131,7 +124,7 @@ const AppleIAP: IPaymentAdapter = {
 
         const isMatchesTransaction =
           parseInt(matchedTransaction.quantity, 10) === quantity &&
-          matchedTransaction.product_id === productId;  
+          matchedTransaction.product_id === productId;
 
         if (!isMatchesTransaction)
           throw new Error('Apple IAP Plugin: Product in order does not match transaction');

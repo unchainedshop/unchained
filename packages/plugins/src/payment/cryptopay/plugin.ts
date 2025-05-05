@@ -31,7 +31,7 @@ const resolveNetwork = (prefix) => {
   return TEST_NETWORK;
 };
 
-enum CryptopayCurrencies {  
+enum CryptopayCurrencies {
   BTC = 'BTC',
   ETH = 'ETH',
 }
@@ -98,9 +98,7 @@ const Cryptopay: IPaymentAdapter = {
     const adapterActions = {
       ...PaymentAdapter.actions(config, context),
 
-       
       configurationError() {
-         
         if (!CRYPTOPAY_SECRET) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }

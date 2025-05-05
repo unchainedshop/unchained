@@ -42,7 +42,6 @@ const LocalSearch: IFilterAdapter = {
         return products.map(({ productId }) => productId);
       },
 
-       
       searchAssortments: async ({ assortmentIds }) => {
         const { queryString } = params.searchQuery;
 

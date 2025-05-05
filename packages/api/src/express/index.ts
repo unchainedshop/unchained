@@ -62,18 +62,17 @@ const addContext = async function middlewareWithContext(
       const tokenObject = {
         _id: (req as any).sessionID,
         userId: user._id,
-         
+
         tokenExpires: new Date((req as any).session?.cookie._expires),
       };
 
       await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
 
-       
       (user as any)._inLoginMethodResponse = true;
       return { user, ...tokenObject };
     };
 
-    const logout: LogoutFn = async (sessionId) => {  
+    const logout: LogoutFn = async (sessionId) => {
       // TODO: this should only logout an explicitly provided session if sessionID
       // has been provided
       // express-session destroy
