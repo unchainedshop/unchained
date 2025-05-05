@@ -1,10 +1,10 @@
-export enum IntegrationModes { // eslint-disable-line
+export enum IntegrationModes {  
   PaymentPage = 'PaymentPage',
   Lightbox = 'Lightbox',
   iFrame = 'iFrame',
 }
 
-export enum CompletionModes { // eslint-disable-line
+export enum CompletionModes {  
   Immediate = 'Immediate',
   Deferred = 'Deferred',
 }

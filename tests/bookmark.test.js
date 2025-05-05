@@ -87,7 +87,7 @@ test.describe('Bookmark', () => {
 
     test('remove bookmark a product when provided valid product ID and false second argument', async () => {
       const {
-        data: { bookmark }, // eslint-disable-line
+        data: { bookmark },  
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {

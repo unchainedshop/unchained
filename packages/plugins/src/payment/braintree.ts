@@ -52,7 +52,7 @@ const BraintreeDirect: IPaymentAdapter = {
       return BRAINTREE_SANDBOX_TOKEN;
     };
 
-    // eslint-disable-next-line
+     
     const getPrivateKey = () => {
       return BRAINTREE_PRIVATE_KEY;
     };
@@ -114,7 +114,7 @@ const BraintreeDirect: IPaymentAdapter = {
 
         // eslint-disable-next-line
         // @ts-ignore
-        const braintree = (await import('braintree')).default; // eslint-disable-line
+        const braintree = (await import('braintree')).default;  
         const gateway = getGateway(braintree);
         const address = order.billingAddress;
         const pricing = OrderPricingSheet({

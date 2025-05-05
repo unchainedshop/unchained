@@ -5,16 +5,16 @@ export const fixPeriods = async (
   unchainedAPI: UnchainedCore,
 ) => {
   const relevantTransactions = transactions.filter(
-    // eslint-disable-next-line
+     
     ({ original_transaction_id }) => {
-      return original_transaction_id === transactionId; // eslint-disable-line
+      return original_transaction_id === transactionId;  
     },
   );
 
   const adjustedEnrollmentPeriods = relevantTransactions
     .map((transaction) => {
       return {
-        isTrial: transaction.is_trial_period === 'true', // eslint-disable-line
+        isTrial: transaction.is_trial_period === 'true',  
         start: new Date(parseInt(transaction.purchase_date_ms, 10)),
         end: new Date(parseInt(transaction.expires_date_ms, 10)),
         orderId: transaction.transaction_id === transactionId ? orderId : null,

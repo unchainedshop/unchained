@@ -14,7 +14,7 @@ export async function removeFilesService(this: Modules, { fileIds }: { fileIds: 
   try {
     await fileUploadAdapter.removeFiles(fileObjects, { modules: this });
   } catch (e) {
-    console.warn(e); // eslint-disable-line
+    console.warn(e);  
   }
 
   const fileIdsToDelete = fileObjects.map((f) => f._id).filter(Boolean);

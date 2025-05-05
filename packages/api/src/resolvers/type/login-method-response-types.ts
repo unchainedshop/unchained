@@ -1,6 +1,6 @@
 export const LoginMethodResponse = {
   user({ user }) {
-    user._inLoginMethodResponse = true; // eslint-disable-line
+    user._inLoginMethodResponse = true;  
     return user;
   },
 };

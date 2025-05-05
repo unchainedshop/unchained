@@ -366,7 +366,7 @@ test.describe('AssortmentMedia', () => {
 
   test.describe('mutation.removeAssortmentMedia for admin user should', () => {
     test('remove assortment media successfuly when provided valid media ID', async () => {
-      // eslint-disable-next-line no-unused-vars
+       
 
       await graphqlFetch({
         query: /* GraphQL */ `

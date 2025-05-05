@@ -31,7 +31,7 @@ const resolveNetwork = (prefix) => {
   return TEST_NETWORK;
 };
 
-enum CryptopayCurrencies { // eslint-disable-line
+enum CryptopayCurrencies {  
   BTC = 'BTC',
   ETH = 'ETH',
 }
@@ -98,9 +98,9 @@ const Cryptopay: IPaymentAdapter = {
     const adapterActions = {
       ...PaymentAdapter.actions(config, context),
 
-      // eslint-disable-next-line
+       
       configurationError() {
-        // eslint-disable-line
+         
         if (!CRYPTOPAY_SECRET) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
