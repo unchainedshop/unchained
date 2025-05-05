@@ -12,7 +12,7 @@ export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
     resolveDiscountAdapterFromStaticCode: (params: {
       code: string;
     }) => Promise<IDiscountAdapter<DiscountConfiguration>>;
-    findSystemDiscounts: () => Promise<Array<string>>;
+    findSystemDiscounts: () => Promise<string[]>;
   }>;
 };
 

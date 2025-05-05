@@ -12,8 +12,8 @@ import {
 const generateOrder = async (
   enrollment: Enrollment,
   params: {
-    orderPositions: Array<OrderPosition>;
-  } & { [x: string]: any },
+    orderPositions: OrderPosition[];
+  } & Record<string, any>,
   unchainedAPI: Pick<UnchainedCore, 'modules' | 'services'>,
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;

@@ -32,13 +32,9 @@ export interface AssortmentPathLink {
   parentIds: string[];
 }
 
-export type BreadcrumbAssortmentLinkFunction = (
-  childAssortmentId: string,
-) => Promise<Array<AssortmentLink>>;
+export type BreadcrumbAssortmentLinkFunction = (childAssortmentId: string) => Promise<AssortmentLink[]>;
 
-export type BreacrumbAssortmentProductFunction = (
-  productId: string,
-) => Promise<Array<AssortmentProduct>>;
+export type BreacrumbAssortmentProductFunction = (productId: string) => Promise<AssortmentProduct[]>;
 
 const logger = createLogger('unchained:core');
 
@@ -107,7 +103,7 @@ export const configureAssortmentsModule = async ({
     await AssortmentsCollection(db);
 
   // Functions
-  const findLinkedAssortments = async (assortment: Assortment): Promise<Array<AssortmentLink>> => {
+  const findLinkedAssortments = async (assortment: Assortment): Promise<AssortmentLink[]> => {
     return AssortmentLinks.find(
       {
         $or: [{ parentAssortmentId: assortment._id }, { childAssortmentId: assortment._id }],
@@ -275,9 +271,9 @@ export const configureAssortmentsModule = async ({
     }: AssortmentQuery & {
       limit?: number;
       offset?: number;
-      sort?: Array<SortOption>;
-    }): Promise<Array<Assortment>> => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'sequence', value: SortDirection.ASC }];
+      sort?: SortOption[];
+    }): Promise<Assortment[]> => {
+      const defaultSortOption: SortOption[] = [{ key: 'sequence', value: SortDirection.ASC }];
       const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
         limit,
@@ -294,7 +290,7 @@ export const configureAssortmentsModule = async ({
       assortmentId: string;
       forceLiveCollection?: boolean;
       ignoreChildAssortments?: boolean;
-    }): Promise<Array<string>> => {
+    }): Promise<string[]> => {
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId), {});
       if (!assortment) return [];
 
@@ -315,7 +311,7 @@ export const configureAssortmentsModule = async ({
     }: {
       assortmentId: string;
       includeInactive?: boolean;
-    }): Promise<Array<Assortment>> => {
+    }): Promise<Assortment[]> => {
       const links = await AssortmentLinks.find(
         { parentAssortmentId: assortmentId },
         {
@@ -376,7 +372,7 @@ export const configureAssortmentsModule = async ({
         resolveAssortmentLinks?: BreadcrumbAssortmentLinkFunction;
         resolveAssortmentProducts?: BreacrumbAssortmentProductFunction;
       },
-    ): Promise<Array<{ links: Array<AssortmentPathLink> }>> => {
+    ): Promise<{ links: AssortmentPathLink[] }[]> => {
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
         resolveAssortmentLinks,
         resolveAssortmentProducts,
@@ -492,12 +488,12 @@ export const configureAssortmentsModule = async ({
         assortmentSelector,
         sort,
       }: {
-        assortmentIds: Array<string>;
+        assortmentIds: string[];
         assortmentSelector: mongodb.Filter<Assortment>;
         limit: number;
         offset: number;
         sort: mongodb.FindOptions['sort'];
-      }): Promise<Array<Assortment>> => {
+      }): Promise<Assortment[]> => {
         const assortments = await findPreservingIds(Assortments)(assortmentSelector, assortmentIds, {
           limit,
           skip: offset,

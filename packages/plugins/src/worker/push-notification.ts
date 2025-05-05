@@ -3,7 +3,7 @@ import webPush from 'web-push';
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;
 
-type NotificationOptions = {
+interface NotificationOptions {
   vapidDetails: {
     subject: string;
     publicKey: string;
@@ -12,7 +12,7 @@ type NotificationOptions = {
   TTL: number;
   urgency?: 'very-low' | 'low' | 'normal' | 'high';
   topic?: string;
-};
+}
 
 const PushNotificationWorkerPlugin: IWorkerAdapter<
   {

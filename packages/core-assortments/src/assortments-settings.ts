@@ -8,17 +8,17 @@ import { mongodb } from '@unchainedshop/mongodb';
  */
 
 export interface AssortmentsSettingsOptions {
-  zipTree?: (data: Tree<string>) => Array<string>;
+  zipTree?: (data: Tree<string>) => string[];
   slugify?: (title: string) => string;
-  setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
-  getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
+  setCachedProductIds?: (assortmentId: string, productIds: string[]) => Promise<number>;
+  getCachedProductIds?: (assortmentId: string) => Promise<string[]>;
 }
 
 export interface AssortmentsSettings {
-  zipTree?: (data: Tree<string>) => Array<string>;
+  zipTree?: (data: Tree<string>) => string[];
   slugify?: (title: string) => string;
-  setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
-  getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
+  setCachedProductIds?: (assortmentId: string, productIds: string[]) => Promise<number>;
+  getCachedProductIds?: (assortmentId: string) => Promise<string[]>;
   configureSettings: (options: AssortmentsSettingsOptions, db: mongodb.Db) => void;
 }
 

@@ -2,7 +2,7 @@ import { ProductPrice } from '../../db/ProductsCollection.js';
 
 export const getPriceRange = (params: {
   productId: string;
-  prices: Array<ProductPrice>;
+  prices: ProductPrice[];
 }): { minPrice: ProductPrice; maxPrice: ProductPrice } => {
   const { min, max } = params.prices.reduce(
     (m, current) => {

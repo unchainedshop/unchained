@@ -5,7 +5,7 @@ import { AssortmentPathLink, AssortmentProduct } from '@unchainedshop/core-assor
 export type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
 export interface ProductAssortmentPathHelperTypes {
   assortmentProduct: (
-    data: { assortmentId: string; productId: string; links: Array<AssortmentPathLink> },
+    data: { assortmentId: string; productId: string; links: AssortmentPathLink[] },
     _: never,
     context: Context,
   ) => Promise<AssortmentProduct>;

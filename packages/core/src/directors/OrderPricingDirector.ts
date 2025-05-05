@@ -14,7 +14,7 @@ export interface OrderPricingContext {
   currencyCode: string;
   order: Order;
   orderDelivery: OrderDelivery;
-  orderPositions: Array<OrderPosition>;
+  orderPositions: OrderPosition[];
   orderPayment: OrderPayment;
 }
 

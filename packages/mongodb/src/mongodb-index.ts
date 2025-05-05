@@ -17,19 +17,19 @@ export * from './documentdb-compat-mode.js';
 
 export { mongodb };
 
-export type LogFields = {
-  log: Array<{
+export interface LogFields {
+  log: {
     date: Date;
     status?: string;
     info: string;
-  }>;
-};
+  }[];
+}
 
-export type TimestampFields = {
+export interface TimestampFields {
   created?: Date;
   updated?: Date;
   deleted?: Date;
-};
+}
 
 export interface Address {
   addressLine?: string;
@@ -58,7 +58,7 @@ export interface MigrationRepository<Context = unknown> {
   db: mongodb.Db;
   migrations: Map<number, Migration<Context>>;
   register: (migration: Migration<Context>) => void;
-  allMigrations: () => Array<Migration<Context>>;
+  allMigrations: () => Migration<Context>[];
 }
 
 export interface ModuleInput<Options extends Record<string, any>> {

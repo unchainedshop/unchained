@@ -1,6 +1,6 @@
 import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 
-export type TokenSurrogate = {
+export interface TokenSurrogate {
   _id?: string;
   userId?: string;
   walletAddress?: string;
@@ -13,7 +13,7 @@ export type TokenSurrogate = {
   productId: string;
   orderPositionId: string;
   meta: any;
-};
+}
 
 export enum TokenStatus {
   CENTRALIZED = 'CENTRALIZED',

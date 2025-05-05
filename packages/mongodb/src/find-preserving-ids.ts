@@ -9,8 +9,8 @@ const defaultSort = sortByIndex;
 export const findPreservingIds =
   <T>(
     collection: Collection<T>,
-  ): ((selector: Filter<T>, ids: Array<string>, options?: FindOptions) => Promise<Array<T>>) =>
-  async (selector: Filter<T>, ids: Array<string>, options?: FindOptions): Promise<Array<T>> => {
+  ): ((selector: Filter<T>, ids: string[], options?: FindOptions) => Promise<T[]>) =>
+  async (selector: Filter<T>, ids: string[], options?: FindOptions): Promise<T[]> => {
     const { skip, limit, sort = defaultSort } = options || {};
     const filteredSelector = {
       ...selector,
@@ -34,5 +34,5 @@ export const findPreservingIds =
 
     const aggregationPointer = collection.aggregate(filteredPipeline);
     const items = await aggregationPointer.toArray();
-    return items as Array<T>;
+    return items as T[];
   };

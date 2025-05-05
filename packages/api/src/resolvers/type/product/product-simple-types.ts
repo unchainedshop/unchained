@@ -13,12 +13,12 @@ export const SimpleProduct = {
     params: { referenceDate: Date; quantity: number; deliveryProviderType: DeliveryProviderType },
     requestContext: Context,
   ): Promise<
-    Array<{
+    {
       deliveryProvider?: DeliveryProvider;
       warehousingProvider?: WarehousingProvider;
       shipping?: Date;
       earliestDelivery?: Date;
-    }>
+    }[]
   > {
     const { referenceDate, quantity } = params;
     const { services, modules } = requestContext;
@@ -42,11 +42,11 @@ export const SimpleProduct = {
     },
     requestContext: Context,
   ): Promise<
-    Array<{
+    {
       deliveryProvider?: DeliveryProvider;
       warehousingProvider?: WarehousingProvider;
       quantity?: number;
-    }>
+    }[]
   > {
     const { modules, services } = requestContext;
     const { referenceDate, deliveryProviderType } = params;

@@ -122,7 +122,7 @@ export const configureAssortmentTextsModule = ({
     findTexts: async (
       query: mongodb.Filter<AssortmentText>,
       options?: mongodb.FindOptions<AssortmentText>,
-    ): Promise<Array<AssortmentText>> => {
+    ): Promise<AssortmentText[]> => {
       const texts = AssortmentTexts.find(query, options);
 
       return texts.toArray();
@@ -142,8 +142,8 @@ export const configureAssortmentTextsModule = ({
     // Mutations
     updateTexts: async (
       assortmentId: string,
-      texts: Array<Omit<AssortmentText, 'assortmentId'>>,
-    ): Promise<Array<AssortmentText>> => {
+      texts: Omit<AssortmentText, 'assortmentId'>[],
+    ): Promise<AssortmentText[]> => {
       const assortmentTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
       );

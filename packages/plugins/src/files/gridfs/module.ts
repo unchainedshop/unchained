@@ -34,6 +34,6 @@ export default {
   },
 };
 
-export type GridFSFileUploadsModule = {
+export interface GridFSFileUploadsModule {
   gridfsFileUploads: ReturnType<typeof configureGridFSFileUploadModule>;
-};
+}

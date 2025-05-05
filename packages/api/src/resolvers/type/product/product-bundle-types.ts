@@ -4,7 +4,7 @@ import { Product } from './product-types.js';
 export const BundleProduct = {
   ...Product,
 
-  bundleItems(product): Array<ProductBundleItem> {
+  bundleItems(product): ProductBundleItem[] {
     return product.bundleItems ? product.bundleItems : [];
   },
 };

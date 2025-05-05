@@ -25,7 +25,7 @@ export interface DeliveryAdapterActions {
   isActive: () => boolean;
   isAutoReleaseAllowed: () => boolean;
   pickUpLocationById: (locationId: string) => Promise<DeliveryLocation>;
-  pickUpLocations: () => Promise<Array<DeliveryLocation>>;
+  pickUpLocations: () => Promise<DeliveryLocation[]>;
   send: () => Promise<boolean | Work>;
 }
 

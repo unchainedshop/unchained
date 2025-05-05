@@ -54,7 +54,7 @@ export const configureDeliveryModule = async ({
     findProviders: async (
       query: mongodb.Filter<DeliveryProvider>,
       options: mongodb.FindOptions<DeliveryProvider> = { sort: { created: 1 } },
-    ): Promise<Array<DeliveryProvider>> => {
+    ): Promise<DeliveryProvider[]> => {
       const providers = DeliveryProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },

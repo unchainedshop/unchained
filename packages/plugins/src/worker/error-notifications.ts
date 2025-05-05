@@ -2,13 +2,13 @@ import { WorkStatus } from '@unchainedshop/core-worker';
 import { IWorkerAdapter, WorkerDirector, WorkerAdapter } from '@unchainedshop/core';
 import later from '@breejs/later';
 
-type Arg = {
+interface Arg {
   secondsPassed?: number;
-};
+}
 
-type Result = {
+interface Result {
   forked?: string;
-};
+}
 
 const everyDayAtFourInTheNight = later.parse.cron('0 3 * * *');
 

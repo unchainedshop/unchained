@@ -1,37 +1,26 @@
 import { Quotation as QuotationType } from '@unchainedshop/core-quotations';
 import { Context } from '../../context.js';
-import { User } from '@unchainedshop/core-users';
-import { Product } from '@unchainedshop/core-products';
-import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/core-currencies';
 
-type HelperType<P, T> = (quotation: QuotationType, params: P, context: Context) => T;
+export const Quotation = {
+  country: async (obj: QuotationType, _: never, { loaders }: Context) =>
+    loaders.countryLoader.load({ isoCode: obj.countryCode }),
 
-type QuotationHelperTypes = {
-  country: HelperType<never, Promise<Country>>;
-  currency: HelperType<never, Promise<Currency>>;
-  isExpired: HelperType<{ referenceDate: Date }, boolean>;
-  status: HelperType<never, string>;
-  product: HelperType<never, Promise<Product>>;
-  user: HelperType<never, Promise<User>>;
-};
+  currency: async (obj: QuotationType, _: never, { loaders }: Context) =>
+    loaders.currencyLoader.load({ isoCode: obj.currencyCode }),
 
-export const Quotation: QuotationHelperTypes = {
-  country: async (obj, _, { loaders }) => loaders.countryLoader.load({ isoCode: obj.countryCode }),
-
-  currency: async (obj, _, { loaders }) => loaders.currencyLoader.load({ isoCode: obj.currencyCode }),
-
-  isExpired: (obj, { referenceDate }, { modules }) =>
+  isExpired: (obj: QuotationType, { referenceDate }: { referenceDate: Date }, { modules }: Context) =>
     modules.quotations.isExpired(obj, { referenceDate }),
 
-  product: async (obj, _, { loaders }) => {
+  product: async (obj: QuotationType, _: never, { loaders }: Context) => {
     const product = await loaders.productLoader.load({
       productId: obj.productId,
     });
     return product;
   },
 
-  status: (obj, _, { modules }) => modules.quotations.normalizedStatus(obj),
+  status: (obj: QuotationType, _: never, { modules }: Context) =>
+    modules.quotations.normalizedStatus(obj),
 
-  user: async (obj, _, { loaders }) => loaders.userLoader.load({ userId: obj.userId }),
+  user: async (obj: QuotationType, _: never, { loaders }: Context) =>
+    loaders.userLoader.load({ userId: obj.userId }),
 };

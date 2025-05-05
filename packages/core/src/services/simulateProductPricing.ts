@@ -11,7 +11,7 @@ export async function simulateProductPricingService(
     countryCode: string;
     currencyCode: string;
     quantity: number;
-    configuration?: Array<ProductConfiguration>;
+    configuration?: ProductConfiguration[];
   },
 ) {
   const calculated = await ProductPricingDirector.rebuildCalculation(pricingContext, { modules: this });

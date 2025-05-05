@@ -14,16 +14,20 @@ export enum QuotationStatus {
   REJECTED = 'REJECTED',
 }
 
-export type QuotationProposal = { price?: number; expires?: Date; meta?: any };
+export interface QuotationProposal {
+  price?: number;
+  expires?: Date;
+  meta?: any;
+}
 
 export interface QuotationItemConfiguration {
   quantity?: number;
-  configuration: Array<{ key: string; value: string }>;
+  configuration: { key: string; value: string }[];
 }
 
 export type Quotation = {
   _id?: string;
-  configuration?: Array<{ key: string; value: string }>;
+  configuration?: { key: string; value: string }[];
   context?: any;
   countryCode?: string;
   currencyCode?: string;

@@ -4,8 +4,8 @@ import { createYoga, createSchema, YogaServerOptions } from 'graphql-yoga';
 const logger = createLogger('unchained:api');
 
 export type GraphQLServerOptions = YogaServerOptions<any, any> & {
-  typeDefs?: Array<string>;
-  resolvers?: Array<Record<string, any>>;
+  typeDefs?: string[];
+  resolvers?: Record<string, any>[];
 };
 
 export default async (options: GraphQLServerOptions) => {

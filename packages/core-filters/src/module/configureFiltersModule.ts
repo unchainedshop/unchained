@@ -75,10 +75,10 @@ export const configureFiltersModule = async ({
       }: FilterQuery & {
         limit?: number;
         offset?: number;
-        sort?: Array<SortOption>;
+        sort?: SortOption[];
       } & mongodb.Filter<Filter>,
       options?: mongodb.FindOptions<Filter>,
-    ): Promise<Array<Filter>> => {
+    ): Promise<Filter[]> => {
       const defaultSortOption = [{ key: 'created', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {
         ...options,
@@ -117,7 +117,7 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    parse: (filter: Filter, values: Array<any>, allKeys: Array<string>) => {
+    parse: (filter: Filter, values: any[], allKeys: string[]) => {
       const parse = createFilterValueParser(filter.type);
       // const keys = parse(values, Object.keys(productIds));
       return parse(values, allKeys);

@@ -14,13 +14,13 @@ import {
   ProductVote,
 } from '../db/ProductReviewsCollection.js';
 
-export type ProductReviewQuery = {
+export interface ProductReviewQuery {
   productId?: string;
   authorId?: string;
   queryString?: string;
   created?: { end?: Date; start?: Date };
   updated?: { end?: Date; start?: Date };
-};
+}
 
 const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REVIEW_CREATE',
@@ -65,7 +65,7 @@ const buildFindSelector = ({
 const userIdsThatVoted = (
   productReview: ProductReview,
   { type = ProductReviewVoteType.UPVOTE }: { type: ProductReviewVoteType },
-): Array<string> => {
+): string[] => {
   return (productReview.votes || [])
     .filter(({ type: currentType }) => type === currentType)
     .map(({ userId }) => userId);
@@ -100,8 +100,8 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
     }: ProductReviewQuery & {
       limit?: number;
       offset?: number;
-      sort?: Array<SortOption>;
-    }): Promise<Array<ProductReview>> => {
+      sort?: SortOption[];
+    }): Promise<ProductReview[]> => {
       const reviewsList = ProductReviews.find(buildFindSelector(query), {
         skip: offset,
         limit,
@@ -200,7 +200,7 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
       ownVotes: (
         productReview: ProductReview,
         { userId: ownUserId }: { userId: string },
-      ): Array<ProductVote> => {
+      ): ProductVote[] => {
         return (productReview.votes || []).filter(({ userId }) => userId === ownUserId);
       },
 

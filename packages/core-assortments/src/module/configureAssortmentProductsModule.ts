@@ -24,8 +24,8 @@ export const configureAssortmentProductsModule = ({
       tags,
     }: {
       productId: string;
-      tags?: Array<string>;
-    }): Promise<Array<string>> => {
+      tags?: string[];
+    }): Promise<string[]> => {
       const selector: mongodb.Filter<AssortmentProduct> = { productId };
       if (tags) {
         selector.tags = { $in: tags };
@@ -40,8 +40,8 @@ export const configureAssortmentProductsModule = ({
       tags,
     }: {
       assortmentId: string;
-      tags?: Array<string>;
-    }): Promise<Array<string>> => {
+      tags?: string[];
+    }): Promise<string[]> => {
       const selector: mongodb.Filter<AssortmentProduct> = { assortmentId };
       if (tags) {
         selector.tags = { $in: tags };
@@ -67,12 +67,12 @@ export const configureAssortmentProductsModule = ({
         assortmentIds,
       }: {
         assortmentId?: string;
-        assortmentIds?: Array<string>;
+        assortmentIds?: string[];
         productId?: string;
-        productIds?: Array<string>;
+        productIds?: string[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<AssortmentProduct>> => {
+    ): Promise<AssortmentProduct[]> => {
       const selector: mongodb.Filter<AssortmentProduct> = {};
       if (assortmentId || assortmentIds) {
         selector.assortmentId = assortmentId || { $in: assortmentIds };
@@ -89,8 +89,8 @@ export const configureAssortmentProductsModule = ({
       productId,
     }: {
       productId: string;
-      assortmentIds: Array<string>;
-    }): Promise<Array<string>> => {
+      assortmentIds: string[];
+    }): Promise<string[]> => {
       const selector = {
         assortmentId: { $in: assortmentIds },
       };
@@ -162,7 +162,7 @@ export const configureAssortmentProductsModule = ({
     delete: async (
       assortmentProductId: string,
       options?: { skipInvalidation?: boolean },
-    ): Promise<Array<AssortmentProduct>> => {
+    ): Promise<AssortmentProduct[]> => {
       const selector = generateDbFilterById(assortmentProductId);
 
       const assortmentProduct = await AssortmentProducts.findOneAndDelete(selector);
@@ -232,13 +232,13 @@ export const configureAssortmentProductsModule = ({
       {
         sortKeys,
       }: {
-        sortKeys: Array<{
+        sortKeys: {
           assortmentProductId: string;
           sortKey: number;
-        }>;
+        }[];
       },
       options?: { skipInvalidation?: boolean },
-    ): Promise<Array<AssortmentProduct>> => {
+    ): Promise<AssortmentProduct[]> => {
       const changedAssortmentProductIds = await Promise.all(
         sortKeys.map(async ({ assortmentProductId, sortKey }) => {
           await AssortmentProducts.updateOne(generateDbFilterById(assortmentProductId), {

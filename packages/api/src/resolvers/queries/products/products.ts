@@ -6,7 +6,7 @@ import { Context } from '../../../context.js';
 export default async function products(
   root: never,
   params: ProductQuery & {
-    sort: Array<SortOption>;
+    sort: SortOption[];
     limit: number;
     offset: number;
   },

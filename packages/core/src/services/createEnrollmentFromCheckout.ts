@@ -12,16 +12,16 @@ export async function createEnrollmentFromCheckoutService(
     items,
     context,
   }: {
-    items: Array<{
+    items: {
       orderPosition: OrderPosition;
       product: Product;
-    }>;
+    }[];
     context: {
       paymentContext?: any;
       deliveryContext?: any;
     };
   },
-): Promise<Array<Enrollment>> {
+): Promise<Enrollment[]> {
   const orderId = order._id;
 
   const payment = await this.orders.payments.findOrderPayment({

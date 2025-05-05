@@ -74,10 +74,10 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
         productId?: mongodb.Filter<ProductMedia>['assortmentId'];
         limit?: number;
         offset?: number;
-        tags?: Array<string>;
+        tags?: string[];
       },
       options?: mongodb.FindOptions<ProductMedia>,
-    ): Promise<Array<ProductMedia>> => {
+    ): Promise<ProductMedia[]> => {
       const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
       if (tags?.length > 0) {
         selector.tags = { $all: tags };
@@ -149,8 +149,8 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       excludedProductMediaIds,
     }: {
       productId?: string;
-      excludedProductIds?: Array<string>;
-      excludedProductMediaIds?: Array<string>;
+      excludedProductIds?: string[];
+      excludedProductMediaIds?: string[];
     }): Promise<number> => {
       const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
 
@@ -189,11 +189,11 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     updateManualOrder: async ({
       sortKeys,
     }: {
-      sortKeys: Array<{
+      sortKeys: {
         productMediaId: string;
         sortKey: number;
-      }>;
-    }): Promise<Array<ProductMedia>> => {
+      }[];
+    }): Promise<ProductMedia[]> => {
       const changedProductMediaIds = await Promise.all(
         sortKeys.map(async ({ productMediaId, sortKey }) => {
           await ProductMedias.updateOne(generateDbFilterById(productMediaId), {
@@ -228,7 +228,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       findMediaTexts: async (
         { productMediaId }: mongodb.Filter<ProductMediaText>,
         options?: mongodb.FindOptions,
-      ): Promise<Array<ProductMediaText>> => {
+      ): Promise<ProductMediaText[]> => {
         return ProductMediaTexts.find({ productMediaId }, options).toArray();
       },
 
@@ -251,8 +251,8 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       // Mutations
       updateMediaTexts: async (
         productMediaId: string,
-        texts: Array<Omit<ProductMediaText, 'productMediaId'>>,
-      ): Promise<Array<ProductMediaText>> => {
+        texts: Omit<ProductMediaText, 'productMediaId'>[],
+      ): Promise<ProductMediaText[]> => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...localizations }) =>
             upsertLocalizedText(productMediaId, locale, localizations),

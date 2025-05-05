@@ -18,7 +18,7 @@ export default async function addCartQuotation(
     orderId?: string;
     quotationId: string;
     quantity: number;
-    configuration: Array<{ key: string; value: string }>;
+    configuration: { key: string; value: string }[];
   },
   context: Context,
 ) {

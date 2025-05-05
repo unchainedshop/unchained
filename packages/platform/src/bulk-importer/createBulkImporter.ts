@@ -7,11 +7,11 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:bulk-import');
 
-export type BulkImportOperationResult = {
+export interface BulkImportOperationResult {
   entity: string;
   operation: string;
   success: boolean;
-};
+}
 export type BulkImportOperation = (
   payload: any,
   options: {
@@ -23,9 +23,7 @@ export type BulkImportOperation = (
   unchainedAPI: UnchainedCore,
 ) => Promise<BulkImportOperationResult>;
 
-export type BulkImportHandler = {
-  [x: string]: BulkImportOperation;
-};
+export type BulkImportHandler = Record<string, BulkImportOperation>;
 
 let bulkOperationHandlers: Record<string, BulkImportHandler> = {};
 

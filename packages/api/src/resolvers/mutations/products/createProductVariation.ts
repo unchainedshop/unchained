@@ -4,7 +4,11 @@ import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 import { ProductVariationType } from '@unchainedshop/core-products';
 
-export type VariationInputText = { locale: string; title: string; subtitle?: string };
+export interface VariationInputText {
+  locale: string;
+  title: string;
+  subtitle?: string;
+}
 
 export default async function F(
   root: never,

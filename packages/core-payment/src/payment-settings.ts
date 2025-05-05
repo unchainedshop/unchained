@@ -3,17 +3,17 @@ import { PaymentProvider } from './db/PaymentProvidersCollection.js';
 
 export type FilterProviders<Order = unknown, UnchainedAPI = unknown> = (
   params: {
-    providers: Array<PaymentProvider>;
+    providers: PaymentProvider[];
     order: Order;
   },
   unchainedAPI: UnchainedAPI,
-) => Promise<Array<PaymentProvider>>;
+) => Promise<PaymentProvider[]>;
 
 export type DetermineDefaultProvider<Order = unknown, UnchainedAPI = unknown> = (
   params: {
-    providers: Array<PaymentProvider>;
+    providers: PaymentProvider[];
     order: Order;
-    paymentCredentials?: Array<PaymentCredentials>;
+    paymentCredentials?: PaymentCredentials[];
   },
   unchainedAPI: UnchainedAPI,
 ) => Promise<PaymentProvider>;

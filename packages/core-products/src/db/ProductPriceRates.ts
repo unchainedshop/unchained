@@ -1,12 +1,12 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
-export type ProductPriceRate = {
+export interface ProductPriceRate {
   baseCurrency: string;
   quoteCurrency: string;
   rate: number;
   expiresAt: Date;
   timestamp: Date;
-};
+}
 
 export const ProductPriceRates = async (db: mongodb.Db) => {
   const ProductRates = db.collection<ProductPriceRate>('product_rates');

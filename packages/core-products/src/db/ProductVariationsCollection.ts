@@ -9,7 +9,7 @@ export type ProductVariation = {
   _id?: string;
   key?: string;
   tags?: string[];
-  options: Array<string>;
+  options: string[];
   productId: string;
   type?: string;
 } & TimestampFields;
@@ -23,11 +23,11 @@ export type ProductVariationText = {
   title?: string;
 } & TimestampFields;
 
-export type ProductVariationOption = {
+export interface ProductVariationOption {
   _id?: string;
   texts: ProductVariationText;
   value: string;
-};
+}
 export const ProductVariationsCollection = async (db: mongodb.Db) => {
   const ProductVariations = db.collection<ProductVariation>('product_variations');
   const ProductVariationTexts = db.collection<ProductVariationText>('product_variation_texts');

@@ -13,7 +13,7 @@ export type AssortmentMediaType = {
   mediaId: string;
   assortmentId: string;
   sortKey: number;
-  tags: Array<string>;
+  tags: string[];
   meta?: any;
 } & TimestampFields;
 

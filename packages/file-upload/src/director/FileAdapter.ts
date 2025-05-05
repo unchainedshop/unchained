@@ -9,7 +9,7 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
     fileName: string,
     unchainedAPI: Context,
   ) => Promise<(UploadFileData & { putURL: string }) | null>;
-  removeFiles: (files: Array<UploadedFile>, unchainedContext: Context) => Promise<void>;
+  removeFiles: (files: UploadedFile[], unchainedContext: Context) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
     rawFile: any,

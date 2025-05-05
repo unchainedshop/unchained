@@ -50,7 +50,7 @@ export const configureAssortmentLinksModule = ({
         parentAssortmentIds?: string[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<AssortmentLink>> => {
+    ): Promise<AssortmentLink[]> => {
       const selector =
         parentAssortmentId || parentAssortmentIds
           ? {
@@ -227,13 +227,13 @@ export const configureAssortmentLinksModule = ({
       {
         sortKeys,
       }: {
-        sortKeys: Array<{
+        sortKeys: {
           assortmentLinkId: string;
           sortKey: number;
-        }>;
+        }[];
       },
       options?: { skipInvalidation?: boolean },
-    ): Promise<Array<AssortmentLink>> => {
+    ): Promise<AssortmentLink[]> => {
       const changedAssortmentLinkIds = await Promise.all(
         sortKeys.map(async ({ assortmentLinkId, sortKey }) => {
           await AssortmentLinks.updateOne(generateDbFilterById(assortmentLinkId), {

@@ -6,7 +6,7 @@ const SORT_DIRECTIONS = {
   DESC: -1,
 };
 
-export const buildSortOptions = (sort: Array<SortOption> = []): Sort => {
+export const buildSortOptions = (sort: SortOption[] = []): Sort => {
   const sortBy = {};
   sort?.forEach(({ key, value }) => {
     sortBy[key] = SORT_DIRECTIONS[value];

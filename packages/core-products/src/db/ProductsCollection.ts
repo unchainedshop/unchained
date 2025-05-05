@@ -31,7 +31,7 @@ export interface ProductAssignment {
 }
 
 export interface ProductProxy {
-  assignments: Array<ProductAssignment>;
+  assignments: ProductAssignment[];
 }
 
 export interface ProductSupply {
@@ -54,7 +54,7 @@ export interface ProductConfiguration {
 export interface ProductBundleItem {
   productId: string;
   quantity: number;
-  configuration: Array<ProductConfiguration>;
+  configuration: ProductConfiguration[];
 }
 
 export interface ProductPrice extends Price {
@@ -73,7 +73,7 @@ export interface ProductCommerce {
   salesUnit?: string;
   salesQuantityPerUnit?: string;
   defaultOrderQuantity?: number;
-  pricing: Array<ProductPrice>;
+  pricing: ProductPrice[];
 }
 
 export interface ProductTokenization {
@@ -99,17 +99,17 @@ export interface ProductWarehousing {
 
 export type Product = {
   _id?: string;
-  bundleItems: Array<ProductBundleItem>;
+  bundleItems: ProductBundleItem[];
   commerce?: ProductCommerce;
   meta?: any;
   plan: ProductPlan;
   proxy: ProductProxy;
   published?: Date;
   sequence: number;
-  slugs: Array<string>;
+  slugs: string[];
   status?: string;
   supply: ProductSupply;
-  tags?: Array<string>;
+  tags?: string[];
   type: string;
   warehousing?: ProductWarehousing;
   tokenization?: ProductTokenization;
@@ -125,7 +125,7 @@ export type ProductText = {
   title?: string;
   brand?: string;
   vendor?: string;
-  labels?: Array<string>;
+  labels?: string[];
 } & TimestampFields;
 
 export const ProductsCollection = async (db: mongodb.Db) => {

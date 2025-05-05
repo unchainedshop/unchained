@@ -53,10 +53,10 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
       }: LanguageQuery & {
         limit?: number;
         offset?: number;
-        sort?: Array<SortOption>;
+        sort?: SortOption[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<Language>> => {
+    ): Promise<Language[]> => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       return Languages.find(buildFindSelector(query), {
         skip: offset,

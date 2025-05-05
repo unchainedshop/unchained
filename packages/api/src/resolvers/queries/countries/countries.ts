@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 
 export default async function countries(
   root: never,
-  params: CountryQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
+  params: CountryQuery & { limit?: number; offset?: number; sort?: SortOption[] },
   { modules, userId }: Context,
 ) {
   log(

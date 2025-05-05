@@ -13,14 +13,14 @@ import {
 } from '../db/WarehousingProvidersCollection.js';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 
-type WarehousingProviderQuery = {
+interface WarehousingProviderQuery {
   type?: WarehousingProviderType;
-};
+}
 
-type TokenQuery = {
+interface TokenQuery {
   queryString?: string;
   userId?: string;
-};
+}
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
@@ -75,7 +75,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return TokenSurrogates.findOne({ _id: tokenId }, options);
     },
 
-    findTokens: async (selector: any, options?: mongodb.FindOptions): Promise<Array<TokenSurrogate>> => {
+    findTokens: async (selector: any, options?: mongodb.FindOptions): Promise<TokenSurrogate[]> => {
       return TokenSurrogates.find(buildTokenFindSelector(selector), options).toArray();
     },
 
@@ -87,7 +87,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     findTokensForUser: async (
       params: { userId: string } | { walletAddresses: string[] },
       options?: mongodb.FindOptions,
-    ): Promise<Array<TokenSurrogate>> => {
+    ): Promise<TokenSurrogate[]> => {
       const { userId, walletAddresses } = params as any;
       if (!userId && !walletAddresses)
         throw new Error('userId or walletAddresses must be provided for findTokensForUser');
@@ -109,7 +109,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     findProviders: async (
       query: WarehousingProviderQuery,
       options: mongodb.FindOptions = { sort: { created: 1 } },
-    ): Promise<Array<WarehousingProvider>> => {
+    ): Promise<WarehousingProvider[]> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },

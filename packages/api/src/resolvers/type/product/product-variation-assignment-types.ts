@@ -9,7 +9,7 @@ export type AssignmentHelperType<T> = (
 
 export interface ProductVariationAssignmentHelperTypes {
   _id: AssignmentHelperType<string>;
-  vectors: AssignmentHelperType<Array<{ product: Product } & ProductConfiguration>>;
+  vectors: AssignmentHelperType<({ product: Product } & ProductConfiguration)[]>;
   product: AssignmentHelperType<Promise<Product>>;
 }
 

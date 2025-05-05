@@ -188,7 +188,7 @@ export const configureOrderPaymentsModule = ({
 
     updateCalculation: async <T extends PricingCalculation>(
       orderPaymentId: string,
-      calculation: Array<T>,
+      calculation: T[],
     ) => {
       return OrderPayments.findOneAndUpdate(
         buildFindOrderPaymentByIdSelector(orderPaymentId),

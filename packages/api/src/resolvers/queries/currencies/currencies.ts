@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 
 export default async function currencies(
   root: never,
-  params: CurrencyQuery & { limit: number; offset: number; sort?: Array<SortOption> },
+  params: CurrencyQuery & { limit: number; offset: number; sort?: SortOption[] },
   { modules, userId }: Context,
 ) {
   log(

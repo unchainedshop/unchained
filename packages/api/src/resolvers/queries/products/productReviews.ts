@@ -7,7 +7,7 @@ export default async function productReviews(
   params: {
     limit: number;
     offset: number;
-    sort: Array<SortOption>;
+    sort: SortOption[];
     queryString?: string;
   },
   { modules, userId }: Context,

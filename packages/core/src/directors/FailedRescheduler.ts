@@ -6,7 +6,7 @@ export interface FailedReschedulerParams {
   transformRetry?: (workData: WorkData) => Promise<WorkData | null>;
 }
 
-export type IScheduler<P> = {
+export interface IScheduler<P> {
   key: string;
   label: string;
   version: string;
@@ -18,7 +18,7 @@ export type IScheduler<P> = {
     start: () => void;
     stop: () => void;
   };
-};
+}
 
 export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
   key: 'shop.unchained.scheduler.failed',

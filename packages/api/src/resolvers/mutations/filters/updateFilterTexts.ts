@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 export default async function updateFilterTexts(
   root: never,
   params: {
-    texts: Array<{ locale: string; title?: string; subtitle?: string }>;
+    texts: { locale: string; title?: string; subtitle?: string }[];
     filterId: string;
     filterOptionValue?: string;
   },

@@ -1,34 +1,31 @@
 import { has } from './utils/has.js';
 import { isFunction } from './utils/isFunction.js';
 
-type RoleUserContext = { userId?: string; user?: any };
+interface RoleUserContext {
+  userId?: string;
+  user?: any;
+}
 export interface RoleInterface {
   name: string;
-  allowRules: {
-    [name: string]: any;
-  };
+  allowRules: Record<string, any>;
   allow(action: string, fn: (root: any, props: any, context: RoleUserContext) => Promise<boolean>): void;
   helpers: Record<string, unknown>;
 }
 
-export interface RoleInterfaceFactory {
-  new (key: string): RoleInterface;
-}
+export type RoleInterfaceFactory = new (key: string) => RoleInterface;
 
 export type CheckPermissionArgs = [obj?: any, params?: any];
 
 export interface RolesInterface {
-  roles: {
-    [name: string]: RoleInterface;
-  };
+  roles: Record<string, RoleInterface>;
   actions: string[];
   helpers: string[];
   registerAction(name: string): void;
   registerHelper(name: string): void;
-  getUserRoles(userId: string, roles: Array<string>, includeSpecial: boolean): string[];
+  getUserRoles(userId: string, roles: string[], includeSpecial: boolean): string[];
   allow(
     context: RoleUserContext,
-    roles: Array<string>,
+    roles: string[],
     action?: string,
     args?: CheckPermissionArgs,
   ): Promise<boolean>;
@@ -44,16 +41,14 @@ export interface RolesInterface {
 
 export interface RoleInterface {
   name: string;
-  allowRules: {
-    [name: string]: any;
-  };
+  allowRules: Record<string, any>;
   allow(action: string, fn: (root: any, props: any, context: RoleUserContext) => Promise<boolean>): void;
   helpers: Record<string, unknown>;
 }
 
 export interface IRoleOptionConfig {
   additionalRoles?: Record<string, (role: RolesInterface, actions: Record<string, string>) => void>;
-  additionalActions?: Array<string>;
+  additionalActions?: string[];
 }
 
 export const Roles: RolesInterface = {
@@ -139,9 +134,9 @@ export const Roles: RolesInterface = {
  * Constructs a new role
  */
 export class Role implements RoleInterface {
-  allowRules: { [name: string]: any };
+  allowRules: Record<string, any>;
 
-  helpers: { [name: string]: any };
+  helpers: Record<string, any>;
 
   constructor(public name: string) {
     if (has(Roles.roles, name)) throw new Error(`"${name}" role is already defined`);

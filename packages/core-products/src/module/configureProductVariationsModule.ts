@@ -114,8 +114,8 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       productId: string;
       limit?: number;
       offset?: number;
-      tags?: Array<string>;
-    }): Promise<Array<ProductVariation>> => {
+      tags?: string[];
+    }): Promise<ProductVariation[]> => {
       const selector: mongodb.Filter<ProductVariation> = { productId };
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
@@ -171,7 +171,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       excludedProductIds,
     }: {
       productId?: string;
-      excludedProductIds?: Array<string>;
+      excludedProductIds?: string[];
     }) => {
       const selector: mongodb.Filter<ProductVariation> = {};
       if (productId) {
@@ -247,7 +247,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       }: {
         productVariationId: string;
         productVariationOptionValue?: string;
-      }): Promise<Array<ProductVariationText>> => {
+      }): Promise<ProductVariationText[]> => {
         return ProductVariationTexts.find({
           productVariationId,
           productVariationOptionValue,
@@ -277,9 +277,9 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       // Mutations
       updateVariationTexts: async (
         productVariationId: string,
-        texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
+        texts: Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>[],
         productVariationOptionValue?: string,
-      ): Promise<Array<ProductVariationText>> => {
+      ): Promise<ProductVariationText[]> => {
         const productVariationTexts = await Promise.all(
           texts.map(async ({ locale, ...text }) =>
             upsertLocalizedText(

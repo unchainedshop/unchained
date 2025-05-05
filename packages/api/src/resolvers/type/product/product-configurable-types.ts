@@ -18,10 +18,10 @@ export const ConfigurableProduct = {
     },
     { modules }: Context,
   ): Promise<
-    Array<{
+    {
       assignment: ProductAssignment;
       product: typeof product;
-    }>
+    }[]
   > {
     return modules.products.proxyAssignments(product, params);
   },
@@ -32,11 +32,11 @@ export const ConfigurableProduct = {
       vectors,
       includeInactive,
     }: {
-      vectors: Array<ProductConfiguration>;
+      vectors: ProductConfiguration[];
       includeInactive: boolean;
     },
     { modules }: Context,
-  ): Promise<Array<typeof product>> {
+  ): Promise<(typeof product)[]> {
     return modules.products.proxyProducts(product, vectors, {
       includeInactive,
     });
@@ -53,7 +53,7 @@ export const ConfigurableProduct = {
       currencyCode?: string;
       includeInactive: boolean;
       quantity: number;
-      vectors: Array<ProductConfiguration>;
+      vectors: ProductConfiguration[];
     },
     requestContext: Context,
   ): Promise<ProductPriceRange> {
@@ -77,7 +77,7 @@ export const ConfigurableProduct = {
       offset: number;
     },
     { modules }: Context,
-  ): Promise<Array<ProductVariation>> {
+  ): Promise<ProductVariation[]> {
     return modules.products.variations.findProductVariations({
       productId: product._id,
       limit,
@@ -97,7 +97,7 @@ export const ConfigurableProduct = {
       currencyCode?: string;
       includeInactive: boolean;
       quantity?: number;
-      vectors: Array<ProductConfiguration>;
+      vectors: ProductConfiguration[];
       useNetPrice: boolean;
     },
     requestContext: Context,

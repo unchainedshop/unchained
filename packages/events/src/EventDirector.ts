@@ -2,9 +2,9 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:events');
 
-export type RawPayloadType<T> = {
+export interface RawPayloadType<T> {
   payload: T;
-};
+}
 export interface EmitAdapter {
   publish(eventName: string, data: RawPayloadType<Record<string, any>>): void;
   subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;

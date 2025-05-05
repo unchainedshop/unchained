@@ -4,7 +4,7 @@ import { InvalidIdError, UserNotFoundError } from '../../../errors.js';
 
 export default async function updateUserProfile(
   root: never,
-  params: { roles: Array<string>; userId: string },
+  params: { roles: string[]; userId: string },
   { modules, userId }: Context,
 ) {
   const foreignUserId = params.userId;

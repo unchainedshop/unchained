@@ -9,6 +9,7 @@ import eslintPluginPrettierConfig from 'eslint-plugin-prettier/recommended';
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
+  tseslint.configs.stylistic,
   eslintPluginPrettierConfig,
   globalIgnores(['.git', '.aider*', 'node_modules/', 'examples/', './docs/', '**/lib/']),
   {

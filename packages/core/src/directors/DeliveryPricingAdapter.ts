@@ -44,7 +44,7 @@ export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext
   order: Order;
   orderDelivery: OrderDelivery;
   user: User;
-  discounts: Array<OrderDiscount>;
+  discounts: OrderDiscount[];
 }
 
 export type IDeliveryPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<

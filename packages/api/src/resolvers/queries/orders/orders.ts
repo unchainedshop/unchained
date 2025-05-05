@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 
 export default async function orders(
   root: never,
-  params: OrderQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
+  params: OrderQuery & { limit?: number; offset?: number; sort?: SortOption[] },
   { modules, userId }: Context,
 ) {
   const { includeCarts, limit, offset, queryString } = params;

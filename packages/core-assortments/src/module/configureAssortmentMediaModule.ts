@@ -79,10 +79,10 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
         assortmentId?: mongodb.Filter<AssortmentMediaType>['assortmentId'];
         limit?: number;
         offset?: number;
-        tags?: Array<string>;
+        tags?: string[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<AssortmentMediaType>> => {
+    ): Promise<AssortmentMediaType[]> => {
       const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
@@ -151,8 +151,8 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       excludedAssortmentMediaIds,
     }: {
       assortmentId?: string;
-      excludedAssortmentIds?: Array<string>;
-      excludedAssortmentMediaIds?: Array<string>;
+      excludedAssortmentIds?: string[];
+      excludedAssortmentMediaIds?: string[];
     }): Promise<number> => {
       const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
 
@@ -198,11 +198,11 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     updateManualOrder: async ({
       sortKeys,
     }: {
-      sortKeys: Array<{
+      sortKeys: {
         assortmentMediaId: string;
         sortKey: number;
-      }>;
-    }): Promise<Array<AssortmentMediaType>> => {
+      }[];
+    }): Promise<AssortmentMediaType[]> => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
           await AssortmentMedia.updateOne(generateDbFilterById(assortmentMediaId), {
@@ -234,7 +234,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       findMediaTexts: async (
         { assortmentMediaId }: mongodb.Filter<AssortmentMediaText>,
         options?: mongodb.FindOptions,
-      ): Promise<Array<AssortmentMediaText>> => {
+      ): Promise<AssortmentMediaText[]> => {
         return AssortmentMediaTexts.find({ assortmentMediaId }, options).toArray();
       },
 
@@ -256,8 +256,8 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
 
       updateMediaTexts: async (
         assortmentMediaId: string,
-        texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
-      ): Promise<Array<AssortmentMediaText>> => {
+        texts: Omit<AssortmentMediaText, 'assortmentMediaId'>[],
+      ): Promise<AssortmentMediaText[]> => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
         );

@@ -10,13 +10,13 @@ interface IDiscountableItem {
 
 export interface BasePricingAdapterContext {
   order?: Order;
-  discounts: Array<OrderDiscount>;
+  discounts: OrderDiscount[];
 }
 
 export type BasePricingContext =
   | {
       order?: Order;
-      discounts?: Array<OrderDiscount>;
+      discounts?: OrderDiscount[];
     }
   | {
       item: IDiscountableItem;
@@ -26,7 +26,7 @@ export interface IPricingAdapterActions<
   Calculation extends PricingCalculation,
   Sheet extends IPricingSheet<Calculation>,
 > {
-  calculate: () => Promise<Array<Calculation>>;
+  calculate: () => Promise<Calculation[]>;
   resultSheet: () => Sheet;
 }
 
@@ -43,7 +43,7 @@ export type IPricingAdapter<
   actions: (params: {
     context: PricingAdapterContext;
     calculationSheet: Sheet;
-    discounts: Array<Discount<DiscountConfiguration>>;
+    discounts: Discount<DiscountConfiguration>[];
   }) => IPricingAdapterActions<Calculation, Sheet>;
 };
 

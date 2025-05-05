@@ -15,10 +15,10 @@ export enum SortDirection {
   DESC = 'DESC',
 }
 
-export type SortOption = {
+export interface SortOption {
   key: string;
   value: SortDirection;
-};
+}
 
 export interface Price {
   amount: number;
@@ -34,7 +34,7 @@ export interface PricingCalculation {
 
 export type NodeOrTree<T> = string | Tree<T>;
 
-export type Tree<T> = Array<NodeOrTree<T>>;
+export type Tree<T> = NodeOrTree<T>[];
 
 export interface DateFilterInput {
   start?: string;

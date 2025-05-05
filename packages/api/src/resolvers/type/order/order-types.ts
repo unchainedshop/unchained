@@ -15,11 +15,7 @@ import { Price } from '@unchainedshop/utils';
 import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
-  async supportedDeliveryProviders(
-    order: OrderType,
-    _,
-    context: Context,
-  ): Promise<Array<DeliveryProvider>> {
+  async supportedDeliveryProviders(order: OrderType, _, context: Context): Promise<DeliveryProvider[]> {
     return context.services.orders.supportedDeliveryProviders({
       order,
     });
@@ -39,7 +35,7 @@ export const Order = {
     return loaders.countryLoader.load({ isoCode: order.countryCode });
   },
 
-  async discounts(order: OrderType, _, { modules }: Context): Promise<Array<OrderDiscount>> {
+  async discounts(order: OrderType, _, { modules }: Context): Promise<OrderDiscount[]> {
     return modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
   },
 
@@ -56,7 +52,7 @@ export const Order = {
     });
   },
 
-  async items(order: OrderType, _, { modules }: Context): Promise<Array<OrderPosition>> {
+  async items(order: OrderType, _, { modules }: Context): Promise<OrderPosition[]> {
     return modules.orders.positions.findOrderPositions({
       orderId: order._id,
     });

@@ -23,11 +23,7 @@ const getPricingSheet = async (orderPosition: OrderPosition, context: Context) =
 };
 
 export const OrderItem = {
-  async discounts(
-    orderPosition: OrderPosition,
-    _,
-    context: Context,
-  ): Promise<Array<OrderPositionDiscount>> {
+  async discounts(orderPosition: OrderPosition, _, context: Context): Promise<OrderPositionDiscount[]> {
     const pricing = await getPricingSheet(orderPosition, context);
 
     if (pricing.isValid()) {
@@ -45,13 +41,13 @@ export const OrderItem = {
     _,
     { modules, loaders }: Context,
   ): Promise<
-    Array<{
+    {
       _id: string;
       deliveryProvider: DeliveryProvider;
       warehousingProvider: WarehousingProvider;
       shipping: Date;
       earliestDelivery: Date;
-    }>
+    }[]
   > {
     const scheduling = orderPosition.scheduling || [];
     // TODO: use order loader
@@ -149,7 +145,7 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: never,
     { modules }: Context,
-  ): Promise<Array<TokenSurrogate>> {
+  ): Promise<TokenSurrogate[]> {
     return modules.warehousing.findTokens({
       orderPositionId: orderPosition._id,
     });

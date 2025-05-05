@@ -4,10 +4,10 @@ export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',
   PICKUP = 'PICKUP',
 }
-export type DeliveryConfiguration = Array<{
+export type DeliveryConfiguration = {
   key: string;
   value: string;
-}>;
+}[];
 
 export type DeliveryProvider = {
   _id?: string;

@@ -8,7 +8,7 @@ type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) 
 
 export interface OrderDeliveryShippingHelperTypes {
   address: HelperType<Address>;
-  discounts: HelperType<Promise<Array<OrderDeliveryDiscount>>>;
+  discounts: HelperType<Promise<OrderDeliveryDiscount[]>>;
   provider: HelperType<Promise<DeliveryProvider>>;
   status: HelperType<string>;
 }

@@ -8,15 +8,12 @@ import {
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 
-export type EnrollmentContext = {
+export interface EnrollmentContext {
   enrollment: Enrollment;
-};
+}
 
 export interface EnrollmentAdapterActions {
-  configurationForOrder: (params: {
-    period: EnrollmentPeriod;
-    products: Array<Product>;
-  }) => Promise<any>;
+  configurationForOrder: (params: { period: EnrollmentPeriod; products: Product[] }) => Promise<any>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
   nextPeriod: () => Promise<EnrollmentPeriod>;

@@ -10,7 +10,7 @@ export default async function addProductAssignment(
   params: {
     proxyId: string;
     productId: string;
-    vectors: Array<ProductConfiguration>;
+    vectors: ProductConfiguration[];
   },
   { modules, userId }: Context,
 ) {

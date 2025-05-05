@@ -15,16 +15,16 @@ export enum WarehousingError {
   WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
 }
 
-export type WarehousingAdapterActions = {
+export interface WarehousingAdapterActions {
   configurationError: () => WarehousingError;
   isActive: () => boolean;
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId' | 'orderPositionId'>>>;
+  tokenize: () => Promise<Omit<TokenSurrogate, 'userId' | 'productId' | 'orderPositionId'>[]>;
   tokenMetadata: (chainTokenId: string, referenceDate: Date) => Promise<any>;
   isInvalidateable: (chainTokenId: string, referenceDate: Date) => Promise<boolean>;
-};
+}
 
 export interface WarehousingContext {
   deliveryProvider?: DeliveryProvider;

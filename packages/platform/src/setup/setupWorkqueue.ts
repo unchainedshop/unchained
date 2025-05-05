@@ -13,7 +13,7 @@ import { MigrationRepository } from '@unchainedshop/mongodb';
 
 export type WorkQueueQueueManager = IWorker<any> | IScheduler<any>;
 export interface SetupWorkqueueOptions extends IntervalWorkerParams, FailedReschedulerParams {
-  enabledQueueManagers?: Array<WorkQueueQueueManager>;
+  enabledQueueManagers?: WorkQueueQueueManager[];
   invalidateProviders?: boolean;
   providerInvalidationMaxAgeDays?: number;
   assignCartForUsers?: boolean;
@@ -27,13 +27,13 @@ const {
   UNCHAINED_ASSIGN_CART_FOR_USERS,
 } = process.env;
 
-export const defaultQueueManagers: Array<WorkQueueQueueManager> = [
+export const defaultQueueManagers: WorkQueueQueueManager[] = [
   FailedRescheduler,
   EventListenerWorker,
   IntervalWorker,
 ];
 
-export const queueWorkers: Array<any> = [];
+export const queueWorkers: any[] = [];
 
 export const setupWorkqueue = async ({
   unchainedAPI,

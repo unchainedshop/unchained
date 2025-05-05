@@ -12,10 +12,10 @@ import {
 } from '../directors/index.js';
 import { Modules } from '../modules.js';
 
-export type EstimatedDispatch = {
+export interface EstimatedDispatch {
   shipping?: Date;
   earliestDelivery?: Date;
-};
+}
 
 export type EstimatedStock = { quantity: number } | null;
 
@@ -47,7 +47,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     isActive: () => boolean;
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
-    tokenize: () => Promise<Array<TokenSurrogate>>;
+    tokenize: () => Promise<TokenSurrogate[]>;
     tokenMetadata: (chainTokenId: string) => Promise<any>;
     isInvalidateable: (chainTokenId: string) => Promise<boolean>;
   }>;

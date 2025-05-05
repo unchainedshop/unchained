@@ -3,10 +3,10 @@ import { Assortment, AssortmentLink as AssortmentLinkType } from '@unchainedshop
 
 type HelperType<T> = (assortmentLink: AssortmentLinkType, _: never, context: Context) => T;
 
-export type AssortmentLinkHelperTypes = {
+export interface AssortmentLinkHelperTypes {
   child: HelperType<Promise<Assortment>>;
   parent: HelperType<Promise<Assortment>>;
-};
+}
 
 export const AssortmentLink: AssortmentLinkHelperTypes = {
   child: async (obj, _, { loaders }) => {

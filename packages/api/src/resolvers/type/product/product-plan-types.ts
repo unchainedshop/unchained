@@ -34,7 +34,7 @@ export const PlanProduct = {
       quantity?: number;
       currencyCode?: string;
       useNetPrice?: boolean;
-      configuration?: Array<ProductConfiguration>;
+      configuration?: ProductConfiguration[];
     },
     requestContext: Context,
   ): Promise<ProductPrice> {
@@ -67,11 +67,11 @@ export const PlanProduct = {
     { currencyCode: forcedCurrencyCode }: { currencyCode?: string },
     requestContext: Context,
   ): Promise<
-    Array<{
+    {
       minQuantity: number;
       maxQuantity: number;
       price: ProductPrice;
-    }>
+    }[]
   > {
     const { countryCode, modules } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;

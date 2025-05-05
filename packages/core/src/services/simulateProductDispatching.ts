@@ -21,7 +21,7 @@ export async function simulateProductDispatchingService(
   },
 ) {
   return deliveryProviders.reduce<
-    Promise<Array<WarehousingContext & EstimatedDispatch & { warehousingProvider: WarehousingProvider }>>
+    Promise<(WarehousingContext & EstimatedDispatch & { warehousingProvider: WarehousingProvider })[]>
   >(async (oldResult, deliveryProvider) => {
     const result = await oldResult;
 

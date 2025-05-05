@@ -49,9 +49,9 @@ export const configureProductPricesModule = ({
 }: {
   proxyProducts: (
     product: Product,
-    vectors: Array<ProductConfiguration>,
+    vectors: ProductConfiguration[],
     options: { includeInactive?: boolean },
-  ) => Promise<Array<Product>>;
+  ) => Promise<Product[]>;
   db: any;
 }) => {
   const catalogPrice = async (
@@ -90,7 +90,7 @@ export const configureProductPricesModule = ({
 
     priceRange: getPriceRange,
 
-    async catalogPrices(product: Product): Promise<Array<ProductPrice>> {
+    async catalogPrices(product: Product): Promise<ProductPrice[]> {
       return (product.commerce && product.commerce.pricing) || [];
     },
 
@@ -107,7 +107,7 @@ export const configureProductPricesModule = ({
         currencyCode: string;
         includeInactive?: boolean;
         quantity?: number;
-        vectors: Array<ProductConfiguration>;
+        vectors: ProductConfiguration[];
       },
     ): Promise<ProductPriceRange> => {
       const products = await proxyProducts(product, vectors, {
@@ -143,11 +143,11 @@ export const configureProductPricesModule = ({
       product: Product,
       { currencyCode, countryCode }: { currencyCode: string; countryCode: string },
     ): Promise<
-      Array<{
+      {
         minQuantity: number;
         maxQuantity: number;
         price: ProductPrice;
-      }>
+      }[]
     > => {
       let previousMax = null;
 
@@ -253,7 +253,7 @@ export const configureProductPricesModule = ({
           {} as { min: number; max: number },
         );
       },
-      updateRates: async (rates: Array<ProductPriceRate>): Promise<boolean> => {
+      updateRates: async (rates: ProductPriceRate[]): Promise<boolean> => {
         const priceRates = await ProductPriceRates(db);
         try {
           if (rates?.length) {

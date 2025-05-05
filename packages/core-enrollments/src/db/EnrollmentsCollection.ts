@@ -9,7 +9,7 @@ export interface EnrollmentPeriod {
 }
 
 export interface EnrollmentPlan {
-  configuration: Array<{ key: string; value: string }>;
+  configuration: { key: string; value: string }[];
   productId: string;
   quantity: number;
 }
@@ -24,7 +24,7 @@ export enum EnrollmentStatus {
 export type Enrollment = {
   _id?: string;
   billingAddress: Address;
-  configuration?: Array<{ key: string; value: string }>;
+  configuration?: { key: string; value: string }[];
   contact: Contact;
   context?: any;
   countryCode?: string;
@@ -41,7 +41,7 @@ export type Enrollment = {
     paymentProviderId?: string;
     context?: any;
   };
-  periods: Array<EnrollmentPeriod>;
+  periods: EnrollmentPeriod[];
   productId: string;
   quantity?: number;
   status: EnrollmentStatus;

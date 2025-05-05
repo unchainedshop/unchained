@@ -24,6 +24,6 @@ export default {
   },
 };
 
-export type AppleTransactionsModule = {
+export interface AppleTransactionsModule {
   appleTransactions: Awaited<ReturnType<typeof configureAppleTransactionsModule>>;
-};
+}

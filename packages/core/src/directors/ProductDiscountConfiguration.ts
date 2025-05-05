@@ -10,7 +10,7 @@ type ResolvedConfiguration = {
 export type PriceConfigurationResolver = (
   product: Product,
   quantity: number,
-  configuration: Array<ProductConfiguration>,
+  configuration: ProductConfiguration[],
 ) => ResolvedConfiguration | null;
 
 export interface ProductDiscountConfiguration extends ResolvedConfiguration {

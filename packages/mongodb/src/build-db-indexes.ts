@@ -3,12 +3,12 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:mongodb');
 
-export type Indexes = Array<{
+export type Indexes = {
   index: IndexSpecification;
   options?: CreateIndexesOptions;
-}>;
+}[];
 
-const buildIndexes = <T>(collection: Collection<T>, indexes: Indexes): Promise<Array<false | Error>> =>
+const buildIndexes = <T>(collection: Collection<T>, indexes: Indexes): Promise<(false | Error)[]> =>
   Promise.all(
     indexes.map(async (indexOptions) => {
       if (!indexOptions) return;

@@ -2,7 +2,7 @@ import later from '@breejs/later';
 import { Work, WorkData } from '@unchainedshop/core-worker';
 import { WorkerDirector } from './WorkerDirector.js';
 
-export type IWorker<P extends { workerId?: string }> = {
+export interface IWorker<P extends { workerId?: string }> {
   key: string;
   label: string;
   version: string;
@@ -15,13 +15,13 @@ export type IWorker<P extends { workerId?: string }> = {
     params: P,
     unchainedAPI,
   ) => {
-    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work | null>>;
+    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<(Work | null)[]>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
     reset: () => Promise<void>;
     start: () => void;
     stop: () => void;
   };
-};
+}
 
 interface WorkerParams {
   workerId?: string;

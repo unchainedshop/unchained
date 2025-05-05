@@ -17,13 +17,13 @@ export default async function workQueue(
     limit?: number;
     offset?: number;
     queryString?: string;
-    status?: Array<WorkStatus>;
-    types?: Array<string>;
+    status?: WorkStatus[];
+    types?: string[];
     created?: {
       start: Date;
       end: Date;
     };
-    sort?: Array<SortOption>;
+    sort?: SortOption[];
   },
   { modules, userId }: Context,
 ) {

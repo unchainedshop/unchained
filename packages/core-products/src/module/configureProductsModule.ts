@@ -25,23 +25,23 @@ import { configureProductTextsModule } from './configureProductTextsModule.js';
 import { configureProductVariationsModule } from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 
-export type ProductQuery = {
+export interface ProductQuery {
   queryString?: string;
   includeDrafts?: boolean;
-  productIds?: Array<string>;
+  productIds?: string[];
   productSelector?: mongodb.Filter<Product>;
-  slugs?: Array<string>;
-  tags?: Array<string>;
-};
+  slugs?: string[];
+  tags?: string[];
+}
 
-export type ProductDiscount = {
+export interface ProductDiscount {
   _id?: string;
   productId: string;
   code: string;
   total?: Price;
   discountKey?: string;
   context?: any;
-};
+}
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -183,9 +183,9 @@ export const configureProductsModule = async ({
 
   const proxyProducts = async (
     product: Product,
-    vectors: Array<ProductConfiguration> = [],
+    vectors: ProductConfiguration[] = [],
     { includeInactive = false }: { includeInactive?: boolean } = {},
-  ): Promise<Array<Product>> => {
+  ): Promise<Product[]> => {
     const { proxy } = product;
     let filtered = [...(proxy.assignments || [])];
 
@@ -238,11 +238,11 @@ export const configureProductsModule = async ({
       }: ProductQuery & {
         limit?: number;
         offset?: number;
-        sort?: Array<SortOption>;
+        sort?: SortOption[];
       },
       options?: mongodb.FindOptions,
-    ): Promise<Array<Product>> => {
-      const defaultSortOption: Array<SortOption> = [
+    ): Promise<Product[]> => {
+      const defaultSortOption: SortOption[] = [
         { key: 'sequence', value: SortDirection.ASC },
         { key: 'published', value: SortDirection.DESC },
       ];
@@ -255,7 +255,7 @@ export const configureProductsModule = async ({
       return products.toArray();
     },
 
-    findProductIds: async (query: ProductQuery): Promise<Array<string>> => {
+    findProductIds: async (query: ProductQuery): Promise<string[]> => {
       return Products.distinct('_id', buildFindSelector(query));
     },
 
@@ -287,7 +287,7 @@ export const configureProductsModule = async ({
     proxyAssignments: async (
       product: Product,
       { includeInactive = false }: { includeInactive?: boolean } = {},
-    ): Promise<Array<{ assignment: ProductAssignment; product: Product }>> => {
+    ): Promise<{ assignment: ProductAssignment; product: Product }[]> => {
       const assignments = product.proxy?.assignments || [];
 
       const productIds = assignments.map(({ productId }) => productId);
@@ -317,7 +317,7 @@ export const configureProductsModule = async ({
 
     resolveOrderableProduct: async (
       product: Product,
-      { configuration }: { configuration?: Array<ProductConfiguration> },
+      { configuration }: { configuration?: ProductConfiguration[] },
     ): Promise<Product> => {
       const productId = product._id as string;
 
@@ -433,7 +433,7 @@ export const configureProductsModule = async ({
     assignments: {
       addProxyAssignment: async (
         productId: string,
-        { proxyId, vectors }: { proxyId: string; vectors: Array<ProductConfiguration> },
+        { proxyId, vectors }: { proxyId: string; vectors: ProductConfiguration[] },
       ): Promise<string> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
@@ -460,7 +460,7 @@ export const configureProductsModule = async ({
 
       removeAssignment: async (
         productId: string,
-        { vectors }: { vectors: Array<ProductConfiguration> },
+        { vectors }: { vectors: ProductConfiguration[] },
       ): Promise<number> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
@@ -540,7 +540,7 @@ export const configureProductsModule = async ({
         productIds,
         productSelector,
       }: {
-        productIds: Array<string>;
+        productIds: string[];
         productSelector: mongodb.Filter<Product>;
       }): Promise<number> => {
         return Products.countDocuments({
@@ -557,10 +557,10 @@ export const configureProductsModule = async ({
       }: {
         limit?: number;
         offset?: number;
-        productIds: Array<string>;
+        productIds: string[];
         productSelector: mongodb.Filter<Product>;
         sort?: mongodb.FindOptions['sort'];
-      }): Promise<Array<Product>> => {
+      }): Promise<Product[]> => {
         return findPreservingIds(Products)(productSelector, productIds, {
           skip: offset,
           limit,

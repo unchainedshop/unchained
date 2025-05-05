@@ -58,7 +58,7 @@ export const configureOrderPositionsModule = ({
       configuration,
     }: {
       orderPositionId: string;
-      configuration?: Array<{ key: string; value: string }>;
+      configuration?: { key: string; value: string }[];
       quantity?: number;
     }): Promise<OrderPosition> => {
       const modifier: any = {
@@ -92,7 +92,7 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    removeProductByIdFromAllOpenPositions: async (productId: string): Promise<Array<string>> => {
+    removeProductByIdFromAllOpenPositions: async (productId: string): Promise<string[]> => {
       const positions = await OrderPositions.aggregate([
         {
           $match: {
@@ -142,7 +142,7 @@ export const configureOrderPositionsModule = ({
 
     updateCalculation: async <T extends PricingCalculation>(
       orderPositionId: string,
-      calculation: Array<T>,
+      calculation: T[],
     ): Promise<OrderPosition> => {
       return OrderPositions.findOneAndUpdate(
         { _id: orderPositionId },
@@ -157,7 +157,7 @@ export const configureOrderPositionsModule = ({
 
     addProductItem: async (orderPosition: {
       context?: any;
-      configuration?: Array<{ key: string; value: string }>;
+      configuration?: { key: string; value: string }[];
       orderId: string;
       originalProductId: string;
       productId: string;

@@ -36,12 +36,12 @@ enum CryptopayCurrencies {
   ETH = 'ETH',
 }
 
-type CryptopayAddress = {
+interface CryptopayAddress {
   currencyCode: CryptopayCurrencies;
   address: string;
   currencyConversionRate?: number;
   currencyConversionExpiryDate?: Date;
-};
+}
 
 const Cryptopay: IPaymentAdapter = {
   ...PaymentAdapter,

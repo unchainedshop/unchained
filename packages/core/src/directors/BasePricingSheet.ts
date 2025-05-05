@@ -7,17 +7,17 @@ export interface PricingDiscount {
 
 export interface IPricingSheet<Calculation extends PricingCalculation>
   extends IBasePricingSheet<Calculation> {
-  discountPrices: (discountId?: string) => Array<PricingDiscount>;
+  discountPrices: (discountId?: string) => PricingDiscount[];
   addDiscount: (params: { amount: number; discountId: string; meta?: any }) => void;
 }
 
 export interface IBasePricingSheet<Calculation extends PricingCalculation> {
-  calculation: Array<Calculation>;
+  calculation: Calculation[];
   currencyCode?: string;
   quantity?: number;
 
-  getRawPricingSheet: () => Array<Calculation>;
-  filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
+  getRawPricingSheet: () => Calculation[];
+  filterBy: (filter?: Partial<Calculation>) => Calculation[];
   isValid: () => boolean;
 
   gross: () => number;
@@ -30,11 +30,11 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 
   taxSum: (filter?: Partial<Calculation>) => number;
 
-  resetCalculation: (sheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
+  resetCalculation: (sheetToInvert: IBasePricingSheet<Calculation>) => Calculation[];
 }
 
 export interface PricingSheetParams<Calculation extends PricingCalculation> {
-  calculation?: Array<Calculation>;
+  calculation?: Calculation[];
   currencyCode?: string;
   quantity?: number;
 }

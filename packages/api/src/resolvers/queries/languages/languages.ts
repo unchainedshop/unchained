@@ -5,7 +5,7 @@ import { Context } from '../../../context.js';
 
 export default async function languages(
   root: never,
-  params: LanguageQuery & { limit: number; offset: number; sort?: Array<SortOption> },
+  params: LanguageQuery & { limit: number; offset: number; sort?: SortOption[] },
   { modules, userId }: Context,
 ) {
   log(

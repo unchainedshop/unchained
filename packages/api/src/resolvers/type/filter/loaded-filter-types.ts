@@ -2,14 +2,14 @@ import { Context } from '../../../context.js';
 import { Filter, SearchQuery } from '@unchainedshop/core-filters';
 import { FilterDirector } from '@unchainedshop/core';
 
-type LoadedFilterData = {
+export interface LoadedFilterData {
   forceLiveCollection: boolean;
   searchQuery: SearchQuery;
   filter: Filter;
   examinedProductIdSet: Set<string>;
   filteredByOtherFiltersSet: Set<string>;
   filteredByThisFilterSet: Set<string>;
-};
+}
 
 export const LoadedFilter = {
   definition: ({ filter }: LoadedFilterData) => {

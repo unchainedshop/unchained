@@ -3,7 +3,7 @@ import { Context } from '../../../context.js';
 
 export default async function reorderAssortmentLinks(
   root: never,
-  params: { sortKeys: Array<{ assortmentLinkId: string; sortKey: number }> },
+  params: { sortKeys: { assortmentLinkId: string; sortKey: number }[] },
   { modules, userId }: Context,
 ) {
   log('mutation reorderAssortmentLinks', { userId });

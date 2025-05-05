@@ -31,12 +31,12 @@ export interface AdminUiConfig {
   singleSignOnURL?: string;
 }
 
-export type UnchainedHTTPServerContext = {
+export interface UnchainedHTTPServerContext {
   setHeader: (key: string, value: string) => void;
   getHeader: (key: string) => string;
   remoteAddress?: string;
   remotePort?: number;
-};
+}
 
 export type Context = UnchainedCore & {
   version?: string;

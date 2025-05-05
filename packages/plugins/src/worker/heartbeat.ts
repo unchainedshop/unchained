@@ -8,10 +8,10 @@ const wait = async (time: number) => {
   });
 };
 
-type Arg = {
+interface Arg {
   wait?: number;
   fails?: boolean;
-};
+}
 
 type Result = Arg;
 

@@ -5,19 +5,23 @@ import { Product } from '@unchainedshop/core-products';
 import { Filter, SearchQuery } from '@unchainedshop/core-filters';
 import { Modules } from '../modules.js';
 
-export type FilterInputText = { locale: string; title: string; subtitle?: string };
+export interface FilterInputText {
+  locale: string;
+  title: string;
+  subtitle?: string;
+}
 
-export type FilterContext = {
+export interface FilterContext {
   filter?: Filter;
   searchQuery: SearchQuery;
-};
+}
 
 export interface FilterAdapterActions {
-  aggregateProductIds: (params: { productIds: Array<string> }) => Array<string>;
+  aggregateProductIds: (params: { productIds: string[] }) => string[];
 
   searchAssortments: (
     params: {
-      assortmentIds: Array<string>;
+      assortmentIds: string[];
     },
     options: {
       filterSelector: mongodb.Filter<Filter>;
@@ -25,11 +29,11 @@ export interface FilterAdapterActions {
       sortStage: mongodb.FindOptions['sort'];
       locale: Intl.Locale;
     },
-  ) => Promise<Array<string>>;
+  ) => Promise<string[]>;
 
   searchProducts: (
     params: {
-      productIds: Array<string>;
+      productIds: string[];
     },
     options: {
       filterSelector: mongodb.Filter<Filter>;
@@ -37,7 +41,7 @@ export interface FilterAdapterActions {
       sortStage: mongodb.FindOptions['sort'];
       locale: Intl.Locale;
     },
-  ) => Promise<Array<string>>;
+  ) => Promise<string[]>;
 
   transformFilterSelector: (
     query: mongodb.Filter<Filter>,

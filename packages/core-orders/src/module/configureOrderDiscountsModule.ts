@@ -27,7 +27,7 @@ export const configureOrderDiscountsModule = ({
       return OrderDiscounts.findOne(buildFindOrderDiscountByIdSelector(discountId), options);
     },
 
-    findOrderDiscounts: async ({ orderId }: { orderId: string }): Promise<Array<OrderDiscount>> => {
+    findOrderDiscounts: async ({ orderId }: { orderId: string }): Promise<OrderDiscount[]> => {
       const discounts = OrderDiscounts.find({ orderId });
       return discounts.toArray();
     },

@@ -14,12 +14,12 @@ import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-set
 
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
 
-export type QuotationQuery = {
+export interface QuotationQuery {
   userId?: string;
   queryString?: string;
-};
+}
 export interface QuotationData {
-  configuration?: Array<{ key: string; value: string }>;
+  configuration?: { key: string; value: string }[];
   countryCode?: string;
   productId: string;
   userId: string;
@@ -118,7 +118,7 @@ export const configureQuotationsModule = async ({
   };
 
   const updateQuotationFields =
-    (fieldKeys: Array<string>) =>
+    (fieldKeys: string[]) =>
     async (quotationId: string, values: any): Promise<Quotation> => {
       const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
         $set: {
@@ -162,11 +162,11 @@ export const configureQuotationsModule = async ({
       }: QuotationQuery & {
         limit?: number;
         offset?: number;
-        sort?: Array<SortOption>;
+        sort?: SortOption[];
       },
       options?: mongodb.FindOptions<Quotation>,
-    ): Promise<Array<Quotation>> => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.ASC }];
+    ): Promise<Quotation[]> => {
+      const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.ASC }];
       const quotations = Quotations.find(buildFindSelector(query), {
         limit,
         skip: offset,

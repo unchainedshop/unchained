@@ -12,7 +12,7 @@ import {
 import { Product } from '@unchainedshop/core-products';
 import { Modules } from '../modules.js';
 
-export const parseQueryArray = (query: SearchFilterQuery): Record<string, Array<string>> =>
+export const parseQueryArray = (query: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({
       ...accumulator,
@@ -31,24 +31,24 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
     filter: Filter,
     { value }: { value?: boolean | string },
     unchainedAPI: { modules: Modules },
-  ) => Promise<Array<string>>;
+  ) => Promise<string[]>;
   buildProductIdMap: (
     filter: Filter,
     unchainedAPI: { modules: Modules },
-  ) => Promise<[Array<string>, Record<string, Array<string>>]>;
+  ) => Promise<[string[], Record<string, string[]>]>;
   filterProductIds: (
     filter: Filter,
-    { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
+    { values, forceLiveCollection }: { values: string[]; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
-  ) => Promise<Array<string>>;
+  ) => Promise<string[]>;
 
   filterFacets: (
     filter: Filter,
     params: {
       searchQuery: SearchQuery;
       forceLiveCollection?: boolean;
-      allProductIds: Array<string>;
-      otherFilters: Array<Filter>;
+      allProductIds: string[];
+      otherFilters: Filter[];
     },
     unchainedAPI: { modules: Modules },
   ) => Promise<{
@@ -58,10 +58,10 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   }>;
 
   productFacetedSearch: (
-    productIds: Array<string>,
+    productIds: string[],
     searchConfiguration: SearchConfiguration,
     unchainedAPI: { modules: Modules },
-  ) => Promise<Array<string>>;
+  ) => Promise<string[]>;
 };
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
@@ -97,14 +97,14 @@ export const FilterDirector: IFilterDirector = {
       },
 
       searchAssortments: async (params, options) => {
-        return reduceAdapters<Array<string>>(async (lastSearchPromise, adapter) => {
+        return reduceAdapters<string[]>(async (lastSearchPromise, adapter) => {
           const assortmentIds = await lastSearchPromise;
           return adapter.searchAssortments({ assortmentIds }, options);
         }, params.assortmentIds);
       },
 
       searchProducts: async (params, options) => {
-        return reduceAdapters<Array<string>>(async (lastSearchPromise, adapter) => {
+        return reduceAdapters<string[]>(async (lastSearchPromise, adapter) => {
           const productIds = await lastSearchPromise;
           return adapter.searchProducts({ productIds }, options);
         }, params.productIds);
@@ -155,7 +155,7 @@ export const FilterDirector: IFilterDirector = {
   async buildProductIdMap(
     filter: Filter,
     unchainedAPI: { modules: Modules },
-  ): Promise<[Array<string>, Record<string, Array<string>>]> {
+  ): Promise<[string[], Record<string, string[]>]> {
     const allProductIds = await this.findProductIds(filter, {}, unchainedAPI);
     const productIdsMap =
       filter.type === FilterType.SWITCH
@@ -176,10 +176,10 @@ export const FilterDirector: IFilterDirector = {
 
   async filterProductIds(
     filter: Filter,
-    { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
+    { values, forceLiveCollection }: { values: string[]; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
   ) {
-    const [allProductIds, keyToProductIdMap]: [Array<string>, Record<string, Array<string>>] =
+    const [allProductIds, keyToProductIdMap]: [string[], Record<string, string[]>] =
       (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
       (await this.buildProductIdMap(filter, unchainedAPI));
 
@@ -199,10 +199,10 @@ export const FilterDirector: IFilterDirector = {
   },
 
   async productFacetedSearch(
-    productIds: Array<string>,
+    productIds: string[],
     searchConfiguration: SearchConfiguration,
     unchainedAPI: { modules: Modules },
-  ): Promise<Array<string>> {
+  ): Promise<string[]> {
     const { searchQuery, filterSelector, forceLiveCollection } = searchConfiguration;
     const { modules } = unchainedAPI;
     if (!searchQuery || !searchQuery.filterQuery) return productIds;

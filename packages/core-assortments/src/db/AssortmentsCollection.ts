@@ -7,7 +7,7 @@ import {
 
 export type AssortmentProductIdCacheRecord = {
   _id?: string;
-  productIds: Array<string>;
+  productIds: string[];
 } & TimestampFields;
 
 export type AssortmentText = {
@@ -26,7 +26,7 @@ export type AssortmentProduct = {
   meta?: any;
   productId: string;
   sortKey: number;
-  tags: Array<string>;
+  tags: string[];
 } & TimestampFields;
 
 export type AssortmentLink = {
@@ -35,7 +35,7 @@ export type AssortmentLink = {
   meta?: any;
   parentAssortmentId: string;
   sortKey: number;
-  tags: Array<string>;
+  tags: string[];
 } & TimestampFields;
 
 export type AssortmentFilter = {
@@ -44,7 +44,7 @@ export type AssortmentFilter = {
   filterId: string;
   meta?: any;
   sortKey: number;
-  tags: Array<string>;
+  tags: string[];
 } & TimestampFields;
 
 export type Assortment = {
@@ -54,19 +54,19 @@ export type Assortment = {
   isRoot: boolean;
   meta?: any;
   sequence: number;
-  slugs: Array<string>;
-  tags: Array<string>;
+  slugs: string[];
+  tags: string[];
 } & TimestampFields;
 
-export type AssortmentQuery = {
+export interface AssortmentQuery {
   queryString?: string;
-  assortmentIds?: Array<string>;
+  assortmentIds?: string[];
   assortmentSelector?: mongodb.Filter<Assortment>;
   includeInactive?: boolean;
   includeLeaves?: boolean;
-  slugs?: Array<string>;
-  tags?: Array<string>;
-};
+  slugs?: string[];
+  tags?: string[];
+}
 
 export type InvalidateCacheFn = (
   params: AssortmentQuery,

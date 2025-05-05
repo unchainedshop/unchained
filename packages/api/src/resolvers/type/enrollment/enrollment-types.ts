@@ -1,25 +1,12 @@
 import { Context } from '../../../context.js';
-import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/core-currencies';
-import { Enrollment as EnrollmentType, EnrollmentPlan } from '@unchainedshop/core-enrollments';
-import { User } from '@unchainedshop/core-users';
+import { Enrollment as EnrollmentType } from '@unchainedshop/core-enrollments';
 
-type HelperType<P, T> = (enrollment: EnrollmentType, params: P, context: Context) => T;
-
-type EnrollmentHelperTypes = {
-  isExpired: HelperType<{ referenceDate?: Date }, boolean>;
-  plan: HelperType<never, EnrollmentPlan>;
-  user: HelperType<never, Promise<User>>;
-  country: HelperType<never, Promise<Country>>;
-  currency: HelperType<never, Promise<Currency>>;
-};
-
-export const Enrollment: EnrollmentHelperTypes = {
-  isExpired: (obj, params, { modules }) => {
+export const Enrollment = {
+  isExpired: (obj: EnrollmentType, params: { referenceDate?: Date }, { modules }: Context) => {
     return modules.enrollments.isExpired(obj, params);
   },
 
-  plan: ({ quantity, productId, configuration }) => {
+  plan: ({ quantity, productId, configuration }: EnrollmentType) => {
     return {
       quantity,
       productId,
@@ -27,7 +14,10 @@ export const Enrollment: EnrollmentHelperTypes = {
     };
   },
 
-  country: async (obj, _, { loaders }) => loaders.currencyLoader.load({ isoCode: obj.countryCode }),
-  currency: async (obj, _, { loaders }) => loaders.currencyLoader.load({ isoCode: obj.currencyCode }),
-  user: async (obj, _, { loaders }) => loaders.userLoader.load({ userId: obj.userId }),
+  country: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
+    loaders.currencyLoader.load({ isoCode: obj.countryCode }),
+  currency: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
+    loaders.currencyLoader.load({ isoCode: obj.currencyCode }),
+  user: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
+    loaders.userLoader.load({ userId: obj.userId }),
 };

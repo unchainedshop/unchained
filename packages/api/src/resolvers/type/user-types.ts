@@ -45,19 +45,19 @@ export interface UserHelperTypes {
   updated: HelperType<any, Date>;
   deleted: HelperType<any, Date>;
   avatar: HelperType<{ locale: Intl.Locale }, File>;
-  bookmarks: HelperType<any, Array<Bookmark>>;
+  bookmarks: HelperType<any, Bookmark[]>;
   cart: HelperType<{ orderNumber?: string }, Order>;
   country: HelperType<{ locale: Intl.Locale }, Country>;
-  emails: HelperType<any, Array<string>>;
+  emails: HelperType<any, string[]>;
   enrollments: HelperType<
     {
-      sort?: Array<SortOption>;
+      sort?: SortOption[];
       queryString?: string;
       limit?: number;
       offset?: number;
-      status?: Array<EnrollmentStatus>;
+      status?: EnrollmentStatus[];
     },
-    Array<Enrollment>
+    Enrollment[]
   >;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
@@ -65,41 +65,41 @@ export interface UserHelperTypes {
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
-  allowedActions: HelperType<any, Array<string>>;
+  allowedActions: HelperType<any, string[]>;
   name: HelperType<any, string>;
   orders: HelperType<
     {
       includeCarts: boolean;
-      sort?: Array<SortOption>;
+      sort?: SortOption[];
       queryString?: string;
       status?: OrderStatus[];
       userId?: string;
       limit?: number;
       offset?: number;
     },
-    Array<Order>
+    Order[]
   >;
-  paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
-  tokens: HelperType<any, Array<TokenSurrogate>>;
-  webAuthnCredentials: HelperType<any, Array<WebAuthnCredentials>>;
-  web3Addresses: HelperType<any, Array<Web3Address>>;
+  paymentCredentials: HelperType<any, PaymentCredentials[]>;
+  tokens: HelperType<any, TokenSurrogate[]>;
+  webAuthnCredentials: HelperType<any, WebAuthnCredentials[]>;
+  web3Addresses: HelperType<any, Web3Address[]>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
   quotations: HelperType<
-    { sort?: Array<SortOption>; queryString?: string; userId?: string; limit?: number; offset?: number },
-    Array<Quotation>
+    { sort?: SortOption[]; queryString?: string; userId?: string; limit?: number; offset?: number },
+    Quotation[]
   >;
-  roles: HelperType<any, Array<string>>;
-  tags: HelperType<any, Array<string>>;
+  roles: HelperType<any, string[]>;
+  tags: HelperType<any, string[]>;
   username: HelperType<any, string>;
-  pushSubscriptions: HelperType<any, Array<PushSubscription>>;
+  pushSubscriptions: HelperType<any, PushSubscription[]>;
   reviews: HelperType<
     {
-      sort?: Array<SortOption>;
+      sort?: SortOption[];
       limit?: number;
       offset?: number;
     },
-    Array<ProductReview>
+    ProductReview[]
   >;
   reviewsCount: HelperType<any, number>;
 }

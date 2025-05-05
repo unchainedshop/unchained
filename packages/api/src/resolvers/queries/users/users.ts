@@ -8,7 +8,7 @@ export default async function users(
   params: UserQuery & {
     limit?: number;
     offset?: number;
-    sort?: Array<SortOption>;
+    sort?: SortOption[];
     includeGuests?: boolean;
     emailVerified?: boolean;
     lastLogin?: DateFilterInput;

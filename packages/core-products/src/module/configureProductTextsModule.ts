@@ -126,7 +126,7 @@ export const configureProductTextsModule = ({
     findTexts: async (
       query: mongodb.Filter<ProductText>,
       options?: mongodb.FindOptions,
-    ): Promise<Array<ProductText>> => {
+    ): Promise<ProductText[]> => {
       const texts = ProductTexts.find(query, options);
 
       return texts.toArray();
@@ -146,8 +146,8 @@ export const configureProductTextsModule = ({
     // Mutations
     updateTexts: async (
       productId: string,
-      texts: Array<Omit<ProductText, 'productId'>>,
-    ): Promise<Array<ProductText>> => {
+      texts: Omit<ProductText, 'productId'>[],
+    ): Promise<ProductText[]> => {
       const productTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
       );
