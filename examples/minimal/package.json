@@ -37,13 +37,13 @@
     "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^4.0.0-rc.2",
     "@unchainedshop/plugins": "^4.0.0-rc.2",
-    "fastify": "^5.2.2"
+    "fastify": "^5.3.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.14",
+    "@types/node": "^22.15.3",
     "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }
