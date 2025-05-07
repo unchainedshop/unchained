@@ -1,8 +1,9 @@
-import { ethers } from 'ethers';
+import { keccak_256 } from '@noble/hashes/sha3';
+import { secp256k1 } from '@noble/curves/secp256k1';
 import { HDKey } from '@scure/bip32';
 import { p2wpkh, NETWORK, TEST_NETWORK } from '@scure/btc-signer';
-
 import { createLogger } from '@unchainedshop/logger';
+
 import {
   IPaymentAdapter,
   PaymentAdapter,
@@ -15,6 +16,27 @@ import { CryptopayModule } from './module.js';
 const logger = createLogger('unchained:core-payment:cryptopay');
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_BTC_XPUB, CRYPTOPAY_ETH_XPUB } = process.env;
+
+function getChecksumAddress(address) {
+    const chars = address.split("");
+    const expanded = new Uint8Array(40);
+    for (let i = 0; i < 40; i++) {
+        expanded[i] = chars[i].charCodeAt(0);
+    }
+    const hashed = keccak_256(expanded);
+
+    for (let i = 0; i < 40; i += 2) {
+        if ((hashed[i >> 1] >> 4) >= 8) {
+            chars[i] = chars[i].toUpperCase();
+        }
+        if ((hashed[i >> 1] & 0x0f) >= 8) {
+            chars[i + 1] = chars[i + 1].toUpperCase();
+        }
+    }
+
+    return "0x" + chars.join("");
+}
+
 
 const resolvePath = (prefix) => {
   if (prefix === 'x') return `m/44'/0'`;
@@ -149,33 +171,37 @@ const Cryptopay: IPaymentAdapter = {
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
           const derivationPath = resolvePath(CRYPTOPAY_BTC_XPUB.slice(0, 1));
-
           const hardenedMaster = HDKey.fromExtendedKey(CRYPTOPAY_BTC_XPUB);
-          hardenedMaster.wipePrivateData();
+          hardenedMaster.wipePrivateData(); // Neuter
 
           const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.BTC,
           );
-          const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`);
-
+          const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`); // TODO: Test if works
           const network = resolveNetwork(CRYPTOPAY_BTC_XPUB.slice(0, 1));
+          const address = p2wpkh(child.publicKey /* hex.decode( as string)*/, network).address;
+
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.BTC,
-            address: p2wpkh(child.publicKey /* hex.decode( as string)*/, network).address,
+            address,
           });
         }
         if (CRYPTOPAY_ETH_XPUB) {
-          // we neuter for security reasons, it's still quite complicated for most ethereum clients to show an appropriate
-          // xpub, that's why
-          const hdWallet = ethers.HDNodeWallet.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
-          const hardenedMaster = 'neuter' in hdWallet ? hdWallet.neuter() : hdWallet;
+          const hardenedMaster = HDKey.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
+          hardenedMaster.wipePrivateData(); // Neuter
 
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
           );
+          const child = hardenedMaster.derive(`m/0/${ethDerivationNumber}`);
+
+          // ETH Address (secp256k1 + keccak_256 + checksum)
+          const childSigningKey = secp256k1.ProjectivePoint.fromHex(child.publicKey).toRawBytes(false)
+          const address = Buffer.from(keccak_256(childSigningKey.slice(1))).toString('hex').substring(24);
+
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.ETH,
-            address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
+            address: getChecksumAddress(address),
           });
         }
 

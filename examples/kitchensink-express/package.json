@@ -41,7 +41,6 @@
     "@unchainedshop/core-payment": "^4.0.0-rc.2",
     "@unchainedshop/platform": "^4.0.0-rc.2",
     "@unchainedshop/plugins": "^4.0.0-rc.2",
-    "ethers": "^6.13.7",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "graphql": "^16.11.0",
