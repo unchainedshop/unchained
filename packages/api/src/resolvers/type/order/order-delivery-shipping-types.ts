@@ -1,37 +1,24 @@
 import { DeliveryPricingSheet } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
-import { Address } from '@unchainedshop/mongodb';
+import { OrderDelivery } from '@unchainedshop/core-orders';
 
-type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
-
-export interface OrderDeliveryShippingHelperTypes {
-  address: HelperType<Address>;
-  discounts: HelperType<Promise<OrderDeliveryDiscount[]>>;
-  provider: HelperType<Promise<DeliveryProvider>>;
-  status: HelperType<string>;
-}
-
-export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
-  address: (obj) => {
+export const OrderDeliveryShipping = {
+  address(obj: OrderDelivery) {
     return obj.context?.address;
   },
 
-  status: (obj, _, { modules }) => {
+  status(obj: OrderDelivery, _: never, { modules }: Context) {
     return modules.orders.deliveries.normalizedStatus(obj);
   },
 
-  provider: async (obj, _, { loaders }) => {
+  async provider(obj: OrderDelivery, _: never, { loaders }: Context) {
     return loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,
     });
   },
 
-  discounts: async (obj, _, context) => {
-    const { modules } = context;
-    // TODO: use order loader
-    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+  async discounts(obj: OrderDelivery, _: never, { loaders }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     const pricing = DeliveryPricingSheet({
       calculation: obj.calculation,
       currencyCode: order.currencyCode,

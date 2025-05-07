@@ -1,8 +1,8 @@
 import { OrderQuery, Order } from '../db/OrdersCollection.js';
 import { assertDocumentDBCompatMode, mongodb } from '@unchainedshop/mongodb';
 
-export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
-  const selector: mongodb.Filter<Order> = {};
+export const buildFindSelector = ({ includeCarts, status, userId, queryString, ...rest }: OrderQuery) => {
+  const selector: mongodb.Filter<Order> = { ...rest };
 
   if (userId) {
     selector.userId = userId;

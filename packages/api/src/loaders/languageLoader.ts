@@ -4,7 +4,7 @@ import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ isoCode: string }, Language>(async (queries) => {
-    const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))]; // you don't need lodash, _.unique my ass
+    const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))];
 
     const languages = await unchainedAPI.modules.languages.findLanguages({
       isoCode: { $in: isoCodes },

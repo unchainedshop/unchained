@@ -36,9 +36,8 @@ export type Order = {
 } & LogFields &
   TimestampFields;
 
-export interface OrderQuery {
+export interface OrderQuery extends mongodb.Filter<Order> {
   includeCarts?: boolean;
-  orderStatus?: OrderStatus[];
   queryString?: string;
   status?: OrderStatus[];
   userId?: string;

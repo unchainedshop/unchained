@@ -4,7 +4,7 @@ import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ fileId: string }, File>(async (queries) => {
-    const fileIds = [...new Set(queries.map((q) => q.fileId).filter(Boolean))]; // you don't need lodash, _.unique my ass
+    const fileIds = [...new Set(queries.map((q) => q.fileId).filter(Boolean))];
 
     const files = await unchainedAPI.modules.files.findFiles({
       _id: { $in: fileIds },

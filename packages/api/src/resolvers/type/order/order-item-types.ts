@@ -8,11 +8,8 @@ import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehou
 import { Price } from '@unchainedshop/utils';
 import { ProductPricingSheet } from '@unchainedshop/core';
 
-const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
-  const { modules } = context;
-
-  // TODO: use order loader
-  const order = await modules.orders.findOrder({
+const getPricingSheet = async (orderPosition: OrderPosition, { loaders }: Context) => {
+  const order = await loaders.orderLoader.load({
     orderId: orderPosition.orderId,
   });
   return ProductPricingSheet({
@@ -23,6 +20,7 @@ const getPricingSheet = async (orderPosition: OrderPosition, context: Context) =
 };
 
 export const OrderItem = {
+  
   async discounts(orderPosition: OrderPosition, _, context: Context): Promise<OrderPositionDiscount[]> {
     const pricing = await getPricingSheet(orderPosition, context);
 
@@ -38,7 +36,7 @@ export const OrderItem = {
 
   async dispatches(
     orderPosition: OrderPosition,
-    _,
+    _: never,
     { modules, loaders }: Context,
   ): Promise<
     {
@@ -50,11 +48,11 @@ export const OrderItem = {
     }[]
   > {
     const scheduling = orderPosition.scheduling || [];
-    // TODO: use order loader
-    const order = await modules.orders.findOrder({ orderId: orderPosition.orderId });
+    const order = await loaders.orderLoader.load({
+      orderId: orderPosition.orderId,
+    });
     const { countryCode, userId } = order;
 
-    // TODO: use order delivery loader
     const orderDelivery = await modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
     });
@@ -90,9 +88,10 @@ export const OrderItem = {
     );
   },
 
-  async order(orderPosition: OrderPosition, _, { modules }: Context): Promise<Order> {
-    // TODO: use order loader
-    return modules.orders.findOrder({ orderId: orderPosition.orderId });
+  async order(orderPosition: OrderPosition, _, { loaders }: Context): Promise<Order> {
+    return loaders.orderLoader.load({
+      orderId: orderPosition.orderId,
+    });
   },
 
   async originalProduct(orderPosition: OrderPosition, _, { loaders }: Context): Promise<Product> {

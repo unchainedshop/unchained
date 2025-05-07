@@ -47,7 +47,6 @@ export const TokenizedProduct = {
     const { modules, services } = requestContext;
     const { referenceDate } = params;
 
-    // TODO: use delivery providers loader?
     const deliveryProviders = await modules.delivery.findProviders({});
 
     return services.products.simulateProductInventory({

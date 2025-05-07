@@ -1,20 +1,9 @@
 import { DeliveryDirector, DeliveryPricingSheet } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
-import { DeliveryLocation, DeliveryProvider } from '@unchainedshop/core-delivery';
-import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
+import { OrderDelivery } from '@unchainedshop/core-orders';
 
-type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
-
-export interface OrderDeliveryPickupHelperTypes {
-  activePickUpLocation: HelperType<Promise<DeliveryLocation>>;
-  discounts: HelperType<Promise<OrderDeliveryDiscount[]>>;
-  pickUpLocations: HelperType<Promise<DeliveryLocation[]>>;
-  provider: HelperType<Promise<DeliveryProvider>>;
-  status: HelperType<string>;
-}
-
-export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
-  activePickUpLocation: async (orderDelivery, _, requestContext) => {
+export const OrderDeliveryPickUp = {
+  async activePickUpLocation(orderDelivery: OrderDelivery, _: never, requestContext: Context) {
     const { orderPickUpLocationId } = orderDelivery.context || {};
 
     const provider = await requestContext.loaders.deliveryProviderLoader.load({
@@ -29,7 +18,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
     return director.pickUpLocationById(orderPickUpLocationId);
   },
 
-  pickUpLocations: async (obj, _, context) => {
+  async pickUpLocations(obj: OrderDelivery, _: never, context: Context) {
     const provider = await context.loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,
     });
@@ -38,21 +27,18 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
     return director.pickUpLocations();
   },
 
-  provider: async (obj, _, { loaders }) => {
+  async provider(obj: OrderDelivery, _: never, { loaders }: Context) {
     return loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,
     });
   },
 
-  status: (obj, _, { modules }) => {
+  status(obj: OrderDelivery, _: never, { modules }: Context) {
     return modules.orders.deliveries.normalizedStatus(obj);
   },
 
-  discounts: async (obj, _, context) => {
-    const { modules } = context;
-    // TODO: use order loader
-    const order = await modules.orders.findOrder({ orderId: obj.orderId });
-
+  async discounts(obj: OrderDelivery, _: never, { loaders }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     const pricing = DeliveryPricingSheet({
       calculation: obj.calculation,
       currencyCode: order.currencyCode,

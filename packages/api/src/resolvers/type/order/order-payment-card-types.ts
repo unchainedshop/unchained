@@ -1,32 +1,20 @@
 import { PaymentPricingSheet } from '@unchainedshop/core';
 import { Context } from '../../../context.js';
-import { OrderPayment, OrderPaymentDiscount } from '@unchainedshop/core-orders';
-import { PaymentProvider } from '@unchainedshop/core-payment';
+import { OrderPayment } from '@unchainedshop/core-orders';
 
-type HelperType<T> = (orderPayment: OrderPayment, _: never, context: Context) => T;
-
-export interface OrderPaymentCardHelperTypes {
-  discounts: HelperType<Promise<OrderPaymentDiscount[]>>;
-  provider: HelperType<Promise<PaymentProvider>>;
-  status: HelperType<string>;
-}
-
-export const OrderPaymentCard: OrderPaymentCardHelperTypes = {
-  status: (obj, _, { modules }) => {
+export const OrderPaymentCard = {
+  status(obj: OrderPayment, _: never, { modules }: Context) {
     return modules.orders.payments.normalizedStatus(obj);
   },
 
-  provider: async (obj, _, { loaders }) => {
+  async provider(obj: OrderPayment, _: never, { loaders }: Context) {
     return loaders.paymentProviderLoader.load({
       paymentProviderId: obj.paymentProviderId,
     });
   },
 
-  discounts: async (obj, _, context) => {
-    const { modules } = context;
-
-    // TODO: use order loader
-    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+  async discounts(obj: OrderPayment, _: never, { loaders }: Context) {    
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     const pricing = PaymentPricingSheet({
       calculation: obj.calculation,
       currencyCode: order.currencyCode,

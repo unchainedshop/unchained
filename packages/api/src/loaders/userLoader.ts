@@ -4,7 +4,7 @@ import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ userId: string }, User>(async (queries) => {
-    const userIds = [...new Set(queries.map((q) => q.userId).filter(Boolean))]; // you don't need lodash, _.unique my ass
+    const userIds = [...new Set(queries.map((q) => q.userId).filter(Boolean))];
 
     // It's important to also fetch deleted with the loader,
     // because the loader fetches entities by id.

@@ -28,10 +28,9 @@ export const PaymentProvider = {
     { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext },
     requestContext: Context,
   ) {
-    const { modules, countryCode, user } = requestContext;
+    const { loaders, countryCode, user } = requestContext;
 
-    // TODO: use order loader
-    const order = await modules.orders.findOrder({ orderId });
+    const order = await loaders.orderLoader.load({ orderId })
     const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
     const pricingContext = {
       countryCode,

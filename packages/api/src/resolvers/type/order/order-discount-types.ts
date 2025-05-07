@@ -1,29 +1,9 @@
-import { Price } from '@unchainedshop/utils';
 import { Context } from '../../../context.js';
-import { Order, OrderDiscount as OrderDiscountType } from '@unchainedshop/core-orders';
-import { OrderDiscountDirector, OrderPricingDiscount } from '@unchainedshop/core';
+import { OrderDiscount as OrderDiscountType } from '@unchainedshop/core-orders';
+import { OrderDiscountDirector } from '@unchainedshop/core';
 
-type HelperType<P, T> = (orderDiscount: OrderDiscountType, params: P, context: Context) => T;
-
-export interface OrderDiscountHelperTypes {
-  interface: HelperType<
-    never,
-    Promise<{
-      _id: string;
-      label: string;
-      version: string;
-      isManualAdditionAllowed: boolean;
-      isManualRemovalAllowed: boolean;
-    }>
-  >;
-
-  discounted: HelperType<never, Promise<OrderPricingDiscount[]>>;
-  order: HelperType<never, Promise<Order>>;
-  total: HelperType<never, Promise<Price>>;
-}
-
-export const OrderDiscount: OrderDiscountHelperTypes = {
-  interface: async (obj) => {
+export const OrderDiscount = {
+  async interface(obj: OrderDiscountType) {
     const Interface = OrderDiscountDirector.getAdapter(obj.discountKey);
     if (!Interface) return null;
 
@@ -36,24 +16,17 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
     };
   },
 
-  order: async (obj, _, { modules }) => {
-    // TODO: use order loader
-    return modules.orders.findOrder({ orderId: obj.orderId });
+  async order(obj: OrderDiscountType, _: never, { loaders }: Context) {
+    return loaders.orderLoader.load({ orderId: obj.orderId });
   },
 
-  total: async (obj, _, context) => {
-    // TODO: use order loader
-    const order = await context.modules.orders.findOrder({
-      orderId: obj.orderId,
-    });
-    return context.services.orders.calculateDiscountTotal(order, obj);
+  async total(obj: OrderDiscountType, _: never, { loaders, services }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
+    return services.orders.calculateDiscountTotal(order, obj);
   },
 
-  discounted: async (obj, _, context) => {
-    // TODO: use order loader
-    const order = await context.modules.orders.findOrder({
-      orderId: obj.orderId,
-    });
-    return context.services.orders.discountedEntities(order, obj);
+  async discounted(obj: OrderDiscountType, _: never, { loaders, services }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
+    return services.orders.discountedEntities(order, obj);
   },
 };

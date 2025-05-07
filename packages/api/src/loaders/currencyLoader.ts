@@ -4,7 +4,7 @@ import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ isoCode: string }, Currency>(async (queries) => {
-    const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))]; // you don't need lodash, _.unique my ass
+    const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))];
 
     const currencies = await unchainedAPI.modules.currencies.findCurrencies({
       isoCode: { $in: isoCodes },

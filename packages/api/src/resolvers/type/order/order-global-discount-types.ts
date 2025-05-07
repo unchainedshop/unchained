@@ -20,7 +20,6 @@ export const OrderGlobalDiscount = {
     _,
     { modules }: Context,
   ) => {
-    // TODO: use order discount loader
     return modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
     });

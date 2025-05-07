@@ -4,7 +4,7 @@ import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ sku: string }, Product>(async (queries) => {
-    const skus = [...new Set(queries.map((q) => q.sku).filter(Boolean))]; // you don't need lodash, _.unique my ass
+    const skus = [...new Set(queries.map((q) => q.sku).filter(Boolean))];
 
     const products = await unchainedAPI.modules.products.findProducts({
       productSelector: {

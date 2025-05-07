@@ -40,7 +40,6 @@ export const Order = {
   },
 
   async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery> {
-    // TODO: use order delivery loader
     return modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
     });
