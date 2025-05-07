@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: Project Setup
-sidebar_label: Installation
+sidebar_label: Install the Engine
 ---
 
 This section walks you through the steps to create a basic Node.js project and boot the Unchained Engine API server locally.
 
-## Step 1: Installation
+## Setup the Backend API
 
 1. Create a new folder for your project.
 
@@ -24,9 +24,9 @@ npm init @unchainedshop
 
 ```bash
 ? What type of template do you want ›
-Full stack e-commerce
+Full Stack E-Commerce
 Storefront
-Unchained engine <--
+Unchained Engine <--
 ```
 
 4. Select the directory (press `enter` to use the current directory) and whether to initialize git.
@@ -44,7 +44,7 @@ cd my-unchained-engine
 npm install
 ```
 
-## Step 2: Start the Unchained Engine
+## Start the Engine
 
 ```bash
 npm run dev
@@ -54,28 +54,7 @@ Open [localhost:4010](http://localhost:4010) to check if your Unchained Engine i
 
 ![diagram](../assets/engin_intro.png)
 
-## Open Admin UI sandbox
 
-:::info
-The Unchained Admin UI needs a browser that allows cross-origin requests to localhost such as Chrome or Firefox. Safari is not supported.
-:::
+## Add Products
 
-On the initial landing page, click [Use sandbox Admin UI](https://sandbox-v3.unchained.shop/log-in) to manage your local engine instance using the admin UI sandbox. Use the following credentials to log in and change them as soon as possible:
-
-**Username**: _admin@unchained.local_<br />
-**Password**: _password_
-
-
-![diagram](../assets/sandbox-login.png)
-
-You can also click on [GraphQL playground](http://localhost:4010/graphql) to open the GraphQL playground for executing queries and mutations.
-
-## Step 3: Add Products
-
-To set up the store and add products and categories using the admin UI, follow the instructions in the [Add Products](/getting-started/add-products) guide using your local instance at [localhost:4010](http://localhost:4010).
-
-Follow the examples to learn how to add products, initiate a checkout, and use plugins with GraphQL.
-
-## Run the Storefront template
-
-To test the Unchained Engine, set up the test storefront web app created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally and connect it to your local Unchained Engine GraphQL API, as covered in the next chapter.
+To set up the store and add products and categories using the Unchained Admin UI, follow the instructions in the next chapter [Add Products](/getting-started/feed-the-db) using your local instance at [localhost:4010](http://localhost:4010).

@@ -1,8 +1,8 @@
 ---
-sidebar_position: 3
-sidebar_label: Add products
-sidebar_title: Add products
-title: Add new products to your store
+sidebar_position: 2
+sidebar_label: Feed the DB
+sidebar_title: Feed the DB
+title: Feed the DB
 ---
 
  <!--<style>
@@ -35,27 +35,26 @@ Steps:
 
 - Log into your Admin UI
 - Fill your store with content using the Admin UI
-- Understand the store's data entities
-- Use GraphQL queries and mutations to feed and search over the Unchained Engine api.
 
-<p class="info">This is an example application of a management admin UI.<br />The Unchained Engine is designed for professional enterprise applications and uses powerful plugins to connect to existing CRM solutions which should be the choice if you build the store.<br />However, to start we can manage a simple shop catalogue and add a basic payment option using the provide Admin UI.</p>
+## Open Admin UI sandbox
 
-## Step 1: Access Admin UI
+:::info
+The Unchained Admin UI needs a browser that allows cross-origin requests to localhost such as Chrome or Firefox. Safari is not supported.
+:::
 
-In order to add content to your store, you need to log into the store's admin UI [sandbox](https://sandbox-v3.unchained.shop/). By default the sandbox is pointed to your `localhost:4010` port but in case you change the local engine endpoint to something else you can simply change the **ENDPOINT** URL
-
-Navigate to the login window of your admin UI
-
-Initially the username and password are set as following:
+On the initial landing page, click [Use sandbox Admin UI](https://sandbox-v3.unchained.shop/log-in) to manage your local engine instance using the admin UI sandbox. Use the following credentials to log in and change them as soon as possible:
 
 **Username**: _admin@unchained.local_<br />
 **Password**: _password_
 
+
 ![diagram](../assets/sandbox-login.png)
+
+You can also click on [GraphQL playground](http://localhost:4010/graphql) to open the GraphQL playground for executing queries and mutations.
 
 <p class="warning">This is a test project using common hard-coded credentials. Change your password as soon as you intend to work professionally with the engine. (<b class="normal"><code class="language-text">Account</code> ➤ <code class="language-text">Change password</code></b>)</p>
 
-## Step 1: Add Payment Provider
+## Add Payment Provider
 
 One of the basic settings besides the **currency** & **language** is the **payment provider** for your store. We gonna add a simple _Pay per invoice_ method to our shop.<br />
 Check [Further Reading](#further-reading) at the end of this chapter for a (growing) list of payment plugins available for the Unchained Engine.
@@ -69,9 +68,9 @@ Check [Further Reading](#further-reading) at the end of this chapter for a (grow
 - The new payment provider **INVOICE** page will open.
   ![diagramm](../assets/add-payment-step-3.png)
 
-## Step 2: Set Delivery Option
+## Add Delivery Provider
 
-The second important configuration is **delivery option** which defines where and how orders should be send to for furhter processing.<br />
+The second important configuration is **delivery providers** which defines where and how orders should be send to for furhter processing.
 
 - On top choose the menu entry **`System settings` ➤ `Delivery providers`**
 - Click on **`Add`** in the empty list view.
@@ -81,7 +80,7 @@ The second important configuration is **delivery option** which defines where an
 - The new delivery provider **SHIPPING** should appear in the list. (You might need to select the delivery list again in the top menu)
   ![diagramm](../assets/add-delivery-step-2.png)
 
-## Step 3: Add Product
+## Add Product
 
 It's time to add our first product to the store.
 
@@ -97,7 +96,7 @@ It's time to add our first product to the store.
 - Great! The product is ready to be assigned to a category.
 - Do it again and add a second product!
 
-## Step 4: Create Category (Assortment) with Products
+## Create Category (Assortment) with Products
 
 Firstly, we will add two new categories which are called _Assortments_ in the Admin UI.
 
@@ -112,23 +111,17 @@ Firstly, we will add two new categories which are called _Assortments_ in the Ad
 - Search for the **(exact)** name of the product you added in [Step 3](#step-3-add-product), select it
   and click **`Add Product`** to link the product to the category
 
-## Step 5. Admire the Products
+## See your Products in Action
 
-Open your local storefront app http://localhost:3000 and verify that the categories appear on the entry page.
-Choose a category to see the underlying products and start shopping! 😎
-
-![diagram](../assets/Storefront_Startscreen.png)
-
-## Step 6: Place an Order
-Now, you are able to go through a complete check-out and buy a product with the pay-per-invoice payment method.
-
-On successful completion of an order you will find a new entry in the **Orders** list and a detailed order view including the the **Invoice Paid** option.
+To see your data in action, in the next chapter you will learn to set up a basic storefront web app created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) and connect it to your local Unchained Engine GraphQL API.
 
 ## Further Reading
 
-Those are only the basic steps to fill some products into your store and process an order.
+You just used the Admin UI to store very basic entities in the DB connected to the Unchained Engine API.
+The Admin UI just called the GraphQL endpoint underneath to do that. Depending on your case you could opt-in to write your own Admin UI or feed the data in other ways, checkout the following chapters:
 
-Check out further guides in the list below and do not hesitate to contact us if you need help 🍫!
+Do not hesitate to contact us if you need help 🍫!
 
-- [Plugins](../plugins/plugin-overview)
-- [API](https://docs.unchained.shop/api)
+- [Use other Providers](../plugins/plugin-overview)
+- [Checkout the GraphQL API Reference](/api/queries)
+- [Stream Entities with the Bulk Import API](/advanced/bulk-import)

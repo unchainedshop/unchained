@@ -5,14 +5,16 @@ This release brings you Beta FerretDB and cloud hosted MongoDB support (AWS / Az
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 
 ## Major
-
-- DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
+- The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system: The type of locale fields in the API are now validated at the GraphQL Server level. This effects a lot of plugins too, please check migration-v4.md.
 - Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
 - Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).
 
 ## Minor
-
+- Add Node.js v23 support
 - Add various loaders to optimize db requests and improve the overall performance of the system
+- DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
+
+## Patch
 - Update to ESlint 9
 - Use @scure packages to reduce dependency hell around cryptography
 - Remove the 'twilio' dependency (> 5mb) with a single native fetch call to the Twilio API 🤪
