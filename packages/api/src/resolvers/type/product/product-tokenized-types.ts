@@ -44,13 +44,9 @@ export const TokenizedProduct = {
       quantity?: number;
     }[]
   > {
-    const { modules, services } = requestContext;
+    const { services } = requestContext;
     const { referenceDate } = params;
-
-    const deliveryProviders = await modules.delivery.findProviders({});
-
     return services.products.simulateProductInventory({
-      deliveryProviders,
       product: obj,
       referenceDate,
     });

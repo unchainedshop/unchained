@@ -23,7 +23,7 @@ const ercMetadataMiddleware: RequestHandler = async (
       return methodWrongHandler(res);
     }
 
-    const { services, locale } = req.unchainedContext;
+    const { services, modules, loaders, locale } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);
     const parsedPath = path.parse(url.pathname);
 
@@ -31,10 +31,17 @@ const ercMetadataMiddleware: RequestHandler = async (
 
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
 
-    const ercMetadata = await services.warehousing.ercMetadata({
-      productId,
-      locale: tokenFileName ? new Intl.Locale(localeOrTokenFilename) : locale,
+    const product = await loaders.productLoader.load({ productId });
+
+    const [token] = await modules.warehousing.findTokens({
       chainTokenId: parsedPath.name,
+      contractAddress: product?.tokenization?.contractAddress,
+    });
+
+    const ercMetadata = await services.warehousing.ercMetadata({
+      product,
+      token,
+      locale: tokenFileName ? new Intl.Locale(localeOrTokenFilename) : locale,
     });
 
     if (!ercMetadata) {

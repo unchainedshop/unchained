@@ -9,15 +9,15 @@ import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 export async function simulateProductInventoryService(
   this: Modules,
   {
-    deliveryProviders,
     product,
     referenceDate,
   }: {
     product: Product;
-    deliveryProviders: DeliveryProvider[];
     referenceDate?: Date;
   },
 ) {
+  const deliveryProviders = await this.delivery.allProviders();
+
   return deliveryProviders.reduce<
     Promise<(WarehousingContext & EstimatedStock & { warehousingProvider: WarehousingProvider })[]>
   >(async (oldResult, deliveryProvider) => {

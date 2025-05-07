@@ -32,33 +32,21 @@ export const Token = {
     { forceLocale }: { forceLocale: string },
     context: Context,
   ) => {
-    const { loaders } = context;
+    const { loaders, services } = context;
     const product = await loaders.productLoader.load({ productId: token.productId });
 
-    const virtualProviders = await context.modules.warehousing.findProviders({
-      type: WarehousingProviderType.VIRTUAL,
+    return services.warehousing.ercMetadata({
+      product,
+      token,
+      locale: forceLocale ? new Intl.Locale(forceLocale) : context.locale,
     });
-
-    return WarehousingDirector.tokenMetadata(
-      virtualProviders,
-      {
-        product,
-        token,
-        locale: forceLocale ? new Intl.Locale(forceLocale) : context.locale,
-        quantity: token?.quantity || 1,
-        referenceDate: new Date(),
-      },
-      context,
-    );
   },
 
   isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
     const { loaders } = context;
     const product = await loaders.productLoader.load({ productId: token.productId });
 
-    const virtualProviders = await context.modules.warehousing.findProviders({
-      type: WarehousingProviderType.VIRTUAL,
-    });
+    const virtualProviders = (await context.modules.warehousing.allProviders()).filter(({ type }) => type === WarehousingProviderType.VIRTUAL);
 
     const isInvalidateable = await WarehousingDirector.isInvalidateable(
       virtualProviders,

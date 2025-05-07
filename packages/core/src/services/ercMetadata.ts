@@ -1,23 +1,13 @@
-import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { TokenSurrogate, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { Product } from '@unchainedshop/core-products';
 import { WarehousingDirector } from '../directors/WarehousingDirector.js';
 import { Modules } from '../modules.js';
 
 export async function ercMetadataService(
   this: Modules,
-  { productId, chainTokenId, locale }: { productId: string; chainTokenId: string; locale: Intl.Locale },
+  { product, token, locale }: { product: Product; token: TokenSurrogate; locale: Intl.Locale },
 ) {
-  const product = await this.products.findProduct({
-    productId,
-  });
-
-  const [token] = await this.warehousing.findTokens({
-    chainTokenId,
-    contractAddress: product?.tokenization?.contractAddress,
-  });
-
-  const virtualProviders = await this.warehousing.findProviders({
-    type: WarehousingProviderType.VIRTUAL,
-  });
+  const virtualProviders = (await this.warehousing.allProviders()).filter(({ type }) => type === WarehousingProviderType.VIRTUAL);
 
   return await WarehousingDirector.tokenMetadata(
     virtualProviders,

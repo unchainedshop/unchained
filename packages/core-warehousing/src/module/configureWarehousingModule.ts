@@ -12,6 +12,8 @@ import {
   WarehousingProviderType,
 } from '../db/WarehousingProvidersCollection.js';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
 
 interface WarehousingProviderQuery {
   type?: WarehousingProviderType;
@@ -29,6 +31,8 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'TOKEN_OWNERSHIP_CHANGED',
   'TOKEN_INVALIDATED',
 ];
+
+const allProvidersCache = new ExpiryMap(60000);
 
 export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   const query = type ? { type, deleted: null } : { deleted: null };
@@ -114,6 +118,15 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return providers.toArray();
     },
 
+    allProviders: pMemoize(
+      async function () {
+        return WarehousingProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
+      },
+      {
+        cache: allProvidersCache,
+      },
+    ),
+
     providerExists: async ({
       warehousingProviderId,
     }: {
@@ -191,6 +204,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       });
 
       const warehousingProvider = await WarehousingProviders.findOne({ _id: warehousingProviderId });
+      allProvidersCache.clear();
       await emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
       return warehousingProvider;
     },
@@ -209,6 +223,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
       if (!warehousingProvider) return null;
 
+      allProvidersCache.clear();
       await emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
       return warehousingProvider;
     },
@@ -224,6 +239,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
         { returnDocument: 'after' },
       );
 
+      allProvidersCache.clear();
       await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
       return warehousingProvider;
     },

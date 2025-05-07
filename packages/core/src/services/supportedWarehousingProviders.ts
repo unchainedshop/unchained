@@ -3,7 +3,7 @@ import { WarehousingContext, WarehousingDirector } from '../directors/index.js';
 import { Modules } from '../modules.js';
 
 export async function supportedWarehousingProvidersService(this: Modules, params: WarehousingContext) {
-  const allProviders = await this.warehousing.findProviders({});
+  const allProviders = await this.warehousing.allProviders();
 
   const providers = (
     await Promise.all(

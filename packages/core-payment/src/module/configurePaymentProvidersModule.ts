@@ -1,6 +1,8 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
 
 export interface PaymentInterface {
   _id: string;
@@ -13,6 +15,8 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_UPDATE',
   'PAYMENT_PROVIDER_REMOVE',
 ];
+
+const allProvidersCache = new ExpiryMap(60000);
 
 export const buildFindSelector = ({ type }: mongodb.Filter<PaymentProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
@@ -53,6 +57,15 @@ export const configurePaymentProvidersModule = (
       return providers.toArray();
     },
 
+    allProviders: pMemoize(
+      async function () {
+        return PaymentProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
+      },
+      {
+        cache: allProvidersCache,
+      },
+    ),
+
     providerExists: async ({ paymentProviderId }: { paymentProviderId: string }): Promise<boolean> => {
       const providerCount = await PaymentProviders.countDocuments(
         generateDbFilterById(paymentProviderId, { deleted: null }),
@@ -73,6 +86,7 @@ export const configurePaymentProvidersModule = (
         generateDbFilterById(paymentProviderId),
         {},
       );
+      allProvidersCache.clear();
       await emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
       return paymentProvider;
     },
@@ -88,6 +102,7 @@ export const configurePaymentProvidersModule = (
         },
         { returnDocument: 'after' },
       );
+      allProvidersCache.clear();
       await emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
       return paymentProvider;
     },
@@ -102,6 +117,7 @@ export const configurePaymentProvidersModule = (
         },
         { returnDocument: 'after' },
       );
+      allProvidersCache.clear();
       await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;
     },

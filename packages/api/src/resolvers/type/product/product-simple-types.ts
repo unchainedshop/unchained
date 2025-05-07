@@ -21,12 +21,8 @@ export const SimpleProduct = {
     }[]
   > {
     const { referenceDate, quantity } = params;
-    const { services, modules } = requestContext;
-
-    const deliveryProviders = await modules.delivery.findProviders({});
-
+    const { services } = requestContext;
     return services.products.simulateProductDispatching({
-      deliveryProviders,
       product: obj,
       quantity,
       referenceDate,
@@ -47,15 +43,9 @@ export const SimpleProduct = {
       quantity?: number;
     }[]
   > {
-    const { modules, services } = requestContext;
-    const { referenceDate, deliveryProviderType } = params;
-
-    const deliveryProviders = await modules.delivery.findProviders({
-      type: deliveryProviderType,
-    });
-
+    const { services } = requestContext;
+    const { referenceDate } = params;
     return services.products.simulateProductInventory({
-      deliveryProviders,
       product: obj,
       referenceDate,
     });

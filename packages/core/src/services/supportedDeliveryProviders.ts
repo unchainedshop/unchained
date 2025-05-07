@@ -3,7 +3,7 @@ import { Modules } from '../modules.js';
 import { DeliveryContext, DeliveryDirector } from '../directors/index.js';
 
 export async function supportedDeliveryProvidersService(this: Modules, params: DeliveryContext) {
-  const allProviders = await this.delivery.findProviders({});
+  const allProviders = await this.delivery.allProviders();
 
   const providers = (
     await Promise.all(

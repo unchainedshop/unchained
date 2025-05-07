@@ -175,9 +175,8 @@ export async function processOrderService(
       );
       if (tokenizedItems.length > 0) {
         // Give virtual warehouse a chance to instantiate new virtual objects
-        const virtualProviders = await this.warehousing.findProviders({
-          type: WarehousingProviderType.VIRTUAL,
-        });
+        const virtualProviders = (await this.warehousing.allProviders()).filter(({ type }) => type === WarehousingProviderType.VIRTUAL);
+
         // It's very important to do this in a series and not in Promise.all
         // TODO: Actually, only createTokens should decide on the unique chainTokenId
         // and the tokens should be created with a distributed Lock to not assign the same id multiple times!

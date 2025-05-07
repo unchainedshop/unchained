@@ -2,6 +2,8 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { mongodb, generateDbFilterById, generateDbObjectId, ModuleInput } from '@unchainedshop/mongodb';
 import { DeliveryProvidersCollection, DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
 import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_CREATE',
@@ -18,6 +20,8 @@ export interface DeliveryInterface {
 export const buildFindSelector = ({ type }: mongodb.Filter<DeliveryProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
+
+const allProvidersCache = new ExpiryMap(60000);
 
 export const configureDeliveryModule = async ({
   db,
@@ -59,6 +63,15 @@ export const configureDeliveryModule = async ({
       return providers.toArray();
     },
 
+    allProviders: pMemoize(
+      async function () {
+        return DeliveryProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
+      },
+      {
+        cache: allProvidersCache,
+      },
+    ),
+
     providerExists: async ({ deliveryProviderId }: { deliveryProviderId: string }): Promise<boolean> => {
       const providerCount = await DeliveryProviders.countDocuments(
         generateDbFilterById(deliveryProviderId, { deleted: null }),
@@ -75,6 +88,7 @@ export const configureDeliveryModule = async ({
         ...doc,
       });
       const deliveryProvider = await DeliveryProviders.findOne({ _id: deliveryProviderId }, {});
+      allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
       return deliveryProvider;
     },
@@ -90,6 +104,7 @@ export const configureDeliveryModule = async ({
         },
         { returnDocument: 'after' },
       );
+      allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
@@ -104,6 +119,7 @@ export const configureDeliveryModule = async ({
         },
         { returnDocument: 'after' },
       );
+      allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },

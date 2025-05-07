@@ -4,7 +4,7 @@ import { PaymentContext } from '../directors/PaymentAdapter.js';
 import { Modules } from '../modules.js';
 
 export async function supportedPaymentProvidersService(this: Modules, params: PaymentContext) {
-  const allProviders = await this.payment.paymentProviders.findProviders({});
+  const allProviders = await this.payment.paymentProviders.allProviders();
 
   const providers = (
     await Promise.all(
