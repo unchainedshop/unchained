@@ -7,7 +7,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SimpleProduct } from './seeds/products.js';
 import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, SHIBCurrency } from './seeds/cryptopay.js';
 
-test.describe.skip('Plugins: Cryptopay', () => {
+test.describe('Plugins: Cryptopay', () => {
   let db;
   let graphqlFetch;
 
@@ -140,7 +140,7 @@ test.describe.skip('Plugins: Cryptopay', () => {
     await disconnect();
   });
 
-  test('Derive address for first order', async () => {
+  test.only('Derive address for first order', async () => {
     const { data } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
@@ -151,6 +151,7 @@ test.describe.skip('Plugins: Cryptopay', () => {
         orderPaymentId: 'cryptopay-payment',
       },
     });
+
     assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
       { currency: 'BTC', address: BTC_DERIVATIONS[0] },
       { currency: 'ETH', address: ETH_DERIVATIONS[0] },
