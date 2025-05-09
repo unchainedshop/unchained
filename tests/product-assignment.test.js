@@ -7,7 +7,7 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
+import { SimpleProduct, ProxyProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
 test.describe('Product: Assignments', async () => {
   let graphqlFetchAsAdmin;
@@ -27,79 +27,71 @@ test.describe('Product: Assignments', async () => {
 
   test.describe('mutation.addProductAssignment for admin user should', async () => {
     test('Throw error when incomplete/invalid vectors is passed', async () => {
-      const { errors } = await graphqlFetchAsAdmin(
-        {
-          query: /* GraphQL */ `
-            mutation AddProductAssignment(
-              $proxyId: ID!
-              $productId: ID!
-              $vectors: [ProductAssignmentVectorInput!]!
-            ) {
-              addProductAssignment(
-                proxyId: $proxyId
-                productId: $productId
-                vectors: $vectors
-              ) {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation AddProductAssignment(
+            $proxyId: ID!
+            $productId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              texts {
                 _id
-                sequence
-                status
-                tags
-                created
-                updated
-                published
-                texts {
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              siblings {
+                _id
+              }
+              ... on ConfigurableProduct {
+                products {
                   _id
                 }
-                media {
-                  _id
-                }
-                reviews {
-                  _id
-                }
-                siblings {
-                  _id
-                }
-                ... on ConfigurableProduct {
-                  products {
-                    _id
-                  }
-                  assortmentPaths {
-                    links {
-                      link {
+                assortmentPaths {
+                  links {
+                    link {
+                      _id
+                      parent {
                         _id
-                        parent {
+                        productAssignments {
                           _id
-                          productAssignments {
+                          product {
                             _id
-                            product {
-                              _id
-                            }
                           }
                         }
                       }
                     }
                   }
-                  variations {
-                    _id
-                    key
-                    texts {
-                      title
-                    }
+                }
+                variations {
+                  _id
+                  key
+                  texts {
+                    title
                   }
                 }
               }
             }
-          `,
-          variables: {
-            productId: SimpleProduct._id,
-            proxyId: ProxyProduct._id,
-            vectors: [
-              { key: 'non-existing', value: 'text-variant-a' },            
-            ],
-          },
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          proxyId: ProxyProduct._id,
+          vectors: [{ key: 'non-existing', value: 'text-variant-a' }],
         },
-      );
-      expect(errors?.[0]?.extensions).toMatchObject({
+      });
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
         code: 'ConfigurationVectorInvalid',
       });
     });

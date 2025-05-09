@@ -311,7 +311,7 @@ export const FileUploadExpiredError = createError('FileUploadExpired', 'File upl
 
 export const ImpersonatingAdminUserError = createError(
   'ImpersonatingAdminUserError',
-  'Can not impersonate a admin user account'
+  'Can not impersonate a admin user account',
 );
 
 export const ConfigurationVectorInvalid = createError(
