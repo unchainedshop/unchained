@@ -465,7 +465,7 @@ export const configureProductsModule = async ({
 
       removeAssignment: async (
         proxyId: string,
-        { vectors }: { vectors: ProductConfiguration[]; productId: string },
+        { vectors }: { vectors: ProductConfiguration[] },
       ): Promise<number> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {

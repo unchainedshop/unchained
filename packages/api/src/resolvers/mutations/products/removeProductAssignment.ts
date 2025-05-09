@@ -6,7 +6,7 @@ import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../
 
 export default async function removeProductAssignment(
   root: never,
-  params: { proxyId: string; vectors: ProductConfiguration[]; productId?: string },
+  params: { proxyId: string; vectors: ProductConfiguration[] },
   { modules, userId }: Context,
 ) {
   const { proxyId, vectors } = params;
