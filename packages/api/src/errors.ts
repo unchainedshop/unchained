@@ -305,6 +305,11 @@ export const ProductLinkedToQuotationError = createError(
   'Product is part of a requested/proposed quotations item, remove it from any requested/proposed quotations item before deleting',
 );
 
+export const ProductVariationVectorInvalid = createError(
+  'ProductVariationVectorInvalid',
+  'Product variation vector is invalid/incomplete',
+);
+
 export const FileNotFoundError = createError('FileNotFoundError', 'File not found');
 
 export const FileUploadExpiredError = createError('FileUploadExpired', 'File upload has expired');
@@ -312,9 +317,4 @@ export const FileUploadExpiredError = createError('FileUploadExpired', 'File upl
 export const ImpersonatingAdminUserError = createError(
   'ImpersonatingAdminUserError',
   'Can not impersonate a admin user account',
-);
-
-export const ConfigurationVectorInvalid = createError(
-  'ConfigurationVectorInvalid',
-  'Provider Configuration vector is invalid/incomplete please provide all available configuration vectors',
 );

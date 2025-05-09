@@ -92,7 +92,7 @@ test.describe('Product: Assignments', async () => {
         },
       });
       assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
-        code: 'ConfigurationVectorInvalid',
+        code: 'ProductVariationVectorInvalid',
       });
     });
     test('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {

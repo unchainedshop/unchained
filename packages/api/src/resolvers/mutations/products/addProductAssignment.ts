@@ -7,7 +7,7 @@ import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
-  ConfigurationVectorInvalid,
+  ProductVariationVectorInvalid,
 } from '../../../errors.js';
 const extractVariationMatrix = (variations = []) => {
   const cartesianProduct = (arrays) => {
@@ -77,7 +77,7 @@ export default async function addProductAssignment(
     };
   }, {});
   if (!combinationExists(variationMatrix, normalizedVectors))
-    throw new ConfigurationVectorInvalid({ proxyId, vectors });
+    throw new ProductVariationVectorInvalid({ proxyId, vectors });
 
   await modules.products.assignments.addProxyAssignment(productId, {
     proxyId,
