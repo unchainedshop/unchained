@@ -7,7 +7,7 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
+import { SimpleProduct, ProxyProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
 test.describe('Product: Assignments', async () => {
   let graphqlFetchAsAdmin;
@@ -26,8 +26,8 @@ test.describe('Product: Assignments', async () => {
   });
 
   test.describe('mutation.addProductAssignment for admin user should', async () => {
-    test('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
-      const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin({
+    test('Throw error when incomplete/invalid vectors is passed', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
             $proxyId: ID!
@@ -87,16 +87,93 @@ test.describe('Product: Assignments', async () => {
         `,
         variables: {
           productId: SimpleProduct._id,
-          proxyId: ConfigurableProduct._id,
+          proxyId: ProxyProduct._id,
+          vectors: [{ key: 'non-existing', value: 'text-variant-a' }],
+        },
+      });
+      assert.partialDeepStrictEqual(errors?.[0]?.extensions, {
+        code: 'ProductVariationVectorInvalid',
+      });
+    });
+    test('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
+      const { data = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation AddProductAssignment(
+            $proxyId: ID!
+            $productId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              texts {
+                _id
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              siblings {
+                _id
+              }
+              ... on ConfigurableProduct {
+                assignments {
+                  _id
+                  product {
+                    _id
+                  }
+                  vectors {
+                    _id
+                  }
+                }
+                products(vectors: $vectors) {
+                  _id
+                }
+                assortmentPaths {
+                  links {
+                    link {
+                      _id
+                      parent {
+                        _id
+                        productAssignments {
+                          _id
+                          product {
+                            _id
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                variations {
+                  _id
+                  key
+                  texts {
+                    title
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          proxyId: ProxyProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'color-variant', value: 'color-variant-red' },
+            { key: 'text-variant', value: 'text-variant-b' },
           ],
         },
       });
 
-      assert.deepStrictEqual(addProductAssignment.products?.[0], {
+      assert.deepStrictEqual(data?.addProductAssignment.products?.[0], {
         _id: SimpleProduct._id,
       });
     });

@@ -305,6 +305,16 @@ export const ProductLinkedToQuotationError = createError(
   'Product is part of a requested/proposed quotations item, remove it from any requested/proposed quotations item before deleting',
 );
 
+export const ProductVariationVectorAlreadySet = createError(
+  'ProductVariationVectorAlreadySet',
+  'Product variation vector is already set, remove the existing one before setting a new one',
+);
+
+export const ProductVariationVectorInvalid = createError(
+  'ProductVariationVectorInvalid',
+  'Product variation vector is invalid/incomplete',
+);
+
 export const FileNotFoundError = createError('FileNotFoundError', 'File not found');
 
 export const FileUploadExpiredError = createError('FileUploadExpired', 'File upload has expired');

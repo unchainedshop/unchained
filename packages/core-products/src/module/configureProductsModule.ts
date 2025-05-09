@@ -188,7 +188,6 @@ export const configureProductsModule = async ({
   ): Promise<Product[]> => {
     const { proxy } = product;
     let filtered = [...(proxy.assignments || [])];
-
     vectors.forEach(({ key, value }) => {
       filtered = filtered.filter((assignment) => {
         if (assignment.vector[key] === value) {
@@ -289,7 +288,6 @@ export const configureProductsModule = async ({
       { includeInactive = false }: { includeInactive?: boolean } = {},
     ): Promise<{ assignment: ProductAssignment; product: Product }[]> => {
       const assignments = product.proxy?.assignments || [];
-
       const productIds = assignments.map(({ productId }) => productId);
       const selector: mongodb.Filter<Product> = {
         _id: { $in: productIds },
@@ -302,7 +300,6 @@ export const configureProductsModule = async ({
       })
         .map(({ _id }) => _id)
         .toArray();
-
       return assignments
         .filter(({ productId }) => {
           return supportedProductIds.includes(productId);
@@ -431,31 +428,48 @@ export const configureProductsModule = async ({
      */
 
     assignments: {
-      addProxyAssignment: async (
-        productId: string,
-        { proxyId, vectors }: { proxyId: string; vectors: ProductConfiguration[] },
-      ): Promise<string> => {
-        const vector = {};
-        vectors.forEach(({ key, value }) => {
-          vector[key] = value;
-        });
+      addProxyAssignment: async ({
+        productId,
+        proxyId,
+        vectors,
+      }: {
+        productId: string;
+        proxyId: string;
+        vectors: ProductConfiguration[];
+      }): Promise<boolean> => {
+        const assignment = {
+          vector: Object.fromEntries(vectors.map(({ key, value }) => [key, value])),
+          productId,
+        };
+
         const modifier = {
           $set: {
             updated: new Date(),
           },
           $push: {
-            'proxy.assignments': {
-              vector,
-              productId,
-            },
+            'proxy.assignments': assignment,
           },
         };
 
-        await Products.updateOne(generateDbFilterById(proxyId), modifier);
+        const updated = await Products.updateOne(
+          generateDbFilterById(proxyId, {
+            'proxy.assignments': {
+              $not: {
+                $elemMatch: {
+                  vector: assignment.vector,
+                },
+              },
+            },
+          }),
+          modifier,
+        );
 
-        await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+        if (updated.modifiedCount > 0) {
+          await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+          return true;
+        }
 
-        return proxyId;
+        return false;
       },
 
       removeAssignment: async (
@@ -478,7 +492,7 @@ export const configureProductsModule = async ({
         };
         await Products.updateOne(generateDbFilterById(productId), modifier);
 
-        await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
+        await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId, vectors });
 
         return vectors.length;
       },
