@@ -124,7 +124,16 @@ test.describe('Product: Assignments', async () => {
                 _id
               }
               ... on ConfigurableProduct {
-                products {
+                assignments {
+                  _id
+                  product {
+                    _id
+                  }
+                  vectors {
+                    _id
+                  }
+                }
+                products(vectors: $vectors) {
                   _id
                 }
                 assortmentPaths {
@@ -156,16 +165,14 @@ test.describe('Product: Assignments', async () => {
         `,
         variables: {
           productId: SimpleProduct._id,
-          proxyId: ConfigurableProduct._id,
+          proxyId: ProxyProduct._id,
           vectors: [
-            { key: 'key-1', value: 'value-1' },
-            { key: 'key-2', value: 'value-2' },
-            { key: 'key-3', value: 'value-3' },
+            { key: 'color-variant', value: 'color-variant-red' },
+            { key: 'text-variant', value: 'text-variant-b' },
           ],
         },
       });
 
-      console.log(data);
       assert.deepStrictEqual(data?.addProductAssignment.products?.[0], {
         _id: SimpleProduct._id,
       });

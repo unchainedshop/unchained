@@ -408,7 +408,7 @@ export const ProxySimpleProduct2 = {
 };
 
 export const ProxyPlanProduct1 = {
-  _id: 'CbBSxR6wcAbBtubaB',
+  _id: 'proxy-plan-product-1',
   created: new Date('2021-02-25T21:18:02.851Z'),
   type: 'PLAN_PRODUCT',
   status: 'ACTIVE',
@@ -519,44 +519,13 @@ export const ProxyPlanProduct3 = {
   },
 };
 
-export const ProxySimpleProduct3 = {
-  _id: 'E8Y58rvx8HX2bTYNN',
-  created: new Date('2021-02-25T17:55:03.018Z'),
-  type: 'SIMPLE_PRODUCT',
-  status: 'ACTIVE',
-  sequence: 13,
-  slugs: ['simple-product-3'],
-  updated: new Date('2021-02-25T20:33:07.993Z'),
-  published: new Date('2021-02-25T17:55:07.303Z'),
-  commerce: {
-    pricing: [
-      {
-        amount: 10000000,
-        maxQuantity: 1,
-        isTaxable: true,
-        isNetPrice: false,
-        currencyCode: 'CHF',
-        countryCode: 'CH',
-      },
-      {
-        amount: 5000000,
-        maxQuantity: 5,
-        isTaxable: true,
-        isNetPrice: false,
-        currencyCode: 'CHF',
-        countryCode: 'CH',
-      },
-    ],
-  },
-};
-
 export const ProxyProduct = {
   _id: 'proxy-product',
   created: new Date('2021-02-24T14:02:42.208Z'),
   type: 'CONFIGURABLE_PRODUCT',
   status: 'ACTIVE',
   sequence: 10,
-  slugs: ['configurable-product'],
+  slugs: ['proxy-product'],
   updated: new Date('2021-02-25T20:33:23.191Z'),
   published: new Date('2021-02-24T14:02:51.039Z'),
   proxy: {
@@ -574,13 +543,6 @@ export const ProxyProduct = {
           'text-variant': 'text-variant-a',
         },
         productId: ProxySimpleProduct2._id,
-      },
-      {
-        vector: {
-          'color-variant': 'color-variant-red',
-          'text-variant': 'text-variant-b',
-        },
-        productId: ProxySimpleProduct3._id,
       },
       {
         vector: {
@@ -604,7 +566,6 @@ export default async function seedProducts(db) {
       ConfigurableProduct,
       ProxySimpleProduct1,
       ProxySimpleProduct2,
-      ProxySimpleProduct3,
       ProxyPlanProduct1,
       ProxyPlanProduct2,
       ProxyPlanProduct3,

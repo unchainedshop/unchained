@@ -428,43 +428,52 @@ export const configureProductsModule = async ({
      */
 
     assignments: {
-      addProxyAssignment: async (
-        productId: string,
-        { proxyId, vectors }: { proxyId: string; vectors: ProductConfiguration[] },
-      ): Promise<string> => {
-        const vector = {};
-        vectors.forEach(({ key, value }) => {
-          vector[key] = value;
-        });
-        // Check if a similar vector assignment already exists
-        const existingAssignment = await Products.findOne({
-          _id: proxyId,
-          'proxy.assignments.vector': vector,
-        });
-
-        if (existingAssignment) return;
+      addProxyAssignment: async ({
+        productId,
+        proxyId,
+        vectors,
+      }: {
+        productId: string;
+        proxyId: string;
+        vectors: ProductConfiguration[];
+      }): Promise<boolean> => {
+        const assignment = {
+          vector: Object.fromEntries(vectors.map(({ key, value }) => [key, value])),
+          productId,
+        };
 
         const modifier = {
           $set: {
             updated: new Date(),
           },
           $push: {
-            'proxy.assignments': {
-              vector,
-              productId,
-            },
+            'proxy.assignments': assignment,
           },
         };
 
-        await Products.updateOne(generateDbFilterById(proxyId), modifier);
+        const updated = await Products.updateOne(
+          generateDbFilterById(proxyId, {
+            'proxy.assignments': {
+              $not: {
+                $elemMatch: {
+                  vector: assignment.vector,
+                },
+              },
+            },
+          }),
+          modifier,
+        );
 
-        await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+        if (updated.modifiedCount > 0) {
+          await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+          return true;
+        }
 
-        return proxyId;
+        return false;
       },
 
       removeAssignment: async (
-        proxyId: string,
+        productId: string,
         { vectors }: { vectors: ProductConfiguration[] },
       ): Promise<number> => {
         const vector = {};
@@ -481,9 +490,9 @@ export const configureProductsModule = async ({
             },
           },
         };
-        await Products.updateOne(generateDbFilterById(proxyId), modifier);
+        await Products.updateOne(generateDbFilterById(productId), modifier);
 
-        await emit('PRODUCT_REMOVE_ASSIGNMENT', { proxyId, vectors });
+        await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId, vectors });
 
         return vectors.length;
       },
