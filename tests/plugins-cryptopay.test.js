@@ -140,7 +140,7 @@ test.describe('Plugins: Cryptopay', () => {
     await disconnect();
   });
 
-  test.only('Derive address for first order', async () => {
+  test('Derive address for first order', async () => {
     const { data } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {

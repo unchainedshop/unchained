@@ -96,7 +96,7 @@ test.describe('Product: Assignments', async () => {
       });
     });
     test('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
-      const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin({
+      const { data = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
             $proxyId: ID!
@@ -165,7 +165,8 @@ test.describe('Product: Assignments', async () => {
         },
       });
 
-      assert.deepStrictEqual(addProductAssignment.products?.[0], {
+      console.log(data);
+      assert.deepStrictEqual(data?.addProductAssignment.products?.[0], {
         _id: SimpleProduct._id,
       });
     });
