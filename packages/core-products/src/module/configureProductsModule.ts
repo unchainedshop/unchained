@@ -465,7 +465,7 @@ export const configureProductsModule = async ({
 
       removeAssignment: async (
         proxyId: string,
-        { vectors, productId }: { vectors: ProductConfiguration[]; productId: string },
+        { vectors }: { vectors: ProductConfiguration[]; productId: string },
       ): Promise<number> => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
@@ -481,11 +481,9 @@ export const configureProductsModule = async ({
             },
           },
         };
-        if (productId) modifier.$pull['proxy.assignments']['productId'] = productId;
-
         await Products.updateOne(generateDbFilterById(proxyId), modifier);
 
-        await emit('PRODUCT_REMOVE_ASSIGNMENT', { proxyId, productId });
+        await emit('PRODUCT_REMOVE_ASSIGNMENT', { proxyId, vectors });
 
         return vectors.length;
       },
