@@ -1,4 +1,3 @@
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Modules } from '../modules.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
 import { Product } from '@unchainedshop/core-products';

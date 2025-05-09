@@ -13,7 +13,7 @@ export const OrderPaymentCard = {
     });
   },
 
-  async discounts(obj: OrderPayment, _: never, { loaders }: Context) {    
+  async discounts(obj: OrderPayment, _: never, { loaders }: Context) {
     const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     const pricing = PaymentPricingSheet({
       calculation: obj.calculation,

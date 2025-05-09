@@ -14,7 +14,7 @@ export const OrderPaymentInvoice = {
   },
 
   async discounts(obj: OrderPayment, _: never, { loaders }: Context) {
-    const order = await loaders.orderLoader.load({ orderId: obj.orderId })
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     const pricing = PaymentPricingSheet({
       calculation: obj.calculation,
       currencyCode: order.currencyCode,

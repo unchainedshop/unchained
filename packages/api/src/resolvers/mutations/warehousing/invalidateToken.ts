@@ -27,7 +27,9 @@ export default async function invalidateToken(
   const product = await modules.products.findProduct({ productId: token.productId });
   if (!product) throw new ProductNotFoundError({ productId: token.productId });
 
-  const virtualProviders = (await context.modules.warehousing.allProviders()).filter(({ type }) => type === WarehousingProviderType.VIRTUAL);
+  const virtualProviders = (await context.modules.warehousing.allProviders()).filter(
+    ({ type }) => type === WarehousingProviderType.VIRTUAL,
+  );
 
   const isInvalidateable = await WarehousingDirector.isInvalidateable(
     virtualProviders,

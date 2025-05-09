@@ -7,7 +7,9 @@ export async function ercMetadataService(
   this: Modules,
   { product, token, locale }: { product: Product; token: TokenSurrogate; locale: Intl.Locale },
 ) {
-  const virtualProviders = (await this.warehousing.allProviders()).filter(({ type }) => type === WarehousingProviderType.VIRTUAL);
+  const virtualProviders = (await this.warehousing.allProviders()).filter(
+    ({ type }) => type === WarehousingProviderType.VIRTUAL,
+  );
 
   return await WarehousingDirector.tokenMetadata(
     virtualProviders,

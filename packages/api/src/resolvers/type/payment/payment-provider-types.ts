@@ -30,7 +30,7 @@ export const PaymentProvider = {
   ) {
     const { loaders, countryCode, user } = requestContext;
 
-    const order = await loaders.orderLoader.load({ orderId })
+    const order = await loaders.orderLoader.load({ orderId });
     const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
     const pricingContext = {
       countryCode,

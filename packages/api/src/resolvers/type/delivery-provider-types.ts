@@ -25,7 +25,12 @@ export const DeliveryProvider = {
 
   async simulatedPrice(
     deliveryProvider: DeliveryProviderType,
-    { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext }: {
+    {
+      currencyCode: forcedCurrencyCode,
+      orderId,
+      useNetPrice,
+      context: providerContext,
+    }: {
       currencyCode?: string;
       orderId: string;
       useNetPrice?: boolean;

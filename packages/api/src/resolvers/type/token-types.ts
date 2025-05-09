@@ -46,7 +46,9 @@ export const Token = {
     const { loaders } = context;
     const product = await loaders.productLoader.load({ productId: token.productId });
 
-    const virtualProviders = (await context.modules.warehousing.allProviders()).filter(({ type }) => type === WarehousingProviderType.VIRTUAL);
+    const virtualProviders = (await context.modules.warehousing.allProviders()).filter(
+      ({ type }) => type === WarehousingProviderType.VIRTUAL,
+    );
 
     const isInvalidateable = await WarehousingDirector.isInvalidateable(
       virtualProviders,

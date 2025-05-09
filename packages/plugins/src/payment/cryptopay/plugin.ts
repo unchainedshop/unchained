@@ -18,25 +18,24 @@ const logger = createLogger('unchained:core-payment:cryptopay');
 const { CRYPTOPAY_SECRET, CRYPTOPAY_BTC_XPUB, CRYPTOPAY_ETH_XPUB } = process.env;
 
 function getChecksumAddress(address) {
-    const chars = address.split("");
-    const expanded = new Uint8Array(40);
-    for (let i = 0; i < 40; i++) {
-        expanded[i] = chars[i].charCodeAt(0);
-    }
-    const hashed = keccak_256(expanded);
+  const chars = address.split('');
+  const expanded = new Uint8Array(40);
+  for (let i = 0; i < 40; i++) {
+    expanded[i] = chars[i].charCodeAt(0);
+  }
+  const hashed = keccak_256(expanded);
 
-    for (let i = 0; i < 40; i += 2) {
-        if ((hashed[i >> 1] >> 4) >= 8) {
-            chars[i] = chars[i].toUpperCase();
-        }
-        if ((hashed[i >> 1] & 0x0f) >= 8) {
-            chars[i + 1] = chars[i + 1].toUpperCase();
-        }
+  for (let i = 0; i < 40; i += 2) {
+    if (hashed[i >> 1] >> 4 >= 8) {
+      chars[i] = chars[i].toUpperCase();
     }
+    if ((hashed[i >> 1] & 0x0f) >= 8) {
+      chars[i + 1] = chars[i + 1].toUpperCase();
+    }
+  }
 
-    return "0x" + chars.join("");
+  return '0x' + chars.join('');
 }
-
 
 const resolvePath = (prefix) => {
   if (prefix === 'x') return `m/44'/0'`;
@@ -196,8 +195,10 @@ const Cryptopay: IPaymentAdapter = {
           const child = hardenedMaster.derive(`m/0/${ethDerivationNumber}`);
 
           // ETH Address (secp256k1 + keccak_256 + checksum)
-          const childSigningKey = secp256k1.ProjectivePoint.fromHex(child.publicKey).toRawBytes(false)
-          const address = Buffer.from(keccak_256(childSigningKey.slice(1))).toString('hex').substring(24);
+          const childSigningKey = secp256k1.ProjectivePoint.fromHex(child.publicKey).toRawBytes(false);
+          const address = Buffer.from(keccak_256(childSigningKey.slice(1)))
+            .toString('hex')
+            .substring(24);
 
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.ETH,

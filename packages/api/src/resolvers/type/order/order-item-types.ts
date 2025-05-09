@@ -20,7 +20,6 @@ const getPricingSheet = async (orderPosition: OrderPosition, { loaders }: Contex
 };
 
 export const OrderItem = {
-  
   async discounts(orderPosition: OrderPosition, _, context: Context): Promise<OrderPositionDiscount[]> {
     const pricing = await getPricingSheet(orderPosition, context);
 
