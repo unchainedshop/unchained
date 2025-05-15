@@ -2,6 +2,7 @@ import { Db, MongoClient } from 'mongodb';
 
 let zstdEnabled = false;
 let mongod;
+let mongoClient: MongoClient | null;
 
 try {
   // eslint-disable-next-line
@@ -42,17 +43,18 @@ export const startDb = async () => {
 };
 
 export const stopDb = async () => {
+  await mongoClient?.close();
   const mongoInstance = await mongod;
   await (mongoInstance as any)?.stop();
 };
 
 const initDb = async (): Promise<Db> => {
   const url = process.env.MONGO_URL || (await startDb());
-  const client = new MongoClient(url, {
+  mongoClient = new MongoClient(url, {
     compressors: zstdEnabled ? 'zstd' : undefined,
   });
-  await client.connect();
-  const db = client.db();
+  await mongoClient.connect();
+  const db = mongoClient.db();
   return db;
 };
 

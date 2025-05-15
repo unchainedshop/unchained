@@ -1,6 +1,6 @@
 import { startAPIServer, roles, UnchainedServerOptions } from '@unchainedshop/api';
 import { initCore, UnchainedCoreOptions } from '@unchainedshop/core';
-import { initDb, mongodb } from '@unchainedshop/mongodb';
+import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
@@ -10,7 +10,6 @@ import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
 import { IRoleOptionConfig } from '@unchainedshop/roles';
-
 export { MessageTypes };
 
 export type PlatformOptions = {
@@ -109,6 +108,15 @@ export const startPlatform = async ({
     with: { type: 'json' },
   });
   defaultLogger.info(`Unchained Engine running`, { version: packageJson.version });
+
+  process.on('SIGTERM', async () => {
+    defaultLogger.info('Stopping GraphQL server (SIGTERM)');
+    await graphqlHandler.dispose();
+    defaultLogger.info('Stopping DB Connection (SIGTERM)');
+    await stopDb();
+    defaultLogger.info(`Unchained Engine stopped`, { version: packageJson.version });
+    process.exit(0);
+  });
 
   return { unchainedAPI, graphqlHandler, db };
 };
