@@ -12,9 +12,7 @@ export default async function setPassword(
   log(`mutation setPassword ${normalizedUserId}`, { userId });
 
   if (!normalizedUserId) throw new InvalidIdError({ userId: normalizedUserId });
-  if (!params.newPassword) {
-    throw new Error('Password is required');
-  }
+
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 

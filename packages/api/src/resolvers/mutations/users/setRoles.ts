@@ -2,7 +2,7 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, UserNotFoundError } from '../../../errors.js';
 
-export default async function updateUserProfile(
+export default async function setRoles(
   root: never,
   params: { roles: string[]; userId: string },
   { modules, userId }: Context,
