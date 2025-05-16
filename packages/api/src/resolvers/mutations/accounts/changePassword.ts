@@ -5,19 +5,12 @@ import { Context } from '../../../context.js';
 export default async function changePassword(
   root: never,
   params: {
-    oldPassword?: string;
-    newPassword?: string;
+    oldPassword: string;
+    newPassword: string;
   },
   { modules, userId }: Context,
 ) {
   log('mutation changePassword', { userId });
-
-  if (!params.newPassword) {
-    throw new Error('New password is required');
-  }
-  if (!params.oldPassword) {
-    throw new Error('Old password is required');
-  }
 
   const user = await modules.users.findUserById(userId);
 

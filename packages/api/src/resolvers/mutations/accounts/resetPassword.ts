@@ -4,16 +4,12 @@ import { Context } from '../../../context.js';
 
 export default async function resetPassword(
   root: never,
-  params: { newPassword?: string; token: string },
+  params: { newPassword: string; token: string },
   context: Context,
 ) {
   const { modules, userId } = context;
 
   log('mutation resetPassword', { userId });
-
-  if (!params.newPassword) {
-    throw new Error('Password is required');
-  }
 
   try {
     let user = await modules.users.resetPassword(params.token, params.newPassword);
