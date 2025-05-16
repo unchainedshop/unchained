@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-minimal",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "3.1.7",
+  "version": "3.1.10",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
