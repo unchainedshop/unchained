@@ -40,7 +40,7 @@ export default [
       """
       Change the current user's password. Must be logged in.
       """
-      changePassword(oldPassword: String, newPassword: String): SuccessResponse
+      changePassword(oldPassword: String!, newPassword: String!): SuccessResponse
 
       """
       Request a forgot password email.
@@ -50,7 +50,7 @@ export default [
       """
       Reset the password for a user using a token received in email. Logs the user in afterwards.
       """
-      resetPassword(newPassword: String, token: String!): LoginMethodResponse
+      resetPassword(newPassword: String!, token: String!): LoginMethodResponse
 
       """
       Log the user out.
