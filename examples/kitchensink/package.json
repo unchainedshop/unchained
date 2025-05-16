@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-kitchensink",
   "description": "Kitchensink for Unchained Engine (Fastify)",
   "private": true,
-  "version": "3.1.10",
+  "version": "3.1.11",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
