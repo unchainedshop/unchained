@@ -2,6 +2,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.js';
 
+/* eslint-disable no-useless-escape */
+
 describe('Insensitive Trimmed Regex Operator', () => {
   it('should accept + mails', () => {
     const input = 'test+test@test.com';
