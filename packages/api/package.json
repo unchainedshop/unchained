@@ -71,6 +71,7 @@
     }
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.4",
     "@unchainedshop/core": "^4.0.0-rc.2",
     "@unchainedshop/events": "^4.0.0-rc.2",
     "@unchainedshop/logger": "^4.0.0-rc.2",

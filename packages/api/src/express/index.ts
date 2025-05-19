@@ -1,7 +1,4 @@
 import e from 'express';
-import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
-import createBulkImportMiddleware from './createBulkImportMiddleware.js';
-import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { Passport } from 'passport';
@@ -9,8 +6,13 @@ import { YogaServerInstance } from 'graphql-yoga';
 import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
-import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';
+
+import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
+import createBulkImportMiddleware from './createBulkImportMiddleware.js';
+import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
+import createMCPMiddleware from './createMCPMiddleware.js';
+import { API_EVENTS } from '../events.js';
 
 const resolveUserRemoteAddress = (req: e.Request) => {
   const remoteAddress =
@@ -26,6 +28,7 @@ const resolveUserRemoteAddress = (req: e.Request) => {
 const {
   BULK_IMPORT_API_PATH = '/bulk-import',
   ERC_METADATA_API_PATH = '/erc-metadata',
+  MCP_API_PATH = '/mcp',
   GRAPHQL_API_PATH = '/graphql',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
@@ -189,4 +192,7 @@ export const connect = (
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
+
+  expressApp.use(MCP_API_PATH, e.json());
+  expressApp.use(MCP_API_PATH, createMCPMiddleware);
 };
