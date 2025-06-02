@@ -228,9 +228,9 @@ test.describe('Auth for anonymous users', () => {
 
       const token = event.payload.token;
 
-      const { data: { resetPassword } = {} } = await graphqlFetch({
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation resetPassword($newPassword: String, $token: String!) {
+          mutation resetPassword($newPassword: String!, $token: String!) {
             resetPassword(newPassword: $newPassword, token: $token) {
               _id
               user {
@@ -244,7 +244,7 @@ test.describe('Auth for anonymous users', () => {
           token,
         },
       });
-      assert.partialDeepStrictEqual(resetPassword, {
+      assert.partialDeepStrictEqual(data?.resetPassword, {
         user: {
           _id: 'userthatforgetspasswords',
         },
