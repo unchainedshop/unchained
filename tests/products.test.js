@@ -33,6 +33,108 @@ test.describe('Products', () => {
     await disconnect();
   });
 
+  test.describe('query.productsCount for admin user should', () => {
+    test('return total number of products when no argument is passed', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
+          }
+        `,
+        variables: {},
+      });
+
+      assert.strictEqual(productsCount, 10);
+    });
+
+    test('return only total number of products that include a slug', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
+          }
+        `,
+        variables: {
+          slugs: ['old-slug-de'],
+        },
+      });
+
+      assert.strictEqual(productsCount, 3);
+    });
+
+    test('return only total number of products that include the tags specified', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
+          }
+        `,
+        variables: {
+          tags: ['tag-1'],
+        },
+      });
+
+      assert.strictEqual(productsCount, 3);
+    });
+
+    test('include draft products if includeDrafts argument is passed as true', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
+          }
+        `,
+        variables: {
+          includeDrafts: true,
+        },
+      });
+
+      assert.strictEqual(productsCount, 12);
+    });
+  });
+
+  test.describe('query.productsCount for anonymous user should', () => {
+    test('return total number of products when no argument is passed', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
+          }
+        `,
+        variables: {},
+      });
+
+      assert.strictEqual(productsCount, 10);
+    });
+  });
+
+  test.describe('query.productsCount for normal user should', () => {
+    test('return total number of products when no argument is passed', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
+          }
+        `,
+        variables: {},
+      });
+
+      assert.strictEqual(productsCount, 10);
+    });
+  });
+
   test.describe('Mutation.createProduct', () => {
     test('create a new product', async () => {
       const result = await graphqlFetchAsAdmin({
@@ -1235,108 +1337,6 @@ test.describe('Products', () => {
 
       assert.strictEqual(products.length, 10);
       assert.notStrictEqual(products.filter((p) => p.status === 'DRAFT').length, 0);
-    });
-  });
-
-  test.describe('query.productsCount for admin user should', () => {
-    test('return total number of products when no argument is passed', async () => {
-      const {
-        data: { productsCount },
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
-            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
-          }
-        `,
-        variables: {},
-      });
-
-      assert.strictEqual(productsCount, 11);
-    });
-
-    test('return only total number of products that include a slug', async () => {
-      const {
-        data: { productsCount },
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
-            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
-          }
-        `,
-        variables: {
-          slugs: ['old-slug-de'],
-        },
-      });
-
-      assert.strictEqual(productsCount, 3);
-    });
-
-    test('return only total number of products that include the tags specified', async () => {
-      const {
-        data: { productsCount },
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
-            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
-          }
-        `,
-        variables: {
-          tags: ['tag-1'],
-        },
-      });
-
-      assert.strictEqual(productsCount, 3);
-    });
-
-    test('include draft products if includeDrafts argument is passed as true', async () => {
-      const {
-        data: { productsCount },
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
-            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
-          }
-        `,
-        variables: {
-          includeDrafts: true,
-        },
-      });
-
-      assert.strictEqual(productsCount, 13);
-    });
-  });
-
-  test.describe('query.productsCount for anonymous user should', () => {
-    test('return total number of products when no argument is passed', async () => {
-      const {
-        data: { productsCount },
-      } = await graphqlFetchAsAnonymousUser({
-        query: /* GraphQL */ `
-          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
-            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
-          }
-        `,
-        variables: {},
-      });
-
-      assert.strictEqual(productsCount, 11);
-    });
-  });
-
-  test.describe('query.productsCount for normal user should', () => {
-    test('return total number of products when no argument is passed', async () => {
-      const {
-        data: { productsCount },
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
-            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
-          }
-        `,
-        variables: {},
-      });
-
-      assert.strictEqual(productsCount, 11);
     });
   });
 
