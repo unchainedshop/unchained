@@ -129,16 +129,13 @@ const AppleIAP: IPaymentAdapter = {
         if (!isMatchesTransaction)
           throw new Error('Apple IAP Plugin: Product in order does not match transaction');
 
-        logger.warn('Apple IAP Plugin: Transaction find', { transactionIdentifier });
         const alreadyProcessedTransaction =
           await modules.appleTransactions.findTransactionById(transactionIdentifier);
 
-        logger.warn('Apple IAP Plugin: Transaction found', { alreadyProcessedTransaction });
         if (alreadyProcessedTransaction)
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
-        logger.warn('Apple IAP Plugin: Transaction create', { transactionIdentifier });
         await modules.appleTransactions.createTransaction({
           _id: transactionIdentifier,
           matchedTransaction,
