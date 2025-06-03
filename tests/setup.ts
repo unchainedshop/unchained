@@ -38,7 +38,7 @@ const startAndWaitForApp = async () => {
           APPLE_IAP_SHARED_SECRET: '71c41914012b4ad7be859f6c26432298',
           CRYPTOPAY_SECRET: 'secret',
           CRYPTOPAY_BTC_XPUB:
-            'tpubDDsGg7jiaNfukcctBwCogVUqdfU7p7X4Uoge2FNCk64YD6THTBxdGahRuAq9uuJxFErJuihg7RdgbG3YHW5AgT17f7m6MAQjauiUAPJytQG',
+            'zpub6qpRm6gMdkrXvVKw7qgayHnqJGJkpE4rnYQdyJfZW87ed4Fk6HjVaThN12hv2rrL3EzfvvBW6ZpbMEe5UxZYEjhgeMigyvAbS5LiXPkKrys',
           CRYPTOPAY_ETH_XPUB:
             'xpub6DWGtXnV4tfoCvDZyao1zh4664ZZ7hw2TFgGiKskeAZ1ga2Uen8epiDQzaHYrFkn2X5wf6sbTgpHqsNzaTuGstEhmN2nR2szqGyoWuiYHrf',
           SAFERPAY_CUSTOMER_ID: '274656',

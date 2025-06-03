@@ -148,6 +148,8 @@ const Cryptopay: IPaymentAdapter = {
 
       sign: async () => {
         const { orderPayment, order } = context;
+        if (!orderPayment)
+          throw new Error('Payment Credential Registration is not yet supported for Cryptopay');
 
         const existingAddresses = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
           orderPayment._id,
@@ -169,20 +171,41 @@ const Cryptopay: IPaymentAdapter = {
 
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
-          const derivationPath = resolvePath(CRYPTOPAY_BTC_XPUB.slice(0, 1));
-          const hardenedMaster = HDKey.fromExtendedKey(CRYPTOPAY_BTC_XPUB);
+          const prefix = CRYPTOPAY_BTC_XPUB.slice(0, 1);
+          if (prefix !== 'z' && prefix !== 'v')
+            throw new Error(
+              'Cryptopay only supports native segwit (zpub/vpub) extended key format for BTC',
+            );
+
+          const hardenedMaster = HDKey.fromExtendedKey(
+            CRYPTOPAY_BTC_XPUB,
+            prefix === 'z'
+              ? {
+                  public: 0x04b24746, // zpub public
+                  private: 0x04b2430c, // zpriv private
+                }
+              : {
+                  public: 0x045f1cf6,
+                  private: 0x045f18bc,
+                },
+          );
           hardenedMaster.wipePrivateData(); // Neuter
 
           const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.BTC,
           );
-          const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`); // TODO: Test if works
-          const network = resolveNetwork(CRYPTOPAY_BTC_XPUB.slice(0, 1));
-          const address = p2wpkh(child.publicKey /* hex.decode( as string)*/, network).address;
+          const child = hardenedMaster.deriveChild(0).deriveChild(btcDerivationNumber);
+
+          // We don't need this AFAIK:
+          // const derivationPath = resolvePath(prefix);
+          // const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`);
+
+          const network = resolveNetwork(prefix);
+          const pubKey = p2wpkh(child.publicKey /* hex.decode( as string)*/, network);
 
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.BTC,
-            address,
+            address: pubKey.address,
           });
         }
         if (CRYPTOPAY_ETH_XPUB) {
@@ -192,7 +215,7 @@ const Cryptopay: IPaymentAdapter = {
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
           );
-          const child = hardenedMaster.derive(`m/0/${ethDerivationNumber}`);
+          const child = hardenedMaster.deriveChild(0).deriveChild(ethDerivationNumber);
 
           // ETH Address (secp256k1 + keccak_256 + checksum)
           const childSigningKey = secp256k1.ProjectivePoint.fromHex(child.publicKey).toRawBytes(false);
