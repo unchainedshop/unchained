@@ -37,15 +37,15 @@ function getChecksumAddress(address) {
   return '0x' + chars.join('');
 }
 
-const resolvePath = (prefix) => {
-  if (prefix === 'x') return `m/44'/0'`;
-  if (prefix === 'y') return `m/49'/0'`;
-  if (prefix === 'z') return `m/84'/0'`;
-  if (prefix === 't') return `m/44'/1'`;
-  if (prefix === 'u') return `m/49'/1'`;
-  if (prefix === 'v') return `m/84'/1'`;
-  return `m`;
-};
+// const resolvePath = (prefix) => {
+//   if (prefix === 'x') return `m/44'/0'`;
+//   if (prefix === 'y') return `m/49'/0'`;
+//   if (prefix === 'z') return `m/84'/0'`;
+//   if (prefix === 't') return `m/44'/1'`;
+//   if (prefix === 'u') return `m/49'/1'`;
+//   if (prefix === 'v') return `m/84'/1'`;
+//   return `m`;
+// };
 
 const resolveNetwork = (prefix) => {
   if (['x', 'y', 'z'].includes(prefix)) return NETWORK;
