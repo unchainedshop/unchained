@@ -8,5 +8,6 @@
 docs
 node_modules
 
-examples/kitchensink/lib
+examples/*/lib
+examples/*/.db
 packages/*/lib
