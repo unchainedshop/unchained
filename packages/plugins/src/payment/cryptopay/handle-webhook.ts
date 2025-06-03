@@ -42,12 +42,13 @@ export default async function handleWebhook(
   const { modules, services } = context;
 
   if (secret !== CRYPTOPAY_SECRET) {
-    logger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
+    logger.warn(`webhook called with invalid secret`);
     throw new Error('Secret invalid');
   }
 
   if (wallet) {
     const { address, blockHeight, amount, contract, decimals, currencyCode } = wallet;
+    logger.debug('webhook received wallet data', wallet);
     const { orderPaymentId } = await modules.cryptopay.updateWalletAddress({
       address,
       blockHeight,
@@ -56,6 +57,7 @@ export default async function handleWebhook(
       decimals,
       currencyCode,
     });
+
     const orderPayment =
       orderPaymentId &&
       (await modules.orders.payments.findOrderPayment({
@@ -77,6 +79,7 @@ export default async function handleWebhook(
   }
 
   if (price) {
+    logger.debug('webhook received price data', price);
     const { baseCurrency, token, rate, timestamp } = price;
 
     const timestampDate = new Date(timestamp);
@@ -89,11 +92,11 @@ export default async function handleWebhook(
       expiresAt,
       timestamp: timestampDate,
     };
-    logger.info(`update rate ${JSON.stringify(price)}, ${JSON.stringify(rateData)}`);
     await modules.products.prices.rates.updateRates([rateData]);
   }
 
   if (ping) {
+    logger.debug('webhook received ping data', ping);
     const { blockHeight, currencyCode } = ping;
     await modules.cryptopay.updateMostRecentBlock(currencyCode, blockHeight);
   }

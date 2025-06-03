@@ -1,5 +1,8 @@
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { createLogger } from '@unchainedshop/logger';
 import handleWebhook from './handle-webhook.js';
+
+const logger = createLogger('unchained:core-payment:cryptopay');
+import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const cryptopayHandler: RouteHandlerMethod = async (
   req: FastifyRequest & {
@@ -12,6 +15,7 @@ const cryptopayHandler: RouteHandlerMethod = async (
     reply.status(200);
     return reply.send({ success: true });
   } catch (e) {
+    logger.error(e);
     reply.status(500);
     return reply.send({ success: false, error: e.message });
   }

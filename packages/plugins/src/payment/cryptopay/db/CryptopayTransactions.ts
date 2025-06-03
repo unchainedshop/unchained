@@ -8,7 +8,6 @@ export type CryptopayTransaction = {
   amount: mongodb.Decimal128;
   currencyCode: string;
   decimals: number;
-  contract: string;
   orderPaymentId?: string;
 } & TimestampFields;
 

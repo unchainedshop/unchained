@@ -10,6 +10,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { CryptopayModule } from './module.js';
 import deriveBtcAddress from './derive-btc-address.js';
 import deriveEthAddress from './derive-eth-address.js';
+import denoteAmount from './denote-amount.js';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 
@@ -67,16 +68,14 @@ const Cryptopay: IPaymentAdapter = {
       orderPaymentId: string,
       cryptoAddresses: CryptopayAddress[],
     ) => {
-      return Promise.all(
-        cryptoAddresses.map(async ({ address, currencyCode }) =>
-          modules.cryptopay.mapOrderPaymentToWalletAddress({
-            address,
-            contract: null,
-            currencyCode,
-            orderPaymentId,
-          }),
-        ),
-      );
+      for (const cryptoAddress of cryptoAddresses) {
+        const { address, currencyCode } = cryptoAddress;
+        await modules.cryptopay.mapOrderPaymentToWalletAddress({
+          address,
+          currencyCode,
+          orderPaymentId,
+        });
+      }
     };
 
     const adapterActions = {
@@ -193,9 +192,10 @@ const Cryptopay: IPaymentAdapter = {
             order.confirmed || new Date(),
           );
 
-          const convertedAmount =
-            BigInt(walletForOrderPayment.amount.toString()) /
-            10n ** (BigInt(walletForOrderPayment.decimals) - 9n);
+          const convertedAmount = denoteAmount(
+            walletForOrderPayment.amount.toString(),
+            walletForOrderPayment.decimals,
+          );
 
           // Add a Promille 🍻
           // const minAmount = parseFloat(convertedAmount.toString()) * min * 0.999;
@@ -213,10 +213,10 @@ const Cryptopay: IPaymentAdapter = {
         }
 
         if (walletForOrderPayment) {
-          // Hack: Downgrade to 8 decimals
-          const convertedAmount =
-            BigInt(walletForOrderPayment.amount.toString()) /
-            10n ** (BigInt(walletForOrderPayment.decimals) - 9n); // All crypto native prices denoted with 8 decimals
+          const convertedAmount = denoteAmount(
+            walletForOrderPayment.amount.toString(),
+            walletForOrderPayment.decimals,
+          );
 
           if (convertedAmount && convertedAmount >= totalAmount) {
             return {

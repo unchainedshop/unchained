@@ -4,8 +4,9 @@ import { CryptopayTransaction, CryptopayTransactionsCollection } from './db/Cryp
 const configureCryptopayModule = ({ db }) => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
-  const getWalletAddress = async (address: string): Promise<CryptopayTransaction> => {
-    return CryptoTransactions.findOne({ _id: address });
+  const getWalletAddress = async (address: string, contract?: string): Promise<CryptopayTransaction> => {
+    const addressId = [address, contract].filter(Boolean).join(':');
+    return CryptoTransactions.findOne({ _id: addressId });
   };
 
   const updateMostRecentBlock = async (currencyCode: string, blockHeight: number): Promise<void> => {
@@ -28,20 +29,20 @@ const configureCryptopayModule = ({ db }) => {
     orderPaymentId,
   }: {
     address: string;
-    contract: string;
+    contract?: string;
     currencyCode: string;
     orderPaymentId: string;
   }): Promise<CryptopayTransaction> => {
+    const addressId = [address, contract].filter(Boolean).join(':');
+
     return CryptoTransactions.findOneAndUpdate(
       {
-        _id: address,
+        _id: addressId,
       },
       {
         $setOnInsert: {
-          _id: address,
-          contract,
+          _id: addressId,
           currencyCode,
-          decimals: null,
           mostRecentBlockHeight: 0,
           blockHeight: 0,
           amount: mongodb.Decimal128.fromString('0'),
@@ -85,27 +86,27 @@ const configureCryptopayModule = ({ db }) => {
   }: {
     address: string;
     blockHeight: number;
-    amount: string;
-    contract: string;
+    amount: string | number;
+    contract?: string;
     currencyCode: string;
     decimals: number;
   }): Promise<CryptopayTransaction> => {
+    const addressId = [address, contract].filter(Boolean).join(':');
     return CryptoTransactions.findOneAndUpdate(
       {
-        _id: address,
+        _id: addressId,
       },
       {
         $setOnInsert: {
-          _id: address,
-          currencyCode,
-          contract,
+          _id: addressId,
           created: new Date(),
         },
         $set: {
+          currencyCode,
           decimals,
           blockHeight,
           mostRecentBlockHeight: blockHeight,
-          amount: mongodb.Decimal128.fromString(amount),
+          amount: mongodb.Decimal128.fromString(typeof amount === 'number' ? `${amount}` : amount),
           updated: new Date(),
         },
       },
