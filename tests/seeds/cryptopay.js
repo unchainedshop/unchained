@@ -22,9 +22,9 @@ export const SHIBCurrency = {
 
 export const BTC_DERIVATIONS = [
   'bc1qspcam3ntdpvhgz4vnxfdhas6qr8hf8tjfaz5p4',
-  'mkJv2TAA6LkW71id8Px9Un2Mwi77CE2jvs',
+  'bc1qd0a7znq3pz3sc4armthddkyam57ey7qjc4v6vn',
 ];
 export const ETH_DERIVATIONS = [
-  '0xaC39b311DCEb2A4b2f5d8461c1cdaF756F4F7Ae9',
-  '0xD7c0Cd9e7d2701c710D64Fc492C7086679BdF7b4',
+  '0x11CF7d607A1Dc45a002592891fF25DAAE6eC7dE9',
+  '0x61663D505e3aB5b61a5344eA2c64b644c08013ea',
 ];

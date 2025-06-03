@@ -58,8 +58,8 @@ const configureCryptopayModule = ({ db }) => {
     return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
-  const getNextDerivationNumber = async (currency: string): Promise<number> => {
-    return (await CryptoTransactions.countDocuments({ currency })) + 1;
+  const getNextDerivationNumber = async (currencyCode: string): Promise<number> => {
+    return (await CryptoTransactions.countDocuments({ currencyCode })) + 1;
   };
 
   const getWalletAddressesByOrderPaymentId = async (
