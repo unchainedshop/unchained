@@ -4,8 +4,8 @@ export interface ProductPriceRate {
   baseCurrency: string;
   quoteCurrency: string;
   rate: number;
-  expiresAt: Date;
-  timestamp: Date;
+  expiresAt?: Date;
+  timestamp?: Date;
 }
 
 export const ProductPriceRates = async (db: mongodb.Db) => {

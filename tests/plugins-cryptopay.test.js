@@ -5,7 +5,13 @@ import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SimpleProduct } from './seeds/products.js';
-import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, SHIBCurrency } from './seeds/cryptopay.js';
+import {
+  BTC_DERIVATIONS,
+  ETH_DERIVATIONS,
+  BTCCurrency,
+  SHIBCurrency,
+  ETHCurrency,
+} from './seeds/cryptopay.js';
 
 test.describe('Plugins: Cryptopay', () => {
   let db;
@@ -21,12 +27,12 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await db.collection('currencies').findOrInsertOne(BTCCurrency);
-
+    await db.collection('currencies').findOrInsertOne(ETHCurrency);
     await db.collection('currencies').findOrInsertOne(SHIBCurrency);
 
     await db.collection('product_rates').findOrInsertOne({
       baseCurrency: 'CHF',
-      quoteCurrency: SHIBCurrency.contractAddress,
+      quoteCurrency: SHIBCurrency.isoCode,
       rate: 0.00002711,
       timestamp: Math.round(Date.now() / 1000),
     });
@@ -91,7 +97,7 @@ test.describe('Plugins: Cryptopay', () => {
       _id: 'cryptopay-order',
       orderNumber: 'cryptopay',
       paymentId: 'cryptopay-payment',
-      currency: 'BTC',
+      currencyCode: 'BTC',
       calculation: [
         {
           category: 'ITEMS',
@@ -153,8 +159,8 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
-      { currency: 'BTC', address: BTC_DERIVATIONS[0] },
-      { currency: 'ETH', address: ETH_DERIVATIONS[0] },
+      { currencyCode: 'BTC', address: BTC_DERIVATIONS[0] },
+      { currencyCode: 'ETH', address: ETH_DERIVATIONS[0] },
     ]);
   });
 
@@ -170,8 +176,8 @@ test.describe('Plugins: Cryptopay', () => {
       },
     });
     assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
-      { currency: 'BTC', address: BTC_DERIVATIONS[1] },
-      { currency: 'ETH', address: ETH_DERIVATIONS[1] },
+      { currencyCode: 'BTC', address: BTC_DERIVATIONS[1] },
+      { currencyCode: 'ETH', address: ETH_DERIVATIONS[1] },
     ]);
   });
 
@@ -187,8 +193,8 @@ test.describe('Plugins: Cryptopay', () => {
       },
     });
     assert.deepStrictEqual(JSON.parse(data?.signPaymentProviderForCheckout), [
-      { currency: 'BTC', address: BTC_DERIVATIONS[0] },
-      { currency: 'ETH', address: ETH_DERIVATIONS[0] },
+      { currencyCode: 'BTC', address: BTC_DERIVATIONS[0] },
+      { currencyCode: 'ETH', address: ETH_DERIVATIONS[0] },
     ]);
   });
 
@@ -199,8 +205,8 @@ test.describe('Plugins: Cryptopay', () => {
       {
         $set: {
           context: [
-            { currency: 'BTC', address: BTC_DERIVATIONS[0] },
-            { currency: 'ETH', address: ETH_DERIVATIONS[0] },
+            { currencyCode: 'BTC', address: BTC_DERIVATIONS[0] },
+            { currencyCode: 'ETH', address: ETH_DERIVATIONS[0] },
           ],
         },
       },
@@ -210,8 +216,8 @@ test.describe('Plugins: Cryptopay', () => {
       {
         $set: {
           context: [
-            { currency: 'BTC', address: BTC_DERIVATIONS[1] },
-            { currency: 'ETH', address: ETH_DERIVATIONS[1] },
+            { currencyCode: 'BTC', address: BTC_DERIVATIONS[1] },
+            { currencyCode: 'ETH', address: ETH_DERIVATIONS[1] },
           ],
         },
       },
@@ -225,7 +231,7 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currency: 'BTC',
+          currencyCode: 'BTC',
           contract: null,
           decimals: 8,
           address: BTC_DERIVATIONS[0],
@@ -246,7 +252,7 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currency: 'BTC',
+          currencyCode: 'BTC',
           contract: null,
           decimals: 8,
           address: BTC_DERIVATIONS[0],
@@ -267,7 +273,7 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currency: 'BTC',
+          currencyCode: 'BTC',
           contract: null,
           decimals: 8,
           address: BTC_DERIVATIONS[0],

@@ -1,9 +1,3 @@
-import { keccak_256 } from '@noble/hashes/sha3';
-import { secp256k1 } from '@noble/curves/secp256k1';
-import { HDKey } from '@scure/bip32';
-import { p2wpkh, NETWORK, TEST_NETWORK } from '@scure/btc-signer';
-import { createLogger } from '@unchainedshop/logger';
-
 import {
   IPaymentAdapter,
   PaymentAdapter,
@@ -11,46 +5,15 @@ import {
   PaymentError,
   OrderPricingSheet,
 } from '@unchainedshop/core';
+import { createLogger } from '@unchainedshop/logger';
+
 import { CryptopayModule } from './module.js';
+import deriveBtcAddress from './derive-btc-address.js';
+import deriveEthAddress from './derive-eth-address.js';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_BTC_XPUB, CRYPTOPAY_ETH_XPUB } = process.env;
-
-function getChecksumAddress(address) {
-  const chars = address.split('');
-  const expanded = new Uint8Array(40);
-  for (let i = 0; i < 40; i++) {
-    expanded[i] = chars[i].charCodeAt(0);
-  }
-  const hashed = keccak_256(expanded);
-
-  for (let i = 0; i < 40; i += 2) {
-    if (hashed[i >> 1] >> 4 >= 8) {
-      chars[i] = chars[i].toUpperCase();
-    }
-    if ((hashed[i >> 1] & 0x0f) >= 8) {
-      chars[i + 1] = chars[i + 1].toUpperCase();
-    }
-  }
-
-  return '0x' + chars.join('');
-}
-
-// const resolvePath = (prefix) => {
-//   if (prefix === 'x') return `m/44'/0'`;
-//   if (prefix === 'y') return `m/49'/0'`;
-//   if (prefix === 'z') return `m/84'/0'`;
-//   if (prefix === 't') return `m/44'/1'`;
-//   if (prefix === 'u') return `m/49'/1'`;
-//   if (prefix === 'v') return `m/84'/1'`;
-//   return `m`;
-// };
-
-const resolveNetwork = (prefix) => {
-  if (['x', 'y', 'z'].includes(prefix)) return NETWORK;
-  return TEST_NETWORK;
-};
 
 enum CryptopayCurrencies {
   BTC = 'BTC',
@@ -171,61 +134,25 @@ const Cryptopay: IPaymentAdapter = {
 
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
-          const prefix = CRYPTOPAY_BTC_XPUB.slice(0, 1);
-          if (prefix !== 'z' && prefix !== 'v')
-            throw new Error(
-              'Cryptopay only supports native segwit (zpub/vpub) extended key format for BTC',
-            );
-
-          const hardenedMaster = HDKey.fromExtendedKey(
-            CRYPTOPAY_BTC_XPUB,
-            prefix === 'z'
-              ? {
-                  public: 0x04b24746, // zpub public
-                  private: 0x04b2430c, // zpriv private
-                }
-              : {
-                  public: 0x045f1cf6,
-                  private: 0x045f18bc,
-                },
-          );
-          hardenedMaster.wipePrivateData(); // Neuter
-
           const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.BTC,
           );
-          const child = hardenedMaster.deriveChild(0).deriveChild(btcDerivationNumber);
 
-          // We don't need this AFAIK:
-          // const derivationPath = resolvePath(prefix);
-          // const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`);
-
-          const network = resolveNetwork(prefix);
-          const pubKey = p2wpkh(child.publicKey /* hex.decode( as string)*/, network);
-
+          const address = deriveBtcAddress(CRYPTOPAY_BTC_XPUB, btcDerivationNumber);
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.BTC,
-            address: pubKey.address,
+            address,
           });
         }
         if (CRYPTOPAY_ETH_XPUB) {
-          const hardenedMaster = HDKey.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
-          hardenedMaster.wipePrivateData(); // Neuter
-
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
           );
-          const child = hardenedMaster.deriveChild(0).deriveChild(ethDerivationNumber);
 
-          // ETH Address (secp256k1 + keccak_256 + checksum)
-          const childSigningKey = secp256k1.ProjectivePoint.fromHex(child.publicKey).toRawBytes(false);
-          const address = Buffer.from(keccak_256(childSigningKey.slice(1)))
-            .toString('hex')
-            .substring(24);
-
+          const address = deriveEthAddress(CRYPTOPAY_ETH_XPUB, ethDerivationNumber);
           cryptoAddresses.push({
             currencyCode: CryptopayCurrencies.ETH,
-            address: getChecksumAddress(address),
+            address,
           });
         }
 
