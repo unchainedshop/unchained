@@ -252,11 +252,13 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currencyCode: 'BTC',
-          contract: null,
-          decimals: 8,
-          address: BTC_DERIVATIONS[0],
-          amount: 5 ** 7,
+          wallet: {
+            currencyCode: 'BTC',
+            contract: null,
+            decimals: 8,
+            address: BTC_DERIVATIONS[0],
+            amount: 5 ** 7,
+          },
           secret: 'secret',
         }),
       });
@@ -273,11 +275,13 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currencyCode: 'BTC',
-          contract: null,
-          decimals: 8,
-          address: BTC_DERIVATIONS[0],
-          amount: 10 ** 7,
+          wallet: {
+            currencyCode: 'BTC',
+            contract: null,
+            decimals: 8,
+            address: BTC_DERIVATIONS[0],
+            amount: 10 ** 7,
+          },
           secret: 'secret',
         }),
       });
@@ -294,11 +298,13 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currency: 'ETH',
-          contract: SHIBCurrency.contractAddress,
-          decimals: 18,
-          address: ETH_DERIVATIONS[1],
-          amount: '1844337882700110748172344', // 50 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          wallet: {
+            currency: 'ETH',
+            contract: SHIBCurrency.contractAddress,
+            decimals: 18,
+            address: ETH_DERIVATIONS[1],
+            amount: '1844337882700110748172344', // 50 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          },
           secret: 'secret',
         }),
       });
@@ -315,11 +321,13 @@ test.describe('Plugins: Cryptopay', () => {
         },
         duplex: 'half',
         body: JSON.stringify({
-          currency: 'ETH',
-          contract: SHIBCurrency.contractAddress,
-          decimals: 18,
-          address: ETH_DERIVATIONS[1],
-          amount: '11857248247879012000000000', // 107.15 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          wallet: {
+            currency: 'ETH',
+            contract: SHIBCurrency.contractAddress,
+            decimals: 18,
+            address: ETH_DERIVATIONS[1],
+            amount: '11857248247879012000000000', // 107.15 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          },
           secret: 'secret',
         }),
       });
