@@ -70,7 +70,7 @@ const Cryptopay: IPaymentAdapter = {
       return Promise.all(
         cryptoAddresses.map(async ({ address, currencyCode }) =>
           modules.cryptopay.mapOrderPaymentToWalletAddress({
-            addressId: address,
+            address,
             contract: null,
             currencyCode,
             orderPaymentId,

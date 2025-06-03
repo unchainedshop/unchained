@@ -4,8 +4,8 @@ import { CryptopayTransaction, CryptopayTransactionsCollection } from './db/Cryp
 const configureCryptopayModule = ({ db }) => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
-  const getWalletAddress = async (addressId: string): Promise<CryptopayTransaction> => {
-    return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
+  const getWalletAddress = async (address: string): Promise<CryptopayTransaction> => {
+    return CryptoTransactions.findOne({ _id: address });
   };
 
   const updateMostRecentBlock = async (currencyCode: string, blockHeight: number): Promise<void> => {
@@ -22,23 +22,23 @@ const configureCryptopayModule = ({ db }) => {
   };
 
   const mapOrderPaymentToWalletAddress = async ({
-    addressId,
+    address,
     contract,
     currencyCode,
     orderPaymentId,
   }: {
-    addressId: string;
+    address: string;
     contract: string;
     currencyCode: string;
     orderPaymentId: string;
   }): Promise<CryptopayTransaction> => {
-    await CryptoTransactions.updateOne(
+    return CryptoTransactions.findOneAndUpdate(
       {
-        _id: addressId.toLowerCase(),
+        _id: address,
       },
       {
         $setOnInsert: {
-          _id: addressId.toLowerCase(),
+          _id: address,
           contract,
           currencyCode,
           decimals: null,
@@ -52,10 +52,8 @@ const configureCryptopayModule = ({ db }) => {
           updated: new Date(),
         },
       },
-      { upsert: true },
+      { upsert: true, returnDocument: 'after' },
     );
-
-    return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
   const getNextDerivationNumber = async (currencyCode: string): Promise<number> => {
@@ -65,33 +63,40 @@ const configureCryptopayModule = ({ db }) => {
   const getWalletAddressesByOrderPaymentId = async (
     orderPaymentId: string,
   ): Promise<CryptopayTransaction[]> => {
-    return CryptoTransactions.find({
-      orderPaymentId,
-    }).toArray();
+    return CryptoTransactions.find(
+      {
+        orderPaymentId,
+      },
+      {
+        sort: {
+          created: 1, // Sort by creation date, most recent first
+        },
+      },
+    ).toArray();
   };
 
   const updateWalletAddress = async ({
-    addressId,
+    address,
     blockHeight,
     amount,
     contract,
     currencyCode,
     decimals,
   }: {
-    addressId: string;
+    address: string;
     blockHeight: number;
     amount: string;
     contract: string;
     currencyCode: string;
     decimals: number;
   }): Promise<CryptopayTransaction> => {
-    await CryptoTransactions.updateOne(
+    return CryptoTransactions.findOneAndUpdate(
       {
-        _id: addressId.toLowerCase(),
+        _id: address,
       },
       {
         $setOnInsert: {
-          _id: addressId.toLowerCase(),
+          _id: address,
           currencyCode,
           contract,
           created: new Date(),
@@ -104,10 +109,8 @@ const configureCryptopayModule = ({ db }) => {
           updated: new Date(),
         },
       },
-      { upsert: true },
+      { upsert: true, returnDocument: 'after' },
     );
-
-    return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
   return {

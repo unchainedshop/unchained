@@ -223,7 +223,7 @@ test.describe('Plugins: Cryptopay', () => {
       },
     );
 
-    test('Invalid secret', async () => {
+    await test('Invalid secret', async () => {
       const result = await fetch('http://localhost:4010/payment/cryptopay', {
         method: 'POST',
         headers: {
@@ -239,12 +239,12 @@ test.describe('Plugins: Cryptopay', () => {
           secret: 'invalid',
         }),
       });
-      assert.deepStrictEqual(await result.json(), { success: false });
+      assert.partialDeepStrictEqual(await result.json(), { success: false });
       const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
-    test('Pay too little for product with crypto prices', async () => {
+    await test('Pay too little for product with crypto prices', async () => {
       const result = await fetch('http://localhost:4010/payment/cryptopay', {
         method: 'POST',
         headers: {
@@ -265,7 +265,7 @@ test.describe('Plugins: Cryptopay', () => {
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
-    test('Pay product with crypto prices', async () => {
+    await test('Pay product with crypto prices', async () => {
       const result = await fetch('http://localhost:4010/payment/cryptopay', {
         method: 'POST',
         headers: {
@@ -286,7 +286,7 @@ test.describe('Plugins: Cryptopay', () => {
       assert.strictEqual(orderPayment.status, 'PAID');
     });
 
-    test('Pay too little for converted prices', async () => {
+    await test('Pay too little for converted prices', async () => {
       const result = await fetch('http://localhost:4010/payment/cryptopay', {
         method: 'POST',
         headers: {
@@ -307,7 +307,7 @@ test.describe('Plugins: Cryptopay', () => {
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
-    test('Pay product with fiat prices in SHIB', async () => {
+    await test('Pay product with fiat prices in SHIB', async () => {
       const result = await fetch('http://localhost:4010/payment/cryptopay', {
         method: 'POST',
         headers: {

@@ -25,7 +25,7 @@ const cryptopayHandler = async (req, res) => {
       if (wallet) {
         const { address, blockHeight, amount, contract, decimals, currencyCode } = wallet;
         const { orderPaymentId } = await modules.cryptopay.updateWalletAddress({
-          addressId: address,
+          address,
           blockHeight,
           amount,
           contract,
