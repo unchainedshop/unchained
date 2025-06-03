@@ -13,6 +13,7 @@ import seedBookmarks from './seeds/bookmark.js';
 import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
 import { GraphQLClient } from 'graphql-request';
+import waitOn from 'wait-on';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -41,7 +42,7 @@ export const setupDatabase = async () => {
   await connect();
   const db = await connection.db('test');
   const collections = await db.collections();
-  await Promise.all(collections.map((collection) => collection.deleteMany({})));
+  await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 
   await seedLocaleData(db);
   await seedUsers(db);
@@ -60,18 +61,11 @@ export const setupDatabase = async () => {
   return [db, connection];
 };
 
-export const wipeDatabase = async () => {
-  await connect();
-  const db = await connection.db('test');
-  const collections = await db.collections();
-  await Promise.all(collections.map((collection) => collection.deleteMany({})));
-};
-
 export const createAnonymousGraphqlFetch = () => {
   return createLoggedInGraphqlFetch(null);
 };
 
-export const createLoggedInGraphqlFetch = (token: string | null = ADMIN_TOKEN) => {
+export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const client = new GraphQLClient('http://localhost:4010/graphql', {
     errorPolicy: 'all',
   });
@@ -109,3 +103,14 @@ export const putFile = async (file, { url, type }) => {
   }
   return Promise.reject(new Error('error'));
 };
+
+export async function globalSetup() {
+  await waitOn({
+    resources: ['tcp:4010'],
+  });
+  await setupDatabase();
+}
+
+export async function globalTeardown() {
+  await disconnect();
+}

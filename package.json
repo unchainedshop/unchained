@@ -22,7 +22,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=24.0.0",
     "npm": ">=10.0.0"
   },
   "workspaces": [
@@ -68,8 +68,8 @@
     "test": "run-p test:*",
     "test:integration": "run-p -r integration-test:*",
     "test:unit": "cd packages && tsx --test",
-    "integration-test:start-engine": "tsx --env-file-if-exists=.env tests/setup.js",
-    "integration-test:run-test": "wait-on tcp:4010 && tsx --env-file-if-exists=.env --no-warnings --test --test-concurrency=1 tests/*.test.*",
+    "integration-test:start-engine": "cd examples/kitchensink && npm run integration-test",
+    "integration-test:run-test": "node --no-warnings --test-global-setup=tests/helpers.js --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",

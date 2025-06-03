@@ -32,7 +32,7 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'TOKEN_INVALIDATED',
 ];
 
-const allProvidersCache = new ExpiryMap(60000);
+const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
 export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   const query = type ? { type, deleted: null } : { deleted: null };

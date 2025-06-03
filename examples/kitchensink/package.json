@@ -30,7 +30,8 @@
     "clean": "tsc -b --clean",
     "build": "tsc -b",
     "start": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
-    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts"
+    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts",
+    "integration-test": "node --no-warnings --env-file .env.defaults --no-warnings --env-file .env.tests --env-file-if-exists=.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

@@ -128,6 +128,16 @@ export const UsersCollection = async (db: mongodb.Db) => {
         sparse: true,
       },
     },
+
+    {
+      index: {
+        'services.token.secret': 1,
+      },
+      options: {
+        sparse: true,
+      },
+    },
+
     !isDocumentDBCompatModeEnabled() && {
       index: {
         _id: 'text',

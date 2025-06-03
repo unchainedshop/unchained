@@ -4,8 +4,8 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
-import { intervalUntilTimeout } from './lib/wait';
+import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
+import { intervalUntilTimeout } from './lib/wait.js';
 import assert from 'node:assert';
 import test from 'node:test';
 

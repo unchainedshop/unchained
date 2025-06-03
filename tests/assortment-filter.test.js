@@ -5,7 +5,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
-} from './helpers';
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentFilters } from './seeds/assortments.js';
 import { MultiChoiceFilter } from './seeds/filters.js';

@@ -16,11 +16,9 @@ export interface UnchainedLocaleContext {
   locale: Intl.Locale;
   currencyCode: string;
 }
-const { NODE_ENV } = process.env;
-
 export type GetHeaderFn = (key: string) => string | string[];
 
-const memoizeCache = new ExpiryMap(NODE_ENV === 'production' ? 1000 * 60 : 100); // Cached values expire after 10 seconds
+const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 1000 * 60 : 1); // Cached values expire after 10 seconds
 
 export const resolveDefaultContext = pMemoize(
   async ({ acceptLang, acceptCountry }, unchainedAPI) => {

@@ -21,7 +21,7 @@ export const buildFindSelector = ({ type }: mongodb.Filter<DeliveryProvider> = {
   return { ...(type ? { type } : {}), deleted: null };
 };
 
-const allProvidersCache = new ExpiryMap(60000);
+const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
 export const configureDeliveryModule = async ({
   db,

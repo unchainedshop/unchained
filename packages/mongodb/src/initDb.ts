@@ -22,11 +22,14 @@ export const startDb = async () => {
     /* */
   }
   mongod = MongoMemoryServer.create({
-    instance: {
-      dbPath: `${process.cwd()}/.db`,
-      storageEngine: 'wiredTiger',
-      port: parseInt(process.env.PORT, 10) + 1,
-    },
+    instance:
+      process.env.NODE_ENV === 'test'
+        ? { dbName: 'test', port: parseInt(process.env.PORT, 10) + 1 }
+        : {
+            dbPath: `${process.cwd()}/.db`,
+            storageEngine: 'wiredTiger',
+            port: parseInt(process.env.PORT, 10) + 1,
+          },
   }).catch((e) => {
     console.log(e);
     // Drop error
@@ -39,7 +42,7 @@ export const startDb = async () => {
       "Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set",
     );
   }
-  return `${mongoInstance.getUri()}unchained`;
+  return `${mongoInstance.getUri()}${process.env.NODE_ENV === 'test' ? 'test' : 'unchained'}`;
 };
 
 export const stopDb = async () => {

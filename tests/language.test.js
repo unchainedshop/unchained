@@ -16,49 +16,47 @@ test.describe('Language', () => {
     await disconnect();
   });
 
-  test.describe('For admin user ', () => {
-    test('Return language search result', async () => {
-      const {
-        data: { languages },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query Languages($queryString: String) {
-            languages(queryString: $queryString) {
-              _id
-              isoCode
-            }
+  test('Return language search result', async () => {
+    const {
+      data: { languages },
+    } = await graphqlFetch({
+      query: /* GraphQL */ `
+        query Languages($queryString: String) {
+          languages(queryString: $queryString) {
+            _id
+            isoCode
           }
-        `,
-        variables: {
-          queryString: 'de',
-        },
-      });
-      assert.strictEqual(languages.length, 1);
-      assert.deepStrictEqual(languages, [
-        {
-          _id: BaseLanguage._id,
-          isoCode: BaseLanguage.isoCode,
-        },
-      ]);
+        }
+      `,
+      variables: {
+        queryString: 'de',
+      },
     });
+    assert.strictEqual(languages.length, 1);
+    assert.deepStrictEqual(languages, [
+      {
+        _id: BaseLanguage._id,
+        isoCode: BaseLanguage.isoCode,
+      },
+    ]);
+  });
 
-    test('Return empty array when no matching search result found', async () => {
-      const {
-        data: { languages },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query Languages($queryString: String) {
-            languages(queryString: $queryString) {
-              _id
-              isoCode
-            }
+  test('Return empty array when no matching search result found', async () => {
+    const {
+      data: { languages },
+    } = await graphqlFetch({
+      query: /* GraphQL */ `
+        query Languages($queryString: String) {
+          languages(queryString: $queryString) {
+            _id
+            isoCode
           }
-        `,
-        variables: {
-          queryString: 'wrong',
-        },
-      });
-      assert.strictEqual(languages.length, 0);
+        }
+      `,
+      variables: {
+        queryString: 'wrong',
+      },
     });
+    assert.strictEqual(languages.length, 0);
   });
 });
