@@ -3,10 +3,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import createMcpServer from '../mcp/index.js';
 import { Request, RequestHandler } from 'express';
-import { createLogger } from '@unchainedshop/logger';
 import { Context } from '../context.js';
-
-const logger = createLogger('unchained:mcp');
 
 // Map to store transports by session ID
 const transports: Record<string, StreamableHTTPServerTransport> = {};
@@ -17,12 +14,6 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
   let transport: StreamableHTTPServerTransport;
-
-  logger.info('Received request', {
-    method: req.method,
-    url: req.url,
-    headers: req.headers,
-  });
 
   if (sessionId && transports[sessionId]) {
     // Reuse existing transport
