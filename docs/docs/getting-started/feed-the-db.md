@@ -108,7 +108,7 @@ Firstly, we will add two new categories which are called _Assortments_ in the Ad
 - (Same here, add a nice category image under `Media`.)
   ![diagram](../assets/assortment-detail-page.png)
 - Select **`Products`** tab.
-- Search for the **(exact)** name of the product you added in [Step 3](#step-3-add-product), select it
+- Search for the **(exact)** name of the product you added before, select it
   and click **`Add Product`** to link the product to the category
 
 ## See your Products in Action
