@@ -47,9 +47,7 @@ export async function searchProductsService(
     };
   }
 
-  const productIds = await searchQuery.productIds;
-  const totalProductIds =
-    (await filterActions.searchProducts({ productIds }, searchConfiguration)) || [];
+  const totalProductIds = (await filterActions.searchProducts(searchQuery, searchConfiguration)) || [];
 
   const filteredProductIds = await FilterDirector.productFacetedSearch(
     totalProductIds,

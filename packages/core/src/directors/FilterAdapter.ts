@@ -33,7 +33,7 @@ export interface FilterAdapterActions {
 
   searchProducts: (
     params: {
-      productIds: string[];
+      productIds?: string[];
     },
     options: {
       filterSelector: mongodb.Filter<Filter>;

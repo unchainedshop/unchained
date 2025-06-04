@@ -178,10 +178,6 @@ export const MultipleBookmarksFound = createError(
   'The convenience bookmark mutation cannot be used because multiple bookmarks were explicitly created with different metadata',
 );
 
-export const QueryStringRequiredError = createError(
-  'QueryStringRequiredError',
-  'Query string is required when no assortments are in scope',
-);
 export const PaymentProviderNotFoundError = createError(
   'PaymentProviderNotFoundError',
   'Payment provider not found',

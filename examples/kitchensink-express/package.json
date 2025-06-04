@@ -31,7 +31,8 @@
     "build": "tsc -b",
     "start": "node --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
     "dev:run": "node --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --no-warnings --loader ts-node/esm src/boot.ts",
-    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts"
+    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts",
+    "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
     "@scure/bip32": "1.7.0",

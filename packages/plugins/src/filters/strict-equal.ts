@@ -12,6 +12,17 @@ const StrictQualFilter: IFilterAdapter = {
     return {
       ...FilterAdapter.actions(params),
 
+      searchProducts: async ({ productIds }) => {
+        // Search Products
+        const { queryString } = params.searchQuery;
+
+        if (!queryString && !productIds) {
+          // If no query string is provided, return all product IDs
+          return params.modules.products.findProductIds({});
+        }
+        return productIds;
+      },
+
       transformProductSelector: async (lastSelector, options) => {
         const { key, value } = options || {};
 
