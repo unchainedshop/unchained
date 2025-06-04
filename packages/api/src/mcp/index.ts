@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
 import { Context } from '../context.js';
+import { listProductsHandler, ListProductsSchema } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
   const server = new McpServer({
@@ -9,32 +9,11 @@ export default function createMcpServer(context: Context) {
   });
 
   server.tool(
-    'hello-world',
-    'Say hello',
-    {
-      name: z.string().describe('Name of the person to greet'),
-    },
-    async ({ name }) => {
-      // Here you would implement the logic for the Unchained tool
-      return {
-        content: [{ type: 'text', text: `Hello ${name}!` }],
-      };
-    },
+    'list_products',
+    'Search and list products with comprehensive filtering and pagination support',
+    ListProductsSchema,
+    async (params) => listProductsHandler(context, params),
   );
-
-  // server.resource('config', 'config://app', async (uri) => {
-  //   return {
-  //     contents: [
-  //       {
-  //         uri: uri.href,
-  //         mimeType: 'application/json',
-  //         text: {
-  //           version: context.version,
-  //         },
-  //       },
-  //     ],
-  //   };
-  // });
 
   return server;
 }

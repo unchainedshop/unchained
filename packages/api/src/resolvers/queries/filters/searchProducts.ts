@@ -1,6 +1,5 @@
 import { log } from '@unchainedshop/logger';
 import { SearchFilterQuery } from '@unchainedshop/core-filters';
-import { QueryStringRequiredError } from '../../../errors.js';
 import { Context } from '../../../context.js';
 
 export default async function searchProducts(
@@ -16,7 +15,6 @@ export default async function searchProducts(
   context: Context,
 ) {
   const { modules, services, userId, locale } = context;
-  const forceLiveCollection = false;
   const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
     query;
 
@@ -25,7 +23,6 @@ export default async function searchProducts(
   if (assortmentId) {
     const productIds = await modules.assortments.findProductIds({
       assortmentId,
-      forceLiveCollection,
       ignoreChildAssortments,
     });
     const filterIds = await modules.assortments.filters.findFilterIds({
@@ -33,14 +30,12 @@ export default async function searchProducts(
     });
     return services.filters.searchProducts(
       { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
-      { forceLiveCollection, locale: locale },
+      { locale: locale },
     );
   }
 
-  if (!queryString) throw new QueryStringRequiredError({});
-
   return services.filters.searchProducts(
     { queryString, includeInactive, filterQuery, ...rest },
-    { forceLiveCollection, locale: locale },
+    { locale: locale },
   );
 }
