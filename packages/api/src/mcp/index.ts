@@ -1,6 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Context } from '../context.js';
-import { listProductsHandler, ListProductsSchema, getProductHandler, GetProductSchema } from './tools/index.js';
+import {
+  listProductsHandler,
+  ListProductsSchema,
+  getProductHandler,
+  GetProductSchema,
+} from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
   const server = new McpServer({
