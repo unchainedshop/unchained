@@ -10,20 +10,6 @@ export default function createMcpServer(context: Context) {
   });
 
   server.tool(
-    'hello-world',
-    'Say hello',
-    {
-      name: z.string().describe('Name of the person to greet'),
-    },
-    async ({ name }) => {
-      // Here you would implement the logic for the Unchained tool
-      return {
-        content: [{ type: 'text', text: `Hello ${name}!` }],
-      };
-    },
-  );
-
-  server.tool(
     'list_products',
     'Search and list products with comprehensive filtering and pagination support',
     {
@@ -32,25 +18,35 @@ export default function createMcpServer(context: Context) {
       tags: z.array(z.string()).optional().describe('Filter by product tags'),
       slugs: z.array(z.string()).optional().describe('Filter by specific product slugs'),
       productIds: z.array(z.string()).optional().describe('Filter by specific product IDs'),
-      filterQuery: z.array(z.object({
-        key: z.string().describe('Filter key'),
-        value: z.string().optional().describe('Filter value')
-      })).optional().describe('Key-value filter pairs'),
+      filterQuery: z
+        .array(
+          z.object({
+            key: z.string().describe('Filter key'),
+            value: z.string().optional().describe('Filter value'),
+          }),
+        )
+        .optional()
+        .describe('Key-value filter pairs'),
       assortmentId: z.string().optional().describe('Filter by assortment'),
       includeDrafts: z.boolean().default(false).describe('Include draft products'),
       includeInactive: z.boolean().default(false).describe('Include inactive products'),
-      
-      // Pagination  
+
+      // Pagination
       limit: z.number().min(1).max(100).default(20).describe('Results per page'),
       offset: z.number().min(0).default(0).describe('Skip results for pagination'),
-      
+
       // Sorting
-      sort: z.array(z.object({
-        key: z.string().describe('Sort field'),
-        value: z.enum(['ASC', 'DESC']).describe('Sort direction')
-      })).optional().describe('Sort options'),
+      sort: z
+        .array(
+          z.object({
+            key: z.string().describe('Sort field'),
+            value: z.enum(['ASC', 'DESC']).describe('Sort direction'),
+          }),
+        )
+        .optional()
+        .describe('Sort options'),
     },
-    async ({ 
+    async ({
       queryString,
       tags,
       slugs,
@@ -61,7 +57,7 @@ export default function createMcpServer(context: Context) {
       includeInactive = false,
       limit = 20,
       offset = 0,
-      sort
+      sort,
     }) => {
       try {
         let filteredProductIds = productIds;
@@ -69,12 +65,12 @@ export default function createMcpServer(context: Context) {
         // If assortmentId is provided, get product IDs from assortment
         if (assortmentId) {
           const assortmentProductIds = await context.modules.assortments.products.findProductIds({
-            assortmentId
+            assortmentId,
           });
-          
+
           if (filteredProductIds) {
             // Intersection of both sets
-            filteredProductIds = filteredProductIds.filter(id => assortmentProductIds.includes(id));
+            filteredProductIds = filteredProductIds.filter((id) => assortmentProductIds.includes(id));
           } else {
             filteredProductIds = assortmentProductIds;
           }
@@ -92,7 +88,7 @@ export default function createMcpServer(context: Context) {
         // Convert sort options to the expected format
         const sortOptions = sort?.map(({ key, value }) => ({
           key,
-          value: value === 'ASC' ? SortDirection.ASC : SortDirection.DESC
+          value: value === 'ASC' ? SortDirection.ASC : SortDirection.DESC,
         }));
 
         let products;
@@ -104,21 +100,21 @@ export default function createMcpServer(context: Context) {
             queryString,
             productIds: filteredProductIds || [],
             includeInactive,
-            filterQuery: filterQuery?.reduce((acc, { key, value }) => {
-              acc[key] = value;
-              return acc;
-            }, {} as Record<string, string>) || {},
+            filterQuery: filterQuery as { key: string; value?: string }[],
           };
 
-          const searchResult = await context.services.searchProducts(searchQuery, { 
-            locale: context.locale 
+          const searchResult = await context.services.filters.searchProducts(searchQuery, {
+            locale: context.locale,
           });
-          
+
           // Get products from search results with pagination
-          const paginatedProductIds = searchResult.aggregatedFilteredProductIds.slice(offset, offset + limit);
+          const paginatedProductIds = searchResult.aggregatedFilteredProductIds.slice(
+            offset,
+            offset + limit,
+          );
           products = await context.modules.products.findProducts({
             productIds: paginatedProductIds,
-            sort: sortOptions
+            sort: sortOptions,
           });
           totalCount = searchResult.aggregatedFilteredProductIds.length;
         } else {
@@ -127,20 +123,32 @@ export default function createMcpServer(context: Context) {
             ...productQuery,
             limit,
             offset,
-            sort: sortOptions
+            sort: sortOptions,
           });
           totalCount = await context.modules.products.count(productQuery);
         }
 
         // Build HTML output
-        const htmlContent = generateProductsHTML(products, { 
-          offset, 
-          limit, 
-          total: totalCount 
+
+        const htmlContent = generateProductsHTML(products, {
+          offset,
+          limit,
+          total: totalCount,
         });
+        console.log(htmlContent);
 
         return {
-          content: [{ type: 'text', text: htmlContent }],
+          content: [
+            { type: 'text', text: JSON.stringify(products) },
+            {
+              type: 'resource',
+              resource: {
+                text: htmlContent,
+                uri: `data:text/html,charset=UTF-8,${encodeURIComponent(htmlContent)}`,
+                mimeType: 'text/html',
+              },
+            },
+          ],
         };
       } catch (error) {
         return {
@@ -150,72 +158,71 @@ export default function createMcpServer(context: Context) {
     },
   );
 
-  // server.resource('config', 'config://app', async (uri) => {
-  //   return {
-  //     contents: [
-  //       {
-  //         uri: uri.href,
-  //         mimeType: 'application/json',
-  //         text: {
-  //           version: context.version,
-  //         },
-  //       },
-  //     ],
-  //   };
-  // });
-
   return server;
 }
 
 /**
  * Generate HTML output for products list with Unchained styling
  */
-function generateProductsHTML(products: any[], pagination: { offset: number; limit: number; total: number }): string {
+function generateProductsHTML(
+  products: any[],
+  pagination: { offset: number; limit: number; total: number },
+): string {
   const { offset, total } = pagination;
   const resultsShown = products.length;
   const startIndex = offset + 1;
   const endIndex = offset + resultsShown;
 
   return `
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui; max-width: 1200px;">
-  <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="color: #343a40; margin: 0;">Products</h3>
-    <span style="color: #6c757d; font-size: 14px;">Showing ${startIndex}-${endIndex} of ${total}</span>
-  </div>
-  
-  <div style="background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
-    <table style="width: 100%; border-collapse: collapse;">
-      <thead style="background: #f8f9fa; border-bottom: 1px solid #e9ecef;">
-        <tr>
-          <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">Image</th>
-          <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">Product</th>
-          <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">SKU</th>
-          <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">Status</th>
-          <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${products.map((product, index) => generateProductRow(product, index)).join('')}
-      </tbody>
-    </table>
-  </div>
-</div>`;
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
+    <body>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui; max-width: 1200px;">
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="color: #343a40; margin: 0;">Products</h3>
+          <span style="color: #6c757d; font-size: 14px;">Showing ${startIndex}-${endIndex} of ${total}</span>
+        </div>
+        
+        <div style="background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: #f8f9fa; border-bottom: 1px solid #e9ecef;">
+              <tr>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">Image</th>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">Product</th>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">SKU</th>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">Status</th>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #343a40;">ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${products.map((product, index) => generateProductRow(product, index)).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </body>
+  </html>`;
 }
 
 function generateProductRow(product: any, index: number): string {
   const isEven = index % 2 === 0;
   const backgroundColor = isEven ? '#ffffff' : '#f8f9fa';
-  
+
   // Get product title from texts
-  const title = product.texts?.find((t: any) => t.locale === 'en')?.title || product.title || 'Untitled Product';
-  
+  const title =
+    product.texts?.find((t: any) => t.locale === 'en')?.title || product.title || 'Untitled Product';
+
   // Get SKU from warehousing info
   const sku = product.warehousing?.sku || 'N/A';
-  
+
   // Get status with proper formatting
   const status = product.status || 'DRAFT';
   const statusColor = status === 'ACTIVE' ? '#28a745' : status === 'DRAFT' ? '#ffc107' : '#6c757d';
-  
+
   // Product ID (shortened for display)
   const productId = product._id?.toString() || 'N/A';
   const shortId = productId.length > 12 ? `${productId.substring(0, 12)}...` : productId;
@@ -229,7 +236,17 @@ function generateProductRow(product: any, index: number): string {
           </td>
           <td style="padding: 12px;">
             <div style="font-weight: 500; color: #343a40;">${escapeHtml(title)}</div>
-            ${product.tags?.length ? `<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${product.tags.slice(0, 3).map((tag: string) => `<span style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+            ${
+              product.tags?.length
+                ? `<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${product.tags
+                    .slice(0, 3)
+                    .map(
+                      (tag: string) =>
+                        `<span style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">${escapeHtml(tag)}</span>`,
+                    )
+                    .join('')}</div>`
+                : ''
+            }
           </td>
           <td style="padding: 12px;">
             <span style="color: #343a40; font-family: monospace;">${escapeHtml(sku)}</span>
