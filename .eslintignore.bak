@@ -1,7 +1,0 @@
-.github
-.git
-.aider*
-**/lib
-examples/**
-docs/**
-node_modules/**

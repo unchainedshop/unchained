@@ -13,6 +13,7 @@ const transports: Record<string, StreamableHTTPServerTransport> = {};
 
 const handlePostRequest: RequestHandler = async (req: Request & { unchainedContext: Context }, res) => {
   // Check for existing session ID
+
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
   let transport: StreamableHTTPServerTransport;
@@ -74,6 +75,7 @@ const handleSessionRequest: RequestHandler = async (req, res) => {
 };
 
 const createMCPMiddleware: RequestHandler = (req, res, next) => {
+  console.log(req.method, req.headers);
   if (req.method === 'POST') {
     return handlePostRequest(req, res, next);
   } else if (req.method === 'GET' || req.method === 'DELETE') {

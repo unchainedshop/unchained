@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "unchained": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "supergateway", "--streamableHttp", "http://localhost:4010/mcp"],
+      "env": {}
+    }
+  }
+}
