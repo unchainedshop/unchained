@@ -263,6 +263,10 @@ export const configureAssortmentsModule = async ({
       return Assortments.findOne(selector, {});
     },
 
+    findAssortmentIds: async (query: AssortmentQuery): Promise<string[]> => {
+      return Assortments.distinct('_id', buildFindSelector(query));
+    },
+
     findAssortments: async ({
       limit,
       offset,

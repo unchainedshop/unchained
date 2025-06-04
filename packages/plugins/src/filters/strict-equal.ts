@@ -23,6 +23,16 @@ const StrictQualFilter: IFilterAdapter = {
         return productIds;
       },
 
+      searchAssortments: async ({ assortmentIds }) => {
+        // Search Assortments
+        const { queryString } = params.searchQuery;
+        if (!queryString && !assortmentIds) {
+          // If no query string is provided, return all assortment IDs
+          return params.modules.assortments.findAssortmentIds({});
+        }
+        return assortmentIds;
+      },
+
       transformProductSelector: async (lastSelector, options) => {
         const { key, value } = options || {};
 
