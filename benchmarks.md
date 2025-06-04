@@ -4,10 +4,10 @@ Vendure v3.1.1:
 * initial memory footprint: ~350M x 2 (worker and api)
 * cold boot time (dev): ~3 seconds (including Postgres dev server)
 
-Unchained v3.1.2 (Kitchensink Example):
+Unchained v4.0.0 (Kitchensink Example):
 
-* node_modules size: 160M
-* initial memory footprint: ~140M
+* node_modules size: 90M
+* initial memory footprint: ~120M
 * cold boot time (dev): ~1.5 seconds (including MongoDB dev server)
 * cold boot time (prod): ~150 ms
 

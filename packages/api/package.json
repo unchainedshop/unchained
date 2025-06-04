@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
+    "@modelcontextprotocol/sdk": ">= 1 < 2",
     "@ethereumjs/util": ">= 10 < 11",
     "@fastify/cookie": ">= 11.0 < 12",
     "@fastify/session": ">= 11.0 < 12",
@@ -42,6 +43,9 @@
     "passport": ">= 0.7 < 1"
   },
   "peerDependenciesMeta": {
+    "@modelcontextprotocol/sdk": {
+      "optional": false
+    },
     "graphql-yoga": {
       "optional": false
     },
@@ -84,6 +88,7 @@
     "p-memoize": "^7.1.1"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.4",
     "@ethereumjs/util": "^10.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
