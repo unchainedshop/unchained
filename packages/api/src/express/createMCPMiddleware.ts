@@ -66,7 +66,6 @@ const handleSessionRequest: RequestHandler = async (req, res) => {
 };
 
 const createMCPMiddleware: RequestHandler = (req, res, next) => {
-  console.log(req.method, req.headers);
   if (req.method === 'POST') {
     return handlePostRequest(req, res, next);
   } else if (req.method === 'GET' || req.method === 'DELETE') {
