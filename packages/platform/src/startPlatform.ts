@@ -7,9 +7,10 @@ import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/cr
 import { setupAccounts } from './setup/setupAccounts.js';
 import { setupUploadHandlers } from './setup/setupUploadHandlers.js';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
-import { SetupWorkqueueOptions, setupWorkqueue } from './setup/setupWorkqueue.js';
+import { SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
 import { IRoleOptionConfig } from '@unchainedshop/roles';
+
 export { MessageTypes };
 
 export type PlatformOptions = {
@@ -109,23 +110,19 @@ export const startPlatform = async ({
   });
   defaultLogger.info(`Unchained Engine running`, { version: packageJson.version });
 
-  process.on('SIGTERM', async () => {
-    defaultLogger.info('Stopping GraphQL server (SIGTERM)');
+  const cleanup = (signal) => async () => {
+    defaultLogger.debug('Stopping Workqueue', { signal });
+    stopWorkqueue();
+    defaultLogger.debug('Stopping GraphQL server', { signal });
     await graphqlHandler.dispose();
-    defaultLogger.info('Stopping DB Connection (SIGTERM)');
+    defaultLogger.debug('Stopping DB Connection', { signal });
     await stopDb();
-    defaultLogger.info(`Unchained Engine stopped`, { version: packageJson.version });
+    defaultLogger.info(`Unchained Engine stopped`, { signal, version: packageJson.version });
     process.exit(0);
-  });
+  };
 
-  process.on('SIGINT', async () => {
-    defaultLogger.info('Stopping GraphQL server (SIGINT)');
-    await graphqlHandler.dispose();
-    defaultLogger.info('Stopping DB Connection (SIGINT)');
-    await stopDb();
-    defaultLogger.info(`Unchained Engine stopped`, { version: packageJson.version });
-    process.exit(0);
-  });
+  process.on('SIGTERM', cleanup('SIGTERM'));
+  process.on('SIGINT', cleanup('SIGINT'));
 
   return { unchainedAPI, graphqlHandler, db };
 };

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
 import { Context } from '../../context.js';
+import { ProductText } from '@unchainedshop/core-products';
 
 /**
  * Zod schema for the list_products tool (as raw object for MCP)
@@ -108,6 +109,12 @@ export async function listProductsHandler(context: Context, params: ListProducts
       })),
     );
 
+    // iterate all products and add texts
+    products.forEach((product) => {
+      const texts = productTexts.filter((text) => (text as ProductText).productId === product._id);
+      (product as any).texts = texts;
+    });
+
     // const htmlContent = generateProductsHTML(products, productTexts, {
     //   offset,
     //   limit,
@@ -116,7 +123,14 @@ export async function listProductsHandler(context: Context, params: ListProducts
 
     return {
       content: [
-        { type: 'text' as const, text: JSON.stringify({ products, productTexts, searchResult }) },
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            products,
+            total: searchResult.aggregatedTotalProductIds.length,
+            filtered: searchResult.aggregatedFilteredProductIds.length,
+          }),
+        },
         // {
         //   type: 'resource',
         //   resource: {

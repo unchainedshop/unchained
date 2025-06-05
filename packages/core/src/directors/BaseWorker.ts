@@ -93,7 +93,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
         );
       },
 
-      process: async ({ maxWorkItemCount, referenceDate }) => {
+      process: async ({ maxWorkItemCount = 10, referenceDate }) => {
         await workerActions.autorescheduleTypes({
           referenceDate,
         });

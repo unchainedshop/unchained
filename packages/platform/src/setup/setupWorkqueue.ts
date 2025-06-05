@@ -35,14 +35,14 @@ export const defaultQueueManagers: WorkQueueQueueManager[] = [
 
 export const queueWorkers: any[] = [];
 
-export const setupWorkqueue = async ({
+export async function setupWorkqueue({
   unchainedAPI,
   migrationRepository,
   ...workQueueOptions
 }: {
   unchainedAPI: UnchainedCore;
   migrationRepository: MigrationRepository<UnchainedCore>;
-} & SetupWorkqueueOptions) => {
+} & SetupWorkqueueOptions) {
   if (workQueueOptions.disableWorker || UNCHAINED_DISABLE_WORKER) return;
 
   // Run migrations
@@ -86,4 +86,11 @@ export const setupWorkqueue = async ({
   if (!workQueueOptions?.skipInvalidationOnStartup) {
     setImmediate(() => unchainedAPI.services.filters.invalidateFilterCache());
   }
-};
+}
+
+export function stopWorkqueue() {
+  queueWorkers.forEach((worker) => {
+    worker?.stop();
+  });
+  queueWorkers.length = 0;
+}
