@@ -14,6 +14,7 @@ export * from './loaders/index.js';
 export * from './errors.js';
 export * as acl from './acl.js';
 export * as roles from './roles/index.js';
+export * as bulkImport from './bulk-import/index.js';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 import { buildDefaultTypeDefs } from './schema/index.js';
