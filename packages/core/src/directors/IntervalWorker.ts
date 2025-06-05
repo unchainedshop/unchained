@@ -28,7 +28,7 @@ export const IntervalWorker: IWorker<IntervalWorkerParams> = {
   version: '1.0.0',
   type: 'CRON',
 
-  actions: ({ workerId, batchCount = 0, schedule = defaultSchedule }, unchainedAPI) => {
+  actions: ({ workerId, batchCount = 10, schedule = defaultSchedule }, unchainedAPI) => {
     const baseWorkerActions = BaseWorker.actions({ workerId, worker: IntervalWorker }, unchainedAPI);
 
     const intervalDelay = scheduleToInterval(schedule);
