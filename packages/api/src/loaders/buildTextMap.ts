@@ -10,8 +10,12 @@ export default function buildTextMap<T extends Array<{ locale?: string }>>(
     for (const text of texts) {
       if (originLocale !== text.locale) continue;
       for (const locale of localesForText) {
-        if (textsMap[locale + buildId(text as any)]) continue;
-        textsMap[locale + buildId(text as any)] = text;
+        const key = locale + buildId(text as any);
+        if (textsMap[key] && locale !== text.locale) {
+          // If the key already exists and the locale is a fallback, skip this text
+          continue;
+        }
+        textsMap[key] = text;
       }
     }
   }
