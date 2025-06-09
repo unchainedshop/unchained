@@ -23,7 +23,6 @@ try {
   connect(app, engine, { allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production' });
   connectDefaultPluginsToExpress(app, engine);
 
-  const fileUrl = new URL(import.meta.resolve('../static/index.html'));
   app.use('/', expressRouter);
 
   // Seed Database and Set a super insecure Access Token for admin
