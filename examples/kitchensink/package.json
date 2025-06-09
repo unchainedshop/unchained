@@ -53,7 +53,7 @@
     "stripe": "^18.1.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11",
-    "@unchainedshop/admin-ui": "^3.0.17"
+    "@unchainedshop/admin-ui": "^4.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
