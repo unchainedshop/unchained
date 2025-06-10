@@ -35,6 +35,7 @@
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.2.12",
     "@ai-sdk/openai": "^1.3.22",
     "@scure/bip32": "1.7.0",
     "@scure/btc-signer": "^1.8.0",

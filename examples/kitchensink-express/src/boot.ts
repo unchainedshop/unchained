@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import http from 'node:http';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/lib/express/index.js';
@@ -7,10 +7,12 @@ import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-e
 import { createLogger } from '@unchainedshop/logger';
 import { expressRouter } from '@unchainedshop/admin-ui'
 import seed from './seed.js';
-import { openai } from '@ai-sdk/openai';
-import { CoreMessage, streamText, tool } from 'ai';
-import { z } from 'zod';
+import { Experimental_StdioMCPTransport as StdioMCPTransport } from 'ai/mcp-stdio';
+import { experimental_createMCPClient as createMCPClient } from 'ai';
+import { streamText } from 'ai';
 import cors from 'cors';
+import { anthropic } from '@ai-sdk/anthropic';
+
 
 export function errorHandler(error: unknown) {
   if (error == null) {
@@ -35,12 +37,15 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 const logger = createLogger('express');
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:3000', // 👈 replace with your frontend origin
-  credentials: true                // 👈 allow cookies/authorization headers
+  origin: 'http://localhost:3000',
+  credentials: true
+
 }));
 
 const httpServer = http.createServer(app);
 app.use(express.json());
+
+
 
 try {
   const engine = await startPlatform({
@@ -52,89 +57,38 @@ try {
 
   app.use('/', expressRouter);
 
-
-  app.post('/chat', async (req: Request, res: Response) => {
-
-    const messages: CoreMessage[] = [];
+  app.post('/chat', async (req, res) => {
+    const { messages } = req.body;
     try {
-      const { messages } = req.body;
+      const client = await createMCPClient({
+        transport: new StdioMCPTransport({
+          command: "npx",
+          args: ["-y", "supergateway", "--streamableHttp", "http://localhost:4010/mcp"],
+          "env": {}
+        }),
+      });
+
+      const tools = await client.tools();
 
 
       const result = streamText({
-        model: openai('gpt-4.1'),
-
+        model: anthropic('claude-4-sonnet-20250514'),
         messages,
-        tools: {
-          getWeatherInformation: tool({
-            description: 'Get the weather in a location (in Celsius)',
-            parameters: z.object({
-              location: z
-                .string()
-                .describe('The location to get the weather for'),
-            }),
-            execute: async ({ location }) => {
-              console.log(location)
-              return {
-                location,
-                temperature: Math.round((Math.random() * 30 + 5) * 10) / 10,
-              }
-            },
-          }),
-          convertCelsiusToFahrenheit: tool({
-            description: 'Convert a temperature from Celsius to Fahrenheit',
-            parameters: z.object({
-              celsius: z
-                .number()
-                .describe('The temperature in Celsius to convert'),
-            }),
-            execute: async ({ celsius }) => {
-              const fahrenheit = (celsius * 9) / 5 + 32;
-              return { fahrenheit: Math.round(fahrenheit * 100) / 100 };
-            },
-          }),
-
+        maxTokens: 1000,
+        tools,
+        onFinish: async () => {
+          await client.close();
         },
-        maxSteps: 5,
-        onStepFinish: step => {
-          console.log(JSON.stringify(step, null, 2));
-        },
-
       });
-      let fullResponse = '';
+
       result.pipeDataStreamToResponse(res, {
-        getErrorMessage: errorHandler
+        getErrorMessage: errorHandler,
       });
-      for await (const textPart of result.textStream) {
-        console.log(textPart);
-      }
-      const reader = result.textStream.getReader();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        console.log(value);
-      }
-      process.stdout.write('\nAssistant: ');
-      for await (const delta of result.textStream) {
-        fullResponse += delta;
-        process.stdout.write(delta);
-      }
-      process.stdout.write('\n\n');
-      console.log('result', result.toolResults);
-      const x = await result.toolResults;
-      console.log(x)
-      console.log('result.toolCalls ', await result.toolCalls);
-      console.log('result.toolResults ', await result.toolResults);
-
-      messages.push({ role: 'assistant', content: fullResponse });
     } catch (err) {
-      console.error('Streaming error:', err);
       res.status(500).json({ error: 'Failed to stream response' });
     }
   });
-
 
 
   // Seed Database and Set a super insecure Access Token for admin
