@@ -1,7 +1,10 @@
 import later, { ScheduleData } from '@breejs/later';
 import { BaseWorker, IWorker } from './BaseWorker.js';
+import { createLogger } from '@unchainedshop/logger';
 
 const { NODE_ENV } = process.env;
+
+const logger = createLogger('unchained:interval-worker');
 
 export interface IntervalWorkerParams {
   workerId?: string;
@@ -15,7 +18,13 @@ const defaultSchedule = later.parse.text(
 
 export const scheduleToInterval = (schedule: ScheduleData) => {
   const referenceDate = new Date(1000);
-  const [one, two] = later.schedule(schedule).next(2, referenceDate) as Date[];
+  const nextDates = later.schedule(schedule).next(2, referenceDate) as Date[];
+
+  if (!nextDates || nextDates.length < 2) {
+    throw new Error('Schedule must produce at least 2 consecutive dates');
+  }
+
+  const [one, two] = nextDates;
   const diff = new Date(two).getTime() - new Date(one).getTime();
   return Math.min(1000 * 60 * 60, diff); // at least once every hour!
 };
@@ -32,22 +41,35 @@ export const IntervalWorker: IWorker<IntervalWorkerParams> = {
     const baseWorkerActions = BaseWorker.actions({ workerId, worker: IntervalWorker }, unchainedAPI);
 
     const intervalDelay = scheduleToInterval(schedule);
-    let intervalHandle: NodeJS.Timeout;
+    let intervalHandle: NodeJS.Timeout | null = null;
 
     return {
       ...baseWorkerActions,
 
       start() {
-        intervalHandle = setInterval(() => {
-          baseWorkerActions.process({
-            maxWorkItemCount: batchCount,
-            referenceDate: IntervalWorker.getFloorDate(),
-          });
+        // Prevent multiple intervals from running
+        if (intervalHandle) {
+          return;
+        }
+
+        intervalHandle = setInterval(async () => {
+          try {
+            await baseWorkerActions.process({
+              maxWorkItemCount: batchCount,
+              referenceDate: IntervalWorker.getFloorDate(),
+            });
+          } catch (error) {
+            // Log error but don't crash the interval
+            logger.error('IntervalWorker process error:', error);
+          }
         }, intervalDelay);
       },
 
       stop() {
-        clearInterval(intervalHandle);
+        if (intervalHandle) {
+          clearInterval(intervalHandle);
+          intervalHandle = null;
+        }
       },
     };
   },
