@@ -17,9 +17,9 @@ export interface IWorker<P extends { workerId?: string }> {
   ) => {
     autorescheduleTypes: (options: { referenceDate: Date }) => Promise<(Work | null)[]>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
-    reset: () => Promise<void>;
-    start: () => void;
-    stop: () => void;
+    reset: () => Promise<void> | void;
+    start: () => Promise<void> | void;
+    stop: () => Promise<void> | void;
   };
 }
 
@@ -42,11 +42,11 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
   actions: ({ workerId }: WorkerParams, unchainedAPI) => {
     const workerActions = {
-      start() {
+      async start() {
         throw new Error(`Not implemented on ${this.constructor.key}`);
       },
 
-      stop() {
+      async stop() {
         throw new Error(`Not implemented on ${this.constructor.key}`);
       },
 

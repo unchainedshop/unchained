@@ -1,12 +1,5 @@
 import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
-
-const wait = async (time: number) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
+import { setTimeout } from 'node:timers/promises';
 
 interface Arg {
   wait?: number;
@@ -26,7 +19,7 @@ const Heartbeat: IWorkerAdapter<Arg, Result> = {
 
   doWork: async (input: Arg): Promise<{ success: boolean; result: Result }> => {
     if (input?.wait) {
-      await wait(input.wait);
+      await setTimeout(input.wait);
     }
     if (input?.fails) {
       return {

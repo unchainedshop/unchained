@@ -1,16 +1,49 @@
 import { subscribe } from '@unchainedshop/events';
 import { BaseWorker, IWorker } from './BaseWorker.js';
 import { WorkerEventTypes } from '@unchainedshop/core-worker';
+import { setTimeout } from 'node:timers/promises';
 
-function debounce<T extends (...args: any) => any>(func: T, wait) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      timeout = null;
-      func(...args);
-    }, wait);
+function debounce<T extends (...args: any[]) => Promise<any>>(
+  func: T,
+  wait: number,
+): T & { cancel: () => void } {
+  let abortController: AbortController | null = null;
+
+  const debounced = (async (...args: Parameters<T>) => {
+    // Cancel any pending execution
+    if (abortController) {
+      abortController.abort();
+    }
+
+    // Create new abort controller for this execution
+    abortController = new AbortController();
+
+    try {
+      // Wait for the debounce period
+      await setTimeout(wait, undefined, { signal: abortController.signal });
+
+      // If we reach here, the timeout completed without being aborted
+      const result = await func(...args);
+      abortController = null;
+      return result;
+    } catch (error) {
+      // If the operation was aborted, don't execute the function
+      if (error.name === 'AbortError') {
+        return;
+      }
+      // Re-throw any other errors
+      throw error;
+    }
+  }) as T & { cancel: () => void };
+
+  debounced.cancel = () => {
+    if (abortController) {
+      abortController.abort();
+      abortController = null;
+    }
   };
+
+  return debounced;
 }
 
 export interface EventListenerWorkerParams {
@@ -42,19 +75,18 @@ export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
     return {
       ...baseWorkerActions,
 
-      start() {
+      async start() {
         subscribe(WorkerEventTypes.ADDED, processWorkQueue);
         subscribe(WorkerEventTypes.FINISHED, processWorkQueue);
 
-        setTimeout(async () => {
-          await baseWorkerActions.autorescheduleTypes({
-            referenceDate: EventListenerWorker.getFloorDate(),
-          });
-        }, 300);
+        await setTimeout(300);
+        await baseWorkerActions.autorescheduleTypes({
+          referenceDate: EventListenerWorker.getFloorDate(),
+        });
       },
 
       stop() {
-        /* */
+        processWorkQueue.cancel();
       },
     };
   },
