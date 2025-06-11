@@ -45,9 +45,9 @@ describe('buildLocaleMap', () => {
   });
 
   it('Only default locale', () => {
-    const queries = [{ locale: new Intl.Locale('de_CH') }];
+    const queries = [{ locale: new Intl.Locale('de-CH') }];
     const expected = {
-      de: ['de_CH'],
+      de: ['de-CH'],
     };
     const result = buildLocaleMap(queries, testTexts);
     assert.deepStrictEqual(result, expected);

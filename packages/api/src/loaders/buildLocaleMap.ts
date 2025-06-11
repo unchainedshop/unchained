@@ -24,13 +24,13 @@ export default function buildLocaleMap(
   // value = input query locale
   const queryLocales = new Set(queries.map((q) => q.locale));
   const textLocales = new Set(texts.map((t) => t.locale));
-  const localeMap = {};
+  const localeMap: Record<string, string[]> = {};
   for (const queryLocale of queryLocales) {
     const potentialMatches = getLocaleStrings(queryLocale);
     const matches = potentialMatches.filter((l) => textLocales.has(l));
     for (const match of matches) {
       if (!localeMap[match]) localeMap[match] = [];
-      localeMap[match].push(queryLocale);
+      localeMap[match].push(queryLocale.toString());
     }
   }
   return localeMap;

@@ -1,4 +1,3 @@
-import wait from './lib/wait.js';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
@@ -9,6 +8,7 @@ import { AllocatedWork, NewWork } from './seeds/work.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
+import { setTimeout } from 'node:timers/promises';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
@@ -46,7 +46,7 @@ test.describe('Work Queue', () => {
       assert.strictEqual(addWorkResult.data.addWork.type, 'HEARTBEAT');
       assert.strictEqual(addWorkResult.errors, undefined);
 
-      await wait(1000);
+      await setTimeout(1000);
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -310,7 +310,7 @@ test.describe('Work Queue', () => {
       assert.strictEqual(addWorkResult.errors, undefined);
 
       // Test if work is done eventually
-      await wait(3000);
+      await setTimeout(3000);
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -365,7 +365,7 @@ test.describe('Work Queue', () => {
 
       assert.strictEqual(addWorkResult.errors, undefined);
 
-      await wait(3000);
+      await setTimeout(3000);
 
       // Expect copy & reschedule
       const { data: { workQueue: workQueue } = {} } = await graphqlFetchAsAdminUser({

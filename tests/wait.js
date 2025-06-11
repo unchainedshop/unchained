@@ -1,10 +1,4 @@
-const wait = async (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-export const intervalUntilTimeout = async (
-  fnToCheckResult,
-  timeout,
-  stepCount = 10,
-) => {
+export const intervalUntilTimeout = async (fnToCheckResult, timeout, stepCount = 10) => {
   const interval = timeout / stepCount;
   return new Promise((resolve) => {
     const intervalHandle = setInterval(async () => {
@@ -23,5 +17,3 @@ export const intervalUntilTimeout = async (
     }, timeout);
   });
 };
-
-export default wait;
