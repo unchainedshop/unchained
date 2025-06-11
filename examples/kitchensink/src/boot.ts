@@ -1,10 +1,10 @@
-import { createReadStream } from 'node:fs';
 import Fastify from 'fastify';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.js';
+import { fastifyRouter } from '@unchainedshop/admin-ui'
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
@@ -25,15 +25,8 @@ try {
   });
   connectDefaultPluginsToFastify(fastify, platform);
 
-  const fileUrl = new URL(import.meta.resolve('../static/index.html'));
-  fastify.route({
-    method: 'GET',
-    url: '*',
-    handler: async (req, reply) => {
-      reply.status(200);
-      reply.header('Content-Type', 'text/html');
-      return createReadStream(fileUrl.pathname);
-    },
+  fastify.register(fastifyRouter, {
+    prefix: '/',
   });
 
   await seed(platform.unchainedAPI);
