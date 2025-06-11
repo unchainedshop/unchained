@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
 import { Context } from '../../context.js';
 import { ProductText } from '@unchainedshop/core-products';
+import normalizeMediaUrl from './normalizeMediaUrl.js';
 
 /**
  * Zod schema for the list_products tool (as raw object for MCP)
@@ -110,17 +111,27 @@ export async function listProductsHandler(context: Context, params: ListProducts
     );
 
     // iterate all products and add texts
-    products.forEach((product) => {
-      const texts = productTexts.filter((text) => (text as ProductText).productId === product._id);
-      (product as any).texts = texts;
-    });
+    const normalizedProducts = await Promise.all(
+      products.map(async (product) => {
+        const texts = productTexts.filter((text) => (text as ProductText).productId === product._id);
+        const productMedias = await context.modules.products.media.findProductMedias({
+          productId: product._id,
+        });
+        const media = await normalizeMediaUrl(productMedias, context);
+        return {
+          ...product,
+          texts,
+          media,
+        };
+      }),
+    );
 
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            products,
+            products: normalizedProducts,
             total: searchResult.aggregatedTotalProductIds.length,
             filtered: searchResult.aggregatedFilteredProductIds.length,
           }),

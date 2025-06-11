@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Context } from '../../context.js';
+import normalizeMediaUrl from './normalizeMediaUrl.js';
 
 /**
  * Zod schema for the get_product tool (as raw object for MCP)
@@ -57,9 +58,10 @@ export async function getProductHandler(context: Context, params: GetProductPara
     });
 
     // Get media
-    const media = await context.modules.products.media.findProductMedias({
+    const productMedias = await context.modules.products.media.findProductMedias({
       productId: product._id,
     });
+    const media = await normalizeMediaUrl(productMedias, context);
 
     // Get pricing information
     let pricing = null;

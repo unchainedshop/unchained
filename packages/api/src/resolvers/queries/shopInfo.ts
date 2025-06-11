@@ -9,6 +9,7 @@ export default function shopInfo(
   version?: string;
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
+  chatEnabled?: boolean;
 } {
   const { adminUiConfig } = context;
   log('query shopInfo', { userId: context.userId });
@@ -28,6 +29,7 @@ export default function shopInfo(
       },
     },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,
+    chatEnabled: !!process.env?.ANTHROPIC_API_KEY,
   };
 }
 
