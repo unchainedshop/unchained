@@ -1,5 +1,6 @@
 import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import bulkImportHandler from './bulkImportHandler.js';
+import bulkImportHandlerWithValidation from './bulkImportHandlerWithValidation.js';
 import ercMetadataHandler from './ercMetadataHandler.js';
 import MongoStore from 'connect-mongo';
 import { YogaServerInstance } from 'graphql-yoga';
@@ -204,3 +205,5 @@ export const connect = (
     registered();
   });
 };
+
+export { bulkImportHandler, bulkImportHandlerWithValidation };
