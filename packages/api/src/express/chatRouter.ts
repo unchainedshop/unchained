@@ -39,6 +39,7 @@ const errorHandler = (error: any): string => {
   if (NoSuchToolError.isInstance(error)) return 'NoSuchToolError';
   if (InvalidToolArgumentsError.isInstance(error)) return 'InvalidToolArgumentsError';
   if (ToolExecutionError.isInstance(error)) return 'ToolExecutionError';
+  if (error?.message?.toLowerCase() === 'forbidden') return 'NetworkError';
   defaultLogger.error(error);
   return `Failed to stream response: ${error?.message || 'Unknown error'}`;
 };
@@ -73,10 +74,12 @@ chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req, res) => {
     const tools = await client.tools();
 
     const result = streamText({
+      system:
+        'do not include the data in your summary, just write a summary about it for example say only The system currently contains only 1 product total ',
       model: anthropic('claude-4-sonnet-20250514'),
       messages,
       maxTokens: 1000,
-      maxSteps: 1,
+      maxSteps: 3,
       tools,
       onFinish: async () => {
         await client?.close();
