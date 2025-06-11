@@ -115,12 +115,6 @@ export async function listProductsHandler(context: Context, params: ListProducts
       (product as any).texts = texts;
     });
 
-    // const htmlContent = generateProductsHTML(products, productTexts, {
-    //   offset,
-    //   limit,
-    //   total,
-    // });
-
     return {
       content: [
         {
@@ -131,14 +125,6 @@ export async function listProductsHandler(context: Context, params: ListProducts
             filtered: searchResult.aggregatedFilteredProductIds.length,
           }),
         },
-        // {
-        //   type: 'resource',
-        //   resource: {
-        //     text: htmlContent,
-        //     uri: `data:text/html,charset=UTF-8,${encodeURIComponent(htmlContent)}`,
-        //     mimeType: 'text/html',
-        //   },
-        // },
       ],
     };
   } catch (error) {

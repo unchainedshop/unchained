@@ -20,11 +20,8 @@ export default function createMcpServer(context: Context) {
     async (params) => listProductsHandler(context, params),
   );
 
-  server.tool(
-    'get_product',
-    'Get detailed product information with rich visualization',
-    GetProductSchema,
-    async (params) => getProductHandler(context, params),
+  server.tool('get_product', 'Get detailed product information', GetProductSchema, async (params) =>
+    getProductHandler(context, params),
   );
 
   return server;
