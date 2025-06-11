@@ -98,14 +98,15 @@ export const BaseWorker: IWorker<WorkerParams> = {
           referenceDate,
         });
 
-        const processRecursively = async (recursionCounter = 0) => {
-          if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
-          const doneWork = await WorkerDirector.processNextWork(unchainedAPI, workerId);
-          if (doneWork) return processRecursively(recursionCounter + 1);
-          return null;
-        };
+        let processedCount = 0;
+        while (true) {
+          if (maxWorkItemCount && maxWorkItemCount <= processedCount) break;
 
-        await processRecursively();
+          const doneWork = await WorkerDirector.processNextWork(unchainedAPI, workerId);
+          if (!doneWork) break;
+
+          processedCount++;
+        }
       },
     };
 

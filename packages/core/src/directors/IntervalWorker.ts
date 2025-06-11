@@ -4,7 +4,7 @@ import { createLogger } from '@unchainedshop/logger';
 
 const { NODE_ENV } = process.env;
 
-const logger = createLogger('unchained:interval-worker');
+const logger = createLogger('unchained:worker');
 
 export interface IntervalWorkerParams {
   workerId?: string;
@@ -59,8 +59,7 @@ export const IntervalWorker: IWorker<IntervalWorkerParams> = {
               referenceDate: IntervalWorker.getFloorDate(),
             });
           } catch (error) {
-            // Log error but don't crash the interval
-            logger.error('IntervalWorker process error:', error);
+            logger.error(error);
           }
         }, intervalDelay);
       },

@@ -2,6 +2,9 @@ import { subscribe } from '@unchainedshop/events';
 import { BaseWorker, IWorker } from './BaseWorker.js';
 import { WorkerEventTypes } from '@unchainedshop/core-worker';
 import { setTimeout } from 'node:timers/promises';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:worker');
 
 function debounce<T extends (...args: any[]) => Promise<any>>(
   func: T,
@@ -66,10 +69,15 @@ export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
 
     // Debounce in the event of many work queue events conflicting with each other
     const processWorkQueue = debounce<() => Promise<void>>(async () => {
-      await baseWorkerActions.process({
-        maxWorkItemCount: 1, // only one work item at a time, else we could end up in a loop
-        referenceDate: EventListenerWorker.getFloorDate(),
-      });
+      try {
+        await baseWorkerActions.process({
+          maxWorkItemCount: 1, // only one work item at a time, else we could end up in a loop
+          referenceDate: EventListenerWorker.getFloorDate(),
+        });
+      } catch (error) {
+        // Log error but don't crash the worker
+        logger.error(error);
+      }
     }, 300);
 
     return {
