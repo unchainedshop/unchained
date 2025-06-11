@@ -74,14 +74,7 @@ chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req, res) => {
 
     const result = streamText({
       model: anthropic('claude-4-sonnet-20250514'),
-      messages: [
-        {
-          role: 'system',
-          content:
-            'When a tool is invoked, do not generate any other content or reasoning. Only the tool output should be returned.',
-        },
-        ...messages,
-      ],
+      messages,
       maxTokens: 1000,
       maxSteps: 1,
       tools,
