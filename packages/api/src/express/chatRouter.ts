@@ -11,7 +11,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { defaultLogger } from '@unchainedshop/logger';
 
 const chatRouter = express.Router();
-const { CHAT_API_PATH = '/chat', ANTHROPIC_API_KEY } = process.env;
+const { CHAT_API_PATH = '/chat', ANTHROPIC_API_KEY, ROOT_URL = 'http://localhost:4010' } = process.env;
 
 const errorHandler = (error: any): string => {
     if (NoSuchToolError.isInstance(error)) return 'NoSuchToolError';
@@ -40,7 +40,7 @@ chatRouter.post(CHAT_API_PATH, async (req, res) => {
         client = await createMCPClient({
             transport: new StdioMCPTransport({
                 command: 'npx',
-                args: ['-y', 'supergateway', '--streamableHttp', 'http://localhost:4010/mcp'],
+                args: ['-y', 'supergateway', '--streamableHttp', `${ROOT_URL}/mcp`],
                 env: {},
             }),
         });
