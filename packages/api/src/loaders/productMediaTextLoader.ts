@@ -1,7 +1,7 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import DataLoader from 'dataloader';
-import { buildLocaleMap } from './utils.js';
 import { ProductMediaText } from '@unchainedshop/core-products';
+import buildLocaleMap from './buildLocaleMap.js';
 import buildTextMap from './buildTextMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>

@@ -1,8 +1,8 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import DataLoader from 'dataloader';
-import { buildLocaleMap } from './utils.js';
 import { ProductText } from '@unchainedshop/core-products';
 import buildTextMap from './buildTextMap.js';
+import buildLocaleMap from './buildLocaleMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ productId: string; locale: Intl.Locale }, ProductText>(async (queries) => {

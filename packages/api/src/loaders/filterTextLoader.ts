@@ -1,6 +1,6 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import DataLoader from 'dataloader';
-import { buildLocaleMap } from './utils.js';
+import buildLocaleMap from './buildLocaleMap.js';
 import { FilterText } from '@unchainedshop/core-filters';
 import buildTextMap from './buildTextMap.js';
 

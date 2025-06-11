@@ -4,6 +4,7 @@ import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
+import { setTimeout } from 'node:timers/promises';
 
 const { SAFERPAY_CUSTOMER_ID, SAFERPAY_PW } = process.env;
 
@@ -19,7 +20,7 @@ const simulatePayment = async (paymentPageUrl) => {
       selectionId: '1510', // Twint, no user input required
     }),
   });
-  await new Promise((r) => setTimeout(r, 10000)); // Need to wait a few seconds after request
+  await setTimeout(10000); // Need to wait a few seconds after request
 };
 
 test.describe('Plugins: Worldline/Saferpay', () => {

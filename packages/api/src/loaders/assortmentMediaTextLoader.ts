@@ -1,8 +1,8 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import DataLoader from 'dataloader';
-import { buildLocaleMap } from './utils.js';
 import buildTextMap from './buildTextMap.js';
+import buildLocaleMap from './buildLocaleMap.js';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ assortmentMediaId: string; locale: Intl.Locale }, AssortmentMediaText>(
