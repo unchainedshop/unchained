@@ -5,6 +5,8 @@ import {
   ListProductsSchema,
   getProductHandler,
   GetProductSchema,
+  createProductHandler,
+  CreateProductSchema,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -21,6 +23,10 @@ export default function createMcpServer(context: Context) {
   );
   server.tool('get_product', 'Get detailed product information', GetProductSchema, async (params) =>
     getProductHandler(context, params),
+  );
+
+  server.tool('create_product', 'Adds or create new product ', CreateProductSchema, async (params) =>
+    createProductHandler(context, params),
   );
 
   return server;
