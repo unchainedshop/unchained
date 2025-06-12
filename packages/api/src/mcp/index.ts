@@ -9,6 +9,10 @@ import {
   CreateProductSchema,
   RemoveProductSchema,
   removeProductHandler,
+  PublishProductSchema,
+  publishProductHandler,
+  UnpublishProductSchema,
+  unpublishProductHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -27,14 +31,31 @@ export default function createMcpServer(context: Context) {
     getProductHandler(context, params),
   );
 
-  server.tool('create_product', 'Adds or create new product ', CreateProductSchema, async (params) =>
-    createProductHandler(context, params),
+  server.tool(
+    'create_product',
+    'Adds or create new product the product will be in DRAFT/unpublish status',
+    CreateProductSchema,
+    async (params) => createProductHandler(context, params),
   );
   server.tool(
     'remove_product',
-    'Removed or deletes a product by its id',
+    'Removed or deletes a product by its id changing its status to DELETED and removing it from sale',
     RemoveProductSchema,
     async (params) => removeProductHandler(context, params),
+  );
+
+  server.tool(
+    'publish_product',
+    'Publish a product by its id changing it to active and available for sale',
+    PublishProductSchema,
+    async (params) => publishProductHandler(context, params),
+  );
+
+  server.tool(
+    'unpublish_product',
+    'Deactivates or Unpublishes product by its id changing it to DRAFT and not available for sale',
+    UnpublishProductSchema,
+    async (params) => unpublishProductHandler(context, params),
   );
 
   return server;
