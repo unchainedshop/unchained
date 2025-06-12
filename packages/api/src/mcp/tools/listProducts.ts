@@ -83,29 +83,31 @@ export async function listProductsHandler(context: Context, params: ListProducts
       }
     }
 
-    const searchResult = await context.services.filters.searchProducts(
-      {
-        queryString,
-        productIds: filteredProductIds,
-        includeInactive,
-        filterQuery: filterQuery?.filter((f) => f.key) as { key: string; value?: string }[],
-      },
-      {
-        locale: context.locale,
-      },
-    );
-
+    let searchResult: any = {};
+    if (queryString)
+      searchResult = await context.services.filters.searchProducts(
+        {
+          queryString,
+          productIds: filteredProductIds,
+          includeInactive,
+          filterQuery: filterQuery?.filter((f) => f.key) as { key: string; value?: string }[],
+        },
+        {
+          locale: context.locale,
+        },
+      );
     const products = await context.modules.products.findProducts({
-      productIds: searchResult.aggregatedFilteredProductIds,
+      productIds: searchResult?.aggregatedFilteredProductIds,
       tags,
       limit,
       offset,
+      includeDrafts: includeInactive,
       sort: sort?.filter((s) => s.key) as { key: string; value: SortDirection }[],
     });
 
     const productTexts = await context.loaders.productTextLoader.loadMany(
-      searchResult.aggregatedFilteredProductIds.map((productId) => ({
-        productId,
+      products.map(({ _id }) => ({
+        productId: _id,
         locale: context.locale,
       })),
     );
@@ -132,8 +134,8 @@ export async function listProductsHandler(context: Context, params: ListProducts
           type: 'text' as const,
           text: JSON.stringify({
             products: normalizedProducts,
-            total: searchResult.aggregatedTotalProductIds.length,
-            filtered: searchResult.aggregatedFilteredProductIds.length,
+            total: searchResult?.aggregatedTotalProductIds?.length,
+            filtered: searchResult?.aggregatedFilteredProductIds?.length || products?.length,
           }),
         },
       ],
