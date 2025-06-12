@@ -7,6 +7,8 @@ import {
   GetProductSchema,
   createProductHandler,
   CreateProductSchema,
+  RemoveProductSchema,
+  removeProductHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -27,6 +29,12 @@ export default function createMcpServer(context: Context) {
 
   server.tool('create_product', 'Adds or create new product ', CreateProductSchema, async (params) =>
     createProductHandler(context, params),
+  );
+  server.tool(
+    'remove_product',
+    'Removed or deletes a product by its id',
+    RemoveProductSchema,
+    async (params) => removeProductHandler(context, params),
   );
 
   return server;

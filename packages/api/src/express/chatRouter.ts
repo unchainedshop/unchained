@@ -75,7 +75,7 @@ chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req, res) => {
 
     const result = streamText({
       system:
-        'do not include the data in your summary, just write a summary about it for example say only The system currently contains only 1 product total ',
+        'do not include the data in your summary, just write a summary about it never list all the fields of a result, just summarize paragraph about your findings, if necessary',
       model: anthropic('claude-4-sonnet-20250514'),
       messages,
       maxTokens: 1000,

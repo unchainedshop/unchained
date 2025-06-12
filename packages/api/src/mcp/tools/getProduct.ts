@@ -96,18 +96,19 @@ export async function getProductHandler(context: Context, params: GetProductPara
     const reviewsCount = await context.modules.products.reviews.count({
       productId: product._id,
     });
-
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            product,
-            productTexts,
-            media,
-            pricing,
-            variations,
-            reviewsCount,
+            product: {
+              ...product,
+              texts: productTexts,
+              media,
+              pricing,
+              variations,
+              reviewsCount,
+            },
           }),
         },
       ],
