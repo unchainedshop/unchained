@@ -5,15 +5,24 @@ import { connect } from '@unchainedshop/api/lib/express/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
 import { createLogger } from '@unchainedshop/logger';
-import { expressRouter } from '@unchainedshop/admin-ui'
+import { expressRouter } from '@unchainedshop/admin-ui';
 import seed from './seed.js';
+import cors from 'cors';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 const logger = createLogger('express');
 const app = express();
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+
 const httpServer = http.createServer(app);
+app.use(express.json());
 
 try {
   const engine = await startPlatform({
@@ -22,7 +31,6 @@ try {
 
   connect(app, engine, { allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production' });
   connectDefaultPluginsToExpress(app, engine);
-
   app.use('/', expressRouter);
 
   // Seed Database and Set a super insecure Access Token for admin

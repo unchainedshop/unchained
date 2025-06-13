@@ -35,6 +35,7 @@
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.2.12",
     "@scure/bip32": "1.7.0",
     "@scure/btc-signer": "^1.8.0",
     "@unchainedshop/api": "^4.0.0-rc.2",
@@ -42,6 +43,7 @@
     "@unchainedshop/core-payment": "^4.0.0-rc.2",
     "@unchainedshop/platform": "^4.0.0-rc.2",
     "@unchainedshop/plugins": "^4.0.0-rc.2",
+    "ai": "^4.3.16",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "graphql": "^16.11.0",
