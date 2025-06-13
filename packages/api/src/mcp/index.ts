@@ -13,6 +13,8 @@ import {
   publishProductHandler,
   UnpublishProductSchema,
   unpublishProductHandler,
+  UpdateProductSchema,
+  updateProductHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -56,6 +58,12 @@ export default function createMcpServer(context: Context) {
     'Deactivates or Unpublishes product by its id changing it to DRAFT and not available for sale',
     UnpublishProductSchema,
     async (params) => unpublishProductHandler(context, params),
+  );
+  server.tool(
+    'update_product',
+    'Modify/Update generic infos of a product (tags for ex.)',
+    UpdateProductSchema,
+    async (params) => updateProductHandler(context, params),
   );
 
   return server;

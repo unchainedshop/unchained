@@ -8,3 +8,4 @@ export * from './createProduct.js';
 export * from './removeProduct.js';
 export * from './publishProduct.js';
 export * from './unPublishProduct.js';
+export * from './updateProduct.js';
