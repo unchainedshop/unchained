@@ -99,6 +99,13 @@ export default function createMcpServer(context: Context) {
   );
 
   server.tool(
+    'update_product_warehousing',
+    'Modify/update products commerce info like prices, taxes, etc. for SIMPLE_PRODUCT product type only.  it is only available for SIMPLE_PRODUCT type products',
+    UpdateProductCommerceSchema,
+    async (params) => updateProductCommerceHandler(context, params),
+  );
+
+  server.tool(
     'update_product_supply',
     'Modify/update products supply of SIMPLE_PRODUCT type info like prices, taxes, etc. it is only available for SIMPLE_PRODUCT type products',
     UpdateProductSupplySchema,

@@ -12,6 +12,7 @@ export * from './updateProduct.js';
 export * from './updateProductTextsHandler.js';
 export * from './updateProductCommerceHandler.js';
 export * from './updateProductSupplyHandler.js';
+export * from './updateProductWarehousingHandler.js';
 export * from './currenciesHandler.js';
 export * from './currencyHandler.js';
 export * from './countriesHandler.js';
