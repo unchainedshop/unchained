@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../context.js';
 import { ProductNotFoundError } from '../../errors.js';
+import normalizeMediaUrl from './normalizeMediaUrl.js';
 
 export const UpdateProductSchema = {
   productId: z.string().min(1).describe('ID of the product to update'),
@@ -33,10 +34,10 @@ export async function updateProductHandler(context: Context, params: UpdateProdu
       locale: context.locale,
     });
 
-    const media = await context.modules.products.media.findProductMedias({
+    const productMedias = await context.modules.products.media.findProductMedias({
       productId,
     });
-
+    const media = await normalizeMediaUrl(productMedias, context);
     return {
       content: [
         {

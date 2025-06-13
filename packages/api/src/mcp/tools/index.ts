@@ -10,3 +10,4 @@ export * from './publishProduct.js';
 export * from './unPublishProduct.js';
 export * from './updateProduct.js';
 export * from './updateProductTextsHandler.js';
+export * from './updateProductCommerceHandler.js';
