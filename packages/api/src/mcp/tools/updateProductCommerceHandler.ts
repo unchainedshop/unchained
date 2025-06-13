@@ -17,8 +17,20 @@ export const UpdateProductCommerceSchema = {
               .describe('Optional maximum quantity for this price tier'),
             isTaxable: z.boolean().optional().describe('Whether tax applies to this price'),
             isNetPrice: z.boolean().optional().describe('Whether this is a net price (without tax)'),
-            currencyCode: z.string().min(3).max(3).describe('ISO currency code (e.g., USD, EUR)'),
-            countryCode: z.string().min(2).max(2).describe('ISO country code (e.g., US, DE)'),
+            currencyCode: z
+              .string()
+              .min(3)
+              .max(3)
+              .describe(
+                'ISO currency code (e.g., USD, EUR) always use values registered in the system and if explicitly provided check if it exists',
+              ),
+            countryCode: z
+              .string()
+              .min(2)
+              .max(2)
+              .describe(
+                'ISO country code (e.g., US, DE) always use values registered in the system and if explicitly provided check if it exists',
+              ),
           }),
         )
         .nonempty()

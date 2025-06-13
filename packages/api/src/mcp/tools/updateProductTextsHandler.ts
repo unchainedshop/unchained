@@ -7,7 +7,12 @@ export const UpdateProductTextsSchema = {
   texts: z
     .array(
       z.object({
-        locale: z.string().min(2).describe('Locale code like "en", "de"'),
+        locale: z
+          .string()
+          .min(2)
+          .describe(
+            'Locale code like "en", "de" always use locales registered in the system languages, if explicitly provided check if it exists',
+          ),
         slug: z.string().optional().describe('URL slug'),
         title: z.string().optional().describe('Product title'),
         subtitle: z.string().optional().describe('Product subtitle'),
