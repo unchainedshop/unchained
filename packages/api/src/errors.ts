@@ -40,6 +40,11 @@ export const ProductWrongTypeError = createError(
   'The current type of the product does not allow this operation',
 );
 
+export const ProductVariationInfinityLoop = createError(
+  'ProductInfinityLoop',
+  'Assigning the proxy to itself as child in product assignments is not allowed, this would create an infinite loop',
+);
+
 export const AssortmentNotFoundError = createError('AssortmentNotFoundError', 'Assortment not found');
 
 export const AssortmentFilterNotFoundError = createError(

@@ -9,6 +9,7 @@ import {
   ProductWrongTypeError,
   ProductVariationVectorInvalid,
   ProductVariationVectorAlreadySet,
+  ProductVariationInfinityLoop,
 } from '../../../errors.js';
 const extractVariationMatrix = (variations = []) => {
   const cartesianProduct = (arrays) => {
@@ -60,6 +61,8 @@ export default async function addProductAssignment(
     productId: proxyId,
   });
   if (!proxyProduct) throw new ProductNotFoundError({ proxyId });
+
+  if (productId === proxyId) throw new ProductVariationInfinityLoop({ productId });
 
   if (proxyProduct.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
