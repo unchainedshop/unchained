@@ -3,7 +3,10 @@ import { Context } from '../../context.js';
 import normalizeMediaUrl from './normalizeMediaUrl.js';
 
 export const UpdateProductCommerceSchema = {
-  productId: z.string().min(1).describe('ID of the product to update commerce info'),
+  productId: z
+    .string()
+    .min(1)
+    .describe('ID of the product of all type except for CONFIGURABLE_PRODUCT to update commerce info'),
   commerce: z
     .object({
       pricing: z

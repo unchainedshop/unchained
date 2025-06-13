@@ -31,6 +31,8 @@ import {
   languagesHandler,
   LanguageSchema,
   languageHandler,
+  UpdateProductSupplySchema,
+  updateProductSupplyHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -91,9 +93,16 @@ export default function createMcpServer(context: Context) {
 
   server.tool(
     'update_product_commerce',
-    'Modify/update products commerce info like prices, taxes, etc. for currency value always use registered currency in the system and not a custom one',
+    'Modify/update products commerce info like prices, taxes, etc. for all product types except CONFIGURABLE_PRODUCT. for currency value always use registered currency in the system and not a custom one, it should not be called for CONFIGURABLE_PRODUCT type products',
     UpdateProductCommerceSchema,
     async (params) => updateProductCommerceHandler(context, params),
+  );
+
+  server.tool(
+    'update_product_supply',
+    'Modify/update products supply of SIMPLE_PRODUCT type info like prices, taxes, etc. it is only available for SIMPLE_PRODUCT type products',
+    UpdateProductSupplySchema,
+    async (params) => updateProductSupplyHandler(context, params),
   );
 
   server.tool(
