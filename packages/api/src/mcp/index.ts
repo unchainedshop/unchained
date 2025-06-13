@@ -15,6 +15,8 @@ import {
   unpublishProductHandler,
   UpdateProductSchema,
   updateProductHandler,
+  UpdateProductTextsSchema,
+  updateProductTextsHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -64,6 +66,13 @@ export default function createMcpServer(context: Context) {
     'Modify/Update generic infos of a product (tags for ex.)',
     UpdateProductSchema,
     async (params) => updateProductHandler(context, params),
+  );
+
+  server.tool(
+    'update_product_texts',
+    'Modify/update localized texts of a product',
+    UpdateProductTextsSchema,
+    async (params) => updateProductTextsHandler(context, params),
   );
 
   return server;
