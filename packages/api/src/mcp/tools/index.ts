@@ -22,3 +22,4 @@ export * from './languageHandler.js';
 export * from './updateProductPlanHandler.js';
 export * from './updateProductTokenizationHandler.js';
 export * from './productsCountHandler.js';
+export * from './createProductVariationHandler.js';
