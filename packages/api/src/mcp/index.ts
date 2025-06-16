@@ -39,6 +39,8 @@ import {
   updateProductTokenizationHandler,
   ProductsCountSchema,
   productsCountHandler,
+  CreateProductVariationSchema,
+  createProductVariationHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -179,5 +181,11 @@ export default function createMcpServer(context: Context) {
     async (params) => languageHandler(context, params),
   );
 
+  server.tool(
+    'create_product_variation',
+    'Adds/create a variation of a product, it is only available for CONFIGURABLE_PRODUCT type products',
+    CreateProductVariationSchema,
+    async (params) => createProductVariationHandler(context, params),
+  );
   return server;
 }
