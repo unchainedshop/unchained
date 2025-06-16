@@ -10,6 +10,7 @@ import {
 import { anthropic } from '@ai-sdk/anthropic';
 import { defaultLogger } from '@unchainedshop/logger';
 import rateLimit from 'express-rate-limit';
+import { Context } from '../context.js';
 
 // Define the rate limiter middleware
 const chatRateLimiter = rateLimit({
@@ -44,9 +45,8 @@ const errorHandler = (error: any): string => {
   return `Failed to stream response: ${error?.message || 'Unknown error'}`;
 };
 
-chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req, res) => {
+chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req: any, res) => {
   const { messages } = req.body;
-
   if (!ANTHROPIC_API_KEY) {
     const logMessage =
       'ANTHROPIC_API_KEY environment variable is not set. Please set it to use the chat API.';
