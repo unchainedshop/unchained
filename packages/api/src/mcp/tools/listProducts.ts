@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
 import { Context } from '../../context.js';
 import { ProductText } from '@unchainedshop/core-products';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import normalizeMediaUrl from '../utils/normalizeMediaUrl.js';
 
 /**
  * Zod schema for the list_products tool (as raw object for MCP)

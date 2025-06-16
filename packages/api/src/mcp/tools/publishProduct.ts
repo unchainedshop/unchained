@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../context.js';
 import { ProductNotFoundError, ProductWrongStatusError } from '../../errors.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../utils/getNormalizedProductDetails.js';
 
 export const PublishProductSchema = {
   productId: z.string().min(1).describe('ID of the product to publish'),
@@ -22,24 +22,12 @@ export async function publishProductHandler(context: Context, params: PublishPro
       throw new ProductWrongStatusError({ status: product.status });
     }
 
-    const publishedProduct = await modules.products.findProduct({ productId });
-
-    const texts = await context.loaders.productTextLoader.load({
-      productId: product._id,
-      locale: context.locale,
-    });
-
-    const productMedias = await context.modules.products.media.findProductMedias({
-      productId: product._id,
-    });
-    const media = await normalizeMediaUrl(productMedias, context);
-
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            product: { ...publishedProduct, texts, media },
+            product: await getNormalizedProductDetails(productId, context),
           }),
         },
       ],
