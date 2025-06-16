@@ -19,3 +19,4 @@ export * from './countriesHandler.js';
 export * from './countryHandler.js';
 export * from './languagesHandler.js';
 export * from './languageHandler.js';
+export * from './updateProductPlanHandler.js';

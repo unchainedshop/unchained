@@ -33,6 +33,8 @@ import {
   languageHandler,
   UpdateProductSupplySchema,
   updateProductSupplyHandler,
+  UpdateProductPlanSchema,
+  updateProductPlanHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -110,6 +112,12 @@ export default function createMcpServer(context: Context) {
     'Modify/update products supply of SIMPLE_PRODUCT type info like prices, taxes, etc. it is only available for SIMPLE_PRODUCT type products',
     UpdateProductSupplySchema,
     async (params) => updateProductSupplyHandler(context, params),
+  );
+  server.tool(
+    'update_product_plan',
+    'Modify/update products subscription/plan information of PLAN_PRODUCT type info like billing period, trial period and usage calculation, etc. it is only available for PLAN_PRODUCT type products',
+    UpdateProductPlanSchema,
+    async (params) => updateProductPlanHandler(context, params),
   );
 
   server.tool(
