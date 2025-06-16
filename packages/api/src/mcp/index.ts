@@ -37,6 +37,8 @@ import {
   updateProductPlanHandler,
   UpdateProductTokenizationSchema,
   updateProductTokenizationHandler,
+  ProductsCountSchema,
+  productsCountHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -50,6 +52,13 @@ export default function createMcpServer(context: Context) {
     'Search and list products with comprehensive filtering and pagination support',
     ListProductsSchema,
     async (params) => listProductsHandler(context, params),
+  );
+
+  server.tool(
+    'products_count',
+    'Search and returns total number of products registered in the system with comprehensive filtering if provided',
+    ProductsCountSchema,
+    async (params) => productsCountHandler(context, params),
   );
   server.tool('get_product', 'Get detailed product information', GetProductSchema, async (params) =>
     getProductHandler(context, params),
