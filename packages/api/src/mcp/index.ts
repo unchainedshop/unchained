@@ -35,6 +35,8 @@ import {
   updateProductSupplyHandler,
   UpdateProductPlanSchema,
   updateProductPlanHandler,
+  UpdateProductTokenizationSchema,
+  updateProductTokenizationHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -112,6 +114,12 @@ export default function createMcpServer(context: Context) {
     'Modify/update products supply of SIMPLE_PRODUCT type info like prices, taxes, etc. it is only available for SIMPLE_PRODUCT type products',
     UpdateProductSupplySchema,
     async (params) => updateProductSupplyHandler(context, params),
+  );
+  server.tool(
+    'update_tokenized_product',
+    'Modify/update products supply of TOKENIZED_PRODUCT type info like contractAddress, contractStandard, tokenId, supply, ercMetadataProperties etc. it is only available for TOKENIZED_PRODUCT type products',
+    UpdateProductTokenizationSchema,
+    async (params) => updateProductTokenizationHandler(context, params),
   );
   server.tool(
     'update_product_plan',
