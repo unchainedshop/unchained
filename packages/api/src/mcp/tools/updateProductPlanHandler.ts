@@ -15,9 +15,9 @@ export const UpdateProductPlanSchema = {
   }),
 };
 
-export const UpdateProductCommerceZodSchema = z.object(UpdateProductPlanSchema);
+export const UpdateProductPlanZodSchema = z.object(UpdateProductPlanSchema);
 
-export type UpdateProductPlanParams = z.infer<typeof UpdateProductCommerceZodSchema>;
+export type UpdateProductPlanParams = z.infer<typeof UpdateProductPlanZodSchema>;
 
 export async function updateProductPlanHandler(context: Context, params: UpdateProductPlanParams) {
   const { productId, plan } = params;

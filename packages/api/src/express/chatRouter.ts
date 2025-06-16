@@ -10,7 +10,6 @@ import {
 import { anthropic } from '@ai-sdk/anthropic';
 import { defaultLogger } from '@unchainedshop/logger';
 import rateLimit from 'express-rate-limit';
-import { Context } from '../context.js';
 
 // Define the rate limiter middleware
 const chatRateLimiter = rateLimit({
