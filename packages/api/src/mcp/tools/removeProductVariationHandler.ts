@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../context.js';
 import { ProductVariationNotFoundError } from '../../errors.js';
+import { getNormalizedProductDetails } from '../utils/getNormalizedProductDetails.js';
 
 export const RemoveProductVariationSchema = {
   productVariationId: z
@@ -31,7 +32,9 @@ export async function removeProductVariationHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ variation: productVariation }),
+          text: JSON.stringify({
+            product: await getNormalizedProductDetails(productVariationId, context),
+          }),
         },
       ],
     };

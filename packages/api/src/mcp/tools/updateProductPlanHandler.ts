@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../context.js';
 import { ProductNotFoundError, ProductWrongStatusError } from '../../errors.js';
 import { ProductTypes } from '@unchainedshop/core-products';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../utils/getNormalizedProductDetails.js';
 
 export const UpdateProductPlanSchema = {
   productId: z.string().min(1).describe('ID of the product of type PLAN_PRODUCT to update only'),
@@ -35,27 +35,12 @@ export async function updateProductPlanHandler(context: Context, params: UpdateP
 
     await modules.products.update(productId, { plan });
 
-    const updatedProduct = await modules.products.findProduct({ productId });
-    const productTexts = await context.loaders.productTextLoader.load({
-      productId,
-      locale: context.locale,
-    });
-
-    const productMedias = await context.modules.products.media.findProductMedias({
-      productId,
-    });
-    const media = await normalizeMediaUrl(productMedias, context);
-
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            product: {
-              ...updatedProduct,
-              texts: productTexts,
-              media,
-            },
+            product: await getNormalizedProductDetails(productId, context),
           }),
         },
       ],

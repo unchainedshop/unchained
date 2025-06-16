@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Context } from '../../context.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../utils/getNormalizedProductDetails.js';
 
 export const UpdateProductTextsSchema = {
   productId: z.string().min(1).describe('ID of the product to update texts for'),
@@ -36,24 +36,12 @@ export async function updateProductTextsHandler(context: Context, params: Update
 
   try {
     await modules.products.texts.updateTexts(productId, texts as any[]);
-
-    const updatedProduct = await modules.products.findProduct({ productId });
-    const updatedTexts = await context.loaders.productTextLoader.load({
-      productId,
-      locale: context.locale,
-    });
-
-    const productMedias = await context.modules.products.media.findProductMedias({
-      productId,
-    });
-    const media = await normalizeMediaUrl(productMedias, context);
-
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            product: { ...updatedProduct, texts: updatedTexts, media },
+            product: await getNormalizedProductDetails(productId, context),
           }),
         },
       ],

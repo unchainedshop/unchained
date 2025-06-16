@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../context.js';
 import { ProductTypes, ProductVariationType } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../errors.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../utils/getNormalizedProductDetails.js';
 
 const productVariationTypeKeys = Object.keys(ProductVariationType) as [
   keyof typeof ProductVariationType,
@@ -61,27 +61,13 @@ export async function createProductVariationHandler(
     if (texts) {
       await modules.products.variations.texts.updateVariationTexts(newVariation._id, texts as any);
     }
-    const updatedProduct = await modules.products.findProduct({ productId });
-    const productTexts = await context.loaders.productTextLoader.load({
-      productId,
-      locale: context.locale,
-    });
-
-    const productMedias = await context.modules.products.media.findProductMedias({
-      productId,
-    });
-    const media = await normalizeMediaUrl(productMedias, context);
 
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            product: {
-              ...updatedProduct,
-              texts: productTexts,
-              media,
-            },
+            product: await getNormalizedProductDetails(productId, context),
           }),
         },
       ],
