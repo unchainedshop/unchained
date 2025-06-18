@@ -18,7 +18,7 @@ export const CreateProductSchema = {
           .string()
           .min(2)
           .describe(
-            'Locale code like "en", "de" always use locales registered in the system languages, if explicitly provided check if it exists',
+            'Locale code like "en", "de" always use locales registered in the system languages, if language explicitly provided check if it exists',
           ),
         slug: z.string().optional().describe('URL slug'),
         title: z.string().optional().describe('Product title'),
