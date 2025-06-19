@@ -11,7 +11,7 @@ import seed from './seed.js';
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
-  trustProxy: process.env.NODE_ENV !== 'production',
+  trustProxy: true,
 });
 
 try {

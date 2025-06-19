@@ -12,7 +12,7 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
-  trustProxy: process.env.NODE_ENV !== 'production',
+  trustProxy: true,
 });
 
 try {
