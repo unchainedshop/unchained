@@ -1,0 +1,98 @@
+---
+pagination_next: null
+pagination_prev: null
+id: assortment-texts
+title: AssortmentTexts
+---
+
+
+
+
+export const Bullet = () => <><span style={{ fontWeight: 'normal', fontSize: '.5em', color: 'var(--ifm-color-secondary-darkest)' }}>&nbsp;●&nbsp;</span></>
+
+export const SpecifiedBy = (props) => <>Specification<a className="link" style={{ fontSize:'1.5em', paddingLeft:'4px' }} target="_blank" href={props.url} title={'Specified by ' + props.url}>⎘</a></>
+
+export const Badge = (props) => <><span className={props.class}>{props.text}</span></>
+
+import { useState } from 'react';
+
+export const Details = ({ dataOpen, dataClose, children, startOpen = false }) => {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <details {...(open ? { open: true } : {})} className="details" style={{ border:'none', boxShadow:'none', background:'var(--ifm-background-color)' }}>
+      <summary
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((open) => !open);
+        }}
+        style={{ listStyle:'none' }}
+      >
+      {open ? dataOpen : dataClose}
+      </summary>
+      {open && children}
+    </details>
+  );
+};
+
+
+
+
+
+
+
+
+No description
+
+
+```graphql
+type AssortmentTexts {
+  _id: ID!
+  locale: Locale
+  slug: String
+  title: String
+  subtitle: String
+  description: String
+}
+```
+
+
+
+
+### Fields
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentTexts.<b>_id</b></code>](#)<Bullet />[`ID!`](/schema/types/scalars/id.mdx) <Badge class="badge badge--secondary" text="non-null"/> <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentTexts.<b>locale</b></code>](#)<Bullet />[`Locale`](/schema/types/scalars/locale.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentTexts.<b>slug</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentTexts.<b>title</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentTexts.<b>subtitle</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+#### [<code style={{ fontWeight: 'normal' }}>AssortmentTexts.<b>description</b></code>](#)<Bullet />[`String`](/schema/types/scalars/string.mdx) <Badge class="badge badge--secondary" text="scalar"/> 
+
+
+
+
+
+
+
+### Returned By
+
+[`translatedAssortmentTexts`](/schema/operations/queries/translated-assortment-texts.mdx)  <Badge class="badge badge--secondary" text="query"/><Bullet />[`updateAssortmentTexts`](/schema/operations/mutations/update-assortment-texts.mdx)  <Badge class="badge badge--secondary" text="mutation"/>
+
+### Member Of
+
+[`Assortment`](/schema/types/objects/assortment.mdx)  <Badge class="badge badge--secondary" text="object"/><Bullet />[`AssortmentPathLink`](/schema/types/objects/assortment-path-link.mdx)  <Badge class="badge badge--secondary" text="object"/>
+
