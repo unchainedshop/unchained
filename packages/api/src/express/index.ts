@@ -13,6 +13,7 @@ import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
+import chatRouter from './chatRouter.js';
 
 const resolveUserRemoteAddress = (req: e.Request) => {
   const remoteAddress =
@@ -195,4 +196,5 @@ export const connect = (
 
   expressApp.use(MCP_API_PATH, e.json());
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
+  expressApp.use(chatRouter);
 };
