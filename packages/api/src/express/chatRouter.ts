@@ -9,31 +9,9 @@ import {
 } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { defaultLogger } from '@unchainedshop/logger';
-import rateLimit from 'express-rate-limit';
-
-// Define the rate limiter middleware
-const chatRateLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 5, // Limit each IP to 5 requests per windowMs
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    error: 'Too many requests to /chat. Please wait and try again later.',
-  },
-});
 
 const chatRouter = express.Router();
 const { CHAT_API_PATH = '/chat', ANTHROPIC_API_KEY, ROOT_URL = 'http://localhost:4010' } = process.env;
-
-const rootUrl = ROOT_URL;
-try {
-  const url = new URL(rootUrl);
-  if (!['http:', 'https:'].includes(url.protocol))
-    throw new Error('Configuration error: Invalid protocol');
-} catch (error) {
-  defaultLogger.error('Invalid ROOT_URL environment variable');
-  throw error;
-}
 
 const errorHandler = (error: any): string => {
   if (NoSuchToolError.isInstance(error)) return 'NoSuchToolError';
@@ -44,7 +22,7 @@ const errorHandler = (error: any): string => {
   return `Failed to stream response: ${error?.message || 'Unknown error'}`;
 };
 
-chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req: any, res) => {
+chatRouter.post(CHAT_API_PATH, async (req: any, res) => {
   const { messages } = req.body;
   if (!ANTHROPIC_API_KEY) {
     const logMessage =
@@ -65,7 +43,7 @@ chatRouter.post(CHAT_API_PATH, chatRateLimiter, async (req: any, res) => {
     client = await createMCPClient({
       transport: new StdioMCPTransport({
         command: 'npx',
-        args: ['-y', 'supergateway', '--streamableHttp', `${rootUrl}/mcp`],
+        args: ['-y', 'supergateway', '--streamableHttp', `${ROOT_URL}/mcp`],
         env: {},
       }),
     });
