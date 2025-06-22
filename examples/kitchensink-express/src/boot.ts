@@ -8,6 +8,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { expressRouter } from '@unchainedshop/admin-ui';
 import seed from './seed.js';
 import cors from 'cors';
+import { anthropic } from '@ai-sdk/anthropic';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
@@ -27,7 +28,16 @@ app.use(express.json());
 try {
   const engine = await startPlatform({
     modules: defaultModules,
+    chatConfiguration: {
+      system:
+        'do not include the data in your summary, just write a summary about it never list all the fields of a result, just summarize paragraph about your findings, if necessary',
+      model: anthropic('claude-4-sonnet-20250514'),
+
+      maxTokens: 1000,
+      maxSteps: 3,
+    }
   });
+
 
   connect(app, engine, { allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production' });
   connectDefaultPluginsToExpress(app, engine);

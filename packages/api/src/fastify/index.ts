@@ -112,7 +112,12 @@ export const connect = (
   {
     graphqlHandler,
     db,
-  }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  }: {
+    graphqlHandler: YogaServerInstance<any, any>;
+    mcpChatHandler?: YogaServerInstance<any, any>;
+    db: mongodb.Db;
+    unchainedAPI: UnchainedCore;
+  },
   {
     allowRemoteToLocalhostSecureCookies = false,
   }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},

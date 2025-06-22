@@ -10,6 +10,7 @@ import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
 import { IRoleOptionConfig } from '@unchainedshop/roles';
+import { setupMCPChatHandler } from './setup/setupMCPChatHandler.js';
 
 export { MessageTypes };
 
@@ -19,6 +20,14 @@ export type PlatformOptions = {
   };
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions;
+  chatConfiguration?: {
+    tools?: any[];
+    model?: any;
+    messages?: any;
+    maxTokens?: number;
+    maxSteps?: number;
+    system?: string;
+  };
 } & Omit<UnchainedCoreOptions, 'bulkImporter' | 'migrationRepository' | 'db'> &
   Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 
@@ -54,11 +63,13 @@ export const startPlatform = async ({
   rolesOptions = {},
   bulkImporter: bulkImporterOptions,
   workQueueOptions,
+  chatConfiguration,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
   graphqlHandler: any;
   db: mongodb.Db;
+  mcpChatHandler?: any;
 }> => {
   exitOnMissingEnvironmentVariables();
   existOnInvalidEnvironmentVariables();
@@ -95,6 +106,7 @@ export const startPlatform = async ({
   const graphqlHandler = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
+    chatConfiguration,
     ...arbitraryAPIServerConfiguration,
   });
 
@@ -104,7 +116,7 @@ export const startPlatform = async ({
     migrationRepository,
     ...workQueueOptions,
   });
-
+  const mcpChatHandler = await setupMCPChatHandler(chatConfiguration, unchainedAPI);
   const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
     with: { type: 'json' },
   });
@@ -124,5 +136,5 @@ export const startPlatform = async ({
   process.on('SIGTERM', cleanup('SIGTERM'));
   process.on('SIGINT', cleanup('SIGINT'));
 
-  return { unchainedAPI, graphqlHandler, db };
+  return { unchainedAPI, graphqlHandler, db, mcpChatHandler };
 };
