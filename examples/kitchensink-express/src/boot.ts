@@ -8,9 +8,10 @@ import { createLogger } from '@unchainedshop/logger';
 import { expressRouter } from '@unchainedshop/admin-ui';
 import seed from './seed.js';
 import cors from 'cors';
-
+import { anthropic } from '@ai-sdk/anthropic';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
+const { ANTHROPIC_API_KEY, CHAT_API_PATH = '/chat' } = process.env || {};
 
 const logger = createLogger('express');
 const app = express();
@@ -25,11 +26,30 @@ const httpServer = http.createServer(app);
 app.use(express.json());
 
 try {
+  let chatConfiguration = null;
+
+  if (ANTHROPIC_API_KEY) {
+    logger.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
+    chatConfiguration = {
+      system:
+        'do not include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary',
+      model: anthropic('claude-4-sonnet-20250514'),
+      maxTokens: 1000,
+      maxSteps: 3,
+    };
+  } else {
+    logger.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
+  }
+
   const engine = await startPlatform({
     modules: defaultModules,
+    chatConfiguration,
   });
 
-  connect(app, engine, { allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production' });
+  connect(app, engine, {
+    allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+    chatConfiguration,
+  });
   connectDefaultPluginsToExpress(app, engine);
   app.use('/', expressRouter);
 

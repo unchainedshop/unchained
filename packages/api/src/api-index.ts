@@ -5,6 +5,7 @@ import {
   getCurrentContextResolver,
   AdminUiConfig,
   UnchainedContextResolver,
+  MCPChatConfig,
 } from './context.js';
 import { UnchainedCore } from '@unchainedshop/core';
 export * from './events.js';
@@ -24,6 +25,7 @@ export type UnchainedServerOptions = {
   roles?: any;
   adminUiConfig?: AdminUiConfig;
   unchainedAPI: UnchainedCore;
+  chatConfiguration?: MCPChatConfig;
   context?: (defaultResolver: UnchainedContextResolver) => UnchainedContextResolver;
 } & GraphQLServerOptions;
 
@@ -33,12 +35,17 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     context: customContext,
     roles,
     adminUiConfig = {},
+    chatConfiguration = null,
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
     ...serverOptions
   } = options || {};
 
-  const contextResolver = createContextResolver(unchainedAPI, { roles, adminUiConfig });
+  const contextResolver = createContextResolver(unchainedAPI, {
+    roles,
+    adminUiConfig,
+    chatConfiguration,
+  });
 
   setCurrentContextResolver(
     customContext

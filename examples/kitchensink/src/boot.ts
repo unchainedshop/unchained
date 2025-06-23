@@ -12,7 +12,7 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
-  trustProxy: process.env.NODE_ENV !== 'production',
+  trustProxy: true,
 });
 
 try {
@@ -32,7 +32,7 @@ try {
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
 
-  await fastify.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+  await fastify.listen({ host: '0.0.0.0', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);

@@ -31,6 +31,15 @@ export interface AdminUiConfig {
   singleSignOnURL?: string;
 }
 
+export interface MCPChatConfig {
+  tools?: any[];
+  model?: any;
+  messages?: any;
+  maxTokens?: number;
+  maxSteps?: number;
+  system?: string;
+}
+
 export interface UnchainedHTTPServerContext {
   setHeader: (key: string, value: string) => void;
   getHeader: (key: string) => string;
@@ -42,6 +51,7 @@ export type Context = UnchainedCore & {
   version?: string;
   roles?: any;
   adminUiConfig?: AdminUiConfig;
+  chatConfiguration?: MCPChatConfig;
   loaders: UnchainedLoaders;
 } & UnchainedUserContext &
   UnchainedLocaleContext &
@@ -69,7 +79,7 @@ const { UNCHAINED_API_VERSION = packageJson?.version || '3.x' } = process.env;
 export const createContextResolver =
   (
     unchainedAPI: UnchainedCore,
-    unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
+    unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig' | 'chatConfiguration'>,
   ): UnchainedContextResolver =>
   async ({
     getHeader,

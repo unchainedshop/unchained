@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
-    "@docusaurus/preset-classic": "^3.8.0",
+    "@docusaurus/preset-classic": "^3.8.1",
     "@easyops-cn/docusaurus-search-local": "^0.50.0",
-    "@graphql-markdown/diff": "^1.1.10",
-    "@graphql-markdown/docusaurus": "^1.29.0",
+    "@graphql-markdown/diff": "^1.1.11",
+    "@graphql-markdown/docusaurus": "^1.29.1",
     "@graphql-tools/graphql-file-loader": "^8.0.20",
     "@graphql-tools/url-loader": "^8.0.31",
     "@mdx-js/react": "^3.1.0",

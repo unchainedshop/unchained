@@ -10,8 +10,9 @@ export default function shopInfo(
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
   chatEnabled?: boolean;
+  chatConfiguration?: Record<string, any>;
 } {
-  const { adminUiConfig } = context;
+  const { adminUiConfig, chatConfiguration } = context;
   log('query shopInfo', { userId: context.userId });
 
   return {
@@ -29,7 +30,7 @@ export default function shopInfo(
       },
     },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,
-    chatEnabled: !!process.env?.ANTHROPIC_API_KEY,
+    chatEnabled: !!chatConfiguration?.model,
   };
 }
 
