@@ -13,7 +13,7 @@
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.8.1",
-    "@easyops-cn/docusaurus-search-local": "^0.50.0",
+    "@easyops-cn/docusaurus-search-local": "^0.51.1",
     "@graphql-markdown/diff": "^1.1.11",
     "@graphql-markdown/docusaurus": "^1.29.1",
     "@graphql-tools/graphql-file-loader": "^8.0.20",
@@ -32,7 +32,7 @@
     "@graphql-markdown/types": "^1.7.0",
     "docusaurus-plugin-typedoc": "^1.4.0",
     "typedoc": "^0.28.5",
-    "typedoc-plugin-markdown": "^4.6.4"
+    "typedoc-plugin-markdown": "^4.7.0"
   },
   "browserslist": {
     "production": [
