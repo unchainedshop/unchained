@@ -10,7 +10,7 @@ import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
 import { IRoleOptionConfig } from '@unchainedshop/roles';
-import { setupMCPChatHandler } from './setup/setupMCPChatHandler.js';
+import { setupMCPChatHandler } from '@unchainedshop/api/src/express/setupMCPChatHandler.js';
 
 export { MessageTypes };
 

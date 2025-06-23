@@ -10,7 +10,7 @@ import {
 } from 'ai';
 import { defaultLogger } from '@unchainedshop/logger';
 
-const { ROOT_URL, ANTHROPIC_API_KEY } = process.env;
+const { ROOT_URL } = process.env;
 const errorHandler = (error: any): string => {
   if (NoSuchToolError.isInstance(error)) return 'NoSuchToolError';
   if (InvalidToolArgumentsError.isInstance(error)) return 'InvalidToolArgumentsError';
@@ -31,19 +31,6 @@ export const setupMCPChatHandler = async (chatConfiguration, context: UnchainedC
     }
 
     const { messages } = req.body;
-    if (!ANTHROPIC_API_KEY) {
-      const logMessage =
-        'ANTHROPIC_API_KEY environment variable is not set. Please set it to use the chat API.';
-      defaultLogger.error(logMessage);
-      res.status(503).json({
-        error: {
-          code: 'CHAT_API_UNAVAILABLE',
-          message: 'Chat service temporarily unavailable. please try again letter',
-        },
-        id: null,
-      });
-      return null;
-    }
 
     try {
       client = await createMCPClient({
