@@ -62,7 +62,6 @@ export const startPlatform = async ({
   rolesOptions = {},
   bulkImporter: bulkImporterOptions,
   workQueueOptions,
-  chatConfiguration,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
@@ -104,7 +103,6 @@ export const startPlatform = async ({
   const graphqlHandler = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
-    chatConfiguration,
     ...arbitraryAPIServerConfiguration,
   });
 

@@ -1,4 +1,3 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import { Experimental_StdioMCPTransport as StdioMCPTransport } from 'ai/mcp-stdio';
 import { Request, RequestHandler, Response } from 'express';
 import {
@@ -9,6 +8,7 @@ import {
   streamText,
 } from 'ai';
 import { defaultLogger } from '@unchainedshop/logger';
+import { Context } from '../context.js';
 
 const { ROOT_URL } = process.env;
 const errorHandler = (error: any): string => {
@@ -19,12 +19,15 @@ const errorHandler = (error: any): string => {
   defaultLogger.error(error);
   return `Failed to stream response: ${error?.message || 'Unknown error'}`;
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const setupMCPChatHandler = async (chatConfiguration, context: UnchainedCore) => {
+
+export const setupMCPChatHandler = (chatConfiguration) => {
   let client;
-  if (!chatConfiguration) return null;
+  if (!chatConfiguration || !chatConfiguration?.model) return null;
   const { tools = {}, ...restChatConfig } = chatConfiguration || {};
-  const mcpChatHandler: RequestHandler = async (req: Request, res: Response) => {
+  const mcpChatHandler: RequestHandler = async (
+    req: Request & { unchainedContext: Context },
+    res: Response,
+  ) => {
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
       return null;

@@ -8,11 +8,12 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import { User } from '@unchainedshop/core-users';
 
-import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
+import { getCurrentContextResolver, LoginFn, LogoutFn, MCPChatConfig } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
+import { setupMCPChatHandler } from './setupMCPChatHandler.js';
 
 const resolveUserRemoteAddress = (req: e.Request) => {
   const remoteAddress =
@@ -35,6 +36,7 @@ const {
   UNCHAINED_COOKIE_DOMAIN,
   UNCHAINED_COOKIE_SAMESITE,
   UNCHAINED_COOKIE_INSECURE,
+  CHAT_API_PATH = '/chat',
 } = process.env;
 
 const addContext = async function middlewareWithContext(
@@ -136,7 +138,11 @@ export const connect = (
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
-  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
+    chatConfiguration,
+  }: {
+    allowRemoteToLocalhostSecureCookies?: boolean;
+    chatConfiguration?: MCPChatConfig;
+  } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
     // Workaround: Allow to use sandbox with localhost
@@ -199,4 +205,9 @@ export const connect = (
 
   expressApp.use(MCP_API_PATH, e.json());
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
+
+  const mcpChatHandler = setupMCPChatHandler(chatConfiguration);
+  if (mcpChatHandler) {
+    expressApp.use(CHAT_API_PATH, mcpChatHandler);
+  }
 };
