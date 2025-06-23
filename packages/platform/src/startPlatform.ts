@@ -10,7 +10,6 @@ import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
 import { IRoleOptionConfig } from '@unchainedshop/roles';
-import { setupMCPChatHandler } from '@unchainedshop/api/src/express/setupMCPChatHandler.js';
 
 export { MessageTypes };
 
@@ -69,7 +68,6 @@ export const startPlatform = async ({
   unchainedAPI: UnchainedCore;
   graphqlHandler: any;
   db: mongodb.Db;
-  mcpChatHandler?: any;
 }> => {
   exitOnMissingEnvironmentVariables();
   existOnInvalidEnvironmentVariables();
@@ -116,7 +114,7 @@ export const startPlatform = async ({
     migrationRepository,
     ...workQueueOptions,
   });
-  const mcpChatHandler = await setupMCPChatHandler(chatConfiguration, unchainedAPI);
+
   const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
     with: { type: 'json' },
   });
@@ -136,5 +134,5 @@ export const startPlatform = async ({
   process.on('SIGTERM', cleanup('SIGTERM'));
   process.on('SIGINT', cleanup('SIGINT'));
 
-  return { unchainedAPI, graphqlHandler, db, mcpChatHandler };
+  return { unchainedAPI, graphqlHandler, db };
 };

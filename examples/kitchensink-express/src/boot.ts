@@ -9,10 +9,10 @@ import { expressRouter } from '@unchainedshop/admin-ui';
 import seed from './seed.js';
 import cors from 'cors';
 import { anthropic } from '@ai-sdk/anthropic';
-
+import { setupMCPChatHandler } from '@unchainedshop/api/src/express/setupMCPChatHandler.js';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-const { ANTHROPIC_API_KEY } = process.env || {}
+const { ANTHROPIC_API_KEY, CHAT_API_PATH = '/chat', } = process.env || {}
 
 const logger = createLogger('express');
 const app = express();
@@ -47,9 +47,14 @@ try {
     chatConfiguration,
   });
 
-
   connect(app, engine, { allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production' });
   connectDefaultPluginsToExpress(app, engine);
+
+  const mcpChatHandler = await setupMCPChatHandler(chatConfiguration, engine.unchainedAPI);
+
+  if (mcpChatHandler) {
+    app.use(CHAT_API_PATH, mcpChatHandler);
+  }
   app.use('/', expressRouter);
 
   // Seed Database and Set a super insecure Access Token for admin

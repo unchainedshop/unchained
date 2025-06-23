@@ -35,7 +35,6 @@ const {
   UNCHAINED_COOKIE_DOMAIN,
   UNCHAINED_COOKIE_SAMESITE,
   UNCHAINED_COOKIE_INSECURE,
-  CHAT_API_PATH = '/chat',
 } = process.env;
 
 const addContext = async function middlewareWithContext(
@@ -129,11 +128,9 @@ export const connect = (
   expressApp: e.Express,
   {
     graphqlHandler,
-    mcpChatHandler,
     db,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
-    mcpChatHandler?: YogaServerInstance<any, any>;
     db: mongodb.Db;
     unchainedAPI: UnchainedCore;
   },
@@ -202,5 +199,4 @@ export const connect = (
 
   expressApp.use(MCP_API_PATH, e.json());
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
-  if (mcpChatHandler) expressApp.use(CHAT_API_PATH, mcpChatHandler);
 };

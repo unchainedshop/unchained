@@ -114,7 +114,6 @@ export const connect = (
     db,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
-    mcpChatHandler?: YogaServerInstance<any, any>;
     db: mongodb.Db;
     unchainedAPI: UnchainedCore;
   },
