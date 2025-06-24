@@ -39,7 +39,7 @@ export const startDb = async () => {
       "Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set",
     );
   }
-  return `${mongoInstance.getUri()}unchained`;
+  return `${mongoInstance.getUri()}${process.env.NODE_ENV === 'test' ? 'test' : 'unchained'}`;
 };
 
 export const stopDb = async () => {
