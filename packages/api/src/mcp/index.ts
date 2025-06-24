@@ -47,6 +47,10 @@ import {
   addProductAssignmentHandler,
   CreateProductVariationOptionSchema,
   createProductVariationOptionHandler,
+  removeProductAssignmentHandler,
+  RemoveProductVariationOptionSchema,
+  removeProductVariationOptionHandler,
+  RemoveProductAssignmentSchema,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -213,6 +217,20 @@ export default function createMcpServer(context: Context) {
     'Adds variation option to an existing product variations',
     CreateProductVariationOptionSchema,
     async (params) => createProductVariationOptionHandler(context, params),
+  );
+
+  server.tool(
+    'remove_variation_options',
+    'Removes product option value for product variation with the provided variation option value',
+    RemoveProductVariationOptionSchema,
+    async (params) => removeProductVariationOptionHandler(context, params),
+  );
+
+  server.tool(
+    'remove_product_variation_assignment',
+    'Unlinks a product from a ConfigurableProduct by providing a configuration combination that uniquely identifies a row in the assignment matrix',
+    RemoveProductAssignmentSchema,
+    async (params) => removeProductAssignmentHandler(context, params),
   );
   return server;
 }
