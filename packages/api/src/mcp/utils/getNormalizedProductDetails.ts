@@ -4,8 +4,9 @@ import normalizeMediaUrl from './normalizeMediaUrl.js';
 
 export async function getNormalizedProductDetails(productId: string, context: Context) {
   const { modules, locale, loaders } = context;
-
   const product = await modules.products.findProduct({ productId });
+
+  if (!product) return null;
 
   const texts = await loaders.productTextLoader.load({
     productId,

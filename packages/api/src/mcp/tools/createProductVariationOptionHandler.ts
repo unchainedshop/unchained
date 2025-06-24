@@ -31,7 +31,6 @@ export async function createProductVariationOptionHandler(
 ) {
   const { productVariationId, option, texts } = params;
   const { modules } = context;
-
   try {
     const variation = await modules.products.variations.findProductVariation({
       productVariationId,
@@ -56,7 +55,7 @@ export async function createProductVariationOptionHandler(
           type: 'text' as const,
           text: JSON.stringify({
             variation: newOption,
-            product: await getNormalizedProductDetails(productVariationId, context),
+            product: await getNormalizedProductDetails(newOption?.productId, context),
           }),
         },
       ],

@@ -203,7 +203,7 @@ export default function createMcpServer(context: Context) {
 
   server.tool(
     'assign_product_variation',
-    'Link a product to a ConfigurableProduct by providing a vector combination that uniquely identifies it in the assignment matrix',
+    'Link a product to a ConfigurableProduct variation option by providing a vector combination that uniquely identifies the variation option',
     AssignProductVariationSchema,
     async (params) => addProductAssignmentHandler(context, params),
   );
