@@ -11,7 +11,7 @@ import cors from 'cors';
 import { anthropic } from '@ai-sdk/anthropic';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-const { ANTHROPIC_API_KEY, CHAT_API_PATH = '/chat' } = process.env || {};
+const { ANTHROPIC_API_KEY } = process.env || {};
 
 const logger = createLogger('express');
 const app = express();

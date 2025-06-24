@@ -31,3 +31,4 @@ export * from './removeProductVariationOptionHandler.js';
 export * from './createLanguageHandler.js';
 export * from './updateLanguageHandler.js';
 export * from './removeLanguageHandler.js';
+export * from './addProductMediaUploadHandler.js';
