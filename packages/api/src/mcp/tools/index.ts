@@ -25,3 +25,4 @@ export * from './productsCountHandler.js';
 export * from './createProductVariationHandler.js';
 export * from './removeProductVariationHandler.js';
 export * from './addProductAssignmentHandler.js';
+export * from './createProductVariationOptionHandler.js';

@@ -17,15 +17,23 @@ export const CreateProductVariationSchema = {
       'Product ID for which to create the variation. it should only be CONFIGURABLE_PRODUCT type product id',
     ),
   variation: z.object({
-    key: z.string().min(1),
+    key: z
+      .string()
+      .min(1)
+      .describe('unique value that is not already used as key for the products variations vector'),
     type: z.enum(productVariationTypeKeys).describe('Product variation types'),
   }),
   texts: z
     .array(
       z.object({
-        locale: z.string().min(2),
-        title: z.string().optional(),
-        subtitle: z.string().optional(),
+        locale: z
+          .string()
+          .min(2)
+          .describe(
+            'Locale code like "en", "de" always use locales registered in the system languages, if language explicitly provided check if it exists',
+          ),
+        title: z.string().describe('variation title'),
+        subtitle: z.string().optional().describe('variation additional description'),
       }),
     )
     .optional(),

@@ -23,7 +23,7 @@ app.use(
 );
 
 const httpServer = http.createServer(app);
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 try {
   let chatConfiguration = null;
@@ -34,8 +34,8 @@ try {
       system:
         'do not include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary',
       model: anthropic('claude-4-sonnet-20250514'),
-      maxTokens: 1000,
-      maxSteps: 3,
+      maxTokens: 8000,
+      maxSteps: 1,
     };
   } else {
     logger.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
