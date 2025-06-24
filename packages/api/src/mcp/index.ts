@@ -51,6 +51,12 @@ import {
   RemoveProductVariationOptionSchema,
   removeProductVariationOptionHandler,
   RemoveProductAssignmentSchema,
+  CreateLanguageSchema,
+  createLanguageHandler,
+  UpdateLanguageSchema,
+  updateLanguageHandler,
+  RemoveLanguageSchema,
+  removeLanguageHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context) {
@@ -232,5 +238,18 @@ export default function createMcpServer(context: Context) {
     RemoveProductAssignmentSchema,
     async (params) => removeProductAssignmentHandler(context, params),
   );
+
+  server.tool('add_language', 'Adds new language', CreateLanguageSchema, async (params) =>
+    createLanguageHandler(context, params),
+  );
+
+  server.tool('update_language', 'Updates language', UpdateLanguageSchema, async (params) =>
+    updateLanguageHandler(context, params),
+  );
+
+  server.tool('remove_language', 'Deletes a language', RemoveLanguageSchema, async (params) =>
+    removeLanguageHandler(context, params),
+  );
+
   return server;
 }

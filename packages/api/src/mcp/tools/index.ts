@@ -28,3 +28,6 @@ export * from './addProductAssignmentHandler.js';
 export * from './createProductVariationOptionHandler.js';
 export * from './removeProductAssignmentHandler.js';
 export * from './removeProductVariationOptionHandler.js';
+export * from './createLanguageHandler.js';
+export * from './updateLanguageHandler.js';
+export * from './removeLanguageHandler.js';
