@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.0.4",
     "typescript": "^5.8.3"
   }
 }

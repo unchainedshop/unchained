@@ -47,9 +47,9 @@
     "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
-    "@types/mustache": "^4.2.5",
-    "@types/node": "^22.15.3",
-    "tsx": "^4.19.4",
+    "@types/mustache": "^4.2.6",
+    "@types/node": "^24.0.4",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
