@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "dependencies": {
     "@unchainedshop/api": "^4.0.0-rc.2",
