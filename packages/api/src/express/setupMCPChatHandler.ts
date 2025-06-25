@@ -33,8 +33,7 @@ export const setupMCPChatHandler = (chatConfiguration) => {
       return null;
     }
 
-    const { messages, ...rest } = req.body;
-    console.log({ messages, ...rest });
+    const { messages } = req.body;
 
     try {
       client = await createMCPClient({

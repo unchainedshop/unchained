@@ -4,9 +4,9 @@ import { log } from '@unchainedshop/logger';
 import { FileNotFoundError, FileUploadExpiredError } from '../../errors.js';
 
 export const AddProductMediaUploadSchema = {
-  mediaName: z.string().min(1).describe('Name of the media file (e.g. "image.png")'),
+  mediaName: z.string().min(1).optional().describe('Name of the media file (e.g. "image.png") use random name if not provided'),
   productId: z.string().min(1).describe('ID of the product to link media to'),
-  url: z.string().describe('Base64-encoded file content (data URL or plain base64)'),
+  url: z.string().describe('Base64-encoded Or a data URL of the media'),
 };
 
 export const AddProductMediaUploadZodSchema = z.object(AddProductMediaUploadSchema);
@@ -39,9 +39,6 @@ export async function addProductMediaUploadHandler(
     const uploadRes = await fetch(putURL, {
       method: 'PUT',
       body: buffer,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-      },
     });
 
     if (!uploadRes.ok) {
@@ -54,7 +51,6 @@ export async function addProductMediaUploadHandler(
     if (file.expires && new Date(file.expires).getTime() < Date.now()) {
       throw new FileUploadExpiredError({ fileId });
     }
-
     const linked = await services.files.linkFile({ fileId, size, type });
 
     return {
@@ -62,14 +58,13 @@ export async function addProductMediaUploadHandler(
         {
           type: 'text' as const,
           text: JSON.stringify({
-            uploaded: true,
-            confirmed: true,
             file: linked,
           }),
         },
       ],
     };
   } catch (error) {
+    console.log(error);
     return {
       content: [
         {
