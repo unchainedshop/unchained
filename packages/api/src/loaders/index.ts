@@ -14,7 +14,6 @@ import { File } from '@unchainedshop/core-files';
 import buildTextMap from './buildTextMap.js';
 import buildLocaleMap from './buildLocaleMap.js';
 
-
 const loaders = async (unchainedAPI: UnchainedCore) => {
   return {
     assortmentLoader: new DataLoader<{ assortmentId: string }, Assortment>(async (queries) => {

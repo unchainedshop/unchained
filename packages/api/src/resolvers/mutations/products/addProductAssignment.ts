@@ -3,7 +3,12 @@ import { ProductTypes } from '@unchainedshop/core-products';
 
 import { Context } from '../../../context.js';
 import { ProductConfiguration } from '@unchainedshop/core-products';
-import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError, ProductVariationInfinityLoop } from '../../../errors.js';
+import {
+  ProductNotFoundError,
+  InvalidIdError,
+  ProductWrongTypeError,
+  ProductVariationInfinityLoop,
+} from '../../../errors.js';
 
 export default async function addProductAssignment(
   root: never,

@@ -6,7 +6,7 @@ const testTexts = [
   // 1 has translations in French and German
   { locale: 'fr', _id: 'french-1', entityId: '1' },
   { locale: 'de', _id: 'german-1', entityId: '1' },
-  
+
   // 2 only has Ialien translations
   { locale: 'it', _id: 'italian-2', entityId: '2' },
 
@@ -20,30 +20,30 @@ const testTexts = [
 describe('buildTextMap', () => {
   it('Generate a correct text map for all fallbacks', () => {
     const localeMap = {
-      'de': ['de-CH', 'fr', 'it'],
-      'fr': ['fr'],
-      'it': ['it'],
+      de: ['de-CH', 'fr', 'it'],
+      fr: ['fr'],
+      it: ['it'],
     };
     const expected = {
       'de-CH1': {
         _id: 'german-1',
       },
-      'fr1': {
+      fr1: {
         _id: 'french-1',
       },
-      'it1': {
+      it1: {
         _id: 'german-1',
       },
       'de-CH4': {
         _id: 'german-4',
       },
-      'fr4': {
+      fr4: {
         _id: 'german-4',
       },
-      'it4': {
+      it4: {
         _id: 'german-4',
       },
-      'it2': {
+      it2: {
         _id: 'italian-2',
       },
     };
@@ -51,5 +51,4 @@ describe('buildTextMap', () => {
 
     assert.partialDeepStrictEqual(result, expected);
   });
-
 });

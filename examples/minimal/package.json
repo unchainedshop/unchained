@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-minimal",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "3.1.11",
+  "version": "3.1.13",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -22,8 +22,8 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "scripts": {
     "lint": "prettier -w .",
@@ -35,15 +35,15 @@
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
-    "@unchainedshop/platform": "^3.1.7",
-    "@unchainedshop/plugins": "^3.1.7",
-    "fastify": "^5.2.2"
+    "@unchainedshop/platform": "^3.1.13",
+    "@unchainedshop/plugins": "^3.1.13",
+    "fastify": "^5.4.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.14",
+    "@types/node": "^24.0.4",
     "mongodb-memory-server": "^10.1.4",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }

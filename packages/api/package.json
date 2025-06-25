@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "3.1.12",
+  "version": "3.1.13",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@ethereumjs/util": ">= 8 < 10",
+    "@ethereumjs/util": ">= 8 < 11",
     "@fastify/cookie": ">= 11.0 < 12",
     "@fastify/session": ">= 11.0 < 12",
     "connect-mongo": ">= 5.1.0 < 6",
@@ -71,11 +71,11 @@
     }
   },
   "dependencies": {
-    "@unchainedshop/core": "^3.1.7",
-    "@unchainedshop/events": "^3.1.7",
-    "@unchainedshop/logger": "^3.1.7",
-    "@unchainedshop/roles": "^3.1.7",
-    "@unchainedshop/utils": "^3.1.7",
+    "@unchainedshop/core": "^3.1.13",
+    "@unchainedshop/events": "^3.1.13",
+    "@unchainedshop/logger": "^3.1.13",
+    "@unchainedshop/roles": "^3.1.13",
+    "@unchainedshop/utils": "^3.1.13",
     "accounting": "0.4.1",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
@@ -84,16 +84,16 @@
     "p-memoize": "^7.1.1"
   },
   "devDependencies": {
-    "@ethereumjs/util": "^9.1.0",
+    "@ethereumjs/util": "^10.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
-    "@types/express": "^5.0.1",
-    "@types/node": "^22.13.14",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.4",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "fastify": "^5.2.2",
+    "fastify": "^5.4.0",
     "passport": "^0.7.0",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }
