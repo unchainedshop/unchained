@@ -13,3 +13,4 @@ tsconfig.tsbuildinfo
 /env
 .aider*
 /data
+fly.toml

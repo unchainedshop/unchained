@@ -37,7 +37,8 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.12",
     "@scure/bip32": "1.7.0",
-    "@scure/btc-signer": "^1.8.0",
+    "@scure/btc-signer": "^1.8.1",
+    "@unchainedshop/admin-ui": "^4.0.4",
     "@unchainedshop/api": "^4.0.0-rc.2",
     "@unchainedshop/core-delivery": "^4.0.0-rc.2",
     "@unchainedshop/core-payment": "^4.0.0-rc.2",
@@ -47,21 +48,20 @@
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "graphql": "^16.11.0",
-    "graphql-yoga": "^5.13.4",
-    "nodemailer": "^7.0.2",
+    "graphql-yoga": "^5.13.5",
+    "nodemailer": "^7.0.3",
     "open": "^10.1.2",
     "passport": "^0.7.0",
     "postfinancecheckout": "^4.7.0",
-    "stripe": "^18.1.0",
+    "stripe": "^18.2.1",
     "web-push": "^3.6.7",
-    "xml-js": "^1.6.11",
-    "@unchainedshop/admin-ui": "^4.0.3"
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
-    "@types/node": "^22.15.3",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.4",
     "mongodb-memory-server": "^10.1.4",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

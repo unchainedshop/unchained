@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "dependencies": {
     "@unchainedshop/api": "^4.0.0-rc.2",
@@ -48,9 +49,9 @@
     "ai": "^4.3.16"
   },
   "devDependencies": {
-    "@types/mustache": "^4.2.5",
-    "@types/node": "^22.15.3",
-    "tsx": "^4.19.4",
+    "@types/mustache": "^4.2.6",
+    "@types/node": "^24.0.4",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

@@ -22,8 +22,8 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "scripts": {
     "lint": "prettier -w .",
@@ -37,12 +37,12 @@
     "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^4.0.0-rc.2",
     "@unchainedshop/plugins": "^4.0.0-rc.2",
-    "fastify": "^5.3.2"
+    "fastify": "^5.4.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.0.4",
     "mongodb-memory-server": "^10.1.4",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
