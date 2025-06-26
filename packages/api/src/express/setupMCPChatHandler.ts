@@ -31,9 +31,14 @@ export const setupMCPChatHandler = (chatConfiguration) => {
     req: Request & { unchainedContext: Context },
     res: Response,
   ) => {
+    if (req.method === 'OPTIONS') {
+      res.status(204).end();
+      return;
+    }
+
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
-      return null;
+      return;
     }
 
     const { messages } = req.body;

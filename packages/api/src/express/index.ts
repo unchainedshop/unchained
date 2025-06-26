@@ -150,7 +150,7 @@ export const connect = (
     expressApp.use((req, res, next) => {
       req.headers['x-forwarded-proto'] = 'https';
       res.setHeader('Access-Control-Allow-Private-Network', 'true');
-      res.setHeader('Access-Control-Allow-Origin', 'localhost');
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
       res.setHeader('Access-Control-Allow-Credentials', 'true');
       res.setHeader(
         'Access-Control-Allow-Methods',
