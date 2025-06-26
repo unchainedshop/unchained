@@ -36,7 +36,13 @@ export default function setupMCPChatHandler(chatConfiguration) {
       if (req.method === 'OPTIONS') return res.send();
       const { messages } = req.body as any;
       client = await createMCPClient({
-        transport: new StreamableHTTPClientTransport(new URL(`${ROOT_URL}/mcp`)),
+        transport: new StreamableHTTPClientTransport(new URL(`${ROOT_URL}/mcp`), {
+          requestInit: {
+            headers: {
+              Cookie: req.headers.cookie || '',
+            },
+          },
+        }),
       });
 
       const defaultUnchainedTools = await client.tools();
