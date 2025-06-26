@@ -209,11 +209,14 @@ export const connect = (
     handler: mcpHandler,
   });
 
-  fastify.route({
-    url: CHAT_API_PATH,
-    method: ['POST', 'OPTIONS'],
-    handler: mcpChatHandler(chatConfiguration),
-  });
+  const chatHandler = mcpChatHandler(chatConfiguration);
+  if (chatConfiguration) {
+    fastify.route({
+      url: CHAT_API_PATH,
+      method: ['POST', 'OPTIONS'],
+      handler: chatHandler,
+    });
+  }
 
   fastify.register((s, opts, registered) => {
     s.removeAllContentTypeParsers();
