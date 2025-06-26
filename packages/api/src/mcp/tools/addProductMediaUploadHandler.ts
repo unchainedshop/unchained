@@ -4,7 +4,11 @@ import { log } from '@unchainedshop/logger';
 import { FileNotFoundError, FileUploadExpiredError } from '../../errors.js';
 
 export const AddProductMediaUploadSchema = {
-  mediaName: z.string().min(1).optional().describe('Name of the media file (e.g. "image.png") use random name if not provided'),
+  mediaName: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('Name of the media file (e.g. "image.png") use random name if not provided'),
   productId: z.string().min(1).describe('ID of the product to link media to'),
   url: z.string().describe('Base64-encoded Or a data URL of the media'),
 };

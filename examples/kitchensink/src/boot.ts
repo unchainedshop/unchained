@@ -4,7 +4,7 @@ import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.j
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.js';
-import { fastifyRouter } from '@unchainedshop/admin-ui'
+import { fastifyRouter } from '@unchainedshop/admin-ui';
 import { anthropic } from '@ai-sdk/anthropic';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
