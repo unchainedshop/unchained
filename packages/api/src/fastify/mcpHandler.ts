@@ -4,7 +4,6 @@ import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import createMcpServer from '../mcp/index.js';
-import jwt from 'jsonwebtoken';
 
 const logger = createLogger('unchained:mcp-handler');
 
