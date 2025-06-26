@@ -1,8 +1,4 @@
-import fastifyCookie from '@fastify/cookie';
-import { API_EVENTS, Context, UnchainedContextResolver } from '@unchainedshop/api';
-import { emit } from '@unchainedshop/events';
-import { FastifyInstance, FastifyRequest } from 'fastify';
-import FastifyOAuth2 from '@fastify/oauth2';
+import { FastifyInstance } from 'fastify';
 import jwt from 'jsonwebtoken';
 
 const {
@@ -12,8 +8,8 @@ const {
 
 
 export default async function setupMCPOIDC(app: FastifyInstance, {
-  clientId, discoveryUrl
-}: { clientId: string, discoveryUrl: string }) {
+  discoveryUrl
+}: { discoveryUrl: string }) {
 
   const discoveryResponse = await fetch(discoveryUrl);
   const discoveryData = await discoveryResponse.json();

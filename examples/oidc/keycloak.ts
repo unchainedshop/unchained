@@ -111,7 +111,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
   );
 
   await setupMCPOIDC(app, {
-    clientId: UNCHAINED_KEYCLOAK_CLIENT_ID,
     discoveryUrl: `${UNCHAINED_KEYCLOAK_REALM_URL}/.well-known/openid-configuration`,
   });
 
@@ -123,10 +122,12 @@ export default async function setupKeycloak(app: FastifyInstance) {
 
     if (req.mcp) {
       // TODO: Improve by adding the user and fetching it
+      const roles = req.mcp.payload?.resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID]?.roles || [];
+
       return {
         ...context,
         user: {
-          roles: ["admin"]
+          roles
         },
       };
     }
