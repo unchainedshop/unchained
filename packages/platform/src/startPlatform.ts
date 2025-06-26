@@ -19,14 +19,6 @@ export type PlatformOptions = {
   };
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions;
-  chatConfiguration?: {
-    tools?: any[];
-    model?: any;
-    messages?: any;
-    maxTokens?: number;
-    maxSteps?: number;
-    system?: string;
-  };
 } & Omit<UnchainedCoreOptions, 'bulkImporter' | 'migrationRepository' | 'db'> &
   Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 

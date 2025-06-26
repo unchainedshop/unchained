@@ -1,4 +1,4 @@
-import { getCurrentContextResolver, LoginFn, LogoutFn, MCPChatConfig } from '../context.js';
+import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import bulkImportHandler from './bulkImportHandler.js';
 import ercMetadataHandler from './ercMetadataHandler.js';
 import MongoStore from 'connect-mongo';
@@ -13,7 +13,6 @@ import fastifyCookie from '@fastify/cookie';
 import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.js';
-import mcpChatHandler from './mcpChatHandler.js';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
@@ -28,7 +27,6 @@ const resolveUserRemoteAddress = (req: FastifyRequest) => {
 
 const {
   MCP_API_PATH = '/mcp',
-  CHAT_API_PATH = '/chat',
   GRAPHQL_API_PATH = '/graphql',
   BULK_IMPORT_API_PATH = '/bulk-import',
   ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
@@ -123,8 +121,7 @@ export const connect = (
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
-    chatConfiguration,
-  }: { allowRemoteToLocalhostSecureCookies?: boolean; chatConfiguration?: MCPChatConfig } = {},
+  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
     // Workaround: Allow to use sandbox with localhost
@@ -208,15 +205,6 @@ export const connect = (
     method: ['GET', 'POST', 'DELETE'],
     handler: mcpHandler,
   });
-
-  const chatHandler = mcpChatHandler(chatConfiguration);
-  if (chatConfiguration) {
-    fastify.route({
-      url: CHAT_API_PATH,
-      method: ['POST', 'OPTIONS'],
-      handler: chatHandler,
-    });
-  }
 
   fastify.register((s, opts, registered) => {
     s.removeAllContentTypeParsers();

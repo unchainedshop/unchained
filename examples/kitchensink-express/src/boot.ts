@@ -5,7 +5,7 @@ import { connect } from '@unchainedshop/api/lib/express/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
 import { createLogger } from '@unchainedshop/logger';
-import { expressRouter, connectChat, ChatConfiguration } from '@unchainedshop/admin-ui/express';
+import { expressRouter, connectChat } from '@unchainedshop/admin-ui/express';
 import seed from './seed.js';
 import { anthropic } from '@ai-sdk/anthropic';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
@@ -18,26 +18,24 @@ const app = express();
 const httpServer = http.createServer(app);
 
 try {
-  let chatConfiguration: ChatConfiguration = null;
 
   if (ANTHROPIC_API_KEY) {
     logger.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
-    chatConfiguration = {
+
+    connectChat(app, {
       system:
         'do not include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary',
       model: anthropic('claude-4-sonnet-20250514'),
       maxTokens: 8000,
       maxSteps: 1,
       mcpEndpoint: `${ROOT_URL}/mcp`,
-    };
-    connectChat(app, chatConfiguration)
+    })
   } else {
     logger.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
   }
 
   const engine = await startPlatform({
     modules: defaultModules,
-    chatConfiguration: chatConfiguration as any,
   });
 
   connect(app, engine, {
