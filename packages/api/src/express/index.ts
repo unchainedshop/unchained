@@ -10,6 +10,7 @@ import { User } from '@unchainedshop/core-users';
 
 import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
+import createBulkImportMiddlewareWithValidation from './createBulkImportMiddlewareWithValidation.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
@@ -196,3 +197,5 @@ export const connect = (
   expressApp.use(MCP_API_PATH, e.json());
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
 };
+
+export { createBulkImportMiddleware, createBulkImportMiddlewareWithValidation };
