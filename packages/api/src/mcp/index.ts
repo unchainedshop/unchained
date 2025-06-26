@@ -61,11 +61,15 @@ import {
   addProductMediaUploadHandler,
 } from './tools/index.js';
 
-export default function createMcpServer(context: Context) {
+export default function createMcpServer(context: Context, roles) {
   const server = new McpServer({
     name: 'Unchained MCP Server',
     version: '1.0.0',
   });
+
+  if (!roles?.includes('admin')) {
+    return server;
+  }
 
   server.tool(
     'list_products',
