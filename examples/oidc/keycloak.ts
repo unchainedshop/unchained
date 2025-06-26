@@ -7,16 +7,16 @@ import jwt from 'jsonwebtoken';
 
 const {
   UNCHAINED_KEYCLOAK_CALLBACK_PATH = '/login/keycloak/callback',
-  UNCHAINED_KEYCLOAK_CLIENT_ID = 'unchained-local',
+  UNCHAINED_KEYCLOAK_CLIENT_ID,
   UNCHAINED_KEYCLOAK_CLIENT_SECRET,
-  UNCHAINED_KEYCLOAK_REALM_URL = 'http://localhost:8080/realms/master',
+  UNCHAINED_KEYCLOAK_REALM_URL,
   ROOT_URL = 'http://localhost:4010',
 } = process.env;
 
 export default async function setupKeycloak(app: FastifyInstance) {
-  if (!UNCHAINED_KEYCLOAK_CLIENT_SECRET || !UNCHAINED_KEYCLOAK_REALM_URL)
+  if (!UNCHAINED_KEYCLOAK_REALM_URL || !UNCHAINED_KEYCLOAK_CLIENT_ID)
     throw new Error(
-      'Environment variables UNCHAINED_KEYCLOAK_CLIENT_SECRET and UNCHAINED_KEYCLOAK_REALM_URL are required',
+      'Environment variables UNCHAINED_KEYCLOAK_CLIENT_ID and UNCHAINED_KEYCLOAK_REALM_URL are required',
     );
 
   await app.register(fastifyCookie);
