@@ -4,6 +4,7 @@ import { emit } from '@unchainedshop/events';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import jwt from 'jsonwebtoken';
+import setupMCPOIDC from './mcp-oidc.js';
 
 const {
   UNCHAINED_KEYCLOAK_CALLBACK_PATH = '/login/keycloak/callback',
@@ -109,10 +110,28 @@ export default async function setupKeycloak(app: FastifyInstance) {
     },
   );
 
+  await setupMCPOIDC(app, {
+    clientId: UNCHAINED_KEYCLOAK_CLIENT_ID,
+    discoveryUrl: `${UNCHAINED_KEYCLOAK_REALM_URL}/.well-known/openid-configuration`,
+  });
+
   return (contextResolver: UnchainedContextResolver) => async (props, req) => {
     const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
     const context = await contextResolver(props);
-    if (context.user || !req.session.keycloak) return context;
+
+    if (context.user) return context;
+
+    if (req.mcp) {
+      // TODO: Improve by adding the user and fetching it
+      return {
+        ...context,
+        user: {
+          roles: ["admin"]
+        },
+      };
+    }
+    
+    if (!req.session.keycloak) return context;
 
     try {
       const isExpired = new Date(req.session.keycloak.expires_at) < new Date();

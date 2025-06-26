@@ -33,7 +33,9 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
         delete transports[transport.sessionId];
       }
     };
-    const server = createMcpServer(req.unchainedContext);
+
+    const roles = req.unchainedContext.user.roles || [];
+    const server = createMcpServer(req.unchainedContext, roles);
     await server.connect(transport);
   } else {
     // Invalid request
@@ -65,6 +67,19 @@ const handleSessionRequest: RequestHandler = async (req, res) => {
 };
 
 const createMCPMiddleware: RequestHandler = (req, res, next) => {
+  if (!(req as any).unchainedContext.user) {
+    res.status(401);
+    res.header(
+      'WWW-Authenticate',
+      `Bearer realm="Unchained MCP", error="invalid_token", resource="${process.env.ROOT_URL || 'http://localhost:4010'}",`,
+    );
+    res.json({
+      error: 'invalid_token',
+      resource_metadata: `${process.env.ROOT_URL || 'http://localhost:4010'}/.well-known/oauth-protected-resource`,
+    });
+    return;
+  }
+
   if (req.method === 'POST') {
     return handlePostRequest(req, res, next);
   } else if (req.method === 'GET' || req.method === 'DELETE') {

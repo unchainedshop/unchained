@@ -4,6 +4,7 @@ import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import createMcpServer from '../mcp/index.js';
+import jwt from 'jsonwebtoken';
 
 const logger = createLogger('unchained:mcp-handler');
 
@@ -13,6 +14,20 @@ const mcpHandler: RouteHandlerMethod = async (
   req: FastifyRequest & { unchainedContext: Context },
   res,
 ) => {
+  if (!req.unchainedContext.user) {
+    res.status(401);
+    res.header(
+      'WWW-Authenticate',
+      `Bearer realm="Unchained MCP", error="invalid_token", resource="${process.env.ROOT_URL || 'http://localhost:4010'}",`,
+    );
+    return res.send(
+      JSON.stringify({
+        error: 'invalid_token',
+        resource_metadata: `${process.env.ROOT_URL || 'http://localhost:4010'}/.well-known/oauth-protected-resource`,
+      }),
+    );
+  }
+
   try {
     if (req.method === 'POST') {
       const sessionId = req.headers['mcp-session-id'] as string | undefined;
@@ -38,7 +53,9 @@ const mcpHandler: RouteHandlerMethod = async (
             delete transports[transport.sessionId];
           }
         };
-        const server = createMcpServer(req.unchainedContext);
+
+        const roles = req.unchainedContext.user.roles || [];
+        const server = createMcpServer(req.unchainedContext, roles);
         await server.connect(transport);
       } else {
         // Invalid request
