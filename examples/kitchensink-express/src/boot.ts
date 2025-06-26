@@ -7,7 +7,6 @@ import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-e
 import { createLogger } from '@unchainedshop/logger';
 import { expressRouter } from '@unchainedshop/admin-ui';
 import seed from './seed.js';
-import cors from 'cors';
 import { anthropic } from '@ai-sdk/anthropic';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
@@ -15,15 +14,8 @@ const { ANTHROPIC_API_KEY } = process.env || {};
 
 const logger = createLogger('express');
 const app = express();
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  }),
-);
 
 const httpServer = http.createServer(app);
-app.use(express.json({ limit: '10mb' }));
 
 try {
   let chatConfiguration = null;

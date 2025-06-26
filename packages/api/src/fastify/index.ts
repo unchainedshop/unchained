@@ -1,4 +1,4 @@
-import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
+import { getCurrentContextResolver, LoginFn, LogoutFn, MCPChatConfig } from '../context.js';
 import bulkImportHandler from './bulkImportHandler.js';
 import ercMetadataHandler from './ercMetadataHandler.js';
 import MongoStore from 'connect-mongo';
@@ -12,6 +12,8 @@ import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
 import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
+import mcpHandler from './mcpHandler.js';
+import mcpChatHandler from './mcpChatHandler.js';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
@@ -25,6 +27,8 @@ const resolveUserRemoteAddress = (req: FastifyRequest) => {
 };
 
 const {
+  MCP_API_PATH = '/mcp',
+  CHAT_API_PATH = '/chat',
   GRAPHQL_API_PATH = '/graphql',
   BULK_IMPORT_API_PATH = '/bulk-import',
   ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
@@ -119,7 +123,8 @@ export const connect = (
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
-  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
+    chatConfiguration,
+  }: { allowRemoteToLocalhostSecureCookies?: boolean; chatConfiguration?: MCPChatConfig } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
     // Workaround: Allow to use sandbox with localhost
@@ -127,9 +132,13 @@ export const connect = (
     fastify.addHook('preHandler', async function (request) {
       request.headers['x-forwarded-proto'] = 'https';
     });
-    fastify.addHook('onSend', async function (_, reply) {
+    fastify.addHook('onSend', async function (req, reply) {
       reply.headers({
         'Access-Control-Allow-Private-Network': 'true',
+        'Access-Control-Allow-Origin': req.headers.origin || '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'].join(', '),
+        'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || '*',
       });
     });
   }
@@ -192,6 +201,18 @@ export const connect = (
     url: ERC_METADATA_API_PATH,
     method: ['GET'],
     handler: ercMetadataHandler,
+  });
+
+  fastify.route({
+    url: MCP_API_PATH,
+    method: ['GET', 'POST', 'DELETE'],
+    handler: mcpHandler,
+  });
+
+  fastify.route({
+    url: CHAT_API_PATH,
+    method: ['POST', 'OPTIONS'],
+    handler: mcpChatHandler(chatConfiguration),
   });
 
   fastify.register((s, opts, registered) => {

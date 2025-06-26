@@ -1,4 +1,6 @@
-import { Request, RequestHandler, Response } from 'express';
+import { createLogger } from '@unchainedshop/logger';
+import { Context } from '../context.js';
+import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import {
   experimental_createMCPClient as createMCPClient,
   InvalidToolArgumentsError,
@@ -6,13 +8,12 @@ import {
   ToolExecutionError,
   streamText,
 } from 'ai';
-import { createLogger } from '@unchainedshop/logger';
-import { Context } from '../context.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
 const logger = createLogger('unchained:mcp-chat-handler');
 
 const { ROOT_URL } = process.env;
+
 const errorHandler = (error: any): string => {
   if (NoSuchToolError.isInstance(error)) return 'NoSuchToolError';
   if (InvalidToolArgumentsError.isInstance(error)) return 'InvalidToolArgumentsError';
@@ -22,23 +23,18 @@ const errorHandler = (error: any): string => {
   return `Failed to stream response: ${error?.message || 'Unknown error'}`;
 };
 
-export const setupMCPChatHandler = (chatConfiguration) => {
+export default function setupMCPChatHandler(chatConfiguration) {
   let client;
   if (!chatConfiguration || !chatConfiguration?.model) return null;
   const { tools = {}, ...restChatConfig } = chatConfiguration || {};
 
-  const mcpChatHandler: RequestHandler = async (
-    req: Request & { unchainedContext: Context },
-    res: Response,
+  const mcpChatHandler: RouteHandlerMethod = async (
+    req: FastifyRequest & { unchainedContext: Context },
+    res,
   ) => {
-    if (req.method !== 'POST') {
-      res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
-      return null;
-    }
-
-    const { messages } = req.body;
-
     try {
+      if (req.method === 'OPTIONS') return res.send();
+      const { messages } = req.body as any;
       client = await createMCPClient({
         transport: new StreamableHTTPClientTransport(new URL(`${ROOT_URL}/mcp`)),
       });
@@ -54,14 +50,19 @@ export const setupMCPChatHandler = (chatConfiguration) => {
         },
       });
 
-      result.pipeDataStreamToResponse(res, {
-        getErrorMessage: errorHandler,
-      });
-    } catch (err) {
-      await client?.close();
-      res.status(500).json({ error: errorHandler(err) });
+      res.header('X-Vercel-AI-Data-Stream', 'v1');
+      res.header('Content-Type', 'text/plain; charset=utf-8');
+      return res.send(
+        result.toDataStream({
+          getErrorMessage: errorHandler,
+        }),
+      );
+    } catch (e) {
+      logger.error(e.message);
+      res.status(503);
+      return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
     }
   };
 
   return mcpChatHandler;
-};
+}

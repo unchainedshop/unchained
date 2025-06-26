@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import createMcpServer from '../mcp/index.js';
@@ -21,7 +20,7 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
   } else if (!sessionId && isInitializeRequest(req.body)) {
     // New initialization request
     transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => randomUUID(),
+      sessionIdGenerator: () => crypto.randomUUID(),
       onsessioninitialized: (sessionId) => {
         // Store the transport by session ID
         transports[sessionId] = transport;
@@ -49,7 +48,7 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
     return;
   }
 
-  // Handle the request  
+  // Handle the request
   await transport.handleRequest(req, res, req.body);
 };
 
