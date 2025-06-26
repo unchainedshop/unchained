@@ -5,12 +5,12 @@ import { connect } from '@unchainedshop/api/lib/express/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
 import { createLogger } from '@unchainedshop/logger';
-import { expressRouter } from '@unchainedshop/admin-ui';
+import { expressRouter, connectChat, ChatConfiguration } from '@unchainedshop/admin-ui/express';
 import seed from './seed.js';
 import { anthropic } from '@ai-sdk/anthropic';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-const { ANTHROPIC_API_KEY } = process.env || {};
+const { ANTHROPIC_API_KEY, ROOT_URL } = process.env || {};
 
 const logger = createLogger('express');
 const app = express();
@@ -18,7 +18,7 @@ const app = express();
 const httpServer = http.createServer(app);
 
 try {
-  let chatConfiguration = null;
+  let chatConfiguration: ChatConfiguration = null;
 
   if (ANTHROPIC_API_KEY) {
     logger.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
@@ -28,22 +28,24 @@ try {
       model: anthropic('claude-4-sonnet-20250514'),
       maxTokens: 8000,
       maxSteps: 1,
+      mcpEndpoint: `${ROOT_URL}/mcp`,
     };
+    connectChat(app, chatConfiguration)
   } else {
     logger.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
   }
 
   const engine = await startPlatform({
     modules: defaultModules,
-    chatConfiguration,
+    chatConfiguration: chatConfiguration as any,
   });
 
   connect(app, engine, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
-    chatConfiguration,
   });
   connectDefaultPluginsToExpress(app, engine);
   app.use('/', expressRouter);
+
 
   // Seed Database and Set a super insecure Access Token for admin
   await seed(engine.unchainedAPI);

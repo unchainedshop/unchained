@@ -25,7 +25,7 @@ export async function addProductMediaUploadHandler(
   const { modules, services, userId } = context;
 
   try {
-    log('addProductMediaUploadHandler', { mediaName, productId, userId });
+    log('addProductMediaUploadHandler', { mediaName, productId, userId, url });
     const {
       _id: fileId,
       url: putURL,
