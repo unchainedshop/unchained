@@ -34,51 +34,45 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       productVariationId: string;
       productVariationOptionValue?: string;
     },
-    locale: string,
+    locale: Intl.Locale,
     text: Omit<ProductVariationText, 'locale' | 'productVariationId' | 'productVariationOptionValue'>,
   ): Promise<ProductVariationText> => {
-    const selector = {
-      productVariationId,
-      productVariationOptionValue: productVariationOptionValue || {
-        $eq: null,
+    const updateResult = await ProductVariationTexts.findOneAndUpdate(
+      {
+        productVariationId,
+        productVariationOptionValue: productVariationOptionValue || {
+          $eq: null,
+        },
+        locale: locale.baseName,
       },
-      locale,
-    };
-
-    const updateResult = await ProductVariationTexts.updateOne(
-      selector,
       {
         $set: {
           ...text,
+          updated: new Date(),
         },
         $setOnInsert: {
           _id: generateDbObjectId(),
           productVariationId,
           productVariationOptionValue: productVariationOptionValue || null,
           created: new Date(),
-          locale,
+          locale: locale.baseName,
         },
       },
       {
         upsert: true,
+        returnDocument: 'after',
+        includeResultMetadata: true,
       },
     );
-    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
-    const currentText = await ProductVariationTexts.findOne(selector, {});
-    if (isModified) {
-      await ProductVariationTexts.updateOne(selector, {
-        $set: {
-          updated: new Date(),
-        },
-      });
+    if (updateResult.ok) {
       await emit('PRODUCT_UPDATE_VARIATION_TEXT', {
         productVariationId,
         productVariationOptionValue,
-        text: currentText,
+        text: updateResult.value,
       });
     }
-    return currentText;
+    return updateResult.value;
   };
 
   return {
@@ -287,7 +281,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
                 productVariationId,
                 productVariationOptionValue,
               },
-              locale,
+              new Intl.Locale(locale),
               text,
             ),
           ),

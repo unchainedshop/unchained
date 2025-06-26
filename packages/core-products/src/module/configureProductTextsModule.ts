@@ -50,7 +50,7 @@ export const configureProductTextsModule = ({
 
   const upsertLocalizedText = async (
     productId: string,
-    locale: string,
+    locale: Intl.Locale,
     text: Omit<ProductText, 'productId' | 'locale'>,
   ): Promise<ProductText> => {
     const { slug: textSlug, title = null, ...textFields } = text;
@@ -70,7 +70,7 @@ export const configureProductTextsModule = ({
         _id: generateDbObjectId(),
         created: new Date(),
         productId,
-        locale,
+        locale: locale.baseName,
       },
     };
 
@@ -80,13 +80,15 @@ export const configureProductTextsModule = ({
       modifier.$setOnInsert.slug = slug;
     }
 
-    const selector = { productId, locale };
-
-    const updateResult = await ProductTexts.findOneAndUpdate(selector, modifier, {
-      upsert: true,
-      returnDocument: 'after',
-      includeResultMetadata: true,
-    });
+    const updateResult = await ProductTexts.findOneAndUpdate(
+      { productId, locale: locale.baseName },
+      modifier,
+      {
+        upsert: true,
+        returnDocument: 'after',
+        includeResultMetadata: true,
+      },
+    );
 
     if (updateResult.ok) {
       await Products.updateOne(generateDbFilterById(productId), {
@@ -149,7 +151,9 @@ export const configureProductTextsModule = ({
       texts: Omit<ProductText, 'productId'>[],
     ): Promise<ProductText[]> => {
       const productTexts = await Promise.all(
-        texts.map(async ({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
+        texts.map(async ({ locale, ...text }) =>
+          upsertLocalizedText(productId, new Intl.Locale(locale), text),
+        ),
       );
       return productTexts;
     },
