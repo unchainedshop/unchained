@@ -6,9 +6,25 @@ export interface UserRegistrationData extends Partial<User> {
   password: string | null;
   webAuthnPublicKeyCredentials?: any;
 }
+
+export enum UserAccountAction {
+  RESET_PASSWORD = 'reset-password',
+  VERIFY_EMAIL = 'verify-email',
+  ENROLL_ACCOUNT = 'enroll-account',
+  PASSWORD_RESETTED = 'password-resetted',
+  EMAIL_VERIFIED = 'email-verified',
+}
 export interface UserSettingsOptions {
   mergeUserCartsOnLogin?: boolean;
   autoMessagingAfterUserCreation?: boolean;
+  /**
+   * Function to calculate the earliest valid token date. Defaults to 1h if not set.
+   * @param type The type of user account action.
+   * @returns A date. All tokens created after that date are considered valid.
+   */
+  earliestValidTokenDate?: (
+    type: UserAccountAction.VERIFY_EMAIL | UserAccountAction.RESET_PASSWORD,
+  ) => Date;
   validateEmail?: (email: string) => Promise<boolean>;
   validateUsername?: (username: string) => Promise<boolean>;
   validateNewUser?: (user: UserRegistrationData) => Promise<UserRegistrationData>;
@@ -17,6 +33,9 @@ export interface UserSettingsOptions {
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
+  earliestValidTokenDate: (
+    type: UserAccountAction.VERIFY_EMAIL | UserAccountAction.RESET_PASSWORD,
+  ) => Date;
   validateEmail: (email: string) => Promise<boolean>;
   validateUsername: (username: string) => Promise<boolean>;
   validateNewUser: (user: UserRegistrationData) => Promise<UserRegistrationData>;
@@ -27,6 +46,7 @@ export interface UserSettings {
 export const userSettings: UserSettings = {
   autoMessagingAfterUserCreation: null,
   mergeUserCartsOnLogin: null,
+  earliestValidTokenDate: null,
   validateEmail: null,
   validateUsername: null,
   validateNewUser: null,
@@ -36,6 +56,7 @@ export const userSettings: UserSettings = {
     {
       mergeUserCartsOnLogin,
       autoMessagingAfterUserCreation,
+      earliestValidTokenDate,
       validateEmail,
       validateUsername,
       validateNewUser,
@@ -45,6 +66,11 @@ export const userSettings: UserSettings = {
   ) => {
     const defaultAutoMessagingAfterUserCreation = true;
     const defaultMergeUserCartsOnLogin = true;
+
+    const defaultEarliestValidTokenDate = () => {
+      // 1 hour ago
+      return new Date(new Date().getTime() - 1000 * 60 * 60);
+    };
 
     const defaultValidateEmail = async (rawEmail: string) => {
       if (!rawEmail?.includes?.('@')) return false;
@@ -78,6 +104,7 @@ export const userSettings: UserSettings = {
     userSettings.mergeUserCartsOnLogin = mergeUserCartsOnLogin ?? defaultMergeUserCartsOnLogin;
     userSettings.autoMessagingAfterUserCreation =
       autoMessagingAfterUserCreation ?? defaultAutoMessagingAfterUserCreation;
+    userSettings.earliestValidTokenDate = earliestValidTokenDate || defaultEarliestValidTokenDate;
     userSettings.validateEmail = validateEmail || defaultValidateEmail;
     userSettings.validateUsername = validateUsername || defaultValidateUsername;
     userSettings.validateNewUser = validateNewUser || defaultValidateNewUser;
