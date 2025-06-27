@@ -20,7 +20,12 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
 import addMigrations from './addMigrations.js';
-import { UserRegistrationData, userSettings, UserSettingsOptions } from '../users-settings.js';
+import {
+  UserAccountAction,
+  UserRegistrationData,
+  userSettings,
+  UserSettingsOptions,
+} from '../users-settings.js';
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 
@@ -128,7 +133,7 @@ export const configureUsersModule = async ({
           'services.email.verificationTokens': {
             $elemMatch: {
               token,
-              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
+              when: { $gt: userSettings.earliestValidTokenDate(UserAccountAction.VERIFY_EMAIL) },
             },
           },
         },
@@ -162,7 +167,7 @@ export const configureUsersModule = async ({
 
       if (updated.modifiedCount > 0) {
         await emit('USER_ACCOUNT_ACTION', {
-          action: 'email-verified',
+          action: UserAccountAction.EMAIL_VERIFIED,
           address,
           userId,
         });
@@ -180,7 +185,7 @@ export const configureUsersModule = async ({
           'services.password.reset': {
             $elemMatch: {
               token,
-              when: { $gt: new Date(new Date().getTime() - 1000 * 60 * 60) },
+              when: { $gt: userSettings.earliestValidTokenDate(UserAccountAction.RESET_PASSWORD) },
             },
           },
         },
@@ -420,7 +425,7 @@ export const configureUsersModule = async ({
       );
 
       await emit('USER_ACCOUNT_ACTION', {
-        action: isEnrollment ? 'enroll-account' : 'reset-password',
+        action: isEnrollment ? UserAccountAction.ENROLL_ACCOUNT : UserAccountAction.RESET_PASSWORD,
         userId,
         ...resetToken,
         token: plainToken,
@@ -445,7 +450,7 @@ export const configureUsersModule = async ({
       );
 
       await emit('USER_ACCOUNT_ACTION', {
-        action: 'verify-email',
+        action: UserAccountAction.VERIFY_EMAIL,
         userId,
         ...verificationToken,
         token: plainToken,
@@ -526,7 +531,7 @@ export const configureUsersModule = async ({
           },
         );
         await emit('USER_ACCOUNT_ACTION', {
-          action: 'password-resetted',
+          action: UserAccountAction.PASSWORD_RESETTED,
           userId: updatedUser._id,
         });
 
