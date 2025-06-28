@@ -114,7 +114,7 @@ export default async function setupZitadel(app: FastifyInstance) {
         }
         // @ts-ignore
         request.session.zitadel = accessToken.token;
-        return reply.redirect('http://localhost:4010/graphql');
+        return reply.redirect('http://localhost:4010');
       } catch (e) {
         console.error(e);
         reply.status(500);

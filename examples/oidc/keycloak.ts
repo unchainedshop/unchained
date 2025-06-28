@@ -108,7 +108,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
         }
         // @ts-ignore
         request.session.keycloak = accessToken.token;
-        return reply.redirect('http://localhost:3000/');
+        return reply.redirect('http://localhost:4010/');
       } catch (e) {
         console.error(e);
         reply.status(500);
