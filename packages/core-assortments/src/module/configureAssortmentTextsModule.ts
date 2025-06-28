@@ -45,7 +45,7 @@ export const configureAssortmentTextsModule = ({
 
   const upsertLocalizedText = async (
     assortmentId: string,
-    locale: string,
+    locale: Intl.Locale,
     text: Omit<AssortmentText, 'assortmentId' | 'locale'>,
   ): Promise<AssortmentText> => {
     const { slug: textSlug, ...textFields } = text;
@@ -63,7 +63,7 @@ export const configureAssortmentTextsModule = ({
       $setOnInsert: {
         _id: generateDbObjectId(),
         created: new Date(),
-        locale,
+        locale: locale.baseName,
       },
     };
 
@@ -73,13 +73,15 @@ export const configureAssortmentTextsModule = ({
       modifier.$setOnInsert.slug = slug;
     }
 
-    const selector = { assortmentId, locale };
-
-    const updateResult = await AssortmentTexts.findOneAndUpdate(selector, modifier, {
-      upsert: true,
-      returnDocument: 'after',
-      includeResultMetadata: true,
-    });
+    const updateResult = await AssortmentTexts.findOneAndUpdate(
+      { assortmentId, locale: locale.baseName },
+      modifier,
+      {
+        upsert: true,
+        returnDocument: 'after',
+        includeResultMetadata: true,
+      },
+    );
 
     if (updateResult.ok) {
       await Assortments.updateOne(
@@ -145,7 +147,9 @@ export const configureAssortmentTextsModule = ({
       texts: Omit<AssortmentText, 'assortmentId'>[],
     ): Promise<AssortmentText[]> => {
       const assortmentTexts = await Promise.all(
-        texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
+        texts.map(async ({ locale, ...text }) =>
+          upsertLocalizedText(assortmentId, new Intl.Locale(locale), text),
+        ),
       );
       return assortmentTexts;
     },

@@ -23,15 +23,14 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
 
   const upsertLocalizedText = async (
     assortmentMediaId: string,
-    locale: string,
+    locale: Intl.Locale,
     text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
   ): Promise<AssortmentMediaText> => {
-    const selector = {
-      assortmentMediaId,
-      locale,
-    };
     const currentText = await AssortmentMediaTexts.findOneAndUpdate(
-      selector,
+      {
+        assortmentMediaId,
+        locale: locale.baseName,
+      },
       {
         $set: {
           updated: new Date(),
@@ -41,7 +40,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
           _id: generateDbObjectId(),
           created: new Date(),
           assortmentMediaId,
-          locale,
+          locale: locale.baseName,
         },
       },
       {
@@ -259,7 +258,9 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
         texts: Omit<AssortmentMediaText, 'assortmentMediaId'>[],
       ): Promise<AssortmentMediaText[]> => {
         const mediaTexts = await Promise.all(
-          texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
+          texts.map(async ({ locale, ...text }) =>
+            upsertLocalizedText(assortmentMediaId, new Intl.Locale(locale), text),
+          ),
         );
 
         return mediaTexts;

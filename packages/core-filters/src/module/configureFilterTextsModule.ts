@@ -13,37 +13,37 @@ export const configureFilterTextsModule = ({
 
   const upsertLocalizedText = async (
     params: { filterId: string; filterOptionValue?: string },
-    locale: string,
+    locale: Intl.Locale,
     text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
   ): Promise<FilterText> => {
     const { filterId, filterOptionValue } = params;
 
-    const modifier: any = {
-      $set: {
-        updated: new Date(),
-        title: text.title,
-        subtitle: text.subtitle,
-      },
-      $setOnInsert: {
-        _id: generateDbObjectId(),
-        created: new Date(),
+    const updateResult = await FilterTexts.findOneAndUpdate(
+      {
         filterId,
-        filterOptionValue: filterOptionValue || null,
-        locale,
+        filterOptionValue: filterOptionValue || { $eq: null },
+        locale: locale.baseName,
       },
-    };
-
-    const selector: mongodb.Filter<FilterText> = {
-      filterId,
-      filterOptionValue: filterOptionValue || { $eq: null },
-      locale,
-    };
-
-    const updateResult = await FilterTexts.findOneAndUpdate(selector, modifier, {
-      upsert: true,
-      returnDocument: 'after',
-      includeResultMetadata: true,
-    });
+      {
+        $set: {
+          updated: new Date(),
+          title: text.title,
+          subtitle: text.subtitle,
+        },
+        $setOnInsert: {
+          _id: generateDbObjectId(),
+          created: new Date(),
+          filterId,
+          filterOptionValue: filterOptionValue || null,
+          locale: locale.baseName,
+        },
+      },
+      {
+        upsert: true,
+        returnDocument: 'after',
+        includeResultMetadata: true,
+      },
+    );
 
     if (updateResult.ok) {
       await emit('FILTER_UPDATE_TEXT', {
@@ -92,7 +92,9 @@ export const configureFilterTextsModule = ({
       texts: Omit<FilterText, 'filterId' | 'filterOptionValue'>[],
     ): Promise<FilterText[]> => {
       const filterTexts = await Promise.all(
-        texts.map(async ({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
+        texts.map(async ({ locale, ...text }) =>
+          upsertLocalizedText(params, new Intl.Locale(locale), text),
+        ),
       );
 
       return filterTexts;

@@ -22,15 +22,14 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
 
   const upsertLocalizedText = async (
     productMediaId: string,
-    locale: string,
+    locale: Intl.Locale,
     text: Omit<ProductMediaText, 'productMediaId' | 'locale'>,
   ): Promise<ProductMediaText> => {
-    const selector = {
-      productMediaId,
-      locale,
-    };
     const updateResult = await ProductMediaTexts.findOneAndUpdate(
-      selector,
+      {
+        productMediaId,
+        locale: locale.baseName,
+      },
       {
         $set: {
           updated: new Date(),
@@ -40,7 +39,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
           _id: generateDbObjectId(),
           productMediaId,
           created: new Date(),
-          locale,
+          locale: locale.baseName,
         },
       },
       {
@@ -255,7 +254,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       ): Promise<ProductMediaText[]> => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...localizations }) =>
-            upsertLocalizedText(productMediaId, locale, localizations),
+            upsertLocalizedText(productMediaId, new Intl.Locale(locale), localizations),
           ),
         );
 
