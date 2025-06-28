@@ -1,15 +1,14 @@
 import Fastify from 'fastify';
+import { anthropic } from '@ai-sdk/anthropic';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
+import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
-import { fastifyRouter } from '@unchainedshop/admin-ui';
-import { anthropic } from '@ai-sdk/anthropic';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-import { connectChat } from '@unchainedshop/admin-ui/fastify';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -18,10 +17,7 @@ const fastify = Fastify({
 });
 
 try {
-
-
   if (process.env.ANTHROPIC_API_KEY) {
-
     connectChat(fastify, {
       system:
         'do not include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary',
@@ -29,7 +25,7 @@ try {
       maxTokens: 8000,
       maxSteps: 1,
       mcpEndpoint: `${process.env?.ROOT_URL}/mcp`,
-    })
+    });
   }
 
   const platform = await startPlatform({
