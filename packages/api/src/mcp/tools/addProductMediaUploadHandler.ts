@@ -37,7 +37,6 @@ export async function addProductMediaUploadHandler(
     });
 
     const sourceResponse = await fetch(url);
-    console.log('Source response status:', sourceResponse);
     const uploadUrl = new URL(putURL, process.env.ROOT_URL || 'http://localhost:4010');
     const uploadResponse = await fetch(uploadUrl, {
       method: 'PUT',
@@ -68,7 +67,6 @@ export async function addProductMediaUploadHandler(
       ],
     };
   } catch (error) {
-    console.log(error);
     return {
       content: [
         {
