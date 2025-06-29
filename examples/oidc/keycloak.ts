@@ -7,17 +7,25 @@ import jwt from 'jsonwebtoken';
 
 const {
   UNCHAINED_KEYCLOAK_CALLBACK_PATH = '/login/keycloak/callback',
-  UNCHAINED_KEYCLOAK_CLIENT_ID = 'unchained-local',
+  UNCHAINED_KEYCLOAK_CLIENT_ID,
   UNCHAINED_KEYCLOAK_CLIENT_SECRET,
-  UNCHAINED_KEYCLOAK_REALM_URL = 'http://localhost:8080/realms/master',
+  UNCHAINED_KEYCLOAK_REALM_URL,
+  MCP_API_PATH = '/mcp',
   ROOT_URL = 'http://localhost:4010',
 } = process.env;
 
 export default async function setupKeycloak(app: FastifyInstance) {
-  if (!UNCHAINED_KEYCLOAK_CLIENT_SECRET || !UNCHAINED_KEYCLOAK_REALM_URL)
+  if (!UNCHAINED_KEYCLOAK_REALM_URL || !UNCHAINED_KEYCLOAK_CLIENT_ID)
     throw new Error(
-      'Environment variables UNCHAINED_KEYCLOAK_CLIENT_SECRET and UNCHAINED_KEYCLOAK_REALM_URL are required',
+      'Environment variables UNCHAINED_KEYCLOAK_CLIENT_ID and UNCHAINED_KEYCLOAK_REALM_URL are required',
     );
+
+  const discoveryResponse = await fetch(
+    `${UNCHAINED_KEYCLOAK_REALM_URL}/.well-known/openid-configuration`,
+  );
+  const discoveryData = await discoveryResponse.json();
+  const jwksResponse = await fetch(discoveryData.jwks_uri);
+  const jwksData = await jwksResponse.json();
 
   await app.register(fastifyCookie);
 
@@ -100,7 +108,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
         }
         // @ts-ignore
         request.session.keycloak = accessToken.token;
-        return reply.redirect('http://localhost:3000/');
+        return reply.redirect('http://localhost:4010/');
       } catch (e) {
         console.error(e);
         reply.status(500);
@@ -109,10 +117,62 @@ export default async function setupKeycloak(app: FastifyInstance) {
     },
   );
 
+  app.route({
+    url: '/.well-known/oauth-protected-resource',
+    method: ['GET'],
+    handler: (req, reply) => {
+      reply.header('Content-Type', 'application/json');
+      return reply.send(
+        JSON.stringify({
+          resource: ROOT_URL,
+          authorization_servers: [ROOT_URL],
+          resource_documentation: 'https://docs.unchained.shop',
+        }),
+      );
+    },
+  });
+
+  app.route({
+    url: '/.well-known/oauth-authorization-server',
+    method: ['GET'],
+    handler: async (req, reply) => {
+      reply.header('Content-Type', 'application/json');
+      return reply.send(discoveryData);
+    },
+  });
+
+  app.addHook('onRequest', async (req, reply) => {
+    // Some code
+    if (req.url === MCP_API_PATH) {
+      try {
+        const encodedToken = req.headers.authorization?.replace('Bearer ', '');
+        const token = encodedToken
+          ? jwt.verify(encodedToken, { key: jwksData?.keys[1], format: 'jwk' }, { complete: true })
+          : null;
+        (req as any).mcp = token;
+      } catch {}
+    }
+  });
+
   return (contextResolver: UnchainedContextResolver) => async (props, req) => {
     const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
     const context = await contextResolver(props);
-    if (context.user || !req.session.keycloak) return context;
+
+    if (context.user) return context;
+
+    if (req.mcp) {
+      // TODO: Improve by adding the user and fetching it
+      const roles = req.mcp.payload?.resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID]?.roles || [];
+
+      return {
+        ...context,
+        user: {
+          roles,
+        },
+      };
+    }
+
+    if (!req.session.keycloak) return context;
 
     try {
       const isExpired = new Date(req.session.keycloak.expires_at) < new Date();

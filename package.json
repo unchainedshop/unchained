@@ -99,5 +99,8 @@
   },
   "trustedDependencies": [
     "@mongodb-js/zstd"
-  ]
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  }
 }

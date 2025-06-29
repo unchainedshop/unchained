@@ -129,10 +129,16 @@ export const connect = (
   {
     graphqlHandler,
     db,
-  }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  }: {
+    graphqlHandler: YogaServerInstance<any, any>;
+    db: mongodb.Db;
+    unchainedAPI: UnchainedCore;
+  },
   {
     allowRemoteToLocalhostSecureCookies = false,
-  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
+  }: {
+    allowRemoteToLocalhostSecureCookies?: boolean;
+  } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
     // Workaround: Allow to use sandbox with localhost
@@ -140,6 +146,16 @@ export const connect = (
     expressApp.use((req, res, next) => {
       req.headers['x-forwarded-proto'] = 'https';
       res.setHeader('Access-Control-Allow-Private-Network', 'true');
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'].join(', '),
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        req.headers['access-control-request-headers'] || '*',
+      );
       next();
     });
   }
@@ -193,6 +209,6 @@ export const connect = (
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
 
-  expressApp.use(MCP_API_PATH, e.json());
+  expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
 };

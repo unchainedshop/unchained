@@ -38,7 +38,10 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     ...serverOptions
   } = options || {};
 
-  const contextResolver = createContextResolver(unchainedAPI, { roles, adminUiConfig });
+  const contextResolver = createContextResolver(unchainedAPI, {
+    roles,
+    adminUiConfig,
+  });
 
   setCurrentContextResolver(
     customContext
