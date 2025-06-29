@@ -19,6 +19,16 @@ const httpServer = http.createServer(app);
 
 try {
 
+  const engine = await startPlatform({
+    modules: defaultModules,
+  });
+
+  connect(app, engine, {
+    allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+  });
+  connectDefaultPluginsToExpress(app, engine);
+  app.use('/', expressRouter);
+
   if (ANTHROPIC_API_KEY) {
     logger.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
 
@@ -34,15 +44,6 @@ try {
     logger.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
   }
 
-  const engine = await startPlatform({
-    modules: defaultModules,
-  });
-
-  connect(app, engine, {
-    allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
-  });
-  connectDefaultPluginsToExpress(app, engine);
-  app.use('/', expressRouter);
 
 
   // Seed Database and Set a super insecure Access Token for admin
