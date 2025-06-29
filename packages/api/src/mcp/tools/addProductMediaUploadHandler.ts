@@ -7,10 +7,9 @@ export const AddProductMediaUploadSchema = {
   mediaName: z
     .string()
     .min(1)
-    .optional()
     .describe('Name of the media file (e.g. "image.png") use random name if not provided'),
   productId: z.string().min(1).describe('ID of the product to link media to'),
-  url: z.string().describe('Base64-encoded Or a data URL of the media'),
+  url: z.string().describe('Anonymously fetchable URL of the source media, can be a data URL too'),
 };
 
 export const AddProductMediaUploadZodSchema = z.object(AddProductMediaUploadSchema);
@@ -28,7 +27,7 @@ export async function addProductMediaUploadHandler(
     log('addProductMediaUploadHandler', { mediaName, productId, userId, url });
     const {
       _id: fileId,
-      url: putURL,
+      putURL,
       type,
       size,
     } = await services.files.createSignedURL({
@@ -37,16 +36,17 @@ export async function addProductMediaUploadHandler(
       meta: { productId },
     });
 
-    const base64 = url.includes(',') ? url.split(',')[1] : url;
-    const buffer = Buffer.from(base64, 'base64');
-
-    const uploadRes = await fetch(putURL, {
+    const sourceResponse = await fetch(url);
+    console.log('Source response status:', sourceResponse);
+    const uploadUrl = new URL(putURL, process.env.ROOT_URL || 'http://localhost:4010');
+    const uploadResponse = await fetch(uploadUrl, {
       method: 'PUT',
-      body: buffer,
-    });
+      body: sourceResponse.body,
+      duplex: 'half',
+    } as RequestInit);
 
-    if (!uploadRes.ok) {
-      throw new Error(`Upload failed: ${uploadRes.status} ${uploadRes.statusText}`);
+    if (!uploadResponse.ok) {
+      throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
     }
 
     const file = await modules.files.findFile({ fileId });
