@@ -34,3 +34,6 @@ export * from './removeLanguageHandler.js';
 export * from './addProductMediaUploadHandler.js';
 export * from './removeProductMediaHandler.js';
 export * from './updateProductMediaTextsHandler.js';
+export * from './reorderProductMediaHandler.js';
+export * from './productReviewsCountHandler.js';
+export * from './productReviewsHandler.js';

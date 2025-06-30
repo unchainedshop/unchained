@@ -63,6 +63,12 @@ import {
   removeProductMediaHandler,
   UpdateProductMediaTextsSchema,
   updateProductMediaTextsHandler,
+  ReorderProductMediaSchema,
+  reorderProductMediaHandler,
+  ProductReviewsCountSchema,
+  productReviewsCountHandler,
+  ProductReviewsSchema,
+  productReviewsHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -280,6 +286,27 @@ export default function createMcpServer(context: Context, roles) {
     "Modify localized texts part of a product's media asset",
     UpdateProductMediaTextsSchema,
     async (params) => updateProductMediaTextsHandler(context, params),
+  );
+
+  server.tool(
+    'reorder_product_media',
+    'Reorder a media asset (first is primary)',
+    ReorderProductMediaSchema,
+    async (params) => reorderProductMediaHandler(context, params),
+  );
+
+  server.tool(
+    'product_review_count',
+    'Returns total number of product reviews',
+    ProductReviewsCountSchema,
+    async (params) => productReviewsCountHandler(context, params),
+  );
+
+  server.tool(
+    'product_reviews',
+    ' Get all product reviews, by default sorted by creation date (descending)',
+    ProductReviewsSchema,
+    async (params) => productReviewsHandler(context, params),
   );
 
   return server;
