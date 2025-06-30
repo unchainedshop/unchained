@@ -10,8 +10,11 @@ import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
+import fastifyMultipart from '@fastify/multipart';
 import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
+import mcpHandler from './mcpHandler.js';
+import tempUploadHandler from './tempUploadHandler.js';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
@@ -25,8 +28,10 @@ const resolveUserRemoteAddress = (req: FastifyRequest) => {
 };
 
 const {
+  MCP_API_PATH = '/mcp',
   GRAPHQL_API_PATH = '/graphql',
   BULK_IMPORT_API_PATH = '/bulk-import',
+  TEMP_UPLOAD_API_PATH = '/temp-upload',
   ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
@@ -112,7 +117,11 @@ export const connect = (
   {
     graphqlHandler,
     db,
-  }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  }: {
+    graphqlHandler: YogaServerInstance<any, any>;
+    db: mongodb.Db;
+    unchainedAPI: UnchainedCore;
+  },
   {
     allowRemoteToLocalhostSecureCookies = false,
   }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
@@ -123,9 +132,13 @@ export const connect = (
     fastify.addHook('preHandler', async function (request) {
       request.headers['x-forwarded-proto'] = 'https';
     });
-    fastify.addHook('onSend', async function (_, reply) {
+    fastify.addHook('onSend', async function (req, reply) {
       reply.headers({
         'Access-Control-Allow-Private-Network': 'true',
+        'Access-Control-Allow-Origin': req.headers.origin || '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'].join(', '),
+        'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || '*',
       });
     });
   }
@@ -188,6 +201,23 @@ export const connect = (
     url: ERC_METADATA_API_PATH,
     method: ['GET'],
     handler: ercMetadataHandler,
+  });
+
+  fastify.route({
+    url: MCP_API_PATH,
+    method: ['GET', 'POST', 'DELETE'],
+    handler: mcpHandler,
+  });
+
+  fastify.register((s, opts, registered) => {
+    s.register(fastifyMultipart);
+    s.route({
+      url: TEMP_UPLOAD_API_PATH,
+      method: ['POST'],
+      bodyLimit: 1024 * 1024 * 35, // 35MB
+      handler: tempUploadHandler,
+    });
+    registered();
   });
 
   fastify.register((s, opts, registered) => {

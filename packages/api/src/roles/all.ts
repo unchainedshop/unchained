@@ -101,6 +101,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewTokens, () => false);
   role.allow(actions.viewStatistics, () => false);
   role.allow(actions.uploadUserAvatar, () => false);
+  role.allow(actions.uploadTempFile, () => false);
   role.allow(actions.impersonate, () => false);
 
   // special case: when doing a login mutation, the user is not logged in technically yet,

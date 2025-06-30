@@ -98,6 +98,10 @@ const gridfsHandler = async (
           res.end('Access restricted: Invalid signature.');
           return;
         }
+      } else if (!fileDocument) {
+        res.statusCode = 404;
+        res.end();
+        return;
       }
       if (file?.metadata?.['content-type']) {
         res.setHeader('Content-Type', file.metadata['content-type']);

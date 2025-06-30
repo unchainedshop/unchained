@@ -34,8 +34,10 @@
     "integration-test": "node --no-warnings --env-file .env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.2.12",
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
+    "@fastify/multipart": "^9.0.3",
     "@scure/bip32": "^1.7.0",
     "@scure/btc-signer": "^1.8.1",
     "@unchainedshop/admin-ui": "^4.0.4",

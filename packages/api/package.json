@@ -32,14 +32,16 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
     "@ethereumjs/util": ">= 10 < 11",
-    "@fastify/cookie": ">= 11.0 < 12",
-    "@fastify/session": ">= 11.0 < 12",
-    "connect-mongo": ">= 5.1.0 < 6",
-    "@modelcontextprotocol/sdk": ">= 1 < 2",
-    "express": ">= 5.0 < 6",
-    "express-session": ">= 1.18 < 2",
     "fastify": ">= 5.2 < 6",
-    "graphql-yoga": ">= 5.9 < 6.0",
+    "@fastify/cookie": ">= 11 < 12",
+    "@fastify/session": ">= 11 < 12",
+    "@fastify/multipart": ">= 9 < 10",
+    "connect-mongo": ">= 5.1 < 6",
+    "@modelcontextprotocol/sdk": ">= 1 < 2",
+    "express": ">= 5 < 6",
+    "express-session": ">= 1.18 < 2",
+    "multer": ">= 2 < 3",
+    "graphql-yoga": ">= 5.9 < 6",
     "passport": ">= 0.7 < 1"
   },
   "peerDependenciesMeta": {
@@ -55,7 +57,13 @@
     "@ethereumjs/util": {
       "optional": true
     },
+    "fastify": {
+      "optional": true
+    },
     "@fastify/cookie": {
+      "optional": true
+    },
+    "@fastify/multipart": {
       "optional": true
     },
     "@fastify/session": {
@@ -67,7 +75,7 @@
     "express-session": {
       "optional": true
     },
-    "fastify": {
+    "multer": {
       "optional": true
     },
     "passport": {
@@ -85,18 +93,21 @@
     "expiry-map": "^2.0.0",
     "graphql-scalars": "^1.24.2",
     "moniker": "0.1.2",
-    "p-memoize": "^7.1.1"
+    "p-memoize": "^7.1.1",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@ethereumjs/util": "^10.0.0",
+    "fastify": "^5.4.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/session": "^11.1.0",
+    "@fastify/multipart": "^9.0.3",
     "@modelcontextprotocol/sdk": "^1.13.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.4",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "fastify": "^5.4.0",
+    "multer": "^2.0.1",
     "passport": "^0.7.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"

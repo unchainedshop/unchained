@@ -89,6 +89,9 @@ const gridfsHandler: RouteHandlerMethod = async (
           reply.status(403);
           return reply.send('Access restricted: Invalid signature.');
         }
+      } else if (!fileDocument) {
+        reply.status(404);
+        return reply.send();
       }
 
       if (file?.metadata?.['content-type']) {
