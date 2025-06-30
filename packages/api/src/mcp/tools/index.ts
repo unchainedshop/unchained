@@ -5,7 +5,7 @@
 export * from './listProducts.js';
 export * from './getProduct.js';
 export * from './createProduct.js';
-export * from './removeProduct.js';
+export * from './removeProductHandler.js';
 export * from './publishProduct.js';
 export * from './unPublishProduct.js';
 export * from './updateProduct.js';
@@ -33,3 +33,4 @@ export * from './updateLanguageHandler.js';
 export * from './removeLanguageHandler.js';
 export * from './addProductMediaUploadHandler.js';
 export * from './removeProductMediaHandler.js';
+export * from './updateProductMediaTextsHandler.js';

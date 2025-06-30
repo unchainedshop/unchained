@@ -61,6 +61,8 @@ import {
   addProductMediaUploadHandler,
   RemoveProductMediaSchema,
   removeProductMediaHandler,
+  UpdateProductMediaTextsSchema,
+  updateProductMediaTextsHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -271,6 +273,13 @@ export default function createMcpServer(context: Context, roles) {
     "Remove a media asset from a product's visualization",
     RemoveProductMediaSchema,
     async (params) => removeProductMediaHandler(context, params),
+  );
+
+  server.tool(
+    'update_product_media_texts',
+    "Modify localized texts part of a product's media asset",
+    UpdateProductMediaTextsSchema,
+    async (params) => updateProductMediaTextsHandler(context, params),
   );
 
   return server;
