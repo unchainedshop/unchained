@@ -6,7 +6,7 @@ import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
-
+import { openai } from '@ai-sdk/openai';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
@@ -25,6 +25,7 @@ try {
       maxTokens: 8000,
       maxSteps: 1,
       mcpEndpoint: `${process.env?.ROOT_URL}/mcp`,
+      imageModel: openai.image('dall-e-3')
     });
   }
 
