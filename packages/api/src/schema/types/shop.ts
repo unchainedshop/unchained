@@ -35,7 +35,6 @@ export default [
       userRoles: [String!]!
       adminUiConfig: AdminUiConfig!
       vapidPublicKey: String
-      chatEnabled: Boolean
     }
   `,
 ];
