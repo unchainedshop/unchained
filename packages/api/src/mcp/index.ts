@@ -67,6 +67,8 @@ import {
   reorderProductMediaHandler,
   ProductReviewsCountSchema,
   productReviewsCountHandler,
+  ProductReviewsSchema,
+  productReviewsHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -298,6 +300,13 @@ export default function createMcpServer(context: Context, roles) {
     'Returns total number of product reviews',
     ProductReviewsCountSchema,
     async (params) => productReviewsCountHandler(context, params),
+  );
+
+  server.tool(
+    'product_reviews',
+    ' Get all product reviews, by default sorted by creation date (descending)',
+    ProductReviewsSchema,
+    async (params) => productReviewsHandler(context, params),
   );
 
   return server;
