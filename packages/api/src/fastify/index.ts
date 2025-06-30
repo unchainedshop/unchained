@@ -10,9 +10,11 @@ import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
+import fastifyMultipart from '@fastify/multipart';
 import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.js';
+import tempUploadHandler from './tempUploadHandler.js';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
@@ -29,6 +31,7 @@ const {
   MCP_API_PATH = '/mcp',
   GRAPHQL_API_PATH = '/graphql',
   BULK_IMPORT_API_PATH = '/bulk-import',
+  TEMP_UPLOAD_API_PATH = '/temp-upload',
   ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
@@ -204,6 +207,17 @@ export const connect = (
     url: MCP_API_PATH,
     method: ['GET', 'POST', 'DELETE'],
     handler: mcpHandler,
+  });
+
+  fastify.register((s, opts, registered) => {
+    s.register(fastifyMultipart);
+    s.route({
+      url: TEMP_UPLOAD_API_PATH,
+      method: ['POST'],
+      bodyLimit: 1024 * 1024 * 35, // 35MB
+      handler: tempUploadHandler,
+    });
+    registered();
   });
 
   fastify.register((s, opts, registered) => {

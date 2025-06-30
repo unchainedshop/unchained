@@ -1,5 +1,6 @@
 import e from 'express';
 import session from 'express-session';
+import multer from 'multer';
 import MongoStore from 'connect-mongo';
 import { Passport } from 'passport';
 import { YogaServerInstance } from 'graphql-yoga';
@@ -11,6 +12,7 @@ import { User } from '@unchainedshop/core-users';
 import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
+import createTempUploadMiddleware from './createTempUploadMiddleware.js';
 import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
 
@@ -25,9 +27,13 @@ const resolveUserRemoteAddress = (req: e.Request) => {
   return { remoteAddress, remotePort };
 };
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const {
   BULK_IMPORT_API_PATH = '/bulk-import',
   ERC_METADATA_API_PATH = '/erc-metadata',
+  TEMP_UPLOAD_API_PATH = '/temp-upload',
   MCP_API_PATH = '/mcp',
   GRAPHQL_API_PATH = '/graphql',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
@@ -208,6 +214,7 @@ export const connect = (
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
+  expressApp.use(TEMP_UPLOAD_API_PATH, upload.any(), createTempUploadMiddleware);
 
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
   expressApp.use(MCP_API_PATH, createMCPMiddleware);

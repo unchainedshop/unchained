@@ -248,4 +248,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.confirmMediaUpload, () => true);
   role.allow(actions.downloadFile, isFileAccessible);
   role.allow(actions.uploadUserAvatar, canUpdateAvatar);
+  role.allow(actions.uploadTempFile, canUpdateAvatar);
 };
