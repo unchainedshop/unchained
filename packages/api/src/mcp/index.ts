@@ -63,6 +63,8 @@ import {
   removeProductMediaHandler,
   UpdateProductMediaTextsSchema,
   updateProductMediaTextsHandler,
+  ReorderProductMediaSchema,
+  reorderProductMediaHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -280,6 +282,13 @@ export default function createMcpServer(context: Context, roles) {
     "Modify localized texts part of a product's media asset",
     UpdateProductMediaTextsSchema,
     async (params) => updateProductMediaTextsHandler(context, params),
+  );
+
+  server.tool(
+    'reorder_product_media',
+    'Reorder a media asset (first is primary)',
+    ReorderProductMediaSchema,
+    async (params) => reorderProductMediaHandler(context, params),
   );
 
   return server;
