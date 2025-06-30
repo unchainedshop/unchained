@@ -35,3 +35,4 @@ export * from './addProductMediaUploadHandler.js';
 export * from './removeProductMediaHandler.js';
 export * from './updateProductMediaTextsHandler.js';
 export * from './reorderProductMediaHandler.js';
+export * from './productReviewsCountHandler.js';

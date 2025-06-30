@@ -65,6 +65,8 @@ import {
   updateProductMediaTextsHandler,
   ReorderProductMediaSchema,
   reorderProductMediaHandler,
+  ProductReviewsCountSchema,
+  productReviewsCountHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -289,6 +291,13 @@ export default function createMcpServer(context: Context, roles) {
     'Reorder a media asset (first is primary)',
     ReorderProductMediaSchema,
     async (params) => reorderProductMediaHandler(context, params),
+  );
+
+  server.tool(
+    'product_review_count',
+    'Returns total number of product reviews',
+    ProductReviewsCountSchema,
+    async (params) => productReviewsCountHandler(context, params),
   );
 
   return server;
