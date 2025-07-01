@@ -115,7 +115,7 @@ export async function listProductsHandler(context: Context, params: ListProducts
     // iterate all products and add texts
     const normalizedProducts = await Promise.all(
       products.map(async (product) => {
-        const texts = productTexts.filter((text) => (text as ProductText).productId === product._id);
+        const texts = productTexts.filter((text) => (text as ProductText)?.productId === product._id);
         const productMedias = await context.modules.products.media.findProductMedias({
           productId: product._id,
         });
