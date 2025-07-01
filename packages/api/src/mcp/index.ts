@@ -96,6 +96,12 @@ import {
   languagesCountHandler,
   CreateAssortmentSchema,
   createAssortmentHandler,
+  AssortmentsSchema,
+  assortmentsHandler,
+  AssortmentsCountSchema,
+  assortmentsCountHandler,
+  AssortmentSchema,
+  assortmentHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -423,6 +429,27 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool('add_assortment', 'Creates new assortment', CreateAssortmentSchema, async (params) =>
     createAssortmentHandler(context, params),
+  );
+
+  server.tool(
+    'get_assortment',
+    'Get a specific assortment by ID or slug',
+    AssortmentSchema,
+    async (params) => assortmentHandler(context, params),
+  );
+
+  server.tool(
+    'list_assortments',
+    'Search and list assortments with comprehensive filtering, sorting, and pagination support.',
+    AssortmentsSchema,
+    async (params) => assortmentsHandler(context, params),
+  );
+
+  server.tool(
+    'assortments_count',
+    'Returns total number of assortments that match a given criteria or all if no criteria is given',
+    AssortmentsCountSchema,
+    async (params) => assortmentsCountHandler(context, params),
   );
 
   return server;

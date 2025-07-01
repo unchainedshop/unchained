@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
-const SortDirectionEnum = z.enum(['asc', 'desc']); // assuming these are your directions
+const SortDirectionEnum = z.enum(['ASC', 'DESC']);
 
 export const ProductReviewsSchema = {
   limit: z.number().int().min(1).max(100).default(10).describe('Number of reviews to return'),
