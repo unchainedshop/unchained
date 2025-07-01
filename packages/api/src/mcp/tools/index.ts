@@ -50,3 +50,4 @@ export * from './currency/removeCurrencyHandler.js';
 export * from './currency/currenciesCountHandler.js';
 export * from './currency/currenciesHandler.js';
 export * from './currency/currencyHandler.js';
+export * from './assortment/createAssortmentHandler.js';

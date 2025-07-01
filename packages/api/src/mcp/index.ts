@@ -94,6 +94,8 @@ import {
   currenciesCountHandler,
   LanguagesCountSchema,
   languagesCountHandler,
+  CreateAssortmentSchema,
+  createAssortmentHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -417,6 +419,10 @@ export default function createMcpServer(context: Context, roles) {
     'Returns total number of languages registered in the system',
     LanguagesCountSchema,
     async (params) => languagesCountHandler(context, params),
+  );
+
+  server.tool('add_assortment', 'Creates new assortment', CreateAssortmentSchema, async (params) =>
+    createAssortmentHandler(context, params),
   );
 
   return server;
