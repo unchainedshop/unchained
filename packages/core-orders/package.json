@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-orders",
-  "version": "4.0.0-rc.2",
+  "version": "4.0.0-rc.3",
   "main": "lib/orders-index.js",
   "types": "lib/orders-index.d.ts",
   "type": "module",
@@ -32,9 +32,9 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@kontsedal/locco": "0.1.0",
-    "@unchainedshop/events": "^4.0.0-rc.2",
-    "@unchainedshop/logger": "^4.0.0-rc.2",
-    "@unchainedshop/utils": "^4.0.0-rc.2"
+    "@unchainedshop/events": "^4.0.0-rc.3",
+    "@unchainedshop/logger": "^4.0.0-rc.3",
+    "@unchainedshop/utils": "^4.0.0-rc.3"
   },
   "devDependencies": {
     "@types/node": "^24.0.4",

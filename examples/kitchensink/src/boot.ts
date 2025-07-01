@@ -10,6 +10,8 @@ import { openai } from '@ai-sdk/openai';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
+const { ANTHROPIC_API_KEY, ROOT_URL } = process.env;
+
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
@@ -17,24 +19,8 @@ const fastify = Fastify({
 });
 
 try {
-  if (process.env.ANTHROPIC_API_KEY) {
-    connectChat(fastify, {
-      system:
-        'do not include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary',
-      model: anthropic('claude-4-sonnet-20250514'),
-      maxTokens: 8000,
-      maxSteps: 1,
-      mcpEndpoint: `${process.env?.ROOT_URL}/mcp`,
-      imageModel: openai.image('dall-e-3')
-    });
-  }
-
   const platform = await startPlatform({
     modules: defaultModules,
-  });
-
-  fastify.register(fastifyRouter, {
-    prefix: '/',
   });
 
   connect(fastify, platform, {
@@ -42,6 +28,26 @@ try {
   });
 
   connectDefaultPluginsToFastify(fastify, platform);
+
+  if (ANTHROPIC_API_KEY) {
+    fastify.log.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
+    connectChat(fastify, {
+      system:
+        'do not include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary',
+      model: anthropic('claude-4-sonnet-20250514'),
+      maxTokens: 8000,
+      maxSteps: 1,
+      imageGenerationTool: {
+        model: openai.image('dall-e-3'),
+      },
+    });
+  } else {
+    fastify.log.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
+  }
+
+  fastify.register(fastifyRouter, {
+    prefix: '/',
+  });
 
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
