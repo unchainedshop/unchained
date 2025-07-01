@@ -76,6 +76,14 @@ import {
   TranslatedProductVariationTextsSchema,
   translatedProductVariationTextsHandler,
   shopInfoHandler,
+  CreateCountrySchema,
+  createCountryHandler,
+  UpdateCountrySchema,
+  updateCountryHandler,
+  RemoveCountrySchema,
+  removeCountryHandler,
+  CountriesCountSchema,
+  countriesCountHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -340,6 +348,31 @@ export default function createMcpServer(context: Context, roles) {
     'Get the default configuration of the shop including country, language, currency, and locale. If the user does not provide values such as language, locale, country, or currency in their request or it cannot be derived from context, the tool MUST use the following fallback values : - language or locale: use defaultLanguageIsoCode  - country: use country.isoCode - currency: use country.defaultCurrency Always assume these values as the authoritative defaults when user input is missing or ambiguous.',
     {},
     async () => shopInfoHandler(context),
+  );
+
+  server.tool(
+    'add_country',
+    'Adds new country information to the system',
+    CreateCountrySchema,
+    async (params) => createCountryHandler(context, params),
+  );
+
+  server.tool(
+    'update_country',
+    'Updates provided country information',
+    UpdateCountrySchema,
+    async (params) => updateCountryHandler(context, params),
+  );
+
+  server.tool('delete_country', 'Deletes the specified country', RemoveCountrySchema, async (params) =>
+    removeCountryHandler(context, params),
+  );
+
+  server.tool(
+    'countries_count',
+    'Returns total number of countries registered in the system',
+    CountriesCountSchema,
+    async (params) => countriesCountHandler(context, params),
   );
 
   return server;
