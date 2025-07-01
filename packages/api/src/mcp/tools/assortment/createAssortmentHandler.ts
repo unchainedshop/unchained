@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
+import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortmentDetails.js';
 
 export const AssortmentTextInputSchema = z.object({
   locale: z
@@ -48,7 +49,12 @@ export async function createAssortmentHandler(context: Context, params: CreateAs
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ assortment: newAssortment }),
+          text: JSON.stringify({
+            assortment: await getNormalizedAssortmentDetails(
+              { assortmentId: newAssortment._id },
+              context,
+            ),
+          }),
         },
       ],
     };

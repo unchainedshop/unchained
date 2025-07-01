@@ -102,6 +102,12 @@ import {
   assortmentsCountHandler,
   AssortmentSchema,
   assortmentHandler,
+  UpdateAssortmentSchema,
+  updateAssortmentHandler,
+  RemoveAssortmentSchema,
+  removeAssortmentHandler,
+  SetBaseAssortmentSchema,
+  setBaseAssortmentHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -429,6 +435,27 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool('add_assortment', 'Creates new assortment', CreateAssortmentSchema, async (params) =>
     createAssortmentHandler(context, params),
+  );
+
+  server.tool(
+    'update_assortment',
+    'Updates the provided assortment detail',
+    UpdateAssortmentSchema,
+    async (params) => updateAssortmentHandler(context, params),
+  );
+
+  server.tool(
+    'delete_assortment',
+    'Removes assortment with the provided ID',
+    RemoveAssortmentSchema,
+    async (params) => removeAssortmentHandler(context, params),
+  );
+
+  server.tool(
+    'set_assortment_base',
+    'Makes the assortment provided as the base assortment and make any other existing base assortment regular assortments.',
+    SetBaseAssortmentSchema,
+    async (params) => setBaseAssortmentHandler(context, params),
   );
 
   server.tool(
