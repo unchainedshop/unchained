@@ -23,7 +23,7 @@ export async function reorderProductMediaHandler(context: Context, params: Reord
   const { modules, userId } = context;
 
   try {
-    log('mutation reorderProductMedia', { userId });
+    log('handler reorderProductMedia', { userId });
 
     const reorderedMedia = await modules.products.media.updateManualOrder({ sortKeys: sortKeys as any });
 

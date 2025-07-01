@@ -18,7 +18,7 @@ export const CreateProductSchema = {
           .string()
           .min(2)
           .describe(
-            'Locale code like "en", "de" always use locales registered in the system languages, if language explicitly provided check if it exists',
+            'Locale code like "en", "de" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language explicitly provided check if it exists',
           ),
         slug: z.string().optional().describe('URL slug'),
         title: z.string().optional().describe('Product title'),
@@ -39,7 +39,6 @@ export type CreateProductParams = z.infer<typeof CreateProductZodSchema>;
 
 export async function createProductHandler(context: Context, params: CreateProductParams) {
   const { product, texts } = params;
-
   try {
     const newProduct = await context.modules.products.create(product as Product);
     let productTexts: any[] = texts;

@@ -4,7 +4,7 @@
 
 export * from './listProducts.js';
 export * from './getProduct.js';
-export * from './createProduct.js';
+export * from './createProductHandler.js';
 export * from './removeProductHandler.js';
 export * from './publishProduct.js';
 export * from './unPublishProduct.js';
@@ -37,3 +37,7 @@ export * from './updateProductMediaTextsHandler.js';
 export * from './reorderProductMediaHandler.js';
 export * from './productReviewsCountHandler.js';
 export * from './productReviewsHandler.js';
+export * from './translatedProductTextsHandler.js';
+export * from './translatedProductMediaTextsHandler.js';
+export * from './translatedProductVariationTextsHandler.js';
+export * from './shopInfoHandler.js';

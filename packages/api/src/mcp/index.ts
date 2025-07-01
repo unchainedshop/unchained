@@ -69,6 +69,13 @@ import {
   productReviewsCountHandler,
   ProductReviewsSchema,
   productReviewsHandler,
+  TranslatedProductTextsSchema,
+  translatedProductTextsHandler,
+  TranslatedProductMediaTextsSchema,
+  translatedProductMediaTextsHandler,
+  TranslatedProductVariationTextsSchema,
+  translatedProductVariationTextsHandler,
+  shopInfoHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -83,7 +90,7 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'list_products',
-    'Search and list products with comprehensive filtering and pagination support',
+    `Search and list products with comprehensive filtering, sorting, and pagination support.`,
     ListProductsSchema,
     async (params) => listProductsHandler(context, params),
   );
@@ -173,7 +180,7 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'list_currencies',
-    'List all available currencies in the system, when currency is required and not implicitly provided use this tool to get the list of available currencies also if non existing currency is provided to you by a user inform them it does not exist and to create it first before they can use it',
+    'List all available currencies in the system, if non existing currency is provided to you by a user inform them it does not exist and to create it first before they can use it',
     ListCurrenciesSchema,
     async (params) => currenciesHandler(context, params),
   );
@@ -187,7 +194,7 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'list_countries',
-    'List all available countries in the system, when country is required and not implicitly provided use this tool to get the list of available countries also if non existing country is provided to you by a user inform them it does not exist and to create it first before they can use it',
+    'List all available countries in the system, if non existing country is provided to you by a user inform them it does not exist and to create it first before they can use it',
     ListCountriesSchema,
     async (params) => countriesHandler(context, params),
   );
@@ -201,7 +208,7 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'list_languages',
-    'List all available languages in the system, when language is required and not implicitly provided use this tool to get the list of available languages also if non existing language is provided to you by a user inform them it does not exist and to create it first before they can use it',
+    'List all available languages in the system, if non existing language is provided to you by a user inform them it does not exist and to create it first before they can use it',
     ListLanguagesSchema,
     async (params) => languagesHandler(context, params),
   );
@@ -304,9 +311,35 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'product_reviews',
-    ' Get all product reviews, by default sorted by creation date (descending)',
+    'Get all product reviews, by default sorted by creation date (descending)',
     ProductReviewsSchema,
     async (params) => productReviewsHandler(context, params),
+  );
+  server.tool(
+    'product_localized_texts',
+    'Returns Localization: Meta data for product',
+    TranslatedProductTextsSchema,
+    async (params) => translatedProductTextsHandler(context, params),
+  );
+
+  server.tool(
+    'product_media_localized_texts',
+    'Returns Localization: Meta data for product media',
+    TranslatedProductMediaTextsSchema,
+    async (params) => translatedProductMediaTextsHandler(context, params),
+  );
+
+  server.tool(
+    'product_variation_localized_texts',
+    'Returns Localization: Meta data for product variation',
+    TranslatedProductVariationTextsSchema,
+    async (params) => translatedProductVariationTextsHandler(context, params),
+  );
+  server.tool(
+    'shop_info',
+    'Get the default configuration of the shop including country, language, currency, and locale. If the user does not provide values such as language, locale, country, or currency in their request or it cannot be derived from context, the tool MUST use the following fallback values : - language or locale: use defaultLanguageIsoCode  - country: use country.isoCode - currency: use country.defaultCurrency Always assume these values as the authoritative defaults when user input is missing or ambiguous.',
+    {},
+    async () => shopInfoHandler(context),
   );
 
   return server;
