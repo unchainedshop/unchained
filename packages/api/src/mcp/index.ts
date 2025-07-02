@@ -134,6 +134,12 @@ import {
   removeAssortmentMediaHandler,
   AddAssortmentMediaUploadSchema,
   addAssortmentMediaUploadHandler,
+  CreateFilterSchema,
+  createFilterHandler,
+  UpdateFilterSchema,
+  updateFilterHandler,
+  RemoveFilterSchema,
+  removeFilterHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -600,6 +606,17 @@ export default function createMcpServer(context: Context, roles) {
     `Remove a media asset from a assortment`,
     AddAssortmentMediaUploadSchema,
     async (params) => addAssortmentMediaUploadHandler(context, params),
+  );
+
+  server.tool('add_filter', `Creates new Filter`, CreateFilterSchema, async (params) =>
+    createFilterHandler(context, params),
+  );
+  server.tool('update_filter', `Update filter information`, UpdateFilterSchema, async (params) =>
+    updateFilterHandler(context, params),
+  );
+
+  server.tool('remove_filter', ` Deletes the specified filter`, RemoveFilterSchema, async (params) =>
+    removeFilterHandler(context, params),
   );
 
   return server;

@@ -72,3 +72,7 @@ export * from './assortment/reorderAssortmentLinksHandler.js';
 export * from './assortment/reorderAssortmentMediaHandler.js';
 export * from './assortment/removeAssortmentMediaHandler.js';
 export * from './assortment/addAssortmentMediaUploadHandler.js';
+
+export * from './filter/createFilterHandler.js';
+export * from './filter/updateFilterHandler.js';
+export * from './filter/removeFilterHandler.js';
