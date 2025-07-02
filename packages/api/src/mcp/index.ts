@@ -146,6 +146,16 @@ import {
   updateFilterTextsHandler,
   RemoveFilterOptionSchema,
   removeFilterOptionHandler,
+  GetFilterSchema,
+  getFilterHandler,
+  GetFiltersSchema,
+  getFiltersHandler,
+  TranslatedFilterTextsSchema,
+  translatedFilterTextsHandler,
+  TranslatedAssortmentMediaTextsSchema,
+  translatedAssortmentMediaTextsHandler,
+  TranslatedAssortmentTextsSchema,
+  translatedAssortmentTextsHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -643,6 +653,38 @@ export default function createMcpServer(context: Context, roles) {
     `Removes the filter option from the specified filter.`,
     RemoveFilterOptionSchema,
     async (params) => removeFilterOptionHandler(context, params),
+  );
+
+  server.tool('get_filter', `Get a specific filter by ID`, GetFilterSchema, async (params) =>
+    getFilterHandler(context, params),
+  );
+
+  server.tool(
+    'list_filters',
+    `Get all filters, by default sorted by creation date (ascending), optionally it can filter based on various parameters including querystring`,
+    GetFiltersSchema,
+    async (params) => getFiltersHandler(context, params),
+  );
+
+  server.tool(
+    'filter_localized_texts',
+    `Returns localized filter texts found in the system for the specified filterId`,
+    TranslatedFilterTextsSchema,
+    async (params) => translatedFilterTextsHandler(context, params),
+  );
+
+  server.tool(
+    'assortment_media_localized_texts',
+    'Returns localized assortment media texts found in the system for the specified assortmentId',
+    TranslatedAssortmentMediaTextsSchema,
+    async (params) => translatedAssortmentMediaTextsHandler(context, params),
+  );
+
+  server.tool(
+    'assortment_localized_texts',
+    'Returns localized assortment texts found in the system for the specified assortmentId',
+    TranslatedAssortmentTextsSchema,
+    async (params) => translatedAssortmentTextsHandler(context, params),
   );
 
   return server;

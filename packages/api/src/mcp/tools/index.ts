@@ -72,6 +72,8 @@ export * from './assortment/reorderAssortmentLinksHandler.js';
 export * from './assortment/reorderAssortmentMediaHandler.js';
 export * from './assortment/removeAssortmentMediaHandler.js';
 export * from './assortment/addAssortmentMediaUploadHandler.js';
+export * from './assortment/translatedAssortmentTextsHandler.js';
+export * from './assortment/translatedAssortmentMediaTextsHandler.js';
 
 export * from './filter/createFilterHandler.js';
 export * from './filter/updateFilterHandler.js';
@@ -79,3 +81,6 @@ export * from './filter/removeFilterHandler.js';
 export * from './filter/createFilterOptionHandler.js';
 export * from './filter/updateFilterTextsHandler.js';
 export * from './filter/removeFilterOptionHandler.js';
+export * from './filter/getFilterHandler.js';
+export * from './filter/getFiltersHandler.js';
+export * from './filter/translatedFilterTextsHandler.js';
