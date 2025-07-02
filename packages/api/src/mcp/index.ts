@@ -128,6 +128,12 @@ import {
   addAssortmentLinkHandler,
   RemoveAssortmentLinkSchema,
   removeAssortmentLinkHandler,
+  ReorderAssortmentMediaSchema,
+  reorderAssortmentMediaHandler,
+  RemoveAssortmentMediaSchema,
+  removeAssortmentMediaHandler,
+  AddAssortmentMediaUploadSchema,
+  addAssortmentMediaUploadHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -564,16 +570,36 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'remove_assortment_link',
-    `Remove a child/parent assortment link from it's parent`,
+    `Removes a child/parent assortment link from it's parent`,
     RemoveAssortmentLinkSchema,
     async (params) => removeAssortmentLinkHandler(context, params),
   );
 
   server.tool(
-    'reorder_assortment_link',
-    ` Reorder the assortment links in parent assortment`,
+    'reorder_assortment_links',
+    ` Reorders the assortment links in parent assortment`,
     RemoveAssortmentLinkSchema,
     async (params) => removeAssortmentLinkHandler(context, params),
+  );
+
+  server.tool(
+    'reorder_assortment_medias',
+    `Reorders the assortment medias`,
+    ReorderAssortmentMediaSchema,
+    async (params) => reorderAssortmentMediaHandler(context, params),
+  );
+
+  server.tool(
+    'add_assortment_media',
+    `Add a media asset to a assortment`,
+    RemoveAssortmentMediaSchema,
+    async (params) => removeAssortmentMediaHandler(context, params),
+  );
+  server.tool(
+    'remove_assortment_media',
+    `Remove a media asset from a assortment`,
+    AddAssortmentMediaUploadSchema,
+    async (params) => addAssortmentMediaUploadHandler(context, params),
   );
 
   return server;

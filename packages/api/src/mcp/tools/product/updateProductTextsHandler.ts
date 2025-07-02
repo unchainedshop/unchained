@@ -11,7 +11,7 @@ export const UpdateProductTextsSchema = {
           .string()
           .min(2)
           .describe(
-            'Locale code like "en", "de" always use locales registered in the system languages, if explicitly provided check if it exists',
+            'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
           ),
         slug: z.string().optional().describe('URL slug'),
         title: z.string().optional().describe('Product title'),

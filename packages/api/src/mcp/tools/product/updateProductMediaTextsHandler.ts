@@ -7,7 +7,12 @@ export const UpdateProductMediaTextsSchema = {
   texts: z
     .array(
       z.object({
-        locale: z.string().min(2).describe('Locale of the text, e.g. "en", "fr", etc.'),
+        locale: z
+          .string()
+          .min(2)
+          .describe(
+            'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
+          ),
         title: z.string().optional().describe('Title in the given locale'),
         subtitle: z.string().optional().describe('Subtitle in the given locale'),
       }),

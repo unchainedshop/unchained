@@ -8,7 +8,7 @@ const ProductVariationTextInputSchema = z.object({
     .string()
     .min(2)
     .describe(
-      'Locale code like "en", "de" always use locales registered in the system languages, if language explicitly provided check if it exists',
+      'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
     ),
   title: z.string().describe('variation option title in the specified locale'),
   subtitle: z.string().optional().describe('variation option subtitle in the specified locale'),
