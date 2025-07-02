@@ -140,6 +140,12 @@ import {
   updateFilterHandler,
   RemoveFilterSchema,
   removeFilterHandler,
+  CreateFilterOptionSchema,
+  createFilterOptionHandler,
+  UpdateFilterTextsSchema,
+  updateFilterTextsHandler,
+  RemoveFilterOptionSchema,
+  removeFilterOptionHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -617,6 +623,26 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool('remove_filter', ` Deletes the specified filter`, RemoveFilterSchema, async (params) =>
     removeFilterHandler(context, params),
+  );
+  server.tool(
+    'add_filter_option',
+    `Adds new option to filters`,
+    CreateFilterOptionSchema,
+    async (params) => createFilterOptionHandler(context, params),
+  );
+
+  server.tool(
+    'update_filter_texts',
+    `Updates or created specified filter texts for filter with ID provided and locale and optionally filterOptionValue`,
+    UpdateFilterTextsSchema,
+    async (params) => updateFilterTextsHandler(context, params),
+  );
+
+  server.tool(
+    'remove_filter_option',
+    `Removes the filter option from the specified filter.`,
+    RemoveFilterOptionSchema,
+    async (params) => removeFilterOptionHandler(context, params),
   );
 
   return server;
