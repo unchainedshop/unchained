@@ -112,6 +112,8 @@ import {
   assortmentChildrenHandler,
   assortmentProductsHandler,
   AssortmentProductsSchema,
+  searchAssortmentProductHandler,
+  SearchAssortmentProductSchema,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -495,6 +497,13 @@ export default function createMcpServer(context: Context, roles) {
     'Returns products assigned to the specified assortmentID',
     AssortmentProductsSchema,
     async (params) => assortmentProductsHandler(context, params),
+  );
+
+  server.tool(
+    'search_assortment_products',
+    'searches products assigned to the specified assortment using various parameters',
+    SearchAssortmentProductSchema,
+    async (params) => searchAssortmentProductHandler(context, params),
   );
 
   return server;
