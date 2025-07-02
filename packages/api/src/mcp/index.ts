@@ -120,6 +120,8 @@ import {
   assortmentFiltersHandler,
   AddAssortmentProductSchema,
   addAssortmentProductHandler,
+  RemoveAssortmentProductSchema,
+  removeAssortmentProductHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -531,6 +533,13 @@ export default function createMcpServer(context: Context, roles) {
     'Add a new product to an assortment',
     AddAssortmentProductSchema,
     async (params) => addAssortmentProductHandler(context, params),
+  );
+
+  server.tool(
+    'remove_assortment_product',
+    'Remove a product from an assortment',
+    RemoveAssortmentProductSchema,
+    async (params) => removeAssortmentProductHandler(context, params),
   );
 
   return server;
