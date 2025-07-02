@@ -61,3 +61,4 @@ export * from './assortment/setBaseAssortmentHandler.js';
 export * from './assortment/assortmentChildrenHandler.js';
 export * from './assortment/assortmentProductsHandler.js';
 export * from './assortment/searchAssortmentProductHandler.js';
+export * from './assortment/assortmentLinksHandler.js';
