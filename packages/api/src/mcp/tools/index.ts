@@ -66,3 +66,6 @@ export * from './assortment/assortmentFiltersHandler.js';
 export * from './assortment/addAssortmentProductHandler.js';
 export * from './assortment/removeAssortmentProductHandler.js';
 export * from './assortment/reorderAssortmentProductsHandler.js';
+export * from './assortment/addAssortmentLinkHandler.js';
+export * from './assortment/removeAssortmentLinkHandler.js';
+export * from './assortment/reorderAssortmentLinksHandler.js';

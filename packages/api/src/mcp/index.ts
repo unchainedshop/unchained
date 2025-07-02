@@ -124,6 +124,10 @@ import {
   removeAssortmentProductHandler,
   ReorderAssortmentProductsSchema,
   reorderAssortmentProductsHandler,
+  AddAssortmentLinkSchema,
+  addAssortmentLinkHandler,
+  RemoveAssortmentLinkSchema,
+  removeAssortmentLinkHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -549,6 +553,27 @@ export default function createMcpServer(context: Context, roles) {
     'Reorder sort sequence of products in an assortment',
     ReorderAssortmentProductsSchema,
     async (params) => reorderAssortmentProductsHandler(context, params),
+  );
+
+  server.tool(
+    'add_assortment_link',
+    'Add a new child assortment to an assortment',
+    AddAssortmentLinkSchema,
+    async (params) => addAssortmentLinkHandler(context, params),
+  );
+
+  server.tool(
+    'remove_assortment_link',
+    `Remove a child/parent assortment link from it's parent`,
+    RemoveAssortmentLinkSchema,
+    async (params) => removeAssortmentLinkHandler(context, params),
+  );
+
+  server.tool(
+    'reorder_assortment_link',
+    ` Reorder the assortment links in parent assortment`,
+    RemoveAssortmentLinkSchema,
+    async (params) => removeAssortmentLinkHandler(context, params),
   );
 
   return server;
