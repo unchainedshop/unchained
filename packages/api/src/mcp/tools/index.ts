@@ -58,3 +58,4 @@ export * from './assortment/createAssortmentHandler.js';
 export * from './assortment/updateAssortmentHandler.js';
 export * from './assortment/removeAssortmentHandler.js';
 export * from './assortment/setBaseAssortmentHandler.js';
+export * from './assortment/assortmentChildrenHandler.js';

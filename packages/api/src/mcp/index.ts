@@ -108,6 +108,8 @@ import {
   removeAssortmentHandler,
   SetBaseAssortmentSchema,
   setBaseAssortmentHandler,
+  AssortmentChildrenSchema,
+  assortmentChildrenHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -477,6 +479,13 @@ export default function createMcpServer(context: Context, roles) {
     'Returns total number of assortments that match a given criteria or all if no criteria is given',
     AssortmentsCountSchema,
     async (params) => assortmentsCountHandler(context, params),
+  );
+
+  server.tool(
+    'assortment_children',
+    'Returns child assortments of the specified assortmentID',
+    AssortmentChildrenSchema,
+    async (params) => assortmentChildrenHandler(context, params),
   );
 
   return server;
