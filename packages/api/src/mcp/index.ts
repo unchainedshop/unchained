@@ -118,6 +118,8 @@ import {
   assortmentLinksHandler,
   AssortmentFiltersSchema,
   assortmentFiltersHandler,
+  AddAssortmentProductSchema,
+  addAssortmentProductHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -522,6 +524,13 @@ export default function createMcpServer(context: Context, roles) {
     'Returns filters assigned to the specified assortmentID',
     AssortmentFiltersSchema,
     async (params) => assortmentFiltersHandler(context, params),
+  );
+
+  server.tool(
+    'add_assortment_product',
+    'Add a new product to an assortment',
+    AddAssortmentProductSchema,
+    async (params) => addAssortmentProductHandler(context, params),
   );
 
   return server;
