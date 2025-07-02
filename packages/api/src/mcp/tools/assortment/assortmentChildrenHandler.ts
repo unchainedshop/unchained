@@ -5,6 +5,11 @@ import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortm
 
 export const AssortmentChildrenSchema = {
   assortmentId: z.string().min(1).optional().describe('ID of the assortment to fetch'),
+  includeInactive: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe('Whether to include inactive assortments'),
 };
 
 export const AssortmentChildrenZodSchema = z.object(AssortmentChildrenSchema);
@@ -13,12 +18,13 @@ export type AssortmentChildrenParams = z.infer<typeof AssortmentChildrenZodSchem
 
 export async function assortmentChildrenHandler(context: Context, params: AssortmentChildrenParams) {
   const { userId, modules } = context;
-  const { assortmentId } = params;
+  const { assortmentId, includeInactive } = params;
 
   try {
     log('handler assortmentChildren', { userId, params });
     const assortmentChildren = await modules.assortments.children({
       assortmentId,
+      includeInactive,
     });
 
     const normalizedAssortmentChildren = await Promise.all(

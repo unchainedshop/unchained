@@ -18,11 +18,23 @@ export async function getNormalizedAssortmentDetails(
   const assortmentMedias = await modules.assortments.media.findAssortmentMedias({
     assortmentId: normalizedAssortmentId,
   });
+  const assortmentChildLinks = await loaders.assortmentLinksLoader.load({
+    parentAssortmentId: assortment._id,
+  });
+
+  const assortmentIds = assortmentChildLinks.map(({ childAssortmentId }) => childAssortmentId);
+
+  const childrenCount = await modules.assortments.count({
+    assortmentIds,
+    includeInactive: true,
+    includeLeaves: true,
+  });
   const media = await normalizeMediaUrl(assortmentMedias, context);
 
   return {
     ...assortment,
     texts,
     media,
+    childrenCount,
   };
 }
