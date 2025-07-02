@@ -156,6 +156,12 @@ import {
   translatedAssortmentMediaTextsHandler,
   TranslatedAssortmentTextsSchema,
   translatedAssortmentTextsHandler,
+  AddAssortmentFilterSchema,
+  addAssortmentFilterHandler,
+  RemoveAssortmentFilterSchema,
+  removeAssortmentFilterHandler,
+  ReorderAssortmentFiltersSchema,
+  reorderAssortmentFiltersHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -685,6 +691,27 @@ export default function createMcpServer(context: Context, roles) {
     'Returns localized assortment texts found in the system for the specified assortmentId',
     TranslatedAssortmentTextsSchema,
     async (params) => translatedAssortmentTextsHandler(context, params),
+  );
+
+  server.tool(
+    'add_assortment_filter',
+    'Add/attach/link a filter to an assortment',
+    AddAssortmentFilterSchema,
+    async (params) => addAssortmentFilterHandler(context, params),
+  );
+
+  server.tool(
+    'remove_assortment_filter',
+    'Removes/unlinks a filter from assortment',
+    RemoveAssortmentFilterSchema,
+    async (params) => removeAssortmentFilterHandler(context, params),
+  );
+
+  server.tool(
+    'reorder_assortment_filters',
+    'Reorders the assortment filters',
+    ReorderAssortmentFiltersSchema,
+    async (params) => reorderAssortmentFiltersHandler(context, params),
   );
 
   return server;
