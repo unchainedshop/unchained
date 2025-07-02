@@ -116,6 +116,8 @@ import {
   SearchAssortmentProductSchema,
   AssortmentLinksSchema,
   assortmentLinksHandler,
+  AssortmentFiltersSchema,
+  assortmentFiltersHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -509,10 +511,17 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'assortment_link',
+    'assortment_links',
     'return all the linked assortment of the specified assortment ID including all hierarchy',
     AssortmentLinksSchema,
     async (params) => assortmentLinksHandler(context, params),
+  );
+
+  server.tool(
+    'assortment_filters',
+    'Returns filters assigned to the specified assortmentID',
+    AssortmentFiltersSchema,
+    async (params) => assortmentFiltersHandler(context, params),
   );
 
   return server;
