@@ -6,12 +6,16 @@ import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortm
 import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetails.js';
 
 export const AddAssortmentFilterSchema = {
-  assortmentId: z.string().min(1).describe('ID of the assortment'),
-  filterId: z.string().min(1).describe('ID of the filter to add'),
+  assortmentId: z.string().min(1).describe('ID of the assortment to which the filter will be added.'),
+
+  filterId: z.string().min(1).describe('ID of the filter being added to the assortment.'),
+
   tags: z
     .array(z.string().regex(/^[a-z0-9-_]+$/))
     .optional()
-    .describe('Optional lowercase tags'),
+    .describe(
+      'Optional array of lowercase tags (letters, numbers, hyphens, underscores). Used to label or categorize the filter connection.',
+    ),
 };
 
 export const AddAssortmentFilterZodSchema = z.object(AddAssortmentFilterSchema);

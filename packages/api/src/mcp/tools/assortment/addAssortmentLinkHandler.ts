@@ -5,9 +5,18 @@ import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortm
 import { AssortmentNotFoundError } from '../../../errors.js';
 
 export const AddAssortmentLinkSchema = {
-  parentAssortmentId: z.string().min(1).describe('ID of the parent assortment'),
-  childAssortmentId: z.string().min(1).describe('ID of the child assortment'),
-  tags: z.array(z.string().min(1)).default([]).describe('Tags for the link'),
+  parentAssortmentId: z
+    .string()
+    .min(1)
+    .describe('ID of the parent assortment (the container or grouping assortment).'),
+  childAssortmentId: z
+    .string()
+    .min(1)
+    .describe('ID of the child assortment (the linked or nested assortment).'),
+  tags: z
+    .array(z.string().min(1))
+    .default([])
+    .describe('Optional tags to label or categorize this link.'),
 };
 
 export const AddAssortmentLinkZodSchema = z.object(AddAssortmentLinkSchema);

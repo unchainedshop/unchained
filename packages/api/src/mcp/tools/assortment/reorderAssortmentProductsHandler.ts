@@ -3,15 +3,15 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
 export const ReorderAssortmentProductInputSchema = z.object({
-  assortmentProductId: z.string().min(1),
-  sortKey: z.number(),
+  assortmentProductId: z.string().min(1).describe('ID of the assortment product to reorder'),
+  sortKey: z.number().describe('New sorting key for the product'),
 });
 
 export const ReorderAssortmentProductsSchema = {
   sortKeys: z
     .array(ReorderAssortmentProductInputSchema)
     .min(1)
-    .describe('New sort order for assortment products'),
+    .describe('Array of assortmentProductId with their new sort keys'),
 };
 
 export const ReorderAssortmentProductsZodSchema = z.object(ReorderAssortmentProductsSchema);

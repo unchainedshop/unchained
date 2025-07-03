@@ -4,7 +4,11 @@ import { log } from '@unchainedshop/logger';
 import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortmentDetails.js';
 
 export const AssortmentLinksSchema = {
-  assortmentId: z.string().min(1).optional().describe('ID of the assortment to fetch'),
+  assortmentId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('ID of the assortment to fetch links for (optional).'),
 };
 
 export const AssortmentLinksZodSchema = z.object(AssortmentLinksSchema);

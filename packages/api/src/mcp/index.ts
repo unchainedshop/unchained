@@ -164,6 +164,10 @@ import {
   reorderAssortmentFiltersHandler,
   UpdateAssortmentTextsSchema,
   updateAssortmentTextsHandler,
+  ReorderAssortmentLinksSchema,
+  reorderAssortmentLinksHandler,
+  UpdateAssortmentMediaTextsSchema,
+  updateAssortmentMediaTextsHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -489,147 +493,158 @@ export default function createMcpServer(context: Context, roles) {
     async (params) => languagesCountHandler(context, params),
   );
 
-  server.tool('add_assortment', 'Creates new assortment', CreateAssortmentSchema, async (params) =>
-    createAssortmentHandler(context, params),
+  server.tool(
+    'assortment.create',
+    'Create a new assortment with optional localized texts.',
+    CreateAssortmentSchema,
+    async (params) => createAssortmentHandler(context, params),
   );
 
   server.tool(
-    'update_assortment',
-    'Updates the details of an existing assortment such as tags, active state, root status, or sort order.',
+    'assortment.update',
+    'Update fields of an existing assortment by ID.',
     UpdateAssortmentSchema,
     async (params) => updateAssortmentHandler(context, params),
   );
 
   server.tool(
-    'delete_assortment',
-    'Removes assortment with the provided ID',
+    'assortment.remove',
+    'Remove an assortment by ID.',
     RemoveAssortmentSchema,
     async (params) => removeAssortmentHandler(context, params),
   );
 
   server.tool(
-    'set_assortment_base',
-    'Makes the assortment provided as the base assortment and make any other existing base assortment regular assortments.',
+    'assortment.setBase',
+    'Makes the provided assortment the base assortment and resets others to regular.',
     SetBaseAssortmentSchema,
     async (params) => setBaseAssortmentHandler(context, params),
   );
 
   server.tool(
-    'get_assortment',
-    'Get a specific assortment by ID or slug',
+    'assortment.get',
+    'Fetch details of an assortment by ID or slug.',
     AssortmentSchema,
     async (params) => assortmentHandler(context, params),
   );
 
   server.tool(
-    'list_assortments',
-    'Search and list assortments with comprehensive filtering, sorting, and pagination support.',
+    'assortment.list',
+    'List assortments with filtering, pagination, and sorting options.',
     AssortmentsSchema,
     async (params) => assortmentsHandler(context, params),
   );
 
   server.tool(
-    'assortments_count',
-    'Returns total number of assortments that match a given criteria or all if no criteria is given',
+    'assortment.count',
+    'Count assortments matching given filters.',
     AssortmentsCountSchema,
     async (params) => assortmentsCountHandler(context, params),
   );
 
   server.tool(
-    'assortment_children',
-    'Returns child assortments of the specified assortmentID',
+    'assortment.getChildren',
+    'Fetch child assortments for a given assortment ID (or root-level assortments if none is provided).',
     AssortmentChildrenSchema,
     async (params) => assortmentChildrenHandler(context, params),
   );
 
   server.tool(
-    'assortment_products',
-    'Returns products assigned to the specified assortmentID',
+    'assortment.getProducts',
+    'Fetch products for a given assortment, optionally including inactive ones.',
     AssortmentProductsSchema,
     async (params) => assortmentProductsHandler(context, params),
   );
 
   server.tool(
-    'search_assortment_products',
-    'searches products assigned to the specified assortment using various parameters',
+    'assortment.searchProducts',
+    'Search products within an assortment with optional filtering and pagination.',
     SearchAssortmentProductSchema,
     async (params) => searchAssortmentProductHandler(context, params),
   );
 
   server.tool(
-    'assortment_links',
-    'return all the linked assortment of the specified assortment ID including all hierarchy',
+    'assortment.getLinks',
+    'Fetch parent and child links for a given assortment.',
     AssortmentLinksSchema,
     async (params) => assortmentLinksHandler(context, params),
   );
 
   server.tool(
-    'assortment_filters',
-    'Returns filters assigned to the specified assortmentID',
+    'assortment.getFilters',
+    'Fetch filters associated with a specific assortment.',
     AssortmentFiltersSchema,
     async (params) => assortmentFiltersHandler(context, params),
   );
 
   server.tool(
-    'add_assortment_product',
-    'Add a new product to an assortment',
+    'assortment.addProduct',
+    'Add a product to an assortment with optional tags.',
     AddAssortmentProductSchema,
     async (params) => addAssortmentProductHandler(context, params),
   );
 
   server.tool(
-    'remove_assortment_product',
-    'Remove a product from an assortment',
+    'assortment.removeProduct',
+    'Remove a product from an assortment.',
     RemoveAssortmentProductSchema,
     async (params) => removeAssortmentProductHandler(context, params),
   );
 
   server.tool(
-    'reorder_assortment_products',
-    'Reorder sort sequence of products in an assortment',
+    'assortment.reorderProducts',
+    'Reorder assortment products by assigning new sort keys.',
     ReorderAssortmentProductsSchema,
     async (params) => reorderAssortmentProductsHandler(context, params),
   );
 
   server.tool(
-    'add_assortment_link',
-    'Add a new child assortment to an assortment',
+    'assortment.linkChild',
+    'Create a parent-child relationship between two assortments, with optional tags.',
     AddAssortmentLinkSchema,
     async (params) => addAssortmentLinkHandler(context, params),
   );
 
   server.tool(
-    'remove_assortment_link',
-    `Removes a child/parent assortment link from it's parent`,
+    'assortment.removeLink',
+    'Remove a link between assortments by ID.',
     RemoveAssortmentLinkSchema,
     async (params) => removeAssortmentLinkHandler(context, params),
   );
 
   server.tool(
-    'reorder_assortment_links',
-    ` Reorders the assortment links in parent assortment`,
-    RemoveAssortmentLinkSchema,
-    async (params) => removeAssortmentLinkHandler(context, params),
+    'assortment.reorderLinks',
+    'Reorder assortment links by assigning new sort keys.',
+    ReorderAssortmentLinksSchema,
+    async (params) => reorderAssortmentLinksHandler(context, params),
   );
 
   server.tool(
-    'reorder_assortment_medias',
-    `Reorders the assortment medias`,
+    'assortment.reorderMedia',
+    'Reorder assortment media assets with new sorting keys; first item becomes primary media.',
     ReorderAssortmentMediaSchema,
     async (params) => reorderAssortmentMediaHandler(context, params),
   );
 
   server.tool(
-    'add_assortment_media',
-    `Add a media asset to a assortment`,
+    'assortment.addMedia',
+    'Upload and link a media asset (e.g., image or video) to an assortment.',
+    AddAssortmentMediaUploadSchema,
+    async (params) => addAssortmentMediaUploadHandler(context, params),
+  );
+
+  server.tool(
+    'assortment.removeMedia',
+    'Remove a media asset previously attached to an assortment.',
     RemoveAssortmentMediaSchema,
     async (params) => removeAssortmentMediaHandler(context, params),
   );
+
   server.tool(
-    'remove_assortment_media',
-    `Remove a media asset from a assortment`,
-    AddAssortmentMediaUploadSchema,
-    async (params) => addAssortmentMediaUploadHandler(context, params),
+    'assortmentMedia.updateTexts',
+    'Update localized texts for a specific assortment media asset.',
+    UpdateAssortmentMediaTextsSchema,
+    async (params) => updateAssortmentMediaTextsHandler(context, params),
   );
 
   server.tool('add_filter', `Creates new Filter`, CreateFilterSchema, async (params) =>
@@ -682,43 +697,43 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'assortment_media_localized_texts',
-    'Returns localized assortment media texts found in the system for the specified assortmentId',
+    'assortmentMedia.getTexts',
+    'Retrieve translated texts associated with a specific assortment media asset.',
     TranslatedAssortmentMediaTextsSchema,
     async (params) => translatedAssortmentMediaTextsHandler(context, params),
   );
 
   server.tool(
-    'assortment_localized_texts',
-    'Returns localized assortment texts found in the system for the specified assortmentId',
+    'assortment.getTexts',
+    'Retrieve translated texts for a specific assortment.',
     TranslatedAssortmentTextsSchema,
     async (params) => translatedAssortmentTextsHandler(context, params),
   );
 
   server.tool(
-    'update_assortment_texts',
-    'Modify/update localized texts of a assortment',
+    'assortment.updateTexts',
+    'Update localized texts (title, subtitle, description, slug) of an assortment for one or more locales.',
     UpdateAssortmentTextsSchema,
     async (params) => updateAssortmentTextsHandler(context, params),
   );
 
   server.tool(
-    'add_assortment_filter',
-    'Add/attach/link a filter to an assortment',
+    'assortment.addFilter',
+    'Attach a filter to a specific assortment, optionally tagging the relation.',
     AddAssortmentFilterSchema,
     async (params) => addAssortmentFilterHandler(context, params),
   );
 
   server.tool(
-    'remove_assortment_filter',
-    'Removes/unlinks a filter from assortment',
+    'assortment.removeFilter',
+    'Remove a filter from an assortment.',
     RemoveAssortmentFilterSchema,
     async (params) => removeAssortmentFilterHandler(context, params),
   );
 
   server.tool(
-    'reorder_assortment_filters',
-    'Reorders the assortment filters',
+    'assortment.reorderFilters',
+    'Reorder assortment filters by assigning new sort keys.',
     ReorderAssortmentFiltersSchema,
     async (params) => reorderAssortmentFiltersHandler(context, params),
   );

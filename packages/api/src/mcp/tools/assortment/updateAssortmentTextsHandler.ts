@@ -3,18 +3,22 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { AssortmentNotFoundError } from '../../../errors.js';
 
-// Input schema for localized text
 export const AssortmentAssortmentTextInputSchema = z.object({
   locale: z
     .string()
     .min(2)
     .describe(
-      'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
+      `Locale ISO code for the language of the text (e.g., "en-US", "de-CH").
+If not provided, fallback to the shop's defaultLanguageIsoCode.
+If provided, it must be a valid language configured in the shop.`,
     ),
-  slug: z.string().optional(),
-  title: z.string().optional(),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
+  slug: z
+    .string()
+    .optional()
+    .describe('Optional URL-safe identifier for the assortment (e.g., "summer-sale").'),
+  title: z.string().optional().describe('Optional title for the assortment in this locale.'),
+  subtitle: z.string().optional().describe('Optional subtitle providing extra context.'),
+  description: z.string().optional().describe('Optional long-form description of the assortment.'),
 });
 
 export const UpdateAssortmentTextsSchema = {

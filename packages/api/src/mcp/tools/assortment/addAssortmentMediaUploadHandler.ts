@@ -7,9 +7,9 @@ export const AddAssortmentMediaUploadSchema = {
   mediaName: z
     .string()
     .min(1)
-    .describe('Name of the media file (e.g. "image.png") use random name if not provided'),
-  assortmentId: z.string().min(1).describe('ID of the assortment to link media to'),
-  url: z.string().describe('Anonymously fetchable URL of the source media, can be a data URL too'),
+    .describe('Name of the media file (e.g., "image.png"). A random name will be used if not provided.'),
+  assortmentId: z.string().min(1).describe('ID of the assortment to link the media to.'),
+  url: z.string().describe('Anonymously fetchable URL of the media file.'),
 };
 
 export const AddAssortmentMediaUploadZodSchema = z.object(AddAssortmentMediaUploadSchema);

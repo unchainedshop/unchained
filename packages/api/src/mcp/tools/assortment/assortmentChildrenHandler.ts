@@ -4,12 +4,16 @@ import { log } from '@unchainedshop/logger';
 import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortmentDetails.js';
 
 export const AssortmentChildrenSchema = {
-  assortmentId: z.string().min(1).optional().describe('ID of the assortment to fetch'),
+  assortmentId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('ID of the assortment to fetch children for (optional: fetch root-level if omitted)'),
   includeInactive: z
     .boolean()
     .optional()
     .default(false)
-    .describe('Whether to include inactive assortments'),
+    .describe('Whether to include inactive child assortments in the response'),
 };
 
 export const AssortmentChildrenZodSchema = z.object(AssortmentChildrenSchema);

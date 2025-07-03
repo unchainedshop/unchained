@@ -3,8 +3,8 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
 export const ReorderAssortmentFilterInputSchema = z.object({
-  assortmentFilterId: z.string().min(1),
-  sortKey: z.number().int(),
+  assortmentFilterId: z.string().min(1).describe('ID of the assortment filter to reorder'),
+  sortKey: z.number().int().describe('New sorting key for the filter'),
 });
 
 export const ReorderAssortmentFiltersSchema = {

@@ -3,7 +3,11 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
 export const AssortmentFiltersSchema = {
-  assortmentId: z.string().min(1).optional().describe('ID of the assortment to fetch'),
+  assortmentId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('ID of the assortment to fetch filters for (optional)'),
 };
 
 export const AssortmentFiltersZodSchema = z.object(AssortmentFiltersSchema);

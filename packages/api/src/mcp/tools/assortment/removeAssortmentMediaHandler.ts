@@ -4,7 +4,10 @@ import { log } from '@unchainedshop/logger';
 import { AssortmentMediaNotFoundError } from '../../../errors.js';
 
 export const RemoveAssortmentMediaSchema = {
-  assortmentMediaId: z.string().min(1).describe('ID of the assortment media to remove'),
+  assortmentMediaId: z
+    .string()
+    .min(1)
+    .describe('Unique ID of the media asset to remove from the assortment.'),
 };
 
 export const RemoveAssortmentMediaZodSchema = z.object(RemoveAssortmentMediaSchema);

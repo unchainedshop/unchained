@@ -6,11 +6,24 @@ export const SearchAssortmentProductSchema = {
   assortmentId: z.string().min(1).describe('ID of the assortment to search in'),
   queryString: z.string().optional().describe('Search query string'),
   filterQuery: z
-    .array(z.object({ key: z.string(), value: z.string().optional() }))
+    .array(
+      z.object({
+        key: z.string().describe('Filter key'),
+        value: z.string().optional().describe('Optional filter value'),
+      }),
+    )
     .optional()
     .describe('Filter conditions'),
-  includeInactive: z.boolean().optional().default(true),
-  ignoreChildAssortments: z.boolean().optional().default(false),
+  includeInactive: z
+    .boolean()
+    .optional()
+    .default(true)
+    .describe('Whether to include inactive products in search results'),
+  ignoreChildAssortments: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe('Whether to ignore child assortments during search'),
   limit: z.number().int().min(1).max(100).default(20).describe('Pagination limit'),
   offset: z.number().int().min(0).default(0).describe('Pagination offset'),
 };
