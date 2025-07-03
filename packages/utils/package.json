@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/utils",
-  "version": "4.0.0-rc.3",
+  "version": "4.0.0-rc.4",
   "main": "lib/utils-index.js",
   "types": "lib/utils-index.d.ts",
   "type": "module",
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.0.0-rc.3",
+    "@unchainedshop/logger": "^4.0.0-rc.4",
     "hashids": "^2.3.0",
     "resolve-accept-language": "^3.1.11"
   },
