@@ -1,5 +1,7 @@
 # Unchained Engine
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/y3gUQH?referralCode=ZXvOAF)
+
 Licensed under the EUPL 1.2
 
 [![Bundle Size](https://pkg-size.dev/badge/bundle/1604171)](https://pkg-size.dev/@unchainedshop/platform)
