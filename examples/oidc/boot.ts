@@ -47,7 +47,7 @@ try {
   // Warning: Do not use this in production
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
 
-  await fastify.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+  await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);
