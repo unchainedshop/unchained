@@ -5,18 +5,25 @@ import { AssortmentNotFoundError } from '../../../errors.js';
 import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortmentDetails.js';
 
 export const UpdateAssortmentInputSchema = z.object({
-  isRoot: z.boolean().optional().describe('Whether this assortment is a root assortment'),
+  isRoot: z
+    .boolean()
+    .optional()
+    .describe('If true, sets this assortment as a root assortment (top-level).'),
   isActive: z.boolean().optional().describe('Whether this assortment is active'),
-  sequence: z.number().int().optional().describe('Sorting sequence of the assortment'),
+  sequence: z
+    .number()
+    .int()
+    .optional()
+    .describe('Order of the assortment in a sorted list (lower number = higher priority).'),
   tags: z
     .array(z.string().min(1).toLowerCase())
     .optional()
-    .describe('List of lowercase tags associated with the assortment'),
+    .describe('Tags (lowercase) used to categorize or filter the assortment.'),
 });
 
 export const UpdateAssortmentSchema = {
   assortmentId: z.string().min(1).describe('ID of the assortment to update'),
-  assortment: UpdateAssortmentInputSchema,
+  assortment: UpdateAssortmentInputSchema.describe('Partial object with fields to update.'),
 };
 
 export const UpdateAssortmentZodSchema = z.object(UpdateAssortmentSchema);
@@ -33,13 +40,13 @@ export async function updateAssortmentHandler(context: Context, params: UpdateAs
       throw new AssortmentNotFoundError({ assortmentId });
 
     await modules.assortments.update(assortmentId, assortment as any);
-
+    const updatedAssortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            assortment: await getNormalizedAssortmentDetails({ assortmentId }, context),
+            assortment: updatedAssortment,
           }),
         },
       ],

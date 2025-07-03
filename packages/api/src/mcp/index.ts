@@ -493,7 +493,7 @@ export default function createMcpServer(context: Context, roles) {
 
   server.tool(
     'update_assortment',
-    'Updates the provided assortment detail',
+    'Updates the details of an existing assortment such as tags, active state, root status, or sort order.',
     UpdateAssortmentSchema,
     async (params) => updateAssortmentHandler(context, params),
   );
