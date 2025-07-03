@@ -7,8 +7,8 @@ export const CurrenciesCountSchema = {
     .boolean()
     .optional()
     .default(false)
-    .describe('Include inactive currencies in count'),
-  queryString: z.string().optional().describe('Optional search filter'),
+    .describe('Whether to include inactive currencies in the count'),
+  queryString: z.string().optional().describe('Optional search string to filter currencies'),
 };
 
 export const CurrenciesCountZodSchema = z.object(CurrenciesCountSchema);
@@ -16,12 +16,11 @@ export const CurrenciesCountZodSchema = z.object(CurrenciesCountSchema);
 export type CurrenciesCountParams = z.infer<typeof CurrenciesCountZodSchema>;
 
 export async function currenciesCountHandler(context: Context, params: CurrenciesCountParams) {
-  const { includeInactive = false, queryString } = params;
   const { modules, userId } = context;
-
   try {
-    log(`Handler currenciesCount (includeInactive: ${includeInactive}, query: ${queryString ?? ''})`, {
+    log(`handler currenciesCountHandler`, {
       userId,
+      params,
     });
 
     const count = await modules.currencies.count(params);

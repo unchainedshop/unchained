@@ -10,12 +10,12 @@ import { UpdateCountrySchema, updateCountryHandler } from './updateCountryHandle
 export const registerCountryTools = (server: McpServer, context: Context) => {
   server.tool(
     'country_list',
-    'List all available countries in the system. If a non-existing country is provided by a user, inform them it does not exist and must be created first before use.',
+    'List countries with optional pagination, search, sorting, and inactive flag.',
     ListCountriesSchema,
     async (params) => countriesHandler(context, params),
   );
 
-  server.tool('country_get', 'Fetch a specific country by its ID.', CountrySchema, async (params) =>
+  server.tool('country_get', 'Retrieve a country by ID', CountrySchema, async (params) =>
     countryHandler(context, params),
   );
 
@@ -28,21 +28,18 @@ export const registerCountryTools = (server: McpServer, context: Context) => {
 
   server.tool(
     'country_update',
-    "Update an existing country's details including ISO code, status, and default currency.",
+    'Update details for a given country',
     UpdateCountrySchema,
     async (params) => updateCountryHandler(context, params),
   );
 
-  server.tool(
-    'country_remove',
-    'Remove a country by its ID. If the country does not exist, an error will be returned.',
-    RemoveCountrySchema,
-    async (params) => removeCountryHandler(context, params),
+  server.tool('country_remove', 'Remove a country by its ID', RemoveCountrySchema, async (params) =>
+    removeCountryHandler(context, params),
   );
 
   server.tool(
     'country_count',
-    'Count countries, optionally including inactive ones and filtered by search query.',
+    'Return the number of countries, optionally filtered by search or inactive status.',
     CountriesCountSchema,
     async (params) => countriesCountHandler(context, params),
   );

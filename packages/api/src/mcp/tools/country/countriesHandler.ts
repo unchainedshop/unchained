@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { SortDirection } from '@unchainedshop/utils';
+import { log } from '@unchainedshop/logger';
 
 const sortDirectionKeys = Object.keys(SortDirection) as [
   keyof typeof SortDirection,
@@ -8,19 +9,37 @@ const sortDirectionKeys = Object.keys(SortDirection) as [
 ];
 
 export const ListCountriesSchema = {
-  limit: z.number().int().min(1).max(100).default(50).describe('Maximum number of countries to return'),
-  offset: z.number().int().min(0).default(0).describe('Number of countries to skip (for pagination)'),
-  includeInactive: z.boolean().default(false).describe('Whether to include inactive countries'),
-  queryString: z.string().min(1).optional().describe('Optional text-based filter'),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .default(50)
+    .describe('Maximum number of countries to return (pagination limit)'),
+  offset: z
+    .number()
+    .int()
+    .min(0)
+    .default(0)
+    .describe('Number of countries to skip before starting to collect the result set'),
+  includeInactive: z
+    .boolean()
+    .default(false)
+    .describe('Whether to include inactive (disabled) countries in the results'),
+  queryString: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('Optional case-insensitive text filter to search country name or code'),
   sort: z
     .array(
       z.object({
-        key: z.string().min(1).describe('Field to sort by'),
-        value: z.enum(sortDirectionKeys).describe("Sort direction, either 'ASC' or 'DESC'"),
+        key: z.string().min(1).describe('Field name to sort by (e.g., "name", "isoCode")'),
+        value: z.enum(sortDirectionKeys).describe('Sorting direction, either "ASC" or "DESC"'),
       }),
     )
     .optional()
-    .describe('Sorting configuration'),
+    .describe('List of fields and their corresponding sort directions'),
 };
 
 export const ListCountriesZodSchema = z.object(ListCountriesSchema);
@@ -29,9 +48,13 @@ export type ListCountriesParams = z.infer<typeof ListCountriesZodSchema>;
 
 export async function countriesHandler(context: Context, params: ListCountriesParams) {
   const { limit, offset, includeInactive, queryString, sort } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log(`handler countriesHandler`, {
+      userId,
+      params,
+    });
     const countries = await modules.countries.findCountries({
       limit,
       offset,

@@ -12,12 +12,12 @@ export const LanguagesCountZodSchema = z.object(LanguagesCountSchema);
 export type LanguagesCountParams = z.infer<typeof LanguagesCountZodSchema>;
 
 export async function languagesCountHandler(context: Context, params: LanguagesCountParams) {
-  const { includeInactive = false, queryString } = params;
   const { modules, userId } = context;
 
   try {
-    log(`handler languagesCount (includeInactive: ${includeInactive}, query: ${queryString ?? ''})`, {
+    log(`handler languagesCountHandler `, {
       userId,
+      params,
     });
 
     const count = await modules.languages.count(params);

@@ -16,7 +16,7 @@ export async function removeCountryHandler(context: Context, params: RemoveCount
   const { modules, userId } = context;
 
   try {
-    log(`handler removeCountry: ${countryId}`, { userId });
+    log(`handler removeCountryHandler`, { userId, params });
 
     if (!(await modules.countries.countryExists({ countryId })))
       throw new CountryNotFoundError({ countryId });

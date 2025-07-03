@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { LanguageNotFoundError } from '../../../errors.js';
+import { log } from '@unchainedshop/logger';
 
 export const RemoveLanguageSchema = {
   languageId: z.string().min(1).describe('ID of the language to remove'),
@@ -11,9 +12,13 @@ export type RemoveLanguageParams = z.infer<typeof RemoveLanguageZodSchema>;
 
 export async function removeLanguageHandler(context: Context, params: RemoveLanguageParams) {
   const { languageId } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log(`handler languagesHandler `, {
+      userId,
+      params,
+    });
     if (!(await modules.languages.languageExists({ languageId })))
       throw new LanguageNotFoundError({ languageId });
 

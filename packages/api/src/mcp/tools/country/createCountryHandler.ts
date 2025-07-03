@@ -20,7 +20,7 @@ export async function createCountryHandler(context: Context, params: CreateCount
   const { country } = params;
   const { modules, userId } = context;
   try {
-    log(`handler createCountry: ${country.isoCode}`, { userId });
+    log(`handler createCountryHandler`, { userId, params });
 
     const countryId = await modules.countries.create(country as any);
 

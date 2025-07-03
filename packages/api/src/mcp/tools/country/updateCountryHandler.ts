@@ -30,7 +30,7 @@ export async function updateCountryHandler(context: Context, params: UpdateCount
   const { country, countryId } = params;
   const { modules, userId } = context;
   try {
-    log(`handler updateCountry: ${countryId}`, { userId });
+    log(`handler updateCountryHandler`, { userId, params });
 
     if (!(await modules.countries.countryExists({ countryId })))
       throw new CountryNotFoundError({ countryId });

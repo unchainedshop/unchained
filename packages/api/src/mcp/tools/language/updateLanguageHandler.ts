@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { LanguageNotFoundError } from '../../../errors.js';
+import { log } from '@unchainedshop/logger';
 
 const UpdateLanguageInputSchema = z.object({
   isoCode: z.string().min(2).max(10).describe('Updated ISO code for the language'),
@@ -17,9 +18,13 @@ export type UpdateLanguageParams = z.infer<typeof UpdateLanguageZodSchema>;
 
 export async function updateLanguageHandler(context: Context, params: UpdateLanguageParams) {
   const { languageId, language } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log(`handler updateLanguageHandler `, {
+      userId,
+      params,
+    });
     if (!(await modules.languages.languageExists({ languageId })))
       throw new LanguageNotFoundError({ languageId });
 

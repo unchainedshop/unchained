@@ -9,42 +9,39 @@ import { UpdateCurrencySchema, updateCurrencyHandler } from './updateCurrencyHan
 
 export const registerCurrencyTools = (server: McpServer, context: Context) => {
   server.tool(
-    'list_currencies',
-    'List all available currencies in the system, if non existing currency is provided to you by a user inform them it does not exist and to create it first before they can use it',
+    'currency_list',
+    'List currencies with pagination, optional search and sorting.',
     ListCurrenciesSchema,
     async (params) => currenciesHandler(context, params),
   );
 
   server.tool(
-    'get_currency',
-    'Gets a single currency registered in the system',
+    'currency_get',
+    'Retrieve a specific currency by its ID.',
     CurrencySchema,
     async (params) => currencyHandler(context, params),
   );
 
   server.tool(
-    'add_currency',
-    'Adds new currency information to the system',
+    'currency_create',
+    'Create a new currency using its ISO code and optional blockchain metadata.',
     CreateCurrencySchema,
     async (params) => createCurrencyHandler(context, params),
   );
   server.tool(
-    'update_currency',
-    'Updates the specified currency in the system',
+    'currency_update',
+    "Update a currency's ISO code, contract address, or decimal precision.",
     UpdateCurrencySchema,
     async (params) => updateCurrencyHandler(context, params),
   );
 
-  server.tool(
-    'delete_currency',
-    'Deletes the specified currency from the system',
-    RemoveCurrencySchema,
-    async (params) => removeCurrencyHandler(context, params),
+  server.tool('currency_remove', 'Remove a currency by its ID.', RemoveCurrencySchema, async (params) =>
+    removeCurrencyHandler(context, params),
   );
 
   server.tool(
-    'currencies_count',
-    'Returns total number of currencies registered in the system',
+    'currency_count',
+    'Return the total number of currencies, with optional filters for status and search string.',
     CurrenciesCountSchema,
     async (params) => currenciesCountHandler(context, params),
   );

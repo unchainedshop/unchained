@@ -7,15 +7,17 @@ export const CountriesCountSchema = {
     .boolean()
     .optional()
     .default(false)
-    .describe('Whether to include inactive countries in the count'),
-  queryString: z.string().optional().describe('Optional text search filter'),
+    .describe('If true, include inactive countries in the count. Defaults to false.'),
+  queryString: z
+    .string()
+    .optional()
+    .describe('Optional search string to filter countries by name or code'),
 };
 
 export const CountriesCountZodSchema = z.object(CountriesCountSchema);
 
 export type CountriesCountParams = z.infer<typeof CountriesCountZodSchema>;
 
-// Handler function
 export async function countriesCountHandler(context: Context, params: CountriesCountParams) {
   const { modules, userId } = context;
 

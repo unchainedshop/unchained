@@ -16,7 +16,7 @@ export async function removeCurrencyHandler(context: Context, params: RemoveCurr
   const { modules, userId } = context;
 
   try {
-    log(`mutation removeCurrency: ${currencyId}`, { userId });
+    log(`handler removeCurrencyHandler`, { userId, params });
 
     if (!(await modules.currencies.currencyExists({ currencyId })))
       throw new CurrencyNotFoundError({ currencyId });
