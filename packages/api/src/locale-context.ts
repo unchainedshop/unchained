@@ -1,9 +1,4 @@
-import {
-  resolveBestCountry,
-  resolveBestSupported,
-  resolveBestCurrency,
-  systemLocale,
-} from '@unchainedshop/utils';
+import { resolveBestCountry, resolveBestSupported, resolveBestCurrency } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';

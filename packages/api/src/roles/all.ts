@@ -31,6 +31,15 @@ export const all = (role, actions) => {
     return false;
   };
 
+  const isUsersCollectionEmpty = async (_: never, params: never, context: Context) => {
+    const count = await context.modules.users.count({
+      includeDeleted: true,
+      includeGuests: true,
+    });
+    if (count === 0) return true;
+    return false;
+  };
+
   const isFilePublic = async (file) => {
     // Non private files or no files always resolve to true
     if (!file?.meta?.isPrivate) return true;
@@ -41,6 +50,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewEvents, () => false);
   role.allow(actions.viewUser, () => false);
   role.allow(actions.viewUsers, () => false);
+  role.allow(actions.viewUsersCount, isUsersCollectionEmpty);
   role.allow(actions.viewPaymentProviders, () => false);
   role.allow(actions.viewPaymentProvider, () => false);
   role.allow(actions.viewPaymentInterfaces, () => false);
