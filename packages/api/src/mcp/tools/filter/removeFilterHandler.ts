@@ -5,7 +5,7 @@ import { FilterNotFoundError } from '../../../errors.js';
 import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetails.js';
 
 export const RemoveFilterSchema = {
-  filterId: z.string().min(1).describe('ID of the filter to remove'),
+  filterId: z.string().min(1).describe('Unique identifier of the filter to be removed'),
 };
 
 export const RemoveFilterZodSchema = z.object(RemoveFilterSchema);
@@ -17,7 +17,7 @@ export async function removeFilterHandler(context: Context, params: RemoveFilter
   const { modules, userId } = context;
 
   try {
-    log(`handler removeFilter: ${filterId}`, { userId });
+    log(`handler removeFilterHandler`, { userId, params });
 
     const filter = await getNormalizedFilterDetails(filterId, context);
     if (!filter) throw new FilterNotFoundError({ filterId });

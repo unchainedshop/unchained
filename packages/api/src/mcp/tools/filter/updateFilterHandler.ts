@@ -6,13 +6,13 @@ import { FilterDirector } from '@unchainedshop/core';
 import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetails.js';
 
 export const UpdateFilterInputSchema = z.object({
-  isActive: z.boolean().optional(),
-  key: z.string().min(1).optional(),
+  isActive: z.boolean().optional().describe('Whether the filter should be active or not'),
+  key: z.string().min(1).optional().describe('New unique key for the filter (if updating)'),
 });
 
 export const UpdateFilterSchema = {
   filterId: z.string().min(1).describe('ID of the filter to update'),
-  filter: UpdateFilterInputSchema,
+  filter: UpdateFilterInputSchema.describe('Filter fields to update'),
 };
 
 export const UpdateFilterZodSchema = z.object(UpdateFilterSchema);
@@ -24,7 +24,7 @@ export async function updateFilterHandler(context: Context, params: UpdateFilter
   const { modules, userId } = context;
 
   try {
-    log('handler updateFilter', { userId, filterId, filter });
+    log('handler updateFilterHandler', { userId, params });
     if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
     const updatedFilter = await modules.filters.update(filterId, filter as any);

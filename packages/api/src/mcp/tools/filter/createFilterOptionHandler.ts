@@ -12,14 +12,20 @@ export const FilterOptionTextInputSchema = z.object({
     .describe(
       'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
     ),
-  title: z.string().optional(),
-  subtitle: z.string().optional(),
+  title: z.string().optional().describe('Optional localized title for the filter option'),
+  subtitle: z.string().optional().describe('Optional localized subtitle for the filter option'),
 });
 
 export const CreateFilterOptionSchema = {
-  filterId: z.string().min(1).describe('ID of the filter to add the option to'),
-  option: z.string().min(1).describe('Value of the new filter option'),
-  texts: z.array(FilterOptionTextInputSchema).optional().describe('Localized titles and subtitles'),
+  filterId: z
+    .string()
+    .min(1)
+    .describe('Unique identifier of the filter to which the option will be added'),
+  option: z.string().min(1).describe('Value of the new option to be added to the filter'),
+  texts: z
+    .array(FilterOptionTextInputSchema)
+    .optional()
+    .describe('Localized titles and subtitles for the filter option'),
 };
 
 export const CreateFilterOptionZodSchema = z.object(CreateFilterOptionSchema);
@@ -31,7 +37,7 @@ export async function createFilterOptionHandler(context: Context, params: Create
   const { modules, userId } = context;
 
   try {
-    log('handler createFilterOption', { userId, filterId, option, texts });
+    log('handler createFilterOptionHandler', { userId, params });
 
     const filter = await getNormalizedFilterDetails(filterId, context);
     if (!filter) throw new FilterNotFoundError({ filterId });

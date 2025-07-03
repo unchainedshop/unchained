@@ -6,8 +6,8 @@ import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetai
 import { FilterDirector } from '@unchainedshop/core';
 
 export const RemoveFilterOptionSchema = {
-  filterId: z.string().min(1).describe('ID of the filter to remove option from'),
-  filterOptionValue: z.string().min(1).describe('Value of the option to remove'),
+  filterId: z.string().min(1).describe('Unique identifier of the filter to modify'),
+  filterOptionValue: z.string().min(1).describe('Exact value of the filter option to remove'),
 };
 
 export const RemoveFilterOptionZodSchema = z.object(RemoveFilterOptionSchema);
@@ -19,7 +19,7 @@ export async function removeFilterOptionHandler(context: Context, params: Remove
   const { modules, userId } = context;
 
   try {
-    log('handler removeFilterOption', { userId, filterId, filterOptionValue });
+    log('handler removeFilterOptionHandler', { userId, params });
     const filter = await getNormalizedFilterDetails(filterId, context);
     if (!filter) throw new FilterNotFoundError({ filterId });
 

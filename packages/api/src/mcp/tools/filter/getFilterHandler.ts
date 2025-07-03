@@ -5,7 +5,7 @@ import { FilterNotFoundError } from '../../../errors.js';
 import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetails.js';
 
 export const GetFilterSchema = {
-  filterId: z.string().min(1).describe('ID of the filter to retrieve'),
+  filterId: z.string().min(1).describe('Unique ID of the filter to retrieve details for'),
 };
 
 export const GetFilterZodSchema = z.object(GetFilterSchema);
@@ -17,7 +17,7 @@ export async function getFilterHandler(context: Context, params: GetFilterParams
   const { userId } = context;
 
   try {
-    log('handler getFilter', { userId, filterId });
+    log('handler getFilterHandler', { userId, params });
 
     const filter = await getNormalizedFilterDetails(filterId, context);
 

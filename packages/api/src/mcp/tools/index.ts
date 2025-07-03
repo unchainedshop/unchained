@@ -1,91 +1,12 @@
-/**
- * Re-export all MCP tools
- */
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { Context } from '../../context.js';
+import { shopInfoHandler } from './shopInfoHandler.js';
 
-export * from './product/listProducts.js';
-export * from './product/getProduct.js';
-export * from './product/createProductHandler.js';
-export * from './product/removeProductHandler.js';
-export * from './product/publishProduct.js';
-export * from './product/unpublishProductHandler.js';
-export * from './product/updateProductHandler.js';
-export * from './product/updateProductTextsHandler.js';
-export * from './product/updateProductCommerceHandler.js';
-export * from './product/updateProductSupplyHandler.js';
-export * from './product/updateProductWarehousingHandler.js';
-export * from './language/languagesCountHandler.js';
-export * from './language/languagesHandler.js';
-export * from './language/languageHandler.js';
-export * from './language/createLanguageHandler.js';
-export * from './language/updateLanguageHandler.js';
-export * from './language/removeLanguageHandler.js';
-export * from './product/updateProductPlanHandler.js';
-export * from './product/updateProductTokenizationHandler.js';
-export * from './product/productsCountHandler.js';
-export * from './product/createProductVariationHandler.js';
-export * from './product/removeProductVariationHandler.js';
-export * from './product/addProductAssignmentHandler.js';
-export * from './product/createProductVariationOptionHandler.js';
-export * from './product/removeProductAssignmentHandler.js';
-export * from './product/removeProductVariationOptionHandler.js';
-export * from './product/addProductMediaUploadHandler.js';
-export * from './product/removeProductMediaHandler.js';
-export * from './product/updateProductMediaTextsHandler.js';
-export * from './product/reorderProductMediaHandler.js';
-export * from './product/productReviewsCountHandler.js';
-export * from './product/productReviewsHandler.js';
-export * from './product/translatedProductTextsHandler.js';
-export * from './product/translatedProductMediaTextsHandler.js';
-export * from './product/translatedProductVariationTextsHandler.js';
-export * from './shopInfoHandler.js';
-export * from './country/countriesHandler.js';
-export * from './country/countryHandler.js';
-export * from './country/createCountryHandler.js';
-export * from './country/updateCountryHandler.js';
-export * from './country/removeCountryHandler.js';
-export * from './country/countriesCountHandler.js';
-export * from './currency/createCurrencyHandler.js';
-export * from './currency/updateCurrencyHandler.js';
-export * from './currency/removeCurrencyHandler.js';
-export * from './currency/currenciesCountHandler.js';
-export * from './currency/currenciesHandler.js';
-export * from './currency/currencyHandler.js';
-
-export * from './assortment/assortmentHandler.js';
-export * from './assortment/assortmentsHandler.js';
-export * from './assortment/assortmentsCountHandler.js';
-export * from './assortment/createAssortmentHandler.js';
-export * from './assortment/updateAssortmentHandler.js';
-export * from './assortment/removeAssortmentHandler.js';
-export * from './assortment/setBaseAssortmentHandler.js';
-export * from './assortment/assortmentChildrenHandler.js';
-export * from './assortment/assortmentProductsHandler.js';
-export * from './assortment/searchAssortmentProductHandler.js';
-export * from './assortment/assortmentLinksHandler.js';
-export * from './assortment/assortmentFiltersHandler.js';
-export * from './assortment/addAssortmentProductHandler.js';
-export * from './assortment/removeAssortmentProductHandler.js';
-export * from './assortment/reorderAssortmentProductsHandler.js';
-export * from './assortment/addAssortmentLinkHandler.js';
-export * from './assortment/removeAssortmentLinkHandler.js';
-export * from './assortment/reorderAssortmentLinksHandler.js';
-export * from './assortment/reorderAssortmentMediaHandler.js';
-export * from './assortment/removeAssortmentMediaHandler.js';
-export * from './assortment/addAssortmentMediaUploadHandler.js';
-export * from './assortment/translatedAssortmentTextsHandler.js';
-export * from './assortment/translatedAssortmentMediaTextsHandler.js';
-export * from './assortment/addAssortmentFilterHandler.js';
-export * from './assortment/removeAssortmentFilterHandler.js';
-export * from './assortment/reorderAssortmentFiltersHandler.js';
-export * from './assortment/updateAssortmentTextsHandler.js';
-export * from './assortment/updateAssortmentMediaTextsHandler.js';
-
-export * from './filter/createFilterHandler.js';
-export * from './filter/updateFilterHandler.js';
-export * from './filter/removeFilterHandler.js';
-export * from './filter/createFilterOptionHandler.js';
-export * from './filter/updateFilterTextsHandler.js';
-export * from './filter/removeFilterOptionHandler.js';
-export * from './filter/getFilterHandler.js';
-export * from './filter/getFiltersHandler.js';
-export * from './filter/translatedFilterTextsHandler.js';
+export const registerOtherTools = (server: McpServer, context: Context) => {
+  server.tool(
+    'shop_info',
+    'Get the default configuration of the shop including country, language, currency, and locale. If the user does not provide values such as language, locale, country, or currency in their request or it cannot be derived from context, the tool MUST use the following fallback values : - language or locale: use defaultLanguageIsoCode  - country: use country_isoCode - currency: use country_defaultCurrency Always assume these values as the authoritative defaults when user input is missing or ambiguous.',
+    {},
+    async () => shopInfoHandler(context),
+  );
+};

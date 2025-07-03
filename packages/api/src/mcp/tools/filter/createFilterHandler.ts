@@ -17,13 +17,13 @@ export const FilterTextInputSchema = z.object({
     .describe(
       'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
     ),
-  title: z.string().min(1),
-  subtitle: z.string().optional(),
+  title: z.string().min(1).describe('Title of the filter in the specified locale'),
+  subtitle: z.string().optional().describe('Optional subtitle for additional context'),
 });
 
 export const CreateFilterSchema = {
   filter: CreateFilterInputSchema,
-  texts: z.array(FilterTextInputSchema).optional(),
+  texts: z.array(FilterTextInputSchema).optional().describe('Localized text entries for the filter'),
 };
 
 export const CreateFilterZodSchema = z.object(CreateFilterSchema);
@@ -35,7 +35,7 @@ export async function createFilterHandler(context: Context, params: CreateFilter
   const { modules, userId } = context;
 
   try {
-    log('handler createFilter', { userId, filter, texts });
+    log('handler createFilterHandler', { userId, params });
 
     const newFilter = await modules.filters.create(filter as any);
 

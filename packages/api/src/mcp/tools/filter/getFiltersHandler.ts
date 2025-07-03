@@ -4,16 +4,16 @@ import { log } from '@unchainedshop/logger';
 import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetails.js';
 
 const SortOptionInputSchema = z.object({
-  key: z.string().min(1).describe('Field to sort by'),
-  value: z.enum(['ASC', 'DESC']).describe('Sort direction'),
+  key: z.string().min(1).describe('Field key to sort by (e.g., "key", "createdAt")'),
+  value: z.enum(['ASC', 'DESC']).describe('Sort direction: ASC for ascending, DESC for descending'),
 });
 
 export const GetFiltersSchema = {
-  limit: z.number().min(1).max(100).default(20),
-  offset: z.number().min(0).default(0),
-  includeInactive: z.boolean().default(false),
-  queryString: z.string().optional(),
-  sort: z.array(SortOptionInputSchema).optional(),
+  limit: z.number().min(1).max(100).default(20).describe('Maximum number of filters to return'),
+  offset: z.number().min(0).default(0).describe('Number of filters to skip (for pagination)'),
+  includeInactive: z.boolean().default(false).describe('Include inactive filters in the result'),
+  queryString: z.string().optional().describe('Free-text search filter (e.g., part of key or title)'),
+  sort: z.array(SortOptionInputSchema).optional().describe('List of sort options to order the filters'),
 };
 
 export const GetFiltersZodSchema = z.object(GetFiltersSchema);
@@ -21,17 +21,12 @@ export const GetFiltersZodSchema = z.object(GetFiltersSchema);
 export type GetFiltersParams = z.infer<typeof GetFiltersZodSchema>;
 
 export async function getFiltersHandler(context: Context, params: GetFiltersParams) {
-  const { limit, offset, includeInactive, queryString, sort } = params;
   const { modules, userId } = context;
 
   try {
-    log('handler getFilters', {
+    log('handler getFiltersHandler', {
       userId,
-      limit,
-      offset,
-      includeInactive,
-      queryString,
-      sort,
+      params,
     });
 
     const filters = await modules.filters.findFilters(params as any);

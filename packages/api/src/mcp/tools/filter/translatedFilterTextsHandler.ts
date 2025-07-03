@@ -4,8 +4,14 @@ import { log } from '@unchainedshop/logger';
 import { FilterNotFoundError } from '../../../errors.js';
 
 export const TranslatedFilterTextsSchema = {
-  filterId: z.string().min(1).describe('ID of the filter to fetch texts for'),
-  filterOptionValue: z.string().optional().describe('Optional option value to fetch texts for'),
+  filterId: z
+    .string()
+    .min(1)
+    .describe('Unique identifier of the filter to retrieve translated texts for'),
+  filterOptionValue: z
+    .string()
+    .optional()
+    .describe('Optional: specific filter option value to fetch translated texts for'),
 };
 
 export const TranslatedFilterTextsZodSchema = z.object(TranslatedFilterTextsSchema);
@@ -20,7 +26,7 @@ export async function translatedFilterTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler translatedFilterTexts', { userId, filterId, filterOptionValue });
+    log('handler translatedFilterTextsHandler', { userId, params });
 
     const filter = await modules.filters.findFilter({ filterId });
     if (!filter) {
