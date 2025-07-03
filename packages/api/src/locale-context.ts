@@ -45,7 +45,7 @@ export const resolveDefaultContext = pMemoize(
       return accumulator.concat(added);
     }, []);
 
-    const locale = resolveBestSupported(acceptLang, supportedLocaleStrings, systemLocale.baseName);
+    const locale = resolveBestSupported(acceptLang, supportedLocaleStrings);
     const countryCode = resolveBestCountry(locale.region, acceptCountry, countries);
     const currencyCode = resolveBestCurrency(defaultCurrencyCodes[countryCode], currencies);
 

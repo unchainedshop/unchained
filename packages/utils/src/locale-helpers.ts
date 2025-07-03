@@ -7,12 +7,20 @@ export const systemLocale = new Intl.Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNT
 export const resolveBestSupported = (
   acceptLanguage: string,
   supportedLocales: string[],
-  fallbackLocale: string,
 ): Intl.Locale => {
-  const { match } = resolveAcceptLanguage(acceptLanguage || '', supportedLocales, fallbackLocale, {
-    returnMatchType: true,
-  });
-  return new Intl.Locale(match);
+  try {
+    const { match } = resolveAcceptLanguage(
+      acceptLanguage || '',
+      supportedLocales,
+      systemLocale.baseName,
+      {
+        returnMatchType: true,
+      },
+    );
+    return new Intl.Locale(match);
+  } catch {
+    return systemLocale;
+  }
 };
 
 export const resolveBestCountry = (
