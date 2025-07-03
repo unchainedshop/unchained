@@ -50,7 +50,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewEvents, () => false);
   role.allow(actions.viewUser, () => false);
   role.allow(actions.viewUsers, () => false);
-  role.allow(actions.viewUsersCount, isUsersCollectionEmpty);
+  role.allow(actions.viewUserCount, isUsersCollectionEmpty);
   role.allow(actions.viewPaymentProviders, () => false);
   role.allow(actions.viewPaymentProvider, () => false);
   role.allow(actions.viewPaymentInterfaces, () => false);

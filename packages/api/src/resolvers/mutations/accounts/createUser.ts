@@ -24,10 +24,16 @@ export default async function createUser(root: never, params: UserRegistrationDa
   }
 
   try {
+    const usersCountBeforeCreation = await context.modules.users.count({
+      includeDeleted: true,
+      includeGuests: true,
+    });
+
     const newUserId = await modules.users.createUser(
       {
         ...params,
         initialPassword: false,
+        roles: usersCountBeforeCreation === 0 ? ['admin'] : [],
       },
       {},
     );

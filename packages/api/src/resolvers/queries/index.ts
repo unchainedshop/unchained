@@ -79,7 +79,7 @@ export default {
   impersonator,
   user: acl(actions.viewUser)(user),
   users: acl(actions.viewUsers)(users),
-  usersCount: acl(actions.viewUsersCount)(usersCount),
+  usersCount: acl(actions.viewUserCount)(usersCount),
   product: acl(actions.viewProduct)(product),
   products: acl(actions.viewProducts)(products),
   productsCount: acl(actions.viewProducts)(productsCount),

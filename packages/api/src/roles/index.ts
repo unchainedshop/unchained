@@ -26,6 +26,7 @@ const actions: Record<string, string> = [
   'viewLogs',
   'viewUser',
   'viewUsers',
+  'viewUserCount',
   'viewProduct',
   'viewProducts',
   'viewLanguages',
