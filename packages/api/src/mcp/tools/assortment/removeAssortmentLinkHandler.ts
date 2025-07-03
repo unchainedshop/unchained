@@ -16,7 +16,7 @@ export async function removeAssortmentLinkHandler(context: Context, params: Remo
   const { modules, userId } = context;
 
   try {
-    log(`handler removeAssortmentLink: ${assortmentLinkId}`, { userId });
+    log(`handler removeAssortmentLinkHandler`, { userId, params });
 
     const assortmentLink = await modules.assortments.links.findLink({
       assortmentLinkId,

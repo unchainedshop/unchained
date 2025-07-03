@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
 import { ProductVariationNotFoundError } from '../../../errors.js';
+import { log } from '@unchainedshop/logger';
 
 const ProductVariationTextInputSchema = z.object({
   locale: z
@@ -30,8 +31,10 @@ export async function createProductVariationOptionHandler(
   params: CreateProductVariationOptionParams,
 ) {
   const { productVariationId, option, texts } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
+
   try {
+    log('handler createProductVariationOptionHandler', { userId, params });
     const variation = await modules.products.variations.findProductVariation({
       productVariationId,
     });

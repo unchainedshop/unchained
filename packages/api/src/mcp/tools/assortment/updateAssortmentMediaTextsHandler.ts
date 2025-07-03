@@ -31,7 +31,7 @@ export async function updateAssortmentMediaTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler updateAssortmentMediaTexts', { userId, assortmentMediaId, texts });
+    log('handler updateAssortmentMediaTextsHandler', { userId, params });
 
     const assortmentMedia = await modules.assortments.media.findAssortmentMedia({
       assortmentMediaId,

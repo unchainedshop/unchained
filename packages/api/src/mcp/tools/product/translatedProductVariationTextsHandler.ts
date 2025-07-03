@@ -24,12 +24,10 @@ export async function translatedProductVariationTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log(
-      `handler translatedProductVariationTexts: ${productVariationId} ${productVariationOptionValue || ''}`,
-      {
-        userId,
-      },
-    );
+    log(`handler translatedProductVariationTexts`, {
+      userId,
+      params,
+    });
 
     const texts = await modules.products.variations.texts.findVariationTexts({
       productVariationId,

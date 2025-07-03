@@ -18,7 +18,7 @@ export async function translatedProductTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log(`handler translatedProductTexts: ${productId}`, { userId });
+    log(`handler translatedProductTexts`, { userId, params });
 
     const texts = await modules.products.texts.findTexts({ productId });
 

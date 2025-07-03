@@ -22,7 +22,7 @@ export async function removeAssortmentMediaHandler(
   const { modules, userId } = context;
 
   try {
-    log(`handler removeAssortmentMedia: ${assortmentMediaId}`, { userId });
+    log(`handler removeAssortmentMediaHandler`, { userId, params });
 
     const assortmentMedia = await modules.assortments.media.findAssortmentMedia({
       assortmentMediaId,

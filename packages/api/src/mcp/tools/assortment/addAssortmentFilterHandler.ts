@@ -27,7 +27,7 @@ export async function addAssortmentFilterHandler(context: Context, params: AddAs
   const { modules, userId } = context;
 
   try {
-    log('handler addAssortmentFilter', { userId, assortmentId, filterId, tags });
+    log('handler addAssortmentFilterHandler', { userId, params });
     const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
     if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
     const filter = await getNormalizedFilterDetails(filterId, context);

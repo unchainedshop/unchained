@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { ProductNotFoundError } from '../../../errors.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductSchema = {
   productId: z.string().min(1).describe('ID of the product to update'),
@@ -20,9 +21,10 @@ export type UpdateProductParams = z.infer<typeof UpdateProductZodSchema>;
 
 export async function updateProductHandler(context: Context, params: UpdateProductParams) {
   const { productId, product } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductHandler', { userId, params });
     if (!(await modules.products.productExists({ productId })))
       throw new ProductNotFoundError({ productId });
 

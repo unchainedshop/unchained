@@ -3,6 +3,7 @@ import { Context } from '../../../context.js';
 import { ProductTypes, ProductVariationType } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 const productVariationTypeKeys = Object.keys(ProductVariationType) as [
   keyof typeof ProductVariationType,
@@ -47,9 +48,10 @@ export async function createProductVariationHandler(
   params: CreateProductVariationParams,
 ) {
   const { productId, variation, texts } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler createProductVariationHandler', { userId, params });
     const product = await modules.products.findProduct({ productId });
     if (!product) throw new ProductNotFoundError({ productId });
 

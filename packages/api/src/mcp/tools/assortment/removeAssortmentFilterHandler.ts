@@ -19,7 +19,7 @@ export async function removeAssortmentFilterHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler removeAssortmentFilter', { userId, assortmentFilterId });
+    log('handler removeAssortmentFilterHandler', { userId, params });
 
     const assortmentFilter = await modules.assortments.filters.findFilter({
       assortmentFilterId,

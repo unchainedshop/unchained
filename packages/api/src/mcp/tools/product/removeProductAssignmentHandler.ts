@@ -3,6 +3,7 @@ import { Context } from '../../../context.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
 import { ProductWrongTypeError } from '../../../errors.js';
 import { ProductTypes } from '@unchainedshop/core-products';
+import { log } from '@unchainedshop/logger';
 
 const ProductAssignmentVectorSchema = z.object({
   key: z.string().min(1).describe('Attribute key (e.g., "Color", "Size")'),
@@ -24,9 +25,10 @@ export async function removeProductAssignmentHandler(
   params: RemoveProductAssignmentParams,
 ) {
   const { proxyId, vectors } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler removeProductAssignmentHandler', { userId, params });
     const product = await modules.products.findProduct({ productId: proxyId });
 
     if (product.type !== ProductTypes.ConfigurableProduct)

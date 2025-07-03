@@ -3,16 +3,19 @@ import { Context } from '../../../context.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongStatusError } from '../../../errors.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductTokenizationSchema = {
   productId: z.string().min(1).describe('ID of the product of type TOKENIZED_PRODUCT to tokenize only'),
-  tokenization: z.object({
-    contractAddress: z.string().min(1),
-    contractStandard: z.string(),
-    tokenId: z.string().min(1),
-    supply: z.number().int().positive(),
-    ercMetadataProperties: z.record(z.any()).optional(),
-  }),
+  tokenization: z
+    .object({
+      contractAddress: z.string().min(1).describe('Blockchain contract address'),
+      contractStandard: z.string().describe('Standard of the smart contract (e.g., ERC-721)'),
+      tokenId: z.string().min(1).describe('Unique token identifier'),
+      supply: z.number().int().positive().describe('Total supply of the token'),
+      ercMetadataProperties: z.record(z.any()).optional().describe('Optional ERC metadata properties'),
+    })
+    .describe('Tokenization details'),
 };
 
 export const UpdateProductTokenizationZodSchema = z.object(UpdateProductTokenizationSchema);
@@ -23,9 +26,10 @@ export async function updateProductTokenizationHandler(
   params: UpdateProductTokenizationParams,
 ) {
   const { productId, tokenization } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductTokenizationHandler', { userId, params });
     const product = await modules.products.findProduct({ productId });
     if (!product) throw new ProductNotFoundError({ productId });
 

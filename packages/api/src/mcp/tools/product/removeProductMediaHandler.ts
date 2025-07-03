@@ -16,7 +16,7 @@ export async function removeProductMediaHandler(context: Context, params: Remove
   const { modules, userId } = context;
 
   try {
-    log('removeProductMediaHandler', { userId, productMediaId });
+    log('handler removeProductMediaHandler', { userId, params });
 
     const productMedia = await modules.products.media.findProductMedia({
       productMediaId,

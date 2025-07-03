@@ -16,7 +16,7 @@ export async function setBaseAssortmentHandler(context: Context, params: SetBase
   const { assortmentId } = params;
 
   try {
-    log('handler setBaseAssortment', { userId, assortmentId });
+    log('handler setBaseAssortmentHandler', { userId, params });
 
     if (!(await modules.assortments.assortmentExists({ assortmentId })))
       throw new AssortmentNotFoundError({ assortmentId });

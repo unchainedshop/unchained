@@ -16,7 +16,7 @@ export async function removeAssortmentHandler(context: Context, params: RemoveAs
   const { assortmentId } = params;
 
   try {
-    log('handler removeAssortment', { userId, assortmentId });
+    log('handler removeAssortmentHandler', { userId, params });
 
     const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
     if (!assortment) throw new AssortmentNotFoundError({ assortmentId });

@@ -26,7 +26,7 @@ export async function reorderAssortmentLinksHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler reorderAssortmentLinks', { userId, sortKeys });
+    log('handler reorderAssortmentLinksHandler', { userId, params });
 
     await modules.assortments.links.updateManualOrder({
       sortKeys: sortKeys,

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { ProductVariationNotFoundError } from '../../../errors.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const RemoveProductVariationSchema = {
   productVariationId: z
@@ -18,9 +19,10 @@ export async function removeProductVariationHandler(
   params: RemoveProductVariationParams,
 ) {
   const { productVariationId } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler removeProductVariationHandler', { userId, params });
     const productVariation = await modules.products.variations.findProductVariation({
       productVariationId,
     });

@@ -18,7 +18,7 @@ export async function translatedAssortmentTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler translatedAssortmentTexts', { userId, assortmentId });
+    log('handler translatedAssortmentTextsHandler', { userId, params });
 
     const texts = await modules.assortments.texts.findTexts({ assortmentId });
 

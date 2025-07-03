@@ -7,9 +7,9 @@ export const AddProductMediaUploadSchema = {
   mediaName: z
     .string()
     .min(1)
-    .describe('Name of the media file (e.g. "image.png") use random name if not provided'),
+    .describe('Name of the media file (e.g. "image.png"); use random name if not provided'),
   productId: z.string().min(1).describe('ID of the product to link media to'),
-  url: z.string().describe('Anonymously fetchable URL of the source media, can be a data URL too'),
+  url: z.string().describe('Anonymously fetchable URL of the source media'),
 };
 
 export const AddProductMediaUploadZodSchema = z.object(AddProductMediaUploadSchema);
@@ -24,7 +24,7 @@ export async function addProductMediaUploadHandler(
   const { modules, services, userId } = context;
 
   try {
-    log('addProductMediaUploadHandler', { mediaName, productId, userId, url });
+    log('handler addProductAssignmentHandler', { userId, params });
     const {
       _id: fileId,
       putURL,

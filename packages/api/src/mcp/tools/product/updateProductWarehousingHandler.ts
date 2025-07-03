@@ -3,13 +3,16 @@ import { Context } from '../../../context.js';
 import { ProductWrongTypeError } from '../../../errors.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductWarehousingSchema = {
-  productId: z.string().min(1).describe('ID of the SIMPLE_PRODUCT product type to update to be updated'),
-  warehousing: z.object({
-    sku: z.string().min(1).optional().describe('Stock keeping unit'),
-    baseUnit: z.string().min(1).optional().describe('Base unit of the product (e.g., "piece", "kg")'),
-  }),
+  productId: z.string().min(1).describe('ID of the SIMPLE_PRODUCT product type to update'),
+  warehousing: z
+    .object({
+      sku: z.string().min(1).optional().describe('Stock keeping unit'),
+      baseUnit: z.string().min(1).optional().describe('Base unit of the product (e.g., "piece", "kg")'),
+    })
+    .describe('Warehousing details to update'),
 };
 
 export const UpdateProductWarehousingZodSchema = z.object(UpdateProductWarehousingSchema);
@@ -21,9 +24,10 @@ export async function updateProductWarehousingHandler(
   params: UpdateProductWarehousingParams,
 ) {
   const { productId, warehousing } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductWarehousingHandler', { userId, params });
     const product = await modules.products.findProduct({ productId });
     if (product?.type !== ProductTypes.SimpleProduct)
       throw new ProductWrongTypeError({

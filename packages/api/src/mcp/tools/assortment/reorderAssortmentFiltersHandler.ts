@@ -26,7 +26,7 @@ export async function reorderAssortmentFiltersHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler reorderAssortmentFilters', { userId, sortKeys });
+    log('handler reorderAssortmentFiltersHandler', { userId, params });
 
     await modules.assortments.filters.updateManualOrder({
       sortKeys,

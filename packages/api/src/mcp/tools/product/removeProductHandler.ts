@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const RemoveProductSchema = {
   productId: z.string().min(1).describe('ID of the product to remove'),
@@ -12,9 +13,10 @@ export type RemoveProductParams = z.infer<typeof RemoveProductZodSchema>;
 
 export async function removeProductHandler(context: Context, params: RemoveProductParams) {
   const { productId } = params;
-  const { services } = context;
+  const { services, userId } = context;
 
   try {
+    log('handler removeProductHandler', { userId, params });
     await services.products.removeProduct({ productId });
 
     return {

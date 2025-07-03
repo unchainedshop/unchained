@@ -25,7 +25,7 @@ export async function assortmentProductsHandler(context: Context, params: Assort
   const { assortmentId } = params;
 
   try {
-    log('handler assortmentProducts', { userId, params });
+    log('handler assortmentProductsHandler', { userId, params });
     const assortmentProducts = await modules.assortments.products.findAssortmentProducts(
       {
         assortmentId,

@@ -28,11 +28,9 @@ export async function addAssortmentLinkHandler(context: Context, params: AddAsso
   const { modules, userId } = context;
 
   try {
-    log('handler addAssortmentLink', {
+    log('handler addAssortmentLinkHandler', {
       userId,
-      parentAssortmentId,
-      childAssortmentId,
-      tags,
+      params,
     });
     const parent = await getNormalizedAssortmentDetails({ assortmentId: parentAssortmentId }, context);
     if (!parent)

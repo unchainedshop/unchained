@@ -1,8 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Context } from '../context.js';
 import {
-  listProductsHandler,
-  ListProductsSchema,
   getProductHandler,
   GetProductSchema,
   createProductHandler,
@@ -168,6 +166,10 @@ import {
   reorderAssortmentLinksHandler,
   UpdateAssortmentMediaTextsSchema,
   updateAssortmentMediaTextsHandler,
+  ProductsListSchema,
+  productsListHandler,
+  UpdateProductWarehousingSchema,
+  updateProductWarehousingHandler,
 } from './tools/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -181,91 +183,94 @@ export default function createMcpServer(context: Context, roles) {
   }
 
   server.tool(
-    'list_products',
-    `Search and list products with comprehensive filtering, sorting, and pagination support.`,
-    ListProductsSchema,
-    async (params) => listProductsHandler(context, params),
+    'product_list',
+    'List products filtered by tags, slugs, or query string; supports pagination and sorting.',
+    ProductsListSchema,
+    async (params) => productsListHandler(context, params),
   );
 
   server.tool(
-    'products_count',
-    'Search and returns total number of products registered in the system with comprehensive filtering if provided',
+    'product_count',
+    'Count products filtered by tags, slugs, draft status, or query string.',
     ProductsCountSchema,
     async (params) => productsCountHandler(context, params),
   );
-  server.tool('get_product', 'Get detailed product information', GetProductSchema, async (params) =>
-    getProductHandler(context, params),
+  server.tool(
+    'product_get',
+    'Retrieve product details by productId, slug, or SKU.',
+    GetProductSchema,
+    async (params) => getProductHandler(context, params),
   );
 
   server.tool(
-    'create_product',
-    'Adds or create new product the product will be in DRAFT/unpublish status',
+    'product_create',
+    'Create a new product with localized text information. it will be in DRAFT/unpublish status',
     CreateProductSchema,
     async (params) => createProductHandler(context, params),
   );
   server.tool(
-    'remove_product',
-    'Removed or deletes a product by its id changing its status to DELETED and removing it from sale',
+    'product_remove',
+    'Remove a product by its ID. Changing its status to DELETED and removing it from sale',
     RemoveProductSchema,
     async (params) => removeProductHandler(context, params),
   );
 
   server.tool(
-    'publish_product',
+    'product_publish',
     'Publish a product by its id changing it to active and available for sale',
     PublishProductSchema,
     async (params) => publishProductHandler(context, params),
   );
 
   server.tool(
-    'unpublish_product',
+    'product_unpublish',
     'Deactivates or Unpublishes product by its id changing it to DRAFT and not available for sale',
     UnpublishProductSchema,
     async (params) => unpublishProductHandler(context, params),
   );
   server.tool(
-    'update_product',
-    'Modify/Update generic infos of a product (tags for ex.)',
+    'product_update',
+    'Update specified fields (such as tags, sequence, and metadata) of an existing product identified by its productId.',
     UpdateProductSchema,
     async (params) => updateProductHandler(context, params),
   );
 
   server.tool(
-    'update_product_texts',
-    'Modify/update localized texts of a product',
+    'product_updateTexts',
+    'Update localized texts (title, subtitle, description, slug, vendor, brand, labels) of a product',
     UpdateProductTextsSchema,
     async (params) => updateProductTextsHandler(context, params),
   );
 
   server.tool(
-    'update_product_commerce',
-    'Modify/update products commerce info like prices, taxes, etc. for all product types except CONFIGURABLE_PRODUCT. for currency value always use registered currency in the system and not a custom one, it should not be called for CONFIGURABLE_PRODUCT type products',
+    'product_updateCommerce',
+    'Update commerce information (pricing) for a product (all types except CONFIGURABLE_PRODUCT)',
     UpdateProductCommerceSchema,
     async (params) => updateProductCommerceHandler(context, params),
   );
 
   server.tool(
-    'update_product_warehousing',
-    'Modify/update products commerce info like prices, taxes, etc. for SIMPLE_PRODUCT product type only.  it is only available for SIMPLE_PRODUCT type products',
-    UpdateProductCommerceSchema,
-    async (params) => updateProductCommerceHandler(context, params),
+    'product_updateWarehousing',
+    'Update warehousing details (SKU, base unit) for a SIMPLE_PRODUCT type product',
+    UpdateProductWarehousingSchema,
+    async (params) => updateProductWarehousingHandler(context, params),
   );
 
   server.tool(
-    'update_product_supply',
-    'Modify/update products supply of SIMPLE_PRODUCT type info like prices, taxes, etc. it is only available for SIMPLE_PRODUCT type products',
+    'product_updateSupply',
+    'Update the supply (delivery) details for a SIMPLE_PRODUCT type product',
     UpdateProductSupplySchema,
     async (params) => updateProductSupplyHandler(context, params),
   );
   server.tool(
-    'update_tokenized_product',
-    'Modify/update products supply of TOKENIZED_PRODUCT type info like contractAddress, contractStandard, tokenId, supply, ercMetadataProperties etc. it is only available for TOKENIZED_PRODUCT type products',
+    'product_updateTokenization',
+    'Update tokenization details for a TOKENIZED_PRODUCT type product',
     UpdateProductTokenizationSchema,
     async (params) => updateProductTokenizationHandler(context, params),
   );
   server.tool(
-    'update_product_plan',
-    'Modify/update products subscription/plan information of PLAN_PRODUCT type info like billing period, trial period and usage calculation, etc. it is only available for PLAN_PRODUCT type products',
+    'product_updatePlan',
+    'Update the plan details for a PLAN_PRODUCT type product',
     UpdateProductPlanSchema,
     async (params) => updateProductPlanHandler(context, params),
   );
@@ -285,17 +290,14 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'list_countries',
-    'List all available countries in the system, if non existing country is provided to you by a user inform them it does not exist and to create it first before they can use it',
+    'country_list',
+    'List all available countries in the system. If a non-existing country is provided by a user, inform them it does not exist and must be created first before use.',
     ListCountriesSchema,
     async (params) => countriesHandler(context, params),
   );
 
-  server.tool(
-    'get_country',
-    'Gets a single country registered in the system',
-    CountrySchema,
-    async (params) => countryHandler(context, params),
+  server.tool('country_get', 'Fetch a specific country by its ID.', CountrySchema, async (params) =>
+    countryHandler(context, params),
   );
 
   server.tool(
@@ -313,43 +315,43 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'create_product_variation',
-    'Adds/create a variation of a product, it is only available for CONFIGURABLE_PRODUCT type products',
+    'product_createVariation',
+    'Create a variation for a CONFIGURABLE_PRODUCT product including localized texts.',
     CreateProductVariationSchema,
     async (params) => createProductVariationHandler(context, params),
   );
 
   server.tool(
-    'remove_product_variation',
-    'removes a variation of a product',
+    'productVariation_remove',
+    'Remove a product variation by its ID.',
     RemoveProductVariationSchema,
     async (params) => removeProductVariationHandler(context, params),
   );
 
   server.tool(
-    'assign_product_variation',
-    'Link a product to a ConfigurableProduct variation option by providing a vector combination that uniquely identifies the variation option',
+    'product_assignVariation',
+    'Assign a product variant to a configurable product with a unique combination of attribute vectors.',
     AssignProductVariationSchema,
     async (params) => addProductAssignmentHandler(context, params),
   );
 
   server.tool(
-    'add_variation_options',
-    'Adds variation option to an existing product variations',
+    'product_createVariationOption',
+    'Create a new option for a product variation with localized titles and subtitles.',
     CreateProductVariationOptionSchema,
     async (params) => createProductVariationOptionHandler(context, params),
   );
 
   server.tool(
-    'remove_variation_options',
-    'Removes product option value for product variation with the provided variation option value',
+    'productVariationOption_remove',
+    'Remove an option from a product variation by its value.',
     RemoveProductVariationOptionSchema,
     async (params) => removeProductVariationOptionHandler(context, params),
   );
 
   server.tool(
-    'remove_product_variation_assignment',
-    'Unlinks a product from a ConfigurableProduct by providing a configuration combination that uniquely identifies a row in the assignment matrix',
+    'product_removeAssignment',
+    'Remove a product variant assignment from a configurable product using attribute vectors.',
     RemoveProductAssignmentSchema,
     async (params) => removeProductAssignmentHandler(context, params),
   );
@@ -367,94 +369,97 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'add_product_media',
-    'Adds media to a product',
+    'product_addMedia',
+    'Add a media asset to a product from a publicly accessible URL',
     AddProductMediaUploadSchema,
     async (params) => addProductMediaUploadHandler(context, params),
   );
 
   server.tool(
-    'remove_product_media',
-    "Remove a media asset from a product's visualization",
+    'productMedia_remove',
+    'Remove a product media asset by its ID.',
     RemoveProductMediaSchema,
     async (params) => removeProductMediaHandler(context, params),
   );
 
   server.tool(
-    'update_product_media_texts',
-    "Modify localized texts part of a product's media asset",
+    'productMedia_updateTexts',
+    'Update localized texts (title, subtitle) of a product media asset.',
     UpdateProductMediaTextsSchema,
     async (params) => updateProductMediaTextsHandler(context, params),
   );
 
   server.tool(
-    'reorder_product_media',
-    'Reorder a media asset (first is primary)',
+    'product_media_reorder',
+    'Reorder media assets of a product by providing new sort keys.',
     ReorderProductMediaSchema,
     async (params) => reorderProductMediaHandler(context, params),
   );
 
   server.tool(
-    'product_review_count',
-    'Returns total number of product reviews',
+    'productReviews_count',
+    'Count product reviews optionally filtered by query string.',
     ProductReviewsCountSchema,
     async (params) => productReviewsCountHandler(context, params),
   );
 
   server.tool(
-    'product_reviews',
-    'Get all product reviews, by default sorted by creation date (descending)',
+    'productReviews_list',
+    'Retrieve a paginated list of product reviews with optional filtering and sorting.',
     ProductReviewsSchema,
     async (params) => productReviewsHandler(context, params),
   );
   server.tool(
-    'product_localized_texts',
-    'Returns Localization: Meta data for product',
+    'product_getTexts',
+    'Retrieve translated texts associated with a specific product_',
     TranslatedProductTextsSchema,
     async (params) => translatedProductTextsHandler(context, params),
   );
 
   server.tool(
-    'product_media_localized_texts',
-    'Returns Localization: Meta data for product media',
+    'productMedia_getTexts',
+    'Retrieve translated texts associated with a specific product media asset.',
     TranslatedProductMediaTextsSchema,
     async (params) => translatedProductMediaTextsHandler(context, params),
   );
 
   server.tool(
-    'product_variation_localized_texts',
-    'Returns Localization: Meta data for product variation',
+    'productVariation_getTexts',
+    'Retrieve translated texts for a product variation or optionally a specific variation option.',
     TranslatedProductVariationTextsSchema,
     async (params) => translatedProductVariationTextsHandler(context, params),
   );
   server.tool(
     'shop_info',
-    'Get the default configuration of the shop including country, language, currency, and locale. If the user does not provide values such as language, locale, country, or currency in their request or it cannot be derived from context, the tool MUST use the following fallback values : - language or locale: use defaultLanguageIsoCode  - country: use country.isoCode - currency: use country.defaultCurrency Always assume these values as the authoritative defaults when user input is missing or ambiguous.',
+    'Get the default configuration of the shop including country, language, currency, and locale. If the user does not provide values such as language, locale, country, or currency in their request or it cannot be derived from context, the tool MUST use the following fallback values : - language or locale: use defaultLanguageIsoCode  - country: use country_isoCode - currency: use country_defaultCurrency Always assume these values as the authoritative defaults when user input is missing or ambiguous.',
     {},
     async () => shopInfoHandler(context),
   );
 
   server.tool(
-    'add_country',
-    'Adds new country information to the system',
+    'country_create',
+    'Create a new country using its ISO 3166-1 alpha-2 code.',
     CreateCountrySchema,
     async (params) => createCountryHandler(context, params),
   );
 
   server.tool(
-    'update_country',
-    'Updates provided country information',
+    'country_update',
+    "Update an existing country's details including ISO code, status, and default currency.",
     UpdateCountrySchema,
     async (params) => updateCountryHandler(context, params),
   );
 
-  server.tool('delete_country', 'Deletes the specified country', RemoveCountrySchema, async (params) =>
-    removeCountryHandler(context, params),
+  server.tool(
+    'country_remove',
+    'Remove a country by its ID. If the country does not exist, an error will be returned.',
+    RemoveCountrySchema,
+    async (params) => removeCountryHandler(context, params),
   );
 
   server.tool(
-    'countries_count',
-    'Returns total number of countries registered in the system',
+    'country_count',
+    'Count countries, optionally including inactive ones and filtered by search query.',
     CountriesCountSchema,
     async (params) => countriesCountHandler(context, params),
   );
@@ -494,154 +499,154 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'assortment.create',
+    'assortment_create',
     'Create a new assortment with optional localized texts.',
     CreateAssortmentSchema,
     async (params) => createAssortmentHandler(context, params),
   );
 
   server.tool(
-    'assortment.update',
+    'assortment_update',
     'Update fields of an existing assortment by ID.',
     UpdateAssortmentSchema,
     async (params) => updateAssortmentHandler(context, params),
   );
 
   server.tool(
-    'assortment.remove',
+    'assortment_remove',
     'Remove an assortment by ID.',
     RemoveAssortmentSchema,
     async (params) => removeAssortmentHandler(context, params),
   );
 
   server.tool(
-    'assortment.setBase',
+    'assortment_setBase',
     'Makes the provided assortment the base assortment and resets others to regular.',
     SetBaseAssortmentSchema,
     async (params) => setBaseAssortmentHandler(context, params),
   );
 
   server.tool(
-    'assortment.get',
+    'assortment_get',
     'Fetch details of an assortment by ID or slug.',
     AssortmentSchema,
     async (params) => assortmentHandler(context, params),
   );
 
   server.tool(
-    'assortment.list',
+    'assortment_list',
     'List assortments with filtering, pagination, and sorting options.',
     AssortmentsSchema,
     async (params) => assortmentsHandler(context, params),
   );
 
   server.tool(
-    'assortment.count',
+    'assortment_count',
     'Count assortments matching given filters.',
     AssortmentsCountSchema,
     async (params) => assortmentsCountHandler(context, params),
   );
 
   server.tool(
-    'assortment.getChildren',
+    'assortment_getChildren',
     'Fetch child assortments for a given assortment ID (or root-level assortments if none is provided).',
     AssortmentChildrenSchema,
     async (params) => assortmentChildrenHandler(context, params),
   );
 
   server.tool(
-    'assortment.getProducts',
+    'assortment_getProducts',
     'Fetch products for a given assortment, optionally including inactive ones.',
     AssortmentProductsSchema,
     async (params) => assortmentProductsHandler(context, params),
   );
 
   server.tool(
-    'assortment.searchProducts',
+    'assortment_searchProducts',
     'Search products within an assortment with optional filtering and pagination.',
     SearchAssortmentProductSchema,
     async (params) => searchAssortmentProductHandler(context, params),
   );
 
   server.tool(
-    'assortment.getLinks',
-    'Fetch parent and child links for a given assortment.',
+    'assortment_getLinks',
+    'Fetch parent and child links for a given assortment_',
     AssortmentLinksSchema,
     async (params) => assortmentLinksHandler(context, params),
   );
 
   server.tool(
-    'assortment.getFilters',
-    'Fetch filters associated with a specific assortment.',
+    'assortment_getFilters',
+    'Fetch filters associated with a specific assortment_',
     AssortmentFiltersSchema,
     async (params) => assortmentFiltersHandler(context, params),
   );
 
   server.tool(
-    'assortment.addProduct',
+    'assortment_addProduct',
     'Add a product to an assortment with optional tags.',
     AddAssortmentProductSchema,
     async (params) => addAssortmentProductHandler(context, params),
   );
 
   server.tool(
-    'assortment.removeProduct',
-    'Remove a product from an assortment.',
+    'assortment_removeProduct',
+    'Remove a product from an assortment_',
     RemoveAssortmentProductSchema,
     async (params) => removeAssortmentProductHandler(context, params),
   );
 
   server.tool(
-    'assortment.reorderProducts',
+    'assortment_reorderProducts',
     'Reorder assortment products by assigning new sort keys.',
     ReorderAssortmentProductsSchema,
     async (params) => reorderAssortmentProductsHandler(context, params),
   );
 
   server.tool(
-    'assortment.linkChild',
+    'assortment_linkChild',
     'Create a parent-child relationship between two assortments, with optional tags.',
     AddAssortmentLinkSchema,
     async (params) => addAssortmentLinkHandler(context, params),
   );
 
   server.tool(
-    'assortment.removeLink',
+    'assortment_removeLink',
     'Remove a link between assortments by ID.',
     RemoveAssortmentLinkSchema,
     async (params) => removeAssortmentLinkHandler(context, params),
   );
 
   server.tool(
-    'assortment.reorderLinks',
+    'assortment_reorderLinks',
     'Reorder assortment links by assigning new sort keys.',
     ReorderAssortmentLinksSchema,
     async (params) => reorderAssortmentLinksHandler(context, params),
   );
 
   server.tool(
-    'assortment.reorderMedia',
+    'assortment_reorderMedia',
     'Reorder assortment media assets with new sorting keys; first item becomes primary media.',
     ReorderAssortmentMediaSchema,
     async (params) => reorderAssortmentMediaHandler(context, params),
   );
 
   server.tool(
-    'assortment.addMedia',
-    'Upload and link a media asset (e.g., image or video) to an assortment.',
+    'assortment_addMedia',
+    'Upload and link a media asset (e.g., image or video) to an assortment_',
     AddAssortmentMediaUploadSchema,
     async (params) => addAssortmentMediaUploadHandler(context, params),
   );
 
   server.tool(
-    'assortment.removeMedia',
-    'Remove a media asset previously attached to an assortment.',
+    'assortment_removeMedia',
+    'Remove a media asset previously attached to an assortment_',
     RemoveAssortmentMediaSchema,
     async (params) => removeAssortmentMediaHandler(context, params),
   );
 
   server.tool(
-    'assortmentMedia.updateTexts',
+    'assortmentMedia_updateTexts',
     'Update localized texts for a specific assortment media asset.',
     UpdateAssortmentMediaTextsSchema,
     async (params) => updateAssortmentMediaTextsHandler(context, params),
@@ -697,42 +702,42 @@ export default function createMcpServer(context: Context, roles) {
   );
 
   server.tool(
-    'assortmentMedia.getTexts',
+    'assortmentMedia_getTexts',
     'Retrieve translated texts associated with a specific assortment media asset.',
     TranslatedAssortmentMediaTextsSchema,
     async (params) => translatedAssortmentMediaTextsHandler(context, params),
   );
 
   server.tool(
-    'assortment.getTexts',
-    'Retrieve translated texts for a specific assortment.',
+    'assortment_getTexts',
+    'Retrieve translated texts for a specific assortment_',
     TranslatedAssortmentTextsSchema,
     async (params) => translatedAssortmentTextsHandler(context, params),
   );
 
   server.tool(
-    'assortment.updateTexts',
+    'assortment_updateTexts',
     'Update localized texts (title, subtitle, description, slug) of an assortment for one or more locales.',
     UpdateAssortmentTextsSchema,
     async (params) => updateAssortmentTextsHandler(context, params),
   );
 
   server.tool(
-    'assortment.addFilter',
+    'assortment_addFilter',
     'Attach a filter to a specific assortment, optionally tagging the relation.',
     AddAssortmentFilterSchema,
     async (params) => addAssortmentFilterHandler(context, params),
   );
 
   server.tool(
-    'assortment.removeFilter',
-    'Remove a filter from an assortment.',
+    'assortment_removeFilter',
+    'Remove a filter from an assortment_',
     RemoveAssortmentFilterSchema,
     async (params) => removeAssortmentFilterHandler(context, params),
   );
 
   server.tool(
-    'assortment.reorderFilters',
+    'assortment_reorderFilters',
     'Reorder assortment filters by assigning new sort keys.',
     ReorderAssortmentFiltersSchema,
     async (params) => reorderAssortmentFiltersHandler(context, params),

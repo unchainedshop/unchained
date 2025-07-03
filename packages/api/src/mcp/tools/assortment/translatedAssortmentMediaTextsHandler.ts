@@ -20,7 +20,7 @@ export async function translatedAssortmentMediaTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler translatedAssortmentMediaTexts', { userId, assortmentMediaId });
+    log('handler translatedAssortmentMediaTextsHandler', { userId, params });
 
     const texts = await modules.assortments.media.texts.findMediaTexts({
       assortmentMediaId,

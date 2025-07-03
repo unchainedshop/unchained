@@ -21,7 +21,7 @@ export async function assortmentHandler(context: Context, params: AssortmentPara
   const { assortmentId, slug } = params;
 
   try {
-    log('handler assortment', { userId, params });
+    log('handler assortmentHandler', { userId, params });
 
     const assortment = await getNormalizedAssortmentDetails(
       {

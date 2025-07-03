@@ -40,7 +40,7 @@ export async function searchAssortmentProductHandler(
   const { assortmentId, limit, offset, ...query } = params;
 
   try {
-    log('handler searchAssortmentProduct', { userId, params });
+    log('handler searchAssortmentProductHandler', { userId, params });
 
     const productIds = await modules.assortments.findProductIds({
       assortmentId,

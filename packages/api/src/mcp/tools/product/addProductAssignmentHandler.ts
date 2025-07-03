@@ -8,6 +8,7 @@ import {
   ProductWrongTypeError,
 } from '../../../errors.js';
 import { ProductConfiguration, ProductTypes } from '@unchainedshop/core-products';
+import { log } from '@unchainedshop/logger';
 
 const extractVariationMatrix = (variations = []) => {
   const cartesianProduct = (arrays) => {
@@ -36,33 +37,33 @@ const combinationExists = (matrix, combination) => {
   });
 };
 
-// Zod schema for ProductAssignmentVectorInput
 const ProductAssignmentVectorSchema = z.object({
   key: z.string().min(1).describe('Attribute key (e.g., "Color", "Size")'),
   value: z.string().min(1).describe('Attribute value (e.g., "Red", "M")'),
 });
 
 export const AssignProductVariationSchema = {
-  proxyId: z.string().min(1).describe('should be ID of the CONFIGURABLE_PRODUCT (parent) only'),
+  proxyId: z.string().min(1).describe('ID of the CONFIGURABLE_PRODUCT (parent) only'),
   productId: z
     .string()
     .min(1)
-    .describe('ID of the product being assigned. can not be a CONFIGURABLE_PRODUCT product'),
+    .describe('ID of the product being assigned. Cannot be a CONFIGURABLE_PRODUCT product'),
   vectors: z
     .array(ProductAssignmentVectorSchema)
     .min(1)
     .describe('Combination of attributes uniquely identifying the variant'),
 };
-// Full schema for the mutation
+
 export const AddProductAssignmentZodSchema = z.object(AssignProductVariationSchema);
 
 export type AddProductAssignmentParams = z.infer<typeof AddProductAssignmentZodSchema>;
 
 export async function addProductAssignmentHandler(context: Context, params: AddProductAssignmentParams) {
   const { proxyId, productId, vectors } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler addProductAssignmentHandler', { userId, params });
     const proxyProduct = await modules.products.findProduct({
       productId: proxyId,
     });

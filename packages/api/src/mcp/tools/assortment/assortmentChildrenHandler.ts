@@ -25,7 +25,7 @@ export async function assortmentChildrenHandler(context: Context, params: Assort
   const { assortmentId, includeInactive } = params;
 
   try {
-    log('handler assortmentChildren', { userId, params });
+    log('handler assortmentChildrenHandler', { userId, params });
     const assortmentChildren = await modules.assortments.children({
       assortmentId,
       includeInactive,

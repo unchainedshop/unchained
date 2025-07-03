@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductCommerceSchema = {
   productId: z
@@ -51,9 +52,10 @@ export async function updateProductCommerceHandler(
   params: UpdateProductCommerceParams,
 ) {
   const { productId, commerce } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductCommerceHandler', { userId, params });
     await modules.products.update(productId, { commerce });
 
     return {

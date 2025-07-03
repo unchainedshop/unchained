@@ -28,7 +28,7 @@ export async function reorderAssortmentMediaHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler reorderAssortmentMedia', { userId, sortKeys });
+    log('handler reorderAssortmentMediaHandler', { userId, params });
 
     await modules.assortments.media.updateManualOrder({
       sortKeys,

@@ -1,19 +1,14 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
-/**
- * Zod schema for the get_product tool (as raw object for MCP)
- */
 export const GetProductSchema = {
   productId: z.string().optional().describe('Product ID for lookup'),
   slug: z.string().optional().describe('Product slug for lookup'),
   sku: z.string().optional().describe('Product SKU for lookup'),
 };
 
-/**
- * Zod object schema for type inference and validation
- */
 export const GetProductZodSchema = z
   .object(GetProductSchema)
   .refine(
@@ -21,20 +16,15 @@ export const GetProductZodSchema = z
     'At least one of productId, slug, or sku must be provided',
   );
 
-/**
- * Interface for the get_product tool parameters
- */
 export type GetProductParams = z.infer<typeof GetProductZodSchema>;
 
-/**
- * Implementation of the get_product tool
- */
 export async function getProductHandler(context: Context, params: GetProductParams) {
   const { productId, slug, sku } = params;
+  const { modules, userId } = context;
 
   try {
-    // Find the product
-    const product = await context.modules.products.findProduct({
+    log('handler getProductHandler', { userId, params });
+    const product = await modules.products.findProduct({
       productId,
       slug,
       sku,

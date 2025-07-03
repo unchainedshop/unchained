@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { Product, ProductText, ProductTypes } from '@unchainedshop/core-products';
+import { log } from '@unchainedshop/logger';
 const productTypeKeys = Object.keys(ProductTypes) as [
   keyof typeof ProductTypes,
   ...(keyof typeof ProductTypes)[],
@@ -39,11 +40,14 @@ export type CreateProductParams = z.infer<typeof CreateProductZodSchema>;
 
 export async function createProductHandler(context: Context, params: CreateProductParams) {
   const { product, texts } = params;
+  const { modules, userId } = context;
+
   try {
-    const newProduct = await context.modules.products.create(product as Product);
+    log('handler createProductHandler', { userId, params });
+    const newProduct = await modules.products.create(product as Product);
     let productTexts: any[] = texts;
     if (texts) {
-      productTexts = await context.modules.products.texts.updateTexts(
+      productTexts = await modules.products.texts.updateTexts(
         newProduct._id,
         texts as unknown as ProductText[],
       );

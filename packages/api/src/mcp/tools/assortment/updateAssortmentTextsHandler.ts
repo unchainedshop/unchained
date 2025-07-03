@@ -38,7 +38,7 @@ export async function updateAssortmentTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log('handler updateAssortmentTexts', { userId, assortmentId, texts });
+    log('handler updateAssortmentTextsHandler', { userId, params });
 
     if (!(await modules.assortments.assortmentExists({ assortmentId })))
       throw new AssortmentNotFoundError({ assortmentId });

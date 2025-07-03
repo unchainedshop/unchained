@@ -18,7 +18,7 @@ export async function translatedProductMediaTextsHandler(
   const { modules, userId } = context;
 
   try {
-    log(`handler translatedProductMediaTexts: ${productMediaId}`, { userId });
+    log(`handler translatedProductMediaTexts`, { userId, params });
 
     const texts = await modules.products.media.texts.findMediaTexts({ productMediaId });
 

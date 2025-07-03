@@ -5,7 +5,7 @@ import { getNormalizedAssortmentDetails } from '../../utils/getNormalizedAssortm
 
 const SortDirectionEnum = z.enum(['ASC', 'DESC']);
 
-export const SortOptionInputSchema = z.object({
+const SortOptionInputSchema = z.object({
   key: z.string().min(1).describe('Field to sort by'),
   value: SortDirectionEnum.describe('Sort direction: ASC or DESC'),
 });
@@ -39,7 +39,7 @@ export async function assortmentsHandler(context: Context, params: AssortmentsPa
   const { modules, userId } = context;
 
   try {
-    log('handler assortments', { userId, params });
+    log('handler assortmentsHandler', { userId, params });
 
     const assortments = await modules.assortments.findAssortments(params as any);
     const normalizedAssortments = await Promise.all(

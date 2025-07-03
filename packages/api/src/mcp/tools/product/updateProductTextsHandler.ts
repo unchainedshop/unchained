@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductTextsSchema = {
   productId: z.string().min(1).describe('ID of the product to update texts for'),
@@ -32,9 +33,10 @@ export type UpdateProductTextsParams = z.infer<typeof UpdateProductTextsZodSchem
 
 export async function updateProductTextsHandler(context: Context, params: UpdateProductTextsParams) {
   const { productId, texts } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductTextsHandler', { userId, params });
     await modules.products.texts.updateTexts(productId, texts as any[]);
     return {
       content: [

@@ -37,7 +37,7 @@ export async function createAssortmentHandler(context: Context, params: CreateAs
   const { assortment, texts } = params;
 
   try {
-    log('handler createAssortment', { userId, params });
+    log('handler createAssortmentHandler', { userId, params });
 
     const newAssortment = await modules.assortments.create(assortment as any);
 

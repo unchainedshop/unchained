@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { ProductMediaNotFoundError } from '../../../errors.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductMediaTextsSchema = {
   productMediaId: z.string().min(1).describe('ID of the media asset to update'),
@@ -30,9 +31,10 @@ export async function updateProductMediaTextsHandler(
   params: UpdateProductMediaTextsParams,
 ) {
   const { productMediaId, texts } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductMediaTextsHandler', { userId, params });
     const productMedia = await modules.products.media.findProductMedia({
       productMediaId,
     });

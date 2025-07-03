@@ -17,12 +17,12 @@ export type CountriesCountParams = z.infer<typeof CountriesCountZodSchema>;
 
 // Handler function
 export async function countriesCountHandler(context: Context, params: CountriesCountParams) {
-  const { includeInactive = false, queryString } = params;
   const { modules, userId } = context;
 
   try {
-    log(`query countriesCount (includeInactive: ${includeInactive}, query: ${queryString || ''})`, {
+    log(`handler countriesCountHandler`, {
       userId,
+      params,
     });
 
     const count = await modules.countries.count(params);

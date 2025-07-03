@@ -3,6 +3,7 @@ import { Context } from '../../../context.js';
 import { ProductWrongTypeError } from '../../../errors.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UpdateProductSupplySchema = {
   productId: z
@@ -11,10 +12,25 @@ export const UpdateProductSupplySchema = {
     .describe('Product ID of a SIMPLE_PRODUCT only to update supply details for'),
   supply: z
     .object({
-      weightInGram: z.number().int().positive().optional(),
-      heightInMillimeters: z.number().int().positive().optional(),
-      lengthInMillimeters: z.number().int().positive().optional(),
-      widthInMillimeters: z.number().int().positive().optional(),
+      weightInGram: z.number().int().positive().optional().describe('Weight of the product in grams'),
+      heightInMillimeters: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Height of the product in millimeters'),
+      lengthInMillimeters: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Length of the product in millimeters'),
+      widthInMillimeters: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Width of the product in millimeters'),
     })
     .describe('Supply (delivery) attributes of the product'),
 };
@@ -25,9 +41,10 @@ export type UpdateProductSupplyParams = z.infer<typeof UpdateProductSupplyZodSch
 
 export async function updateProductSupplyHandler(context: Context, params: UpdateProductSupplyParams) {
   const { productId, supply } = params;
-  const { modules } = context;
+  const { modules, userId } = context;
 
   try {
+    log('handler updateProductSupplyHandler', { userId, params });
     const product = await modules.products.findProduct({ productId });
     if (product?.type !== ProductTypes.SimpleProduct)
       throw new ProductWrongTypeError({

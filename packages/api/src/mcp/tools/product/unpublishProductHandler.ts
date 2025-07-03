@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { ProductNotFoundError, ProductWrongStatusError } from '../../../errors.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { log } from '@unchainedshop/logger';
 
 export const UnpublishProductSchema = {
   productId: z.string().min(1).describe('ID of the product to unpublish'),
@@ -13,8 +14,8 @@ export type UnpublishProductParams = z.infer<typeof UnpublishProductZodSchema>;
 
 export async function unpublishProductHandler(context: Context, params: UnpublishProductParams) {
   const { productId } = params;
-  const { modules } = context;
-
+  const { modules, userId } = context;
+  log('handler unpublishProductHandler', { userId, params });
   try {
     const product = await modules.products.findProduct({ productId });
     if (!product) throw new ProductNotFoundError({ productId });

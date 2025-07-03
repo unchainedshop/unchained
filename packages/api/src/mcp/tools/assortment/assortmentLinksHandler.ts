@@ -20,7 +20,7 @@ export async function assortmentLinksHandler(context: Context, params: Assortmen
   const { assortmentId } = params;
 
   try {
-    log('handler assortmentLinks', { userId, params });
+    log('handler assortmentLinksHandler', { userId, params });
     const assortmentLinks = await loaders.assortmentLinksLoader.load({
       assortmentId,
     });

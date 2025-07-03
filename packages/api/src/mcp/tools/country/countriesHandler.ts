@@ -8,18 +8,19 @@ const sortDirectionKeys = Object.keys(SortDirection) as [
 ];
 
 export const ListCountriesSchema = {
-  limit: z.number().int().min(1).max(100).default(50),
-  offset: z.number().int().min(0).default(0),
-  includeInactive: z.boolean().default(false),
-  queryString: z.string().min(1).optional(),
+  limit: z.number().int().min(1).max(100).default(50).describe('Maximum number of countries to return'),
+  offset: z.number().int().min(0).default(0).describe('Number of countries to skip (for pagination)'),
+  includeInactive: z.boolean().default(false).describe('Whether to include inactive countries'),
+  queryString: z.string().min(1).optional().describe('Optional text-based filter'),
   sort: z
     .array(
       z.object({
-        key: z.string().min(1),
-        value: z.enum(sortDirectionKeys).describe("Sort direction, e.g., 'ASC' or 'DESC'"),
+        key: z.string().min(1).describe('Field to sort by'),
+        value: z.enum(sortDirectionKeys).describe("Sort direction, either 'ASC' or 'DESC'"),
       }),
     )
-    .optional(),
+    .optional()
+    .describe('Sorting configuration'),
 };
 
 export const ListCountriesZodSchema = z.object(ListCountriesSchema);

@@ -28,7 +28,7 @@ export async function assortmentsCountHandler(context: Context, params: Assortme
   const { modules, userId } = context;
 
   try {
-    log('handler assortmentsCount', { userId, params });
+    log('handler assortmentsCountHandler', { userId, params });
 
     const count = await modules.assortments.count(params);
 

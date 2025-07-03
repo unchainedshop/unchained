@@ -24,7 +24,7 @@ export async function addAssortmentMediaUploadHandler(
   const { modules, services, userId } = context;
 
   try {
-    log('handler addAssortmentMediaUploadHandler', { mediaName, assortmentId, userId, url });
+    log('handler addAssortmentMediaUploadHandler', { params, userId });
     const {
       _id: fileId,
       putURL,

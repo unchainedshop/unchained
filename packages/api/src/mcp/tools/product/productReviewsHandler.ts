@@ -30,6 +30,7 @@ export async function productReviewsHandler(context: Context, params: ProductRev
   try {
     log(`query productReviews: ${limit} ${offset} ${queryString || ''}`, {
       userId,
+      params,
     });
 
     const reviews = await modules.products.reviews.findProductReviews(params as any);

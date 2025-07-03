@@ -21,7 +21,7 @@ export async function addAssortmentProductHandler(context: Context, params: AddA
   const { modules, userId } = context;
   const { assortmentId, productId, tags } = params;
   try {
-    log('mutation addAssortmentProduct', { userId, params });
+    log('mutation addAssortmentProductHandler', { userId, params });
     const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
     if (!assortment)
       throw new AssortmentNotFoundError({
