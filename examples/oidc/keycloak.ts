@@ -246,11 +246,36 @@ export default async function setupKeycloak(app: FastifyInstance) {
             _id: (req as any).session.sessionId,
             userId: user._id,
           };
+
           if (req.session.keycloak) {
-            // await keycloakInstance.revokeToken(req.session.keycloak, 'access_token', {});
+            try {
+              await fetch(new URL(discoveryData.revocation_endpoint), {
+                method: 'POST',
+                body: new URLSearchParams({
+                  token: req.session.keycloak.access_token,
+                  token_type_hint: 'access_token',
+                  client_id: UNCHAINED_KEYCLOAK_CLIENT_ID,
+                  client_secret: UNCHAINED_KEYCLOAK_CLIENT_SECRET,
+                }),
+              });
+              await fetch(new URL(discoveryData.revocation_endpoint), {
+                method: 'POST',
+                body: new URLSearchParams({
+                  token: req.session.keycloak.refresh_token,
+                  token_type_hint: 'refresh_token',
+                  client_id: UNCHAINED_KEYCLOAK_CLIENT_ID,
+                  client_secret: UNCHAINED_KEYCLOAK_CLIENT_SECRET,
+                }),
+              });
+            } catch {
+              // Ignore errors during revocation
+            }
+
             delete req.session.keycloak;
           }
+
           await emit(API_EVENTS.API_LOGOUT, tokenObject);
+
           return true;
         },
       };
