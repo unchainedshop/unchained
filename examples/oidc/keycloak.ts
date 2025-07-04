@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 
 const {
   UNCHAINED_KEYCLOAK_CALLBACK_PATH = '/login/keycloak/callback',
+  UNCHAINED_KEYCLOAK_LOGOUT_PATH = '/logout/keycloak/callback',
   UNCHAINED_KEYCLOAK_CLIENT_ID,
   UNCHAINED_KEYCLOAK_CLIENT_SECRET,
   UNCHAINED_KEYCLOAK_REALM_URL,
@@ -117,6 +118,39 @@ export default async function setupKeycloak(app: FastifyInstance) {
     },
   );
 
+  app.get(
+    UNCHAINED_KEYCLOAK_LOGOUT_PATH,
+    async function (
+      this: FastifyInstance & {
+        keycloak: FastifyOAuth2.OAuth2Namespace;
+      },
+      request: FastifyRequest & {
+        unchainedContext: Context;
+      },
+      reply,
+    ) {
+      request?.unchainedContext?.logout();
+      return reply.status(200).send();
+    },
+  );
+
+  app.route({
+    url: '/logout',
+    method: ['GET'],
+    handler: (req, reply) => {
+      const logoutUrl = new URL(discoveryData.end_session_endpoint);
+      logoutUrl.searchParams.set('post_logout_redirect_uri', ROOT_URL);
+      if ((req as any).session?.keycloak) {
+        logoutUrl.searchParams.set('id_token_hint', (req as any).session?.keycloak?.id_token);
+        logoutUrl.searchParams.set('state', (req as any).session?.keycloak?.session_state);
+        return reply.redirect(logoutUrl.toString());
+      } else {
+        logoutUrl.searchParams.set('client_id', UNCHAINED_KEYCLOAK_CLIENT_ID);
+        return reply.redirect(logoutUrl.toString());
+      }
+    },
+  });
+
   app.route({
     url: '/.well-known/oauth-protected-resource',
     method: ['GET'],
@@ -155,7 +189,8 @@ export default async function setupKeycloak(app: FastifyInstance) {
   });
 
   return (contextResolver: UnchainedContextResolver) => async (props, req) => {
-    const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace;
+    const keycloakInstance = (app as any).keycloak as FastifyOAuth2.OAuth2Namespace & { oauth2: any };
+
     const context = await contextResolver(props);
 
     if (context.user) return context;
@@ -182,13 +217,14 @@ export default async function setupKeycloak(app: FastifyInstance) {
         ).token;
       }
 
+      const decodedPayload = jwt.decode(req.session.keycloak.id_token);
       const {
         sub,
         resource_access,
       }: {
         sub: string;
         resource_access: Record<string, { roles: string[] }>;
-      } = jwt.decode(req.session.keycloak.id_token);
+      } = decodedPayload;
 
       const userId = `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
       let user = await context.modules.users.findUserById(userId);
@@ -210,7 +246,10 @@ export default async function setupKeycloak(app: FastifyInstance) {
             _id: (req as any).session.sessionId,
             userId: user._id,
           };
-          delete req.session.keycloak;
+          if (req.session.keycloak) {
+            // await keycloakInstance.revokeToken(req.session.keycloak, 'access_token', {});
+            delete req.session.keycloak;
+          }
           await emit(API_EVENTS.API_LOGOUT, tokenObject);
           return true;
         },
