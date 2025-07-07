@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-payment",
-  "version": "3.1.13",
+  "version": "3.1.15",
   "main": "lib/payment-index.js",
   "types": "lib/payment-index.d.ts",
   "type": "module",
