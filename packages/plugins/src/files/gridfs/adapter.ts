@@ -94,7 +94,11 @@ export const GridFSAdapter: IFileAdapter<
         ...options,
       },
     );
-    await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
+    await pipeline(
+      stream,
+      new PassThrough({ allowHalfOpen: true, highWaterMark: 1024 * 1024 }),
+      writeStream,
+    );
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 
