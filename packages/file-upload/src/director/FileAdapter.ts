@@ -14,6 +14,7 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
     directoryName: string,
     rawFile: any,
     unchainedAPI: Context,
+    options?: Record<string, any>,
   ) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,

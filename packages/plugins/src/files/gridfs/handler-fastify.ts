@@ -56,7 +56,6 @@ const gridfsHandler: RouteHandlerMethod = async (
           fileName,
           {
             metadata: { 'content-type': type },
-            chunkSizeBytes: 1024 * 1024 * 5, // 5MB chunks
           },
         );
 

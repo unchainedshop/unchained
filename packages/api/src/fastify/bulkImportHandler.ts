@@ -29,6 +29,7 @@ const bulkImportHandler: RouteHandlerMethod = async (
       directoryName: 'bulk-import-streams',
       rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req.raw }),
       meta: {},
+      chunkSizeBytes: 1024 * 1024 * 5, // 5MB chunks
     });
 
     input.payloadId = file._id;
