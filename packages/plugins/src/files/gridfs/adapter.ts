@@ -89,7 +89,9 @@ export const GridFSAdapter: IFileAdapter<
       directoryName,
       hashedFilename,
       fileName,
-      { 'content-type': type },
+      {
+        metadata: { 'content-type': type },
+      },
     );
     await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
     const { length } = writeStream;
@@ -125,7 +127,9 @@ export const GridFSAdapter: IFileAdapter<
       directoryName,
       hashedFilename,
       fileName,
-      { 'content-type': type },
+      {
+        metadata: { 'content-type': type },
+      },
     );
     await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;
