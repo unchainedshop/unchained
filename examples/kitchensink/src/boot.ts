@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { anthropic } from '@ai-sdk/anthropic';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
@@ -8,10 +8,10 @@ import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
 import { openai } from '@ai-sdk/openai';
 import { useErrorHandler } from '@envelop/core';
+import { wrapLanguageModel, simulateStreamingMiddleware } from 'ai';
+
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-
-const { ANTHROPIC_API_KEY, ROOT_URL } = process.env;
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -41,18 +41,20 @@ try {
 
   connectDefaultPluginsToFastify(fastify, platform);
 
-  if (ANTHROPIC_API_KEY) {
-    fastify.log.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
-    connectChat(fastify, {
-      model: anthropic('claude-4-sonnet-20250514'),
-      maxSteps: 1,
-      imageGenerationTool: {
-        model: openai.image('dall-e-3'),
-      },
-    });
-  } else {
-    fastify.log.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
-  }
+  const provider = createOpenAICompatible({
+    name: 'local',
+    baseURL: 'http://localhost:8080',
+  });
+
+  connectChat(fastify, {
+    model: provider.chatModel('local'),
+      // model: wrapLanguageModel({
+    //   model: provider.chatModel('local'),
+    //   middleware: simulateStreamingMiddleware(),
+    // }),
+    maxTokens: 8000,
+    maxSteps: 1,
+  });
 
   fastify.register(fastifyRouter, {
     prefix: '/',
