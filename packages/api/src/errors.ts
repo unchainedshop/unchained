@@ -319,3 +319,8 @@ export const ImpersonatingAdminUserError = createError(
   'ImpersonatingAdminUserError',
   'Can not impersonate a admin user account',
 );
+
+export const DuplicateFilterKeyError = createError(
+  'DuplicateFilterKeyError',
+  'Key already registered for another filter',
+);

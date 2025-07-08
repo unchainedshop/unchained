@@ -46,7 +46,7 @@ export async function updateProductMediaTextsHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ texts: updatedTexts }),
+          text: JSON.stringify({ texts: updatedTexts, productId: productMedia.productId }),
         },
       ],
     };

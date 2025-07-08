@@ -47,7 +47,10 @@ export async function updateAssortmentMediaTextsHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ assortmentMediaTexts }),
+          text: JSON.stringify({
+            texts: assortmentMediaTexts,
+            assortmentId: assortmentMedia?.assortmentId,
+          }),
         },
       ],
     };
