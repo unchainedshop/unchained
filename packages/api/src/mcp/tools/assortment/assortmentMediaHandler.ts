@@ -1,6 +1,7 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { z } from 'zod';
+import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
 
 export const AssortmentMediaSchema = {
   assortmentId: z.string().min(1).describe('ID of the Assortment to retrieve media for'),
@@ -39,7 +40,7 @@ export async function assortmentMediaHandler(context: Context, params: assortmen
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ media }),
+          text: JSON.stringify({ media: await normalizeMediaUrl(media, context) }),
         },
       ],
     };

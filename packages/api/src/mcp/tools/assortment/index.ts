@@ -203,7 +203,7 @@ export const registerAssortmentTools = (server: McpServer, context: Context) => 
   );
 
   server.tool(
-    'assortment_reorderMedia',
+    'assortment_reorderMedias',
     'Reorder assortment media assets with new sorting keys; first item becomes primary media.',
     ReorderAssortmentMediaSchema,
     async (params) => reorderAssortmentMediaHandler(context, params),

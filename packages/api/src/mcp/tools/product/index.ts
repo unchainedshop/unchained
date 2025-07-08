@@ -236,7 +236,7 @@ export const registerProductTools = (server: McpServer, context: Context) => {
   );
 
   server.tool(
-    'product_media_reorder',
+    'product_reorderMedias',
     'Reorder media assets of a product by providing new sort keys.',
     ReorderProductMediaSchema,
     async (params) => reorderProductMediaHandler(context, params),

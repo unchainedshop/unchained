@@ -1,7 +1,7 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { z } from 'zod';
-import { z } from 'zod';
+import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
 
 export const ProductMediaSchema = {
   productId: z.string().min(1).describe('ID of the product to retrieve media for'),
@@ -36,7 +36,7 @@ export async function productMediaHandler(context: Context, params: ProductMedia
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ media }),
+          text: JSON.stringify({ media: await normalizeMediaUrl(media, context) }),
         },
       ],
     };

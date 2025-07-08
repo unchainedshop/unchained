@@ -30,7 +30,7 @@ export async function reorderAssortmentMediaHandler(
   try {
     log('handler reorderAssortmentMediaHandler', { userId, params });
 
-    await modules.assortments.media.updateManualOrder({
+    const media = await modules.assortments.media.updateManualOrder({
       sortKeys,
     } as any);
 
@@ -38,7 +38,7 @@ export async function reorderAssortmentMediaHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ success: true }),
+          text: JSON.stringify({ media }),
         },
       ],
     };
