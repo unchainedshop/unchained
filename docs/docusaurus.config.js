@@ -99,7 +99,7 @@ const config = {
         title: 'Unchained Engine',
         logo: {
           alt: 'my site Logo',
-          src: 'img/unchained-logomark copy.svg',
+          src: 'img/unchained-logomark.svg',
         },
         items: [
           {

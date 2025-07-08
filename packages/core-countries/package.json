@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-countries",
-  "version": "4.0.0-rc.4",
+  "version": "4.0.0-rc.5",
   "main": "lib/countries-index.js",
   "types": "lib/countries-index.d.ts",
   "type": "module",

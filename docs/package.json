@@ -2,7 +2,7 @@
   "name": "docs",
   "description": "Docs for Unchained Engine",
   "private": true,
-  "version": "3.0.0",
+  "version": "4.0.0-rc.5",
   "license": "ISC",
   "scripts": {
     "dev": "docusaurus start",
@@ -14,8 +14,8 @@
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.8.1",
     "@easyops-cn/docusaurus-search-local": "^0.50.0",
-    "@graphql-markdown/diff": "^1.1.11",
-    "@graphql-markdown/docusaurus": "^1.29.1",
+    "@graphql-markdown/diff": "^1.1.12",
+    "@graphql-markdown/docusaurus": "^1.30.1",
     "@graphql-tools/graphql-file-loader": "^8.0.20",
     "@graphql-tools/url-loader": "^8.0.31",
     "@mdx-js/react": "^3.1.0",
@@ -30,8 +30,8 @@
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
     "docusaurus-plugin-typedoc": "^1.4.0",
-    "typedoc": "^0.28.5",
-    "typedoc-plugin-markdown": "^4.6.4"
+    "typedoc": "^0.28.7",
+    "typedoc-plugin-markdown": "^4.7.0"
   },
   "browserslist": {
     "production": [
