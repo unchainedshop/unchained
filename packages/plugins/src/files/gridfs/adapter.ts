@@ -69,7 +69,7 @@ export const GridFSAdapter: IFileAdapter<
     } as UploadFileData & { putURL: string };
   },
 
-  async uploadFileFromStream(directoryName: string, rawFile: any, { modules }) {
+  async uploadFileFromStream(directoryName: string, rawFile: any, { modules }, options = {}) {
     let stream: Readable;
     let fileName;
     if (rawFile instanceof Promise) {
@@ -89,9 +89,16 @@ export const GridFSAdapter: IFileAdapter<
       directoryName,
       hashedFilename,
       fileName,
-      { 'content-type': type },
+      {
+        metadata: { 'content-type': type },
+        ...options,
+      },
     );
-    await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
+    await pipeline(
+      stream,
+      new PassThrough({ allowHalfOpen: true, highWaterMark: 1024 * 1024 }),
+      writeStream,
+    );
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 
@@ -125,7 +132,9 @@ export const GridFSAdapter: IFileAdapter<
       directoryName,
       hashedFilename,
       fileName,
-      { 'content-type': type },
+      {
+        metadata: { 'content-type': type },
+      },
     );
     await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;

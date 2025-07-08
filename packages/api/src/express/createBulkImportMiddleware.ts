@@ -37,6 +37,7 @@ export default async function bulkImportMiddleware(
     const file = await context.services.files.uploadFileFromStream({
       directoryName: 'bulk-import-streams',
       rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req }),
+      chunkSizeBytes: 1024 * 1024 * 5, // 5MB chunks
       meta: {},
     });
 

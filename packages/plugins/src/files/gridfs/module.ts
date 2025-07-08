@@ -5,10 +5,15 @@ export const configureGridFSFileUploadModule = ({ db }) => {
   let { GridFSBucket } = mongodb;
 
   return {
-    createWriteStream: async (directoryName, fileId, fileName, metadata) => {
+    createWriteStream: async (
+      directoryName,
+      fileId,
+      fileName,
+      uploadOptions: mongodb.GridFSBucketWriteStream['options'],
+    ) => {
       const options = { bucketName: `file_uploads_${directoryName}` };
       const bucket = new GridFSBucket(db, options);
-      return bucket.openUploadStreamWithId(fileId, fileName, { metadata });
+      return bucket.openUploadStreamWithId(fileId, fileName, uploadOptions);
     },
     getFileInfo: async (directoryName, fileId) => {
       const options = { bucketName: `file_uploads_${directoryName}` };

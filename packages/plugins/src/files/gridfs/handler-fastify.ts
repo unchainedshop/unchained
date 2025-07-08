@@ -54,10 +54,16 @@ const gridfsHandler: RouteHandlerMethod = async (
           directoryName,
           fileId,
           fileName,
-          { 'content-type': type },
+          {
+            metadata: { 'content-type': type },
+          },
         );
 
-        await pipeline(req.raw, new PassThrough(), writeStream);
+        await pipeline(
+          req.raw,
+          new PassThrough({ allowHalfOpen: true, highWaterMark: 1024 * 1024 }),
+          writeStream,
+        );
 
         const { length } = writeStream;
         await services.files.linkFile({ fileId, size: length, type });
