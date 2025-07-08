@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
+import { ProductMediaNotFoundError } from '../../../errors.js';
 
 export const TranslatedProductMediaTextsSchema = {
   productMediaId: z.string().min(1).describe('ID of the product media to fetch translated texts for'),
@@ -19,14 +20,17 @@ export async function translatedProductMediaTextsHandler(
 
   try {
     log(`handler translatedProductMediaTexts`, { userId, params });
-
+    const productMedia = await modules.products.media.findProductMedia({
+      productMediaId,
+    });
+    if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
     const texts = await modules.products.media.texts.findMediaTexts({ productMediaId });
 
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ texts }),
+          text: JSON.stringify({ texts, productId: productMedia.productId }),
         },
       ],
     };

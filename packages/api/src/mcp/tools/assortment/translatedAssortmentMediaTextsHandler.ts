@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
+import { AssortmentMediaNotFoundError } from '../../../errors.js';
 
 export const TranslatedAssortmentMediaTextsSchema = {
   assortmentMediaId: z.string().min(1).describe('ID of the assortment media to retrieve texts for'),
@@ -22,6 +23,12 @@ export async function translatedAssortmentMediaTextsHandler(
   try {
     log('handler translatedAssortmentMediaTextsHandler', { userId, params });
 
+    const assortmentMedia = await modules.assortments.media.findAssortmentMedia({
+      assortmentMediaId,
+    });
+
+    if (!assortmentMedia) throw new AssortmentMediaNotFoundError({ assortmentMediaId });
+
     const texts = await modules.assortments.media.texts.findMediaTexts({
       assortmentMediaId,
     });
@@ -30,7 +37,7 @@ export async function translatedAssortmentMediaTextsHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ texts }),
+          text: JSON.stringify({ texts, assortmentId: assortmentMedia.assortmentId }),
         },
       ],
     };

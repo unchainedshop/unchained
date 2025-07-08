@@ -71,6 +71,10 @@ import {
   translatedProductVariationTextsHandler,
   TranslatedProductVariationTextsSchema,
 } from './translatedProductVariationTextsHandler.js';
+import {
+  updateProductVariationTextsHandler,
+  UpdateProductVariationTextsSchema,
+} from './updateProductVariationTextsHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -268,5 +272,11 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Retrieve translated texts for a product variation or optionally a specific variation option.',
     TranslatedProductVariationTextsSchema,
     async (params) => translatedProductVariationTextsHandler(context, params),
+  );
+  server.tool(
+    'productVariation_updateTexts',
+    'Update product variation texts with the specified locales for product variations that match the provided variation ID and production option value.',
+    UpdateProductVariationTextsSchema,
+    async (params) => updateProductVariationTextsHandler(context, params),
   );
 };
