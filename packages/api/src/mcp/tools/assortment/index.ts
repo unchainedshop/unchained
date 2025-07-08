@@ -73,6 +73,7 @@ import {
   UpdateAssortmentTextsSchema,
   updateAssortmentTextsHandler,
 } from './updateAssortmentTextsHandler.js';
+import { assortmentMediaHandler, AssortmentMediaSchema } from './assortmentMediaHandler.js';
 
 export const registerAssortmentTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -269,5 +270,12 @@ export const registerAssortmentTools = (server: McpServer, context: Context) => 
     'Reorder assortment filters by assigning new sort keys.',
     ReorderAssortmentFiltersSchema,
     async (params) => reorderAssortmentFiltersHandler(context, params),
+  );
+
+  server.tool(
+    'assortment_getMedias',
+    'Retrieve media assets associated with a assortment, optionally filtered by tags and paginated.',
+    AssortmentMediaSchema,
+    async (params) => assortmentMediaHandler(context, params),
   );
 };

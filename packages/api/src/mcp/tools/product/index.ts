@@ -75,6 +75,8 @@ import {
   updateProductVariationTextsHandler,
   UpdateProductVariationTextsSchema,
 } from './updateProductVariationTextsHandler.js';
+import { productSiblingsHandler, ProductSiblingsSchema } from './productSiblingsHandler.js';
+import { productMediaHandler, ProductMediaSchema } from './productMediaHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -278,5 +280,18 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Update product variation texts with the specified locales for product variations that match the provided variation ID and production option value.',
     UpdateProductVariationTextsSchema,
     async (params) => updateProductVariationTextsHandler(context, params),
+  );
+  server.tool(
+    'product_siblings',
+    'Retrieve sibling products of a given product, optionally filtered by assortment ID, with support for pagination and inclusion of inactive products.',
+    ProductSiblingsSchema,
+    async (params) => productSiblingsHandler(context, params),
+  );
+
+  server.tool(
+    'product_getMedias',
+    'Retrieve media assets associated with a product, optionally filtered by tags and paginated.',
+    ProductMediaSchema,
+    async (params) => productMediaHandler(context, params),
   );
 };
