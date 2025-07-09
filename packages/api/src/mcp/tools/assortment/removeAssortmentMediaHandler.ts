@@ -37,7 +37,7 @@ export async function removeAssortmentMediaHandler(
         {
           type: 'text' as const,
           text: JSON.stringify({
-            success: true
+            success: true,
           }),
         },
       ],

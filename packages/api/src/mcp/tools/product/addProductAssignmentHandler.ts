@@ -51,7 +51,9 @@ export const AssignProductVariationSchema = {
   vectors: z
     .array(ProductAssignmentVectorSchema)
     .min(1)
-    .describe('Combination of attributes uniquely identifying the variant'),
+    .describe(
+      'Provide one option for **each** variation of the parent product (e.g., Color and Size). if it is not complete request the user to add all options or offer to create it. Do not call this tool unless all variation options have been selected. Otherwise, this will fail.',
+    ),
 };
 
 export const AddProductAssignmentZodSchema = z.object(AssignProductVariationSchema);

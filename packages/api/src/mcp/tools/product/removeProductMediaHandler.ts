@@ -3,7 +3,6 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { ProductMediaNotFoundError } from '../../../errors.js';
 
-
 export const RemoveProductMediaSchema = {
   productMediaId: z.string().min(1).describe('ID of the product media to be removed'),
 };

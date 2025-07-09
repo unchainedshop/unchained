@@ -188,7 +188,7 @@ export const registerProductTools = (server: McpServer, context: Context) => {
 
   server.tool(
     'product_assignVariation',
-    'Assign a product variant to a configurable product with a unique combination of attribute vectors.',
+    'Assign a product variant to a configurable product with a unique combination of option vectors. assigning with incomplete vector will fail. make sure all variation options are selected before calling this tool.',
     AssignProductVariationSchema,
     async (params) => addProductAssignmentHandler(context, params),
   );
