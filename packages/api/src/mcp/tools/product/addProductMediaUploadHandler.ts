@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { FileNotFoundError, FileUploadExpiredError } from '../../../errors.js';
+import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
 
 export const AddProductMediaUploadSchema = {
   mediaName: z
@@ -24,7 +25,7 @@ export async function addProductMediaUploadHandler(
   const { modules, services, userId } = context;
 
   try {
-    log('handler addProductAssignmentHandler', { userId, params });
+    log('handler addProductMediaUploadHandler', { userId, params });
     const {
       _id: fileId,
       putURL,
@@ -61,7 +62,7 @@ export async function addProductMediaUploadHandler(
         {
           type: 'text' as const,
           text: JSON.stringify({
-            file: linked,
+            file: await normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context),
           }),
         },
       ],

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { FileNotFoundError, FileUploadExpiredError } from '../../../errors.js';
+import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
 
 export const AddAssortmentMediaUploadSchema = {
   mediaName: z
@@ -61,7 +62,7 @@ export async function addAssortmentMediaUploadHandler(
         {
           type: 'text' as const,
           text: JSON.stringify({
-            file: linked,
+            file: await normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context),
           }),
         },
       ],

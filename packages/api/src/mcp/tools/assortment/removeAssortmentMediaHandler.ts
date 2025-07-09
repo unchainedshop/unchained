@@ -36,7 +36,9 @@ export async function removeAssortmentMediaHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ assortmentMedia }),
+          text: JSON.stringify({
+            success: true
+          }),
         },
       ],
     };
