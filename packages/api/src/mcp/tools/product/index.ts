@@ -88,6 +88,7 @@ import {
   RemoveProductBundleItemSchema,
 } from './removeProductBundleItemHandler.js';
 import { productAssignmentsHandler, ProductAssignmentsSchema } from './productAssignmentsHandler.js';
+import { productBundleItemsHandler, ProductBundleItemsSchema } from './productBundleItemsHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -335,8 +336,15 @@ export const registerProductTools = (server: McpServer, context: Context) => {
 
   server.tool(
     'product_assignments',
-    'Fetches Complete assignment matrix for a configurable product, including all variations and their assigned products.',
+    'Retrieve the full assignment matrix of a configurable product, including all assigned variants by their variation vectors. Optionally include inactive variants.',
     ProductAssignmentsSchema,
     async (params) => productAssignmentsHandler(context, params),
+  );
+
+  server.tool(
+    'product_bundleItems',
+    'Retrieve all bundle items from a product of type BUNDLE. Each item includes the configuration and quantity.',
+    ProductBundleItemsSchema,
+    async (params) => productBundleItemsHandler(context, params),
   );
 };
