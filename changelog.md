@@ -17,7 +17,7 @@ Known limitations:
 - Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).
 
 ## Minor
-- Add Node.js v23 support
+- Add Node.js v24 support
 - Add various loaders to optimize db requests and improve the overall performance of the system
 - DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
 
