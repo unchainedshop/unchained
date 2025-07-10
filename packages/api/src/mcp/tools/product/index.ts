@@ -87,6 +87,7 @@ import {
   removeProductBundleItemHandler,
   RemoveProductBundleItemSchema,
 } from './removeProductBundleItemHandler.js';
+import { productAssignmentsHandler, ProductAssignmentsSchema } from './productAssignmentsHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -330,5 +331,12 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Removes a bundled product from a BUNDLE_PRODUCT using its 0-based index in the bundle list. The product must be of type BUNDLE_PRODUCT.',
     RemoveProductBundleItemSchema,
     async (params) => removeProductBundleItemHandler(context, params),
+  );
+
+  server.tool(
+    'product_assignments',
+    'Fetches Complete assignment matrix for a configurable product, including all variations and their assigned products.',
+    ProductAssignmentsSchema,
+    async (params) => productAssignmentsHandler(context, params),
   );
 };

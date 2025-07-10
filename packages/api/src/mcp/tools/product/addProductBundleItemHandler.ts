@@ -27,27 +27,38 @@ export const addProductBundleItemHandler = async (
 
   log('handler addProductBundleItemHandler', { userId, params });
 
-  const product = await modules.products.findProduct({ productId });
-  if (!product) throw new ProductNotFoundError({ productId });
+  try {
+    const product = await modules.products.findProduct({ productId });
+    if (!product) throw new ProductNotFoundError({ productId });
 
-  if (product.type !== ProductTypes.BundleProduct)
-    throw new ProductWrongTypeError({
-      productId,
-      received: product.type,
-      required: ProductTypes.BundleProduct,
-    });
+    if (product.type !== ProductTypes.BundleProduct)
+      throw new ProductWrongTypeError({
+        productId,
+        received: product.type,
+        required: ProductTypes.BundleProduct,
+      });
 
-  if (!(await modules.products.productExists({ productId: item.productId })))
-    throw new ProductNotFoundError({ productId: item.productId });
+    if (!(await modules.products.productExists({ productId: item.productId })))
+      throw new ProductNotFoundError({ productId: item.productId });
 
-  await modules.products.bundleItems.addBundleItem(productId, item as any);
+    await modules.products.bundleItems.addBundleItem(productId, item as any);
 
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: JSON.stringify({ product: await getNormalizedProductDetails(productId, context) }),
-      },
-    ],
-  };
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({ product: await getNormalizedProductDetails(productId, context) }),
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: `Error adding bundle item: ${(error as Error).message}`,
+        },
+      ],
+    };
+  }
 };

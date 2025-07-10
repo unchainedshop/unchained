@@ -22,24 +22,34 @@ export const removeProductBundleItemHandler = async (
   const { productId, index } = params;
 
   log('handler removeProductBundleItemHandler', { userId, params });
+  try {
+    const product = await modules.products.findProduct({ productId });
+    if (!product) throw new ProductNotFoundError({ productId });
 
-  const product = await modules.products.findProduct({ productId });
-  if (!product) throw new ProductNotFoundError({ productId });
+    if (product.type !== ProductTypes.BundleProduct)
+      throw new ProductWrongTypeError({
+        productId,
+        received: product.type,
+        required: ProductTypes.BundleProduct,
+      });
 
-  if (product.type !== ProductTypes.BundleProduct)
-    throw new ProductWrongTypeError({
-      productId,
-      received: product.type,
-      required: ProductTypes.BundleProduct,
-    });
-
-  await modules.products.bundleItems.removeBundleItem(productId, index);
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: JSON.stringify({ product: await getNormalizedProductDetails(productId, context) }),
-      },
-    ],
-  };
+    await modules.products.bundleItems.removeBundleItem(productId, index);
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({ product: await getNormalizedProductDetails(productId, context) }),
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: `Error removing bundle item: ${(error as Error).message}`,
+        },
+      ],
+    };
+  }
 };
