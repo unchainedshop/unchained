@@ -78,6 +78,15 @@ import {
 import { productSiblingsHandler, ProductSiblingsSchema } from './productSiblingsHandler.js';
 import { productMediaHandler, ProductMediaSchema } from './productMediaHandler.js';
 import { variationProductsHandler, VariationProductsSchema } from './variationProductsHandler.js';
+import { productVariationsHandler, ProductVariationsSchema } from './productVariationsHandler.js';
+import {
+  addProductBundleItemHandler,
+  AddProductBundleItemSchema,
+} from './addProductBundleItemHandler.js';
+import {
+  removeProductBundleItemHandler,
+  RemoveProductBundleItemSchema,
+} from './removeProductBundleItemHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -300,5 +309,26 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Retrieve all variant products of a configurable product that exactly match the provided combination of variation key-value pairs (e.g., Color: Red, Size: M). You must provide at least one vector. Optionally include inactive variants in the result.',
     VariationProductsSchema,
     async (params) => variationProductsHandler(context, params),
+  );
+
+  server.tool(
+    'product_variations',
+    'Retrieve all defined variation attributes (e.g., Color, Size) and their possible values for a configurable product.',
+    ProductVariationsSchema,
+    async (params) => productVariationsHandler(context, params),
+  );
+
+  server.tool(
+    'product_addBundleItem',
+    'Adds a product as a bundled item to another product. Only works if the target product is of type BUNDLE_PRODUCT. You must provide the ID of the bundle and the ID and quantity of the item to include.',
+    AddProductBundleItemSchema,
+    async (params) => addProductBundleItemHandler(context, params),
+  );
+
+  server.tool(
+    'product_removeBundleItem',
+    'Removes a bundled product from a BUNDLE_PRODUCT using its 0-based index in the bundle list. The product must be of type BUNDLE_PRODUCT.',
+    RemoveProductBundleItemSchema,
+    async (params) => removeProductBundleItemHandler(context, params),
   );
 };
