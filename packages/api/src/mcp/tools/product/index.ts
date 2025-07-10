@@ -77,6 +77,7 @@ import {
 } from './updateProductVariationTextsHandler.js';
 import { productSiblingsHandler, ProductSiblingsSchema } from './productSiblingsHandler.js';
 import { productMediaHandler, ProductMediaSchema } from './productMediaHandler.js';
+import { variationProductsHandler, VariationProductsSchema } from './variationProductsHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -293,5 +294,11 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Retrieve media assets associated with a product, optionally filtered by tags and paginated.',
     ProductMediaSchema,
     async (params) => productMediaHandler(context, params),
+  );
+  server.tool(
+    'product_variationProducts',
+    'Retrieve all variant products of a configurable product that exactly match the provided combination of variation key-value pairs (e.g., Color: Red, Size: M). You must provide at least one vector. Optionally include inactive variants in the result.',
+    VariationProductsSchema,
+    async (params) => variationProductsHandler(context, params),
   );
 };
