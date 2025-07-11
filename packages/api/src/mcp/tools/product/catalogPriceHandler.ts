@@ -43,7 +43,7 @@ export async function catalogPriceHandler(context: Context, params: CatalogPrice
             content: [
                 {
                     type: 'text' as const,
-                    text: JSON.stringify({ product, catalogPrice, leveledCatalogPrice }),
+                    text: JSON.stringify({ product, price: catalogPrice, leveledCatalogPrice }),
                 },
             ],
         };
