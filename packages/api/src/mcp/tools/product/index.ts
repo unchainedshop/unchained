@@ -89,6 +89,9 @@ import {
 } from './removeProductBundleItemHandler.js';
 import { productAssignmentsHandler, ProductAssignmentsSchema } from './productAssignmentsHandler.js';
 import { productBundleItemsHandler, ProductBundleItemsSchema } from './productBundleItemsHandler.js';
+import { simulatedPriceRangeHandler, SimulatedPriceRangeSchema } from './simulatedPriceRangeHandler.js';
+import { simulatedPriceHandler, SimulatedPriceSchema } from './simulatedPriceHandler.js';
+import { catalogPriceHandler, CatalogPriceSchema } from './catalogPriceHandler.js';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -179,7 +182,7 @@ export const registerProductTools = (server: McpServer, context: Context) => {
   );
   server.tool(
     'product_updatePlan',
-    'Update the plan details for a PLAN_PRODUCT type product',
+    'Update the subscription plan configuration for a product of type PLAN. This includes usage calculation type (LICENSED or METERED), billing interval settings, and optional trial period configuration. This operation is only valid for products with type PLAN_PRODUCT.',
     UpdateProductPlanSchema,
     async (params) => updateProductPlanHandler(context, params),
   );
@@ -346,5 +349,25 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Retrieve all bundle items from a product of type BUNDLE. Each item includes the configuration and quantity.',
     ProductBundleItemsSchema,
     async (params) => productBundleItemsHandler(context, params),
+  );
+
+  server.tool(
+    'product_simulatedPriceRange',
+    'Simulate the price range for a CONFIGURABLE_PRODUCT and its variant combinations based on quantity, variation selections, and pricing rules. Only applicable to configurable products.',
+    SimulatedPriceRangeSchema,
+    async (params) => simulatedPriceRangeHandler(context, params),
+  );
+  server.tool(
+    'product_simulatedPrice',
+    'Simulate the price for a product given a complete configuration vector and quantity. Useful for previewing dynamic pricing rules.',
+    SimulatedPriceSchema,
+    async (params) => simulatedPriceHandler(context, params),
+  );
+
+  server.tool(
+    'product_catalogPrice',
+    'Retrieve the catalog price for any product type, optionally for a specific quantity and currency.',
+    CatalogPriceSchema,
+    async (params) => catalogPriceHandler(context, params),
   );
 };

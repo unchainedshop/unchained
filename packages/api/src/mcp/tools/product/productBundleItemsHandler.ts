@@ -1,5 +1,6 @@
 import { Context } from '../../../context.js';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
+import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
 import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
@@ -18,7 +19,7 @@ export const productBundleItemsHandler = async (context: Context, params: Produc
 
   log('handler productBundleItemsHandler', { userId, params });
   try {
-    const product = await modules.products.findProduct({ productId });
+    const product = await getNormalizedProductDetails(productId, context);
     if (!product) throw new ProductNotFoundError({ productId });
 
     if (product.type !== ProductTypes.BundleProduct) {
@@ -54,7 +55,7 @@ export const productBundleItemsHandler = async (context: Context, params: Produc
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ bundleItems: normalizedBundleItems }),
+          text: JSON.stringify({ product, bundleItems: normalizedBundleItems }),
         },
       ],
     };

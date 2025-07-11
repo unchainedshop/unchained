@@ -4,6 +4,7 @@ import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { z } from 'zod';
 import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
 
 export const ProductAssignmentsSchema = {
   productId: z
@@ -26,7 +27,7 @@ export const productAssignmentsHandler = async (context: Context, params: Produc
 
   log('handler productAssignmentsHandler', { userId, params });
   try {
-    const product = await modules.products.findProduct({ productId });
+    const product = await getNormalizedProductDetails(productId, context);
     if (!product) throw new ProductNotFoundError({ productId });
 
     if (product.type !== ProductTypes.ConfigurableProduct) {
@@ -66,7 +67,7 @@ export const productAssignmentsHandler = async (context: Context, params: Produc
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ assignments: normalizedAssignments }),
+          text: JSON.stringify({ product, assignments: normalizedAssignments }),
         },
       ],
     };
