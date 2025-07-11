@@ -1,7 +1,6 @@
 import { Context } from '../../../context.js';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
-import normalizeMediaUrl from '../../utils/normalizeMediaUrl.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { z } from 'zod';
@@ -14,12 +13,12 @@ export const ProductBundleItemsZodSchema = z.object(ProductBundleItemsSchema);
 export type ProductBundleItemsParams = z.infer<typeof ProductBundleItemsZodSchema>;
 
 export const productBundleItemsHandler = async (context: Context, params: ProductBundleItemsParams) => {
-  const { modules, userId, loaders, locale } = context;
+  const { modules, userId } = context;
   const { productId } = params;
 
   log('handler productBundleItemsHandler', { userId, params });
   try {
-    const product = await getNormalizedProductDetails(productId, context);
+    const product = await modules.products.findProduct({ productId });
     if (!product) throw new ProductNotFoundError({ productId });
 
     if (product.type !== ProductTypes.BundleProduct) {
@@ -30,32 +29,11 @@ export const productBundleItemsHandler = async (context: Context, params: Produc
       });
     }
 
-    const normalizedBundleItems = await Promise.all(
-      (product.bundleItems || []).map(async (item) => {
-        const product = await loaders.productLoader.load({
-          productId: item.productId,
-        });
-        const productMedias = await modules.products.media.findProductMedias({ productId: product._id });
-        const media = await normalizeMediaUrl(productMedias, context);
-        const texts = await loaders.productTextLoader.load({
-          productId: product._id,
-          locale,
-        });
-        return {
-          product: {
-            ...product,
-            media,
-            texts,
-          },
-          ...item,
-        };
-      }),
-    );
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ product, bundleItems: normalizedBundleItems }),
+          text: JSON.stringify({ product: await getNormalizedProductDetails(productId, context) }),
         },
       ],
     };

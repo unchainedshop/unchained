@@ -366,7 +366,7 @@ export const registerProductTools = (server: McpServer, context: Context) => {
 
   server.tool(
     'product_catalogPrice',
-    'Retrieve the catalog price for any product type, optionally for a specific quantity and currency.',
+    'Retrieve the catalog price for any product type, optionally for a specific quantity and currency. when ask for product price without specifying what, always use this tool',
     CatalogPriceSchema,
     async (params) => catalogPriceHandler(context, params),
   );

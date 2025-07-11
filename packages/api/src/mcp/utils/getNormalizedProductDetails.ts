@@ -13,10 +13,37 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     locale,
   });
   let variations = [];
+  let bundleItems = [];
   if (product.type === ProductTypes.ConfigurableProduct)
     variations = await context.modules.products.variations.findProductVariations({
       productId: product._id,
     });
+
+  if (product.type === ProductTypes.BundleProduct) {
+    bundleItems = await Promise.all(
+      (product.bundleItems || []).map(async (item) => {
+        const bundleItemProduct = await loaders.productLoader.load({
+          productId: item.productId,
+        });
+        const productMedias = await modules.products.media.findProductMedias({
+          productId: item.productId,
+        });
+        const media = await normalizeMediaUrl(productMedias, context);
+        const texts = await loaders.productTextLoader.load({
+          productId: item.productId,
+          locale,
+        });
+        return {
+          product: {
+            ...bundleItemProduct,
+            media,
+            texts,
+          },
+          ...item,
+        };
+      }),
+    );
+  }
 
   // Get pricing information
   let pricing = null;
@@ -37,6 +64,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     texts,
     media,
     variations,
+    bundleItems,
     pricing,
   };
 }

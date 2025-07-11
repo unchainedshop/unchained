@@ -52,6 +52,7 @@ export async function catalogPriceHandler(context: Context, params: CatalogPrice
       content: [
         {
           type: 'text' as const,
+
           text: `Error retrieving catalog price: ${(error as Error).message}`,
         },
       ],
