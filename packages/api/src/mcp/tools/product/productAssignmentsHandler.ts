@@ -44,10 +44,12 @@ export const productAssignmentsHandler = async (context: Context, params: Produc
         const product = await loaders.productLoader.load({
           productId: assignment.productId,
         });
-        const productMedias = await modules.products.media.findProductMedias({ productId: product._id });
+        const productMedias = await modules.products.media.findProductMedias({
+          productId: assignment.productId,
+        });
         const media = await normalizeMediaUrl(productMedias, context);
         const texts = await loaders.productTextLoader.load({
-          productId,
+          productId: assignment.productId,
           locale,
         });
         return {

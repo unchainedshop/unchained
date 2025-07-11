@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 import { log } from '@unchainedshop/logger';
+import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
 
 export const ProductVariationsSchema = {
   productId: z.string().min(1).describe('ID of the CONFIGURABLE_PRODUCT to retrieve variations from'),
@@ -17,7 +18,7 @@ export const productVariationsHandler = async (context: Context, params: Product
   try {
     log('handler productVariationsHandler', { userId, productId });
 
-    const product = await modules.products.findProduct({ productId });
+    const product = await getNormalizedProductDetails(productId, context);
     if (!product) throw new ProductNotFoundError({ productId });
 
     if (product.type !== 'CONFIGURABLE_PRODUCT') {
@@ -35,7 +36,7 @@ export const productVariationsHandler = async (context: Context, params: Product
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ variations }),
+          text: JSON.stringify({ product, variations }),
         },
       ],
     };

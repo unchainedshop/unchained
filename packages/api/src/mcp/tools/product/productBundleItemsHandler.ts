@@ -38,7 +38,7 @@ export const productBundleItemsHandler = async (context: Context, params: Produc
         const productMedias = await modules.products.media.findProductMedias({ productId: product._id });
         const media = await normalizeMediaUrl(productMedias, context);
         const texts = await loaders.productTextLoader.load({
-          productId,
+          productId: product._id,
           locale,
         });
         return {
