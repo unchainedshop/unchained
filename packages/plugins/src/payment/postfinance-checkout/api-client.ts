@@ -82,7 +82,7 @@ export class PostFinanceApiClient {
     if (contentType && contentType.includes('application/json')) {
       try {
         return JSON.parse(responseText);
-      } catch (e) {
+      } catch {
         // If JSON parsing fails but content-type is json, return as text
         // This handles PostFinance's payment-page-url endpoint that returns plain text with json content-type
         return responseText as any;
