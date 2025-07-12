@@ -1,7 +1,7 @@
 export default [
   /* GraphQL */ `
     """
-    A Bundle product consists of multiple configured products
+    A Bundle product consists of multiple products
     """
     type BundleProduct implements Product @cacheControl(maxAge: 180) {
       _id: ID!
