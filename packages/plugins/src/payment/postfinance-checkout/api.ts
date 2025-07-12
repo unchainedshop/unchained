@@ -93,10 +93,10 @@ export const confirmDeferredTransaction = async (transactionId: string): Promise
 
 export const getPaymentPageUrl = async (transactionId: number): Promise<string> => {
   const client = getApiClient();
-  const result = await client.get<{ paymentPageUrl: string }>(
+  const result = await client.get<string>(
     `/transaction-payment-page/payment-page-url?spaceId=${SPACE_ID}&id=${transactionId}`,
   );
-  return result.paymentPageUrl;
+  return result;
 };
 
 export const getLightboxJavascriptUrl = async (transactionId: number): Promise<string> => {

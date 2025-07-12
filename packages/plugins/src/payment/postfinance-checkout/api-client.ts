@@ -27,7 +27,11 @@ export class PostFinanceApiClient {
     const timestamp = Math.floor(Date.now() / 1000).toString();
     const userId = this.config.userId.toString();
 
-    const dataToSign = [version, userId, timestamp, method, path].join('|');
+    // Use path as-is since it already includes /api from the URL
+    const resourcePath = path;
+
+    const dataToSign = [version, userId, timestamp, method, resourcePath].join('|');
+    
     const macValue = crypto
       .createHmac('sha512', Buffer.from(this.config.apiSecret, 'base64'))
       .update(dataToSign, 'utf8')
@@ -43,8 +47,10 @@ export class PostFinanceApiClient {
 
   async request<T>(method: string, endpoint: string, body?: any): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    const path = new URL(url).pathname;
-    const macHeaders = this.generateMacHeaders(method, path);
+    const urlObj = new URL(url);
+    // Include both pathname and search (query parameters) for MAC signature
+    const pathWithQuery = urlObj.pathname + urlObj.search;
+    const macHeaders = this.generateMacHeaders(method, pathWithQuery);
 
     const headers: Record<string, string> = {
       ...macHeaders,
@@ -70,7 +76,20 @@ export class PostFinanceApiClient {
       );
     }
 
-    return response.json();
+    const responseText = await response.text();
+    const contentType = response.headers.get('content-type');
+    
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        return JSON.parse(responseText);
+      } catch (e) {
+        // If JSON parsing fails but content-type is json, return as text
+        // This handles PostFinance's payment-page-url endpoint that returns plain text with json content-type
+        return responseText as any;
+      }
+    } else {
+      return responseText as any;
+    }
   }
 
   get<T>(endpoint: string): Promise<T> {
