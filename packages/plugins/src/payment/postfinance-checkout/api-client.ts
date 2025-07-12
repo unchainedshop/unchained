@@ -31,7 +31,7 @@ export class PostFinanceApiClient {
     const resourcePath = path;
 
     const dataToSign = [version, userId, timestamp, method, resourcePath].join('|');
-    
+
     const macValue = crypto
       .createHmac('sha512', Buffer.from(this.config.apiSecret, 'base64'))
       .update(dataToSign, 'utf8')
@@ -78,7 +78,7 @@ export class PostFinanceApiClient {
 
     const responseText = await response.text();
     const contentType = response.headers.get('content-type');
-    
+
     if (contentType && contentType.includes('application/json')) {
       try {
         return JSON.parse(responseText);

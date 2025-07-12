@@ -51,7 +51,7 @@ export const createTransaction = async (transaction: TransactionCreate): Promise
 export const voidTransaction = async (transactionId: string): Promise<boolean> => {
   const client = getApiClient();
   try {
-    await client.post(`/transaction-void/void?spaceId=${SPACE_ID}&transactionId=${transactionId}`, {});
+    await client.post(`/transaction-void/voidOnline?spaceId=${SPACE_ID}&id=${transactionId}`, {});
     return true;
   } catch {
     return false;
@@ -101,16 +101,16 @@ export const getPaymentPageUrl = async (transactionId: number): Promise<string> 
 
 export const getLightboxJavascriptUrl = async (transactionId: number): Promise<string> => {
   const client = getApiClient();
-  const result = await client.get<{ javascriptUrl: string }>(
+  const result = await client.get<string>(
     `/transaction-lightbox/javascript-url?spaceId=${SPACE_ID}&id=${transactionId}`,
   );
-  return result.javascriptUrl;
+  return result;
 };
 
 export const getIframeJavascriptUrl = async (transactionId: number): Promise<string> => {
   const client = getApiClient();
-  const result = await client.get<{ javascriptUrl: string }>(
+  const result = await client.get<string>(
     `/transaction-iframe/javascript-url?spaceId=${SPACE_ID}&id=${transactionId}`,
   );
-  return result.javascriptUrl;
+  return result;
 };
