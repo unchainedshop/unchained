@@ -8,7 +8,6 @@ import {
   PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
-import * as pf from 'postfinancecheckout';
 
 import {
   confirmDeferredTransaction,
@@ -23,8 +22,15 @@ import {
 } from './api.js';
 import { orderIsPaid } from './utils.js';
 import { CompletionModes, IntegrationModes, SignResponse } from './types.js';
-
-const { PostFinanceCheckout } = pf;
+import {
+  TransactionCreate,
+  LineItem,
+  LineItemType,
+  TokenizationMode,
+  TransactionCompletionBehavior,
+  TransactionState,
+  CreationEntityState,
+} from './api-types.js';
 
 const {
   PFCHECKOUT_SPACE_ID,
@@ -92,7 +98,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         if (!credentials.meta) return false;
         const { linkedSpaceId } = credentials.meta;
         const tokenData = await getToken(linkedSpaceId, credentials.token);
-        return tokenData.state === PostFinanceCheckout.model.CreationEntityState.ACTIVE;
+        return tokenData.state === CreationEntityState.ACTIVE;
       },
 
       sign: async (transactionContext: any = {}) => {
@@ -107,37 +113,38 @@ const PostfinanceCheckout: IPaymentAdapter = {
         });
 
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
-        const transaction = new PostFinanceCheckout.model.TransactionCreate();
-        const userId = order?.userId || context?.userId;
-        transaction.currency = order.currencyCode;
-        transaction.metaData = {
-          orderPaymentId: orderPayment._id,
+        const transaction: TransactionCreate = {
+          currency: order.currencyCode,
+          metaData: {
+            orderPaymentId: orderPayment._id,
+          },
+          successUrl: `${transactionContext?.successUrl || PFCHECKOUT_SUCCESS_URL}?order_id=${
+            orderPayment.orderId
+          }`,
+          failedUrl: `${transactionContext?.failedUrl || PFCHECKOUT_FAILED_URL}?order_id=${
+            orderPayment.orderId
+          }`,
+          customerId: order?.userId || context?.userId,
+          tokenizationMode: TokenizationMode.ALLOW_ONE_CLICK_PAYMENT,
         };
-        transaction.successUrl = `${transactionContext?.successUrl || PFCHECKOUT_SUCCESS_URL}?order_id=${
-          orderPayment.orderId
-        }`;
-        transaction.failedUrl = `${transactionContext?.failedUrl || PFCHECKOUT_FAILED_URL}?order_id=${
-          orderPayment.orderId
-        }`;
-        transaction.customerId = userId;
-        transaction.tokenizationMode =
-          PostFinanceCheckout.model.TokenizationMode.ALLOW_ONE_CLICK_PAYMENT;
+
         if (completionMode === CompletionModes.Immediate) {
-          transaction.completionBehavior =
-            PostFinanceCheckout.model.TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
+          transaction.completionBehavior = TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
         } else if (completionMode === CompletionModes.Deferred) {
-          transaction.completionBehavior =
-            PostFinanceCheckout.model.TransactionCompletionBehavior.COMPLETE_DEFERRED;
+          transaction.completionBehavior = TransactionCompletionBehavior.COMPLETE_DEFERRED;
         }
+
         if (totalAmount) {
-          const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
-          lineItemSum.name = `Bestellung ${orderPayment.orderId}`;
-          lineItemSum.type = PostFinanceCheckout.model.LineItemType.FEE;
-          lineItemSum.quantity = 1;
-          lineItemSum.uniqueId = orderPayment.orderId;
-          lineItemSum.amountIncludingTax = totalAmount / 100;
+          const lineItemSum: LineItem = {
+            name: `Bestellung ${orderPayment.orderId}`,
+            type: LineItemType.FEE,
+            quantity: 1,
+            uniqueId: orderPayment.orderId,
+            amountIncludingTax: totalAmount / 100,
+          };
           transaction.lineItems = [lineItemSum];
         }
+
         const transactionId = await createTransaction(transaction);
         let location = null;
         if (integrationMode === IntegrationModes.PaymentPage) {
@@ -214,7 +221,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        const refund = transaction.state === PostFinanceCheckout.model.TransactionState.FULFILL;
+        const refund = transaction.state === TransactionState.FULFILL;
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currencyCode: order.currencyCode,
@@ -235,7 +242,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        if (transaction.state === PostFinanceCheckout.model.TransactionState.AUTHORIZED) {
+        if (transaction.state === TransactionState.AUTHORIZED) {
           return confirmDeferredTransaction(transactionId);
         }
         return false;
@@ -247,3 +254,6 @@ const PostfinanceCheckout: IPaymentAdapter = {
 };
 
 PaymentDirector.registerAdapter(PostfinanceCheckout);
+
+export * from './types.js';
+export * from './api-types.js';

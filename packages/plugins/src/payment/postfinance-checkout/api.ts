@@ -1,91 +1,57 @@
-import * as pf from 'postfinancecheckout';
+import { PostFinanceApiClient } from './api-client.js';
+import {
+  Transaction,
+  TransactionCreate,
+  TransactionCompletion,
+  Token,
+  RefundCreate,
+  RefundType,
+} from './api-types.js';
 
-const { PostFinanceCheckout } = pf;
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
 const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID as string, 10);
 const USER_ID = parseInt(PFCHECKOUT_USER_ID as string, 10);
 
-const getConfig = () => {
-  return {
-    space_id: SPACE_ID,
-    user_id: USER_ID,
-    api_secret: PFCHECKOUT_SECRET,
-  };
+let apiClient: PostFinanceApiClient;
+
+const getApiClient = () => {
+  if (!apiClient) {
+    apiClient = new PostFinanceApiClient({
+      spaceId: SPACE_ID,
+      userId: USER_ID,
+      apiSecret: PFCHECKOUT_SECRET as string,
+    });
+  }
+  return apiClient;
 };
 
-const getTransactionService = () => {
-  return new PostFinanceCheckout.api.TransactionService(getConfig());
+export const getTransaction = async (transactionId: string): Promise<Transaction> => {
+  const client = getApiClient();
+  return client.get<Transaction>(`/transaction/read?spaceId=${SPACE_ID}&id=${transactionId}`);
 };
 
-const getTransactionCompletionService = () => {
-  return new PostFinanceCheckout.api.TransactionCompletionService(getConfig());
-};
-
-const getTransactionVoidService = () => {
-  return new PostFinanceCheckout.api.TransactionVoidService(getConfig());
-};
-
-const getRefundService = () => {
-  return new PostFinanceCheckout.api.RefundService(getConfig());
-};
-
-const getTransactionPaymentPageService = () => {
-  return new PostFinanceCheckout.api.TransactionPaymentPageService(getConfig());
-};
-
-const getTransactionIframeService = () => {
-  return new PostFinanceCheckout.api.TransactionIframeService(getConfig());
-};
-
-const getTransactionLightboxService = () => {
-  return new PostFinanceCheckout.api.TransactionLightboxService(getConfig());
-};
-
-const getTokenService = () => {
-  return new PostFinanceCheckout.api.TokenService(getConfig());
-};
-
-export const getTransaction = async (
-  transactionId: string,
-): Promise<pf.PostFinanceCheckout.model.Transaction> => {
-  const transactionService = getTransactionService();
-  const transaction = await transactionService.read(SPACE_ID, parseInt(transactionId, 10));
-  return transaction.body;
-};
-
-export const getTransactionCompletion = async (
-  entityId: string,
-): Promise<pf.PostFinanceCheckout.model.TransactionCompletion> => {
-  const transactionCompletionService = getTransactionCompletionService();
-  const transactionCompletion = await transactionCompletionService.read(
-    SPACE_ID,
-    parseInt(entityId, 10),
+export const getTransactionCompletion = async (entityId: string): Promise<TransactionCompletion> => {
+  const client = getApiClient();
+  return client.get<TransactionCompletion>(
+    `/transaction-completion/read?spaceId=${SPACE_ID}&id=${entityId}`,
   );
-  return transactionCompletion.body;
 };
 
-export const getToken = async (
-  spaceId: number,
-  tokenId: number,
-): Promise<pf.PostFinanceCheckout.model.Token> => {
-  const tokenService = getTokenService();
-  const token = await tokenService.read(spaceId || SPACE_ID, tokenId);
-  return token.body;
+export const getToken = async (spaceId: number, tokenId: number): Promise<Token> => {
+  const client = getApiClient();
+  return client.get<Token>(`/token/read?spaceId=${spaceId || SPACE_ID}&id=${tokenId}`);
 };
 
-export const createTransaction = async (
-  transaction: pf.PostFinanceCheckout.model.TransactionCreate,
-): Promise<number | null> => {
-  const transactionService = getTransactionService();
-  const transactionCreateRes = await transactionService.create(SPACE_ID, transaction);
-  const transactionCreate = transactionCreateRes.body;
-  return transactionCreate.id || null;
+export const createTransaction = async (transaction: TransactionCreate): Promise<number | null> => {
+  const client = getApiClient();
+  const result = await client.post<Transaction>(`/transaction/create?spaceId=${SPACE_ID}`, transaction);
+  return result.id || null;
 };
 
 export const voidTransaction = async (transactionId: string): Promise<boolean> => {
-  const transactionVoidService = getTransactionVoidService();
+  const client = getApiClient();
   try {
-    await transactionVoidService.voidOnline(SPACE_ID, parseInt(transactionId, 10));
+    await client.post(`/transaction-void/void?spaceId=${SPACE_ID}&transactionId=${transactionId}`, {});
     return true;
   } catch {
     return false;
@@ -97,15 +63,15 @@ export const refundTransaction = async (
   orderId: string,
   amount: number,
 ): Promise<boolean> => {
-  const refundService = getRefundService();
-  const refund: pf.PostFinanceCheckout.model.RefundCreate = {
+  const client = getApiClient();
+  const refund: RefundCreate = {
     transaction: parseInt(transactionId, 10),
     externalId: orderId,
     amount,
-    type: PostFinanceCheckout.model.RefundType.MERCHANT_INITIATED_ONLINE,
+    type: RefundType.MERCHANT_INITIATED_ONLINE,
   };
   try {
-    await refundService.refund(SPACE_ID, refund);
+    await client.post(`/refund/refund?spaceId=${SPACE_ID}`, refund);
     return true;
   } catch {
     return false;
@@ -113,9 +79,12 @@ export const refundTransaction = async (
 };
 
 export const confirmDeferredTransaction = async (transactionId: string): Promise<boolean> => {
-  const transactionCompletionService = getTransactionCompletionService();
+  const client = getApiClient();
   try {
-    await transactionCompletionService.completeOnline(SPACE_ID, parseInt(transactionId, 10));
+    await client.post(
+      `/transaction-completion/completeOnline?spaceId=${SPACE_ID}&transactionId=${transactionId}`,
+      {},
+    );
     return true;
   } catch {
     return false;
@@ -123,19 +92,25 @@ export const confirmDeferredTransaction = async (transactionId: string): Promise
 };
 
 export const getPaymentPageUrl = async (transactionId: number): Promise<string> => {
-  const transactionPaymentPageService = getTransactionPaymentPageService();
-  const paymentPageUrl = await transactionPaymentPageService.paymentPageUrl(SPACE_ID, transactionId);
-  return paymentPageUrl.body;
+  const client = getApiClient();
+  const result = await client.get<{ paymentPageUrl: string }>(
+    `/transaction-payment-page/payment-page-url?spaceId=${SPACE_ID}&id=${transactionId}`,
+  );
+  return result.paymentPageUrl;
 };
 
 export const getLightboxJavascriptUrl = async (transactionId: number): Promise<string> => {
-  const transactionLightboxService = getTransactionLightboxService();
-  const javascriptUrl = await transactionLightboxService.javascriptUrl(SPACE_ID, transactionId);
-  return javascriptUrl.body;
+  const client = getApiClient();
+  const result = await client.get<{ javascriptUrl: string }>(
+    `/transaction-lightbox/javascript-url?spaceId=${SPACE_ID}&id=${transactionId}`,
+  );
+  return result.javascriptUrl;
 };
 
 export const getIframeJavascriptUrl = async (transactionId: number): Promise<string> => {
-  const transactionIframeService = getTransactionIframeService();
-  const javascriptUrl = await transactionIframeService.javascriptUrl(SPACE_ID, transactionId);
-  return javascriptUrl.body;
+  const client = getApiClient();
+  const result = await client.get<{ javascriptUrl: string }>(
+    `/transaction-iframe/javascript-url?spaceId=${SPACE_ID}&id=${transactionId}`,
+  );
+  return result.javascriptUrl;
 };

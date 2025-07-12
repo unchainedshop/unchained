@@ -64,7 +64,6 @@
     "nodemailer": ">= 6.9 < 8",
     "open": "10.x",
     "p-memoize": "7.x",
-    "postfinancecheckout": ">= 4.5.0",
     "stripe": ">= 17 < 19",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
@@ -112,9 +111,6 @@
     "p-memoize": {
       "optional": true
     },
-    "postfinancecheckout": {
-      "optional": true
-    },
     "stripe": {
       "optional": true
     },
@@ -142,7 +138,6 @@
     "nodemailer": "^7.0.3",
     "open": "^10.1.2",
     "p-memoize": "^7.1.1",
-    "postfinancecheckout": "^4.7.0",
     "stripe": "^18.2.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
