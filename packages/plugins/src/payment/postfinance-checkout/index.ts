@@ -40,7 +40,7 @@ const {
   PFCHECKOUT_FAILED_URL,
 } = process.env;
 
-const logger = createLogger('unchained:core-payment:postfinance');
+const logger = createLogger('unchained:core-payment:postfinance-checkout');
 
 const newError = ({ code, message }: { code: string; message: string }) => {
   const error = new Error(message);

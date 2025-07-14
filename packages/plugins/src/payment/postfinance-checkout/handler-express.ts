@@ -3,7 +3,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { WebhookData } from './types.js';
 import { getTransaction, getTransactionCompletion } from './api.js';
 
-const logger = createLogger('unchained:core-payment:postfinance-checkout');
+const logger = createLogger('unchained:core-payment:postfinance-checkout:handler');
 
 export const postfinanceCheckoutHandler = async (req, res) => {
   const context = req.unchainedContext as Context;
@@ -13,7 +13,7 @@ export const postfinanceCheckoutHandler = async (req, res) => {
     try {
       const transactionCompletion = await getTransactionCompletion(data.entityId as unknown as string);
       const transaction = await getTransaction(
-        transactionCompletion.linkedTransaction as unknown as string,
+        transactionCompletion ? (transactionCompletion as any).linkedTransaction : data.entityId,
       );
       const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
       const orderPayment = await modules.orders.payments.findOrderPayment({
@@ -27,19 +27,17 @@ export const postfinanceCheckoutHandler = async (req, res) => {
         },
       });
       logger.info(
-        `PostFinance Checkout Webhook: Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
+        `Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
       );
       res.writeHead(200);
       res.end(`Order marked as paid: ${order.orderNumber}`);
     } catch (e) {
-      logger.error(`PostFinance Checkout Webhook: Unchained rejected to checkout with message`, e);
+      logger.error(e);
       res.writeHead(500);
       res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
     }
   } else {
-    logger.error(
-      `PostFinance Checkout Webhook: Received unknown listenerEntityTechnicalName ${data.listenerEntityTechnicalName}`,
-    );
+    logger.error(`Received unknown listenerEntityTechnicalName ${data.listenerEntityTechnicalName}`);
     res.writeHead(404);
     res.end();
   }

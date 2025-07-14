@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/logger",
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "main": "lib/logger-index.js",
   "types": "lib/logger-index.d.ts",
   "type": "module",
@@ -37,7 +37,7 @@
     "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.0.13",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

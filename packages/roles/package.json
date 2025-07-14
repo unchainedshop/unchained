@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/roles",
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "description": "Roles package for unchained engine",
   "main": "lib/roles-index.js",
   "types": "lib/roles-index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.0.13",
     "typescript": "^5.8.3"
   }
 }

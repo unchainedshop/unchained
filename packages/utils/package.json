@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/utils",
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "main": "lib/utils-index.js",
   "types": "lib/utils-index.d.ts",
   "type": "module",
@@ -32,7 +32,7 @@
     "resolve-accept-language": "^3.1.11"
   },
   "devDependencies": {
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.0.13",
     "typescript": "^5.8.3"
   }
 }

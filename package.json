@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -79,21 +79,21 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
-    "@types/node": "^24.0.4",
-    "eslint": "^9.29.0",
+    "@types/node": "^24.0.13",
+    "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
-    "globals": "^16.2.0",
+    "globals": "^16.3.0",
     "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",
     "mongodb": "^6.17.0",
     "mongodb-memory-server": "^10.1.4",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.6.1",
+    "prettier": "^3.6.2",
     "tsx": "^4.20.3",
-    "typedoc": "^0.28.5",
+    "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.0",
+    "typescript-eslint": "^8.36.0",
     "wait-on": "^8.0.3",
     "workspaces-run": "^1.0.2"
   },
@@ -101,6 +101,6 @@
     "@mongodb-js/zstd"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1"
+    "@modelcontextprotocol/sdk": "^1.15.1"
   }
 }

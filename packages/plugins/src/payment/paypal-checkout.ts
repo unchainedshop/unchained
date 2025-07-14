@@ -17,7 +17,7 @@ try {
   /* */
 }
 
-const logger = createLogger('unchained:core-payment');
+const logger = createLogger('unchained:core-payment:paypal-checkout');
 
 const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = process.env;
 
@@ -79,7 +79,6 @@ const PaypalCheckout: IPaymentAdapter = {
         const { order } = context;
 
         if (!orderID) {
-          logger.warn('Paypal Native Plugin: PRICE MATCH');
           throw new Error('You have to provide orderID in paymentContext');
         }
 
@@ -96,21 +95,17 @@ const PaypalCheckout: IPaymentAdapter = {
           const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;
 
           if (ourTotal === paypalTotal) {
-            logger.info('Paypal Native Plugin: PRICE MATCH');
             return order;
           }
 
-          logger.warn(
-            'Paypal Native Plugin: Missmatch PAYPAL ORDER',
-            JSON.stringify(paypalOrder.result, null, 2),
-          );
+          logger.warn('Missmatch PAYPAL ORDER', JSON.stringify(paypalOrder.result, null, 2));
 
-          logger.debug('Paypal Native Plugin: OUR ORDER', order);
-          logger.debug('Paypal Native Plugin: OUR PRICE', pricing);
+          logger.debug('OUR ORDER', order);
+          logger.debug('OUR PRICE', pricing);
 
           throw new Error(`Payment mismatch`);
         } catch (e) {
-          logger.warn('Paypal Native Plugin: Failed', e);
+          logger.warn(e);
           throw new Error(e);
         }
       },

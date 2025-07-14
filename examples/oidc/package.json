@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-oidc",
   "description": "Keycloak Example",
   "private": true,
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -34,18 +34,18 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
+    "@fastify/multipart": "^9.0.3",
     "@fastify/oauth2": "^8.1.2",
     "@fastify/session": "^11.1.0",
-    "@fastify/multipart": "^9.0.3",
-    "@unchainedshop/admin-ui": "^4.0.18",
+    "@unchainedshop/admin-ui": "^4.0.23",
     "@unchainedshop/platform": "^4.0.0-rc.4",
     "@unchainedshop/plugins": "^4.0.0-rc.4",
     "fastify": "^5.4.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.0.13",
     "mongodb-memory-server": "^10.1.4",
-    "prettier": "^3.6.1",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

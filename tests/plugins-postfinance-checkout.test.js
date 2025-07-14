@@ -256,13 +256,15 @@ test.describe('Plugins: Postfinance Checkout', () => {
             spaceId: PFCHECKOUT_SPACE_ID,
           }),
         });
-        assert.strictEqual(result.status, 200);
-        assert.strictEqual(await result.text(), `Order not marked as paid`);
+        assert.strictEqual(result.status, 500);
+        assert.partialDeepStrictEqual(await result.json(), {
+          name: 'POSTFINANCE_STATE_PENDING',
+        });
         assert.strictEqual(mockedOrderModule.payments.markAsPaid.mock.calls.length, 0);
       },
     );
 
-    test.skip(
+    test(
       'Payment Flow with Webhook Call (PostFinance Checkout) should start a new transaction with webhook call and payment',
       { timeout: 10000 },
       async () => {
@@ -290,16 +292,16 @@ test.describe('Plugins: Postfinance Checkout', () => {
 
         const transactionRes = {
           ...SuccTransactionApiResponse,
+          completedAmount: 300.0,
           metaData: { orderPaymentId: 'pfcheckout-payment' },
         };
 
-        // Call function that is called by webhook with modified transaction to mock response
-        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule); // FIXME: Fix this test
+        const hookRes = await orderIsPaid(SimpleOrder, transactionRes);
         assert.strictEqual(hookRes, true);
       },
     );
 
-    test.skip(
+    test(
       'Payment Flow with Webhook Call (PostFinance Checkout) should start a new transaction with webhook call and too low payment',
       { timeout: 10000 },
       async () => {
@@ -332,8 +334,7 @@ test.describe('Plugins: Postfinance Checkout', () => {
           completedAmount: 200.0,
         };
 
-        // Call function that is called by webhook with modified transaction to mock response
-        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule); // FIXME: Fix this test
+        const hookRes = await orderIsPaid(SimpleOrder, transactionRes);
         assert.strictEqual(hookRes, false);
       },
     );

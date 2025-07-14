@@ -3,7 +3,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { AppleTransactionsModule } from './module.js';
 import { verifyReceipt } from './verify-receipt.js';
 
-const logger = createLogger('unchained:core-payment:iap');
+const logger = createLogger('unchained:core-payment:apple-iap');
 
 const { APPLE_IAP_SHARED_SECRET } = process.env;
 

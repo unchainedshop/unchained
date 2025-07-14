@@ -6,7 +6,7 @@ import { ProductPriceRate } from '@unchainedshop/core-products';
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_MAX_RATE_AGE = '360' } = process.env;
 
-const logger = createLogger('unchained:core-payment:cryptopay');
+const logger = createLogger('unchained:core-payment:cryptopay:handler');
 
 export default async function handleWebhook(
   {

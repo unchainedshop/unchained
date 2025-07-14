@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -45,12 +45,11 @@
     "@unchainedshop/roles": "^4.0.0-rc.4",
     "@unchainedshop/utils": "^4.0.0-rc.4",
     "mustache": "^4.2.0",
-    "safe-stable-stringify": "^2.5.0",
-    "ai": "^4.3.16"
+    "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.6",
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.0.13",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

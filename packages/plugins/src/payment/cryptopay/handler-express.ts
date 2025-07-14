@@ -1,7 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import handleWebhook from './handle-webhook.js';
 
-const logger = createLogger('unchained:core-payment:cryptopay');
+const logger = createLogger('unchained:core-payment:cryptopay:handler');
 
 const cryptopayHandler = async (req, res) => {
   if (req.method === 'POST') {

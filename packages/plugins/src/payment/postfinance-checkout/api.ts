@@ -30,11 +30,9 @@ export const getTransaction = async (transactionId: string): Promise<Transaction
   return client.get<Transaction>(`/transaction/read?spaceId=${SPACE_ID}&id=${transactionId}`);
 };
 
-export const getTransactionCompletion = async (entityId: string): Promise<TransactionCompletion> => {
+export const getTransactionCompletion = async (id: string): Promise<TransactionCompletion> => {
   const client = getApiClient();
-  return client.get<TransactionCompletion>(
-    `/transaction-completion/read?spaceId=${SPACE_ID}&id=${entityId}`,
-  );
+  return client.get<TransactionCompletion>(`/transaction-completion/read?spaceId=${SPACE_ID}&id=${id}`);
 };
 
 export const getToken = async (spaceId: number, tokenId: number): Promise<Token> => {

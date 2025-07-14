@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "4.0.0-rc.5",
+  "version": "4.0.0-rc.6",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
@@ -94,19 +94,19 @@
     "graphql-scalars": "^1.24.2",
     "moniker": "0.1.2",
     "p-memoize": "^7.1.1",
-    "zod": "^3.25.67"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@ethereumjs/util": "^10.0.0",
-    "fastify": "^5.4.0",
     "@fastify/cookie": "^11.0.2",
-    "@fastify/session": "^11.1.0",
     "@fastify/multipart": "^9.0.3",
-    "@modelcontextprotocol/sdk": "^1.13.1",
+    "@fastify/session": "^11.1.0",
+    "@modelcontextprotocol/sdk": "^1.15.1",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.0.13",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
+    "fastify": "^5.4.0",
     "multer": "^2.0.1",
     "passport": "^0.7.0",
     "tsx": "^4.20.3",
