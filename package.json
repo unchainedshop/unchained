@@ -74,8 +74,8 @@
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "tsc --build -w",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
-    "clean": "npm run clean --workspaces",
-    "build": "npm run prepublishOnly --workspaces --if-present"
+    "clean": "tsc --build --clean",
+    "build": "npm run clean && tsc --build"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
