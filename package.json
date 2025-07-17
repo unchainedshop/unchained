@@ -64,13 +64,12 @@
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && mv ./typedocs ./docs/static/types",
     "lint": "eslint --fix --ext=js --ext=ts .",
-    "pretest": "eslint --ext=js --ext=ts .",
     "test": "(cd packages && tsx --test) && run-p -r test:*",
     "test:start-engine": "cd examples/kitchensink && npm run integration-test",
     "test:run-test": "node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-global-setup=tests/helpers.js --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
-    "dev:watch-packages": "tsc --build -w",
+    "dev:watch": "tsc --build -w",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "tsc --build --clean",
     "build": "npm run clean && tsc --build"
