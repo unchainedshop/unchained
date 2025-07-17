@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "types": ["node"]
+    "types": ["node"],
+    "composite": true
   }
 }
