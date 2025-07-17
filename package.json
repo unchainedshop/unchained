@@ -72,7 +72,7 @@
     "integration-test:run-test": "node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-global-setup=tests/helpers.js --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
-    "dev:watch-packages": "tsc -w",
+    "dev:watch-packages": "tsc --build -w",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "npm run clean --workspaces",
     "build": "npm run prepublishOnly --workspaces --if-present"
