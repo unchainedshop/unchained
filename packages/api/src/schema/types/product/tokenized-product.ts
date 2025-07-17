@@ -42,6 +42,7 @@ export default [
       ): Price @cacheControl(scope: PRIVATE, maxAge: 10)
       simulatedStocks(referenceDate: Timestamp): [Stock!] @cacheControl(scope: PRIVATE, maxAge: 10)
       assortmentPaths(forceLocale: Locale): [ProductAssortmentPath!]!
+      proxies: [ConfigurableOrBundleProduct!]!
       siblings(
         assortmentId: ID
         limit: Int = 10

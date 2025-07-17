@@ -13,6 +13,10 @@ export const Product = {
     return invertedProductTypes[product.type];
   },
 
+  async proxies(product: ProductType, _: never, context: Context): Promise<ProductType[]> {
+    return context.loaders.productProxiesLoader.load({ productId: product._id });
+  },
+
   async assortmentPaths(
     product: ProductType,
     params: {

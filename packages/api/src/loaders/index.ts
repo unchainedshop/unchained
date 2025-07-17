@@ -14,6 +14,7 @@ import productLoaderBySKU from './productLoaderBySKU.js';
 import productTextLoader from './productTextLoader.js';
 import productMediaTextLoader from './productMediaTextLoader.js';
 import productMediasLoader from './productMediasLoader.js';
+import productProxiesLoader from './productProxiesLoader.js';
 import fileLoader from './fileLoader.js';
 import userLoader from './userLoader.js';
 import countryLoader from './countryLoader.js';
@@ -42,6 +43,7 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     productTextLoader: productTextLoader(unchainedAPI),
     productMediaTextLoader: productMediaTextLoader(unchainedAPI),
     productMediasLoader: productMediasLoader(unchainedAPI),
+    productProxiesLoader: productProxiesLoader(unchainedAPI),
 
     fileLoader: fileLoader(unchainedAPI),
 

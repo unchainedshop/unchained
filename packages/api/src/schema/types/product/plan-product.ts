@@ -51,6 +51,7 @@ export default [
         configuration: [ProductConfigurationParameterInput!]
       ): Price @cacheControl(scope: PRIVATE)
       assortmentPaths(forceLocale: Locale): [ProductAssortmentPath!]!
+      proxies: [ConfigurableOrBundleProduct!]!
       siblings(
         assortmentId: ID
         limit: Int = 10

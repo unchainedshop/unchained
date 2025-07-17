@@ -31,6 +31,7 @@ export default [
         referenceDate: Timestamp
       ): [Stock!] @cacheControl(scope: PRIVATE, maxAge: 10)
       assortmentPaths: [ProductAssortmentPath!]!
+      proxies: [ConfigurableOrBundleProduct!]!
       siblings(
         assortmentId: ID
         limit: Int = 10

@@ -52,6 +52,7 @@ import { ProductVariation } from './product/product-variation-types.js';
 import { ProductVariationAssignment } from './product/product-variation-assignment-types.js';
 import { ProductVariationAssignmentVector } from './product/product-variation-assignment-vector.js';
 import { ProductVariationOption } from './product/product-variation-option-types.js';
+import { ConfigurableOrBundleProduct } from './product/product-configurable-or-bundle-product-types.js';
 import { Quotation } from './quotation-types.js';
 import { Shop } from './shop-types.js';
 import { SimpleProduct } from './product/product-simple-types.js';
@@ -123,6 +124,7 @@ const types = {
   ProductVariationAssignmentVector,
   ProductVariationOption,
   ProductSearchResult,
+  ConfigurableOrBundleProduct,
   Quotation,
   Shop,
   SimpleProduct,

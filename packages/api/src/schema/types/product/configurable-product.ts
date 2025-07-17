@@ -73,6 +73,7 @@ export default [
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
       texts(forceLocale: Locale): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!
+      proxies: [ConfigurableOrBundleProduct!]!
       siblings(
         assortmentId: ID
         limit: Int = 10

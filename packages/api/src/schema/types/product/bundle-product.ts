@@ -22,6 +22,7 @@ export default [
       ): [ProductReview!]!
       reviewsCount(queryString: String): Int!
       assortmentPaths: [ProductAssortmentPath!]!
+      proxies: [ConfigurableOrBundleProduct!]!
       siblings(
         assortmentId: ID
         limit: Int = 10

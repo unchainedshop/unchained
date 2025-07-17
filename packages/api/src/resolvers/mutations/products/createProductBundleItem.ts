@@ -2,7 +2,12 @@ import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 import { ProductBundleItem } from '@unchainedshop/core-products';
-import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
+import {
+  ProductNotFoundError,
+  InvalidIdError,
+  ProductWrongTypeError,
+  CyclicProductBundlingNotSupportedError,
+} from '../../../errors.js';
 
 export default async function createProductBundleItem(
   root: never,
@@ -24,8 +29,13 @@ export default async function createProductBundleItem(
       required: ProductTypes.BundleProduct,
     });
 
-  if (!(await modules.products.productExists({ productId: item.productId })))
-    throw new ProductNotFoundError({ productId: item.productId });
+  const itemProduct = await modules.products.findProduct({ productId: item.productId });
+  if (!itemProduct) throw new ProductNotFoundError({ productId: item.productId });
+
+  if (itemProduct._id === product._id)
+    throw new CyclicProductBundlingNotSupportedError({
+      productId: itemProduct._id,
+    });
 
   await modules.products.bundleItems.addBundleItem(productId, item);
 
