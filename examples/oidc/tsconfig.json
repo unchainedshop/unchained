@@ -19,7 +19,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "baseUrl": "." // This must be specified if "paths" is.
+    "baseUrl": ".",
+    "composite": true
   },
   "exclude": ["node_modules", "lib"]
 }

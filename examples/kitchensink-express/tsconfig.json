@@ -19,7 +19,8 @@
     "sourceMap": true,
     "target": "esnext",
     "declarationDir": "./lib",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "composite": true
   },
   "exclude": ["node_modules", "lib"]
 }
