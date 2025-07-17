@@ -1,3 +1,5 @@
 # API (Unchained Engine)
 
-This package exposes unchained as a GraphQL Server (Apollo)
+This package exposes API layers for Unchained:
+- GraphQL (Yoga)
+- MCP
