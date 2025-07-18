@@ -3,7 +3,7 @@ import { subscribe } from '@unchainedshop/events';
 import { Work, WorkData, WorkerEventTypes } from '@unchainedshop/core-worker';
 
 export interface FailedReschedulerParams {
-  transformRetry?: (workData: WorkData) => Promise<WorkData | null>;
+  transformRetry?: (workData: WorkData, lastFailedWork: Work) => Promise<WorkData | null>;
 }
 
 export interface IScheduler<P> {
@@ -55,7 +55,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
           scheduled,
         };
         await unchainedAPI.modules.worker.addWork(
-          transformRetry ? await transformRetry(newWorkData) : newWorkData,
+          transformRetry ? await transformRetry(newWorkData, work) : newWorkData,
         );
       }
     };
