@@ -1,6 +1,12 @@
 version = 1
 
 [[analyzers]]
+name = "shell"
+
+[[analyzers]]
+name = "secrets"
+
+[[analyzers]]
 name = "javascript"
 
   [analyzers.meta]
