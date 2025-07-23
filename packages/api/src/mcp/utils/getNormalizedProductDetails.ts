@@ -14,10 +14,37 @@ export async function getNormalizedProductDetails(productId: string, context: Co
   });
   let variations = [];
   let bundleItems = [];
-  if (product.type === ProductTypes.ConfigurableProduct)
+  let assignments = [];
+  if (product.type === ProductTypes.ConfigurableProduct && product?.proxy?.assignments?.length) {
     variations = await context.modules.products.variations.findProductVariations({
       productId: product._id,
     });
+    assignments = await Promise.all(
+      product?.proxy?.assignments?.map(async (assignment) => {
+        const product = await loaders.productLoader.load({
+          productId: assignment.productId,
+        });
+        const productMedias = await modules.products.media.findProductMedias({
+          productId: assignment.productId,
+        });
+        const media = await normalizeMediaUrl(productMedias, context);
+        const texts = await loaders.productTextLoader.load({
+          productId: assignment.productId,
+          locale,
+        });
+        return {
+          assignment: {
+            ...assignment,
+            product: {
+              ...product,
+              media,
+              texts,
+            },
+          },
+        };
+      }),
+    );
+  }
 
   if (product.type === ProductTypes.BundleProduct) {
     bundleItems = await Promise.all(
@@ -63,6 +90,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     ...product,
     texts,
     media,
+    assignments,
     variations,
     bundleItems,
     pricing,
