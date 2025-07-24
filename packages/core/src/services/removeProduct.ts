@@ -7,6 +7,7 @@ export async function removeProductService(
   { productId }: { productId: string },
 ): Promise<boolean> {
   const product = await this.products.findProduct({ productId });
+
   switch (product.status) {
     case ProductStatus.ACTIVE:
       await this.products.unpublish(product);
@@ -16,6 +17,19 @@ export async function removeProductService(
       {
         await this.bookmarks.deleteByProductId(productId);
         await this.assortments.products.delete(productId);
+
+        for (const assignment of product.proxy?.assignments || []) {
+          await this.products.assignments.removeAssignment(product._id, {
+            vectors: Object.entries(assignment.vector).map(([key, value]) => ({ key, value })),
+          });
+        }
+
+        // TODO: remove all bundle items
+        // for (const bundleItem of product.bundleItems || []) {
+        // await this.products.bundleItems.removeBundleItem(product._id, )
+        // await this.products.bundles.removeItem(product._id, bundleItem.productId);
+        // }
+
         const orderIdsToRecalculate =
           await this.orders.positions.removeProductByIdFromAllOpenPositions(productId);
         await Promise.all(

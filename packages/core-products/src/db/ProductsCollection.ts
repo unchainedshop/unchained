@@ -26,7 +26,7 @@ export interface ProductContractConfiguration {
 }
 
 export interface ProductAssignment {
-  vector: any;
+  vector: Record<string, string>;
   productId: string;
 }
 

@@ -7,6 +7,7 @@ import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-f
 import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
 import { openai } from '@ai-sdk/openai';
+import { useErrorHandler } from '@envelop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
@@ -20,6 +21,18 @@ const fastify = Fastify({
 
 try {
   const platform = await startPlatform({
+    plugins: [useErrorHandler(({ errors }) => {
+      for (const error of errors) {
+        const { code: errorCode } = (error as any).extensions || {};
+        if (!errorCode) continue;
+        (error as any).path?.map((path) => {
+          fastify.log.error(
+            `${error.message} (${path} -> ${error.name})`,
+            (error as any).extensions,
+          );
+        });
+      }
+    })],
     modules: defaultModules,
   });
 
