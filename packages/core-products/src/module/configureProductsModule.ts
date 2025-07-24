@@ -539,6 +539,22 @@ export const configureProductsModule = async ({
       },
     },
 
+    removeAllAssignmentsAndBundleItems: async (productId: string): Promise<Product> => {
+      return Products.findOneAndUpdate(
+        generateDbFilterById(productId),
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $unset: {
+            'proxy.assignments': '1',
+            bundleItems: '1',
+          },
+        },
+        { returnDocument: 'after' },
+      );
+    },
+
     media: productMedia,
     reviews: productReviews,
     variations: productVariations,
