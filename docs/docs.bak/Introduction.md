@@ -5,7 +5,7 @@ description: Overview
 slug: /
 ---
 
-**Unchained Engine is a high-performance, open-source e-commerce framework for Node.js/Bun**
+**Unchained Engine is a high-performance, open-source e-commerce and middleware framework for Node.js/Bun**
 
 ![diagram](./assets/System-Architecture.png)
 

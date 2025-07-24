@@ -1,16 +1,16 @@
 ---
 sidebar_position: 3
-title: Initialize Your Project
-sidebar_label: Initialize Project
+title: Initialize and run your first Unchained Project
+sidebar_label: Initialize and Run
 ---
 
-# Initialize Your Project
+# Initialize and run your first Unchained Project
 
-This guide walks you through creating a new Unchained Engine project and storefront from scratch.
+This guide walks you through creating and runnging a new project on localhost.
 
 ## Project Structure Overview
 
-A typical Unchained project consists of two main services:
+A typical Unchained project consists of two main sub-projects:
 
 ```
 my-shop/
@@ -29,146 +29,71 @@ my-shop/
 
 ### npm init
 
+To start, you can use our npm init helper:
 ```bash
-# Initialize Unchained Engine
+mkdir my-shop && cd my-shop
 npm init @unchainedshop
 ```
 
-When prompted, select:
-- Template: **Full Stack E-Commerce**
+When prompted for the template, select:
+- **Full Stack E-Commerce**
 
 ```bash
 ? What type of template do you want ›
 Full Stack E-Commerce <--
 Storefront
-Unchained Engine 
+Unchained Engine
 ```
 
-### Configure the Engine
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Create environment configuration:**
-   ```bash
-   cp .env.defaults .env
-   ```
-
-3. **Edit `.env` file with your settings:**
-   ```env
-   # MongoDB Connection
-   MONGO_URL=mongodb://localhost:27017/my-shop
-   
-   # Server Configuration
-   PORT=4010
-   ROOT_URL=http://localhost:4010
-   
-   # Admin User (auto-created on first start)
-   SEED_ADMIN_USERNAME=admin@myshop.com
-   SEED_ADMIN_PASSWORD=mysecurepassword
-   
-   # File Upload Directory
-   FILE_STORAGE_PATH=./uploads
-   
-   # Email Settings (optional for development)
-   EMAIL_FROM=shop@myshop.com
-   EMAIL_URL=smtp://localhost:1025
-   ```
+When prompted for the Directory name, just press enter.
 
 ### Start the Engine
 
+1. **Install dependencies:**
 ```bash
-# Start in development mode
+npm install
+```
+
+The install script will install the dependencies in both engine and storefront sub-directories.
+
+2. **Start in development mode:**
+```bash
 npm run dev
 ```
+
+Both services will be started in parallel, the backend and the storefront.
 
 You should see:
 ```
 🚀 Unchained Engine started
+🍎 Storefront: http://localhost:3000
+🔑 Admin UI: http://localhost:4010
 📍 GraphQL Playground: http://localhost:4010/graphql
-🔑 Admin UI: http://localhost:4010/admin
 ```
 
 ### Verify Engine Installation
 
-1. Open http://localhost:4010 in your browser
-2. Click on "GraphQL Playground" to explore the API
-3. Try a simple query:
-   ```graphql
-   query {
-     shopInfo {
-       _id
-       version
-     }
-   }
-   ```
+1. **Configure your Backend**
 
-## Step 2: Create the Storefront
+- Open http://localhost:4010 in your browser
+- Setup your administrator user, the built-in E-Mail preview will popup with a verification link, it's not needed to click it.
+- Go the dashboard and complete the onboarding (essentials)
 
-### Initialize the Storefront
+To have a working checkout, you need:
+- 1 currency
+- 1 country with the default currency set
+- 1 language
+- 1 payment provider (use Invoice -> Invoice)
+- 1 delivery provider (use Shipping -> Manual)
+- 1 simple product in status published with at least one price setup in commerce.
 
-```bash
-# From project root
-cd .. # back to my-shop/
-mkdir storefront && cd storefront
+2. **Verify Checkout on Storefront**
 
-# Initialize Storefront
-npm init @unchainedshop
-```
+- Open http://localhost:3000 in your browser
+- Scroll down, you should see your product
+- Add it to the cart and complete the payment process
+- At the end of the process, the built-in E-Mail preview should show the E-Mail Confirmation
 
-When prompted, select:
-- Template: **Storefront**
-- Package manager: **npm** (or your preference)
-
-### Configure the Storefront
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Create environment configuration:**
-   ```bash
-   cp .env.defaults .env.local
-   ```
-
-3. **Edit `.env.local` file:**
-   ```env
-   # Unchained Engine URL
-   UNCHAINED_ENDPOINT=http://localhost:4010/graphql
-   
-   # Storefront Configuration
-   NEXT_PUBLIC_SITE_URL=http://localhost:3000
-   NEXT_PUBLIC_SITE_TITLE=My Shop
-   
-   # Optional: Connect to demo engine for sample data
-   # UNCHAINED_ENDPOINT=https://engine.unchained.shop/graphql
-   ```
-
-### Start the Storefront
-
-```bash
-# Start in development mode
-npm run dev
-```
-
-The storefront will be available at http://localhost:3000
-
-## Step 3: Connect and Verify
-
-### Test the Connection
-
-1. Open http://localhost:3000 in your browser
-2. You should see the default storefront homepage
-3. Check browser console for any connection errors
-
-### Create Your First User
-
-1. Click "Sign Up" in the storefront
-2. Create a new account
-3. Verify email (check console logs in development)
 
 ## Project Structure Details
 
@@ -218,7 +143,6 @@ Both engine and storefront support hot reloading:
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
-npm test            # Run tests
 npm run lint        # Run linter
 ```
 
@@ -279,9 +203,9 @@ lsof -i :4010
 ```
 
 **MongoDB Connection Failed**
-- Ensure MongoDB is running
-- Check connection string in `.env`
-- Verify database permissions
+- Ensure MongoDB is running by checking engine logs
+- Check connection string in dotenv files
+- Verify database permissions if custom connection string is used
 
 ### Storefront Issues
 
@@ -296,4 +220,4 @@ lsof -i :4010
 
 ## Next Steps
 
-Your Unchained project is now initialized and running! Continue to [Configure Admin UI →](./admin-ui-setup)
+Your Unchained project is now initialized and running and you should see your first confirmed order in the backend.
