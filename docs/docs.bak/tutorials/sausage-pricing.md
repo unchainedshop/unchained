@@ -54,13 +54,7 @@ For the engine environment even though there are many environment variables you 
 SUPPRESS_ENV_ERRORS=
 ```
 
-Next under the root directory of storefront create a `.env` file and add the following environment variable.
-
-```
-UNCHAINED_ENDPOINT=https://localhost:4010/graphql
-```
-
-Not you can customize the above value once you get accustomed to the inner working of unchained.
+Now you can customize the above value once you get accustomed to the inner working of unchained.
 
 Finally, the only thing remaining is firing up unchained sees its work in action. to do so go to the projects root directory and run
 
