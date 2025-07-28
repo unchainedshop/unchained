@@ -81,6 +81,10 @@ export default [
       updated: DateTime
       user: User
     }
+    type OrderStatisticsRecord {
+      date: String!
+      total: Price!
+    }
 
     type OrderStatistics {
       newCount: Int!
@@ -88,6 +92,10 @@ export default [
       rejectCount: Int!
       confirmCount: Int!
       fulfillCount: Int!
+      confirmRecords: [OrderStatisticsRecord!]!
+      checkoutRecords: [OrderStatisticsRecord!]!
+      rejectRecords: [OrderStatisticsRecord!]!
+      newRecords: [OrderStatisticsRecord!]!
     }
   `,
 ];

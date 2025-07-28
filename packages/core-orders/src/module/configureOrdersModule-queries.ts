@@ -10,6 +10,13 @@ export interface OrderReport {
   confirmCount: number;
   fulfillCount: number;
 }
+export interface OrderStatisticsRecord {
+  date: string;
+  total: {
+    amount: number;
+    currency: string;
+  };
+}
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {
@@ -201,6 +208,51 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         limit: 1,
       });
       return !!orderCount;
+    },
+
+    getOrderStatisticsRecordsByDate: async ({
+      field,
+      dateRange,
+    }: {
+      field: 'created' | 'confirmed' | 'ordered' | 'rejected';
+      dateRange?: DateFilterInput;
+    }): Promise<OrderStatisticsRecord[]> => {
+      const match: Record<string, any> = {};
+      if (dateRange?.start || dateRange?.end) {
+        match[field] = {};
+        if (dateRange?.start) match[field].$gte = new Date(dateRange.start);
+        if (dateRange?.end) match[field].$lte = new Date(dateRange.end);
+      } else {
+        match[field] = { $exists: true };
+      }
+
+      return (await Orders.aggregate([
+        { $match: match },
+        {
+          $group: {
+            _id: {
+              date: {
+                $dateToString: { format: '%Y-%m-%d', date: `$${field}` },
+              },
+              currency: '$currencyCode',
+            },
+            total: {
+              $sum: '$total.gross',
+            },
+          },
+        },
+        {
+          $project: {
+            date: '$_id.date',
+            total: {
+              amount: '$total',
+              currency: '$_id.currency',
+            },
+            _id: 0,
+          },
+        },
+        { $sort: { date: 1 } },
+      ]).toArray()) as OrderStatisticsRecord[];
     },
   };
 };
