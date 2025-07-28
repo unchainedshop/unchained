@@ -67,6 +67,7 @@ import { Token } from './token-types.js';
 import { Web3Address } from './web3-address.js';
 import { LoginMethodResponse } from './login-method-response-types.js';
 import { ProductSearchResult } from './product-search-result-types.js';
+import { OrderStatistics } from './order/order-statistics-types.js';
 
 const types = {
   Assortment,
@@ -138,6 +139,7 @@ const types = {
   Media,
   Web3Address,
   LoginMethodResponse,
+  OrderStatistics,
 };
 
 export default types;
