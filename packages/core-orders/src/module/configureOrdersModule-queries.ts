@@ -11,6 +11,13 @@ export interface OrderReport {
   confirmCount: number;
   fulfillCount: number;
 }
+export interface OrderStatisticsRecord {
+  date: string;
+  total: {
+    amount: number;
+    currency: string;
+  };
+}
 
 interface OrderAggregateParams {
   match?: Record<string, any>;
