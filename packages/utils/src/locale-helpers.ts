@@ -26,7 +26,7 @@ export const resolveBestSupported = (
 export const resolveBestCountry = (
   localeCountry: string,
   shopCountry: string,
-  countries: { isoCode: string }[],
+  countries: { isoCode: string; isActive: boolean }[],
 ) => {
   if (shopCountry) {
     const resolvedCountry = countries.reduce<string>((lastResolved, country) => {
@@ -39,10 +39,20 @@ export const resolveBestCountry = (
       return resolvedCountry;
     }
   }
-  return localeCountry || systemLocale.region;
+
+  const fallbackCountry = countries.find((currency) => currency.isoCode === UNCHAINED_CURRENCY);
+  if (fallbackCountry) {
+    return fallbackCountry.isoCode;
+  }
+  const firstActiveCountry = countries?.find(({ isActive }) => isActive);
+
+  return firstActiveCountry?.isoCode || localeCountry || systemLocale.region;
 };
 
-export const resolveBestCurrency = (localeCurrency: string, currencies: { isoCode: string }[]) => {
+export const resolveBestCurrency = (
+  localeCurrency: string,
+  currencies: { isoCode: string; isActive: boolean }[],
+) => {
   if (localeCurrency) {
     const resolvedCurrency = currencies.find((currency) => currency.isoCode === localeCurrency);
     if (resolvedCurrency) {
@@ -50,10 +60,10 @@ export const resolveBestCurrency = (localeCurrency: string, currencies: { isoCod
     }
   }
 
-  const fallbackCurrency = currencies.find((currency) => currency.isoCode === UNCHAINED_CURRENCY);
+  const fallbackCurrency = currencies.find((currency) => currency.isoCode === UNCHAINED_COUNTRY);
   if (fallbackCurrency) {
     return fallbackCurrency.isoCode;
   }
-
-  return currencies?.[0]?.isoCode || UNCHAINED_CURRENCY;
+  const firstActiveCurrency = currencies?.find(({ isActive }) => isActive);
+  return firstActiveCurrency?.isoCode || UNCHAINED_CURRENCY;
 };
