@@ -7,38 +7,19 @@ const SmsWorkerPlugin: IWorkerAdapter<
     from?: string;
     to?: string;
     text?: string;
+    [key: string]: any; // Allow additional parameters
   },
   any
 > = {
   ...WorkerAdapter,
 
-  key: 'shop.unchained.worker-plugin.sms',
-  label: 'Send a SMS through Twilio',
+  key: 'shop.unchained.worker-plugin.twilio',
+  label: 'Send Messages through Twilio',
   version: '1.0.0',
 
-  type: 'SMS',
+  type: 'TWILIO',
 
-  doWork: async ({ from, to, text }) => {
-    if (!TWILIO_SMS_FROM && !from) {
-      return {
-        success: false,
-        error: {
-          name: 'SENDER_REQUIRED',
-          message: 'SMS requires a from, TWILIO_SMS_FROM not set',
-        },
-      };
-    }
-
-    if (!to) {
-      return {
-        success: false,
-        error: {
-          name: 'RECIPIENT_REQUIRED',
-          message: 'SMS requires a to',
-        },
-      };
-    }
-
+  doWork: async ({ from, to, text, ...params }) => {
     try {
       const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
       const response = await fetch(url, {
@@ -51,6 +32,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
           Body: text || '',
           From: from || TWILIO_SMS_FROM,
           To: to,
+          ...params, // Include any additional parameters passed
         }),
       });
 

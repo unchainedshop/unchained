@@ -21,7 +21,7 @@ import '../filters/strict-equal.js';
 import '../filters/local-search.js';
 
 // Workers
-import '../worker/sms.js';
+import '../worker/twilio.js';
 import '../worker/push-notification.js';
 import '../worker/enrollment-order-generator.js';
 
