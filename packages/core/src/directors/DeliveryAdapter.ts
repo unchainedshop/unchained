@@ -7,7 +7,6 @@ import type { User } from '@unchainedshop/core-users';
 import {
   DeliveryConfiguration,
   DeliveryLocation,
-  DeliveryProvider,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
 import { Modules } from '../modules.js';
@@ -31,7 +30,6 @@ export interface DeliveryAdapterActions {
 
 export interface DeliveryContext {
   countryCode?: string;
-  deliveryProvider?: DeliveryProvider;
   order?: Order;
   orderDelivery?: OrderDelivery;
   orderPosition?: OrderPosition;
