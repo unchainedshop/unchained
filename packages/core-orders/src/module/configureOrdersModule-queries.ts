@@ -228,6 +228,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
 
       return (await Orders.aggregate([
         { $match: match },
+        { $unwind: '$calculation' },
         {
           $group: {
             _id: {
@@ -236,21 +237,20 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
               },
               currency: '$currencyCode',
             },
-            total: {
-              $sum: '$total.gross',
-            },
+            totalAmount: { $sum: '$calculation.amount' },
           },
         },
         {
           $project: {
             date: '$_id.date',
             total: {
-              amount: '$total',
+              amount: '$totalAmount',
               currency: '$_id.currency',
             },
             _id: 0,
           },
         },
+
         { $sort: { date: 1 } },
       ]).toArray()) as OrderStatisticsRecord[];
     },
