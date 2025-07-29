@@ -125,7 +125,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
 
     getReport: async (params: { dateRange?: DateFilterInput }): Promise<OrderReport> => {
       const { dateRange } = params || {};
-      const selector: any = { $exists: true };
+      const selector: any = {};
       if (dateRange?.end || dateRange?.start) {
         if (dateRange?.start) {
           const fromDate = new Date(dateRange?.start);
