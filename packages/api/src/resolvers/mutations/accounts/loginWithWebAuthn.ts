@@ -29,7 +29,7 @@ export default async function loginWithWebAuthn(
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
-    locale: context.locale.baseName,
+    locale: context.locale?.baseName,
     countryCode: context.countryCode,
   });
 

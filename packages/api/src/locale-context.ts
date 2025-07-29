@@ -1,4 +1,4 @@
-import { resolveBestCountry, resolveBestSupported, resolveBestCurrency } from '@unchainedshop/utils';
+import { resolveBestSupported, resolveBestCurrency } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
@@ -29,26 +29,19 @@ export const resolveDefaultContext = pMemoize(
 
     const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
 
-    const defaultCurrencyCodes = Object.fromEntries(
-      countries.map((c) => [c.isoCode, c.defaultCurrencyCode]),
-    );
+    const locale = resolveBestSupported(acceptLang, acceptCountry, { countries, languages });
 
-    const supportedLocaleStrings: string[] = languages.reduce((accumulator, language) => {
-      const added = countries.map((country) => {
-        return `${language.isoCode}-${country.isoCode}`;
-      });
-      return accumulator.concat(added);
-    }, []);
+    const defaultCurrencyCode = countries.find(
+      (country) => country.isoCode.toUpperCase() === locale?.region?.toUpperCase(),
+    )?.defaultCurrencyCode;
 
-    const locale = resolveBestSupported(acceptLang, supportedLocaleStrings);
-    const countryCode = resolveBestCountry(locale.region, acceptCountry, countries);
-    const currencyCode = resolveBestCurrency(defaultCurrencyCodes[countryCode], currencies);
+    const currencyCode = resolveBestCurrency(defaultCurrencyCode, currencies);
 
-    logger.debug(`Locale Context: Resolved ${locale.baseName} ${countryCode} ${currencyCode}`);
+    logger.debug(`Locale Context: Resolved ${locale?.baseName} ${currencyCode}`);
 
     const newContext: UnchainedLocaleContext = {
       locale,
-      countryCode,
+      countryCode: locale?.region,
       currencyCode,
     };
 

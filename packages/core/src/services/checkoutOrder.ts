@@ -33,7 +33,7 @@ export async function checkoutOrderService(
     const locale = this.users.userLocale(user);
     await nextUserCartService.bind(this)({
       user,
-      countryCode: locale.region,
+      countryCode: locale?.region || processedOrder.countryCode,
     });
 
     return processedOrder;

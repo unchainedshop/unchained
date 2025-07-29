@@ -1,12 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { resolveBestCountry, resolveBestSupported, slugify, systemLocale } from './utils-index.js';
+import { resolveBestSupported, slugify, systemLocale } from './utils-index.js';
 import generateHashId from './generate-random-hash.js';
 
 describe('Utils', () => {
   it('Locale', () => {
     assert.ok(systemLocale);
-    assert.equal(typeof resolveBestCountry, 'function');
     assert.equal(typeof resolveBestSupported, 'function');
   });
 
