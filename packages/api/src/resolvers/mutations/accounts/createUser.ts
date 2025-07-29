@@ -42,7 +42,7 @@ export default async function createUser(root: never, params: UserRegistrationDa
       remoteAddress: context.remoteAddress,
       remotePort: context.remotePort,
       userAgent: context.getHeader('user-agent'),
-      locale: context.locale.baseName,
+      locale: context.locale?.baseName,
       countryCode: context.countryCode,
     });
 

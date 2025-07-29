@@ -4,66 +4,76 @@ const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH', UNCHAINED_CURRENCY = 'C
 
 export const systemLocale = new Intl.Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNTRY}`);
 
+export const determineFallbackLocale = (
+  countries: { isoCode: string }[],
+  languages: { isoCode: string }[],
+): Intl.Locale | null => {
+  try {
+    const country =
+      countries.find((country) => country.isoCode === systemLocale.region)?.isoCode ||
+      countries[0]?.isoCode;
+    const language =
+      languages.find((language) => language.isoCode === systemLocale.language)?.isoCode ||
+      languages[0]?.isoCode;
+    return new Intl.Locale(`${language}-${country}`);
+  } catch {
+    return null;
+  }
+};
+
 export const resolveBestSupported = (
   acceptLanguage: string,
-  supportedLocales: string[],
+  acceptCountry: string,
+  {
+    countries = [],
+    languages = [],
+  }: {
+    countries: { isoCode: string }[];
+    languages: { isoCode: string }[];
+  },
 ): Intl.Locale => {
+  const supportedLocales: string[] = languages.reduce((accumulator, language) => {
+    const added = countries
+      .filter((country) => {
+        if (acceptCountry) {
+          return country.isoCode === acceptCountry;
+        }
+        return true;
+      })
+      .map((country) => {
+        return `${language.isoCode}-${country.isoCode}`;
+      });
+    return accumulator.concat(added);
+  }, []);
+
+  const fallbackLocale = determineFallbackLocale(countries, languages);
+
   try {
     const { match } = resolveAcceptLanguage(
       acceptLanguage || '',
       supportedLocales,
-      systemLocale.baseName,
+      fallbackLocale?.baseName,
       {
         returnMatchType: true,
       },
     );
     return new Intl.Locale(match);
   } catch {
-    return systemLocale;
+    return fallbackLocale;
   }
 };
 
-export const resolveBestCountry = (
-  localeCountry: string,
-  shopCountry: string,
-  countries: { isoCode: string; isActive: boolean }[],
-) => {
-  if (shopCountry) {
-    const resolvedCountry = countries.reduce<string>((lastResolved, country) => {
-      if (shopCountry === country.isoCode) {
-        return country.isoCode;
-      }
-      return lastResolved;
-    }, null);
-    if (resolvedCountry) {
-      return resolvedCountry;
-    }
-  }
-
-  const fallbackCountry = countries.find((currency) => currency.isoCode === UNCHAINED_CURRENCY);
-  if (fallbackCountry) {
-    return fallbackCountry.isoCode;
-  }
-  const firstActiveCountry = countries?.find(({ isActive }) => isActive);
-
-  return firstActiveCountry?.isoCode || localeCountry || systemLocale.region;
-};
-
-export const resolveBestCurrency = (
-  localeCurrency: string,
-  currencies: { isoCode: string; isActive: boolean }[],
-) => {
-  if (localeCurrency) {
-    const resolvedCurrency = currencies.find((currency) => currency.isoCode === localeCurrency);
+export const resolveBestCurrency = (currencyCode: string | null, currencies: { isoCode: string }[]) => {
+  if (currencyCode) {
+    const resolvedCurrency = currencies.find(
+      (currency) => currency.isoCode.toUpperCase() === currencyCode.toUpperCase(),
+    );
     if (resolvedCurrency) {
       return resolvedCurrency.isoCode;
     }
   }
-
-  const fallbackCurrency = currencies.find((currency) => currency.isoCode === UNCHAINED_COUNTRY);
-  if (fallbackCurrency) {
-    return fallbackCurrency.isoCode;
-  }
-  const firstActiveCurrency = currencies?.find(({ isActive }) => isActive);
-  return firstActiveCurrency?.isoCode || UNCHAINED_CURRENCY;
+  return (
+    currencies.find((currency) => currency.isoCode === UNCHAINED_CURRENCY)?.isoCode ||
+    currencies[0]?.isoCode
+  );
 };

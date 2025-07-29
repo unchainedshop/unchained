@@ -19,7 +19,7 @@ export default async function verifyEmail(root: never, { token }: { token: any }
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
-    locale: context.locale.baseName,
+    locale: context.locale?.baseName,
     countryCode: context.countryCode,
   });
 
