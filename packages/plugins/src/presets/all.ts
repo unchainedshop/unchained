@@ -22,6 +22,7 @@ import '../filters/local-search.js';
 
 // Workers
 import '../worker/twilio.js';
+import '../worker/bulkgate.js';
 import '../worker/push-notification.js';
 import '../worker/enrollment-order-generator.js';
 
