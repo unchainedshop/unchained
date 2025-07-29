@@ -29,8 +29,8 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
   actions: (params) => {
     const calculation: OrderPricingCalculation[] = [];
     const { context } = params;
-    const { currency } = context;
-    const resultSheet = OrderPricingSheet({ currency });
+    const { currencyCode } = context;
+    const resultSheet = OrderPricingSheet({ currencyCode });
 
     return {
       calculate: async () => {
