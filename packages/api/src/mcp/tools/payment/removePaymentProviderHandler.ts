@@ -20,20 +20,18 @@ export async function removePaymentProviderHandler(
   try {
     log('handler removePaymentProviderHandler', { userId, paymentProviderId });
 
-    if (
-      !(await modules.payment.paymentProviders.providerExists({
-        paymentProviderId,
-      }))
-    )
-      throw new PaymentProviderNotFoundError({ paymentProviderId });
+    const provider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId,
+    });
+    if (!provider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-    const removed = await modules.payment.paymentProviders.delete(paymentProviderId);
+    await modules.payment.paymentProviders.delete(paymentProviderId);
 
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ provider: removed }),
+          text: JSON.stringify({ provider }),
         },
       ],
     };

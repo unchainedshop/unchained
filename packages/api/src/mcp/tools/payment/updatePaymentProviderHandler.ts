@@ -3,11 +3,30 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { PaymentProviderNotFoundError } from '../../../errors.js';
 
+const ConfigurationEntry = z.object({
+  key: z.string().min(1).describe('Configuration key'),
+  value: z.any().describe('Configuration value'),
+});
+
 export const UpdatePaymentProviderSchema = {
   paymentProviderId: z.string().min(1).describe('ID of the payment provider to update'),
-  paymentProvider: z.object({
-    configuration: z.array(z.any()).optional().describe('Array of JSON configuration values with a structure {key, value}'),
-  }),
+  paymentProvider: z
+    .object({
+      configuration: z
+        .array(ConfigurationEntry)
+        .optional()
+        .describe('List of key-value configuration entries'),
+    })
+    .refine(
+      (data) => {
+        const keys = data.configuration?.map((entry) => entry.key) || [];
+        return new Set(keys).size === keys.length;
+      },
+      {
+        message: 'Duplicate keys are not allowed in configuration.',
+        path: ['configuration'],
+      },
+    ),
 };
 
 export const UpdatePaymentProviderZodSchema = z.object(UpdatePaymentProviderSchema);

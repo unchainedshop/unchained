@@ -9,6 +9,7 @@ import { registerCountryTools } from './tools/country/index.js';
 import { registerLanguageTools } from './tools/language/index.js';
 import { registerPaymentProviderTools } from './tools/payment/index.js';
 import { registerDeliveryProviderTools } from './tools/delivery/index.js';
+import { registerWarehousingProviderTools } from './tools/warehousing/index.js';
 
 export default function createMcpServer(context: Context, roles) {
   const server = new McpServer({
@@ -28,6 +29,7 @@ export default function createMcpServer(context: Context, roles) {
   registerOtherTools(server, context);
   registerPaymentProviderTools(server, context);
   registerDeliveryProviderTools(server, context);
+  registerWarehousingProviderTools(server, context);
 
   return server;
 }
