@@ -46,4 +46,4 @@ Unless you set an explicit connection string, Unchained will automatically downl
 
 ## Next Steps
 
-Your environment is now ready! Continue to [Initialize Your Project →](./initialize-project)
+Your environment is now ready! Continue to [Initialize Your Project →](./run-local)

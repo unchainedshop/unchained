@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Quick Start
-sidebar_label: Overview
+sidebar_label: Quick Start
 ---
 
 # Quick Start Guide
@@ -17,7 +17,7 @@ By the end of this guide, you'll have a fully working web shop with your first p
 This Quick Start guide is organized into the following sections:
 
 1. **[Development Environment Setup](./setup-environment)** - Install required tools and prepare your system
-2. **[Initialize Your Project](./initialize-project)** - Create and configure your Backend project and Storefront
+2. **[Initialize Your Project](./run-local)** - Create and configure your Backend project and Storefront
 3. **[Configure Admin UI](./admin-ui-setup)** - Set up the administration interface
 4. **[Create Your First Product](./first-product)** - Add products and complete your first sale
 

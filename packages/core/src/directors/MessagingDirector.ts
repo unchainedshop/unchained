@@ -21,7 +21,7 @@ export interface EmailTemplateType {
 }
 
 export interface SMSTemplateType {
-  type: 'SMS';
+  type: 'TWILIO' | 'BULKGATE' | 'BUDGETSMS';
   input: {
     from: string;
     to: string;
