@@ -52,7 +52,7 @@ Note that even if the user enabled push notification Email notification will als
 
 ## Trigger
 
-Triggering a push notification is not any different from sending email since the push service is just another worker. so for additional resource look at [Configuring email template](/advanced/messaging).
+Triggering a push notification is not any different from sending email since the push service is just another worker. so for additional resource look at [Configuring email template](../messaging).
 
 the only difference is push notification worker expects a input type that is slightly different. bellow are all the input values accepted,
 - `subscription`: actual user subscription object stored. it should have the following structure

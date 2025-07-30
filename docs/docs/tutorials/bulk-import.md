@@ -431,4 +431,4 @@ const handlers: Record<string, BulkImportHandler> = {
 
 ```
 
-On the above sample core `durationLogger` is a custom module that is implemented for this purpose. if you want to learn more about write custom modules refer to [Configure custom module](./custom-modules)
+On the above sample core `durationLogger` is a custom module that is implemented for this purpose. if you want to learn more about write custom modules refer to [Configure custom module](../extend/custom-modules)

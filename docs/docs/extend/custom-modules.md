@@ -12,7 +12,7 @@ There might be cases where the out of the box functionalities are not enough to 
 
 Custom Modules enables the developer to add additional functionality to the core engine. A module typically accesses the MongoDB to read and write data from and to the database but it could also provide an interface to some external API that needs to be called from plugins or custom GraphQL resolvers.
 
-In many cases this goes together with [extending the API](../advanced/extending-schema) to include additional mutations and queries that access the module's functions.
+In many cases this goes together with [extending the API](./graphql) to include additional mutations and queries that access the module's functions.
 
 Below is an example of a custom module that will be used to change currency of a cart.
 

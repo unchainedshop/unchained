@@ -8,7 +8,7 @@ sidebar_label: Admin UI Extension
 :::
 
 Admin UI out of the box supports most of the administration tasks a user wants to perform. 
-However, unchained is flexible and can be extended to support any data or data structure by [Extending the schema](../advanced/extending-schema). While this is great, but it means the data will not be accessible through admin UI.
+However, unchained is flexible and can be extended to support any data or data structure by [Extending the schema](./graphql). While this is great, but it means the data will not be accessible through admin UI.
 
 In order to view the additional information in your unchained engine you need to provide admin UI a configuration object
 that contains fragments of the additional types and inject to the unchained platform on start up.

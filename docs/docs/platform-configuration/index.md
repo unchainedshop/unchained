@@ -79,7 +79,7 @@ To configure various aspects of the platform, `startPlatform` accepts a configur
   - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details 
   - `plugins`: Optional 
   - `rolesOptions`: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html): Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
-  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of Data Import and E-Commerce Engine. For more information about bulk import API refer [here](../advanced/bulk-import)
+  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of Data Import and E-Commerce Engine. For more information about bulk import API refer [here](../tutorials/bulk-import)
   - `workQueueOptions`: [SetupWorkqueueOptions](https://docs.unchained.shop/types/interfaces/platform.SetupWorkqueueOptions.html) Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
   - `adminUiConfig`: Customize the Unchained Admin UI
 
@@ -93,7 +93,7 @@ These options are extended by `YogaServerOptions` so you can pass a list of [Yog
 
 ## Getting Help
 
-- 📚 [Full Documentation](/docs)
+- 📚 [Full Documentation](/)
 - 💬 [GitHub Discussions](https://github.com/unchainedshop/unchained/discussions)
 - 🐛 [Report Issues](https://github.com/unchainedshop/unchained/issues)
 - 📧 [Contact Support](mailto:support@unchained.shop)
