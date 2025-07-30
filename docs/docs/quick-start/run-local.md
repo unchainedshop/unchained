@@ -7,9 +7,9 @@ pagination_next: platform-configuration/index
 
 # Start your first Unchained Project
 
-This guide walks you through creating and runnging a new project on localhost. [Alternatively you can scaffold your first Unchained Project with Railway and continue from there.](./run-railway.md)
+This guide walks you through creating and running a new project on localhost. [Alternatively, you can scaffold your first Unchained project with Railway and continue from there.](./run-railway.md)
 
-Using Railway has the benefit that you start with a deployed Project including CI Pipelines. From there you can walk your way back by "Ejecting" to your own Github Repository.
+Using Railway has the benefit that you start with a deployed project including CI pipelines. From there, you can walk your way back by "ejecting" to your own GitHub repository.
 
 
 ## Project Structure Overview
@@ -49,7 +49,7 @@ Storefront
 Unchained Engine
 ```
 
-When prompted for the Directory name, just press enter.
+When prompted for the directory name, just press Enter.
 
 ### Start the Engine
 
@@ -80,8 +80,8 @@ You should see:
 1. **Configure your Backend**
 
 - Open http://localhost:4010 in your browser
-- Setup your administrator user, the built-in E-Mail preview will popup with a verification link, it's not needed to click it.
-- Go the dashboard and complete the onboarding (essentials)
+- Set up your administrator user. The built-in email preview will pop up with a verification link—it's not necessary to click it.
+- Go to the dashboard and complete the onboarding (essentials)
 
 To have a working checkout, you need:
 - 1 currency
@@ -96,11 +96,11 @@ To have a working checkout, you need:
 - Open http://localhost:3000 in your browser
 - Scroll down, you should see your product
 - Add it to the cart and complete the payment process
-- At the end of the process, the built-in E-Mail preview should show the E-Mail Confirmation
+- At the end of the process, the built-in email preview should show the email confirmation
 
 ## Next Steps
 
-Your Unchained project is now initialized and running locally and you should see your first confirmed order in the Admin UI. You can now turn to our next section "Platform Configuration" to find out how to configure and/or extend your project to your needs.
+Your Unchained project is now initialized and running locally, and you should see your first confirmed order in the Admin UI. You can now turn to our next section, "Platform Configuration," to find out how to configure and/or extend your project to your needs.
 
 ## Development Workflow / Troubleshooting
 

@@ -10,14 +10,14 @@ This guide will help you set up a complete e-commerce solution in about 5 minute
 
 ## What You'll Build
 
-By the end of this guide, you'll have a fully working web shop with your first product and first test-order.
+By the end of this guide, you'll have a fully working web shop with your first product and first test order.
 
 ## Guide Structure
 
 This Quick Start guide is organized into the following sections:
 
 1. **[Development Environment Setup](./setup-environment)** - Install required tools and prepare your system
-2. **[Initialize Your Project](./run-local)** - Create and configure your Full-Stack project based on Unchained Engine and Unchained Storefront
+2. **[Initialize Your Project](./run-local)** - Create and configure your full-stack project based on Unchained Engine and Unchained Storefront
 
 ## Architecture Overview
 

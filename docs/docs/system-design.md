@@ -46,30 +46,30 @@ API server, work queue, and orchestrates module configuration, email templates, 
 core modules, such as for federated microservices or custom APIs.
 
 For extending the GraphQL API, adding payment or delivery options, or configuring core modules, check the
-basic configuration options and existing plugins first, then consult advanced options.
+basic configuration options and existing plugins first, then consult the advanced options.
 
 **Service Gateway**
 
 The service gateway composes functions from multiple modules to enable complex workflows, like checkout.
-You can modify services by using or writing custom plugins and extend services by adding functions to
+You can modify services by using or writing custom plugins, and extend services by adding functions to
 `startPlatform` options.
 
 **Core Modules**
 
 Core modules contain business logic and database abstractions. You can modify modules through
-configuration and plugins. To add or overwrite modules, check how to write custom modules.
+configuration and plugins. To add or overwrite modules, see how to write custom modules.
 
 ## API Design Principles
 
 1. Unchained is stateless, with all data stored in MongoDB.
 2. Non-logged-in users can only read certain data. For anonymous user actions like adding to cart and
-   checkout, use the loginAsGuest mutation.
+   checkout, use the `loginAsGuest` mutation.
 3. All business logic remains server-side, ensuring omni-channel support and minimal client-side domain
    logic.
 
-Consequences of these principles as an example:
+Consequences of these principles include the following examples:
 
 1. Carts are defined as "open orders" and stored server-side, allowing users to add items on one device
    and checkout on another. After checkout, the cart becomes an immutable order.
 2. Anonymous users can become registered users without losing order history or bookmarks. Carts merge if
-   a user logs in during the buying process.
+   a user logs in during the purchase process.

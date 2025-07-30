@@ -7,17 +7,17 @@ sidebar_label: Platform Configuration
 
 # Platform Configuration
 
-To customize an Unchained Engine project, follow the following topics:
-1. Boot up: Wire Unchained with a Webserver and boot the app.
-2. Configure the Core: Configure Behavior of the Core Modules
-2. Plugin: Configure which plugins should load
-3. Extend
+To customize an Unchained Engine project, follow these topics:
+1. Boot up: Wire Unchained with a web server and boot the app
+2. Configure the Core: Configure behavior of the core modules
+3. Plugin: Configure which plugins should load
+4. Extend
 
 ## Boot Configuration
 
-The main entry point for an Unchained Engine project is `startPlatform` imported from `@unchainedshop/platform`. Calling it will initialize the Unchained Core, add default Messaging templates and setup the background worker.
+The main entry point for an Unchained Engine project is `startPlatform` imported from `@unchainedshop/platform`. Calling it will initialize the Unchained Core, add default messaging templates, and set up the background worker.
 
-To see it in context, it's best to see an example using Unchained with Fastify which is beeing used as a template for [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app) based projects (`boot.ts`)
+To see it in context, it's best to see an example using Unchained with Fastify, which is being used as a template for [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app)-based projects (`boot.ts`):
 
 ```ts
 import Fastify from "fastify";
@@ -30,7 +30,7 @@ import defaultModules from "@unchainedshop/plugins/presets/all.js";
 import connectDefaultPluginsToFastify from "@unchainedshop/plugins/presets/all-fastify.js";
 import { fastifyRouter } from "@unchainedshop/admin-ui/fastify";
 
-// Setup the Fastify Webserver in insecure mode and set the unchained default logger as request logger
+// Set up the Fastify web server in insecure mode and set the unchained default logger as request logger
 const fastify = Fastify({
   loggerInstance: unchainedLogger("fastify"),
   disableRequestLogging: true,
@@ -58,7 +58,7 @@ try {
     prefix: "/",
   });
 
-  // Tell Fastify to start listening on a part, thus accepting connections
+  // Tell Fastify to start listening on a port, thus accepting connections
   await fastify.listen({
     host: "::",
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
@@ -70,16 +70,16 @@ try {
 ```
 
 To configure various aspects of the platform, `startPlatform` accepts a configuration object with various parameters:
-  - `modules: Record<string, { configure: (params: ModuleInput<any>) => any }>`: Custom modules configuration point. allows you to extends the functionality the engine.
-  - `services: Record<string, any>`: Custom services configuration point. allows you to extends the functionality the engine.
+  - `modules: Record<string, { configure: (params: ModuleInput<any>) => any }>`: Custom modules configuration point. Allows you to extend the functionality of the engine.
+  - `services: Record<string, any>`: Custom services configuration point. Allows you to extend the functionality of the engine.
   - `typeDefs`:  Object (GraphQL Schema that gets merged with the default schema)
   - `schema`:  Object (GraphQL Schema that gets merged with the default schema)
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
   - `context`: Special function to extend the underlying [GraphQL context](https://the-guild.dev/graphql/yoga-server/docs/features/context). Check the [OIDC Example](https://github.com/unchainedshop/unchained/blob/master/examples/oidc/boot.ts) for how you could use it to add custom Auth.
-  - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details 
-  - `plugins`: Optional 
+  - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details.
+  - `plugins`: Optional
   - `rolesOptions`: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html): Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
-  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of Data Import and E-Commerce Engine. For more information about bulk import API refer [here](../tutorials/bulk-import)
+  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of data import and e-commerce engine. For more information about the bulk import API, refer [here](../tutorials/bulk-import).
   - `workQueueOptions`: [SetupWorkqueueOptions](https://docs.unchained.shop/types/interfaces/platform.SetupWorkqueueOptions.html) Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
   - `adminUiConfig`: Customize the Unchained Admin UI
 
