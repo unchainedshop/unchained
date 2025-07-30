@@ -51,7 +51,7 @@ export const registerPaymentProviderTools = (server: McpServer, context: Context
     async (params) => paymentInterfacesHandler(context, params),
   );
   server.tool(
-    'paymentProvider_create',
+    'paymentProvider_add',
     'Adds new payment provider.',
     CreatePaymentProviderSchema,
     async (params) => createPaymentProviderHandler(context, params),

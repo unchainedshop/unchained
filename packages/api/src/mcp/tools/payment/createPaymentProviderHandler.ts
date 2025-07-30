@@ -9,7 +9,12 @@ const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
 export const CreatePaymentProviderSchema = {
   paymentProvider: z.object({
     type: PaymentProviderTypeEnum.describe('Type of payment provider'),
-    adapterKey: z.string().min(1).describe('Adapter key for the payment provider'),
+    adapterKey: z
+      .string()
+      .min(1)
+      .describe(
+        'Adapter key for the payment provider, this value should be a valid adapter key found in payment provider interfaces',
+      ),
   }),
 };
 
@@ -38,7 +43,7 @@ export async function createPaymentProviderHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ paymentProvider: created }),
+          text: JSON.stringify({ provider: created }),
         },
       ],
     };

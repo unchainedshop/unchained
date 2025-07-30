@@ -33,7 +33,7 @@ export async function paymentInterfacesHandler(context: Context, params: Payment
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ paymentInterfaces: interfaces }),
+          text: JSON.stringify({ interfaces }),
         },
       ],
     };

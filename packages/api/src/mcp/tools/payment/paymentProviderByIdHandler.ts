@@ -35,7 +35,7 @@ export async function paymentProviderByIdHandler(context: Context, params: Payme
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ paymentProvider: provider }),
+          text: JSON.stringify({ provider }),
         },
       ],
     };

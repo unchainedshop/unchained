@@ -6,7 +6,7 @@ import { PaymentProviderNotFoundError } from '../../../errors.js';
 export const UpdatePaymentProviderSchema = {
   paymentProviderId: z.string().min(1).describe('ID of the payment provider to update'),
   paymentProvider: z.object({
-    configuration: z.array(z.any()).optional().describe('Array of JSON configuration values'),
+    configuration: z.array(z.any()).optional().describe('Array of JSON configuration values with a structure {key, value}'),
   }),
 };
 
@@ -39,7 +39,7 @@ export async function updatePaymentProviderHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ paymentProvider: updated }),
+          text: JSON.stringify({ provider: updated }),
         },
       ],
     };

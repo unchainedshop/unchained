@@ -33,7 +33,7 @@ export async function removePaymentProviderHandler(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ paymentProvider: removed }),
+          text: JSON.stringify({ provider: removed }),
         },
       ],
     };

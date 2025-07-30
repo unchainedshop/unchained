@@ -23,7 +23,7 @@ export async function paymentProvidersListHandler(context: Context, params: Paym
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ paymentProviders: providers }),
+          text: JSON.stringify({ providers }),
         },
       ],
     };
