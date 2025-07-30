@@ -1,6 +1,6 @@
 # Unchained Engine
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/y3gUQH?referralCode=ZXvOAF)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/unchained?referralCode=ZXvOAF)
 
 Licensed under the EUPL 1.2
 

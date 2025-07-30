@@ -11,7 +11,7 @@ pagination_next: platform-configuration/index
 
 Follow this button:
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/y3gUQH?referralCode=ZXvOAF)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/unchained?referralCode=ZXvOAF)
 
 ### E-Mail Setup
 
