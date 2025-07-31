@@ -7,6 +7,7 @@ import {
   TimestampFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
+import { DateFilterInput } from '@unchainedshop/utils';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -41,6 +42,9 @@ export interface OrderQuery extends mongodb.Filter<Order> {
   queryString?: string;
   status?: OrderStatus[];
   userId?: string;
+  deliveryIds?: string[];
+  paymentIds?: string[];
+  dateRange?: DateFilterInput;
 }
 
 export const OrdersCollection = async (db: mongodb.Db) => {
