@@ -81,6 +81,10 @@ export default [
       updated: DateTime
       user: User
     }
+    type OrderStatisticsRecord {
+      date: Date!
+      total: Price!
+    }
 
     type OrderStatistics {
       newCount: Int!
@@ -88,6 +92,10 @@ export default [
       rejectCount: Int!
       confirmCount: Int!
       fulfillCount: Int!
+      confirmRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      checkoutRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      rejectRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      newRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
     }
   `,
 ];
