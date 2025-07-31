@@ -12,10 +12,18 @@ export const buildFindSelector = ({
   ...rest
 }: OrderQuery) => {
   const selector: mongodb.Filter<Order> = { ...rest };
-  if (dateRange) console.log(dateRange);
   if (userId) {
     selector.userId = userId;
   }
+  if (dateRange) {
+    const dateFilter: mongodb.Filter<Order> = {};
+    if (dateRange.start) dateFilter.$gte = new Date(dateRange.start);
+    if (dateRange.end) dateFilter.$lte = new Date(dateRange.end);
+    if (Object.keys(dateFilter).length > 0) {
+      selector.ordered = dateFilter;
+    }
+  }
+
   if (Array.isArray(deliveryIds) && deliveryIds?.length) {
     selector.deliveryId = { $in: deliveryIds };
   }

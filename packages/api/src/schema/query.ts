@@ -248,7 +248,13 @@ export default [
       """
       Returns total number of orders
       """
-      ordersCount(includeCarts: Boolean = false, queryString: String): Int!
+      ordersCount(
+        includeCarts: Boolean = false
+        queryString: String
+        paymentProviderTypes: [PaymentProviderType!]
+        deliveryProviderTypes: [DeliveryProviderType!]
+        dateRange: DateFilterInput
+      ): Int!
 
       """
       Get all orders, by default sorted by creation date (descending)
@@ -260,7 +266,9 @@ export default [
         queryString: String
         status: [OrderStatus!]
         sort: [SortOptionInput!]
-        filter: OrderFilterInput
+        paymentProviderTypes: [PaymentProviderType!]
+        deliveryProviderTypes: [DeliveryProviderType!]
+        dateRange: DateFilterInput
       ): [Order!]!
 
       """
