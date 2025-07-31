@@ -231,6 +231,12 @@ export default [
       value: String
     }
 
+    input OrderFilterInput {
+      paymentProviderTypes: [PaymentProviderType!]
+      deliveryProviderTypes: [DeliveryProviderType!]
+      dateRange: DateFilterInput
+    }
+
     input CreateProductBundleItemInput {
       productId: ID!
       quantity: Int!

@@ -260,6 +260,7 @@ export default [
         queryString: String
         status: [OrderStatus!]
         sort: [SortOptionInput!]
+        filter: OrderFilterInput
       ): [Order!]!
 
       """
