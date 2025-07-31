@@ -254,6 +254,7 @@ export default [
         paymentProviderTypes: [PaymentProviderType!]
         deliveryProviderTypes: [DeliveryProviderType!]
         dateRange: DateFilterInput
+        status: [OrderStatus!]
       ): Int!
 
       """

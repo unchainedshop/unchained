@@ -12,6 +12,7 @@ export const buildFindSelector = ({
   ...rest
 }: OrderQuery) => {
   const selector: mongodb.Filter<Order> = { ...rest };
+
   if (userId) {
     selector.userId = userId;
   }

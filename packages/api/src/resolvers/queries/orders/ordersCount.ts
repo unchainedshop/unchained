@@ -42,6 +42,11 @@ export default async function ordersCount(
       ? modules.orders.deliveries.findDeliveryByProvidersId({ deliveryProviderIds })
       : [],
   ]);
+  if (
+    (paymentProviderTypes?.length && !orderPayments.length) ||
+    (deliveryProviderTypes && !orderDeliveries.length)
+  )
+    return 0;
   const paymentIds = orderPayments.map((p) => p._id);
   const deliveryIds = orderDeliveries.map((d) => d._id);
 

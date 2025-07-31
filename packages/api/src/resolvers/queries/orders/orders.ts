@@ -43,6 +43,12 @@ export default async function orders(
       ? modules.orders.deliveries.findDeliveryByProvidersId({ deliveryProviderIds })
       : [],
   ]);
+
+  if (
+    (paymentProviderTypes?.length && !orderPayments.length) ||
+    (deliveryProviderTypes && !orderDeliveries.length)
+  )
+    return [];
   const paymentIds = orderPayments.map((p) => p._id);
   const deliveryIds = orderDeliveries.map((d) => d._id);
 
