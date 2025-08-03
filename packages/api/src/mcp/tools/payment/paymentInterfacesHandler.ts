@@ -28,7 +28,7 @@ export async function paymentInterfacesHandler(context: Context, params: Payment
         label: Adapter.label,
         version: Adapter.version,
       }));
-
+    console.log(interfaces);
     return {
       content: [
         {
