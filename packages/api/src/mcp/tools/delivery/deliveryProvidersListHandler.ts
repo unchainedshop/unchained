@@ -7,23 +7,31 @@ const DeliveryProviderTypeEnum = z
   .describe('Delivery provider type');
 
 export const DeliveryProvidersListSchema = {
-  type: DeliveryProviderTypeEnum.optional(),
+  type: DeliveryProviderTypeEnum.optional().describe('Optional filter by delivery provider type'),
+  queryString: z.string().min(1).optional().describe('Search by _id or adapterKey (partial match)'),
 };
 
 export const DeliveryProvidersListZodSchema = z.object(DeliveryProvidersListSchema);
 export type DeliveryProvidersListParams = z.infer<typeof DeliveryProvidersListZodSchema>;
-
 export async function deliveryProvidersListHandler(
   context: Context,
   params: DeliveryProvidersListParams,
 ) {
   const { modules, userId } = context;
-  const { type } = params;
+  const { type, queryString } = params;
 
   try {
-    log('handler deliveryProvidersListHandler', { userId, type });
+    log('handler deliveryProvidersListHandler', { userId, type, queryString });
 
-    const providers = await modules.delivery.findProviders(params as any);
+    const selector: Record<string, any> = {};
+    if (type) selector.type = type;
+
+    if (queryString) {
+      const regex = new RegExp(queryString, 'i');
+      selector.$or = [{ _id: regex }, { adapterKey: regex }];
+    }
+
+    const providers = await modules.delivery.findProviders(selector);
 
     return {
       content: [

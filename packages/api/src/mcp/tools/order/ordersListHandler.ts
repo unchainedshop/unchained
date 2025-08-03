@@ -29,15 +29,19 @@ export const OrdersListSchema = {
   paymentProviderTypes: z
     .array(PaymentProviderTypeEnum)
     .optional()
-    .describe(
-      'Filter by payment provider types, it should be a valid payment provider type supported by the system',
-    ),
+    .describe('Filter by payment provider types'),
   deliveryProviderTypes: z
     .array(DeliveryProviderTypeEnum)
     .optional()
-    .describe(
-      'Filter by delivery provider types, it should be a valid delivery provider type supported by the system',
-    ),
+    .describe('Filter by delivery provider types'),
+  paymentProviderIds: z
+    .array(z.string().min(1))
+    .optional()
+    .describe('Filter by specific payment provider IDs'),
+  deliveryProviderIds: z
+    .array(z.string().min(1))
+    .optional()
+    .describe('Filter by specific delivery provider IDs'),
   dateRange: DateFilterInput.optional().describe('Filter by creation date range'),
 };
 
@@ -50,19 +54,30 @@ export async function ordersListHandler(context: Context, params: OrdersListPara
   try {
     log('handler ordersListHandler', { userId, params });
 
-    const { limit, offset, paymentProviderTypes, deliveryProviderTypes, ...restParams } = params;
-    log(`query orders: ${limit} ${offset}  ${restParams?.queryString || ''}`, { userId });
+    const {
+      limit,
+      offset,
+      paymentProviderTypes,
+      deliveryProviderTypes,
+      paymentProviderIds: directPaymentProviderIds,
+      deliveryProviderIds: directDeliveryProviderIds,
+      ...restParams
+    } = params;
+
+    log(`query orders: ${limit} ${offset} ${restParams?.queryString || ''}`, { userId });
+
+    const paymentProviderIds = directPaymentProviderIds ?? [];
+    const deliveryProviderIds = directDeliveryProviderIds ?? [];
 
     const promises: Promise<any>[] = [];
-
-    let paymentProviderIds: string[] | undefined;
-    let deliveryProviderIds: string[] | undefined;
 
     if (paymentProviderTypes?.length) {
       promises.push(
         modules.payment.paymentProviders
           .findProviders({ type: { $in: paymentProviderTypes as PaymentProviderType[] } })
-          .then((providers) => (paymentProviderIds = providers.map((p) => p._id))),
+          .then((providers) => {
+            paymentProviderIds.push(...providers.map((p) => p._id));
+          }),
       );
     }
 
@@ -70,11 +85,14 @@ export async function ordersListHandler(context: Context, params: OrdersListPara
       promises.push(
         modules.delivery
           .findProviders({ type: { $in: deliveryProviderTypes as DeliveryProviderType[] } })
-          .then((providers) => (deliveryProviderIds = providers.map((p) => p._id))),
+          .then((providers) => {
+            deliveryProviderIds.push(...providers.map((p) => p._id));
+          }),
       );
     }
 
     await Promise.all(promises);
+
     const [orderPayments, orderDeliveries] = await Promise.all([
       paymentProviderIds
         ? modules.orders.payments.findOrderPaymentsByProviderIds({ paymentProviderIds })
@@ -83,10 +101,11 @@ export async function ordersListHandler(context: Context, params: OrdersListPara
         ? modules.orders.deliveries.findDeliveryByProvidersId({ deliveryProviderIds })
         : [],
     ]);
+
     if (
-      (paymentProviderTypes?.length && !orderPayments.length) ||
-      (deliveryProviderTypes?.length && !orderDeliveries.length)
-    )
+      (paymentProviderIds.length && !orderPayments.length) ||
+      (deliveryProviderIds.length && !orderDeliveries.length)
+    ) {
       return {
         content: [
           {
@@ -95,6 +114,8 @@ export async function ordersListHandler(context: Context, params: OrdersListPara
           },
         ],
       };
+    }
+
     const paymentIds = orderPayments.map((p) => p._id);
     const deliveryIds = orderDeliveries.map((d) => d._id);
 
