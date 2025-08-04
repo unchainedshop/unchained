@@ -3,6 +3,7 @@ import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
+import { resolveOrderFilters } from '../../utils/orderFilters.js';
 
 const OrderStatusEnum = z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
 const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
@@ -77,23 +78,12 @@ export async function ordersListHandler(context: Context, params: OrdersListPara
 
     await Promise.all(lookups);
 
-    const [orderPayments, orderDeliveries] = await Promise.all([
-      resolvedPaymentProviderIds.size
-        ? modules.orders.payments.findOrderPaymentsByProviderIds({
-            paymentProviderIds: [...resolvedPaymentProviderIds],
-          })
-        : [],
-      resolvedDeliveryProviderIds.size
-        ? modules.orders.deliveries.findDeliveryByProvidersId({
-            deliveryProviderIds: [...resolvedDeliveryProviderIds],
-          })
-        : [],
-    ]);
+    const filters = await resolveOrderFilters(modules, {
+      paymentProviderIds: [...resolvedPaymentProviderIds],
+      deliveryProviderIds: [...resolvedDeliveryProviderIds],
+    });
 
-    if (
-      (resolvedPaymentProviderIds.size > 0 && orderPayments.length === 0) ||
-      (resolvedDeliveryProviderIds.size > 0 && orderDeliveries.length === 0)
-    ) {
+    if (!filters) {
       return {
         content: [
           {
@@ -103,14 +93,9 @@ export async function ordersListHandler(context: Context, params: OrdersListPara
         ],
       };
     }
-
-    const paymentIds = orderPayments.map((p) => p._id);
-    const deliveryIds = orderDeliveries.map((d) => d._id);
-
     const orders = await modules.orders.findOrders({
       ...restParams,
-      paymentIds,
-      deliveryIds,
+      ...filters,
     } as any);
 
     return {

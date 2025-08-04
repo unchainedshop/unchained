@@ -1,13 +1,12 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
+import { DateRangeSchema, OrderFilterSchema } from '../../utils/sharedSchemas.js';
+import { formatSummaryMap, resolveDateRange, resolveOrderFilters } from '../../utils/orderFilters.js';
 
 export const MonthlySalesBreakdownSchema = {
-  from: z.string().datetime().optional().describe('Start date (ISO format)'),
-  to: z.string().datetime().optional().describe('End date (ISO format)'),
-  paymentProviderIds: z.array(z.string()).optional(),
-  deliveryProviderIds: z.array(z.string()).optional(),
-  status: z.array(z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'])).optional(),
+  ...DateRangeSchema,
+  ...OrderFilterSchema,
 };
 
 export const MonthlySalesBreakdownZodSchema = z.object(MonthlySalesBreakdownSchema);
@@ -24,28 +23,9 @@ export async function getMonthlySalesBreakdownHandler(
 
     const { from, to, paymentProviderIds, deliveryProviderIds, status } = params;
 
-    const endDate = to ? new Date(to) : new Date();
-    const startDate = from
-      ? new Date(from)
-      : new Date(endDate.getFullYear(), endDate.getMonth() - 11, 1);
-
-    const [orderPayments, orderDeliveries] = await Promise.all([
-      paymentProviderIds?.length
-        ? modules.orders.payments.findOrderPaymentsByProviderIds({
-            paymentProviderIds: [...paymentProviderIds],
-          })
-        : [],
-      deliveryProviderIds?.length
-        ? modules.orders.deliveries.findDeliveryByProvidersId({
-            deliveryProviderIds: [...deliveryProviderIds],
-          })
-        : [],
-    ]);
-
-    if (
-      (paymentProviderIds?.length > 0 && orderPayments?.length === 0) ||
-      (deliveryProviderIds?.length > 0 && orderDeliveries?.length === 0)
-    ) {
+    const { startDate, endDate } = resolveDateRange(from, to);
+    const filters = await resolveOrderFilters(modules, { paymentProviderIds, deliveryProviderIds });
+    if (!filters) {
       return {
         content: [
           {
@@ -55,25 +35,18 @@ export async function getMonthlySalesBreakdownHandler(
               orderCount: 0,
               averageOrderValue: 0,
               currencyCode: null,
-              summary: {},
-              dateRange: {
-                start: startDate.toISOString(),
-                end: endDate.toISOString(),
-              },
+              summary: [],
+              dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
             }),
           },
         ],
       };
     }
 
-    const paymentIds = orderPayments.map((p) => p._id);
-    const deliveryIds = orderDeliveries.map((d) => d._id);
-
     const orders = await modules.orders.findOrders({
       dateRange: { from: startDate.toISOString(), to: endDate.toISOString() },
-      paymentIds,
-      deliveryIds,
       status,
+      ...filters,
     } as any);
 
     let totalSalesAmount = 0;
@@ -114,14 +87,7 @@ export async function getMonthlySalesBreakdownHandler(
             orderCount,
             averageOrderValue,
             currencyCode: orders[0]?.currencyCode ?? null,
-            summary: Array.from([...monthlyMap.entries()].reverse()).map(
-              ([date, { sales, orders }]) => ({
-                date,
-                sales: Number(sales.toFixed(2)),
-                orders,
-                avgOrderValue: orders > 0 ? Math.round(sales / orders) : 0,
-              }),
-            ),
+            summary: formatSummaryMap(monthlyMap),
             dateRange: {
               start: startDate.toISOString(),
               end: endDate.toISOString(),

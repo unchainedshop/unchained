@@ -23,8 +23,8 @@ export const registerOrderTools = (server: McpServer, context: Context) => {
   );
 
   server.tool(
-    'monthly_sales_breakdown',
-    'Get monthly total sales amounts grouped by year and month. Supports filtering by currency, status, providers, and date range.',
+    'ordersSales_monthlyBreakdown',
+    'Break down total sales by month. Supports filtering by status and provider IDs, with optional custom date range.',
     MonthlySalesBreakdownSchema,
     async (params) => getMonthlySalesBreakdownHandler(context, params),
   );

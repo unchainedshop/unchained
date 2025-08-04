@@ -1,15 +1,13 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
+import { DateRangeSchema, OrderFilterSchema } from '../../utils/sharedSchemas.js';
+import { formatSummaryMap, resolveDateRange, resolveOrderFilters } from '../../utils/orderFilters.js';
 
 export const SalesSummarySchema = {
-  from: z.string().datetime().optional().describe('Start date (ISO format)'),
-  to: z.string().datetime().optional().describe('End date (ISO format)'),
-  days: z.number().int().min(1).max(365).optional().describe('Number of days to break summary into'),
-
-  paymentProviderIds: z.array(z.string()).optional(),
-  deliveryProviderIds: z.array(z.string()).optional(),
-  status: z.array(z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'])).optional(),
+  ...DateRangeSchema,
+  ...OrderFilterSchema,
+  days: z.number().int().min(1).max(365).optional(),
 };
 
 export const SalesSummaryZodSchema = z.object(SalesSummarySchema);
@@ -22,27 +20,10 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
     log('handler getSalesSummaryHandler', { userId, params });
 
     const { from, to, days = 30, paymentProviderIds, deliveryProviderIds, status } = params;
+    const { startDate, endDate } = resolveDateRange(from, to, days);
 
-    const endDate = to ? new Date(to) : new Date();
-    const startDate = from ? new Date(from) : new Date(endDate.getTime() - (days - 1) * 86400000);
-
-    const [orderPayments, orderDeliveries] = await Promise.all([
-      paymentProviderIds?.length
-        ? modules.orders.payments.findOrderPaymentsByProviderIds({
-            paymentProviderIds: [...paymentProviderIds],
-          })
-        : [],
-      deliveryProviderIds?.length
-        ? modules.orders.deliveries.findDeliveryByProvidersId({
-            deliveryProviderIds: [...deliveryProviderIds],
-          })
-        : [],
-    ]);
-
-    if (
-      (paymentProviderIds?.length > 0 && orderPayments?.length === 0) ||
-      (deliveryProviderIds?.length > 0 && orderDeliveries?.length === 0)
-    ) {
+    const filters = await resolveOrderFilters(modules, { paymentProviderIds, deliveryProviderIds });
+    if (!filters) {
       return {
         content: [
           {
@@ -52,24 +33,17 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
               orderCount: 0,
               averageOrderValue: 0,
               currencyCode: null,
-              summary: {},
-              dateRange: {
-                start: startDate.toISOString(),
-                end: endDate.toISOString(),
-              },
+              summary: [],
+              dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
             }),
           },
         ],
       };
     }
 
-    const paymentIds = orderPayments.map((p) => p._id);
-    const deliveryIds = orderDeliveries.map((d) => d._id);
-
     const orders = await modules.orders.findOrders({
       dateRange: { from: startDate.toISOString(), to: endDate.toISOString() },
-      paymentIds,
-      deliveryIds,
+      ...filters,
       status,
     } as any);
 
@@ -110,12 +84,7 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
             orderCount,
             averageOrderValue,
             currencyCode: orders[0]?.currencyCode ?? null,
-            summary: Array.from([...dateMap.entries()].reverse()).map(([date, { sales, orders }]) => ({
-              date,
-              sales: Number(sales.toFixed(2)),
-              orders,
-              avgOrderValue: orders > 0 ? Math.round(sales / orders) : 0,
-            })),
+            summary: formatSummaryMap(dateMap),
             dateRange: {
               start: startDate.toISOString(),
               end: endDate.toISOString(),
