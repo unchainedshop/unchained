@@ -2,29 +2,32 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 
-export const SalesSummarySchema = {
+export const MonthlySalesBreakdownSchema = {
   from: z.string().datetime().optional().describe('Start date (ISO format)'),
   to: z.string().datetime().optional().describe('End date (ISO format)'),
-  days: z.number().int().min(1).max(365).optional().describe('Number of days to break summary into'),
-
   paymentProviderIds: z.array(z.string()).optional(),
   deliveryProviderIds: z.array(z.string()).optional(),
   status: z.array(z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'])).optional(),
 };
 
-export const SalesSummaryZodSchema = z.object(SalesSummarySchema);
-export type SalesSummaryParams = z.infer<typeof SalesSummaryZodSchema>;
+export const MonthlySalesBreakdownZodSchema = z.object(MonthlySalesBreakdownSchema);
+export type MonthlySalesBreakdownParams = z.infer<typeof MonthlySalesBreakdownZodSchema>;
 
-export async function getSalesSummaryHandler(context: Context, params: SalesSummaryParams) {
+export async function getMonthlySalesBreakdownHandler(
+  context: Context,
+  params: MonthlySalesBreakdownParams,
+) {
   const { modules, userId } = context;
 
   try {
-    log('handler getSalesSummaryHandler', { userId, params });
+    log('handler getMonthlySalesBreakdownHandler', { userId, params });
 
-    const { from, to, days = 30, paymentProviderIds, deliveryProviderIds, status } = params;
+    const { from, to, paymentProviderIds, deliveryProviderIds, status } = params;
 
     const endDate = to ? new Date(to) : new Date();
-    const startDate = from ? new Date(from) : new Date(endDate.getTime() - (days - 1) * 86400000);
+    const startDate = from
+      ? new Date(from)
+      : new Date(endDate.getFullYear(), endDate.getMonth() - 11, 1);
 
     const [orderPayments, orderDeliveries] = await Promise.all([
       paymentProviderIds?.length
@@ -76,11 +79,12 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
     let totalSalesAmount = 0;
     let orderCount = 0;
 
-    const dateMap = new Map<string, { sales: number; orders: number }>();
-    for (let i = 0; i < days; i++) {
-      const date = new Date(endDate.getTime() - i * 86400000);
-      const label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      dateMap.set(label, { sales: 0, orders: 0 });
+    const monthlyMap = new Map<string, { sales: number; orders: number }>();
+
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(endDate.getFullYear(), endDate.getMonth() - i, 1);
+      const label = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      monthlyMap.set(label, { sales: 0, orders: 0 });
     }
 
     for (const order of orders) {
@@ -91,8 +95,8 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
       const itemsAmount = order.calculation?.find((c) => c.category === 'ITEMS')?.amount || 0;
       totalSalesAmount += itemsAmount;
 
-      const label = orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const entry = dateMap.get(label);
+      const label = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
+      const entry = monthlyMap.get(label);
       if (entry) {
         entry.sales += itemsAmount;
         entry.orders += 1;
@@ -110,12 +114,14 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
             orderCount,
             averageOrderValue,
             currencyCode: orders[0]?.currencyCode ?? null,
-            summary: Array.from([...dateMap.entries()].reverse()).map(([date, { sales, orders }]) => ({
-              date,
-              sales: Number(sales.toFixed(2)),
-              orders,
-              avgOrderValue: orders > 0 ? Math.round(sales / orders) : 0,
-            })),
+            summary: Array.from([...monthlyMap.entries()].reverse()).map(
+              ([date, { sales, orders }]) => ({
+                date,
+                sales: Number(sales.toFixed(2)),
+                orders,
+                avgOrderValue: orders > 0 ? Math.round(sales / orders) : 0,
+              }),
+            ),
             dateRange: {
               start: startDate.toISOString(),
               end: endDate.toISOString(),
@@ -129,7 +135,7 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
       content: [
         {
           type: 'text' as const,
-          text: `Error fetching sales summary: ${(error as Error).message}`,
+          text: `Error fetching monthly sales breakdown: ${(error as Error).message}`,
         },
       ],
     };
