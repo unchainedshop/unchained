@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
+import { OrderStatus } from '@unchainedshop/core-orders';
+import { resolveDateRange } from '../../utils/orderFilters.js';
 
 export const TopSellingProductsSchema = {
   from: z.string().datetime().optional().describe('Start date (ISO format)'),
@@ -20,8 +22,25 @@ export async function getTopSellingProductsHandler(context: Context, params: Top
     log('handler getTopSellingProductsHandler', { userId, params });
 
     const match: any = {};
-    if (from) match.created = { ...(match.created || {}), $gte: new Date(from) };
-    if (to) match.created = { ...(match.created || {}), $lte: new Date(to) };
+
+    const { startDate, endDate } = resolveDateRange(from, to);
+
+    const orders = await modules.orders.findOrders(
+      {
+        status: [OrderStatus.CONFIRMED, OrderStatus.FULLFILLED],
+        dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
+      },
+      {
+        projection: {
+          _id: 1,
+        },
+      },
+    );
+    const orderIds = orders.map(({ _id }) => _id);
+
+    if (startDate) match.created = { ...(match.created || {}), $gte: startDate.toISOString() };
+    if (endDate) match.created = { ...(match.created || {}), $lte: endDate.toISOString() };
+    if (orderIds?.length) match.orderId = { $in: orderIds };
 
     const topProducts = await modules.orders.positions.aggregatePositions({
       match,

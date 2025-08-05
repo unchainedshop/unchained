@@ -44,7 +44,7 @@ export async function getMonthlySalesBreakdownHandler(
     }
 
     const orders = await modules.orders.findOrders({
-      dateRange: { from: startDate.toISOString(), to: endDate.toISOString() },
+      dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
       status,
       ...filters,
     } as any);
@@ -88,10 +88,7 @@ export async function getMonthlySalesBreakdownHandler(
             averageOrderValue,
             currencyCode: orders[0]?.currencyCode ?? null,
             summary: formatSummaryMap(monthlyMap),
-            dateRange: {
-              start: startDate.toISOString(),
-              end: endDate.toISOString(),
-            },
+            dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
           }),
         },
       ],

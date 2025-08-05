@@ -42,7 +42,7 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
     }
 
     const orders = await modules.orders.findOrders({
-      dateRange: { from: startDate.toISOString(), to: endDate.toISOString() },
+      dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
       ...filters,
       status,
     } as any);
@@ -85,10 +85,7 @@ export async function getSalesSummaryHandler(context: Context, params: SalesSumm
             averageOrderValue,
             currencyCode: orders[0]?.currencyCode ?? null,
             summary: formatSummaryMap(dateMap),
-            dateRange: {
-              start: startDate.toISOString(),
-              end: endDate.toISOString(),
-            },
+            dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
           }),
         },
       ],
