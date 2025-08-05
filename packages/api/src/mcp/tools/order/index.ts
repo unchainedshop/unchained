@@ -7,6 +7,10 @@ import {
   MonthlySalesBreakdownSchema,
 } from './getMonthlySalesBreakdownHandler.js';
 import { getTopCustomersHandler, GetTopCustomersSchema } from './getTopCustomersHandler.js';
+import {
+  getTopSellingProductsHandler,
+  TopSellingProductsSchema,
+} from './getTopSellingProductsHandler.js';
 
 export const registerOrderTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -31,9 +35,16 @@ export const registerOrderTools = (server: McpServer, context: Context) => {
   );
 
   server.tool(
-    'orders_top_customers',
+    'orders_topCustomers',
     'Get top customers by total amount spent, with optional date and status filters.',
     GetTopCustomersSchema,
     async (params) => getTopCustomersHandler(context, params),
+  );
+
+  server.tool(
+    'topSelling_products',
+    'Get top-selling products by quantity and revenue within an optional date range.',
+    TopSellingProductsSchema,
+    (params) => getTopSellingProductsHandler(context, params),
   );
 };
