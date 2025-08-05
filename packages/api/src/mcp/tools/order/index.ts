@@ -6,6 +6,7 @@ import {
   getMonthlySalesBreakdownHandler,
   MonthlySalesBreakdownSchema,
 } from './getMonthlySalesBreakdownHandler.js';
+import { getTopCustomersHandler, GetTopCustomersSchema } from './getTopCustomersHandler.js';
 
 export const registerOrderTools = (server: McpServer, context: Context) => {
   server.tool(
@@ -27,5 +28,12 @@ export const registerOrderTools = (server: McpServer, context: Context) => {
     'Break down total sales by month. Supports filtering by status and provider IDs, with optional custom date range.',
     MonthlySalesBreakdownSchema,
     async (params) => getMonthlySalesBreakdownHandler(context, params),
+  );
+
+  server.tool(
+    'orders_top_customers',
+    'Get top customers by total amount spent, with optional date and status filters.',
+    GetTopCustomersSchema,
+    async (params) => getTopCustomersHandler(context, params),
   );
 };
