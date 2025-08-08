@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "4.0.0-rc.10",
+  "version": "4.0.0-rc.11",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",

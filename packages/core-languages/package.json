@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-languages",
-  "version": "4.0.0-rc.10",
+  "version": "4.0.0-rc.11",
   "main": "lib/languages-index.js",
   "types": "lib/languages-index.d.ts",
   "type": "module",

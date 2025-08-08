@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-products",
-  "version": "4.0.0-rc.10",
+  "version": "4.0.0-rc.11",
   "main": "lib/products-index.js",
   "types": "lib/products-index.d.ts",
   "type": "module",

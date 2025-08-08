@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-currencies",
-  "version": "4.0.0-rc.10",
+  "version": "4.0.0-rc.11",
   "main": "lib/currencies-index.js",
   "types": "lib/currencies-index.d.ts",
   "type": "module",
