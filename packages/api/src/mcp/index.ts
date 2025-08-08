@@ -7,9 +7,7 @@ import { registerAssortmentTools } from './tools/assortment/index.js';
 import { registerCurrencyTools } from './tools/currency/index.js';
 import { registerCountryTools } from './tools/country/index.js';
 import { registerLanguageTools } from './tools/language/index.js';
-import { registerPaymentProviderTools } from './tools/payment/index.js';
-import { registerDeliveryProviderTools } from './tools/delivery/index.js';
-import { registerWarehousingProviderTools } from './tools/warehousing/index.js';
+import { registerProviderTools } from './tools/provider/index.js';
 import { registerOrderTools } from './tools/order/index.js';
 
 export default function createMcpServer(context: Context, roles) {
@@ -28,9 +26,7 @@ export default function createMcpServer(context: Context, roles) {
   registerCountryTools(server, context);
   registerLanguageTools(server, context);
   registerOtherTools(server, context);
-  registerPaymentProviderTools(server, context);
-  registerDeliveryProviderTools(server, context);
-  registerWarehousingProviderTools(server, context);
+  registerProviderTools(server, context);
   registerOrderTools(server, context);
   return server;
 }
