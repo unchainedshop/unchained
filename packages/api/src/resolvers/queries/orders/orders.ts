@@ -2,8 +2,6 @@ import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
 import { OrderQuery } from '@unchainedshop/core-orders';
 import { Context } from '../../../context.js';
-import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 
 export default async function orders(
   root: never,

@@ -42,8 +42,8 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
     );
     const orderIds = orders.map(({ _id }) => _id);
 
-    if (startDate) match.created = { ...(match.created || {}), $gte: startDate.toISOString() };
-    if (endDate) match.created = { ...(match.created || {}), $lte: endDate.toISOString() };
+    if (startDate) match.created = { ...(match.created || {}), $gte: startDate };
+    if (endDate) match.created = { ...(match.created || {}), $lte: endDate };
     if (orderIds?.length) match._id = { $in: orderIds };
 
     const topCustomers = await modules.orders.aggregateOrders({

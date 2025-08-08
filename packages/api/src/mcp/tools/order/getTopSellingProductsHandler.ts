@@ -38,8 +38,8 @@ export async function getTopSellingProductsHandler(context: Context, params: Top
     );
     const orderIds = orders.map(({ _id }) => _id);
 
-    if (startDate) match.created = { ...(match.created || {}), $gte: startDate.toISOString() };
-    if (endDate) match.created = { ...(match.created || {}), $lte: endDate.toISOString() };
+    if (startDate) match.created = { ...(match.created || {}), $gte: startDate };
+    if (endDate) match.created = { ...(match.created || {}), $lte: endDate };
     if (orderIds?.length) match.orderId = { $in: orderIds };
 
     const topProducts = await modules.orders.positions.aggregatePositions({
