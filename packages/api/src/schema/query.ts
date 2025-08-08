@@ -251,8 +251,8 @@ export default [
       ordersCount(
         includeCarts: Boolean = false
         queryString: String
-        paymentProviderTypes: [PaymentProviderType!]
-        deliveryProviderTypes: [DeliveryProviderType!]
+        paymentProviderIds: [String!]
+        deliveryProviderIds: [String!]
         dateRange: DateFilterInput
         status: [OrderStatus!]
       ): Int!
@@ -267,8 +267,8 @@ export default [
         queryString: String
         status: [OrderStatus!]
         sort: [SortOptionInput!]
-        paymentProviderTypes: [PaymentProviderType!]
-        deliveryProviderTypes: [DeliveryProviderType!]
+        paymentProviderIds: [String!]
+        deliveryProviderIds: [String!]
         dateRange: DateFilterInput
       ): [Order!]!
 

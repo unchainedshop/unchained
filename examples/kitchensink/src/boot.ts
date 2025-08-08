@@ -27,8 +27,7 @@ try {
         if (!errorCode) continue;
         (error as any).path?.map((path) => {
           fastify.log.error(
-            `${error.message} (${path} -> ${error.name})`,
-            (error as any).extensions,
+            `${error.message} (${path} -> ${error.name})`
           );
         });
       }

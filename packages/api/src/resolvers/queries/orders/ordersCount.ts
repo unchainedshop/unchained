@@ -9,42 +9,23 @@ export default async function ordersCount(
   params: OrderQuery,
   { modules, userId }: Context,
 ) {
-  const { paymentProviderTypes, deliveryProviderTypes, ...restParams } = params;
+  const { paymentProviderIds, deliveryProviderIds, ...restParams } = params;
   log(`query ordersCount: ${params.includeCarts ? 'includeCart' : ''}`, { userId });
 
   const promises: Promise<any>[] = [];
 
-  let paymentProviderIds: string[] | undefined;
-  let deliveryProviderIds: string[] | undefined;
-
-  if (paymentProviderTypes?.length) {
-    promises.push(
-      modules.payment.paymentProviders
-        .findProviders({ type: { $in: paymentProviderTypes as PaymentProviderType[] } })
-        .then((providers) => (paymentProviderIds = providers.map((p) => p._id))),
-    );
-  }
-
-  if (deliveryProviderTypes?.length) {
-    promises.push(
-      modules.delivery
-        .findProviders({ type: { $in: deliveryProviderTypes as DeliveryProviderType[] } })
-        .then((providers) => (deliveryProviderIds = providers.map((p) => p._id))),
-    );
-  }
-
   await Promise.all(promises);
   const [orderPayments, orderDeliveries] = await Promise.all([
-    paymentProviderIds
+    paymentProviderIds?.length
       ? modules.orders.payments.findOrderPaymentsByProviderIds({ paymentProviderIds })
       : [],
-    deliveryProviderIds
+    deliveryProviderIds?.length
       ? modules.orders.deliveries.findDeliveryByProvidersId({ deliveryProviderIds })
       : [],
   ]);
   if (
-    (paymentProviderTypes?.length && !orderPayments.length) ||
-    (deliveryProviderTypes && !orderDeliveries.length)
+    (paymentProviderIds?.length && !orderPayments.length) ||
+    (deliveryProviderIds?.length && !orderDeliveries.length)
   )
     return 0;
   const paymentIds = orderPayments.map((p) => p._id);
