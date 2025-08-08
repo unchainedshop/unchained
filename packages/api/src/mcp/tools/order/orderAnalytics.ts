@@ -7,22 +7,39 @@ import { OrderStatus } from '@unchainedshop/core-orders';
 import { getNormalizedProductDetails } from '../../utils/getNormalizedProductDetails.js';
 
 export const OrderAnalyticsSchema = {
-  action: z.enum([
-    'SALES_SUMMARY',
-    'MONTHLY_BREAKDOWN',
-    'TOP_CUSTOMERS',
-    'TOP_PRODUCTS'
-  ]).describe('Analytics action: SALES_SUMMARY (daily sales with totals), MONTHLY_BREAKDOWN (12-month sales breakdown), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products by quantity/revenue)'),
+  action: z
+    .enum(['SALES_SUMMARY', 'MONTHLY_BREAKDOWN', 'TOP_CUSTOMERS', 'TOP_PRODUCTS'])
+    .describe(
+      'Analytics action: SALES_SUMMARY (daily sales with totals), MONTHLY_BREAKDOWN (12-month sales breakdown), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products by quantity/revenue)',
+    ),
 
   ...DateRangeSchema,
-
   ...OrderFilterSchema,
 
-  days: z.number().int().min(1).max(365).optional().describe('Number of days for daily breakdown (SALES_SUMMARY only). Default: 30, Max: 365'),
+  days: z
+    .number()
+    .int()
+    .min(1)
+    .max(365)
+    .optional()
+    .describe('Number of days for daily breakdown (SALES_SUMMARY only). Default: 30, Max: 365'),
 
-  limit: z.number().int().min(1).max(100).optional().describe('Maximum number of results to return (TOP_CUSTOMERS/TOP_PRODUCTS only). Default: 10, Max: 100'),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe(
+      'Maximum number of results to return (TOP_CUSTOMERS/TOP_PRODUCTS only). Default: 10, Max: 100',
+    ),
 
-  customerStatus: z.string().optional().describe('Specific order status for customer analysis (TOP_CUSTOMERS only). Uses CONFIRMED+FULFILLED if not specified'),
+  customerStatus: z
+    .string()
+    .optional()
+    .describe(
+      'Specific order status for customer analysis (TOP_CUSTOMERS only). Uses CONFIRMED+FULFILLED if not specified',
+    ),
 };
 
 export const OrderAnalyticsZodSchema = z.object(OrderAnalyticsSchema);
@@ -43,17 +60,19 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
         const filters = await resolveOrderFilters(modules, { paymentProviderIds, deliveryProviderIds });
         if (!filters) {
           return {
-            content: [{
-              type: 'text' as const,
-              text: JSON.stringify({
-                totalSalesAmount: 0,
-                orderCount: 0,
-                averageOrderValue: 0,
-                currencyCode: null,
-                summary: [],
-                dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
-              }),
-            }],
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify({
+                  totalSalesAmount: 0,
+                  orderCount: 0,
+                  averageOrderValue: 0,
+                  currencyCode: null,
+                  summary: [],
+                  dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
+                }),
+              },
+            ],
           };
         }
 
@@ -92,20 +111,22 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
         const averageOrderValue = orderCount > 0 ? totalSalesAmount / orderCount : 0;
 
         return {
-          content: [{
-            type: 'text' as const,
-            text: JSON.stringify({
-              action,
-              data: {
-                totalSalesAmount,
-                orderCount,
-                averageOrderValue,
-                currencyCode: orders[0]?.currencyCode ?? null,
-                summary: formatSummaryMap(dateMap),
-                dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
-              }
-            }),
-          }],
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: {
+                  totalSalesAmount,
+                  orderCount,
+                  averageOrderValue,
+                  currencyCode: orders[0]?.currencyCode ?? null,
+                  summary: formatSummaryMap(dateMap),
+                  dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
+                },
+              }),
+            },
+          ],
         };
       }
 
@@ -116,20 +137,22 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
         const filters = await resolveOrderFilters(modules, { paymentProviderIds, deliveryProviderIds });
         if (!filters) {
           return {
-            content: [{
-              type: 'text' as const,
-              text: JSON.stringify({
-                action,
-                data: {
-                  totalSalesAmount: 0,
-                  orderCount: 0,
-                  averageOrderValue: 0,
-                  currencyCode: null,
-                  summary: [],
-                  dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
-                }
-              }),
-            }],
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify({
+                  action,
+                  data: {
+                    totalSalesAmount: 0,
+                    orderCount: 0,
+                    averageOrderValue: 0,
+                    currencyCode: null,
+                    summary: [],
+                    dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
+                  },
+                }),
+              },
+            ],
           };
         }
 
@@ -169,20 +192,22 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
         const averageOrderValue = orderCount > 0 ? totalSalesAmount / orderCount : 0;
 
         return {
-          content: [{
-            type: 'text' as const,
-            text: JSON.stringify({
-              action,
-              data: {
-                totalSalesAmount,
-                orderCount,
-                averageOrderValue,
-                currencyCode: orders[0]?.currencyCode ?? null,
-                summary: formatSummaryMap(monthlyMap),
-                dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
-              }
-            }),
-          }],
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: {
+                  totalSalesAmount,
+                  orderCount,
+                  averageOrderValue,
+                  currencyCode: orders[0]?.currencyCode ?? null,
+                  summary: formatSummaryMap(monthlyMap),
+                  dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
+                },
+              }),
+            },
+          ],
         };
       }
 
@@ -276,10 +301,12 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
         );
 
         return {
-          content: [{
-            type: 'text' as const,
-            text: JSON.stringify({ action, data: { customers: normalizedCustomers } }),
-          }],
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({ action, data: { customers: normalizedCustomers } }),
+            },
+          ],
         };
       }
 
@@ -353,19 +380,21 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
         );
 
         return {
-          content: [{
-            type: 'text' as const,
-            text: JSON.stringify({
-              action,
-              data: {
-                products: normalizedTopSellingProducts,
-                dateRange: {
-                  start: from ? new Date(from).toISOString() : null,
-                  end: to ? new Date(to).toISOString() : null,
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: {
+                  products: normalizedTopSellingProducts,
+                  dateRange: {
+                    start: from ? new Date(from).toISOString() : null,
+                    end: to ? new Date(to).toISOString() : null,
+                  },
                 },
-              }
-            }),
-          }],
+              }),
+            },
+          ],
         };
       }
 
@@ -374,10 +403,12 @@ export async function orderAnalytics(context: Context, params: OrderAnalyticsPar
     }
   } catch (error) {
     return {
-      content: [{
-        type: 'text' as const,
-        text: `Error in order analytics ${action.toLowerCase()}: ${(error as Error).message}`,
-      }],
+      content: [
+        {
+          type: 'text' as const,
+          text: `Error in order analytics ${action.toLowerCase()}: ${(error as Error).message}`,
+        },
+      ],
     };
   }
 }
