@@ -49,7 +49,6 @@ export async function createLocalization(context: Context, params: CreateLocaliz
     log('handler createLocalization', { userId, localizationType, entity });
 
     let module: any;
-    let entityId: string;
     let newEntity: any;
     let entityName: string;
 
@@ -82,7 +81,7 @@ export async function createLocalization(context: Context, params: CreateLocaliz
       delete entityData.decimals;
     }
 
-    entityId = await module.create(entityData as any);
+    const entityId = await module.create(entityData as any);
 
     if (localizationType === 'COUNTRY') {
       newEntity = await module.findCountry({ countryId: entityId });

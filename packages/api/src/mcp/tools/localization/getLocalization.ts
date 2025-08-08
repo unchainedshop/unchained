@@ -22,26 +22,24 @@ export async function getLocalization(context: Context, params: GetLocalizationP
   try {
     log('handler getLocalization', { userId, localizationType, entityId });
 
-    let module: any;
     let entityName: string;
     let idField: string;
-
+    let findMethod;
     if (localizationType === 'COUNTRY') {
-      module = modules.countries;
       entityName = 'country';
       idField = 'countryId';
+      findMethod = modules.countries.findCountry;
     } else if (localizationType === 'CURRENCY') {
-      module = modules.currencies;
       entityName = 'currency';
       idField = 'currencyId';
+      findMethod = modules.currencies.findCurrency;
     } else if (localizationType === 'LANGUAGE') {
-      module = modules.languages;
       entityName = 'language';
       idField = 'languageId';
+      findMethod = modules.languages.findLanguage;
     }
 
-    const findMethod = `find${entityName.charAt(0).toUpperCase() + entityName.slice(1)}`;
-    const entity = await module[findMethod]({ [idField]: entityId });
+    const entity = await findMethod({ [idField]: entityId });
 
     if (!entity) {
       return {

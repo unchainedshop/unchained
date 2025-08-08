@@ -67,22 +67,20 @@ export async function listLocalizations(context: Context, params: ListLocalizati
   try {
     log('handler listLocalizations', { userId, localizationType, params });
 
-    let module: any;
     let entityName: string;
-
+    let findMethod;
     if (localizationType === 'COUNTRY') {
-      module = modules.countries;
       entityName = 'countries';
+      findMethod = modules.countries.findCountries;
     } else if (localizationType === 'CURRENCY') {
-      module = modules.currencies;
       entityName = 'currencies';
+      findMethod = modules.currencies.findCurrencies;
     } else if (localizationType === 'LANGUAGE') {
-      module = modules.languages;
       entityName = 'languages';
+      findMethod = modules.language.findLanguages;
     }
 
-    const findMethod = `find${entityName.charAt(0).toUpperCase() + entityName.slice(1)}`;
-    const entities = await module[findMethod]({
+    const entities = await findMethod({
       limit,
       offset,
       includeInactive,

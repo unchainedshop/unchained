@@ -28,26 +28,30 @@ export async function removeLocalization(context: Context, params: RemoveLocaliz
     let entityName: string;
     let idField: string;
 
+    let findMethod;
+
     if (localizationType === 'COUNTRY') {
       module = modules.countries;
       NotFoundError = CountryNotFoundError;
       entityName = 'country';
       idField = 'countryId';
+      findMethod = modules.countries.findCountry;
     } else if (localizationType === 'CURRENCY') {
       module = modules.currencies;
       NotFoundError = CurrencyNotFoundError;
       entityName = 'currency';
       idField = 'currencyId';
+      findMethod = modules.currencies.findCountry;
     } else if (localizationType === 'LANGUAGE') {
       module = modules.languages;
       NotFoundError = LanguageNotFoundError;
       entityName = 'language';
       idField = 'languageId';
+      findMethod = modules.languages.findCountry;
     }
 
-    const findMethod = `find${entityName.charAt(0).toUpperCase() + entityName.slice(1)}`;
     const findParam = { [idField]: entityId };
-    const existing = await module[findMethod](findParam);
+    const existing = await findMethod(findParam);
 
     if (!existing) throw new NotFoundError(findParam);
 
