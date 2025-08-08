@@ -77,7 +77,7 @@ export async function listLocalizations(context: Context, params: ListLocalizati
       findMethod = modules.currencies.findCurrencies;
     } else if (localizationType === 'LANGUAGE') {
       entityName = 'languages';
-      findMethod = modules.language.findLanguages;
+      findMethod = modules.languages.findLanguages;
     }
 
     const entities = await findMethod({
