@@ -181,7 +181,7 @@ export default [
       """
       Get all delivery interfaces filtered by type
       """
-      deliveryInterfaces(type: DeliveryProviderType!): [DeliveryInterface!]!
+      deliveryInterfaces(type: DeliveryProviderType): [DeliveryInterface!]!
         @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
@@ -205,7 +205,7 @@ export default [
       """
       Get all warehousing interfaces filtered by type
       """
-      warehousingInterfaces(type: WarehousingProviderType!): [WarehousingInterface!]!
+      warehousingInterfaces(type: WarehousingProviderType): [WarehousingInterface!]!
         @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
@@ -242,7 +242,7 @@ export default [
       """
       Get all payment interfaces filtered by type
       """
-      paymentInterfaces(type: PaymentProviderType!): [PaymentInterface!]!
+      paymentInterfaces(type: PaymentProviderType): [PaymentInterface!]!
         @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """

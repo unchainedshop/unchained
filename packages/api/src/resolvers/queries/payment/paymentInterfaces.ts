@@ -10,11 +10,15 @@ export default async function paymentInterfaces(
 ) {
   log(`query paymentInterfaces ${type}`, { userId });
 
-  return PaymentDirector.getAdapters()
-    .filter((Adapter) => Adapter.typeSupported(type))
-    .map((Adapter) => ({
-      _id: Adapter.key,
-      label: Adapter.label,
-      version: Adapter.version,
-    }));
+  const allAdapters = await PaymentDirector.getAdapters();
+
+  const filteredAdapters = type
+    ? allAdapters.filter((Adapter) => Adapter.typeSupported(type as PaymentProviderType))
+    : allAdapters;
+
+  return filteredAdapters.map((Adapter) => ({
+    _id: Adapter.key,
+    label: Adapter.label,
+    version: Adapter.version,
+  }));
 }
