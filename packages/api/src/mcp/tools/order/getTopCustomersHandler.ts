@@ -26,8 +26,8 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
   try {
     log('handler getTopCustomersHandler', { userId, params });
 
-    const match: any = { status };
-    const { startDate, endDate } = resolveDateRange(dateRange.start, dateRange.end);
+    const match: any = {};
+    const { startDate, endDate } = resolveDateRange(dateRange?.start, dateRange?.end);
 
     const orders = await modules.orders.findOrders(
       {
@@ -40,10 +40,11 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
         },
       },
     );
-    const orderIds = orders.map(({ _id }) => _id);
 
+    const orderIds = orders.map(({ _id }) => _id);
     if (startDate) match.created = { ...(match.created || {}), $gte: startDate };
     if (endDate) match.created = { ...(match.created || {}), $lte: endDate };
+    if (status) match.status = status;
     if (orderIds?.length) match._id = { $in: orderIds };
 
     const topCustomers = await modules.orders.aggregateOrders({
@@ -82,7 +83,6 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
       sort: { totalSpent: -1 },
       limit,
     });
-
     const normalizedCustomers = await Promise.all(
       topCustomers.map(async (c) => {
         const user = await modules.users.findUserById(c._id);
@@ -92,6 +92,7 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
         return {
           userId: c._id?.toString?.() ?? null,
           user: {
+            ...user,
             avatar,
           },
           totalSpent: c.totalSpent,
