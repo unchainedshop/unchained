@@ -41,13 +41,13 @@ export async function removeLocalization(context: Context, params: RemoveLocaliz
       NotFoundError = CurrencyNotFoundError;
       entityName = 'currency';
       idField = 'currencyId';
-      findMethod = modules.currencies.findCountry;
+      findMethod = modules.currencies.findCurrency;
     } else if (localizationType === 'LANGUAGE') {
       module = modules.languages;
       NotFoundError = LanguageNotFoundError;
       entityName = 'language';
       idField = 'languageId';
-      findMethod = modules.languages.findCountry;
+      findMethod = modules.languages.findLanguage;
     }
 
     const findParam = { [idField]: entityId };
