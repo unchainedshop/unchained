@@ -7,30 +7,7 @@ import { createProductHandler, CreateProductSchema } from './createProductHandle
 import { removeProductHandler, RemoveProductSchema } from './removeProductHandler.js';
 import { updateProductStatusHandler, UpdateProductStatusSchema } from './updateProductStatusHandler.js';
 import { updateProductHandler, UpdateProductSchema } from './updateProductHandler.js';
-import {
-  removeProductVariationHandler,
-  RemoveProductVariationSchema,
-} from './removeProductVariationHandler.js';
-import {
-  createProductVariationHandler,
-  CreateProductVariationSchema,
-} from './createProductVariationHandler.js';
-import {
-  addProductAssignmentHandler,
-  AssignProductVariationSchema,
-} from './addProductAssignmentHandler.js';
-import {
-  createProductVariationOptionHandler,
-  CreateProductVariationOptionSchema,
-} from './createProductVariationOptionHandler.js';
-import {
-  removeProductVariationOptionHandler,
-  RemoveProductVariationOptionSchema,
-} from './removeProductVariationOptionHandler.js';
-import {
-  removeProductAssignmentHandler,
-  RemoveProductAssignmentSchema,
-} from './removeProductAssignmentHandler.js';
+import { productVariationsManager, ProductVariationsSchema } from './productVariationsManager.js';
 import {
   addProductMediaUploadHandler,
   AddProductMediaUploadSchema,
@@ -54,7 +31,6 @@ import {
 import { productSiblingsHandler, ProductSiblingsSchema } from './productSiblingsHandler.js';
 import { productMediaHandler, ProductMediaSchema } from './productMediaHandler.js';
 import { variationProductsHandler, VariationProductsSchema } from './variationProductsHandler.js';
-import { productVariationsHandler, ProductVariationsSchema } from './productVariationsHandler.js';
 import {
   addProductBundleItemHandler,
   AddProductBundleItemSchema,
@@ -117,45 +93,10 @@ export const registerProductTools = (server: McpServer, context: Context) => {
   );
 
   server.tool(
-    'product_createVariation',
-    'Create a variation for a CONFIGURABLE_PRODUCT product including localized texts.',
-    CreateProductVariationSchema,
-    async (params) => createProductVariationHandler(context, params),
-  );
-
-  server.tool(
-    'productVariation_remove',
-    'Remove a product variation by its ID.',
-    RemoveProductVariationSchema,
-    async (params) => removeProductVariationHandler(context, params),
-  );
-
-  server.tool(
-    'product_assignVariation',
-    'Assign a product variant to a configurable product with a unique combination of option vectors. assigning with incomplete vector will fail. make sure all variation options are selected before calling this tool.',
-    AssignProductVariationSchema,
-    async (params) => addProductAssignmentHandler(context, params),
-  );
-
-  server.tool(
-    'product_createVariationOption',
-    'Create a new option for a product variation with localized titles and subtitles.',
-    CreateProductVariationOptionSchema,
-    async (params) => createProductVariationOptionHandler(context, params),
-  );
-
-  server.tool(
-    'productVariationOption_remove',
-    'Remove an option from a product variation by its value.',
-    RemoveProductVariationOptionSchema,
-    async (params) => removeProductVariationOptionHandler(context, params),
-  );
-
-  server.tool(
-    'product_removeAssignment',
-    'Remove a product variant assignment from a configurable product using attribute vectors.',
-    RemoveProductAssignmentSchema,
-    async (params) => removeProductAssignmentHandler(context, params),
+    'product_variationsManagement',
+    'Advanced product variations system for CONFIGURABLE_PRODUCT management. Complete workflow support: CREATE_VARIATION (define attribute types like Color/Size with enum constraints), REMOVE_VARIATION (delete entire attribute types), CREATE_OPTION (add values like "Red"/"Blue" to Color), REMOVE_OPTION (remove specific values), ADD_ASSIGNMENT (map concrete products to exact variation combinations with full vector validation), REMOVE_ASSIGNMENT (unmap product assignments). Features: automatic variation matrix validation, localized text support, product type enforcement, and comprehensive error handling for invalid combinations.',
+    ProductVariationsSchema,
+    async (params) => productVariationsManager(context, params),
   );
 
   server.tool(
@@ -230,13 +171,6 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Retrieve all variant products of a configurable product that exactly match the provided combination of variation key-value pairs (e.g., Color: Red, Size: M). You must provide at least one vector. Optionally include inactive variants in the result.',
     VariationProductsSchema,
     async (params) => variationProductsHandler(context, params),
-  );
-
-  server.tool(
-    'product_variations',
-    'Retrieve all defined variation attributes (e.g., Color, Size) and their possible values for a configurable product.',
-    ProductVariationsSchema,
-    async (params) => productVariationsHandler(context, params),
   );
 
   server.tool(
