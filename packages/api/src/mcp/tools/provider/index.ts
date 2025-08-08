@@ -45,7 +45,7 @@ export const registerProviderTools = (server: McpServer, context: Context) => {
 
   server.tool(
     'provider_interfaces',
-    'Get all available adapter interfaces for a provider type showing adapter keys, names, versions, default configurations, and activation status. Use this before creating providers to see available options.',
+    'Get all available adapter interfaces for a provider type showing adapter keys, names, versions, default configurations, and activation status. Optionally filter by provider subtype (CARD/INVOICE for payments, PICKUP/SHIPPING for delivery, etc.) to see only relevant adapters. Use this before creating providers to see available options.',
     GetProviderInterfacesSchema,
     async (params) => getProviderInterfaces(context, params),
   );
