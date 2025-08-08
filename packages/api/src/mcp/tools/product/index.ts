@@ -8,21 +8,6 @@ import { removeProductHandler, RemoveProductSchema } from './removeProductHandle
 import { publishProductHandler, PublishProductSchema } from './publishProduct.js';
 import { unpublishProductHandler, UnpublishProductSchema } from './unpublishProductHandler.js';
 import { updateProductHandler, UpdateProductSchema } from './updateProductHandler.js';
-import { updateProductTextsHandler, UpdateProductTextsSchema } from './updateProductTextsHandler.js';
-import {
-  updateProductCommerceHandler,
-  UpdateProductCommerceSchema,
-} from './updateProductCommerceHandler.js';
-import {
-  updateProductWarehousingHandler,
-  UpdateProductWarehousingSchema,
-} from './updateProductWarehousingHandler.js';
-import { updateProductSupplyHandler, UpdateProductSupplySchema } from './updateProductSupplyHandler.js';
-import {
-  updateProductTokenizationHandler,
-  UpdateProductTokenizationSchema,
-} from './updateProductTokenizationHandler.js';
-import { updateProductPlanHandler, UpdateProductPlanSchema } from './updateProductPlanHandler.js';
 import {
   removeProductVariationHandler,
   RemoveProductVariationSchema,
@@ -52,10 +37,6 @@ import {
   AddProductMediaUploadSchema,
 } from './addProductMediaUploadHandler.js';
 import { removeProductMediaHandler, RemoveProductMediaSchema } from './removeProductMediaHandler.js';
-import {
-  updateProductMediaTextsHandler,
-  UpdateProductMediaTextsSchema,
-} from './updateProductMediaTextsHandler.js';
 import { reorderProductMediaHandler, ReorderProductMediaSchema } from './reorderProductMediaHandler.js';
 import { productReviewsCountHandler, ProductReviewsCountSchema } from './productReviewsCountHandler.js';
 import { productReviewsHandler, ProductReviewsSchema } from './productReviewsHandler.js';
@@ -71,10 +52,6 @@ import {
   translatedProductVariationTextsHandler,
   TranslatedProductVariationTextsSchema,
 } from './translatedProductVariationTextsHandler.js';
-import {
-  updateProductVariationTextsHandler,
-  UpdateProductVariationTextsSchema,
-} from './updateProductVariationTextsHandler.js';
 import { productSiblingsHandler, ProductSiblingsSchema } from './productSiblingsHandler.js';
 import { productMediaHandler, ProductMediaSchema } from './productMediaHandler.js';
 import { variationProductsHandler, VariationProductsSchema } from './variationProductsHandler.js';
@@ -142,49 +119,9 @@ export const registerProductTools = (server: McpServer, context: Context) => {
   );
   server.tool(
     'product_update',
-    'Update specified fields (such as tags, sequence, and metadata) of an existing product identified by its productId.',
+    'Unified handler to update product fields: basic info (tags, sequence, meta) for ALL types; type-specific data - plan (PLAN_PRODUCT only), warehousing/supply (SIMPLE_PRODUCT only), tokenization (TOKENIZED_PRODUCT only), commerce (all except CONFIGURABLE_PRODUCT & BUNDLE_PRODUCT); texts for main product, variations, or media assets. Enforces product type restrictions with runtime validation.',
     UpdateProductSchema,
     async (params) => updateProductHandler(context, params),
-  );
-
-  server.tool(
-    'product_updateTexts',
-    'Update localized texts (title, subtitle, description, slug, vendor, brand, labels) of a product',
-    UpdateProductTextsSchema,
-    async (params) => updateProductTextsHandler(context, params),
-  );
-
-  server.tool(
-    'product_updateCommerce',
-    'Update commerce information (pricing) for a product (all types except CONFIGURABLE_PRODUCT)',
-    UpdateProductCommerceSchema,
-    async (params) => updateProductCommerceHandler(context, params),
-  );
-
-  server.tool(
-    'product_updateWarehousing',
-    'Update warehousing details (SKU, base unit) for a SIMPLE_PRODUCT type product',
-    UpdateProductWarehousingSchema,
-    async (params) => updateProductWarehousingHandler(context, params),
-  );
-
-  server.tool(
-    'product_updateSupply',
-    'Update the supply (delivery) details for a SIMPLE_PRODUCT type product',
-    UpdateProductSupplySchema,
-    async (params) => updateProductSupplyHandler(context, params),
-  );
-  server.tool(
-    'product_updateTokenization',
-    'Update tokenization details for a TOKENIZED_PRODUCT type product',
-    UpdateProductTokenizationSchema,
-    async (params) => updateProductTokenizationHandler(context, params),
-  );
-  server.tool(
-    'product_updatePlan',
-    'Update the subscription plan configuration for a product of type PLAN. This includes usage calculation type (LICENSED or METERED), billing interval settings, and optional trial period configuration. This operation is only valid for products with type PLAN_PRODUCT.',
-    UpdateProductPlanSchema,
-    async (params) => updateProductPlanHandler(context, params),
   );
 
   server.tool(
@@ -244,13 +181,6 @@ export const registerProductTools = (server: McpServer, context: Context) => {
   );
 
   server.tool(
-    'productMedia_updateTexts',
-    'Update localized texts (title, subtitle) of a product media asset.',
-    UpdateProductMediaTextsSchema,
-    async (params) => updateProductMediaTextsHandler(context, params),
-  );
-
-  server.tool(
     'product_reorderMedias',
     'Reorder media assets of a product by providing new sort keys.',
     ReorderProductMediaSchema,
@@ -289,12 +219,6 @@ export const registerProductTools = (server: McpServer, context: Context) => {
     'Retrieve translated texts for a product variation or optionally a specific variation option.',
     TranslatedProductVariationTextsSchema,
     async (params) => translatedProductVariationTextsHandler(context, params),
-  );
-  server.tool(
-    'productVariation_updateTexts',
-    'Update product variation texts with the specified locales for product variations that match the provided variation ID and production option value.',
-    UpdateProductVariationTextsSchema,
-    async (params) => updateProductVariationTextsHandler(context, params),
   );
   server.tool(
     'product_siblings',
