@@ -18,7 +18,7 @@ export const productVariationsHandler = async (context: Context, params: Product
   try {
     log('handler productVariationsHandler', { userId, productId });
 
-    const product = await getNormalizedProductDetails(productId, context);
+    const product = await modules.products.findProduct({ productId });
     if (!product) throw new ProductNotFoundError({ productId });
 
     if (product.type !== 'CONFIGURABLE_PRODUCT') {
@@ -28,15 +28,12 @@ export const productVariationsHandler = async (context: Context, params: Product
         required: 'CONFIGURABLE_PRODUCT',
       });
     }
-    const variations = await modules.products.variations.findProductVariations({
-      productId,
-    });
 
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ product, variations }),
+          text: JSON.stringify({ product: await getNormalizedProductDetails(productId, context) }),
         },
       ],
     };

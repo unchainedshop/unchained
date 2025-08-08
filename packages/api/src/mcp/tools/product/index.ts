@@ -5,8 +5,7 @@ import { productsCountHandler, ProductsCountSchema } from './productsCountHandle
 import { getProductHandler, GetProductSchema } from './getProduct.js';
 import { createProductHandler, CreateProductSchema } from './createProductHandler.js';
 import { removeProductHandler, RemoveProductSchema } from './removeProductHandler.js';
-import { publishProductHandler, PublishProductSchema } from './publishProduct.js';
-import { unpublishProductHandler, UnpublishProductSchema } from './unpublishProductHandler.js';
+import { updateProductStatusHandler, UpdateProductStatusSchema } from './updateProductStatusHandler.js';
 import { updateProductHandler, UpdateProductSchema } from './updateProductHandler.js';
 import {
   removeProductVariationHandler,
@@ -105,17 +104,10 @@ export const registerProductTools = (server: McpServer, context: Context) => {
   );
 
   server.tool(
-    'product_publish',
-    'Publish a product by its id changing it to active and available for sale',
-    PublishProductSchema,
-    async (params) => publishProductHandler(context, params),
-  );
-
-  server.tool(
-    'product_unpublish',
-    'Deactivates or Unpublishes product by its id changing it to DRAFT and not available for sale',
-    UnpublishProductSchema,
-    async (params) => unpublishProductHandler(context, params),
+    'product_updateStatus',
+    'Update product status - PUBLISH to make active and available for sale, or UNPUBLISH to make DRAFT and not available for sale',
+    UpdateProductStatusSchema,
+    async (params) => updateProductStatusHandler(context, params),
   );
   server.tool(
     'product_update',
