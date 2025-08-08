@@ -60,10 +60,10 @@ export async function updateLocalization(context: Context, params: UpdateLocaliz
 
     let module: any;
     let NotFoundError: any;
-    let updatedEntity: any;
     let entityName: string;
     let idField: string;
-
+    let existsMethod;
+    let findMethod;
     if (localizationType === 'COUNTRY') {
       module = modules.countries;
       NotFoundError = CountryNotFoundError;
@@ -74,6 +74,8 @@ export async function updateLocalization(context: Context, params: UpdateLocaliz
         throw new Error('Country ISO code must be exactly 2 characters (ISO 3166-1 alpha-2)');
       }
       if (entity.isoCode) entity.isoCode = entity.isoCode.toUpperCase();
+      existsMethod = modules.countries.countryExists;
+      findMethod = modules.countries.findCountry;
     } else if (localizationType === 'CURRENCY') {
       module = modules.currencies;
       NotFoundError = CurrencyNotFoundError;
@@ -84,6 +86,8 @@ export async function updateLocalization(context: Context, params: UpdateLocaliz
         throw new Error('Currency ISO code must be exactly 3 characters (ISO 4217)');
       }
       if (entity.isoCode) entity.isoCode = entity.isoCode.toUpperCase();
+      existsMethod = modules.currencies.currencyExists;
+      findMethod = modules.currencies.findCurrency;
     } else if (localizationType === 'LANGUAGE') {
       module = modules.languages;
       NotFoundError = LanguageNotFoundError;
@@ -93,12 +97,13 @@ export async function updateLocalization(context: Context, params: UpdateLocaliz
       if (entity.isoCode && (entity.isoCode.length < 2 || entity.isoCode.length > 10)) {
         throw new Error('Language ISO code must be 2-10 characters (ISO 639-1/ISO 3166-1)');
       }
+      existsMethod = modules.languages.languageExists;
+      findMethod = modules.languages.findLanguage;
     }
 
-    const existsMethod = `${entityName}Exists`;
     const existsParam = { [idField]: entityId };
 
-    if (!(await module[existsMethod](existsParam))) {
+    if (!(await existsMethod(existsParam))) {
       throw new NotFoundError(existsParam);
     }
 
@@ -109,9 +114,7 @@ export async function updateLocalization(context: Context, params: UpdateLocaliz
     }
 
     await module.update(entityId, updateData);
-
-    const findMethod = `find${entityName.charAt(0).toUpperCase() + entityName.slice(1)}`;
-    updatedEntity = await module[findMethod](existsParam);
+    const updatedEntity = await findMethod(existsParam);
 
     return {
       content: [

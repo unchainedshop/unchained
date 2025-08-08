@@ -31,17 +31,13 @@ export async function countLocalizations(context: Context, params: CountLocaliza
     log('handler countLocalizations', { userId, localizationType, params });
 
     let module: any;
-    let entityName: string;
 
     if (localizationType === 'COUNTRY') {
       module = modules.countries;
-      entityName = 'countries';
     } else if (localizationType === 'CURRENCY') {
       module = modules.currencies;
-      entityName = 'currencies';
     } else if (localizationType === 'LANGUAGE') {
       module = modules.languages;
-      entityName = 'languages';
     }
 
     const count = await module.count({

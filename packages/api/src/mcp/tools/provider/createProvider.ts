@@ -44,7 +44,6 @@ export async function createProvider(context: Context, params: CreateProviderPar
 
     let module: any;
     let director: any;
-    let created: any;
 
     switch (providerType) {
       case 'PAYMENT':
@@ -66,7 +65,7 @@ export async function createProvider(context: Context, params: CreateProviderPar
     const Adapter = director.getAdapter(provider.adapterKey);
     if (!Adapter) throw new ProviderConfigurationInvalid(provider);
 
-    created = await module.create({
+    const created = await module.create({
       configuration: Adapter.initialConfiguration,
       ...provider,
     } as any);
