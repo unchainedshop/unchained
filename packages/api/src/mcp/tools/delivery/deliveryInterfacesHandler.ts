@@ -10,7 +10,7 @@ const DeliveryProviderTypeEnum = z
   .describe('Delivery provider type');
 
 export const DeliveryInterfacesSchema = {
-  type: DeliveryProviderTypeEnum.describe('Filter delivery interfaces by type'),
+  type: DeliveryProviderTypeEnum.optional().describe('Optional filter by delivery provider type'),
 };
 
 export const DeliveryInterfacesZodSchema = z.object(DeliveryInterfacesSchema);
@@ -23,9 +23,13 @@ export async function deliveryInterfacesHandler(context: Context, params: Delive
   try {
     log('handler deliveryInterfacesHandler', { userId, type });
 
-    const interfaces = await DeliveryDirector.getAdapters({
-      adapterFilter: (Adapter) => Adapter.typeSupported(type as DeliveryProviderType),
-    }).map((Adapter) => ({
+    const allAdapters = await DeliveryDirector.getAdapters();
+
+    const filteredAdapters = type
+      ? allAdapters.filter((Adapter) => Adapter.typeSupported(type as DeliveryProviderType))
+      : allAdapters;
+
+    const interfaces = filteredAdapters.map((Adapter) => ({
       _id: Adapter.key,
       label: Adapter.label,
       version: Adapter.version,

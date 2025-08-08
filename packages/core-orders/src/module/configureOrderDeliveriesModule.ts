@@ -55,6 +55,17 @@ export const configureOrderDeliveriesModule = ({
       return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
     },
 
+    findDeliveryByProvidersId: async (
+      { deliveryProviderIds }: { deliveryProviderIds: string[] },
+      options?: mongodb.FindOptions,
+    ): Promise<OrderDelivery[]> => {
+      if (!deliveryProviderIds?.length) return [];
+      return OrderDeliveries.find(
+        { deliveryProviderId: { $in: deliveryProviderIds } },
+        options,
+      ).toArray();
+    },
+
     normalizedStatus,
 
     // Mutations

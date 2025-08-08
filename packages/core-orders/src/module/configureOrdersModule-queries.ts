@@ -2,6 +2,7 @@ import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 import buildFindSelector from './buildFindSelector.js';
 import { Order, OrderQuery } from '../db/OrdersCollection.js';
+import { Document } from 'mongodb';
 
 export interface OrderReport {
   newCount: number;
@@ -9,6 +10,16 @@ export interface OrderReport {
   rejectCount: number;
   confirmCount: number;
   fulfillCount: number;
+}
+
+interface OrderAggregateParams {
+  match?: Record<string, any>;
+  project?: Record<string, any>;
+  group?: Record<string, any>;
+  sort?: Record<string, number>;
+  limit?: number;
+  addFields?: Record<string, any>;
+  pipeline?: any[];
 }
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
@@ -201,6 +212,29 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         limit: 1,
       });
       return !!orderCount;
+    },
+    aggregateOrders: async ({
+      match,
+      project,
+      group,
+      sort,
+      limit,
+      addFields,
+      pipeline,
+    }: OrderAggregateParams): Promise<Document[]> => {
+      const stages: Document[] = [];
+      if (pipeline?.length) {
+        return await Orders.aggregate(pipeline).toArray();
+      }
+
+      if (match) stages.push({ $match: match });
+      if (project) stages.push({ $project: project });
+      if (group) stages.push({ $group: group });
+      if (addFields) stages.push({ $addFields: addFields });
+      if (sort) stages.push({ $sort: sort });
+      if (typeof limit === 'number') stages.push({ $limit: limit });
+
+      return Orders.aggregate(stages).toArray();
     },
   };
 };

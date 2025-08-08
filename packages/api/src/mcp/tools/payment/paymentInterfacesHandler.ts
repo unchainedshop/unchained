@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { PaymentDirector } from '@unchainedshop/core';
@@ -8,7 +7,7 @@ import { PaymentProviderType } from '@unchainedshop/core-payment';
 const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
 
 export const PaymentInterfacesSchema = {
-  type: PaymentProviderTypeEnum.describe('Filter payment interfaces by provider type'),
+  type: PaymentProviderTypeEnum.optional().describe('Optional filter by payment provider type'),
 };
 
 export const PaymentInterfacesZodSchema = z.object(PaymentInterfacesSchema);
@@ -21,13 +20,17 @@ export async function paymentInterfacesHandler(context: Context, params: Payment
   try {
     log('handler paymentInterfacesHandler', { userId, type });
 
-    const interfaces = await PaymentDirector.getAdapters()
-      .filter((Adapter) => Adapter.typeSupported(type as PaymentProviderType))
-      .map((Adapter) => ({
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      }));
+    const allAdapters = await PaymentDirector.getAdapters();
+
+    const filteredAdapters = type
+      ? allAdapters.filter((Adapter) => Adapter.typeSupported(type as PaymentProviderType))
+      : allAdapters;
+
+    const interfaces = filteredAdapters.map((Adapter) => ({
+      _id: Adapter.key,
+      label: Adapter.label,
+      version: Adapter.version,
+    }));
 
     return {
       content: [

@@ -9,7 +9,7 @@ const WarehousingProviderTypeEnum = z
   .describe('Warehousing provider type');
 
 export const WarehousingInterfacesSchema = {
-  type: WarehousingProviderTypeEnum.describe('Type of warehousing provider interface'),
+  type: WarehousingProviderTypeEnum.optional().describe('Optional filter by warehousing provider type'),
 };
 
 export const WarehousingInterfacesZodSchema = z.object(WarehousingInterfacesSchema);
@@ -25,9 +25,13 @@ export async function warehousingInterfacesHandler(
   try {
     log('handler warehousingInterfacesHandler', { userId, type });
 
-    const interfaces = await WarehousingDirector.getAdapters({
-      adapterFilter: (Adapter) => Adapter.typeSupported(type as WarehousingProviderType),
-    }).map((Adapter) => ({
+    const allAdapters = await WarehousingDirector.getAdapters();
+
+    const filteredAdapters = type
+      ? allAdapters.filter((Adapter) => Adapter.typeSupported(type as WarehousingProviderType))
+      : allAdapters;
+
+    const interfaces = filteredAdapters.map((Adapter) => ({
       _id: Adapter.key,
       label: Adapter.label,
       version: Adapter.version,
