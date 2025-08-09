@@ -208,7 +208,12 @@ export const configureLocalizationMcpModule = (context: Context) => {
 
     getPluralEntityName: (localizationType: LocalizationType) => {
       const config = getLocalizationConfig(context, localizationType);
-      return `${config.entityName}s`;
+      const mapper = {
+        COUNTRY: 'countries',
+        CURRENCY: 'currencies',
+        LANGUAGE: 'languages',
+      };
+      return mapper[localizationType] || `${config.entityName}s`;
     },
   };
 };

@@ -1,29 +1,29 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureFilterMcpModule } from '../../modules/configureFilterMcpModule.js';
+import { configureAssortmentMcpModule } from '../../modules/configureAssortmentMcpModule.js';
 import {
   actionValidators,
-  FilterManagementSchema,
-  FilterManagementZodSchema,
-  FilterManagementParams,
+  AssortmentManagementSchema,
+  AssortmentManagementZodSchema,
+  AssortmentManagementParams,
   ActionName,
 } from './schemas.js';
 import actionHandlers from './handlers.js';
 
-export { FilterManagementSchema, FilterManagementZodSchema, FilterManagementParams };
+export { AssortmentManagementSchema, AssortmentManagementZodSchema, AssortmentManagementParams };
 
-export async function filterManagement(context: Context, params: FilterManagementParams) {
+export async function assortmentManagement(context: Context, params: AssortmentManagementParams) {
   const { action, ...actionParams } = params;
-  log('MCP handler filterManagement ', { userId: context.userId, params });
+  log('MCP assortmentManagement', { userId: context.userId, params });
 
   try {
     if (!(action in actionHandlers)) {
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const filterModule = configureFilterMcpModule(context);
+    const assortmentModule = configureAssortmentMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](filterModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](assortmentModule, parsedParams as never);
 
     return {
       content: [
@@ -41,7 +41,7 @@ export async function filterManagement(context: Context, params: FilterManagemen
       content: [
         {
           type: 'text' as const,
-          text: `Error in filter ${action.toLowerCase()}: ${(error as Error).message}`,
+          text: `Error in assortment ${action.toLowerCase()}: ${(error as Error).message}`,
         },
       ],
     };

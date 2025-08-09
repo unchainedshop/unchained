@@ -205,11 +205,9 @@ export const configureProductMcpModule = (context: Context) => {
 
       const updateData: any = {};
 
-
       if (productEntity.tags !== undefined) updateData.tags = productEntity.tags;
       if (productEntity.sequence !== undefined) updateData.sequence = productEntity.sequence;
       if (productEntity.meta !== undefined) updateData.meta = productEntity.meta;
-
 
       if (productEntity.plan !== undefined) {
         if (existingProduct.type !== ProductTypes.PlanProduct) {
@@ -256,7 +254,6 @@ export const configureProductMcpModule = (context: Context) => {
       if (productEntity.commerce !== undefined) {
         updateData.commerce = productEntity.commerce;
       }
-
 
       if (Object.keys(updateData).length > 0) {
         await modules.products.update(productId, updateData);
