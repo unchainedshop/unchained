@@ -1,9 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
+import { configureFilterMcpModule, FilterType } from '../../modules/configureFilterMcpModule.js';
 import { log } from '@unchainedshop/logger';
-import { FilterDirector } from '@unchainedshop/core';
-import { FilterNotFoundError } from '../../../errors.js';
-import { getNormalizedFilterDetails } from '../../utils/getNormalizedFilterDetails.js';
 
 const FilterTextInputSchema = z.object({
   locale: z
@@ -27,10 +25,12 @@ const FilterOptionTextInputSchema = z.object({
   subtitle: z.string().optional().describe('Optional localized subtitle for the filter option'),
 });
 
-const SortOptionInputSchema = z.object({
-  key: z.string().min(1).describe('Field key to sort by (e.g., "key", "createdAt")'),
-  value: z.enum(['ASC', 'DESC']).describe('Sort direction: ASC for ascending, DESC for descending'),
-});
+const SortOptionInputSchema = z
+  .object({
+    key: z.string().min(1).describe('Field key to sort by (e.g., "key", "createdAt")'),
+    value: z.enum(['ASC', 'DESC']).describe('Sort direction: ASC for ascending, DESC for descending'),
+  })
+  .strict();
 
 const CreateFilterInputSchema = z.object({
   key: z.string().min(1).describe('Unique key for the filter'),
@@ -145,105 +145,124 @@ export const FilterManagementZodSchema = z.object(FilterManagementSchema);
 export type FilterManagementParams = z.infer<typeof FilterManagementZodSchema>;
 
 export async function filterManagement(context: Context, params: FilterManagementParams) {
-  const { action, filterId } = params;
-  const { modules, userId } = context;
-
+  const { action, filterId } = params as any;
+  log('MCP handler filterManagement ', { userId: context.userId, params });
   try {
-    log('handler filterManagement', { userId, params });
+    const filterModule = configureFilterMcpModule(context);
 
     switch (action) {
       case 'CREATE': {
-        const { filter, texts = [] } = params;
-        if (!filter) throw new Error('Filter data is required for CREATE action');
-
-        const newFilter = await modules.filters.create(filter as any);
-        await FilterDirector.invalidateProductIdCache(newFilter, context);
-
-        if (texts.length > 0) {
-          await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);
+        const { filter, texts } = params as any;
+        if (!filter || !filter.key || !filter.type) {
+          throw new Error('Filter data with key and type is required for CREATE action');
         }
 
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify({ filter: await getNormalizedFilterDetails(newFilter._id, context) }),
-            },
-          ],
-        };
-      }
-
-      case 'UPDATE': {
-        if (!filterId) throw new Error('filterId is required for UPDATE action');
-        const { updateData } = params;
-        if (!updateData) throw new Error('updateData is required for UPDATE action');
-
-        if (!(await modules.filters.filterExists({ filterId }))) {
-          throw new FilterNotFoundError({ filterId });
-        }
-
-        const updatedFilter = await modules.filters.update(filterId, updateData as any);
-        await FilterDirector.invalidateProductIdCache(updatedFilter, context);
-
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify({ filter: await getNormalizedFilterDetails(filterId, context) }),
-            },
-          ],
-        };
-      }
-
-      case 'REMOVE': {
-        if (!filterId) throw new Error('filterId is required for REMOVE action');
-
-        const filter = await getNormalizedFilterDetails(filterId, context);
-        if (!filter) throw new FilterNotFoundError({ filterId });
-
-        await modules.assortments.filters.deleteMany({ filterId });
-        await modules.filters.delete(filterId);
-
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify({ filter }),
-            },
-          ],
-        };
-      }
-
-      case 'GET': {
-        if (!filterId) throw new Error('filterId is required for GET action');
-
-        const filter = await getNormalizedFilterDetails(filterId, context);
-        if (!filter) throw new FilterNotFoundError({ filterId });
-
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify({ filter }),
-            },
-          ],
-        };
-      }
-
-      case 'LIST': {
-        const { limit, offset, includeInactive, queryString, sort } = params;
-        const searchParams = { limit, offset, includeInactive, queryString, sort };
-
-        const filters = await modules.filters.findFilters(searchParams as any);
-        const normalizedFilters = await Promise.all(
-          filters.map(async ({ _id }) => getNormalizedFilterDetails(_id, context)),
+        const created = await filterModule.create(
+          filter as { key: string; type: FilterType; options?: string[] },
+          texts,
         );
 
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify({ filters: normalizedFilters }),
+              text: JSON.stringify({
+                action,
+                data: { filter: created },
+              }),
+            },
+          ],
+        };
+      }
+
+      case 'UPDATE': {
+        const { updateData } = params;
+        if (!filterId) {
+          throw new Error('Filter ID is required for UPDATE action');
+        }
+        if (!updateData) {
+          throw new Error('Update data is required for UPDATE action');
+        }
+
+        const updated = await filterModule.update(filterId, updateData);
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: { filter: updated },
+              }),
+            },
+          ],
+        };
+      }
+
+      case 'REMOVE': {
+        if (!filterId) {
+          throw new Error('Filter ID is required for REMOVE action');
+        }
+
+        const removed = await filterModule.remove(filterId);
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: { filter: removed },
+              }),
+            },
+          ],
+        };
+      }
+
+      case 'GET': {
+        if (!filterId) {
+          throw new Error('Filter ID is required for GET action');
+        }
+
+        const filter = await filterModule.get(filterId);
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: { filter },
+              }),
+            },
+          ],
+        };
+      }
+
+      case 'LIST': {
+        const { limit, offset, sort, includeInactive, queryString } = params;
+
+        // Ensure sort has proper typing if provided
+        const sortOptions =
+          sort?.filter((s): s is { key: string; value: 'ASC' | 'DESC' } => Boolean(s.key && s.value)) ||
+          undefined;
+
+        const filters = await filterModule.list({
+          limit,
+          offset,
+          sort: sortOptions,
+          includeInactive,
+          queryString,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                action,
+                data: { filters },
+              }),
             },
           ],
         };
@@ -251,111 +270,113 @@ export async function filterManagement(context: Context, params: FilterManagemen
 
       case 'COUNT': {
         const { includeInactive, queryString } = params;
-        const searchParams = { includeInactive, queryString };
 
-        const count = await modules.filters.count(searchParams as any);
+        const count = await filterModule.count({
+          includeInactive,
+          queryString,
+        });
 
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify({ count }),
+              text: JSON.stringify({
+                action,
+                data: { count },
+              }),
             },
           ],
         };
       }
 
       case 'CREATE_OPTION': {
-        if (!filterId) throw new Error('filterId is required for CREATE_OPTION action');
-        const { option, optionTexts = [] } = params;
-        if (!option) throw new Error('option is required for CREATE_OPTION action');
-
-        const filter = await modules.filters.findFilter({ filterId });
-        if (!filter) throw new FilterNotFoundError({ filterId });
-
-        const newOptions = await modules.filters.createFilterOption(filterId, { value: option });
-        await FilterDirector.invalidateProductIdCache(newOptions, context);
-
-        if (optionTexts.length > 0) {
-          await modules.filters.texts.updateTexts({ filterId, filterOptionValue: option }, optionTexts);
+        const { option, optionTexts } = params as any;
+        if (!filterId) {
+          throw new Error('Filter ID is required for CREATE_OPTION action');
         }
+        if (!option) {
+          throw new Error('Option value is required for CREATE_OPTION action');
+        }
+
+        const result = await filterModule.createOption(filterId, option, optionTexts);
 
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify({ filter: await getNormalizedFilterDetails(filterId, context) }),
+              text: JSON.stringify({
+                action,
+                data: result,
+              }),
             },
           ],
         };
       }
 
       case 'REMOVE_OPTION': {
-        if (!filterId) throw new Error('filterId is required for REMOVE_OPTION action');
-        const { option: filterOptionValue } = params;
-        if (!filterOptionValue) throw new Error('option is required for REMOVE_OPTION action');
+        const { option } = params;
+        if (!filterId) {
+          throw new Error('Filter ID is required for REMOVE_OPTION action');
+        }
+        if (!option) {
+          throw new Error('Option value is required for REMOVE_OPTION action');
+        }
 
-        const filter = await modules.filters.findFilter({ filterId });
-        if (!filter) throw new FilterNotFoundError({ filterId });
-
-        const removedFilterOption = await modules.filters.removeFilterOption({
-          filterId,
-          filterOptionValue,
-        });
-        await FilterDirector.invalidateProductIdCache(removedFilterOption, context);
+        const result = await filterModule.removeOption(filterId, option);
 
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify({ filter: await getNormalizedFilterDetails(filterId, context) }),
+              text: JSON.stringify({
+                action,
+                data: result,
+              }),
             },
           ],
         };
       }
 
       case 'UPDATE_TEXTS': {
-        if (!filterId) throw new Error('filterId is required for UPDATE_TEXTS action');
-        const { filterOptionValue, textUpdates } = params;
+        const { textUpdates, filterOptionValue } = params as any;
+        if (!filterId) {
+          throw new Error('Filter ID is required for UPDATE_TEXTS action');
+        }
         if (!textUpdates || textUpdates.length === 0) {
-          throw new Error('textUpdates is required for UPDATE_TEXTS action');
+          throw new Error('Text updates are required for UPDATE_TEXTS action');
         }
 
-        const filter = await getNormalizedFilterDetails(filterId, context);
-        if (!filter) throw new FilterNotFoundError({ filterId });
-
-        const updatedTexts = await modules.filters.texts.updateTexts(
-          { filterId, filterOptionValue },
-          textUpdates,
-        );
+        const result = await filterModule.updateTexts(filterId, textUpdates, filterOptionValue);
 
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify({ filterTexts: updatedTexts }),
+              text: JSON.stringify({
+                action,
+                data: result,
+              }),
             },
           ],
         };
       }
 
       case 'GET_TEXTS': {
-        if (!filterId) throw new Error('filterId is required for GET_TEXTS action');
         const { filterOptionValue } = params;
+        if (!filterId) {
+          throw new Error('Filter ID is required for GET_TEXTS action');
+        }
 
-        const filter = await modules.filters.findFilter({ filterId });
-        if (!filter) throw new FilterNotFoundError({ filterId });
-
-        const texts = await modules.filters.texts.findTexts({
-          filterId,
-          filterOptionValue: filterOptionValue || null,
-        });
+        const result = await filterModule.getTexts(filterId, filterOptionValue);
 
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify({ texts }),
+              text: JSON.stringify({
+                action,
+                data: result,
+              }),
             },
           ],
         };

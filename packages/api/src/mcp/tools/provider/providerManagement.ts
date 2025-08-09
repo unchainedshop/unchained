@@ -1,13 +1,7 @@
 import { z } from 'zod';
 import { Context } from '../../../context.js';
+import { configureProviderMcpModule, ProviderType } from '../../modules/configureProviderMcpModule.js';
 import { log } from '@unchainedshop/logger';
-import { PaymentDirector, DeliveryDirector, WarehousingDirector } from '@unchainedshop/core';
-import {
-  ProviderConfigurationInvalid,
-  PaymentProviderNotFoundError,
-  DeliverProviderNotFoundError,
-  WarehousingProviderNotFoundError,
-} from '../../../errors.js';
 
 const ProviderTypeEnum = z.enum(['PAYMENT', 'DELIVERY', 'WAREHOUSING'], {
   description:
@@ -18,17 +12,19 @@ const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
 const DeliveryProviderTypeEnum = z.enum(['PICKUP', 'SHIPPING', 'LOCAL']);
 const WarehousingProviderTypeEnum = z.enum(['PHYSICAL', 'VIRTUAL']);
 
-const ConfigurationEntry = z.object({
-  key: z
-    .string()
-    .min(1)
-    .describe('Configuration parameter name (e.g., "apiKey", "webhookUrl", "sandbox")'),
-  value: z
-    .any()
-    .describe(
-      'Configuration parameter value (string, number, boolean, or object depending on the setting)',
-    ),
-});
+const ConfigurationEntry = z
+  .object({
+    key: z
+      .string()
+      .min(1)
+      .describe('Configuration parameter name (e.g., "apiKey", "webhookUrl", "sandbox")'),
+    value: z
+      .any()
+      .describe(
+        'Configuration parameter value (string, number, boolean, or object depending on the setting)',
+      ),
+  })
+  .strict();
 
 export const ProviderManagementSchema = {
   action: z
@@ -102,73 +98,31 @@ export const ProviderManagementSchema = {
 export const ProviderManagementZodSchema = z.object(ProviderManagementSchema);
 export type ProviderManagementParams = z.infer<typeof ProviderManagementZodSchema>;
 
-interface ProviderModuleConfig {
-  module: any;
-  director: any;
-  NotFoundError: any;
-  idField: string;
-}
-
-function getProviderConfig(context: Context, providerType: string): ProviderModuleConfig {
-  switch (providerType) {
-    case 'PAYMENT':
-      return {
-        module: context.modules.payment.paymentProviders,
-        director: PaymentDirector,
-        NotFoundError: PaymentProviderNotFoundError,
-        idField: 'paymentProviderId',
-      };
-    case 'DELIVERY':
-      return {
-        module: context.modules.delivery,
-        director: DeliveryDirector,
-        NotFoundError: DeliverProviderNotFoundError,
-        idField: 'deliveryProviderId',
-      };
-    case 'WAREHOUSING':
-      return {
-        module: context.modules.warehousing,
-        director: WarehousingDirector,
-        NotFoundError: WarehousingProviderNotFoundError,
-        idField: 'warehousingProviderId',
-      };
-    default:
-      throw new Error(`Unknown provider type: ${providerType}`);
-  }
-}
-
 export async function providerManagement(context: Context, params: ProviderManagementParams) {
   const { action, providerType } = params;
-  const { userId } = context;
-
+  log('MCP localization create', { userId: context.userId, params });
   try {
-    log('handler providerManagement', { userId, action, providerType, params });
-
-    const config = getProviderConfig(context, providerType);
+    const providerModule = configureProviderMcpModule(context);
 
     switch (action) {
       case 'CREATE': {
         const { provider } = params;
-        if (!provider) {
-          throw new Error('Provider configuration is required for CREATE action');
+        if (!provider || !provider.type || !provider.adapterKey) {
+          throw new Error(
+            'Provider configuration with type and adapterKey is required for CREATE action',
+          );
         }
 
-        const Adapter = config.director.getAdapter(provider.adapterKey);
-        if (!Adapter) throw new ProviderConfigurationInvalid(provider);
-
-        const created = await config.module.create({
-          configuration: Adapter.initialConfiguration,
-          ...provider,
-        } as any);
-
-        if (!created) throw new ProviderConfigurationInvalid(provider);
+        const created = await providerModule.create(
+          providerType as ProviderType,
+          provider as { type: string; adapterKey: string },
+        );
 
         return {
           content: [
             {
               type: 'text' as const,
               text: JSON.stringify({
-                providerType,
                 action,
                 data: { provider: created },
               }),
@@ -186,25 +140,23 @@ export async function providerManagement(context: Context, params: ProviderManag
           throw new Error('Configuration is required for UPDATE action');
         }
 
-        const existsParam = { [config.idField]: providerId };
+        const validConfiguration = configuration.filter((c): c is { key: string; value: any } =>
+          Boolean(c.key && c.value !== undefined),
+        );
 
-        if (providerType === 'PAYMENT') {
-          if (!(await config.module.providerExists(existsParam))) {
-            throw new config.NotFoundError(existsParam);
-          }
-        } else {
-          const existing = await config.module.findProvider(existsParam);
-          if (!existing) throw new config.NotFoundError(existsParam);
+        if (validConfiguration.length === 0) {
+          throw new Error('At least one valid configuration entry with key and value is required');
         }
 
-        const updated = await config.module.update(providerId, { configuration } as any);
+        const updated = await providerModule.update(providerType as ProviderType, providerId, {
+          configuration: validConfiguration,
+        });
 
         return {
           content: [
             {
               type: 'text' as const,
               text: JSON.stringify({
-                providerType,
                 action,
                 data: { provider: updated },
               }),
@@ -219,17 +171,13 @@ export async function providerManagement(context: Context, params: ProviderManag
           throw new Error('Provider ID is required for REMOVE action');
         }
 
-        const existing = await config.module.findProvider({ [config.idField]: providerId });
-        if (!existing) throw new config.NotFoundError({ [config.idField]: providerId });
-
-        await config.module.delete(providerId);
+        const existing = await providerModule.remove(providerType as ProviderType, providerId);
 
         return {
           content: [
             {
               type: 'text' as const,
               text: JSON.stringify({
-                providerType,
                 action,
                 data: { provider: existing },
               }),
@@ -244,7 +192,7 @@ export async function providerManagement(context: Context, params: ProviderManag
           throw new Error('Provider ID is required for GET action');
         }
 
-        const provider = await config.module.findProvider({ [config.idField]: providerId });
+        const provider = await providerModule.get(providerType as ProviderType, providerId);
 
         if (!provider) {
           return {
@@ -252,7 +200,6 @@ export async function providerManagement(context: Context, params: ProviderManag
               {
                 type: 'text' as const,
                 text: JSON.stringify({
-                  providerType,
                   action,
                   data: { provider: null },
                   message: `${providerType.toLowerCase()} provider not found for ID: ${providerId}`,
@@ -267,7 +214,6 @@ export async function providerManagement(context: Context, params: ProviderManag
             {
               type: 'text' as const,
               text: JSON.stringify({
-                providerType,
                 action,
                 data: { provider },
               }),
@@ -279,22 +225,16 @@ export async function providerManagement(context: Context, params: ProviderManag
       case 'LIST': {
         const { typeFilter, queryString } = params;
 
-        const selector: Record<string, any> = {};
-        if (typeFilter) selector.type = typeFilter;
-
-        if (queryString) {
-          const regex = new RegExp(queryString, 'i');
-          selector.$or = [{ _id: regex }, { adapterKey: regex }];
-        }
-
-        const providers = await config.module.findProviders(selector);
+        const providers = await providerModule.list(providerType as ProviderType, {
+          typeFilter,
+          queryString,
+        });
 
         return {
           content: [
             {
               type: 'text' as const,
               text: JSON.stringify({
-                providerType,
                 action,
                 data: { providers },
               }),
@@ -306,17 +246,7 @@ export async function providerManagement(context: Context, params: ProviderManag
       case 'INTERFACES': {
         const { typeFilter } = params;
 
-        let allAdapters = config.director.getAdapters();
-
-        if (typeFilter) {
-          allAdapters = allAdapters.filter((adapter: any) => adapter.typeSupported(typeFilter));
-        }
-
-        const interfaces = allAdapters.map((Adapter: any) => ({
-          adapterKey: Adapter.key,
-          label: Adapter.label,
-          version: Adapter.version,
-        }));
+        const interfaces = await providerModule.getInterfaces(providerType as ProviderType, typeFilter);
 
         return {
           content: [
@@ -324,7 +254,6 @@ export async function providerManagement(context: Context, params: ProviderManag
               type: 'text' as const,
               text: JSON.stringify({
                 action,
-                providerType,
                 data: {
                   interfaces,
                   providerType,
