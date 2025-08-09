@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-delivery",
-  "version": "4.0.0-rc.11",
+  "version": "4.0.0-rc.12",
   "main": "lib/delivery-index.js",
   "types": "lib/delivery-index.d.ts",
   "type": "module",

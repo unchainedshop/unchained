@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/events",
-  "version": "4.0.0-rc.11",
+  "version": "4.0.0-rc.12",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
