@@ -9,6 +9,7 @@ import {
   ActionName,
 } from './schemas.js';
 import actionHandlers from './handlers.js';
+import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
 
 export { ProviderManagementSchema, ProviderManagementZodSchema, ProviderManagementParams };
 
@@ -25,26 +26,12 @@ export async function providerManagement(context: Context, params: ProviderManag
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
     const data = await actionHandlers[action as ActionName](providerModule, parsedParams as never);
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify({
-            providerType: actionParams.providerType,
-            action,
-            data,
-          }),
-        },
-      ],
-    };
+    return createMcpResponse({
+      providerType: actionParams.providerType,
+      action,
+      data,
+    });
   } catch (error) {
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: `Error in provider ${action.toLowerCase()}: ${(error as Error).message}`,
-        },
-      ],
-    };
+    return createMcpErrorResponse(action, error);
   }
 }

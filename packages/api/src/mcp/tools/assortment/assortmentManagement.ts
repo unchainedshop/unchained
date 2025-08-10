@@ -9,6 +9,7 @@ import {
   ActionName,
 } from './schemas.js';
 import actionHandlers from './handlers.js';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
 
 export { AssortmentManagementSchema, AssortmentManagementZodSchema, AssortmentManagementParams };
 
@@ -25,25 +26,11 @@ export async function assortmentManagement(context: Context, params: AssortmentM
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
     const data = await actionHandlers[action as ActionName](assortmentModule, parsedParams as never);
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify({
-            action,
-            data,
-          }),
-        },
-      ],
-    };
+    return createMcpResponse({
+      action,
+      data,
+    });
   } catch (error) {
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: `Error in assortment ${action.toLowerCase()}: ${(error as Error).message}`,
-        },
-      ],
-    };
+    return createMcpErrorResponse(action, error);
   }
 }

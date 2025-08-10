@@ -1,5 +1,6 @@
 import { Context } from '../../context.js';
 import { log } from '@unchainedshop/logger';
+import { createMcpErrorResponse, createMcpResponse } from '../utils/sharedSchemas.js';
 
 export async function shopInfoHandler(context: Context) {
   const { version, userId, loaders, locale, countryCode } = context;
@@ -14,22 +15,8 @@ export async function shopInfoHandler(context: Context) {
       ? `${language.isoCode}${country?.isoCode ? '-' + country.isoCode : ''}`
       : null;
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify({ version, defaultLanguageIsoCode, country, language }),
-        },
-      ],
-    };
+    return createMcpResponse({ version, defaultLanguageIsoCode, country, language });
   } catch (error) {
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: `Error getting shop info: ${(error as Error).message}`,
-        },
-      ],
-    };
+    return createMcpErrorResponse('shopInfoHandler', error);
   }
 }

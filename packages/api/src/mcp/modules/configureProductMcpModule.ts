@@ -182,21 +182,12 @@ export const configureProductMcpModule = (context: Context) => {
   return {
     create: async (productEntity: ProductEntity, texts?: ProductTextEntity[]) => {
       const newProduct = await modules.products.create(productEntity as Product);
-      let productTexts: any[] = [];
 
       if (texts && texts.length > 0) {
-        productTexts = await modules.products.texts.updateTexts(
-          newProduct._id,
-          texts as unknown as ProductText[],
-        );
+        await modules.products.texts.updateTexts(newProduct._id, texts as unknown as ProductText[]);
       }
 
-      return {
-        product: {
-          ...newProduct,
-          texts: productTexts,
-        },
-      };
+      return getNormalizedProductDetails(newProduct._id, context);
     },
 
     update: async (productId: string, productEntity: ProductEntity) => {
@@ -280,7 +271,7 @@ export const configureProductMcpModule = (context: Context) => {
       const product = await modules.products.findProduct(query);
       if (!product) throw new ProductNotFoundError(query);
 
-      return product;
+      return getNormalizedProductDetails(product._id, context);
     },
 
     list: async (options: ProductListOptions = {}) => {
@@ -288,7 +279,7 @@ export const configureProductMcpModule = (context: Context) => {
 
       const sortOptions = sort?.map((s) => ({ key: s.key, value: s.value as any })) || undefined;
 
-      return await modules.products.findProducts({
+      const products = await modules.products.findProducts({
         limit,
         offset,
         tags,
@@ -297,6 +288,8 @@ export const configureProductMcpModule = (context: Context) => {
         includeDrafts,
         sort: sortOptions,
       });
+
+      return Promise.all(products?.map(async ({ _id }) => getNormalizedProductDetails(_id, context)));
     },
 
     count: async (options: ProductCountOptions = {}) => {
@@ -500,9 +493,10 @@ export const configureProductMcpModule = (context: Context) => {
         });
       }
 
-      return await modules.products.proxyProducts(product, vectors as any, {
+      const products = await modules.products.proxyProducts(product, vectors as any, {
         includeInactive,
       });
+      return Promise.all(products?.map(async ({ _id }) => getNormalizedProductDetails(_id, context)));
     },
 
     getProductAssignments: async (productId: string, includeInactive = false) => {
@@ -553,8 +547,9 @@ export const configureProductMcpModule = (context: Context) => {
       });
 
       if (!added) throw new Error('Assignment already exists');
+      const product = await getNormalizedProductDetails(assignProductId, context);
 
-      return { productId: assignProductId, vectors };
+      return { product, vectors };
     },
 
     removeAssignment: async (proxyId: string, vectors: ProductAssignmentVector[]) => {
@@ -782,45 +777,6 @@ export const configureProductMcpModule = (context: Context) => {
         includeInactive,
       });
       return siblings;
-    },
-
-    getOperationName: (operation: ProductOperationType) => {
-      const operationNames = {
-        CREATE: 'create',
-        UPDATE: 'update',
-        REMOVE: 'remove',
-        GET: 'get',
-        LIST: 'list',
-        COUNT: 'count',
-        UPDATE_STATUS: 'updateStatus',
-        ADD_MEDIA: 'addMedia',
-        REMOVE_MEDIA: 'removeMedia',
-        REORDER_MEDIA: 'reorderMedia',
-        GET_MEDIA: 'getMedia',
-        CREATE_VARIATION: 'createVariation',
-        REMOVE_VARIATION: 'removeVariation',
-        ADD_VARIATION_OPTION: 'addVariationOption',
-        REMOVE_VARIATION_OPTION: 'removeVariationOption',
-        ADD_ASSIGNMENT: 'addAssignment',
-        REMOVE_ASSIGNMENT: 'removeAssignment',
-        GET_ASSIGNMENTS: 'getProductAssignments',
-        GET_VARIATION_PRODUCTS: 'getVariationProducts',
-        ADD_BUNDLE_ITEM: 'addBundleItem',
-        REMOVE_BUNDLE_ITEM: 'removeBundleItem',
-        GET_BUNDLE_ITEMS: 'getBundleItems',
-        SIMULATE_PRICE: 'simulatePrice',
-        SIMULATE_PRICE_RANGE: 'simulatePriceRange',
-        GET_CATALOG_PRICE: 'getCatalogPrice',
-        GET_PRODUCT_TEXTS: 'getProductTexts',
-        GET_MEDIA_TEXTS: 'getMediaTexts',
-        GET_VARIATION_TEXTS: 'getVariationTexts',
-        UPDATE_MEDIA_TEXTS: 'updateMediaTexts',
-        UPDATE_VARIATION_TEXTS: 'updateVariationTexts',
-        GET_REVIEWS: 'getReviews',
-        COUNT_REVIEWS: 'countReviews',
-        GET_SIBLINGS: 'getSiblings',
-      };
-      return operationNames[operation];
     },
   };
 };

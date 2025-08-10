@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SearchSchema } from '../../utils/sharedSchemas.js';
 
 export const ProviderTypeEnum = z.enum(['PAYMENT', 'DELIVERY', 'WAREHOUSING'], {
   description:
@@ -81,13 +82,7 @@ export const actionValidators = {
       .describe(
         'Optional filter by specific subtype: PAYMENT (CARD, INVOICE, GENERIC), DELIVERY (PICKUP, SHIPPING, LOCAL), WAREHOUSING (PHYSICAL, VIRTUAL)',
       ),
-    queryString: z
-      .string()
-      .min(1)
-      .optional()
-      .describe(
-        'Optional search term to filter providers by their ID or adapter key (case-insensitive partial match)',
-      ),
+    ...SearchSchema,
   }),
 
   INTERFACES: z.object({
@@ -148,13 +143,7 @@ export const ProviderManagementSchema = {
       'Optional filter by specific subtype for LIST/INTERFACES action: PAYMENT (CARD, INVOICE, GENERIC), DELIVERY (PICKUP, SHIPPING, LOCAL), WAREHOUSING (PHYSICAL, VIRTUAL)',
     ),
 
-  queryString: z
-    .string()
-    .min(1)
-    .optional()
-    .describe(
-      'Optional search term for LIST action to filter providers by their ID or adapter key (case-insensitive partial match)',
-    ),
+  ...SearchSchema,
 };
 
 export const ProviderManagementZodSchema = z.object(ProviderManagementSchema);

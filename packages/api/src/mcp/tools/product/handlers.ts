@@ -10,7 +10,11 @@ import { ActionName, Handler } from './schemas.js';
 
 const actionHandlers: { [K in ActionName]: Handler<K> } = {
   CREATE: async (productModule, { product, texts }) => {
-    return await productModule.create(product as ProductEntity, texts as ProductTextEntity[]);
+    const newProduct = await productModule.create(
+      product as ProductEntity,
+      texts as ProductTextEntity[],
+    );
+    return { product: newProduct };
   },
 
   UPDATE: async (productModule, { productId, product }) => {
@@ -20,7 +24,7 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
 
   REMOVE: async (productModule, { productId }) => {
     const removedProduct = await productModule.remove(productId);
-    return { removedProduct };
+    return { product: removedProduct };
   },
 
   GET: async (productModule, { productId, slug, sku }) => {

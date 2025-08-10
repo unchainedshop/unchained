@@ -9,6 +9,7 @@ import {
   ActionName,
 } from './schemas.js';
 import actionHandlers from './handlers.js';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
 
 export { OrderManagementSchema, OrderManagementZodSchema, OrderManagementParams };
 
@@ -25,25 +26,11 @@ export async function orderManagement(context: Context, params: OrderManagementP
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
     const data = await actionHandlers[action as ActionName](orderModule, parsedParams as never);
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify({
-            action,
-            data,
-          }),
-        },
-      ],
-    };
+    return createMcpResponse({
+      action,
+      data,
+    });
   } catch (error) {
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: `Error in order ${action.toLowerCase()}: ${(error as Error).message}`,
-        },
-      ],
-    };
+    return createMcpErrorResponse(action, error);
   }
 }

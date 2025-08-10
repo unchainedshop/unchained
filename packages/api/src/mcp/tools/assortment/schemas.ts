@@ -1,21 +1,22 @@
 import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
+import {
+  PaginationSchema,
+  SortingSchema,
+  SearchSchema,
+  LocalizationTextSchema,
+} from '../../utils/sharedSchemas.js';
 
 export const sortDirectionKeys = Object.keys(SortDirection) as [string, ...string[]];
 
-export const AssortmentTextInputSchema = z.object({
-  locale: z.string().min(2).describe('Locale ISO code like "en-US", "de-CH"'),
+export const AssortmentTextInputSchema = LocalizationTextSchema.extend({
   slug: z.string().optional().describe('URL slug'),
-  title: z.string().optional().describe('Assortment title'),
-  subtitle: z.string().optional().describe('Assortment subtitle'),
   description: z.string().optional().describe('Markdown description'),
-});
+}).describe('Assortment localized text data');
 
-export const AssortmentMediaTextInputSchema = z.object({
-  locale: z.string().min(2).describe('Locale ISO code like "en-US", "de-CH"'),
-  title: z.string().optional().describe('Title in the given locale'),
-  subtitle: z.string().optional().describe('Subtitle in the given locale'),
-});
+export const AssortmentMediaTextInputSchema = LocalizationTextSchema.describe(
+  'Assortment media localized text data',
+);
 
 export const AssortmentSchema = z.object({
   isRoot: z.boolean().optional().describe('Whether this is a root-level assortment'),
@@ -50,35 +51,18 @@ export const actionValidators = {
     }),
 
   LIST: z.object({
-    limit: z
-      .number()
-      .int()
-      .min(1)
-      .max(100)
-      .optional()
-      .describe('Maximum number of results (1-100, default: 50)'),
-    offset: z.number().int().min(0).optional().describe('Number of records to skip for pagination'),
+    ...PaginationSchema,
+    ...SortingSchema,
+    ...SearchSchema,
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
     slugs: z.array(z.string().min(1)).optional().describe('Filter by assortment slugs'),
-    queryString: z.string().optional().describe('Search query to filter assortments'),
-    includeInactive: z.boolean().optional().describe('Include inactive assortments'),
     includeLeaves: z.boolean().optional().describe('Include leaf-level assortments'),
-    sort: z
-      .array(
-        z.object({
-          key: z.string().describe('Field to sort by'),
-          value: z.enum(sortDirectionKeys).describe('Sort direction'),
-        }),
-      )
-      .optional()
-      .describe('Sort options'),
   }),
 
   COUNT: z.object({
+    ...SearchSchema,
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
     slugs: z.array(z.string().min(1)).optional().describe('Filter by assortment slugs'),
-    queryString: z.string().optional().describe('Search query to filter assortments'),
-    includeInactive: z.boolean().optional().describe('Include inactive assortments'),
     includeLeaves: z.boolean().optional().describe('Include leaf-level assortments'),
   }),
 
@@ -112,8 +96,7 @@ export const actionValidators = {
   GET_MEDIA: z.object({
     assortmentId: z.string().min(1).describe('Assortment ID'),
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
-    limit: z.number().int().min(1).max(100).optional().describe('Maximum number of results'),
-    offset: z.number().int().min(0).optional().describe('Number of records to skip'),
+    ...PaginationSchema,
   }),
 
   UPDATE_MEDIA_TEXTS: z.object({
@@ -210,10 +193,8 @@ export const actionValidators = {
 
   SEARCH_PRODUCTS: z.object({
     assortmentId: z.string().min(1).describe('Assortment ID'),
-    queryString: z.string().optional().describe('Search query'),
-    limit: z.number().int().min(1).max(100).optional().describe('Maximum number of results'),
-    offset: z.number().int().min(0).optional().describe('Number of records to skip'),
-    includeInactive: z.boolean().optional().describe('Include inactive products'),
+    ...PaginationSchema,
+    ...SearchSchema,
   }),
 
   GET_TEXTS: z.object({
@@ -319,25 +300,9 @@ export const AssortmentManagementSchema = {
   childAssortmentId: z.string().min(1).optional().describe('Child assortment ID for ADD_LINK action'),
   assortmentLinkId: z.string().min(1).optional().describe('Link ID for REMOVE_LINK action'),
 
-  limit: z
-    .number()
-    .int()
-    .min(1)
-    .max(100)
-    .optional()
-    .describe('Maximum number of results (default varies by action)'),
-  offset: z.number().int().min(0).optional().describe('Number of results to skip for pagination'),
-  queryString: z.string().optional().describe('Search query string'),
-  sort: z
-    .array(
-      z.object({
-        key: z.string().describe('Field to sort by'),
-        value: z.enum(sortDirectionKeys).describe('Sort direction (ASC/DESC)'),
-      }),
-    )
-    .optional()
-    .describe('Sort options'),
-  includeInactive: z.boolean().optional().describe('Include inactive items in results'),
+  ...PaginationSchema,
+  ...SortingSchema,
+  ...SearchSchema,
   includeLeaves: z.boolean().optional().describe('Include leaf-level assortments in results'),
   slugs: z.array(z.string()).optional().describe('Filter by specific slugs'),
 };

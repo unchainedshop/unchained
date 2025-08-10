@@ -1,26 +1,16 @@
 import { z } from 'zod';
+import {
+  PaginationSchema,
+  SortingSchema,
+  SearchSchema,
+  LocalizationTextSchema,
+} from '../../utils/sharedSchemas.js';
 
-export const FilterTextInputSchema = z.object({
-  locale: z
-    .string()
-    .min(1)
-    .describe(
-      'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
-    ),
-  title: z.string().min(1).describe('Title of the filter in the specified locale'),
-  subtitle: z.string().optional().describe('Optional subtitle for additional context'),
-});
+export const FilterTextInputSchema = LocalizationTextSchema.describe('Filter localized text data');
 
-export const FilterOptionTextInputSchema = z.object({
-  locale: z
-    .string()
-    .min(1)
-    .describe(
-      'locale iso code like "en-US", "de-CH" use default defaultLanguageIsoCode in shop info if not explicitly provided. if language is explicitly provided check if it exists',
-    ),
+export const FilterOptionTextInputSchema = LocalizationTextSchema.extend({
   title: z.string().optional().describe('Optional localized title for the filter option'),
-  subtitle: z.string().optional().describe('Optional localized subtitle for the filter option'),
-});
+}).describe('Filter option localized text data');
 
 export const SortOptionInputSchema = z
   .object({
@@ -69,33 +59,13 @@ export const actionValidators = {
   }),
 
   LIST: z.object({
-    limit: z
-      .number()
-      .min(1)
-      .max(100)
-      .optional()
-      .describe('Maximum filters per page (Range: 1-100, default: 20)'),
-    offset: z.number().min(0).optional().describe('Number of filters to skip for pagination'),
-    includeInactive: z
-      .boolean()
-      .optional()
-      .describe('Whether to include inactive/disabled filters in results (Default: false)'),
-    queryString: z
-      .string()
-      .optional()
-      .describe('Search term to filter by filter key or title (supports partial matching)'),
-    sort: z
-      .array(SortOptionInputSchema)
-      .optional()
-      .describe('Sort order for results - array of {key, value} pairs'),
+    ...PaginationSchema,
+    ...SortingSchema,
+    ...SearchSchema,
   }),
 
   COUNT: z.object({
-    includeInactive: z
-      .boolean()
-      .optional()
-      .describe('Whether to include inactive/disabled filters in results'),
-    queryString: z.string().optional().describe('Search term to filter by filter key or title'),
+    ...SearchSchema,
   }),
 
   CREATE_OPTION: z.object({
@@ -168,35 +138,9 @@ export const FilterManagementSchema = {
 
   updateData: UpdateFilterInputSchema.optional().describe('Filter updates for UPDATE action'),
 
-  limit: z
-    .number()
-    .min(1)
-    .max(100)
-    .default(20)
-    .describe('Maximum filters per page (LIST action only). Range: 1-100, default: 20'),
-  offset: z
-    .number()
-    .min(0)
-    .default(0)
-    .describe('Number of filters to skip for pagination (LIST action only). Use with limit for paging'),
-  includeInactive: z
-    .boolean()
-    .default(false)
-    .describe(
-      'Whether to include inactive/disabled filters in results (LIST/COUNT actions). Default: false (active only)',
-    ),
-  queryString: z
-    .string()
-    .optional()
-    .describe(
-      'Search term to filter by filter key or title (LIST/COUNT actions). Supports partial matching',
-    ),
-  sort: z
-    .array(SortOptionInputSchema)
-    .optional()
-    .describe(
-      'Sort order for results (LIST action only). Array of {key, value} pairs where key is field name and value is ASC/DESC',
-    ),
+  ...PaginationSchema,
+  ...SortingSchema,
+  ...SearchSchema,
 
   option: z
     .string()

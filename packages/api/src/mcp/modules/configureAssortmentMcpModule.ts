@@ -150,7 +150,7 @@ export const configureAssortmentMcpModule = (context: Context) => {
       const assortment = await modules.assortments.findAssortment(query);
       if (!assortment) throw new AssortmentNotFoundError(query);
 
-      return assortment;
+      return getNormalizedAssortmentDetails({ assortmentId: assortment._id }, context);
     },
 
     list: async (options: AssortmentListOptions = {}) => {
@@ -167,7 +167,7 @@ export const configureAssortmentMcpModule = (context: Context) => {
 
       const sortOptions = sort?.map((s) => ({ key: s.key, value: s.value as any })) || undefined;
 
-      return await modules.assortments.findAssortments({
+      const assortments = await modules.assortments.findAssortments({
         limit,
         offset,
         tags,
@@ -177,6 +177,10 @@ export const configureAssortmentMcpModule = (context: Context) => {
         includeLeaves,
         sort: sortOptions,
       });
+      return Promise.all(
+        assortments?.map(({ _id }) => getNormalizedAssortmentDetails({ assortmentId: _id }, context)) ||
+          [],
+      );
     },
 
     count: async (options: AssortmentCountOptions = {}) => {
@@ -425,41 +429,6 @@ export const configureAssortmentMcpModule = (context: Context) => {
       if (!media) throw new AssortmentMediaNotFoundError({ assortmentMediaId });
 
       return await modules.assortments.media.texts.findMediaTexts({ assortmentMediaId });
-    },
-
-    getOperationName: (operation: AssortmentOperationType) => {
-      const operationNames = {
-        CREATE: 'create',
-        UPDATE: 'update',
-        REMOVE: 'remove',
-        GET: 'get',
-        LIST: 'list',
-        COUNT: 'count',
-        UPDATE_STATUS: 'updateStatus',
-        ADD_MEDIA: 'addMedia',
-        REMOVE_MEDIA: 'removeMedia',
-        REORDER_MEDIA: 'reorderMedia',
-        GET_MEDIA: 'getMedia',
-        ADD_PRODUCT: 'addProduct',
-        REMOVE_PRODUCT: 'removeProduct',
-        GET_PRODUCTS: 'getProducts',
-        REORDER_PRODUCTS: 'reorderProducts',
-        ADD_FILTER: 'addFilter',
-        REMOVE_FILTER: 'removeFilter',
-        GET_FILTERS: 'getFilters',
-        REORDER_FILTERS: 'reorderFilters',
-        ADD_LINK: 'addLink',
-        REMOVE_LINK: 'removeLink',
-        GET_LINKS: 'getLinks',
-        REORDER_LINKS: 'reorderLinks',
-        GET_CHILDREN: 'getChildren',
-        SET_BASE: 'setBase',
-        SEARCH_PRODUCTS: 'searchProducts',
-        GET_TEXTS: 'getTexts',
-        GET_MEDIA_TEXTS: 'getMediaTexts',
-        UPDATE_MEDIA_TEXTS: 'updateMediaTexts',
-      };
-      return operationNames[operation];
     },
   };
 };

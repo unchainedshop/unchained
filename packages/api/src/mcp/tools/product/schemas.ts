@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
 import { ProductTypes, ProductVariationType } from '@unchainedshop/core-products';
+import {
+  PaginationSchema,
+  SortingSchema,
+  SearchSchema,
+  LocalizationTextSchema,
+} from '../../utils/sharedSchemas.js';
 
 export const productTypeKeys = Object.keys(ProductTypes) as [string, ...string[]];
 export const productVariationTypeKeys = Object.keys(ProductVariationType) as [string, ...string[]];
@@ -27,28 +33,21 @@ export const UpdateProductPlanInputSchema = z.object({
   trialIntervalCount: z.number().int().positive().optional().describe('Number of trial intervals'),
 });
 
-export const ProductTextInputSchema = z.object({
-  locale: z.string().min(2).describe('Locale ISO code like "en-US", "de-CH"'),
+export const ProductTextInputSchema = LocalizationTextSchema.extend({
   slug: z.string().optional().describe('URL slug'),
-  title: z.string().optional().describe('Product title'),
-  subtitle: z.string().optional().describe('Product subtitle'),
   description: z.string().optional().describe('Markdown description'),
   vendor: z.string().optional().describe('Vendor name'),
   brand: z.string().optional().describe('Brand name'),
   labels: z.array(z.string()).optional().describe('Labels or tags'),
-});
+}).describe('Product localized text data');
 
-export const ProductVariationTextInputSchema = z.object({
-  locale: z.string().min(1).describe('Locale code (e.g., "en", "de")'),
-  title: z.string().optional().describe('Title of the variation in the given locale'),
-  subtitle: z.string().optional().describe('Subtitle of the variation in the given locale'),
-});
+export const ProductVariationTextInputSchema = LocalizationTextSchema.describe(
+  'Product variation localized text data',
+);
 
-export const ProductMediaTextInputSchema = z.object({
-  locale: z.string().min(2).describe('Locale ISO code like "en-US", "de-CH"'),
-  title: z.string().optional().describe('Title in the given locale'),
-  subtitle: z.string().optional().describe('Subtitle in the given locale'),
-});
+export const ProductMediaTextInputSchema = LocalizationTextSchema.describe(
+  'Product media localized text data',
+);
 
 export const ProductAssignmentVectorSchema = z.object({
   key: z.string().min(1).describe('Attribute key (e.g., "Color", "Size")'),
@@ -125,7 +124,12 @@ export const actionValidators = {
   }),
 
   REMOVE: z.object({
-    productId: z.string().min(1).describe('Product ID'),
+    productId: z
+      .string()
+      .min(1)
+      .describe(
+        'Product ID, (the product to remove must be inactive or in DRAFT state other wise it will throw error)',
+      ),
   }),
 
   GET: z
@@ -139,33 +143,18 @@ export const actionValidators = {
     }),
 
   LIST: z.object({
-    limit: z
-      .number()
-      .int()
-      .min(1)
-      .max(100)
-      .optional()
-      .describe('Maximum number of results (1-100, default: 50)'),
-    offset: z.number().int().min(0).optional().describe('Number of records to skip for pagination'),
+    ...PaginationSchema,
+    ...SortingSchema,
+    ...SearchSchema,
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
     slugs: z.array(z.string().min(1)).optional().describe('Filter by product slugs'),
-    queryString: z.string().optional().describe('Search query to filter products'),
     includeDrafts: z.boolean().optional().describe('Include draft/unpublished products'),
-    sort: z
-      .array(
-        z.object({
-          key: z.string().describe('Field to sort by'),
-          value: z.enum(sortDirectionKeys).describe('Sort direction'),
-        }),
-      )
-      .optional()
-      .describe('Sort options'),
   }),
 
   COUNT: z.object({
+    ...SearchSchema,
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
     slugs: z.array(z.string().min(1)).optional().describe('Filter by product slugs'),
-    queryString: z.string().optional().describe('Search query to filter products'),
     includeDrafts: z.boolean().optional().describe('Include draft/unpublished products'),
   }),
 
@@ -199,8 +188,7 @@ export const actionValidators = {
   GET_MEDIA: z.object({
     productId: z.string().min(1).describe('Product ID'),
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
-    limit: z.number().int().min(1).max(100).optional().describe('Maximum number of results'),
-    offset: z.number().int().min(0).optional().describe('Number of records to skip'),
+    ...PaginationSchema,
   }),
 
   UPDATE_MEDIA_TEXTS: z.object({
@@ -243,7 +231,7 @@ export const actionValidators = {
   GET_VARIATION_PRODUCTS: z.object({
     productId: z.string().min(1).describe('Product ID'),
     vectors: z.array(ProductAssignmentVectorSchema).describe('Variation vectors'),
-    includeInactive: z.boolean().optional().describe('Include inactive products'),
+    includeInactive: z.boolean().optional().default(true).describe('Include inactive products'),
   }),
 
   GET_ASSIGNMENTS: z.object({
@@ -314,23 +302,14 @@ export const actionValidators = {
 
   GET_REVIEWS: z.object({
     productId: z.string().min(1).describe('Product ID'),
-    limit: z.number().int().min(1).max(100).optional().describe('Maximum number of results'),
-    offset: z.number().int().min(0).optional().describe('Number of records to skip'),
-    queryString: z.string().optional().describe('Search query'),
-    sort: z
-      .array(
-        z.object({
-          key: z.string().describe('Field to sort by'),
-          value: z.enum(sortDirectionKeys).describe('Sort direction'),
-        }),
-      )
-      .optional()
-      .describe('Sort options'),
+    ...PaginationSchema,
+    ...SortingSchema,
+    ...SearchSchema,
   }),
 
   COUNT_REVIEWS: z.object({
     productId: z.string().min(1).describe('Product ID'),
-    queryString: z.string().optional().describe('Search query'),
+    ...SearchSchema,
   }),
 
   GET_SIBLINGS: z.object({
@@ -475,24 +454,9 @@ export const ProductManagementSchema = {
   currencyCode: z.string().min(3).max(3).optional().describe('ISO currency code for pricing'),
   useNetPrice: z.boolean().optional().describe('Whether to use net price in calculations'),
 
-  limit: z
-    .number()
-    .int()
-    .min(1)
-    .max(100)
-    .optional()
-    .describe('Maximum number of results (default varies by action)'),
-  offset: z.number().int().min(0).optional().describe('Number of results to skip for pagination'),
-  queryString: z.string().optional().describe('Search query string'),
-  sort: z
-    .array(
-      z.object({
-        key: z.string().describe('Field to sort by'),
-        value: z.enum(sortDirectionKeys).describe('Sort direction (ASC/DESC)'),
-      }),
-    )
-    .optional()
-    .describe('Sort options'),
+  ...PaginationSchema,
+  ...SortingSchema,
+  ...SearchSchema,
   includeDrafts: z.boolean().optional().describe('Include draft products in results'),
   productIds: z.array(z.string()).optional().describe('Filter by specific product IDs'),
   assortmentId: z.string().optional().describe('Filter by assortment ID (for GET_SIBLINGS action)'),
