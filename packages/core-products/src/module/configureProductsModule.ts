@@ -96,8 +96,8 @@ export const buildFindSelector = ({
     selector.status = !includeDrafts
       ? { $eq: ProductStatus.ACTIVE }
       : {
-          $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
-        };
+        $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
+      };
   }
 
   return selector;
@@ -187,7 +187,7 @@ export const configureProductsModule = async ({
     { includeInactive = false }: { includeInactive?: boolean } = {},
   ): Promise<Product[]> => {
     const { proxy } = product;
-    let filtered = [...(proxy.assignments || [])];
+    let filtered = [...(proxy?.assignments || [])];
     vectors.forEach(({ key, value }) => {
       filtered = filtered.filter((assignment) => {
         if (assignment.vector[key] === value) {
