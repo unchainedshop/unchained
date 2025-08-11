@@ -103,8 +103,8 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
     return { product };
   },
 
-  REMOVE_PRODUCT: async (assortmentModule, { productId }) => {
-    return await assortmentModule.removeProduct(productId);
+  REMOVE_PRODUCT: async (assortmentModule, { assortmentProductId }) => {
+    return await assortmentModule.removeProduct(assortmentProductId);
   },
 
   GET_PRODUCTS: async (assortmentModule, { assortmentId }) => {
@@ -129,8 +129,8 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
     return { filter };
   },
 
-  REMOVE_FILTER: async (assortmentModule, { filterId }) => {
-    return await assortmentModule.removeFilter(filterId);
+  REMOVE_FILTER: async (assortmentModule, { assortmentFilterId }) => {
+    return assortmentModule.removeFilter(assortmentFilterId);
   },
 
   GET_FILTERS: async (assortmentModule, { assortmentId }) => {

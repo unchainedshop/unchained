@@ -22,7 +22,11 @@ export const SortingSchema = {
 
 export const SearchSchema = {
   queryString: z.string().optional().describe('Search query string for text-based filtering'),
-  includeInactive: z.boolean().optional().describe('Whether to include inactive/disabled items'),
+  includeInactive: z
+    .boolean()
+    .optional()
+    .default(true)
+    .describe('Whether to include inactive/disabled items'),
 };
 
 export const LocalizationTextSchema = z.object({

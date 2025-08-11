@@ -56,7 +56,7 @@ export const actionValidators = {
     ...SearchSchema,
     tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Filter by tags'),
     slugs: z.array(z.string().min(1)).optional().describe('Filter by assortment slugs'),
-    includeLeaves: z.boolean().optional().describe('Include leaf-level assortments'),
+    includeLeaves: z.boolean().default(true).optional().describe('Include leaf-level assortments'),
   }),
 
   COUNT: z.object({
@@ -85,7 +85,7 @@ export const actionValidators = {
     sortKeys: z
       .array(
         z.object({
-          assortmentMediaId: z.string().min(1).describe('Media asset ID'),
+          assortmentMediaId: z.string().min(1).describe('Assortment Media asset ID'),
           sortKey: z.number().int().describe('New sort position'),
         }),
       )
@@ -111,7 +111,12 @@ export const actionValidators = {
   }),
 
   REMOVE_PRODUCT: z.object({
-    productId: z.string().min(1).describe('Product ID (from assortment product relationship)'),
+    assortmentProductId: z
+      .string()
+      .min(1)
+      .describe(
+        'Assortment Product ID (from assortment product relationship, _id of assortment product)',
+      ),
   }),
 
   GET_PRODUCTS: z.object({
@@ -122,7 +127,12 @@ export const actionValidators = {
     sortKeys: z
       .array(
         z.object({
-          assortmentProductId: z.string().min(1).describe('Assortment product ID'),
+          assortmentProductId: z
+            .string()
+            .min(1)
+            .describe(
+              'Assortment product ID,(from assortment product relationship, _id of assortment product)',
+            ),
           sortKey: z.number().int().describe('New sort position'),
         }),
       )
@@ -137,7 +147,10 @@ export const actionValidators = {
   }),
 
   REMOVE_FILTER: z.object({
-    filterId: z.string().min(1).describe('Filter ID (from assortment filter relationship)'),
+    assortmentFilterId: z
+      .string()
+      .min(1)
+      .describe('Assortment Filter ID (from assortment filter relationship)'),
   }),
 
   GET_FILTERS: z.object({
@@ -148,7 +161,10 @@ export const actionValidators = {
     sortKeys: z
       .array(
         z.object({
-          assortmentFilterId: z.string().min(1).describe('Assortment filter ID'),
+          assortmentFilterId: z
+            .string()
+            .min(1)
+            .describe('Assortment filter ID (from assortment filter relationship)'),
           sortKey: z.number().int().describe('New sort position'),
         }),
       )
@@ -273,7 +289,7 @@ export const AssortmentManagementSchema = {
           sortKey: z.number().int().describe('New sort position'),
         }),
         z.object({
-          assortmentProductId: z.string().min(1).describe('Product relationship ID'),
+          assortmentProductId: z.string().min(1).describe('_id of assortment product relationship ID'),
           sortKey: z.number().int().describe('New sort position'),
         }),
         z.object({
@@ -293,9 +309,18 @@ export const AssortmentManagementSchema = {
     .optional()
     .describe('Media text updates for UPDATE_MEDIA_TEXTS action'),
   tags: z.array(z.string()).optional().describe('Tags filter or association tags'),
-
+  assortmentProductId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('Product ID for REORDER_PRODUCTS/REMOVE_PRODUCT actions'),
   productId: z.string().min(1).optional().describe('Product ID for ADD_PRODUCT/REMOVE_PRODUCT actions'),
   filterId: z.string().min(1).optional().describe('Filter ID for ADD_FILTER/REMOVE_FILTER actions'),
+  assortmentFilterId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('Filter ID for REORDER_FILTERS/REMOVE_FILTER actions'),
   parentAssortmentId: z.string().min(1).optional().describe('Parent assortment ID for ADD_LINK action'),
   childAssortmentId: z.string().min(1).optional().describe('Child assortment ID for ADD_LINK action'),
   assortmentLinkId: z.string().min(1).optional().describe('Link ID for REMOVE_LINK action'),

@@ -1,7 +1,14 @@
 import { Context } from '../../context.js';
 import { Assortment, AssortmentText } from '@unchainedshop/core-assortments';
-import { AssortmentNotFoundError, AssortmentMediaNotFoundError } from '../../errors.js';
+import {
+  AssortmentNotFoundError,
+  AssortmentMediaNotFoundError,
+  ProductNotFoundError,
+} from '../../errors.js';
 import { getNormalizedAssortmentDetails } from '../utils/getNormalizedAssortmentDetails.js';
+import normalizeMediaUrl from '../utils/normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../utils/getNormalizedProductDetails.js';
+import { getNormalizedFilterDetails } from '../utils/getNormalizedFilterDetails.js';
 
 export type AssortmentOperationType =
   | 'CREATE'
@@ -217,7 +224,7 @@ export const configureAssortmentMcpModule = (context: Context) => {
         tags,
       } as any);
 
-      return assortmentMedia;
+      return normalizeMediaUrl([assortmentMedia], context);
     },
 
     removeMedia: async (mediaId: string) => {
@@ -226,7 +233,8 @@ export const configureAssortmentMcpModule = (context: Context) => {
     },
 
     reorderMedia: async (sortKeys: { assortmentMediaId: string; sortKey: number }[]) => {
-      return await modules.assortments.media.updateManualOrder({ sortKeys: sortKeys as any });
+      const media = await modules.assortments.media.updateManualOrder({ sortKeys: sortKeys as any });
+      return normalizeMediaUrl(media, context);
     },
 
     getMedia: async (assortmentId: string, options: AssortmentMediaOptions = {}) => {
@@ -234,27 +242,28 @@ export const configureAssortmentMcpModule = (context: Context) => {
       if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
       const { tags, limit = 50, offset = 0 } = options;
-
+      let media;
       if (offset || tags) {
-        return await modules.assortments.media.findAssortmentMedias({
+        media = await modules.assortments.media.findAssortmentMedias({
           assortmentId,
           limit,
           offset,
           tags,
         });
       } else {
-        return (await context.loaders.assortmentMediasLoader.load({ assortmentId })).slice(
+        media = (await context.loaders.assortmentMediasLoader.load({ assortmentId })).slice(
           offset,
           offset + limit,
         );
       }
+      return normalizeMediaUrl(media, context);
     },
 
     updateMediaTexts: async (assortmentMediaId: string, texts: AssortmentMediaTextEntity[]) => {
       const media = await modules.assortments.media.findAssortmentMedia({ assortmentMediaId });
       if (!media) throw new AssortmentMediaNotFoundError({ assortmentMediaId });
 
-      return await modules.assortments.media.texts.updateMediaTexts(assortmentMediaId, texts);
+      return modules.assortments.media.texts.updateMediaTexts(assortmentMediaId, texts);
     },
 
     addProduct: async (assortmentId: string, productId: string, tags?: string[]) => {
@@ -262,19 +271,19 @@ export const configureAssortmentMcpModule = (context: Context) => {
       if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
       const product = await modules.products.findProduct({ productId });
-      if (!product) throw new Error(`Product not found: ${productId}`);
+      if (!product) throw new ProductNotFoundError({ productId });
 
       const assortmentProduct = await modules.assortments.products.create({
         assortmentId,
         productId,
         tags,
       } as any);
-
-      return assortmentProduct;
+      const detail = await getNormalizedProductDetails(assortmentProduct.productId, context);
+      return { ...detail, ...assortmentProduct };
     },
 
-    removeProduct: async (productId: string) => {
-      const result = await modules.assortments.products.delete(productId);
+    removeProduct: async (assortmentProductId: string) => {
+      const result = await modules.assortments.products.delete(assortmentProductId);
       return result;
     },
 
@@ -282,14 +291,33 @@ export const configureAssortmentMcpModule = (context: Context) => {
       const assortment = await modules.assortments.findAssortment({ assortmentId });
       if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-      return await modules.assortments.products.findAssortmentProducts(
+      const assortmentProducts = await modules.assortments.products.findAssortmentProducts(
         { assortmentId },
         { sort: { sortKey: 1 } },
+      );
+
+      return (
+        Promise.all(
+          assortmentProducts?.map(async ({ productId, ...rest }) => ({
+            ...(await getNormalizedProductDetails(productId, context)),
+            ...rest,
+          })),
+        ) || []
       );
     },
 
     reorderProducts: async (sortKeys: { assortmentProductId: string; sortKey: number }[]) => {
-      return await modules.assortments.products.updateManualOrder({ sortKeys: sortKeys as any });
+      const reorderedProducts = await modules.assortments.products.updateManualOrder({
+        sortKeys: sortKeys as any,
+      });
+      return (
+        Promise.all(
+          reorderedProducts?.map(async ({ productId, ...rest }) => ({
+            ...(await getNormalizedProductDetails(productId, context)),
+            ...rest,
+          })),
+        ) || []
+      );
     },
 
     addFilter: async (assortmentId: string, filterId: string, tags?: string[]) => {
@@ -305,7 +333,10 @@ export const configureAssortmentMcpModule = (context: Context) => {
         tags,
       } as any);
 
-      return assortmentFilter;
+      return {
+        ...(await getNormalizedFilterDetails(assortmentFilter.filterId, context)),
+        ...assortmentFilter,
+      };
     },
 
     removeFilter: async (filterId: string) => {
@@ -317,11 +348,32 @@ export const configureAssortmentMcpModule = (context: Context) => {
       const assortment = await modules.assortments.findAssortment({ assortmentId });
       if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-      return await modules.assortments.filters.findFilters({ assortmentId }, { sort: { sortKey: 1 } });
+      const filters = await modules.assortments.filters.findFilters(
+        { assortmentId },
+        { sort: { sortKey: 1 } },
+      );
+      return (
+        Promise.all(
+          filters?.map(async ({ filterId, ...rest }) => ({
+            ...(await getNormalizedFilterDetails(filterId, context)),
+            ...rest,
+          })),
+        ) || []
+      );
     },
 
     reorderFilters: async (sortKeys: { assortmentFilterId: string; sortKey: number }[]) => {
-      return await modules.assortments.filters.updateManualOrder({ sortKeys: sortKeys as any });
+      const reorderedFilters = await modules.assortments.filters.updateManualOrder({
+        sortKeys: sortKeys as any,
+      });
+      return (
+        Promise.all(
+          reorderedFilters?.map(async ({ filterId, ...rest }) => ({
+            ...(await getNormalizedFilterDetails(filterId, context)),
+            ...rest,
+          })),
+        ) || []
+      );
     },
 
     addLink: async (parentAssortmentId: string, childAssortmentId: string, tags?: string[]) => {
@@ -356,7 +408,7 @@ export const configureAssortmentMcpModule = (context: Context) => {
       const assortment = await modules.assortments.findAssortment({ assortmentId });
       if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-      return await context.loaders.assortmentLinksLoader.load({
+      return context.loaders.assortmentLinksLoader.load({
         assortmentId,
       });
     },
@@ -379,7 +431,7 @@ export const configureAssortmentMcpModule = (context: Context) => {
       if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
       await modules.assortments.setBase(assortmentId);
-      return await getNormalizedAssortmentDetails({ assortmentId }, context);
+      return getNormalizedAssortmentDetails({ assortmentId }, context);
     },
 
     searchProducts: async (assortmentId: string, options: AssortmentSearchProductsOptions = {}) => {
@@ -408,13 +460,16 @@ export const configureAssortmentMcpModule = (context: Context) => {
         },
       );
 
-      return await modules.products.search.findFilteredProducts({
+      const products = await modules.products.search.findFilteredProducts({
         limit,
         offset,
         productIds: result.aggregatedFilteredProductIds,
         productSelector: result.searchConfiguration.productSelector,
         sort: result.searchConfiguration.sortStage,
       });
+      return (
+        Promise.all(products?.map(async ({ _id }) => getNormalizedProductDetails(_id, context))) || []
+      );
     },
 
     getTexts: async (assortmentId: string) => {
