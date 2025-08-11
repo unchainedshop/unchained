@@ -69,6 +69,9 @@ export async function getTopSellingProductsHandler(context: Context, params: Top
         totalSold: { $sum: '$quantity' },
         totalRevenue: { $sum: '$itemAmount' },
       },
+      matchAfterGroup: {
+        totalSold: { $gt: 0 },
+      },
       sort: { totalSold: -1 },
       limit,
     });

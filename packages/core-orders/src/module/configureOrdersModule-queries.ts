@@ -14,6 +14,7 @@ export interface OrderReport {
 
 interface OrderAggregateParams {
   match?: Record<string, any>;
+  matchAfterGroup?: Record<string, any>;
   project?: Record<string, any>;
   group?: Record<string, any>;
   sort?: Record<string, number>;

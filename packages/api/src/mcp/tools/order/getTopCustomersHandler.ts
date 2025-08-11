@@ -52,6 +52,7 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
       project: {
         userId: 1,
         created: 1,
+        currencyCode: 1,
         itemAmount: {
           $let: {
             vars: {
@@ -70,16 +71,22 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
         },
       },
       group: {
-        _id: '$userId',
+        _id: { userId: '$userId', currencyCode: '$currencyCode' },
         totalSpent: { $sum: '$itemAmount' },
         orderCount: { $sum: 1 },
         lastOrderDate: { $max: '$created' },
+      },
+      matchAfterGroup: {
+        totalSpent: { $gt: 0 },
       },
       addFields: {
         averageOrderValue: {
           $cond: [{ $eq: ['$orderCount', 0] }, 0, { $divide: ['$totalSpent', '$orderCount'] }],
         },
+        currencyCode: '$_id.currencyCode',
+        _id: '$_id.userId',
       },
+
       sort: { totalSpent: -1 },
       limit,
     });
@@ -95,10 +102,11 @@ export async function getTopCustomersHandler(context: Context, params: GetTopCus
             ...user,
             avatar,
           },
-          totalSpent: c.totalSpent,
-          orderCount: c.orderCount,
+          currencyCode: c?.currencyCode || null,
+          totalSpent: c?.totalSpent,
+          orderCount: c?.orderCount,
           lastOrderDate: c.lastOrderDate,
-          averageOrderValue: Math.round(c.averageOrderValue),
+          averageOrderValue: Math.round(c?.averageOrderValue),
         };
       }),
     );

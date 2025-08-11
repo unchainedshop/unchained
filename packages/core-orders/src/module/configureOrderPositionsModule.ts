@@ -13,6 +13,7 @@ const ORDER_POSITION_EVENTS: string[] = [
 
 interface OrderPositionAggregateParams {
   match?: Document;
+  matchAfterGroup?: Document;
   project?: Document;
   group?: Document;
   addFields?: Document;
