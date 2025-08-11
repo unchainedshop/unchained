@@ -232,8 +232,8 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   GET_SIBLINGS: async (productModule, { productId, assortmentId, includeInactive }) => {
-    const siblings = await productModule.getSiblings(productId, assortmentId, includeInactive);
-    return { siblings };
+    const products = await productModule.getSiblings(productId, assortmentId, includeInactive);
+    return { products };
   },
 };
 

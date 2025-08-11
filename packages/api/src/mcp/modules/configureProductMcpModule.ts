@@ -778,7 +778,7 @@ export const configureProductMcpModule = (context: Context) => {
       const siblings = await modules.products.proxyProducts(product, [], {
         includeInactive,
       });
-      return siblings;
+      return Promise.all(siblings.map(({ _id }) => getNormalizedProductDetails(_id, context)));
     },
   };
 };
