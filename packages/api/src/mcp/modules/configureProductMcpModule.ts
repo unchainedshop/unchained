@@ -250,7 +250,7 @@ export const configureProductMcpModule = (context: Context) => {
         await modules.products.update(productId, updateData);
       }
 
-      return await getNormalizedProductDetails(productId, context);
+      return getNormalizedProductDetails(productId, context);
     },
 
     remove: async (productId: string) => {
@@ -318,7 +318,7 @@ export const configureProductMcpModule = (context: Context) => {
         throw new ProductWrongStatusError({ status: product.status });
       }
 
-      return await getNormalizedProductDetails(productId, context);
+      return getNormalizedProductDetails(productId, context);
     },
 
     addMedia: async (productId: string, mediaName: string, url: string) => {
@@ -356,7 +356,7 @@ export const configureProductMcpModule = (context: Context) => {
       }
 
       const linked = await services.files.linkFile({ fileId, size, type });
-      return await normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context);
+      return normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context);
     },
 
     removeMedia: async (productMediaId: string) => {
@@ -369,7 +369,8 @@ export const configureProductMcpModule = (context: Context) => {
     },
 
     reorderMedia: async (sortKeys: { productMediaId: string; sortKey: number }[]) => {
-      return await modules.products.media.updateManualOrder({ sortKeys: sortKeys as any });
+      const media = await modules.products.media.updateManualOrder({ sortKeys: sortKeys as any });
+      return normalizeMediaUrl(media, context);
     },
 
     getMedia: async (productId: string, options: ProductMediaOptions = {}) => {
@@ -378,19 +379,20 @@ export const configureProductMcpModule = (context: Context) => {
 
       const { tags, limit = 50, offset = 0 } = options;
 
-      return await modules.products.media.findProductMedias({
+      const media = await modules.products.media.findProductMedias({
         productId,
         tags,
         limit,
         offset,
       });
+      return normalizeMediaUrl(media, context);
     },
 
     updateMediaTexts: async (productMediaId: string, texts: ProductMediaTextEntity[]) => {
       const media = await modules.products.media.findProductMedia({ productMediaId });
       if (!media) throw new ProductMediaNotFoundError({ productMediaId });
 
-      return await modules.products.media.texts.updateMediaTexts(productMediaId, texts);
+      return modules.products.media.texts.updateMediaTexts(productMediaId, texts);
     },
 
     createVariation: async (
