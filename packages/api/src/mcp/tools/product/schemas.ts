@@ -91,7 +91,7 @@ export const ProductSchema = z.object({
       pricing: z
         .array(
           z.object({
-            amount: z.number().int().describe('Price amount in smallest currency unit'),
+            amount: z.number().int().describe('Price amount in smallest currency unit.'),
             maxQuantity: z
               .number()
               .int()
@@ -99,8 +99,8 @@ export const ProductSchema = z.object({
               .describe('Optional maximum quantity for this price tier'),
             isTaxable: z.boolean().optional().describe('Whether tax applies to this price'),
             isNetPrice: z.boolean().optional().describe('Whether this is a net price (without tax)'),
-            currencyCode: z.string().min(3).max(3).describe('ISO currency code (e.g., USD, EUR)'),
-            countryCode: z.string().min(2).max(2).describe('ISO country code (e.g., US, DE)'),
+            currencyCode: z.string().min(3).max(3).describe('ISO currency code (e.g., USD, EUR) make sure the currency code provided exists in the system currencies before using it. if it does not exists prompt the user to add the currency. NEVER add it automatically'),
+            countryCode: z.string().min(2).max(2).describe('ISO country code (e.g., US, DE) make sure the country exists in the system before using it. if it does not exists prompt the user to add the country. NEVER add it automatically'),
           }),
         )
         .nonempty()

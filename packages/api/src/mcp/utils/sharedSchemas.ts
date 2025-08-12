@@ -30,7 +30,7 @@ export const SearchSchema = {
 };
 
 export const LocalizationTextSchema = z.object({
-  locale: z.string().min(2).describe('Locale code (e.g., "en-US", "de-CH")'),
+  locale: z.string().min(2).describe('Locale code (e.g., "en-US", "de-CH") when a user provides locale make sure it exists in the system languages first. and if not prompt them to add the language before using it. if they provide a dialect at least base language should be registered in the system. if it does not exists prompt the user to add the language. NEVER add it automatically'),
   title: z.string().min(1).describe('Localized title'),
   subtitle: z.string().optional().describe('Optional localized subtitle'),
 });
