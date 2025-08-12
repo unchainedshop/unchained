@@ -14,7 +14,7 @@ export const actionValidators = {
   SHOP_INFO: z
     .object({})
     .describe(
-      'Get the default configuration of the shop including country, language, currency, and locale. No parameters expected - returns system-wide defaults.',
+      'MANDATORY FIRST CALL when locale/language/country/currency defaults are needed. Get the authoritative shop configuration including defaultLanguageIsoCode (for language/locale fallback), country_isoCode (for country fallback), and country_defaultCurrency (for currency fallback). No parameters expected - returns system-wide defaults that must be used when user input lacks localization context.',
     ),
 
   WORKER_ADD: z.object({
@@ -230,7 +230,7 @@ export const SystemManagementSchema = {
       'EVENT_STATISTICS',
     ])
     .describe(
-      'Action to perform on the system. System actions: SHOP_INFO (get shop configuration defaults). Worker actions: WORKER_ADD (add work), WORKER_ALLOCATE (assign work), WORKER_REMOVE (delete work), WORKER_GET (retrieve work), WORKER_LIST (search work), WORKER_COUNT (count work), WORKER_FINISH_WORK (complete work), WORKER_PROCESS_NEXT (get next work), WORKER_STATISTICS (work stats), WORKER_ACTIVE_WORK_TYPES (get active work types). Event actions: EVENT_GET (retrieve event), EVENT_LIST (search events), EVENT_COUNT (count events), EVENT_STATISTICS (event stats). Each action has specific parameters and validation requirements.',
+      'Action to perform on the system. CRITICAL: SHOP_INFO (MANDATORY first call when locale/language/country/currency defaults are needed - returns authoritative fallbacks). Worker actions: WORKER_ADD (add work), WORKER_ALLOCATE (assign work), WORKER_REMOVE (delete work), WORKER_GET (retrieve work), WORKER_LIST (search work), WORKER_COUNT (count work), WORKER_FINISH_WORK (complete work), WORKER_PROCESS_NEXT (get next work), WORKER_STATISTICS (work stats), WORKER_ACTIVE_WORK_TYPES (get active work types). Event actions: EVENT_GET (retrieve event), EVENT_LIST (search events), EVENT_COUNT (count events), EVENT_STATISTICS (event stats). Always call SHOP_INFO first when user lacks localization context.',
     ),
 
   type: z

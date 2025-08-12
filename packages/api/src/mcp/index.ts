@@ -1,6 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Context } from '../context.js';
-import { registerOtherTools } from './tools/index.js';
 import { registerFilterTools } from './tools/filter/index.js';
 import { registerProductTools } from './tools/product/index.js';
 
@@ -8,6 +7,8 @@ import { registerLocalizationTools } from './tools/localization/index.js';
 import { registerProviderTools } from './tools/provider/index.js';
 import { registerOrderTools } from './tools/order/index.js';
 import { registerAssortmentTools } from './tools/assortment/index.js';
+import { registerUsersTools } from './tools/users/index.js';
+import { registerSystemTools } from './tools/system/index.js';
 
 export default function createMcpServer(context: Context, roles) {
   const server = new McpServer({
@@ -22,8 +23,9 @@ export default function createMcpServer(context: Context, roles) {
   registerProductTools(server, context);
   registerAssortmentTools(server, context);
   registerLocalizationTools(server, context);
-  registerOtherTools(server, context); // This now includes the unified system management (worker + events + shopInfo)
+  registerSystemTools(server, context);
   registerProviderTools(server, context);
   registerOrderTools(server, context);
+  registerUsersTools(server, context);
   return server;
 }
