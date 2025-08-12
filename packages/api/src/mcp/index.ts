@@ -8,7 +8,6 @@ import { registerLocalizationTools } from './tools/localization/index.js';
 import { registerProviderTools } from './tools/provider/index.js';
 import { registerOrderTools } from './tools/order/index.js';
 import { registerAssortmentTools } from './tools/assortment/index.js';
-import { registerWorkerTools } from './tools/worker/index.js';
 
 export default function createMcpServer(context: Context, roles) {
   const server = new McpServer({
@@ -23,9 +22,8 @@ export default function createMcpServer(context: Context, roles) {
   registerProductTools(server, context);
   registerAssortmentTools(server, context);
   registerLocalizationTools(server, context);
-  registerOtherTools(server, context);
+  registerOtherTools(server, context); // This now includes the unified system management (worker + events + shopInfo)
   registerProviderTools(server, context);
   registerOrderTools(server, context);
-  registerWorkerTools(server, context);
   return server;
 }
