@@ -26,12 +26,7 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   COUNT: async (usersModule, params) => {
-    const {
-      includeGuests = false,
-      queryString,
-      emailVerified,
-      lastLogin,
-    } = params;
+    const { includeGuests = false, queryString, emailVerified, lastLogin } = params;
 
     const count = await usersModule.count({
       includeGuests,
@@ -146,15 +141,7 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   GET_ORDERS: async (usersModule, params) => {
-    const {
-      userId,
-      limit = 10,
-      offset = 0,
-      includeCarts = false,
-      sort,
-      queryString,
-      status,
-    } = params;
+    const { userId, limit = 10, offset = 0, includeCarts = false, sort, queryString, status } = params;
 
     const orders = await usersModule.getOrders({
       userId,
@@ -170,14 +157,7 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   GET_ENROLLMENTS: async (usersModule, params) => {
-    const {
-      userId,
-      limit = 10,
-      offset = 0,
-      sort,
-      queryString,
-      status,
-    } = params;
+    const { userId, limit = 10, offset = 0, sort, queryString, status } = params;
 
     const enrollments = await usersModule.getEnrollments({
       userId,
@@ -192,13 +172,7 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   GET_QUOTATIONS: async (usersModule, params) => {
-    const {
-      userId,
-      limit = 10,
-      offset = 0,
-      sort,
-      queryString,
-    } = params;
+    const { userId, limit = 10, offset = 0, sort, queryString } = params;
 
     const quotations = await usersModule.getQuotations({
       userId,
@@ -230,12 +204,7 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   GET_REVIEWS: async (usersModule, params) => {
-    const {
-      userId,
-      limit = 10,
-      offset = 0,
-      sort,
-    } = params;
+    const { userId, limit = 10, offset = 0, sort } = params;
 
     const reviews = await usersModule.getReviews({
       userId,

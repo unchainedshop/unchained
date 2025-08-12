@@ -1,6 +1,6 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureUsersManagementMcpModule } from '../../modules/configureUsersManagementMcpModule.js';
+import { configureUsersMcpModule } from '../../modules/configureUsersMcpModule.js';
 import {
   actionValidators,
   UsersManagementSchema,
@@ -22,7 +22,7 @@ export async function usersManagement(context: Context, params: UsersManagementP
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const usersModule = configureUsersManagementMcpModule(context);
+    const usersModule = configureUsersMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
     const data = await actionHandlers[action as ActionName](usersModule, parsedParams as never);
 

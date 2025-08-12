@@ -151,21 +151,22 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
   },
 
   ADD_LINK: async (assortmentModule, { parentAssortmentId, childAssortmentId, tags }) => {
-    const link = await assortmentModule.addLink(parentAssortmentId, childAssortmentId, tags);
-    return { link };
+    const assortment = await assortmentModule.addLink(parentAssortmentId, childAssortmentId, tags);
+    return { assortment };
   },
 
   REMOVE_LINK: async (assortmentModule, { assortmentLinkId }) => {
-    return await assortmentModule.removeLink(assortmentLinkId);
+    await assortmentModule.removeLink(assortmentLinkId);
+    return { success: true };
   },
 
   GET_LINKS: async (assortmentModule, { assortmentId }) => {
-    const links = await assortmentModule.getLinks(assortmentId);
-    return { links };
+    const assortments = await assortmentModule.getLinks(assortmentId);
+    return { assortments };
   },
 
   REORDER_LINKS: async (assortmentModule, { sortKeys }) => {
-    const links = await assortmentModule.reorderLinks(
+    const assortments = await assortmentModule.reorderLinks(
       sortKeys.filter(
         (sk) => 'assortmentLinkId' in sk && sk.assortmentLinkId && sk.sortKey !== undefined,
       ) as {
@@ -173,12 +174,12 @@ const actionHandlers: { [K in ActionName]: Handler<K> } = {
         sortKey: number;
       }[],
     );
-    return { links };
+    return { assortments };
   },
 
   GET_CHILDREN: async (assortmentModule, { assortmentId, includeInactive }) => {
     const children = await assortmentModule.getChildren(assortmentId, includeInactive);
-    return { children };
+    return { assortments: children };
   },
 
   SET_BASE: async (assortmentModule, { assortmentId }) => {

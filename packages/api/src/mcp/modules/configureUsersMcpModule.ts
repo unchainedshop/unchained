@@ -1,8 +1,14 @@
 import { Context } from '../../context.js';
 import { SortOption, DateFilterInput } from '@unchainedshop/utils';
-import { UserProfile } from '@unchainedshop/core-users';
+import { removeConfidentialServiceHashes, UserProfile } from '@unchainedshop/core-users';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import {
+  EmailAlreadyExistsError,
+  UsernameAlreadyExistsError,
+  PasswordInvalidError,
+  AuthOperationFailedError,
+} from '../../errors.js';
 
 export interface UserListOptions {
   limit?: number;
@@ -70,9 +76,8 @@ export interface RemoveEmailOptions {
   email: string;
 }
 
-export const configureUsersManagementMcpModule = (context: Context) => {
+export const configureUsersMcpModule = (context: Context) => {
   const { modules, loaders } = context;
-
   return {
     list: async (options?: UserListOptions) => {
       const {
@@ -85,7 +90,7 @@ export const configureUsersManagementMcpModule = (context: Context) => {
         lastLogin,
       } = options || {};
 
-      return modules.users.findUsers({
+      const users = await modules.users.findUsers({
         includeGuests,
         queryString,
         emailVerified,
@@ -94,6 +99,8 @@ export const configureUsersManagementMcpModule = (context: Context) => {
         offset,
         sort,
       });
+
+      return users.map(removeConfidentialServiceHashes);
     },
 
     count: async (options?: UserCountOptions) => {
@@ -111,24 +118,48 @@ export const configureUsersManagementMcpModule = (context: Context) => {
       if (!userId) {
         return null;
       }
-      return modules.users.findUserById(userId);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     create: async (options: CreateUserOptions) => {
       const { username, email, password, profile } = options;
 
-      return modules.users.createUser({
-        username,
-        email,
-        password,
-        ...profile,
-      });
+      try {
+        const newUserId = await modules.users.createUser(
+          {
+            username,
+            email,
+            password,
+            profile,
+            initialPassword: false,
+          },
+          {},
+        );
+
+        const user = await context.modules.users.updateHeartbeat(newUserId, {
+          remoteAddress: context.remoteAddress,
+          remotePort: context.remotePort,
+          userAgent: context.getHeader('user-agent'),
+          locale: context.locale?.baseName,
+          countryCode: context.countryCode,
+        });
+        return removeConfidentialServiceHashes(user);
+      } catch (e) {
+        if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: options?.email });
+        else if (e.cause === 'USERNAME_INVALID')
+          throw new UsernameAlreadyExistsError({ username: options?.username });
+        else if (e.cause === 'PASSWORD_INVALID')
+          throw new PasswordInvalidError({ username: options?.username });
+        else throw new AuthOperationFailedError({ username: options?.username, email: options.email });
+      }
     },
 
     update: async (options: UpdateUserOptions) => {
       const { userId, profile, meta } = options;
 
-      return modules.users.updateProfile(userId, { profile, meta });
+      const user = await modules.users.updateProfile(userId, { profile, meta });
+      return removeConfidentialServiceHashes(user);
     },
 
     remove: async ({ userId, removeUserReviews }: { userId?: string; removeUserReviews?: boolean }) => {
@@ -138,7 +169,9 @@ export const configureUsersManagementMcpModule = (context: Context) => {
       if (removeUserReviews) {
         await modules.products.reviews.deleteMany({ authorId: userId });
       }
-      return modules.users.markDeleted(userId);
+      await modules.users.markDeleted(userId);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     enroll: async (options: EnrollUserOptions) => {
@@ -154,45 +187,56 @@ export const configureUsersManagementMcpModule = (context: Context) => {
         await modules.users.sendResetPasswordEmail(userId, email, true);
       }
 
-      return modules.users.findUserById(userId);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     setRoles: async (options: SetUserRolesOptions) => {
       const { userId, roles } = options;
+      await modules.users.updateRoles(userId, roles);
 
-      return modules.users.updateRoles(userId, roles);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     setTags: async (options: SetUserTagsOptions) => {
       const { userId, tags } = options;
 
-      return modules.users.updateTags(userId, tags);
+      await modules.users.updateTags(userId, tags);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     setPassword: async (options: SetPasswordOptions) => {
       const { userId, newPassword } = options;
 
-      return modules.users.setPassword(userId, newPassword);
+      await modules.users.setPassword(userId, newPassword);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     setUsername: async (options: SetUsernameOptions) => {
       const { userId, username } = options;
 
-      return modules.users.setUsername(userId, username);
+      await modules.users.setUsername(userId, username);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     addEmail: async (options: AddEmailOptions) => {
       const { userId, email } = options;
 
-      await modules.users.addEmail(userId || context.userId, email);
-      return modules.users.findUserById(userId || context.userId);
+      await modules.users.addEmail(userId, email);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     removeEmail: async (options: RemoveEmailOptions) => {
       const { userId, email } = options;
 
-      await modules.users.removeEmail(userId || context.userId, email);
-      return modules.users.findUserById(userId || context.userId);
+      await modules.users.removeEmail(userId, email);
+      const user = await modules.users.findUserById(userId);
+      return removeConfidentialServiceHashes(user);
     },
 
     sendEnrollmentEmail: async ({ email }: { email: string }) => {
@@ -237,19 +281,22 @@ export const configureUsersManagementMcpModule = (context: Context) => {
       limit?: number;
       offset?: number;
     }) => {
-      return modules.orders.findOrders({
-        userId,
-        includeCarts,
-        queryString,
-        status,
-      }, {
-        skip: offset,
-        limit,
-        sort: sort?.reduce((acc, s) => {
-          acc[s.key] = s.value;
-          return acc;
-        }, {} as any),
-      });
+      return modules.orders.findOrders(
+        {
+          userId,
+          includeCarts,
+          queryString,
+          status,
+        },
+        {
+          skip: offset,
+          limit,
+          sort: sort?.reduce((acc, s) => {
+            acc[s.key] = s.value;
+            return acc;
+          }, {} as any),
+        },
+      );
     },
 
     getEnrollments: async ({
@@ -290,17 +337,20 @@ export const configureUsersManagementMcpModule = (context: Context) => {
       limit?: number;
       offset?: number;
     }) => {
-      return modules.quotations.findQuotations({
-        userId,
-        queryString,
-      }, {
-        skip: offset,
-        limit,
-        sort: sort?.reduce((acc, s) => {
-          acc[s.key] = s.value;
-          return acc;
-        }, {} as any),
-      });
+      return modules.quotations.findQuotations(
+        {
+          userId,
+          queryString,
+        },
+        {
+          skip: offset,
+          limit,
+          sort: sort?.reduce((acc, s) => {
+            acc[s.key] = s.value;
+            return acc;
+          }, {} as any),
+        },
+      );
     },
 
     getBookmarks: async ({ userId }: { userId: string }) => {
@@ -353,8 +403,7 @@ export const configureUsersManagementMcpModule = (context: Context) => {
         authorId: userId,
       });
     },
-
   };
 };
 
-export type UsersManagementMcpModule = ReturnType<typeof configureUsersManagementMcpModule>;
+export type UsersManagementMcpModule = ReturnType<typeof configureUsersMcpModule>;

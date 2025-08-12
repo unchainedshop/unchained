@@ -1,4 +1,4 @@
-import { DateFilterInput, SortOption } from '@unchainedshop/utils';
+import { buildObfuscatedFieldsFilter, DateFilterInput, SortOption } from '@unchainedshop/utils';
 import { Context } from '../../context.js';
 import { WorkStatus } from '@unchainedshop/core-worker';
 import { WorkerDirector } from '@unchainedshop/core';
@@ -43,6 +43,9 @@ export interface EventCountOptions {
 
 export const configureSystemMcpModule = (context: Context) => {
   const { modules, version, loaders, locale, countryCode } = context;
+  const removePrivateFieldsFromWork = buildObfuscatedFieldsFilter(
+    context.options.worker?.blacklistedVariables,
+  );
 
   return {
     system: {
@@ -74,7 +77,8 @@ export const configureSystemMcpModule = (context: Context) => {
         retries?: number;
         worker?: string;
       }) => {
-        return modules.worker.addWork(options);
+        const work = await modules.worker.addWork(options);
+        return removePrivateFieldsFromWork(work);
       },
 
       activeWorkTypes: async () => {
@@ -86,24 +90,28 @@ export const configureSystemMcpModule = (context: Context) => {
       },
 
       allocate: async (options: { types?: string[]; worker?: string }) => {
-        return modules.worker.allocateWork({
+        const work = await modules.worker.allocateWork({
           types: options.types || [],
           worker: options.worker || '',
         });
+        return removePrivateFieldsFromWork(work);
       },
 
       remove: async ({ workId }: { workId: string }) => {
-        return modules.worker.deleteWork(workId);
+        await modules.worker.deleteWork(workId);
+        const work = await modules.worker.findWork({ workId });
+        return removePrivateFieldsFromWork(work);
       },
 
       get: async ({ workId }: { workId: string }) => {
-        return modules.worker.findWork({ workId });
+        const work = await modules.worker.findWork({ workId });
+        return removePrivateFieldsFromWork(work);
       },
 
       list: async (options?: WorkListOptions) => {
         const { limit = 10, offset = 0, queryString, status, sort, types, created } = options || {};
 
-        return modules.worker.findWorkQueue({
+        const workQueue = await modules.worker.findWorkQueue({
           status,
           types,
           created,
@@ -112,6 +120,7 @@ export const configureSystemMcpModule = (context: Context) => {
           limit,
           sort,
         });
+        return workQueue.map(removePrivateFieldsFromWork);
       },
 
       count: async (options?: WorkCountOptions) => {
@@ -132,13 +141,15 @@ export const configureSystemMcpModule = (context: Context) => {
         finished?: Date;
       }) => {
         const { workId, ...finishOptions } = options;
-        return modules.worker.finishWork(workId, finishOptions);
+        await modules.worker.finishWork(workId, finishOptions);
+        const work = await modules.worker.findWork({ workId });
+        return removePrivateFieldsFromWork(work);
       },
 
       processNext: async (options: { worker?: string }) => {
         const { worker } = options;
         const work = WorkerDirector.processNextWork(context, worker);
-        return work;
+        return removePrivateFieldsFromWork(work);
       },
 
       getStatistics: async (options: { types?: string[]; dateRange?: DateFilterInput }) => {
