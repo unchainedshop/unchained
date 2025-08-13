@@ -6,5 +6,5 @@ export default async function getUserBookmarks(context: Context, params: Params<
   const { userId } = params;
   const bookmark = await modules.bookmarks.findBookmarksByUserId(userId);
 
-  return { bookmark }
+  return { bookmark };
 }

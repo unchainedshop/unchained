@@ -1,10 +1,10 @@
 import { Context } from '../../../../context.js';
-import { getLocalizationConfig } from '../../../modules/configureLocalizationMcpModule.js';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
 import { Params } from '../schemas.js';
 
 export default async function getLocalization(context: Context, params: Params<'GET'>) {
   const { localizationType, entityId } = params;
-  const config = getLocalizationConfig(context, localizationType);
+  const config = getLocalizationsConfig(context, localizationType);
   const entity = await config.findMethod({ [config.idField]: entityId });
 
   if (!entity) {

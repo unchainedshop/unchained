@@ -1,16 +1,14 @@
 import { Context } from '../../../../context.js';
-import {
-  getLocalizationConfig,
-  sanitizeEntityData,
-  validateIsoCode,
-} from '../../../modules/configureLocalizationMcpModule.js';
+import sanitizeEntityData from '../../../utils/sanitizeLocalizationEntityData.js';
+import validateIsoCode from '../../../utils/validateIsoCode.js';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
+
 import { Params } from '../schemas.js';
 
 export default async function createLocalization(context: Context, params: Params<'CREATE'>) {
   const { localizationType, entity } = params;
-  const config = getLocalizationConfig(context, localizationType);
+  const config = getLocalizationsConfig(context, localizationType);
 
-  // Sanitize and validate the entity data
   const sanitizedEntity = sanitizeEntityData(localizationType, entity);
   if (sanitizedEntity.isoCode) {
     sanitizedEntity.isoCode = validateIsoCode(localizationType, sanitizedEntity.isoCode);

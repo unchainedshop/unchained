@@ -4,17 +4,17 @@ import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.js';
 import { Params } from '../schemas.js';
 
 export default async function addAssortmentMedia(context: Context, params: Params<'ADD_MEDIA'>) {
-    const { modules } = context;
-    const { assortmentId, mediaId, tags } = params;
+  const { modules } = context;
+  const { assortmentId, mediaId, tags } = params;
 
-    const assortment = await modules.assortments.findAssortment({ assortmentId });
-    if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+  const assortment = await modules.assortments.findAssortment({ assortmentId });
+  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-    const assortmentMedia = await modules.assortments.media.create({
-        assortmentId,
-        mediaId,
-        tags,
-    } as any);
+  const assortmentMedia = await modules.assortments.media.create({
+    assortmentId,
+    mediaId,
+    tags,
+  } as any);
 
-    return { media: await normalizeMediaUrl([assortmentMedia], context) };
+  return { media: await normalizeMediaUrl([assortmentMedia], context) };
 }

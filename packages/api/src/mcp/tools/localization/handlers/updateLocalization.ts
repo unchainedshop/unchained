@@ -1,13 +1,12 @@
 import { Context } from '../../../../context.js';
-import {
-  getLocalizationConfig,
-  sanitizeEntityData,
-} from '../../../modules/configureLocalizationMcpModule.js';
+import sanitizeEntityData from '../../../utils/sanitizeLocalizationEntityData.js';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
+
 import { Params } from '../schemas.js';
 
 export default async function updateLocalization(context: Context, params: Params<'UPDATE'>) {
   const { localizationType, entityId, entity } = params;
-  const config = getLocalizationConfig(context, localizationType);
+  const config = getLocalizationsConfig(context, localizationType);
   const existsParam = { [config.idField]: entityId };
 
   if (!(await config.existsMethod(existsParam))) {

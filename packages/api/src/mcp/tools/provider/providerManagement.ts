@@ -27,6 +27,7 @@ export async function providerManagement(context: Context, params: ProviderManag
     return createMcpResponse({
       action,
       data,
+      providerType: params?.providerType,
     });
   } catch (error) {
     return createMcpErrorResponse(action, error);

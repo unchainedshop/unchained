@@ -1,10 +1,10 @@
 import { Context } from '../../../../context.js';
-import { getLocalizationConfig } from '../../../modules/configureLocalizationMcpModule.js';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
 import { Params } from '../schemas.js';
 
 export default async function removeLocalization(context: Context, params: Params<'REMOVE'>) {
   const { localizationType, entityId } = params;
-  const config = getLocalizationConfig(context, localizationType);
+  const config = getLocalizationsConfig(context, localizationType);
   const findParam = { [config.idField]: entityId };
   const existing = await config.findMethod(findParam);
 

@@ -12,5 +12,5 @@ export default async function getUserReviews(context: Context, params: Params<'G
     sort,
   } as any);
 
-  return { reviews }
+  return { reviews };
 }

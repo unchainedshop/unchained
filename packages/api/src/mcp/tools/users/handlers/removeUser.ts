@@ -1,5 +1,4 @@
 import { Context } from '../../../../context.js';
-import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 import { Params } from '../schemas.js';
 
 export default async function removeUser(context: Context, params: Params<'REMOVE'>) {
@@ -13,6 +12,6 @@ export default async function removeUser(context: Context, params: Params<'REMOV
     await modules.products.reviews.deleteMany({ authorId: userId });
   }
   await modules.users.markDeleted(userId);
-  const user = await modules.users.findUserById(userId);
+  await modules.users.findUserById(userId);
   return { success: true };
 }

@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { getLocalizationConfig } from '../../../modules/configureLocalizationMcpModule.js';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
 import { Params } from '../schemas.js';
 
 export default async function listLocalizations(context: Context, params: Params<'LIST'>) {
@@ -11,7 +11,7 @@ export default async function listLocalizations(context: Context, params: Params
     queryString,
     sort,
   } = params;
-  const config = getLocalizationConfig(context, localizationType);
+  const config = getLocalizationsConfig(context, localizationType);
 
   const sortOptions =
     sort?.filter((s): s is { key: string; value: 'ASC' | 'DESC' } => Boolean(s.key && s.value)) ||

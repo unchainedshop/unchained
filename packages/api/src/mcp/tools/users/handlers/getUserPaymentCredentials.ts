@@ -16,5 +16,5 @@ export default async function getUserPaymentCredentials(
     },
   );
 
-  return { credentials }
+  return { credentials };
 }

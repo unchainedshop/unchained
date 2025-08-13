@@ -14,5 +14,5 @@ export default async function getUserEnrollments(context: Context, params: Param
     sort,
   } as any);
 
-  return { enrollments }
+  return { enrollments };
 }

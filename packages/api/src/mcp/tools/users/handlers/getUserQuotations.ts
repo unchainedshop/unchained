@@ -20,5 +20,5 @@ export default async function getUserQuotations(context: Context, params: Params
     },
   );
 
-  return { quotations }
+  return { quotations };
 }

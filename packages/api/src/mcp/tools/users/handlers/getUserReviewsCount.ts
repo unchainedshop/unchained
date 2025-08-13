@@ -11,5 +11,5 @@ export default async function getUserReviewsCount(
     authorId: userId,
   });
 
-  return { count }
+  return { count };
 }

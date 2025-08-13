@@ -22,5 +22,5 @@ export default async function getUserOrders(context: Context, params: Params<'GE
     },
   );
 
-  return { orders }
+  return { orders };
 }

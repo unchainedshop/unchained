@@ -20,6 +20,18 @@ export const LocalizationEntitySchema = z.object({
     .describe(
       'ISO identifier: Countries need 2-letter codes (US, DE), Currencies need 3-letter codes (USD, EUR), Languages accept 2-10 characters (en, de-CH)',
     ),
+  isActive: z
+    .boolean()
+    .optional()
+    .describe(
+      'Active status for the entity - used for all localization types (COUNTRY, CURRENCY, LANGUAGE)',
+    ),
+  defaultCurrencyCode: z
+    .string()
+    .optional()
+    .describe(
+      'Default currency code for the country - only used when localizationType is COUNTRY, ignored otherwise',
+    ),
   contractAddress: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, 'Must be a valid 42-character blockchain address starting with 0x')

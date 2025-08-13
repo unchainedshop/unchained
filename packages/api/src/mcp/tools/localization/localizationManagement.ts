@@ -27,6 +27,7 @@ export async function localizationManagement(context: Context, params: Localizat
     return createMcpResponse({
       action,
       data,
+      localizationType: actionParams.localizationType,
     });
   } catch (error) {
     return createMcpErrorResponse(action, error);

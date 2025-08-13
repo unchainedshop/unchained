@@ -13,5 +13,5 @@ export default async function getUserAvatar(context: Context, params: Params<'GE
     fileId: user.avatarId,
   });
 
-  return { avatar }
+  return { avatar };
 }
