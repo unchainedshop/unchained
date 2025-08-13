@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureFilterMcpModule } from '../../modules/configureFilterMcpModule.js';
 import {
   actionValidators,
   FilterManagementSchema,
@@ -8,7 +7,7 @@ import {
   FilterManagementParams,
   ActionName,
 } from './schemas.js';
-import actionHandlers from './handlers.js';
+import actionHandlers from './handlers/index.js';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
 
 export { FilterManagementSchema, FilterManagementZodSchema, FilterManagementParams };
@@ -22,9 +21,8 @@ export async function filterManagement(context: Context, params: FilterManagemen
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const filterModule = configureFilterMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](filterModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](context, parsedParams as never);
 
     return createMcpResponse({
       action,

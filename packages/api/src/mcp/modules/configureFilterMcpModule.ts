@@ -75,8 +75,8 @@ export const configureFilterMcpModule = (context: Context) => {
         await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);
       }
 
-      const filter_normalized = await getNormalizedFilterDetails(newFilter._id, context);
-      return filter_normalized;
+      const normalizedFilter = await getNormalizedFilterDetails(newFilter._id, context);
+      return normalizedFilter;
     },
 
     update: async (filterId: string, updateData: FilterUpdateData) => {
@@ -85,8 +85,8 @@ export const configureFilterMcpModule = (context: Context) => {
       }
 
       await modules.filters.update(filterId, updateData as any);
-      const filter_normalized = await getNormalizedFilterDetails(filterId, context);
-      return filter_normalized;
+      const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
+      return normalizedFilter;
     },
 
     remove: async (filterId: string) => {
@@ -101,17 +101,17 @@ export const configureFilterMcpModule = (context: Context) => {
         }),
       );
 
-      const filter_normalized = await getNormalizedFilterDetails(filterId, context);
+      const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
       await modules.filters.delete(filterId);
-      return filter_normalized;
+      return normalizedFilter;
     },
 
     get: async (filterId: string) => {
-      const filter_normalized = await getNormalizedFilterDetails(filterId, context);
-      if (!filter_normalized) {
+      const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
+      if (!normalizedFilter) {
         throw new FilterNotFoundError({ filterId });
       }
-      return filter_normalized;
+      return normalizedFilter;
     },
 
     list: async (options: FilterListOptions = {}) => {
@@ -157,8 +157,8 @@ export const configureFilterMcpModule = (context: Context) => {
         await modules.filters.texts.updateTexts({ filterId, filterOptionValue: option }, texts);
       }
 
-      const filter_normalized = await getNormalizedFilterDetails(filterId, context);
-      return { filter: filter_normalized };
+      const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
+      return { filter: normalizedFilter };
     },
 
     removeOption: async (filterId: string, filterOptionValue: string) => {
@@ -172,8 +172,8 @@ export const configureFilterMcpModule = (context: Context) => {
       });
       await FilterDirector.invalidateProductIdCache(removedFilterOption, context);
 
-      const filter_normalized = await getNormalizedFilterDetails(filterId, context);
-      return { filter: filter_normalized };
+      const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
+      return { filter: normalizedFilter };
     },
 
     updateTexts: async (
@@ -190,8 +190,8 @@ export const configureFilterMcpModule = (context: Context) => {
         texts,
       );
 
-      const filter_normalized = await getNormalizedFilterDetails(filterId, context);
-      return { filterTexts: updatedTexts, filter: filter_normalized };
+      const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
+      return { filterTexts: updatedTexts, filter: normalizedFilter };
     },
 
     getTexts: async (filterId: string, filterOptionValue?: string) => {

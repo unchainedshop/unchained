@@ -1,0 +1,15 @@
+import { Context } from '../../../../context.js';
+import { Params } from '../schemas.js';
+
+export default async function getUserAvatar(context: Context, params: Params<'GET_AVATAR'>) {
+  const { modules, loaders } = context;
+  const { userId } = params;
+  const user = await modules.users.findUserById(userId);
+  if (!user?.avatarId) {
+    return null;
+  }
+
+  return loaders.fileLoader.load({
+    fileId: user.avatarId,
+  });
+}

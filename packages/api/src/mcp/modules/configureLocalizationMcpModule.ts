@@ -41,7 +41,7 @@ export interface LocalizationCountOptions {
   queryString?: string;
 }
 
-const validateIsoCode = (localizationType: LocalizationType, isoCode: string): string => {
+export const validateIsoCode = (localizationType: LocalizationType, isoCode: string): string => {
   switch (localizationType) {
     case 'COUNTRY':
       if (isoCode.length !== 2) {
@@ -63,7 +63,7 @@ const validateIsoCode = (localizationType: LocalizationType, isoCode: string): s
   }
 };
 
-const sanitizeEntityData = (
+export const sanitizeEntityData = (
   localizationType: LocalizationType,
   entity: LocalizationEntity | LocalizationUpdateEntity,
 ) => {

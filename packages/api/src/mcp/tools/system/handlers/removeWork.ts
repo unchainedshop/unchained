@@ -1,7 +1,8 @@
 import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
 import { Context } from '../../../../context.js';
+import { Params } from '../schemas.js';
 
-const removeWork = async (context: Context, { workId }: { workId: string }) => {
+const removeWork = async (context: Context, { workId }: Params<'WORKER_REMOVE'>) => {
   const removePrivateFieldsFromWork = buildObfuscatedFieldsFilter(
     context.options.worker?.blacklistedVariables,
   );

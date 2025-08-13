@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureLocalizationMcpModule } from '../../modules/configureLocalizationMcpModule.js';
 import {
   actionValidators,
   LocalizationManagementSchema,
@@ -8,7 +7,7 @@ import {
   LocalizationManagementParams,
   ActionName,
 } from './schemas.js';
-import actionHandlers from './handlers.js';
+import actionHandlers from './handlers/index.js';
 import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
 
 export { LocalizationManagementSchema, LocalizationManagementZodSchema, LocalizationManagementParams };
@@ -22,13 +21,11 @@ export async function localizationManagement(context: Context, params: Localizat
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const localizationModule = configureLocalizationMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](localizationModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](context, parsedParams as never);
 
     return createMcpResponse({
       action,
-      localizationType: parsedParams.localizationType,
       data,
     });
   } catch (error) {

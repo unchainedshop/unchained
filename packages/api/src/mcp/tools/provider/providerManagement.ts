@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureProviderMcpModule } from '../../modules/configureProviderMcpModule.js';
 import {
   actionValidators,
   ProviderManagementSchema,
@@ -8,7 +7,7 @@ import {
   ProviderManagementParams,
   ActionName,
 } from './schemas.js';
-import actionHandlers from './handlers.js';
+import actionHandlers from './handlers/index.js';
 import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
 
 export { ProviderManagementSchema, ProviderManagementZodSchema, ProviderManagementParams };
@@ -22,12 +21,10 @@ export async function providerManagement(context: Context, params: ProviderManag
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const providerModule = configureProviderMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](providerModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](context, parsedParams as never);
 
     return createMcpResponse({
-      providerType: actionParams.providerType,
       action,
       data,
     });

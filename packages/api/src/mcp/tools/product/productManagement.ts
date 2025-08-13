@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureProductMcpModule } from '../../modules/configureProductMcpModule.js';
 import {
   actionValidators,
   ProductManagementSchema,
@@ -8,7 +7,7 @@ import {
   ProductManagementParams,
   ActionName,
 } from './schemas.js';
-import actionHandlers from './handlers.js';
+import { actionHandlers } from './handlers/index.js';
 import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
 
 export { ProductManagementSchema, ProductManagementZodSchema, ProductManagementParams };
@@ -22,9 +21,8 @@ export async function productManagement(context: Context, params: ProductManagem
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const productModule = configureProductMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](productModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](context, parsedParams as never);
 
     return createMcpResponse({
       action,

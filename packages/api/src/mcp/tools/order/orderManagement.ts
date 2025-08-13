@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
-import { configureOrderMcpModule } from '../../modules/configureOrderMcpModule.js';
 import {
   actionValidators,
   OrderManagementSchema,
@@ -8,7 +7,7 @@ import {
   OrderManagementParams,
   ActionName,
 } from './schemas.js';
-import actionHandlers from './handlers.js';
+import actionHandlers from './handlers/index.js';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
 
 export { OrderManagementSchema, OrderManagementZodSchema, OrderManagementParams };
@@ -22,9 +21,8 @@ export async function orderManagement(context: Context, params: OrderManagementP
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const orderModule = configureOrderMcpModule(context);
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](orderModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](context, parsedParams as never);
 
     return createMcpResponse({
       action,
