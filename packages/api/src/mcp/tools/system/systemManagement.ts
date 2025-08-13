@@ -1,9 +1,8 @@
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import { actionValidators, ActionName, SystemManagementParams } from './schemas.js';
-import actionHandlers from './handlers.js';
+import actionHandlers from './handlers/index.js';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
-import { configureSystemMcpModule } from '../../modules/configureSystemMcpModule.js';
 
 export async function systemManagement(context: Context, params: SystemManagementParams) {
   const { action, ...actionParams } = params;
@@ -14,10 +13,8 @@ export async function systemManagement(context: Context, params: SystemManagemen
       throw new Error(`Unknown action: ${action}`);
     }
 
-    const systemModule = configureSystemMcpModule(context);
-
     const parsedParams = actionValidators[action as ActionName].parse(actionParams);
-    const data = await actionHandlers[action as ActionName](systemModule, parsedParams as never);
+    const data = await actionHandlers[action as ActionName](context, parsedParams as never);
 
     return createMcpResponse({
       action,
