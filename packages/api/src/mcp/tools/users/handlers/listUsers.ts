@@ -22,7 +22,7 @@ export default async function listUsers(context: Context, params: Params<'LIST'>
     limit,
     offset,
     sort,
-  });
+  } as any);
 
   return { users: users.map(removeConfidentialServiceHashes) };
 }

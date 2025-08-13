@@ -5,13 +5,13 @@ export default async function getUserOrders(context: Context, params: Params<'GE
   const { modules } = context;
   const { userId, includeCarts = false, sort, queryString, status, limit = 10, offset = 0 } = params;
 
-  return modules.orders.findOrders(
+  const orders = await modules.orders.findOrders(
     {
       userId,
       includeCarts,
       queryString,
       status,
-    },
+    } as any,
     {
       skip: offset,
       limit,
@@ -21,4 +21,6 @@ export default async function getUserOrders(context: Context, params: Params<'GE
       }, {} as any),
     },
   );
+
+  return { orders }
 }

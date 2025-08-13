@@ -7,7 +7,9 @@ export default async function getUserReviewsCount(
 ) {
   const { modules } = context;
   const { userId } = params;
-  return modules.products.reviews.count({
+  const count = await modules.products.reviews.count({
     authorId: userId,
   });
+
+  return { count }
 }

@@ -13,5 +13,5 @@ export default async function reorderAssortmentLinks(context: Context, params: P
       ...link,
     })) || [],
   );
-  return { links: normalizedAssortmentLinks };
+  return { assortments: normalizedAssortmentLinks };
 }

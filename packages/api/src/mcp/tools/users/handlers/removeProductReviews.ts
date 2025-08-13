@@ -7,6 +7,6 @@ export default async function removeProductReviews(
 ) {
   const { modules } = context;
   const { userId } = params;
-  const result = await modules.products.reviews.deleteMany({ authorId: userId });
-  return { deletedCount: result };
+  await modules.products.reviews.deleteMany({ authorId: userId });
+  return { success: true };
 }

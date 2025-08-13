@@ -9,7 +9,9 @@ export default async function getUserAvatar(context: Context, params: Params<'GE
     return null;
   }
 
-  return loaders.fileLoader.load({
+  const avatar = await loaders.fileLoader.load({
     fileId: user.avatarId,
   });
+
+  return { avatar }
 }

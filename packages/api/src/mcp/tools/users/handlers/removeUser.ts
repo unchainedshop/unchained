@@ -14,5 +14,5 @@ export default async function removeUser(context: Context, params: Params<'REMOV
   }
   await modules.users.markDeleted(userId);
   const user = await modules.users.findUserById(userId);
-  return { user: removeConfidentialServiceHashes(user) };
+  return { success: true };
 }

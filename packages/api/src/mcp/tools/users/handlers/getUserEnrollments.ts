@@ -5,12 +5,14 @@ export default async function getUserEnrollments(context: Context, params: Param
   const { modules } = context;
   const { userId, sort, queryString, status, limit = 10, offset = 0 } = params;
 
-  return modules.enrollments.findEnrollments({
+  const enrollments = await modules.enrollments.findEnrollments({
     userId,
     queryString,
     status,
     offset,
     limit,
     sort,
-  });
+  } as any);
+
+  return { enrollments }
 }

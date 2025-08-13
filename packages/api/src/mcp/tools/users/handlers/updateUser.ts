@@ -6,6 +6,6 @@ export default async function updateUser(context: Context, params: Params<'UPDAT
   const { modules } = context;
   const { userId, profile, meta } = params;
 
-  const user = await modules.users.updateProfile(userId, { profile, meta });
+  const user = await modules.users.updateProfile(userId, { profile, meta } as any);
   return { user: removeConfidentialServiceHashes(user) };
 }

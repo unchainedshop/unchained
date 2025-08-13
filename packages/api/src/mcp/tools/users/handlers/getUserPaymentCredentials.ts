@@ -7,7 +7,7 @@ export default async function getUserPaymentCredentials(
 ) {
   const { modules } = context;
   const { userId } = params;
-  return modules.payment.paymentCredentials.findPaymentCredentials(
+  const credentials = await modules.payment.paymentCredentials.findPaymentCredentials(
     { userId },
     {
       sort: {
@@ -15,4 +15,6 @@ export default async function getUserPaymentCredentials(
       },
     },
   );
+
+  return { credentials }
 }

@@ -8,5 +8,5 @@ export default async function removeUserEmail(context: Context, params: Params<'
 
   await modules.users.removeEmail(userId, email);
   const user = await modules.users.findUserById(userId);
-  return { user: removeConfidentialServiceHashes(user) };
+  return { success: true };
 }

@@ -5,7 +5,7 @@ export default async function getUserQuotations(context: Context, params: Params
   const { modules } = context;
   const { userId, sort, queryString, limit = 10, offset = 0 } = params;
 
-  return modules.quotations.findQuotations(
+  const quotations = await modules.quotations.findQuotations(
     {
       userId,
       queryString,
@@ -19,4 +19,6 @@ export default async function getUserQuotations(context: Context, params: Params
       }, {} as any),
     },
   );
+
+  return { quotations }
 }

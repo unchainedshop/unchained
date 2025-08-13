@@ -5,9 +5,7 @@ import createUser from './createUser.js';
 import updateUser from './updateUser.js';
 import removeUser from './removeUser.js';
 import enrollUser from './enrollUser.js';
-import setUserRoles from './setUserRoles.js';
 import setUserTags from './setUserTags.js';
-import setUserPassword from './setUserPassword.js';
 import setUserUsername from './setUserUsername.js';
 import addUserEmail from './addUserEmail.js';
 import removeUserEmail from './removeUserEmail.js';
@@ -31,9 +29,7 @@ export default {
   UPDATE: updateUser,
   REMOVE: removeUser,
   ENROLL: enrollUser,
-  SET_ROLES: setUserRoles,
   SET_TAGS: setUserTags,
-  SET_PASSWORD: setUserPassword,
   SET_USERNAME: setUserUsername,
   ADD_EMAIL: addUserEmail,
   REMOVE_EMAIL: removeUserEmail,

@@ -85,19 +85,9 @@ export const actionValidators = {
       .describe('Optional password (if not provided, enrollment email sent)'),
   }),
 
-  SET_ROLES: z.object({
-    userId: z.string().describe('User ID to update'),
-    roles: z.array(z.string()).describe('Array of roles to assign'),
-  }),
-
   SET_TAGS: z.object({
     userId: z.string().describe('User ID to update'),
     tags: z.array(z.string()).describe('Array of tags to assign'),
-  }),
-
-  SET_PASSWORD: z.object({
-    userId: z.string().describe('User ID to update'),
-    newPassword: z.string().describe('New password to set'),
   }),
 
   SET_USERNAME: z.object({
@@ -184,9 +174,7 @@ export const UsersManagementSchema = {
       'UPDATE',
       'REMOVE',
       'ENROLL',
-      'SET_ROLES',
       'SET_TAGS',
-      'SET_PASSWORD',
       'SET_USERNAME',
       'ADD_EMAIL',
       'REMOVE_EMAIL',
@@ -203,13 +191,13 @@ export const UsersManagementSchema = {
       'GET_REVIEWS_COUNT',
     ])
     .describe(
-      'User management action to perform. LIST: list users with filters and pagination. COUNT: count users matching criteria. GET: retrieve single user by ID. CREATE: create new user account. UPDATE: update user profile/metadata. REMOVE: mark user as deleted. ENROLL: create user and send enrollment email. SET_ROLES: assign roles to user. SET_TAGS: assign tags to user. SET_PASSWORD: set user password. SET_USERNAME: set user username. ADD_EMAIL/REMOVE_EMAIL: manage user email addresses. SEND_ENROLLMENT_EMAIL/SEND_VERIFICATION_EMAIL: trigger email workflows. REMOVE_PRODUCT_REVIEWS: delete all reviews by user. GET_ORDERS/GET_ENROLLMENTS/GET_QUOTATIONS/GET_BOOKMARKS/GET_PAYMENT_CREDENTIALS/GET_AVATAR/GET_REVIEWS/GET_REVIEWS_COUNT: retrieve user-related data with optional filtering and pagination.',
+      'User management action to perform. LIST: list users with filters and pagination. COUNT: count users matching criteria. GET: retrieve single user by ID. CREATE: create new user account. UPDATE: update user profile/metadata. REMOVE: mark user as deleted. ENROLL: create user and send enrollment email. SET_TAGS: assign tags to user. SET_USERNAME: set user username. ADD_EMAIL/REMOVE_EMAIL: manage user email addresses. SEND_ENROLLMENT_EMAIL/SEND_VERIFICATION_EMAIL: trigger email workflows. REMOVE_PRODUCT_REVIEWS: delete all reviews by user. GET_ORDERS/GET_ENROLLMENTS/GET_QUOTATIONS/GET_BOOKMARKS/GET_PAYMENT_CREDENTIALS/GET_AVATAR/GET_REVIEWS/GET_REVIEWS_COUNT: retrieve user-related data with optional filtering and pagination.',
     ),
   userId: z
     .string()
     .optional()
     .describe(
-      'Required for: GET, UPDATE, REMOVE, SET_ROLES, SET_TAGS, SET_PASSWORD, SET_USERNAME, GET_ORDERS, GET_ENROLLMENTS, GET_QUOTATIONS, GET_BOOKMARKS, GET_PAYMENT_CREDENTIALS, GET_AVATAR, GET_REVIEWS, GET_REVIEWS_COUNT, REMOVE_PRODUCT_REVIEWS. Optional for: ADD_EMAIL, REMOVE_EMAIL (defaults to current user if not provided)',
+      'Required for: GET, UPDATE, REMOVE, SET_TAGS, SET_USERNAME, GET_ORDERS, GET_ENROLLMENTS, GET_QUOTATIONS, GET_BOOKMARKS, GET_PAYMENT_CREDENTIALS, GET_AVATAR, GET_REVIEWS, GET_REVIEWS_COUNT, REMOVE_PRODUCT_REVIEWS. Optional for: ADD_EMAIL, REMOVE_EMAIL (defaults to current user if not provided)',
     ),
 
   username: z
@@ -230,15 +218,10 @@ export const UsersManagementSchema = {
     .describe(
       'Used for: CREATE (optional password for new user), ENROLL (optional password - if not provided, enrollment email is sent)',
     ),
-  newPassword: z.string().optional().describe('Used for: SET_PASSWORD (new password to assign to user)'),
   profile: UserProfileSchema.optional().describe(
     'Used for: CREATE (optional profile data for new user), UPDATE (profile updates to apply), ENROLL (required profile data for new user including displayName, birthday, phoneMobile, address)',
   ),
   meta: z.any().optional().describe('Used for: UPDATE (additional metadata to store with user profile)'),
-  roles: z
-    .array(z.string())
-    .optional()
-    .describe('Used for: SET_ROLES (array of role names to assign to user, e.g. ["admin", "editor"])'),
   tags: z
     .array(z.string())
     .optional()
