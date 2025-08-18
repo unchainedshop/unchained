@@ -1,5 +1,6 @@
 import { Context } from '../../../../context.js';
 import { ProductVariationNotFoundError } from '../../../../errors.js';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function addProductVariationOption(
@@ -23,6 +24,5 @@ export default async function addProductVariationOption(
       option,
     );
   }
-
-  return { option: newOption };
+  return { product: await getNormalizedProductDetails(newOption.productId, context) };
 }

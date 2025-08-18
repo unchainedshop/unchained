@@ -18,14 +18,5 @@ export default async function getBundleItems(context: Context, params: Params<'G
       required: ProductTypes.BundleProduct,
     });
   }
-
-  const bundleItems = await Promise.all(
-    (bundle.bundleItems || []).map(async (item, index) => ({
-      ...item,
-      index,
-      product: await getNormalizedProductDetails(item.productId, context),
-    })),
-  );
-
-  return { bundleItems };
+  return { product: await getNormalizedProductDetails(bundleId, context) };
 }

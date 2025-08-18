@@ -15,12 +15,16 @@ export async function getNormalizedProductDetails(productId: string, context: Co
   let variations = [];
   let bundleItems = [];
   let assignments = [];
-  if (product.type === ProductTypes.ConfigurableProduct && product?.proxy?.assignments?.length) {
+  const reviews = await modules.products.reviews.findProductReviews({
+    productId,
+  });
+
+  if (product.type === ProductTypes.ConfigurableProduct) {
     variations = await context.modules.products.variations.findProductVariations({
-      productId: product._id,
+      productId: product?._id,
     });
     assignments = await Promise.all(
-      product?.proxy?.assignments?.map(async (assignment) => {
+      (product?.proxy?.assignments || [])?.map(async (assignment) => {
         const product = await loaders.productLoader.load({
           productId: assignment.productId,
         });
@@ -34,7 +38,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
         });
         return {
           assignment: {
-            ...assignment,
+            ...(assignment || {}),
             product: {
               ...product,
               media,
@@ -94,5 +98,6 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     variations,
     bundleItems,
     pricing,
+    reviews,
   };
 }

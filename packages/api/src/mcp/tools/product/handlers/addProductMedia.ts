@@ -41,6 +41,6 @@ export default async function addProductMedia(context: Context, params: Params<'
   }
 
   const linked = await services.files.linkFile({ fileId, size, type });
-  const media = normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context);
+  const media = await normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context);
   return { media };
 }

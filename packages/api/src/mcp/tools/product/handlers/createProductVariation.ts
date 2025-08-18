@@ -2,6 +2,7 @@ import { Context } from '../../../../context.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
 import { Params } from '../schemas.js';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 
 export default async function createProductVariation(
   context: Context,
@@ -32,5 +33,5 @@ export default async function createProductVariation(
       variationTexts as any,
     );
   }
-  return { variation: newVariation };
+  return { product: await getNormalizedProductDetails(productId, context) };
 }

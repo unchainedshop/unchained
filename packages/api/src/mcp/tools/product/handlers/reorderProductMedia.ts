@@ -7,5 +7,5 @@ export default async function reorderProductMedia(context: Context, params: Para
   const { sortKeys } = params;
 
   const media = await modules.products.media.updateManualOrder({ sortKeys: sortKeys as any });
-  return { media: normalizeMediaUrl(media, context) };
+  return { media: await normalizeMediaUrl(media, context) };
 }

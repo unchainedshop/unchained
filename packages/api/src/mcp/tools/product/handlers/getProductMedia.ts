@@ -15,5 +15,5 @@ export default async function getProductMedia(context: Context, params: Params<'
     limit,
     offset,
   });
-  return { media: normalizeMediaUrl(media, context) };
+  return { media: await normalizeMediaUrl(media, context) };
 }
