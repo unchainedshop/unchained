@@ -31,7 +31,7 @@ export default async function createUser(context: Context, params: Params<'CREAT
       locale: context.locale?.baseName,
       countryCode: context.countryCode,
     });
-    return removeConfidentialServiceHashes(user);
+    return { user: removeConfidentialServiceHashes(user) };
   } catch (e) {
     if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
     else if (e.cause === 'USERNAME_INVALID')

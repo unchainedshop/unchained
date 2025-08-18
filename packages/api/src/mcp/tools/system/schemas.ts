@@ -75,7 +75,7 @@ export const actionValidators = {
       .nonempty()
       .optional()
       .describe(
-        'List of work types to allocate. If provided, only tasks matching one of these types will be allocated to the worker.',
+        'Must match a registered worker type in the system,  When provided, the worker will take precedence in the queue and be allocated',
       ),
     worker: z
       .string()
@@ -86,7 +86,11 @@ export const actionValidators = {
   }),
 
   WORKER_REMOVE: z.object({
-    workId: z.string().describe('Unique identifier of the work item to remove from the queue.'),
+    workId: z
+      .string()
+      .describe(
+        'Unique identifier of the work item to remove from the queue. only NEW worker that is not deleted, allocated or finished',
+      ),
   }),
 
   WORKER_GET: z.object({
@@ -318,7 +322,7 @@ export const SystemManagementSchema = {
     .array(z.string())
     .optional()
     .describe(
-      'Filter by specific types. For worker actions: work types. For event actions: event types (e.g., USER_CREATED, ORDER_PLACED).',
+      'Filter by specific types. For worker actions: use in WORKER_LIST, WORKER_ALLOCATE work types. For event actions: event types (e.g., USER_CREATED, ORDER_PLACED).',
     ),
   ...PaginationSchema,
   ...SortingSchema,
