@@ -4,10 +4,10 @@ import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAsso
 import { Params } from '../schemas.js';
 
 export default async function getAssortmentLinks(context: Context, params: Params<'GET_LINKS'>) {
-  const { modules, loaders } = context;
+  const { loaders } = context;
   const { assortmentId } = params;
 
-  const assortment = await modules.assortments.findAssortment({ assortmentId });
+  const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
   const assortmentLinks = await loaders.assortmentLinksLoader.load({
@@ -19,5 +19,5 @@ export default async function getAssortmentLinks(context: Context, params: Param
       ...link,
     })) || [],
   );
-  return { links };
+  return { assortment, links };
 }

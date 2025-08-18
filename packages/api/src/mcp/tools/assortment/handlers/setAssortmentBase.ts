@@ -11,6 +11,5 @@ export default async function setAssortmentBase(context: Context, params: Params
   if (!existingAssortment) throw new AssortmentNotFoundError({ assortmentId });
 
   await modules.assortments.setBase(assortmentId);
-  const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
-  return { assortment };
+  return { assortment: await getNormalizedAssortmentDetails({ assortmentId }, context) };
 }

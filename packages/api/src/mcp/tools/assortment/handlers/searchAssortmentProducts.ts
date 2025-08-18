@@ -1,5 +1,6 @@
 import { Context } from '../../../../context.js';
 import { AssortmentNotFoundError } from '../../../../errors.js';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
@@ -10,7 +11,7 @@ export default async function searchAssortmentProducts(
   const { modules, services } = context;
   const { assortmentId, queryString, limit = 50, offset = 0, includeInactive = false } = params;
 
-  const assortment = await modules.assortments.findAssortment({ assortmentId });
+  const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
   const productIds = await modules.assortments.findProductIds({
@@ -43,5 +44,5 @@ export default async function searchAssortmentProducts(
   const products_normalized = await Promise.all(
     products?.map(async ({ _id }) => getNormalizedProductDetails(_id, context)) || [],
   );
-  return { products: products_normalized };
+  return { assortment, products: products_normalized };
 }

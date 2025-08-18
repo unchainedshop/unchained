@@ -7,10 +7,9 @@ export default async function getAssortmentChildren(context: Context, params: Pa
   const { modules } = context;
   const { assortmentId, includeInactive = false } = params;
 
-  if (assortmentId) {
-    const assortment = await modules.assortments.findAssortment({ assortmentId });
-    if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-  }
+  const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
+  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+
   const children = await modules.assortments.children({ assortmentId, includeInactive });
 
   const children_normalized = await Promise.all(
@@ -19,5 +18,5 @@ export default async function getAssortmentChildren(context: Context, params: Pa
       ...link,
     })) || [],
   );
-  return { children: children_normalized };
+  return { assortment, children: children_normalized };
 }

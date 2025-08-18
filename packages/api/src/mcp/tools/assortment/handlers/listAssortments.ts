@@ -28,7 +28,9 @@ export default async function listAssortments(context: Context, params: Params<'
     sort: sortOptions,
   });
   const assortments_normalized = await Promise.all(
-    assortments?.map(({ _id }) => getNormalizedAssortmentDetails({ assortmentId: _id }, context)) || [],
+    assortments?.map(
+      async ({ _id }) => await getNormalizedAssortmentDetails({ assortmentId: _id }, context),
+    ) || [],
   );
   return { assortments: assortments_normalized };
 }

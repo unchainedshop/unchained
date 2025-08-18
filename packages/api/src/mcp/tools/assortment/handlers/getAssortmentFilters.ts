@@ -1,5 +1,6 @@
 import { Context } from '../../../../context.js';
 import { AssortmentNotFoundError } from '../../../../errors.js';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
 import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
 import { Params } from '../schemas.js';
 
@@ -7,7 +8,7 @@ export default async function getAssortmentFilters(context: Context, params: Par
   const { modules } = context;
   const { assortmentId } = params;
 
-  const assortment = await modules.assortments.findAssortment({ assortmentId });
+  const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
   const filters = await modules.assortments.filters.findFilters(
@@ -20,5 +21,5 @@ export default async function getAssortmentFilters(context: Context, params: Par
       ...rest,
     })) || [],
   );
-  return { filters: filters_normalized };
+  return { assortment, filters: filters_normalized };
 }

@@ -14,5 +14,5 @@ export default async function updateAssortmentStatus(context: Context, params: P
   };
 
   await modules.assortments.update(assortmentId, updateData as any);
-  return { assortment: getNormalizedAssortmentDetails({ assortmentId }, context) };
+  return { assortment: await getNormalizedAssortmentDetails({ assortmentId }, context) };
 }

@@ -5,7 +5,7 @@ import { Params } from '../schemas.js';
 
 export default async function addAssortmentLink(context: Context, params: Params<'ADD_LINK'>) {
   const { modules } = context;
-  const { parentAssortmentId, childAssortmentId, tags } = params;
+  const { parentAssortmentId, childAssortmentId } = params;
 
   const parentAssortment = await modules.assortments.findAssortment({
     assortmentId: parentAssortmentId,
@@ -17,19 +17,7 @@ export default async function addAssortmentLink(context: Context, params: Params
   });
   if (!childAssortment) throw new Error(`Child assortment not found: ${childAssortmentId}`);
 
-  const assortmentLink = await modules.assortments.links.create({
-    parentAssortmentId,
-    childAssortmentId,
-    tags,
-  } as any);
-
   return {
-    assortment: {
-      ...(await getNormalizedAssortmentDetails(
-        { assortmentId: assortmentLink.childAssortmentId },
-        context,
-      )),
-      ...assortmentLink,
-    },
+    assortment: await getNormalizedAssortmentDetails({ assortmentId: parentAssortmentId }, context),
   };
 }

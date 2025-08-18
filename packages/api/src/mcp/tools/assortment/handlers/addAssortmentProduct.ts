@@ -1,6 +1,6 @@
 import { Context } from '../../../../context.js';
 import { AssortmentNotFoundError, ProductNotFoundError } from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function addAssortmentProduct(context: Context, params: Params<'ADD_PRODUCT'>) {
@@ -13,11 +13,11 @@ export default async function addAssortmentProduct(context: Context, params: Par
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  const assortmentProduct = await modules.assortments.products.create({
+  await modules.assortments.products.create({
     assortmentId,
     productId,
     tags,
   } as any);
-  const detail = await getNormalizedProductDetails(assortmentProduct.productId, context);
-  return { product: { ...detail, ...assortmentProduct } };
+
+  return { assortment: await getNormalizedAssortmentDetails({ assortmentId }, context) };
 }
