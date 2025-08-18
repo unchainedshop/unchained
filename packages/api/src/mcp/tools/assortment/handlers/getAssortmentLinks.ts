@@ -14,10 +14,12 @@ export default async function getAssortmentLinks(context: Context, params: Param
     assortmentId,
   });
   const links = await Promise.all(
-    assortmentLinks?.map(async (link) => ({
-      ...(await getNormalizedAssortmentDetails({ assortmentId: link?.childAssortmentId }, context)),
-      ...link,
-    })) || [],
+    assortmentLinks
+      ?.filter((a) => a?.childAssortmentId !== assortment._id)
+      ?.map(async (link) => ({
+        ...(await getNormalizedAssortmentDetails({ assortmentId: link?.childAssortmentId }, context)),
+        ...link,
+      })) || [],
   );
   return { assortment, links };
 }
