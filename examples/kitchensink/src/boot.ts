@@ -44,8 +44,6 @@ try {
   if (ANTHROPIC_API_KEY) {
     fastify.log.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
     connectChat(fastify, {
-      system:
-        'never include the data in your summary, just write a summary about it in one short paragraph and never list all the fields of a result, just summarize paragraph about your findings, if necessary. additionally all price are integer type and if you can not determine the currency decimal point you should refer to in currencies ',
       model: anthropic('claude-4-sonnet-20250514'),
       maxSteps: 1,
       imageGenerationTool: {
