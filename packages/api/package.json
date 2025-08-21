@@ -93,7 +93,7 @@
     "expiry-map": "^2.0.0",
     "graphql-scalars": "^1.24.2",
     "moniker": "0.1.2",
-    "p-memoize": "^7.1.1",
+    "p-memoize": "^8.0.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

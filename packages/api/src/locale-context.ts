@@ -15,43 +15,48 @@ export type GetHeaderFn = (key: string) => string | string[];
 
 const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 1000 * 60 : 1); // Cached values expire after 10 seconds
 
-export const resolveDefaultContext = pMemoize(
-  async ({ acceptLang, acceptCountry }, unchainedAPI) => {
-    const languages = await unchainedAPI.modules.languages.findLanguages(
-      { includeInactive: false },
-      { projection: { isoCode: 1, isActive: 1 } },
-    );
+const uncachedResolveDefaultContext = async (
+  { acceptLang, acceptCountry },
+  unchainedAPI: UnchainedCore,
+) => {
+  const languages = await unchainedAPI.modules.languages.findLanguages(
+    { includeInactive: false },
+    { projection: { isoCode: 1, isActive: 1 } },
+  );
 
-    const countries = await unchainedAPI.modules.countries.findCountries(
-      { includeInactive: false },
-      { projection: { isoCode: 1, isActive: 1 } },
-    );
+  const countries = await unchainedAPI.modules.countries.findCountries(
+    { includeInactive: false },
+    { projection: { isoCode: 1, isActive: 1 } },
+  );
 
-    const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
+  const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
 
-    const locale = resolveBestSupported(acceptLang, acceptCountry, { countries, languages });
+  const locale = resolveBestSupported(acceptLang, acceptCountry, { countries, languages });
 
-    const defaultCurrencyCode = countries.find(
-      (country) => country.isoCode.toUpperCase() === locale?.region?.toUpperCase(),
-    )?.defaultCurrencyCode;
+  const defaultCurrencyCode = countries.find(
+    (country) => country.isoCode.toUpperCase() === locale?.region?.toUpperCase(),
+  )?.defaultCurrencyCode;
 
-    const currencyCode = resolveBestCurrency(defaultCurrencyCode, currencies);
+  const currencyCode = resolveBestCurrency(defaultCurrencyCode, currencies);
 
-    logger.debug(`Locale Context: Resolved ${locale?.baseName} ${currencyCode}`);
+  logger.debug(`Locale Context: Resolved ${locale?.baseName} ${currencyCode}`);
 
-    const newContext: UnchainedLocaleContext = {
-      locale,
-      countryCode: locale?.region,
-      currencyCode,
-    };
+  const newContext: UnchainedLocaleContext = {
+    locale,
+    countryCode: locale?.region,
+    currencyCode,
+  };
 
-    return newContext;
+  return newContext;
+};
+
+export const resolveDefaultContext = pMemoize(uncachedResolveDefaultContext, {
+  cache: memoizeCache,
+  cacheKey: (args) => {
+    const [{ acceptLang, acceptCountry }] = args;
+    return `${acceptLang}-${acceptCountry}`;
   },
-  {
-    cache: memoizeCache,
-    cacheKey: ([{ acceptLang, acceptCountry }]) => `${acceptLang}-${acceptCountry}`,
-  },
-);
+});
 
 export const getLocaleContext = async (
   {

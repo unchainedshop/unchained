@@ -35,7 +35,7 @@
     "@unchainedshop/logger": "^4.0.0-rc.4",
     "@unchainedshop/utils": "^4.0.0-rc.4",
     "expiry-map": "^2.0.0",
-    "p-memoize": "^7.1.1"
+    "p-memoize": "^8.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.13",

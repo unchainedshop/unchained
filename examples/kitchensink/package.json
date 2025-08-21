@@ -34,9 +34,9 @@
     "integration-test": "node --no-warnings --env-file .env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^1.2.12",
-    "@ai-sdk/openai": "^1.3.23",
-    "@ai-sdk/openai-compatible": "^0.2.14",
+    "@ai-sdk/anthropic": "^2.0.5",
+    "@ai-sdk/openai": "^2.0.18",
+    "@ai-sdk/openai-compatible": "^1.0.10",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
     "@fastify/session": "^11.1.0",
