@@ -6,9 +6,7 @@ import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
-import { openai } from '@ai-sdk/openai';
 import { useErrorHandler } from '@envelop/core';
-import { wrapLanguageModel, simulateStreamingMiddleware } from 'ai';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
@@ -41,20 +39,14 @@ try {
 
   connectDefaultPluginsToFastify(fastify, platform);
 
-  const provider = createOpenAICompatible({
-    name: 'local',
-    baseURL: 'http://localhost:8080',
-  });
+  // const provider = createOpenAICompatible({
+  //   name: 'local',
+  //   baseURL: 'http://localhost:8080',
+  // });
 
-  connectChat(fastify, {
-    model: provider.chatModel('local'),
-      // model: wrapLanguageModel({
-    //   model: provider.chatModel('local'),
-    //   middleware: simulateStreamingMiddleware(),
-    // }),
-    maxTokens: 8000,
-    maxSteps: 1,
-  });
+  // connectChat(fastify, {
+  //   model: provider.chatModel('local'),
+  // });
 
   fastify.register(fastifyRouter, {
     prefix: '/',

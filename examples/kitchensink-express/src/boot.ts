@@ -34,7 +34,6 @@ try {
     logger.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
     connectChat(app, {
       model: anthropic('claude-4-sonnet-20250514'),
-      maxSteps: 1,
       imageGenerationTool: {
         model: openai.image('dall-e-3'),
       },
