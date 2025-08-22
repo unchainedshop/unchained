@@ -78,21 +78,20 @@ try {
 ```
 
 To configure various aspects of the platform, `startPlatform` accepts a configuration object with various parameters:
-  - `modules: Record<string, { configure: (params: ModuleInput<any>) => any }>`: Custom modules configuration point. Allows you to extend the functionality of the engine.
-  - `services: Record<string, any>`: Custom services configuration point. Allows you to extend the functionality of the engine.
+  - `modules: Record<string, { configure: (params: ModuleInput<any>) => any }>`: Modules configuration point. Load your own modules, a preset or a combination of a preset and your own modules.
+  - `services: Record<string, any>`: Custom services configuration point. Allows you to extend the functionality of the engine with cross-module business-process functions.
   - `typeDefs`:  Object (GraphQL Schema that gets merged with the default schema)
-  - `schema`:  Object (GraphQL Schema that gets merged with the default schema)
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
-  - `context`: Special function to extend the underlying [GraphQL context](https://the-guild.dev/graphql/yoga-server/docs/features/context). Check the [OIDC Example](https://github.com/unchainedshop/unchained/blob/master/examples/oidc/boot.ts) for how you could use it to add custom Auth.
+  - `schema`:  Object (GraphQL Executable Schema that gets merged with the default schema, do not use it together with typeDefs & resolvers specified!)
+  - `context`: Special function to extend the underlying [GraphQL context](https://the-guild.dev/graphql/yoga-server/docs/features/context). Check the [OIDC Example](https://github.com/unchainedshop/unchained/blob/master/examples/oidc/boot.ts) for how you could use it to add custom Auth functionality.
   - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details.
-  - `plugins`: Optional
   - `rolesOptions`: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html): Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
   - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of data import and e-commerce engine. For more information about the bulk import API, refer [here](../tutorials/bulk-import).
   - `workQueueOptions`: [SetupWorkqueueOptions](https://docs.unchained.shop/types/interfaces/platform.SetupWorkqueueOptions.html) Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
-  - `adminUiConfig`: Customize the Unchained Admin UI
+  - `adminUiConfig`: Customize the Unchained Admin UI, for example configuring a Single-Sign-On Link for external Auth support via oAuth.
 
 
-These options are extended by `YogaServerOptions` so you can pass a list of [Yoga GraphQL Plugins](https://the-guild.dev/graphql/yoga-server/docs/features/envelop-plugins) or configure [batching](https://the-guild.dev/graphql/yoga-server/docs/features/request-batching) and other more advanced GraphQL features. Check the [Yoga documentation](https://the-guild.dev/graphql/yoga-server/docs) for more information.
+These options are extended by `YogaServerOptions` so you can pass all options you can normally pass to `createYoga`, add plugins [Yoga GraphQL Plugins](https://the-guild.dev/graphql/yoga-server/docs/features/envelop-plugins) or configure [batching](https://the-guild.dev/graphql/yoga-server/docs/features/request-batching) and other more advanced GraphQL features. Check the [Yoga documentation](https://the-guild.dev/graphql/yoga-server/docs) for more information.
 
 
 ## Next Steps
