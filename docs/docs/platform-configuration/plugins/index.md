@@ -4,20 +4,8 @@ title: Overview
 sidebar_title: Overview
 ---
 
-The (growing) list of available Unchained Engine plugins
-
-## Plugin Presets
-
-Unchained provides several pre-configured plugin bundles for quick setup:
-
-- **[Base Preset](./presets#base-preset)** - Essential plugins for minimal e-commerce setup
-- **[All Preset](./presets#all-preset)** - Full-featured setup with all payment providers and features  
-- **[Crypto Preset](./presets#crypto-preset)** - Specialized for cryptocurrency and blockchain functionality
-- **[Country-Specific Presets](./presets#country-specific-presets)** - Localized plugins (Switzerland, etc.)
-
-👉 **[View complete preset documentation](./presets)**
-
-## Individual Plugins
+The (growing) list of available Unchained Engine plugins.
+Unchained provides several [pre-configured plugin bundles named presets](./presets.md) for quick setup.
 
 ## Payment Providers
 

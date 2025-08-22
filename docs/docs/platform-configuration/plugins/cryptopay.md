@@ -4,10 +4,6 @@ title: Decentralized, Self-Hosted Cryptocurrency Payments
 sidebar_label: Decentralized, Self-Hosted Cryptocurrency Payments
 ---
 
-:::info
-Usage and Configuration Options for the Cryptopay Plugin
-:::info
-
 The Cryptopay plugin in conjunction with the Unchained Cryptopay Payment Gateway allows you to accept payments in Bitcoin, Ethereum and arbitrary ERC20 tokens without relying on centralized payment providers and without your private key. It consists of two parts:
 
 - A payment plugin that generates new addresses for every order and updates the payment status when the order is paid.

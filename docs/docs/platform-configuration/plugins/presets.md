@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 title: Plugin Presets
 ---
 
@@ -10,6 +10,23 @@ Unchained Engine provides several pre-configured plugin bundles (presets) that m
 ## Available Presets
 
 ### Base Preset (`@unchainedshop/plugins/presets/base`)
+
+boot.ts
+```ts
+import modules from '@unchainedshop/plugins/presets/base.js';
+const platform = await startPlatform({
+  modules,
+});
+connect(app, platform)
+
+// Either:
+// a) Load GridFS REST endpoints for Express.js:
+import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
+// a) Load GridFS REST endpoints for Fastify:
+import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
+
+connectPlugins(app);
+```
 
 The base preset includes essential plugins for a minimal e-commerce setup:
 
@@ -56,6 +73,23 @@ The base preset includes essential plugins for a minimal e-commerce setup:
 
 ### All Preset (`@unchainedshop/plugins/presets/all`)
 
+boot.ts
+```ts
+import modules from '@unchainedshop/plugins/presets/all.js';
+const platform = await startPlatform({
+  modules,
+});
+connect(app, platform)
+
+// Either:
+// a) Load all custom API handlers for Express.js:
+import connectPlugins from '@unchainedshop/plugins/presets/all-express.js';
+// b) Load all custom API handlers for Fastify:
+import connectPlugins from '@unchainedshop/plugins/presets/all-fastify.js';
+
+connectPlugins(app);
+```
+
 The all preset extends the base preset with additional payment providers, delivery methods, and features:
 
 **Includes everything from Base Preset plus:**
@@ -93,6 +127,30 @@ The all preset extends the base preset with additional payment providers, delive
 
 ### Crypto Preset (`@unchainedshop/plugins/presets/crypto`)
 
+boot.ts
+```ts
+import baseModules from '@unchainedshop/plugins/presets/base.js';
+import cryptoModules from '@unchainedshop/plugins/presets/crypto.js';
+const platform = await startPlatform({
+  modules: {
+    ...baseModules,
+    ...cryptoModules,
+  },
+});
+connect(app, platform)
+
+// a) Load Crypto API handlers for Express.js:
+import connectCryptoPlugins from '@unchainedshop/plugins/presets/crypto-express.js';
+import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
+// b) Load Crypto API handlers for Fastify:
+import connectCryptoPlugins from '@unchainedshop/plugins/presets/crypto-fastify.js';
+import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
+
+// Make sure you load the base plugins too as those are not part of the crypto preset!
+connectCryptoPlugins(app);
+connectPlugins(app)
+```
+
 Specialized preset for cryptocurrency and blockchain functionality:
 
 **Payment Providers:**
@@ -113,112 +171,33 @@ Specialized preset for cryptocurrency and blockchain functionality:
 
 #### Switzerland (`@unchainedshop/plugins/presets/countries/ch`)
 
+boot.ts
+```ts
+import baseModules from '@unchainedshop/plugins/presets/base.js';
+import chModules from '@unchainedshop/plugins/presets/countries/ch.js';
+const platform = await startPlatform({
+  modules: {
+    ...baseModules,
+    ...chModules,
+  },
+});
+connect(app, platform)
+
+// a) Load Base API handlers for Express.js:
+import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
+// b) Load Base API handlers for Fastify:
+import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
+
+// Make sure you load the base plugins too as those are not part of the ch preset!
+connectPlugins(app)
+```
+
 **Delivery:**
 - Pick-Mup delivery service
 
 **Pricing:**
 - Swiss tax calculation for products
 - Swiss tax calculation for delivery
-
-## Framework-Specific Connectors
-
-Each preset comes with framework-specific connectors that set up HTTP endpoints and webhook handlers:
-
-### Fastify Connectors
-
-- `@unchainedshop/plugins/presets/base-fastify` - GridFS file upload endpoints
-- `@unchainedshop/plugins/presets/all-fastify` - Payment webhooks and file endpoints
-- `@unchainedshop/plugins/presets/crypto-fastify` - Crypto payment webhooks
-
-### Express Connectors
-
-- `@unchainedshop/plugins/presets/base-express` - GridFS file upload endpoints
-- `@unchainedshop/plugins/presets/all-express` - Payment webhooks and file endpoints
-- `@unchainedshop/plugins/presets/crypto-express` - Crypto payment webhooks
-
-## Usage Examples
-
-### Minimal Setup with Base Preset
-
-```typescript
-import { startPlatform } from '@unchainedshop/platform';
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
-
-const platform = await startPlatform({
-  modules: baseModules,
-});
-
-// Connect HTTP endpoints for file uploads
-connectBasePluginsToFastify(fastify);
-```
-
-### Full-Featured Setup with All Preset
-
-```typescript
-import { startPlatform } from '@unchainedshop/platform';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
-
-const platform = await startPlatform({
-  modules: defaultModules,
-});
-
-// Connect payment webhooks and file endpoints
-connectDefaultPluginsToFastify(fastify, platform);
-```
-
-### Crypto-Focused Setup
-
-```typescript
-import { startPlatform } from '@unchainedshop/platform';
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import cryptoModules from '@unchainedshop/plugins/presets/crypto.js';
-import connectCryptoToFastify from '@unchainedshop/plugins/presets/crypto-fastify.js';
-
-const platform = await startPlatform({
-  modules: {
-    ...baseModules,
-    ...cryptoModules,
-  },
-});
-
-// Connect crypto payment webhooks
-connectCryptoToFastify(fastify, platform.unchainedAPI);
-```
-
-## Customizing Presets
-
-You can extend presets by importing additional plugins or creating your own combinations:
-
-```typescript
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import '@unchainedshop/plugins/payment/stripe/index.js';
-import '@unchainedshop/plugins/worker/twilio.js';
-
-// Base preset + Stripe + Twilio SMS
-const platform = await startPlatform({
-  modules: baseModules,
-});
-```
-
-## Environment Variables
-
-Many plugins in the presets can be configured through environment variables:
-
-```bash
-# File storage paths
-GRIDFS_PUT_SERVER_PATH=/gridfs/:directoryName/:fileName
-
-# Payment webhook paths
-STRIPE_WEBHOOK_PATH=/payment/stripe
-PAYREXX_WEBHOOK_PATH=/payment/payrexx
-PFCHECKOUT_WEBHOOK_PATH=/payment/postfinance-checkout
-DATATRANS_WEBHOOK_PATH=/payment/datatrans/webhook
-APPLE_IAP_WEBHOOK_PATH=/payment/apple-iap
-SAFERPAY_WEBHOOK_PATH=/payment/saferpay/webhook
-CRYPTOPAY_WEBHOOK_PATH=/payment/cryptopay/webhook
-```
 
 ## Best Practices
 

@@ -17,6 +17,14 @@ To customize an Unchained Engine project, follow these topics:
 
 The main entry point for an Unchained Engine project is `startPlatform` imported from `@unchainedshop/platform`. Calling it will initialize the Unchained Core, add default messaging templates, and set up the background worker.
 
+To make things a bit more simple, Unchained offers different [presets](./plugins/presets.md) for loading functionalities out-of-the box:
+- `base` (Simple Catalog Price based Pricing strategies, Manual Delivery & Invoice Payment, GridFS Asset Storage)
+- `crypto` (Currency-Rate Updating Workers for ECB & Coinbase, Currency-Converting Pricing Plugin, Event ERC721 Token Lazy-Minting on Ethereum, Payment through Unchained Cryptopay)
+- `countries/ch` (Switzerland Tax Calculation and Migros PickMup Integration)
+- `all` (All of the above + all other available plugins including plugins for various payment gateways)
+
+We recommend loading at least `base`.
+
 To see it in context, it's best to see an example using Unchained with Fastify, which is being used as a template for [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app)-based projects (`boot.ts`):
 
 ```ts
@@ -84,7 +92,7 @@ To configure various aspects of the platform, `startPlatform` accepts a configur
   - `adminUiConfig`: Customize the Unchained Admin UI
 
 
-These options are extended by `YogaServerOptions` so you can pass a list of [Yoga GraphQL Plugins](https://the-guild.dev/graphql/yoga-server/docs/features/envelop-plugins) or configure [batching](https://the-guild.dev/graphql/yoga-server/docs/features/request-batching) etc.
+These options are extended by `YogaServerOptions` so you can pass a list of [Yoga GraphQL Plugins](https://the-guild.dev/graphql/yoga-server/docs/features/envelop-plugins) or configure [batching](https://the-guild.dev/graphql/yoga-server/docs/features/request-batching) and other more advanced GraphQL features. Check the [Yoga documentation](https://the-guild.dev/graphql/yoga-server/docs) for more information.
 
 
 ## Next Steps
