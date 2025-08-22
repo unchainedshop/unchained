@@ -173,13 +173,11 @@ Specialized preset for cryptocurrency and blockchain functionality:
 
 boot.ts
 ```ts
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import chModules from '@unchainedshop/plugins/presets/countries/ch.js';
+import modules from '@unchainedshop/plugins/presets/base.js';
+ // The CH preset exists only of plugins and doesn't expose any custom modules!
+import '@unchainedshop/plugins/presets/countries/ch.js';
 const platform = await startPlatform({
-  modules: {
-    ...baseModules,
-    ...chModules,
-  },
+  modules,
 });
 connect(app, platform)
 
