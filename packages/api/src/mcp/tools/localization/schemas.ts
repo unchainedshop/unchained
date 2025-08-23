@@ -18,7 +18,7 @@ export const LocalizationEntitySchema = z.object({
     .min(1)
     .optional()
     .describe(
-      'ISO identifier: Countries need 2-letter codes (US, DE), Currencies need 3-letter codes (USD, EUR), Languages accept 2-10 characters (en, de-CH)',
+      'ISO identifier: Countries need 2-letter codes (US, DE), Currencies need 3-letter codes (USD, EUR), Languages accept 2-10 characters (en, de-CH). isoCode is required for both CREATE and UPDATE operations',
     ),
   isActive: z
     .boolean()
@@ -63,7 +63,7 @@ export const actionValidators = {
   }),
 
   UPDATE: z.object({
-    localizationType: LocalizationTypeEnum.describe('Type of localization system to operate on'),
+    localizationType: LocalizationTypeEnum.describe('Type of localization system to operate on, wj'),
     entityId: z.string().min(1).describe('Database ID of the specific entity instance'),
     entity: LocalizationEntitySchema.describe('Entity data to update'),
   }),

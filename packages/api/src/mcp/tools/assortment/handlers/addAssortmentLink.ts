@@ -1,11 +1,11 @@
 import { Context } from '../../../../context.js';
-import { AssortmentNotFoundError } from '../../../../errors.js';
+import { AssortmentNotFoundError, CyclicAssortmentLinkNotSupportedError } from '../../../../errors.js';
 import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function addAssortmentLink(context: Context, params: Params<'ADD_LINK'>) {
   const { modules } = context;
-  const { parentAssortmentId, childAssortmentId } = params;
+  const { parentAssortmentId, childAssortmentId, tags } = params;
 
   const parentAssortment = await modules.assortments.findAssortment({
     assortmentId: parentAssortmentId,
@@ -17,7 +17,18 @@ export default async function addAssortmentLink(context: Context, params: Params
   });
   if (!childAssortment) throw new Error(`Child assortment not found: ${childAssortmentId}`);
 
-  return {
-    assortment: await getNormalizedAssortmentDetails({ assortmentId: parentAssortmentId }, context),
-  };
+  try {
+    await modules.assortments.links.create({
+      parentAssortmentId,
+      childAssortmentId,
+      tags,
+    } as any);
+    return {
+      assortment: await getNormalizedAssortmentDetails({ assortmentId: parentAssortmentId }, context),
+    };
+  } catch (e) {
+    if (e?.message === 'CyclicGraphNotSupported')
+      throw new CyclicAssortmentLinkNotSupportedError({ parentAssortmentId, childAssortmentId });
+    throw e;
+  }
 }

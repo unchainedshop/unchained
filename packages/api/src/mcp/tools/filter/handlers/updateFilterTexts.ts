@@ -17,5 +17,5 @@ export default async function updateFilterTexts(context: Context, params: Params
   );
 
   const normalizedFilter = await getNormalizedFilterDetails(filterId, context);
-  return { filterTexts: updatedTexts, filter: normalizedFilter };
+  return { texts: updatedTexts, filter: normalizedFilter };
 }

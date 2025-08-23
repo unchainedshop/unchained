@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function listFilters(context: Context, params: Params<'LIST'>) {
@@ -19,5 +20,9 @@ export default async function listFilters(context: Context, params: Params<'LIST
     },
   );
 
-  return { filters };
+  return {
+    filters: await Promise.all(
+      filters?.map(async ({ _id }) => getNormalizedFilterDetails(_id, context)),
+    ),
+  };
 }

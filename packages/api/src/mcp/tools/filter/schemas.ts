@@ -22,7 +22,7 @@ export const SortOptionInputSchema = z
 export const CreateFilterInputSchema = z.object({
   key: z.string().min(1).describe('Unique key for the filter'),
   type: z.enum(['SWITCH', 'SINGLE_CHOICE', 'MULTI_CHOICE', 'RANGE']).describe('Type of the filter'),
-  options: z.array(z.string().min(1)).optional().describe('Selectable options (if applicable)'),
+  options: z.array(z.string().min(1)).default([]).describe('Selectable options (if applicable)'),
 });
 
 export const UpdateFilterInputSchema = z.object({
@@ -73,8 +73,7 @@ export const actionValidators = {
     option: z.string().min(1).describe('Option value string - must be unique within the filter'),
     optionTexts: z
       .array(FilterOptionTextInputSchema)
-      .optional()
-      .describe('Localized titles/subtitles - optional, can be added later via UPDATE_TEXTS'),
+      .describe('Localized titles/subtitles - can be added later via UPDATE_TEXTS'),
   }),
 
   REMOVE_OPTION: z.object({

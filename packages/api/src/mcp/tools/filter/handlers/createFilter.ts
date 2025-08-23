@@ -6,7 +6,7 @@ import { Params } from '../schemas.js';
 export default async function createFilter(context: Context, params: Params<'CREATE'>) {
   const { modules } = context;
   const { filter, texts } = params;
-  const { key, type, options } = filter as any;
+  const { key, type, options = [] } = filter as any;
 
   const newFilter = await modules.filters.create({
     key,
