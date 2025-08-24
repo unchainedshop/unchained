@@ -31,13 +31,13 @@ export default async function simulatePriceRange(
   };
 
   const pricing = await services.products.simulateProductPricing(pricingContext as any);
-  const minPrice = pricing.unitPrice({ useNetPrice });
-  const maxPrice = pricing.unitPrice({ useNetPrice });
+  const minPrice = pricing?.unitPrice({ useNetPrice });
+  const maxPrice = pricing?.unitPrice({ useNetPrice });
 
   return {
     min: minPrice,
     max: maxPrice,
     isNetPrice: useNetPrice,
-    currencyCode: pricing.currencyCode,
+    currencyCode: pricing?.currencyCode,
   };
 }

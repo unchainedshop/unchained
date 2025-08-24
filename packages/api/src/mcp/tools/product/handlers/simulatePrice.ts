@@ -20,13 +20,13 @@ export default async function simulatePrice(context: Context, params: Params<'SI
   };
 
   const pricing = await services.products.simulateProductPricing(pricingContext as any);
-  const unitPrice = pricing.unitPrice({ useNetPrice });
+  const unitPrice = pricing?.unitPrice({ useNetPrice });
 
   const price = {
     ...unitPrice,
     isNetPrice: useNetPrice,
-    isTaxable: pricing.taxSum() > 0,
-    currencyCode: pricing.currencyCode,
+    isTaxable: pricing?.taxSum() > 0,
+    currencyCode: pricing?.currencyCode,
   };
   return { price };
 }
