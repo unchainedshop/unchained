@@ -1,5 +1,4 @@
 import { Context } from '../../../../context.js';
-import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 import {
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
@@ -7,6 +6,7 @@ import {
   AuthOperationFailedError,
 } from '../../../../errors.js';
 import { Params } from '../schemas.js';
+import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.js';
 
 export default async function createUser(context: Context, params: Params<'CREATE'>) {
   const { modules } = context;
@@ -24,14 +24,15 @@ export default async function createUser(context: Context, params: Params<'CREAT
       {},
     );
 
-    const user = await context.modules.users.updateHeartbeat(newUserId, {
+    await context.modules.users.updateHeartbeat(newUserId, {
       remoteAddress: context.remoteAddress,
       remotePort: context.remotePort,
       userAgent: context.getHeader('user-agent'),
       locale: context.locale?.baseName,
       countryCode: context.countryCode,
     });
-    return { user: removeConfidentialServiceHashes(user) };
+
+    return { user: await getNormalizedUserDetails(newUserId, context) };
   } catch (e) {
     if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
     else if (e.cause === 'USERNAME_INVALID')

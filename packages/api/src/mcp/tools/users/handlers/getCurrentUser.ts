@@ -1,7 +1,7 @@
 import { Context } from '../../../../context.js';
-import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
+import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.js';
 
 export default async function getCurrentUser(context: Context) {
-  const { user } = context;
-  return { user: removeConfidentialServiceHashes(user) };
+  const { userId } = context;
+  return { user: await getNormalizedUserDetails(userId, context) };
 }

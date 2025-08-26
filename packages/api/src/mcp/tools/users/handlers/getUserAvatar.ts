@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.js';
 import { Params } from '../schemas.js';
 
 export default async function getUserAvatar(context: Context, params: Params<'GET_AVATAR'>) {
@@ -13,5 +14,5 @@ export default async function getUserAvatar(context: Context, params: Params<'GE
     fileId: user.avatarId,
   });
 
-  return { avatar };
+  return { avatar: await normalizeMediaUrl([avatar], context) };
 }

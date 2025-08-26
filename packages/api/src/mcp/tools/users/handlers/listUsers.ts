@@ -1,6 +1,6 @@
 import { Context } from '../../../../context.js';
-import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 import { Params } from '../schemas.js';
+import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.js';
 
 export default async function listUsers(context: Context, params: Params<'LIST'>) {
   const { modules } = context;
@@ -23,6 +23,7 @@ export default async function listUsers(context: Context, params: Params<'LIST'>
     offset,
     sort,
   } as any);
-
-  return { users: users.map(removeConfidentialServiceHashes) };
+  return {
+    users: await Promise.all(users.map(async ({ _id }) => getNormalizedUserDetails(_id, context))),
+  };
 }
