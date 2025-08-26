@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function getUserEnrollments(context: Context, params: Params<'GET_ENROLLMENTS'>) {
@@ -14,5 +15,11 @@ export default async function getUserEnrollments(context: Context, params: Param
     sort,
   } as any);
 
-  return { enrollments };
+  const normalizedEnrollments = await Promise.all(
+    enrollments.map(async ({ productId, ...enrollment }) => ({
+      ...(await getNormalizedProductDetails(productId, context)),
+      ...enrollment,
+    })),
+  );
+  return { enrollments: normalizedEnrollments };
 }

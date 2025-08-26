@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function getUserReviews(context: Context, params: Params<'GET_REVIEWS'>) {
@@ -11,6 +12,11 @@ export default async function getUserReviews(context: Context, params: Params<'G
     limit,
     sort,
   } as any);
-
-  return { reviews };
+  const normalizedReviews = await Promise.all(
+    reviews.map(async ({ productId, ...review }) => ({
+      ...(await getNormalizedProductDetails(productId, context)),
+      ...review,
+    })),
+  );
+  return { reviews: normalizedReviews };
 }

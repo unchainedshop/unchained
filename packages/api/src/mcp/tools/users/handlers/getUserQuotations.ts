@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function getUserQuotations(context: Context, params: Params<'GET_QUOTATIONS'>) {
@@ -20,5 +21,12 @@ export default async function getUserQuotations(context: Context, params: Params
     },
   );
 
-  return { quotations };
+  const normalizedQuotations = await Promise.all(
+    quotations.map(async ({ productId, ...quotation }) => ({
+      ...(await getNormalizedProductDetails(productId, context)),
+      ...quotation,
+    })),
+  );
+
+  return { quotations: normalizedQuotations };
 }
