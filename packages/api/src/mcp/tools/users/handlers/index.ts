@@ -20,6 +20,7 @@ import getUserPaymentCredentials from './getUserPaymentCredentials.js';
 import getUserAvatar from './getUserAvatar.js';
 import getUserReviews from './getUserReviews.js';
 import getUserReviewsCount from './getUserReviewsCount.js';
+import getCurrentUser from './getCurrentUser.js';
 
 export default {
   LIST: listUsers,
@@ -44,4 +45,5 @@ export default {
   GET_AVATAR: getUserAvatar,
   GET_REVIEWS: getUserReviews,
   GET_REVIEWS_COUNT: getUserReviewsCount,
+  GET_CURRENT_USER: getCurrentUser,
 };

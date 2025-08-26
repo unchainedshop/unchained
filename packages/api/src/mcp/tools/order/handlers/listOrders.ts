@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
 import { resolveOrderFilters } from '../../../utils/orderFilters.js';
 import { Params } from '../schemas.js';
 
@@ -43,5 +44,7 @@ export default async function listOrders(context: Context, params: Params<'LIST'
     sort: sortOptions as any,
   });
 
-  return { orders };
+  return {
+    orders: await Promise.all(orders?.map(async ({ _id }) => getNormalizedOrderDetails(_id, context))),
+  };
 }

@@ -1,4 +1,5 @@
 import { Context } from '../../../../context.js';
+import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function getUserOrders(context: Context, params: Params<'GET_ORDERS'>) {
@@ -22,5 +23,7 @@ export default async function getUserOrders(context: Context, params: Params<'GE
     },
   );
 
-  return { orders };
+  return {
+    orders: await Promise.all(orders.map(async ({ _id }) => getNormalizedOrderDetails(_id, context))),
+  };
 }
