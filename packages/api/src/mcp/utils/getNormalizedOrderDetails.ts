@@ -3,13 +3,15 @@ import { Context } from '../../context.js';
 import { getNormalizedProductDetails } from './getNormalizedProductDetails.js';
 import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 
-export async function getNormalizedOrderDetails(orderId: string, context: Context) {
+export async function getNormalizedOrderDetails(
+  { orderId, orderNumber }: { orderId?: string; orderNumber?: string },
+  context: Context,
+) {
   const { modules, loaders } = context;
-  if (!orderId) return null;
-  const order = await modules.orders.findOrder({ orderId });
-
+  const order = await modules.orders.findOrder({ orderId, orderNumber });
+  if (!order) return null;
   const positions = await modules.orders.positions.findOrderPositions({
-    orderId,
+    orderId: order._id,
   });
   const payment = await modules.orders.payments.findOrderPayment({
     orderPaymentId: order?.paymentId,

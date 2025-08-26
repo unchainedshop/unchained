@@ -4,6 +4,7 @@ import getMonthlyBreakdown from './getMonthlyBreakdown.js';
 import getTopCustomers from './getTopCustomers.js';
 import getTopProducts from './getTopProducts.js';
 import getUserCart from './getUserCart.js';
+import getOrder from './getOrder.js';
 
 export default {
   LIST: listOrders,
@@ -12,4 +13,5 @@ export default {
   TOP_CUSTOMERS: getTopCustomers,
   TOP_PRODUCTS: getTopProducts,
   GET_CART: getUserCart,
+  GET: getOrder,
 };

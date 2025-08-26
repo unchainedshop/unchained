@@ -70,13 +70,35 @@ export const actionValidators = {
     userId: z.string().describe('User ID to get cart for'),
     orderNumber: z.string().optional().describe('Optional orderNumber if known to get user cart'),
   }),
+  GET: z
+    .object({
+      orderId: z.string().optional().describe('Order ID of the order'),
+      orderNumber: z.string().optional().describe('Optional orderNumber if known to get user cart'),
+    })
+    .superRefine((data, ctx) => {
+      if (!data?.orderId && !data?.orderNumber) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Either orderId or orderNumber is required',
+          path: ['GET'],
+        });
+      }
+    }),
 } as const;
 
 export const OrderManagementSchema = {
   action: z
-    .enum(['LIST', 'SALES_SUMMARY', 'MONTHLY_BREAKDOWN', 'TOP_CUSTOMERS', 'TOP_PRODUCTS', 'GET_CART'])
+    .enum([
+      'LIST',
+      'SALES_SUMMARY',
+      'MONTHLY_BREAKDOWN',
+      'TOP_CUSTOMERS',
+      'TOP_PRODUCTS',
+      'GET_CART',
+      'GET',
+    ])
     .describe(
-      'Order action: LIST (get orders with filters), SALES_SUMMARY (daily sales analytics), MONTHLY_BREAKDOWN (12-month sales analysis), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products), GET_CART (user cart)',
+      'Order action: LIST (get orders with filters), SALES_SUMMARY (daily sales analytics), MONTHLY_BREAKDOWN (12-month sales analysis), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products), GET_CART (user cart), GET (single order)',
     ),
 
   ...PaginationSchema,
@@ -106,11 +128,9 @@ export const OrderManagementSchema = {
     .string()
     .optional()
     .describe('Order status for customer analysis (TOP_CUSTOMERS only)'),
-  orderNumber: z
-    .string()
-    .optional()
-    .describe('Optional orderNumber if known, to get user cart (GET_CART only)'),
-  userId: z.string().describe('User ID to get cart for (GET_CART only)'),
+  orderId: z.string().optional().describe('Optional ID of order, to get user cart (GET only)'),
+  orderNumber: z.string().optional().describe('Optional orderNumber oof a order (GET_CART & GET only)'),
+  userId: z.string().optional().describe('User ID to get cart for (GET_CART only)'),
 };
 
 export const OrderManagementZodSchema = z.object(OrderManagementSchema);

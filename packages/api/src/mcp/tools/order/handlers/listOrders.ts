@@ -45,6 +45,8 @@ export default async function listOrders(context: Context, params: Params<'LIST'
   });
 
   return {
-    orders: await Promise.all(orders?.map(async ({ _id }) => getNormalizedOrderDetails(_id, context))),
+    orders: await Promise.all(
+      orders?.map(async ({ _id }) => getNormalizedOrderDetails({ orderId: _id }, context)),
+    ),
   };
 }

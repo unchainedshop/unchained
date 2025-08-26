@@ -11,5 +11,5 @@ export default async function getUserCart(context: Context, params: Params<'GET_
     userId: params?.userId,
   });
 
-  return { order: await getNormalizedOrderDetails(order?._id, context) };
+  return { order: await getNormalizedOrderDetails({ orderId: order?._id }, context) };
 }
