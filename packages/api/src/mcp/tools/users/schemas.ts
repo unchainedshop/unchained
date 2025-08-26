@@ -144,6 +144,7 @@ export const actionValidators = {
   GET_BOOKMARKS: z.object({
     userId: z.string().describe('User ID to get bookmarks for'),
   }),
+  GET_CURRENT_USER: z.object({}),
 
   GET_PAYMENT_CREDENTIALS: z.object({
     userId: z.string().describe('User ID to get payment credentials for'),
@@ -189,6 +190,7 @@ export const UsersManagementSchema = {
       'GET_AVATAR',
       'GET_REVIEWS',
       'GET_REVIEWS_COUNT',
+      'GET_CURRENT_USER',
     ])
     .describe(
       'User management action to perform. LIST: list users with filters and pagination. COUNT: count users matching criteria. GET: retrieve single user by ID. CREATE: create new user account. UPDATE: update user profile/metadata. REMOVE: mark user as deleted. ENROLL: create user and send enrollment email. SET_TAGS: assign tags to user. SET_USERNAME: set user username. ADD_EMAIL/REMOVE_EMAIL: manage user email addresses. SEND_ENROLLMENT_EMAIL/SEND_VERIFICATION_EMAIL: trigger email workflows. REMOVE_PRODUCT_REVIEWS: delete all reviews by user. GET_ORDERS/GET_ENROLLMENTS/GET_QUOTATIONS/GET_BOOKMARKS/GET_PAYMENT_CREDENTIALS/GET_AVATAR/GET_REVIEWS/GET_REVIEWS_COUNT: retrieve user-related data with optional filtering and pagination.',

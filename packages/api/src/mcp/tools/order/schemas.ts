@@ -66,13 +66,17 @@ export const actionValidators = {
     ...PaginationSchema,
     ...DateRangeSchema,
   }),
+  GET_CART: z.object({
+    userId: z.string().describe('User ID to get cart for'),
+    orderNumber: z.string().optional().describe('Optional orderNumber if known to get user cart'),
+  }),
 } as const;
 
 export const OrderManagementSchema = {
   action: z
-    .enum(['LIST', 'SALES_SUMMARY', 'MONTHLY_BREAKDOWN', 'TOP_CUSTOMERS', 'TOP_PRODUCTS'])
+    .enum(['LIST', 'SALES_SUMMARY', 'MONTHLY_BREAKDOWN', 'TOP_CUSTOMERS', 'TOP_PRODUCTS', 'GET_CART'])
     .describe(
-      'Order action: LIST (get orders with filters), SALES_SUMMARY (daily sales analytics), MONTHLY_BREAKDOWN (12-month sales analysis), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products)',
+      'Order action: LIST (get orders with filters), SALES_SUMMARY (daily sales analytics), MONTHLY_BREAKDOWN (12-month sales analysis), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products), GET_CART (user cart)',
     ),
 
   ...PaginationSchema,
@@ -102,6 +106,11 @@ export const OrderManagementSchema = {
     .string()
     .optional()
     .describe('Order status for customer analysis (TOP_CUSTOMERS only)'),
+  orderNumber: z
+    .string()
+    .optional()
+    .describe('Optional orderNumber if known, to get user cart (GET_CART only)'),
+  userId: z.string().describe('User ID to get cart for (GET_CART only)'),
 };
 
 export const OrderManagementZodSchema = z.object(OrderManagementSchema);
