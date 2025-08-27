@@ -5,6 +5,8 @@ import getTopCustomers from './getTopCustomers.js';
 import getTopProducts from './getTopProducts.js';
 import getUserCart from './getUserCart.js';
 import getOrder from './getOrder.js';
+import payOrder from './payOrder.js';
+import deliverOrder from './deliverOrder.js';
 
 export default {
   LIST: listOrders,
@@ -14,4 +16,6 @@ export default {
   TOP_PRODUCTS: getTopProducts,
   GET_CART: getUserCart,
   GET: getOrder,
+  PAY_ORDER: payOrder,
+  DELIVER_ORDER: deliverOrder,
 };
