@@ -120,6 +120,51 @@ export const actionValidators = {
         '- The delivery status of the order must currently be OPEN, if the order is confirmed.\n' +
         'If these conditions are not satisfied, an appropriate error will be thrown.',
     ),
+  CONFIRM_ORDER: z
+    .object({
+      orderId: z.string({ required_error: 'orderId is required' }).min(1, 'orderId cannot be empty'),
+      paymentContext: z
+        .record(z.any())
+        .optional()
+        .describe('Optional JSON context related to payment (e.g., transaction details).'),
+      deliveryContext: z
+        .record(z.any())
+        .optional()
+        .describe('Optional JSON context related to delivery (e.g., shipping info).'),
+      comment: z
+        .string()
+        .optional()
+        .describe('Optional comment or note to attach to the order confirmation.'),
+    })
+    .describe(
+      'Confirms an order. Requirements:\n' +
+        '- The order must exist.\n' +
+        '- The order status must be PENDING.\n' +
+        '- paymentContext, deliveryContext, and comment are optional additional inputs.',
+    ),
+  REJECT_ORDER: z
+    .object({
+      orderId: z
+        .string({ required_error: 'orderId is required' })
+        .min(1, 'orderId cannot be empty')
+        .describe('The unique identifier of the order to reject.'),
+      paymentContext: z
+        .record(z.any())
+        .optional()
+        .describe('Optional JSON context related to payment, e.g., transaction adjustments.'),
+      deliveryContext: z
+        .record(z.any())
+        .optional()
+        .describe('Optional JSON context related to delivery, e.g., shipment adjustments.'),
+      comment: z
+        .string()
+        .optional()
+        .describe('Optional comment explaining the reason for rejecting the order.'),
+    })
+    .describe(
+      'Manually rejects an order which is currently PENDING. ' +
+        'All additional properties (paymentContext, deliveryContext, comment) are forwarded to services.orders.rejectOrder.',
+    ),
 } as const;
 
 export const OrderManagementSchema = {
@@ -134,9 +179,11 @@ export const OrderManagementSchema = {
       'GET',
       'PAY_ORDER',
       'DELIVER_ORDER',
+      'CONFIRM_ORDER',
+      'REJECT_ORDER',
     ])
     .describe(
-      'Order action: LIST (get orders with filters), SALES_SUMMARY (daily sales analytics), MONTHLY_BREAKDOWN (12-month sales analysis), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products), GET_CART (user cart), GET (single order), PAY_ORDER (mark single order as PAID), DELIVER_ORDER (mark single order as DELIVERED)',
+      'Order action: LIST (get orders with filters), SALES_SUMMARY (daily sales analytics), MONTHLY_BREAKDOWN (12-month sales analysis), TOP_CUSTOMERS (highest spending customers), TOP_PRODUCTS (best-selling products), GET_CART (user cart), GET (single order), PAY_ORDER (mark single order as PAID), DELIVER_ORDER (mark single order as DELIVERED), CONFIRM_ORDER (manually mark order as CONFIRMED), REJECT_ORDER (reject order that is in progress)',
     ),
 
   ...PaginationSchema,
@@ -169,7 +216,9 @@ export const OrderManagementSchema = {
   orderId: z
     .string()
     .optional()
-    .describe('Optional ID of order, to get user cart (GET, PAY_ORDER & DELIVERY_ORDER only)'),
+    .describe(
+      'Optional ID of order, to get user cart (GET, PAY_ORDER & DELIVERY_ORDER, CONFIRM_ORDER & REJECT_ORDER only)',
+    ),
   orderNumber: z.string().optional().describe('Optional orderNumber oof a order (GET_CART & GET only)'),
   userId: z.string().optional().describe('User ID to get cart for (GET_CART only)'),
 };
