@@ -242,7 +242,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       if (sort) stages.push({ $sort: sort });
       if (typeof limit === 'number') stages.push({ $limit: limit });
 
-      return Orders.aggregate(stages).toArray();
+      return Orders.aggregate(stages, { allowDiskUse: true }).toArray();
     },
   };
 };

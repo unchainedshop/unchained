@@ -1,54 +1,93 @@
 import { Context } from '../../../context.js';
 
-const project = {
-  $project: {
-    date: '$_id.date',
-    total: {
-      amount: '$total',
-      currency: '$_id.currency',
-    },
-    _id: 0,
-  },
-};
+function buildDateMatch(dateField: string, dateRange?: { start?: string; end?: string }) {
+  if (!dateRange?.start && !dateRange?.end) return { [dateField]: { $exists: true } };
 
-async function getRecords(
+  const rangeMatch: Record<string, any> = {};
+  if (dateRange?.start) rangeMatch.$gte = new Date(dateRange.start);
+  if (dateRange?.end) rangeMatch.$lte = new Date(dateRange.end);
+
+  return { [dateField]: rangeMatch };
+}
+
+async function aggregateOrders(
   modules: Context['modules'],
   dateField: string,
   dateRange?: { start?: string; end?: string },
+  options?: { includeAmount?: boolean },
 ) {
-  const match: Record<string, any> = {};
+  const match = buildDateMatch(dateField, dateRange);
 
-  if (dateRange?.start || dateRange?.end) {
-    match[dateField] = {};
-    if (dateRange?.start) match[dateField].$gte = new Date(dateRange.start);
-    if (dateRange?.end) match[dateField].$lte = new Date(dateRange.end);
-  } else {
-    match[dateField] = { $exists: true };
-  }
+  const pipeline: any[] = [{ $match: match }];
 
-  const group = {
-    $group: {
-      _id: {
-        date: { $dateToString: { format: '%Y-%m-%d', date: `$${dateField}` } },
-        currency: '$currencyCode',
+  if (options?.includeAmount) {
+    pipeline.push({
+      $addFields: {
+        orderTotal: {
+          $reduce: {
+            input: { $ifNull: ['$calculation', []] },
+            initialValue: 0,
+            in: { $add: ['$$value', { $ifNull: ['$$this.amount', 0] }] },
+          },
+        },
       },
-      total: { $sum: '$total.gross' },
-    },
-  };
+    });
 
-  const sort: any = { $sort: { date: 1 } };
+    pipeline.push({
+      $group: {
+        _id: {
+          date: { $dateToString: { format: '%Y-%m-%d', date: `$${dateField}` } },
+          currency: '$currencyCode',
+        },
+        totalAmount: { $sum: '$orderTotal' },
+        count: { $sum: 1 },
+      },
+    });
 
-  return modules.orders.aggregateOrders({ match, project, group, sort });
+    pipeline.push({
+      $project: {
+        _id: 0,
+        date: '$_id.date',
+        total: { amount: '$totalAmount', currencyCode: '$_id.currency' },
+        count: 1,
+      },
+    });
+
+    pipeline.push({ $sort: { date: 1 } });
+    return modules.orders.aggregateOrders({ pipeline });
+  }
+  // Just count total orders
+  pipeline.push({ $count: 'count' });
+  const result = await modules.orders.aggregateOrders({ pipeline });
+  return result[0]?.count ?? 0;
 }
-
 export const OrderStatistics = {
-  confirmRecords: (_p, { dateRange }, { modules }: Context) =>
-    getRecords(modules, 'confirmed', dateRange),
+  newCount: (_p, { dateRange }, { modules }: Context) => aggregateOrders(modules, 'created', dateRange),
+
+  checkoutCount: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'ordered', dateRange),
+
+  rejectCount: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'rejected', dateRange),
+
+  confirmCount: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'confirmed', dateRange),
+
+  fulfillCount: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'fullfilled', dateRange),
+
+  newRecords: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'created', dateRange, { includeAmount: true }),
 
   checkoutRecords: (_p, { dateRange }, { modules }: Context) =>
-    getRecords(modules, 'ordered', dateRange),
+    aggregateOrders(modules, 'ordered', dateRange, { includeAmount: true }),
 
-  rejectRecords: (_p, { dateRange }, { modules }: Context) => getRecords(modules, 'rejected', dateRange),
+  rejectRecords: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'rejected', dateRange, { includeAmount: true }),
 
-  newRecords: (_p, { dateRange }, { modules }: Context) => getRecords(modules, 'created', dateRange),
+  confirmRecords: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'confirmed', dateRange, { includeAmount: true }),
+
+  fulfilledRecords: (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'fullfilled', dateRange, { includeAmount: true }),
 };
