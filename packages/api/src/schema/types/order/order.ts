@@ -81,13 +81,21 @@ export default [
       updated: DateTime
       user: User
     }
-
+    type OrderStatisticsRecord {
+      date: String!
+      total: Price!
+    }
     type OrderStatistics {
-      newCount: Int!
-      checkoutCount: Int!
-      rejectCount: Int!
-      confirmCount: Int!
-      fulfillCount: Int!
+      newCount(dateRange: DateFilterInput): Int!
+      checkoutCount(dateRange: DateFilterInput): Int!
+      rejectCount(dateRange: DateFilterInput): Int!
+      confirmCount(dateRange: DateFilterInput): Int!
+      fulfillCount(dateRange: DateFilterInput): Int!
+      confirmRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      checkoutRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      rejectRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      newRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
+      fulfilledRecords(dateRange: DateFilterInput): Int!
     }
   `,
 ];

@@ -11,6 +11,13 @@ export interface OrderReport {
   confirmCount: number;
   fulfillCount: number;
 }
+export interface OrderStatisticsRecord {
+  date: string;
+  total: {
+    amount: number;
+    currency: string;
+  };
+}
 
 interface OrderAggregateParams {
   match?: Record<string, any>;
@@ -235,7 +242,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       if (sort) stages.push({ $sort: sort });
       if (typeof limit === 'number') stages.push({ $limit: limit });
 
-      return Orders.aggregate(stages).toArray();
+      return Orders.aggregate(stages, { allowDiskUse: true }).toArray();
     },
   };
 };
