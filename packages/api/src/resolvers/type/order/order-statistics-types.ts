@@ -62,32 +62,33 @@ async function aggregateOrders(
   return result[0]?.count ?? 0;
 }
 export const OrderStatistics = {
-  newCount: (_p, { dateRange }, { modules }: Context) => aggregateOrders(modules, 'created', dateRange),
+  newCount: async (_p, { dateRange }, { modules }: Context) =>
+    aggregateOrders(modules, 'created', dateRange),
 
-  checkoutCount: (_p, { dateRange }, { modules }: Context) =>
+  checkoutCount: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'ordered', dateRange),
 
-  rejectCount: (_p, { dateRange }, { modules }: Context) =>
+  rejectCount: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'rejected', dateRange),
 
-  confirmCount: (_p, { dateRange }, { modules }: Context) =>
+  confirmCount: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'confirmed', dateRange),
 
-  fulfillCount: (_p, { dateRange }, { modules }: Context) =>
+  fulfillCount: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'fullfilled', dateRange),
 
-  newRecords: (_p, { dateRange }, { modules }: Context) =>
+  newRecords: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'created', dateRange, { includeAmount: true }),
 
-  checkoutRecords: (_p, { dateRange }, { modules }: Context) =>
+  checkoutRecords: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'ordered', dateRange, { includeAmount: true }),
 
-  rejectRecords: (_p, { dateRange }, { modules }: Context) =>
+  rejectRecords: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'rejected', dateRange, { includeAmount: true }),
 
-  confirmRecords: (_p, { dateRange }, { modules }: Context) =>
+  confirmRecords: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'confirmed', dateRange, { includeAmount: true }),
 
-  fulfilledRecords: (_p, { dateRange }, { modules }: Context) =>
+  fulfilledRecords: async (_p, { dateRange }, { modules }: Context) =>
     aggregateOrders(modules, 'fullfilled', dateRange, { includeAmount: true }),
 };

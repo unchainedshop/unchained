@@ -95,7 +95,7 @@ export default [
       checkoutRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
       rejectRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
       newRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
-      fulfilledRecords(dateRange: DateFilterInput): Int!
+      fulfilledRecords(dateRange: DateFilterInput): [OrderStatisticsRecord!]!
     }
   `,
 ];
