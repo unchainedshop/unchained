@@ -19,7 +19,7 @@ export interface EventReport {
 export interface EventQuery {
   types?: string[];
   queryString?: string;
-  created?: Date;
+  created?: { end?: Date; start?: Date };
 }
 
 export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
@@ -30,7 +30,11 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
     assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
-  if (created) selector.created = { $gte: created };
+  if (created) {
+    selector.created = created?.end
+      ? { $gte: created.start || new Date(0), $lte: created.end }
+      : { $gte: created.start || new Date(0) };
+  }
   return selector;
 };
 
