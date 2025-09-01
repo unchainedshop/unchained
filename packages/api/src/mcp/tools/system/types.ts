@@ -30,11 +30,17 @@ export interface EventListOptions {
   queryString?: string;
   types?: string[];
   sort?: SortOption[];
-  created?: Date;
+  created?: {
+    start?: Date;
+    end?: Date;
+  };
 }
 
 export interface EventCountOptions {
   queryString?: string;
-  created?: Date;
+  created?: {
+    start?: Date;
+    end?: Date;
+  };
   types?: string[];
 }

@@ -480,14 +480,14 @@ export default [
         limit: Int = 10
         offset: Int = 0
         queryString: String
-        created: DateTime
+        created: DateFilterInput
         sort: [SortOptionInput!]
       ): [Event!]!
 
       """
       Get total count of all emitted events
       """
-      eventsCount(types: [String!], queryString: String, created: DateTime): Int!
+      eventsCount(types: [String!], queryString: String, created: DateFilterInput): Int!
 
       """
       Determines if a token is valid/active for reset password
