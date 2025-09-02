@@ -14,11 +14,16 @@ async function aggregateOrders(
   modules: Context['modules'],
   dateField: string,
   dateRange?: { start?: string; end?: string },
-  options?: { includeAmount?: boolean },
+  options?: { includeAmount?: boolean; includeCarts?: boolean },
 ) {
   const match = buildDateMatch(dateField, dateRange);
 
   const pipeline: any[] = [{ $match: match }];
+
+  if (options?.includeCarts) {
+    match.status = null;
+    match.orderNumber = null;
+  }
 
   if (options?.includeAmount) {
     pipeline.push({
@@ -62,6 +67,9 @@ async function aggregateOrders(
   return result[0]?.count ?? 0;
 }
 export const OrderStatistics = {
+  cartCount: async ({ dateRange }, _p, { modules }: Context) =>
+    aggregateOrders(modules, 'created', dateRange, { includeCarts: true }),
+
   newCount: async ({ dateRange }, _p, { modules }: Context) =>
     aggregateOrders(modules, 'created', dateRange),
 
@@ -91,4 +99,6 @@ export const OrderStatistics = {
 
   fulfilledRecords: async ({ dateRange }, _p, { modules }: Context) =>
     aggregateOrders(modules, 'fullfilled', dateRange, { includeAmount: true }),
+  cartRecords: async ({ dateRange }, _p, { modules }: Context) =>
+    aggregateOrders(modules, 'created', dateRange, { includeAmount: true, includeCarts: true }),
 };
