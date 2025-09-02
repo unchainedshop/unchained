@@ -11,5 +11,5 @@ export default async function removeLocalization(context: Context, params: Param
   if (!existing) throw new config.NotFoundError(findParam);
 
   await config.module.delete(entityId);
-  return { [config.entityName]: existing, localizationType };
+  return { success: true };
 }
