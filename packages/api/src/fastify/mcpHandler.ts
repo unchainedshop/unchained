@@ -58,8 +58,7 @@ const mcpHandler: RouteHandlerMethod = async (
         await server.connect(transport);
       } else {
         // Invalid request
-        res.status(400);
-        return res.send(
+        return res.status(400).send(
           JSON.stringify({
             jsonrpc: '2.0',
             error: {
@@ -76,8 +75,7 @@ const mcpHandler: RouteHandlerMethod = async (
     } else if (req.method === 'GET' || req.method === 'DELETE') {
       const sessionId = req.headers['mcp-session-id'] as string | undefined;
       if (!sessionId || !transports[sessionId]) {
-        res.status(400).send('Invalid or missing session ID');
-        return;
+        return res.status(400).send('Invalid or missing session ID');
       }
 
       const transport = transports[sessionId];
@@ -85,12 +83,10 @@ const mcpHandler: RouteHandlerMethod = async (
       return res;
     }
 
-    res.status(405);
-    return res.send('Method Not Allowed');
+    return res.status(405).send('Method Not Allowed');
   } catch (e) {
     logger.error(e.message);
-    res.status(503);
-    return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    return res.status(503).send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
   }
 };
 

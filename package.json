@@ -98,6 +98,7 @@
     "@mongodb-js/zstd"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.1"
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "zod": "^4.1.5"
   }
 }
