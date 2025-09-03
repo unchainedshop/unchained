@@ -223,7 +223,7 @@ export const UsersManagementSchema = {
   profile: UserProfileSchema.optional().describe(
     'Used for: CREATE (optional profile data for new user), UPDATE (profile updates to apply), ENROLL (required profile data for new user including displayName, birthday, phoneMobile, address)',
   ),
-  meta: z.any().optional().describe('Used for: UPDATE (additional metadata to store with user profile)'),
+  // meta: z.any().optional().describe('Used for: UPDATE (additional metadata to store with user profile)'),
   tags: z
     .array(z.string())
     .optional()

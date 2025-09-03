@@ -128,11 +128,11 @@ export const actionValidators = {
   WORKER_FINISH_WORK: z.object({
     workId: z.string().describe('Unique identifier of the work item to mark as completed.'),
     result: z
-      .unknown()
+      .any()
       .optional()
       .describe('JSON result data produced by the work execution. Can be any valid JSON value.'),
     error: z
-      .unknown()
+      .any()
       .optional()
       .describe(
         'Error information if the work failed. Can be an error message, stack trace, or error object.',
@@ -249,10 +249,10 @@ export const SystemManagementSchema = {
     .int()
     .optional()
     .describe('Job priority for WORKER_ADD action. Higher values processed first. Default: 0.'),
-  input: z
-    .any()
-    .optional()
-    .describe('JSON payload for WORKER_ADD action. Structure depends on work type.'),
+  // input: z
+  //   .any()
+  //   .optional()
+  //   .describe('JSON payload for WORKER_ADD action. Structure depends on work type.'),
   originalWorkId: z
     .string()
     .optional()
@@ -281,14 +281,14 @@ export const SystemManagementSchema = {
     .describe(
       'Unique work identifier. Required for WORKER_GET, WORKER_REMOVE, WORKER_FINISH_WORK actions.',
     ),
-  result: z
-    .unknown()
-    .optional()
-    .describe('JSON result data for WORKER_FINISH_WORK action. Produced by work execution.'),
-  error: z
-    .unknown()
-    .optional()
-    .describe('Error information for WORKER_FINISH_WORK action. Used when work fails.'),
+  // result: z
+  //   .unknown()
+  //   .optional()
+  //   .describe('JSON result data for WORKER_FINISH_WORK action. Produced by work execution.'),
+  // error: z
+  //   .unknown()
+  //   .optional()
+  //   .describe('Error information for WORKER_FINISH_WORK action. Used when work fails.'),
   success: z
     .boolean()
     .optional()
