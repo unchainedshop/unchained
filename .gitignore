@@ -13,3 +13,4 @@ tsconfig.tsbuildinfo
 .aider*
 /data
 fly.toml
+/typedocs

@@ -5,9 +5,10 @@
 .env
 .tmp
 .build
+.claude
 docs
 node_modules
-
+typedocs
 examples/*/lib
 examples/*/.db
 packages/*/lib

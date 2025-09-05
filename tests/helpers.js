@@ -31,7 +31,7 @@ let connection;
 export const getConnection = () => connection;
 
 export const disconnect = async () => {
-  await connection.close(true);
+  await connection?.close(true);
 };
 
 export const connect = async () => {
