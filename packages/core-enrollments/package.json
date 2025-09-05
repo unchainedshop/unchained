@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-enrollments",
-  "version": "4.0.0-rc.12",
+  "version": "4.0.0-rc.13",
   "main": "lib/enrollments-index.js",
   "types": "lib/enrollments-index.d.ts",
   "type": "module",
@@ -32,9 +32,9 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@breejs/later": "^4.2.0",
-    "@unchainedshop/events": "^4.0.0-rc.4",
-    "@unchainedshop/logger": "^4.0.0-rc.4",
-    "@unchainedshop/utils": "^4.0.0-rc.4"
+    "@unchainedshop/events": "^4.0.0-rc.13",
+    "@unchainedshop/logger": "^4.0.0-rc.13",
+    "@unchainedshop/utils": "^4.0.0-rc.13"
   },
   "devDependencies": {
     "@types/breejs__later": "^4.1.5",
