@@ -67,11 +67,8 @@ async function aggregateOrders(
   return result[0]?.count ?? 0;
 }
 export const OrderStatistics = {
-  cartCount: async ({ dateRange }, _p, { modules }: Context) =>
-    aggregateOrders(modules, 'created', dateRange, { includeCarts: true }),
-
   newCount: async ({ dateRange }, _p, { modules }: Context) =>
-    aggregateOrders(modules, 'created', dateRange),
+    aggregateOrders(modules, 'created', dateRange, { includeCarts: true }),
 
   checkoutCount: async ({ dateRange }, _p, { modules }: Context) =>
     aggregateOrders(modules, 'ordered', dateRange),
@@ -86,7 +83,7 @@ export const OrderStatistics = {
     aggregateOrders(modules, 'fullfilled', dateRange),
 
   newRecords: async ({ dateRange }, _p, { modules }: Context) =>
-    aggregateOrders(modules, 'created', dateRange, { includeAmount: true }),
+    aggregateOrders(modules, 'created', dateRange, { includeAmount: true, includeCarts: true }),
 
   checkoutRecords: async ({ dateRange }, _p, { modules }: Context) =>
     aggregateOrders(modules, 'ordered', dateRange, { includeAmount: true }),
@@ -99,6 +96,4 @@ export const OrderStatistics = {
 
   fulfilledRecords: async ({ dateRange }, _p, { modules }: Context) =>
     aggregateOrders(modules, 'fullfilled', dateRange, { includeAmount: true }),
-  cartRecords: async ({ dateRange }, _p, { modules }: Context) =>
-    aggregateOrders(modules, 'created', dateRange, { includeAmount: true, includeCarts: true }),
 };
