@@ -40,7 +40,7 @@
     "@ai-sdk/openai-compatible": "^1.0.10",
     "@scure/bip32": "1.7.0",
     "@scure/btc-signer": "^1.8.1",
-    "@unchainedshop/admin-ui": "^4.0.23",
+    "@unchainedshop/admin-ui": "^4.0.32",
     "@unchainedshop/api": "^4.0.0-rc.4",
     "@unchainedshop/core-delivery": "^4.0.0-rc.4",
     "@unchainedshop/core-payment": "^4.0.0-rc.4",
