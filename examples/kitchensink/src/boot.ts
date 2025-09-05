@@ -39,14 +39,16 @@ try {
 
   connectDefaultPluginsToFastify(fastify, platform);
 
-  // const provider = createOpenAICompatible({
-  //   name: 'local',
-  //   baseURL: 'http://localhost:8080',
-  // });
-
-  // connectChat(fastify, {
-  //   model: provider.chatModel('local'),
-  // });
+  // llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
+  if (process.env.OPENAI_BASE_URL && process.env.OPENAI_MODEL) {
+    const provider = createOpenAICompatible({
+      name: 'local',
+      baseURL: process.env.OPENAI_BASE_URL,
+    });
+    connectChat(fastify, {
+      model: provider.chatModel(process.env.OPENAI_MODEL),
+    });
+  }
 
   fastify.register(fastifyRouter, {
     prefix: '/',
