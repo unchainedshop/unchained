@@ -91,13 +91,11 @@ export default [
       rejectCount: Int!
       confirmCount: Int!
       fulfillCount: Int!
-      cartCount: Int!
       confirmRecords: [OrderStatisticsRecord!]!
       checkoutRecords: [OrderStatisticsRecord!]!
       rejectRecords: [OrderStatisticsRecord!]!
       newRecords: [OrderStatisticsRecord!]!
       fulfilledRecords: [OrderStatisticsRecord!]!
-      cartRecords: [OrderStatisticsRecord!]!
     }
   `,
 ];
