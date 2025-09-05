@@ -20,12 +20,19 @@ Known limitations:
 - Add Node.js v24 support
 - Add various loaders to optimize db requests and improve the overall performance of the system
 - DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
+- Improve docs
+- Add filters to `Query.orders` to filter by payment and delivery providers
+- Allow to call `Query.deliveryInterfaces` without a type
+- Add support for SMS providers BudgetSMS and Bulkgate next to Twilio on our privacy-focused mission to always support European alternatives.
 
 ## Patch
 - Update to ESlint 9
 - Use @scure packages to reduce dependency hell around cryptography
 - Remove the 'twilio' dependency (> 5mb) with a single native fetch call to the Twilio API 🤪
 - Improve style of typescript definitions
+- Fix Types not published to docs.unchained.shop
+- Fix Fastify handler to upload temp files
+- Fix localeContext not returning the correct region #649
 
 # Unchained Engine v3.1
 
