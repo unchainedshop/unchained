@@ -63,7 +63,7 @@
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 8",
     "open": "10.x",
-    "p-memoize": "7.x",
+    "p-memoize": "8.x",
     "stripe": ">= 17 < 19",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
@@ -137,7 +137,7 @@
     "minio": "^8.0.5",
     "nodemailer": "^7.0.5",
     "open": "^10.1.2",
-    "p-memoize": "^7.1.1",
+    "p-memoize": "^8.0.0",
     "stripe": "^18.3.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
