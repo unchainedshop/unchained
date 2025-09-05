@@ -7,6 +7,7 @@ import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-f
 import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
 import { useErrorHandler } from '@envelop/core';
+import { openai } from '@ai-sdk/openai';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
@@ -47,6 +48,7 @@ try {
     });
     connectChat(fastify, {
       model: provider.chatModel(process.env.OPENAI_MODEL),
+      imageGenerationTool: process.env.OPENAI_API_KEY ? { model: openai.image('dall-e-3') } : undefined,
     });
   }
 

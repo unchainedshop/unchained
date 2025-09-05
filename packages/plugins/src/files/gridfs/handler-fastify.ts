@@ -1,4 +1,4 @@
-import { pipeline } from 'node:stream/promises';
+import { finished, pipeline } from 'node:stream/promises';
 import { PassThrough } from 'node:stream';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
@@ -55,15 +55,18 @@ const gridfsHandler: RouteHandlerMethod = async (
           fileId,
           fileName,
           {
+            chunkSizeBytes: 1024 * 1024, // 1MB
             metadata: { 'content-type': type },
           },
         );
 
         await pipeline(
           req.raw,
-          new PassThrough({ allowHalfOpen: true, highWaterMark: 1024 * 1024 }),
+          new PassThrough({ highWaterMark: 1024 * 1024 * 4 }), // 4MB Buffer
           writeStream,
         );
+
+        await finished(writeStream, { readable: false });
 
         const { length } = writeStream;
         await services.files.linkFile({ fileId, size: length, type });

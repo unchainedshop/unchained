@@ -1,5 +1,5 @@
 import { Readable, PassThrough } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+import { finished, pipeline } from 'node:stream/promises';
 import mimeType from 'mime-types';
 import {
   FileAdapter,
@@ -91,14 +91,19 @@ export const GridFSAdapter: IFileAdapter<
       fileName,
       {
         metadata: { 'content-type': type },
+        chunkSizeBytes: 1024 * 1024, // 1MB
         ...options,
       },
     );
+
     await pipeline(
       stream,
-      new PassThrough({ allowHalfOpen: true, highWaterMark: 1024 * 1024 }),
+      new PassThrough({ highWaterMark: 1024 * 1024 * 4 }), // 4MB Buffer
       writeStream,
     );
+
+    await finished(writeStream, { readable: false });
+
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 

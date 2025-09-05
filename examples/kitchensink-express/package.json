@@ -35,10 +35,9 @@
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.5",
     "@ai-sdk/openai": "^2.0.18",
     "@ai-sdk/openai-compatible": "^1.0.10",
-    "@scure/bip32": "1.7.0",
+     "@scure/bip32": "1.7.0",
     "@scure/btc-signer": "^1.8.1",
     "@unchainedshop/admin-ui": "^4.0.32",
     "@unchainedshop/api": "^4.0.0-rc.4",

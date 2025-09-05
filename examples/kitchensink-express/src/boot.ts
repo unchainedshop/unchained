@@ -7,12 +7,10 @@ import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-e
 import { createLogger } from '@unchainedshop/logger';
 import { expressRouter, connectChat } from '@unchainedshop/admin-ui/express';
 import seed from './seed.js';
-import { anthropic } from '@ai-sdk/anthropic';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { openai } from '@ai-sdk/openai';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-
-const { ANTHROPIC_API_KEY } = process.env;
 
 const logger = createLogger('express');
 const app = express();
@@ -30,16 +28,16 @@ try {
 
   connectDefaultPluginsToExpress(app, engine);
 
-  if (ANTHROPIC_API_KEY) {
-    logger.info('Using ANTHROPIC_API_KEY, chat functionality will be available.');
-    connectChat(app, {
-      model: anthropic('claude-4-sonnet-20250514'),
-      imageGenerationTool: {
-        model: openai.image('dall-e-3'),
-      },
+  // llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
+  if (process.env.OPENAI_BASE_URL && process.env.OPENAI_MODEL) {
+    const provider = createOpenAICompatible({
+      name: 'local',
+      baseURL: process.env.OPENAI_BASE_URL,
     });
-  } else {
-    logger.info('No ANTHROPIC_API_KEY found, chat functionality will not be available.');
+    connectChat(app, {
+      model: provider.chatModel(process.env.OPENAI_MODEL),
+      imageGenerationTool: process.env.OPENAI_API_KEY ? { model: openai.image('dall-e-3') } : undefined,
+    });
   }
 
   app.use('/', expressRouter);

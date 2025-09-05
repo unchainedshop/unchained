@@ -210,7 +210,7 @@ export const connect = (
   });
 
   fastify.register((s, opts, registered) => {
-    s.register(fastifyMultipart);
+    s.register(fastifyMultipart, { throwFileSizeLimit: true, limits: { fileSize: 1024 * 1024 * 35 } }); // 35MB
     s.route({
       url: TEMP_UPLOAD_API_PATH,
       method: ['POST'],
