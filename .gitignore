@@ -7,7 +7,6 @@ tsconfig.tsbuildinfo
 .npm
 /globalConfig.json
 /docs/static/api
-/docs/static/types
 /packages/*/lib
 /lib
 /env

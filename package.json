@@ -62,7 +62,7 @@
     "examples/ticketing"
   ],
   "scripts": {
-    "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && mv ./typedocs ./docs/static/types",
+    "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && rm -Rf ./docs/static/types && mv ./typedocs ./docs/static/types",
     "lint": "eslint --fix --ext=js --ext=ts .",
     "test": "(cd packages && tsx --test) && run-p -r test:*",
     "test:start-engine": "cd examples/kitchensink && npm run integration-test",
