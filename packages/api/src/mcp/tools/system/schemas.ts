@@ -183,10 +183,9 @@ export const actionValidators = {
       .optional()
       .describe('Filter events by specific event types (e.g., USER_CREATED, ORDER_PLACED)'),
     created: z
-      .string()
-      .datetime()
+      .object(DateRangeSchema)
       .optional()
-      .describe('ISO 8601 timestamp to filter events created on or after this date/time'),
+      .describe('Date range filter for when events are emitted/created'),
   }),
 
   EVENT_COUNT: z.object({
@@ -196,10 +195,9 @@ export const actionValidators = {
       .optional()
       .describe('Filter events by specific event types (e.g., USER_CREATED, ORDER_PLACED)'),
     created: z
-      .string()
-      .datetime()
+      .object(DateRangeSchema)
       .optional()
-      .describe('ISO 8601 timestamp to filter events created on or after this date/time'),
+      .describe('Date range filter for when events are emitted/created'),
   }),
 
   EVENT_STATISTICS: z.object({
