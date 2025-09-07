@@ -11,19 +11,15 @@ export default [
       created: Timestamp!
     }
 
-    type EventStatisticReportDetail {
-      date: Date!
-      emitCount: Int!
-    }
     type EventStatisticReport {
-      detail: [EventStatisticReportDetail!]!
-      total: String
-      type: String
+      date: Date!
+      count: Int!
     }
 
     type EventStatistics {
-      report: [EventStatisticReport!]!
-      total: Int!
+      detail: [EventStatisticReport!]!
+      emitCount: Int!
+      type: String
     }
   `,
 ];

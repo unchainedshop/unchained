@@ -502,7 +502,7 @@ export default [
       """
       Returns aggregated report of all the events that occurred in the system
       """
-      eventStatistics(types: [String!], dateRange: DateFilterInput): EventStatistics!
+      eventStatistics(types: [String!], dateRange: DateFilterInput): [EventStatistics!]!
       """
       Returns aggregated report of all the orders that occurred in the system
       """

@@ -96,10 +96,7 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
     getReport: async ({
       dateRange,
       types,
-    }: { dateRange?: DateFilterInput; types?: string[] } = {}): Promise<{
-      report: EventReport[];
-      total: number;
-    }> => {
+    }: { dateRange?: DateFilterInput; types?: string[] } = {}): Promise<EventReport[]> => {
       const match: any = {};
 
       if (dateRange?.start || dateRange?.end) {
@@ -131,7 +128,7 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
                 $dateToString: { format: '%Y-%m-%d', date: '$created' },
               },
             },
-            emitCount: { $sum: 1 },
+            count: { $sum: 1 },
           },
         },
         {
@@ -140,41 +137,26 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
             detail: {
               $push: {
                 date: '$_id.day',
-                emitCount: '$emitCount',
+                count: '$count',
               },
             },
-            total: { $sum: '$emitCount' },
+            emitCount: { $sum: '$count' },
           },
         },
         {
           $project: {
             _id: 0,
             type: '$_id',
-            total: 1,
+            emitCount: 1,
             detail: 1,
           },
         },
         { $sort: { type: 1 } },
-        {
-          $group: {
-            _id: null,
-            report: { $push: '$$ROOT' },
-            total: { $sum: 1 },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            report: 1,
-            total: 1,
-          },
-        },
       ].filter(Boolean);
 
-      const [report] = await Events.aggregate<{ report: EventReport[]; total: number }>(
-        pipeline,
-      ).toArray();
-      return report ?? { report: [], total: 0 };
+      const report = await Events.aggregate<EventReport>(pipeline).toArray();
+      console.log(report);
+      return report ?? [];
     },
   };
 };
