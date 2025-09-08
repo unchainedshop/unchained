@@ -1,10 +1,8 @@
 ---
 sidebar_position: 2
-title: Enable AI Copilot (LLM) in Unchained Admin UI
+title: Enable AI Copilot in Unchained Admin UI
 sidebar_label: Activate Copilot
 ---
-
-## Enable Unchained Admin UI with Copilot
 
 To use the built-in AI Copilot, you need to configure the Admin UI with a Vercel AI SDK model provider. To help you with that, we show you two ways: self-hosting and using OpenAI's models. For a complete list of providers and configuration options, please check [the AI SDK docs here](https://ai-sdk.dev/providers/ai-sdk-providers).
 
