@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "4.0.0-rc.13",
+  "version": "4.0.0-rc.14",
   "description": "MongoDB provider for unchained platform",
   "main": "lib/mongodb-index.js",
   "types": "lib/mongodb-index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/utils": "^4.0.0-rc.13"
+    "@unchainedshop/utils": "^4.0.0-rc.14"
   },
   "peerDependencies": {
     "@mongodb-js/zstd": ">= 2.0 < 3",
