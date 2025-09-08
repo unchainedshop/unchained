@@ -94,10 +94,6 @@ To configure various aspects of the platform, `startPlatform` accepts a configur
 These options are extended by `YogaServerOptions` so you can pass all options you can normally pass to `createYoga`, add plugins [Yoga GraphQL Plugins](https://the-guild.dev/graphql/yoga-server/docs/features/envelop-plugins) or configure [batching](https://the-guild.dev/graphql/yoga-server/docs/features/request-batching) and other more advanced GraphQL features. Check the [Yoga documentation](https://the-guild.dev/graphql/yoga-server/docs) for more information.
 
 
-## Next Steps
-
-...
-
 ## Getting Help
 
 - 📚 [Full Documentation](/)

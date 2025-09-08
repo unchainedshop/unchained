@@ -1,4 +1,4 @@
-# Core Options
+# Core Settings
 
 To configure core modules, pass options for every core package to `startPlatform`:
 
