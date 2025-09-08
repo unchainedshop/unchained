@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@ethereumjs/util": ">= 10 < 11",
     "fastify": ">= 5.2 < 6",
     "@fastify/cookie": ">= 11 < 12",
     "@fastify/session": ">= 11 < 12",
@@ -42,7 +41,9 @@
     "express-session": ">= 1.18 < 2",
     "multer": ">= 2 < 3",
     "graphql-yoga": ">= 5.9 < 6",
-    "passport": ">= 0.7 < 1"
+    "passport": ">= 0.7 < 1",
+    "@noble/curves": "^2.0.0",
+    "@noble/hashes": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "@modelcontextprotocol/sdk": {
@@ -53,9 +54,6 @@
     },
     "connect-mongo": {
       "optional": false
-    },
-    "@ethereumjs/util": {
-      "optional": true
     },
     "fastify": {
       "optional": true
@@ -80,6 +78,12 @@
     },
     "passport": {
       "optional": true
+    },
+    "@noble/curves": {
+      "optional": true
+    },
+    "@noble/hashes": {
+      "optional": true
     }
   },
   "dependencies": {
@@ -97,7 +101,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@ethereumjs/util": "^10.0.0",
+    "@noble/curves": "^2.0.0",
+    "@noble/hashes": "^2.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
     "@fastify/session": "^11.1.0",

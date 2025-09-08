@@ -1,6 +1,6 @@
 import { HDKey } from '@scure/bip32';
-import { keccak_256 } from '@noble/hashes/sha3';
-import { secp256k1 } from '@noble/curves/secp256k1';
+import { keccak_256 } from '@noble/hashes/sha3.js';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
 
 function getChecksumAddress(address) {
   const chars = address.split('');
@@ -29,7 +29,7 @@ export default (xpub, index) => {
   const child = hardenedMaster.deriveChild(0).deriveChild(index);
 
   // ETH Address (secp256k1 + keccak_256 + checksum)
-  const childSigningKey = secp256k1.ProjectivePoint.fromHex(child.publicKey).toRawBytes(false);
+  const childSigningKey = secp256k1.Point.fromBytes(child.publicKey).toBytes(false);
   const address = Buffer.from(keccak_256(childSigningKey.slice(1)))
     .toString('hex')
     .substring(24);
