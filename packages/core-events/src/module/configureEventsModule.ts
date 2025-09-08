@@ -19,7 +19,7 @@ export interface EventReport {
 export interface EventQuery {
   types?: string[];
   queryString?: string;
-  created?: Date;
+  created?: { end?: Date; start?: Date };
 }
 
 export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
@@ -30,7 +30,11 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
     assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
-  if (created) selector.created = { $gte: created };
+  if (created) {
+    selector.created = created?.end
+      ? { $gte: created.start || new Date(0), $lte: created.end }
+      : { $gte: created.start || new Date(0) };
+  }
   return selector;
 };
 
@@ -89,66 +93,70 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
       return count;
     },
 
-    getReport: async (
-      { dateRange, types }: { dateRange?: DateFilterInput; types?: string[] } = {
-        dateRange: {},
-        types: null,
-      },
-    ): Promise<EventReport[]> => {
-      const pipeline = [];
-      const matchConditions = [];
-      // build date filter based on provided values it can be a range if both to and from is supplied
-      // a upper or lowe limit if either from or to is provided
-      // or all if none is provided
+    getReport: async ({
+      dateRange,
+      types,
+    }: { dateRange?: DateFilterInput; types?: string[] } = {}): Promise<EventReport[]> => {
+      const match: any = {};
+
       if (dateRange?.start || dateRange?.end) {
-        const dateConditions = [];
-        if (dateRange?.start) {
-          const fromDate = new Date(dateRange?.start);
-          dateConditions.push({
-            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
-          });
+        const conditions: any[] = [];
+        if (dateRange.start) {
+          const fromDate = new Date(dateRange.start);
+          conditions.push({ created: { $gte: fromDate } });
         }
-        if (dateRange?.end) {
-          const toDate = new Date(dateRange?.end);
-          dateConditions.push({
-            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
-          });
+        if (dateRange.end) {
+          const toDate = new Date(dateRange.end);
+          conditions.push({ created: { $lte: toDate } });
         }
-        if (dateConditions.length > 0) {
-          matchConditions.push({ $and: dateConditions });
+        if (conditions.length) {
+          match.$or = conditions;
         }
-      }
-      // build types filter if type is provided or ignore types if it is not provided
-      if (types && Array.isArray(types) && types.length) {
-        matchConditions.push({ type: { $in: types } });
-      }
-      if (matchConditions.length > 0) {
-        pipeline.push({
-          $match: {
-            $and: matchConditions,
-          },
-        });
       }
 
-      pipeline.push(
-        ...[
-          {
-            $group: {
-              _id: '$type',
-              emitCount: { $sum: 1 },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              type: '$_id',
-              emitCount: 1,
-            },
-          },
-        ],
-      );
+      if (types?.length) {
+        match.type = { $in: types };
+      }
 
-      return Events.aggregate(pipeline).toArray() as Promise<EventReport[]>;
+      const pipeline = [
+        Object.keys(match).length ? { $match: match } : null,
+        {
+          $group: {
+            _id: {
+              type: '$type',
+              day: {
+                $dateToString: { format: '%Y-%m-%d', date: '$created' },
+              },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $group: {
+            _id: '$_id.type',
+            detail: {
+              $push: {
+                date: '$_id.day',
+                count: '$count',
+              },
+            },
+            emitCount: { $sum: '$count' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            type: '$_id',
+            emitCount: 1,
+            detail: 1,
+          },
+        },
+        { $sort: { type: 1 } },
+      ].filter(Boolean);
+
+      const report = await Events.aggregate<EventReport>(pipeline).toArray();
+      console.log(report);
+      return report ?? [];
     },
   };
 };

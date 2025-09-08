@@ -1,4 +1,4 @@
-import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 import buildFindSelector from './buildFindSelector.js';
 import { Order, OrderQuery } from '../db/OrdersCollection.js';
@@ -11,6 +11,13 @@ export interface OrderReport {
   confirmCount: number;
   fulfillCount: number;
 }
+export interface OrderStatisticsRecord {
+  date: string;
+  total: {
+    amount: number;
+    currency: string;
+  };
+}
 
 interface OrderAggregateParams {
   match?: Record<string, any>;
@@ -22,21 +29,6 @@ interface OrderAggregateParams {
   addFields?: Record<string, any>;
   pipeline?: any[];
 }
-
-const normalizeOrderAggregateResult = (data = {}): OrderReport => {
-  const statusToFieldMap = {
-    newCount: 0,
-    checkoutCount: 0,
-    rejectCount: 0,
-    confirmCount: 0,
-    fulfillCount: 0,
-  };
-
-  Object.entries(data).forEach(([key, value]) => {
-    statusToFieldMap[key] = value;
-  });
-  return statusToFieldMap;
-};
 
 export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Collection<Order> }) => {
   return {
@@ -134,80 +126,6 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
 
       return Orders.find(selector, findOptions).toArray();
     },
-
-    getReport: async (params: { dateRange?: DateFilterInput }): Promise<OrderReport> => {
-      const { dateRange } = params || {};
-      const selector: any = {};
-      if (dateRange?.end || dateRange?.start) {
-        if (dateRange?.start) {
-          const fromDate = new Date(dateRange?.start);
-          selector.$gte = fromDate;
-        }
-        if (dateRange?.end) {
-          const toDate = new Date(dateRange?.end);
-          selector.$lte = toDate;
-        }
-      }
-
-      const pipeline = [
-        {
-          $facet: {
-            checkoutCount: [
-              {
-                $match: {
-                  ordered: selector,
-                },
-              },
-              { $count: 'count' },
-            ],
-            fulfillCount: [
-              {
-                $match: {
-                  fullfilled: selector,
-                },
-              },
-              { $count: 'count' },
-            ],
-            rejectCount: [
-              {
-                $match: {
-                  rejected: selector,
-                },
-              },
-              { $count: 'count' },
-            ],
-            newCount: [
-              {
-                $match: {
-                  created: selector,
-                },
-              },
-              { $count: 'count' },
-            ],
-            confirmCount: [
-              {
-                $match: {
-                  confirmed: selector,
-                },
-              },
-              { $count: 'count' },
-            ],
-          },
-        },
-        {
-          $project: {
-            checkoutCount: { $arrayElemAt: ['$checkoutCount.count', 0] },
-            fulfillCount: { $arrayElemAt: ['$fulfillCount.count', 0] },
-            rejectCount: { $arrayElemAt: ['$rejectCount.count', 0] },
-            newCount: { $arrayElemAt: ['$newCount.count', 0] },
-            confirmCount: { $arrayElemAt: ['$confirmCount.count', 0] },
-          },
-        },
-      ];
-      const [facetedResult] = await Orders.aggregate(pipeline).toArray();
-      return normalizeOrderAggregateResult(facetedResult);
-    },
-
     orderExists: async ({ orderId }: { orderId: string }): Promise<boolean> => {
       const orderCount = await Orders.countDocuments(generateDbFilterById(orderId), {
         limit: 1,
@@ -235,7 +153,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       if (sort) stages.push({ $sort: sort });
       if (typeof limit === 'number') stages.push({ $limit: limit });
 
-      return Orders.aggregate(stages).toArray();
+      return Orders.aggregate(stages, { allowDiskUse: true }).toArray();
     },
   };
 };

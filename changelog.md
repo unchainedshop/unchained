@@ -12,6 +12,7 @@ Known limitations:
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 
 ## Major
+- `Query.eventsCount` and `Query.events` now accept a DateFilterInput (start/end range) for the created date.
 - The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system: The type of locale fields in the API are now validated at the GraphQL Server level. This effects a lot of plugins too, please check migration-v4.md.
 - Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
 - Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).

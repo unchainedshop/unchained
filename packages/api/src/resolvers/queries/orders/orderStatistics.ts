@@ -5,12 +5,12 @@ import { DateFilterInput } from '@unchainedshop/utils';
 export default async function orderStatistics(
   root: never,
   params: { dateRange?: DateFilterInput },
-  { modules, userId }: Context,
+  { userId }: Context,
 ) {
+  const { dateRange } = params || {};
   log(`query orderStatistics `, {
     userId,
     ...(params?.dateRange || {}),
   });
-
-  return modules.orders.getReport(params);
+  return { dateRange };
 }
