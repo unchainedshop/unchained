@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '../context.js';
 import { Request, RequestHandler } from 'express';
@@ -25,16 +24,20 @@ const ercMetadataMiddleware: RequestHandler = async (
 
     const { services, modules, loaders, locale } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);
-    const parsedPath = path.parse(url.pathname);
 
-    if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
+    // Replace path.parse with URL/string methods
+    const pathname = url.pathname;
+    if (!pathname.toLowerCase().endsWith('.json')) throw new Error('Invalid ERC Metadata URI');
+
+    const fileName = pathname.split('/').pop();
+    const chainTokenId = fileName.slice(0, fileName.lastIndexOf('.'));
 
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
 
     const product = await loaders.productLoader.load({ productId });
 
     const [token] = await modules.warehousing.findTokens({
-      chainTokenId: parsedPath.name,
+      chainTokenId,
       contractAddress: product?.tokenization?.contractAddress,
     });
 
@@ -49,11 +52,10 @@ const ercMetadataMiddleware: RequestHandler = async (
     }
 
     const body = JSON.stringify(ercMetadata);
-    res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(body),
-      'Content-Type': 'text/plain',
-    });
-    res.end(body);
+    res.status(200);
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Length', new TextEncoder().encode(body).length);
+    return res.send(body);
   } catch (e) {
     logger.error(e.message);
     res.writeHead(503);

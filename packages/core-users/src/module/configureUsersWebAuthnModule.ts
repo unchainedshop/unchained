@@ -86,7 +86,8 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       if (!f2l) return null;
 
       const registrationOptions = await f2l.attestationOptions(extensionOptions);
-      const challenge = Buffer.from(registrationOptions.challenge).toString('base64');
+      // Convert challenge to base64 without using Buffer
+      const challenge = btoa(String.fromCharCode(...new Uint8Array(registrationOptions.challenge)));
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
         _id: new Date().getTime(),
         challenge,
@@ -110,7 +111,8 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       if (!f2l) return null;
 
       const loginOptions = await f2l.assertionOptions(extensionOptions);
-      const challenge = Buffer.from(loginOptions.challenge).toString('base64');
+      // Convert challenge to base64 without using Buffer
+      const challenge = btoa(String.fromCharCode(...new Uint8Array(loginOptions.challenge)));
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
         _id: new Date().getTime(),
         challenge,

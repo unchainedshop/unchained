@@ -41,7 +41,7 @@ const ercMetadataHandler: RouteHandlerMethod = async (
 
     const body = JSON.stringify(ercMetadata);
     res.status(200);
-    res.header('Content-Length', Buffer.byteLength(body));
+    res.header('Content-Length', new TextEncoder().encode(body).length);
     res.header('Content-Type', 'application/json');
     return res.send(body);
   } catch (e) {

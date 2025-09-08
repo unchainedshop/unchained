@@ -5,7 +5,11 @@ const PBKDF2_SALT_LENGTH = 16; // Bytes
 
 export function generateSalt(saltLength = PBKDF2_SALT_LENGTH) {
   const array = new Uint8Array(saltLength);
-  return Buffer.from(crypto.getRandomValues(array)).toString('hex');
+  crypto.getRandomValues(array);
+  // Convert to hex string without using Buffer
+  return Array.from(array)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 export async function getDerivedKey(
@@ -30,7 +34,10 @@ export async function getDerivedKey(
     importedKey,
     keyLength,
   );
-  return Buffer.from(bits).toString('hex');
+  // Convert ArrayBuffer to hex string without using Buffer
+  return Array.from(new Uint8Array(bits))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 export async function compare(password: string, hash: string, salt: string) {

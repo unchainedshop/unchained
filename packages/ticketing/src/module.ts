@@ -188,7 +188,10 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
   const buildMagicKey = async (orderId: string) => {
     const msgUint8 = new TextEncoder().encode([orderId, process.env.UNCHAINED_SECRET].join(''));
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    return Buffer.from(hashBuffer).toString('hex');
+    // Convert ArrayBuffer to hex string without using Buffer
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
   };
 
   const cancelTicket = async (tokenId: string) => {

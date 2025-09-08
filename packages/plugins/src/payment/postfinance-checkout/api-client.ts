@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 const API_BASE_URL = 'https://checkout.postfinance.ch/api';
 
 interface ApiConfig {
@@ -22,7 +20,7 @@ export class PostFinanceApiClient {
     this.config = config;
   }
 
-  private generateMacHeaders(method: string, path: string): MacHeaders {
+  private async generateMacHeaders(method: string, path: string): Promise<MacHeaders> {
     const version = '1';
     const timestamp = Math.floor(Date.now() / 1000).toString();
     const userId = this.config.userId.toString();
@@ -32,10 +30,17 @@ export class PostFinanceApiClient {
 
     const dataToSign = [version, userId, timestamp, method, resourcePath].join('|');
 
-    const macValue = crypto
-      .createHmac('sha512', Buffer.from(this.config.apiSecret, 'base64'))
-      .update(dataToSign, 'utf8')
-      .digest('base64');
+    // Use Web Crypto API instead of crypto.createHmac
+    const secretBytes = Uint8Array.from(atob(this.config.apiSecret), (c) => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey(
+      'raw',
+      secretBytes,
+      { name: 'HMAC', hash: 'SHA-512' },
+      false,
+      ['sign'],
+    );
+    const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(dataToSign));
+    const macValue = btoa(String.fromCharCode(...new Uint8Array(signature)));
 
     return {
       'x-mac-version': version,
@@ -50,7 +55,7 @@ export class PostFinanceApiClient {
     const urlObj = new URL(url);
     // Include both pathname and search (query parameters) for MAC signature
     const pathWithQuery = urlObj.pathname + urlObj.search;
-    const macHeaders = this.generateMacHeaders(method, pathWithQuery);
+    const macHeaders = await this.generateMacHeaders(method, pathWithQuery);
 
     const headers: Record<string, string> = {
       ...macHeaders,
