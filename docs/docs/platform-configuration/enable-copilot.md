@@ -51,7 +51,7 @@ import { openai } from '@ai-sdk/openai';
 connect(fastify...
 ...
 if (process.env.OPENAI_API_KEY) {
-    connectChat(app, {
+    connectChat(fastify, {
         model: openai('gpt-4-turbo'),
         imageGenerationTool: { model: openai.image('gpt-image-1') },
     });
