@@ -71,15 +71,15 @@ export const buildFindSelector = ({
 }: ProductQuery) => {
   const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector, ...query } : query;
 
-  if (productIds) {
+  if (productIds && !selector._id) {
     selector._id = { $in: productIds };
   }
 
-  if (slugs) {
+  if (slugs && !selector.slugs) {
     selector.slugs = { $in: slugs };
   }
 
-  if (tags) {
+  if (tags && !selector.tags) {
     if (Array.isArray(tags)) {
       selector.tags = { $all: tags };
     } else {
@@ -87,7 +87,7 @@ export const buildFindSelector = ({
     }
   }
 
-  if (queryString) {
+  if (queryString && !selector.$text) {
     assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }

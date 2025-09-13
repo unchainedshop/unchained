@@ -36,7 +36,8 @@ export async function searchAssortmentsService(
   const assortmentIds = await searchQuery.assortmentIds;
 
   const totalAssortmentIds =
-    (await filterActions.searchAssortments({ assortmentIds }, searchConfiguration)) || [];
+    (await filterActions.searchAssortments({ assortmentIds }, searchConfiguration)) ||
+    (await this.assortments.findAssortmentIds({ includeInactive: searchQuery.includeInactive }));
 
   return {
     searchConfiguration,

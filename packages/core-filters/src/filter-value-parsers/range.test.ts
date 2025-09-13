@@ -4,8 +4,8 @@ import range from './range.js';
 
 describe('range', () => {
   it('returns an empty array if no range is provided', () => {
-    const values = [];
-    const allKeys = [];
+    const values: any = [];
+    const allKeys: any = [];
     const result = range(values, allKeys);
     assert.deepStrictEqual(result, [undefined]);
   });
