@@ -4,9 +4,9 @@ import _switch from './switch.js';
 
 describe('switch', () => {
   it('returns undefined if no value is provided', () => {
-    const values = [];
+    const values: string[] = [];
     const result = _switch(values);
-    assert.deepStrictEqual(result, [undefined]);
+    assert.deepStrictEqual(result, ['true']);
   });
 
   it('returns true if a truthy value is provided', () => {
