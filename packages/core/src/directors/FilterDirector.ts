@@ -161,7 +161,7 @@ export const FilterDirector: IFilterDirector = {
       filter.type === FilterType.SWITCH
         ? {
             true: await this.findProductIds(filter, { value: true }, unchainedAPI),
-            false: await this.findProductIds(filter, { value: false }, unchainedAPI),
+            false: await this.findProductIds(filter, { value: { $in: [null, false] } }, unchainedAPI),
           }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
             const accumulator = await accumulatorPromise;

@@ -12,6 +12,7 @@ Known limitations:
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 
 ## Major
+- Boolean filter types do not support an undefined or null state of values and whenever the key is set in a filter query and it's of type SWITCH (for ex. `[{ key: "meta.feeds.googleAds" }]` it will only show products that have a value of true. You can still do a "NOT" filtering by explicitly providing a value of false or 0: `[{ key: "meta.feeds.googleAds", value: "false" }]`
 - `Query.eventsCount` and `Query.events` now accept a DateFilterInput (start/end range) for the created date.
 - The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system: The type of locale fields in the API are now validated at the GraphQL Server level. This effects a lot of plugins too, please check migration-v4.md.
 - Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
