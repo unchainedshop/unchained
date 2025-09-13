@@ -8,6 +8,13 @@ Known limitations:
 - If you want to use the MCP server in clients like Claude Code, Visual Studio, etc., you need to either set an Access Token or enable OAuth 2.1. Check out our OIDC example to see how this can be achieved.
 - We will bring more tools to the table with upcoming minor releases, currently only basic product management is enabled
 
+Then, we started to make it easier for you to hide products and assortments from search by exposing functional factory methods for creating the appropriate filter plugins:
+
+```ts
+import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
+registerProductDiscoverabilityFilter({ hiddenTagValue: 'hidden' });
+```
+
 
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 

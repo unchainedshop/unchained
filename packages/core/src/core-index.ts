@@ -20,7 +20,7 @@ import {
 
 export * from './services/index.js';
 export * from './directors/index.js';
-
+export * from './factory/index.js';
 export interface BulkImporter {
   createBulkImporter: (options: any) => any;
 }

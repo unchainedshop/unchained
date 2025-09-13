@@ -11,6 +11,7 @@ import { openai } from '@ai-sdk/openai';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
+import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -19,6 +20,8 @@ const fastify = Fastify({
 });
 
 try {
+  registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
+
   const platform = await startPlatform({
     plugins: [useErrorHandler(({ errors }) => {
       for (const error of errors) {
