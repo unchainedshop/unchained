@@ -1,8 +1,8 @@
 import { ProductBundleItem } from '@unchainedshop/core-products';
-import { Product } from './product-types.js';
+import { PlanProduct } from './product-plan-types.js';
 
 export const BundleProduct = {
-  ...Product,
+  ...PlanProduct,
 
   bundleItems(product): ProductBundleItem[] {
     return product.bundleItems ? product.bundleItems : [];

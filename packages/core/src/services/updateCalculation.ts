@@ -11,7 +11,7 @@ import {
 } from '../directors/index.js';
 
 export async function updateCalculationService(this: Modules, orderId: string) {
-  const order = await this.orders.findOrder({ orderId });
+  let order = await this.orders.findOrder({ orderId });
 
   // Don't recalculate orders, only carts
   if (order.status !== null) return order;
@@ -124,7 +124,9 @@ export async function updateCalculationService(this: Modules, orderId: string) {
     { modules: this },
   );
 
-  const updatedOrder = await this.orders.updateCalculationSheet(orderId, calculation);
+  if (JSON.stringify(order.calculation) !== JSON.stringify(calculation)) {
+    order = await this.orders.updateCalculationSheet(orderId, calculation);
+  }
 
   /*
        // We have to do initCartProviders after calculation, only then filterSupportedProviders will work correctly and has access to recent pricing
@@ -138,5 +140,5 @@ export async function updateCalculationService(this: Modules, orderId: string) {
         // 6. update calculation -> order pricing updated to items 0, delivery 0, payment 0
         // 7. initCartProviders with updated order -> all providers are valid -> return order
     */
-  return initCartProvidersService.bind(this)(updatedOrder);
+  return initCartProvidersService.bind(this)(order);
 }

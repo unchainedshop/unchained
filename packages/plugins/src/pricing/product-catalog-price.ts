@@ -3,6 +3,7 @@ import {
   ProductPricingAdapter,
   IProductPricingAdapter,
 } from '@unchainedshop/core';
+import { ProductTypes } from '@unchainedshop/core-products';
 
 export const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -37,6 +38,28 @@ export const ProductPrice: IProductPricingAdapter = {
             isNetPrice: price.isNetPrice,
             meta: { adapter: ProductPrice.key },
           });
+        } else if (product.type === ProductTypes.BundleProduct) {
+          for (const bundleItem of product.bundleItems || []) {
+            const bundledProduct = await modules.products.findProduct({
+              productId: bundleItem.productId,
+            });
+            if (bundledProduct) {
+              const bundleItemPrice = await modules.products.prices.price(bundledProduct, {
+                countryCode,
+                currencyCode,
+                quantity: bundleItem.quantity * quantity,
+              });
+              if (bundleItemPrice) {
+                const bundleItemTotal = bundleItemPrice.amount * bundleItem.quantity * quantity;
+                pricingAdapter.resultSheet().addItem({
+                  amount: bundleItemTotal,
+                  isTaxable: bundleItemPrice.isTaxable,
+                  isNetPrice: bundleItemPrice.isNetPrice,
+                  meta: { adapter: ProductPrice.key },
+                });
+              }
+            }
+          }
         }
 
         return pricingAdapter.calculate();

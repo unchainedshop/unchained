@@ -138,7 +138,6 @@ products to the cart, they are transformed according to the following rules:
 **Products:**
 
 - Adding a SimpleProduct or BundleProduct adds the product to the cart without transformation.
-- Exploding a BundleProduct removes it from the cart and adds its parts instead.
 - Adding a ConfigurableProduct resolves to a concrete product if enough variation parameters are
   provided. Otherwise, the operation fails. The variation configuration is stored on the resolved item
   along with user-provided parameters.

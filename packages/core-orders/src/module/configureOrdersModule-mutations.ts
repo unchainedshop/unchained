@@ -108,7 +108,7 @@ export const configureOrderModuleMutations = ({
         { returnDocument: 'after' },
       );
 
-      await emit('ORDER_UPDATE', { order, field: 'billing' });
+      await emit('ORDER_UPDATE', { order, field: 'billingAddress' });
       return order;
     },
 
