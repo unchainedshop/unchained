@@ -33,10 +33,9 @@ export async function initCartProvidersService(this: Modules, order: Order) {
       { modules: this },
     );
     if (defaultOrderDeliveryProvider) {
-      updatedOrder = await this.orders.setDeliveryProvider(
-        updatedOrder._id,
-        defaultOrderDeliveryProvider._id,
-      );
+      updatedOrder =
+        (await this.orders.setDeliveryProvider(updatedOrder._id, defaultOrderDeliveryProvider._id)) ||
+        updatedOrder;
     }
   }
 
@@ -76,10 +75,9 @@ export async function initCartProvidersService(this: Modules, order: Order) {
     );
 
     if (defaultOrderPaymentProvider) {
-      updatedOrder = await this.orders.setPaymentProvider(
-        updatedOrder._id,
-        defaultOrderPaymentProvider._id,
-      );
+      updatedOrder =
+        (await this.orders.setPaymentProvider(updatedOrder._id, defaultOrderPaymentProvider._id)) ||
+        updatedOrder;
     }
   }
   return updatedOrder;

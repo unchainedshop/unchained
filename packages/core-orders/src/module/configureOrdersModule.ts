@@ -33,8 +33,8 @@ export type OrdersModule = OrderQueries &
       identifier: string,
       timeout?: number,
     ) => Promise<{ release: () => void }>;
-    setDeliveryProvider: (orderId: string, deliveryProviderId: string) => Promise<Order>;
-    setPaymentProvider: (orderId: string, paymentProviderId: string) => Promise<Order>;
+    setDeliveryProvider: (orderId: string, deliveryProviderId: string) => Promise<Order | null>;
+    setPaymentProvider: (orderId: string, paymentProviderId: string) => Promise<Order | null>;
   };
 
 // @kontsedal/locco uses a deprecated way of importing files in ESM (node16 behavior)
@@ -214,23 +214,27 @@ export const configureOrdersModule = async ({
           })
         )._id;
 
-      const order = await Orders.findOneAndUpdate(
-        { _id: orderId },
+      const result = await Orders.findOneAndUpdate(
+        { _id: orderId, deliveryId: { $ne: deliveryId } },
         {
           $set: {
             deliveryId,
             updated: new Date(),
           },
         },
-        { returnDocument: 'after' },
+        { returnDocument: 'after', includeResultMetadata: true },
       );
 
-      await emit('ORDER_SET_DELIVERY_PROVIDER', {
-        order,
-        deliveryProviderId,
-      });
+      if (result.ok) {
+        await emit('ORDER_SET_DELIVERY_PROVIDER', {
+          order: result.value,
+          deliveryProviderId,
+        });
 
-      return order;
+        return result.value;
+      }
+
+      return null;
     },
 
     setPaymentProvider: async (orderId, paymentProviderId) => {
@@ -250,20 +254,25 @@ export const configureOrdersModule = async ({
             status: null,
           })
         )._id;
-      const order = await Orders.findOneAndUpdate(
-        { _id: orderId },
+
+      const result = await Orders.findOneAndUpdate(
+        { _id: orderId, paymentId: { $ne: paymentId } },
         {
           $set: { paymentId, updated: new Date() },
         },
-        { returnDocument: 'after' },
+        { returnDocument: 'after', includeResultMetadata: true },
       );
 
-      await emit('ORDER_SET_PAYMENT_PROVIDER', {
-        order,
-        paymentProviderId,
-      });
+      if (result.ok) {
+        await emit('ORDER_SET_PAYMENT_PROVIDER', {
+          order: result.value,
+          paymentProviderId,
+        });
 
-      return order;
+        return result.value;
+      }
+
+      return null;
     },
   };
 };

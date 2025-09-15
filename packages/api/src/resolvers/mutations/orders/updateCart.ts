@@ -19,7 +19,7 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
 
   log('mutation updateCart', { userId });
 
-  let order = await services.orders.findOrInitCart({
+  const order = await services.orders.findOrInitCart({
     orderId,
     user,
     countryCode: context.countryCode,
@@ -28,23 +28,23 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   if (meta) {
-    order = await modules.orders.updateContext(order._id, meta);
+    await modules.orders.updateContext(order._id, meta);
   }
 
   if (billingAddress) {
-    order = await modules.orders.updateBillingAddress(order._id, billingAddress);
+    await modules.orders.updateBillingAddress(order._id, billingAddress);
   }
 
   if (contact) {
-    order = await modules.orders.updateContact(order._id, contact);
+    await modules.orders.updateContact(order._id, contact);
   }
 
   if (paymentProviderId) {
-    order = await modules.orders.setPaymentProvider(order._id, paymentProviderId);
+    await modules.orders.setPaymentProvider(order._id, paymentProviderId);
   }
 
   if (deliveryProviderId) {
-    order = await modules.orders.setDeliveryProvider(order._id, deliveryProviderId);
+    await modules.orders.setDeliveryProvider(order._id, deliveryProviderId);
   }
 
   // Recalculate, then return
