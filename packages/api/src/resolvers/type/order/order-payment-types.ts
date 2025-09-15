@@ -5,7 +5,6 @@ import { objectInvert } from '@unchainedshop/utils';
 
 const OrderPaymentMap = {
   OrderPaymentGeneric: PaymentProviderType.GENERIC,
-  OrderPaymentCard: PaymentProviderType.CARD,
   OrderPaymentInvoice: PaymentProviderType.INVOICE,
 };
 

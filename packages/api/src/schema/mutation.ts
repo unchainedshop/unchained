@@ -254,11 +254,6 @@ export default [
       ): OrderDeliveryPickUp!
 
       """
-      Update a Card Payment Provider's specific configuration
-      """
-      updateOrderPaymentCard(orderPaymentId: ID!, meta: JSON): OrderPaymentCard!
-
-      """
       Update an Invoice Payment Provider's specific configuration
       """
       updateOrderPaymentInvoice(orderPaymentId: ID!, meta: JSON): OrderPaymentInvoice!

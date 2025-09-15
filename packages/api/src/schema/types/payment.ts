@@ -8,11 +8,6 @@ export default [
 
     enum PaymentProviderType {
       """
-      Card
-      """
-      CARD
-
-      """
       Invoice
       """
       INVOICE

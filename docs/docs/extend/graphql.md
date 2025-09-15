@@ -139,7 +139,6 @@ Note: While every entity that listed above exposes a meta property there is an e
   OrderDeliveryPickUp
   OrderDeliveryShipping
   OrderPaymentInvoice
-  OrderPaymentCard
   OrderPaymentGeneric
   OrderPayment
 ```

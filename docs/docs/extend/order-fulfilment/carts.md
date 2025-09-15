@@ -83,8 +83,7 @@ query {
 By using `Mutation.updateCart` you can change the active payment provider for that order (input parameter
 `paymentProviderId`).
 
-To set payment provider related options, use `Mutation.updateOrderPaymentCard`,
-`Mutation.updateOrderPaymentInvoice` or `Mutation.updateOrderPaymentGeneric`.
+To set payment provider related options, use `Mutation.updateOrderPaymentInvoice` or `Mutation.updateOrderPaymentGeneric`.
 
 ## Delivery Provider configuration
 

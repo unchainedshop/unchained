@@ -1,7 +1,6 @@
 import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
 
 export enum PaymentProviderType {
-  CARD = 'CARD',
   INVOICE = 'INVOICE',
   GENERIC = 'GENERIC',
 }
