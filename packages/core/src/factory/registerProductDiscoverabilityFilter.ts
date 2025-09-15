@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto';
 import { FilterAdapter, FilterDirector } from '../core-index.js';
 
 export default function registerProductDiscoverabilityFilter({
@@ -11,7 +10,7 @@ export default function registerProductDiscoverabilityFilter({
   FilterDirector.registerAdapter({
     ...FilterAdapter,
 
-    key: `shop.unchained.filters.product-discoverability-${randomBytes(4).toString('hex')}`,
+    key: `shop.unchained.filters.product-discoverability-${crypto.randomUUID()}`,
     label: 'Product Discoverability Filter',
     version: '1.0.0',
     orderIndex,
