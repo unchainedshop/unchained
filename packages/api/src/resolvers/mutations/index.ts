@@ -138,7 +138,6 @@ import removePaymentCredentials from './payment/removePaymentCredentials.js';
 import updateOrderDeliveryShipping from './orders/updateOrderDeliveryShipping.js';
 import updateOrderDeliveryPickUp from './orders/updateOrderDeliveryPickUp.js';
 import updateOrderPaymentGeneric from './orders/updateOrderPaymentGeneric.js';
-import updateOrderPaymentCard from './orders/updateOrderPaymentCard.js';
 import updateOrderPaymentInvoice from './orders/updateOrderPaymentInvoice.js';
 import signPaymentProviderForCredentialRegistration from './payment/signPaymentProviderForCredentialRegistration.js';
 import signPaymentProviderForCheckout from './orders/signPaymentProviderForCheckout.js';
@@ -153,6 +152,10 @@ import rejectOrder from './orders/rejectOrder.js';
 import removePushSubscription from './users/removePushSubscription.js';
 import addPushSubscription from './users/addPushSubscription.js';
 import removeUserProductReviews from './users/removeUserProductReviews.js';
+import updateCartDeliveryPickUp from './orders/updateCartDeliveryPickUp.js';
+import updateCartDeliveryShipping from './orders/updateCartDeliveryShipping.js';
+import updateCartPaymentGeneric from './orders/updateCartPaymentGeneric.js';
+import updateCartPaymentInvoice from './orders/updateCartPaymentInvoice.js';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -244,12 +247,15 @@ export default {
   updateCartItem: acl(actions.updateOrderItem)(updateCartItem),
   removeCartItem: acl(actions.updateOrderItem)(removeCartItem),
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
+  updateCartDeliveryPickUp: acl(actions.updateCart)(updateCartDeliveryPickUp),
+  updateCartDeliveryShipping: acl(actions.updateCart)(updateCartDeliveryShipping),
+  updateCartPaymentGeneric: acl(actions.updateCart)(updateCartPaymentGeneric),
+  updateCartPaymentInvoice: acl(actions.updateCart)(updateCartPaymentInvoice),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
   updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDeliveryShipping),
   updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(updateOrderDeliveryPickUp),
   updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(updateOrderPaymentGeneric),
-  updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPaymentCard),
   updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(updateOrderPaymentInvoice),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
