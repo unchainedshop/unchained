@@ -226,12 +226,14 @@ export default [
       doesn’t exists new delivery provider will be created with the provided ID.
       """
       setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!): Order!
+        @deprecated(reason: "Use updateCart or updateCartDelivery* mutations instead")
 
       """
       Change the payment method/provider to an order. If the payment provider
       doesn’t exists new payment provider will be created with the provided ID.
       """
       setOrderPaymentProvider(orderId: ID!, paymentProviderId: ID!): Order!
+        @deprecated(reason: "Use updateCart or updateCartPayment* mutations instead")
 
       """
       Update a Shipping Delivery Provider's specific configuration
