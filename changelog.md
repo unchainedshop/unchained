@@ -29,7 +29,7 @@ registerProductDiscoverabilityFilter({ hiddenTagValue: 'hidden' });
 
 ## Minor
 - Add Node.js v24 support
-- Bundle Products now support pricing on their own, resulting in an actually usable bundle implementation 😳
+- Bundle Products now support pricing on their own, resulting in an actually usable bundle implementation 😳 By default, the catalog pricing plugin fallbacks to 
 - Add various loaders to optimize db requests and improve the overall performance of the system
 - DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
 - Improve docs
