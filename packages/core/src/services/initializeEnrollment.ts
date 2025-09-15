@@ -2,6 +2,7 @@ import { Enrollment } from '@unchainedshop/core-enrollments';
 import { EnrollmentDirector } from '../core-index.js';
 import { processEnrollmentService } from './processEnrollment.js';
 import { Modules } from '../modules.js';
+import { addMessageService } from './addMessage.js';
 
 export async function initializeEnrollmentService(
   this: Modules,
@@ -23,15 +24,10 @@ export async function initializeEnrollmentService(
   const user = await this.users.findUserById(enrollment.userId);
   const locale = this.users.userLocale(user);
 
-  await this.worker.addWork({
-    type: 'MESSAGE',
-    retries: 0,
-    input: {
-      reason: params.reason || 'status_change',
-      locale: locale.baseName,
-      template: 'ENROLLMENT_STATUS',
-      enrollmentId: processedEnrollment._id,
-    },
+  await addMessageService.bind(this)('ENROLLMENT_STATUS', {
+    reason: 'status_change',
+    locale: locale.baseName,
+    enrollmentId: processedEnrollment._id,
   });
 
   return processedEnrollment;

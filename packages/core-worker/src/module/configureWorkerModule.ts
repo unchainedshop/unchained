@@ -397,7 +397,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
     },
 
     // Mutations
-    addWork: async ({
+    async addWork({
       type,
       input,
       priority = 0,
@@ -405,7 +405,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       originalWorkId,
       worker = null,
       retries = 20,
-    }: WorkData): Promise<Work> => {
+    }: WorkData): Promise<Work> {
       const created = new Date();
       const { insertedId: workId } = await WorkQueue.insertOne({
         _id: generateDbObjectId(),

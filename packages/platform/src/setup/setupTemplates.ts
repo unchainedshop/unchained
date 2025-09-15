@@ -36,14 +36,9 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
 
     if (order.status === OrderStatus.PENDING) {
       // We only send the "confirmation" when pending, else we let the other events handle it
-      await unchainedAPI.modules.worker.addWork({
-        type: 'MESSAGE',
-        retries: 0,
-        input: {
-          locale: locale.baseName,
-          template: MessageTypes.ORDER_CONFIRMATION,
-          orderId: order._id,
-        },
+      await unchainedAPI.services.worker.addMessage(MessageTypes.ORDER_CONFIRMATION, {
+        locale: locale.baseName,
+        orderId: order._id,
       });
     }
   });
@@ -53,14 +48,9 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
     const user = await unchainedAPI.modules.users.findUserById(order.userId);
     const locale = unchainedAPI.modules.users.userLocale(user);
 
-    await unchainedAPI.modules.worker.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        locale: locale.baseName,
-        template: MessageTypes.ORDER_CONFIRMATION,
-        orderId: order._id,
-      },
+    await unchainedAPI.services.worker.addMessage(MessageTypes.ORDER_CONFIRMATION, {
+      locale: locale.baseName,
+      orderId: order._id,
     });
   });
 
@@ -69,14 +59,9 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
     const user = await unchainedAPI.modules.users.findUserById(order.userId);
     const locale = unchainedAPI.modules.users.userLocale(user);
 
-    await unchainedAPI.modules.worker.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        locale: locale.baseName,
-        template: MessageTypes.ORDER_REJECTION,
-        orderId: order._id,
-      },
+    await unchainedAPI.services.worker.addMessage(MessageTypes.ORDER_REJECTION, {
+      locale: locale.baseName,
+      orderId: order._id,
     });
   });
 };

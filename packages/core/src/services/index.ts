@@ -44,6 +44,7 @@ import { simulateProductPricingService } from './simulateProductPricing.js';
 import { simulateProductDispatchingService } from './simulateProductDispatching.js';
 import { simulateProductInventoryService } from './simulateProductInventory.js';
 import { findOrInitCartService } from './findOrInitCart.js';
+import { addMessageService } from './addMessage.js';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -155,6 +156,9 @@ export default function initServices(modules: Modules, customServices: CustomSer
     },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
+    },
+    worker: {
+      addMessage: addMessageService as Bound<typeof addMessageService>,
     },
   };
 

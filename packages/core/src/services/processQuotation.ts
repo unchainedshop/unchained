@@ -1,6 +1,7 @@
 import { Quotation, QuotationStatus } from '@unchainedshop/core-quotations';
 import { Modules } from '../modules.js';
 import { QuotationDirector } from '../core-index.js';
+import { addMessageService } from './addMessage.js';
 
 const findNextStatus = async (quotation: Quotation, modules: Modules): Promise<QuotationStatus> => {
   let status = quotation.status as QuotationStatus;
@@ -61,14 +62,9 @@ export async function processQuotationService(
   const user = await this.users.findUserById(updatedQuotation.userId);
   const locale = this.users.userLocale(user);
 
-  await this.worker.addWork({
-    type: 'MESSAGE',
-    retries: 0,
-    input: {
-      locale: locale.baseName,
-      template: 'QUOTATION_STATUS',
-      quotationId: updatedQuotation._id,
-    },
+  await addMessageService.bind(this)('QUOTATION_STATUS', {
+    locale: locale.baseName,
+    quotationId: updatedQuotation._id,
   });
 
   return updatedQuotation;
