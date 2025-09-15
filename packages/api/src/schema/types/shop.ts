@@ -35,6 +35,7 @@ export default [
       userRoles: [String!]!
       adminUiConfig: AdminUiConfig!
       vapidPublicKey: String
+      tags: [String!]!
     }
   `,
 ];

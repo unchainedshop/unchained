@@ -5,12 +5,14 @@ import { checkAction } from '../../acl.js';
 import { allRoles, actions } from '../../roles/index.js';
 
 type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
+const { UNCHAINED_DEFAULT_PRODUCT_TAGS = 'featured,new,bestseller' } = process.env;
 
 export interface ShopHelperTypes {
   _id: () => string;
   country: HelperType<Country>;
   language: HelperType<Language>;
   userRoles: HelperType<string[]>;
+  tags: HelperType<string[]>;
 }
 
 export const Shop: ShopHelperTypes = {
@@ -30,5 +32,18 @@ export const Shop: ShopHelperTypes = {
     return Object.values(allRoles)
       .map(({ name }) => name)
       .filter((name) => name.substring(0, 2) !== '__');
+  },
+  tags: async (root, _, { modules }: Context) => {
+    const existingProductTags = await modules.products.existingTags();
+    const normalizedTags = Array.from(
+      new Set(
+        (UNCHAINED_DEFAULT_PRODUCT_TAGS || '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
+          .concat(existingProductTags),
+      ),
+    );
+    return normalizedTags;
   },
 };
