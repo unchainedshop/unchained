@@ -236,36 +236,16 @@ mutation addCartProduct {
 }
 ```
 
-Tell Unchained more about the guy who orders:
+Tell Unchained more about the guy who orders and optionally set payment and delivery providers:
 
 ```
 mutation updateContact {
-  updateCart(contact: { emailAddress: "hello@unchained.local" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
+  updateCart(contact: { emailAddress: "hello@unchained.local" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}, 
+        paymentProviderId: "PROVIDER_ID"
+        deliveryProviderId: "PROVIDER_ID") {
     _id
   }
 }
-```
-
-Set order payment provider (optional):
-
-```
-mutation SetOrderPaymentProvider{
-    setOrderPaymentProvider(
-      orderId: "ORDERID",
-      paymentProviderId: "PROVIDER_ID"
-    )
-  }
-```
-
-Set order delivery provider (optional):
-
-```
-mutation SetOrderDeliverProvider {
-    setOrderDeliveryProvider(
-      orderId: "ORDERID",
-      deliveryProviderId: "PROVIDER_ID"
-    )
-  }
 ```
 
 Checkout the cart:

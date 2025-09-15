@@ -64,12 +64,10 @@ signPaymentProviderForCredentialRegistration(
 3. **Create Order**: Create an order with the purchased product and set transaction metadata:
 
 ```graphql
-updateOrderPayment(
-  orderPaymentId: "order-payment-id"
-  paymentPayment: {
-    meta: {
-      transactionIdentifier: "apple-transaction-id"
-    }
+updateCartPaymentGeneric(
+  paymentProviderId: "apple-iap-provider-id"
+  meta: {
+    transactionIdentifier: "apple-transaction-id"
   }
 )
 ```

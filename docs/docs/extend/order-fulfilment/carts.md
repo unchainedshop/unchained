@@ -83,7 +83,7 @@ query {
 By using `Mutation.updateCart` you can change the active payment provider for that order (input parameter
 `paymentProviderId`).
 
-To set payment provider related options, use `Mutation.updateOrderPaymentInvoice` or `Mutation.updateOrderPaymentGeneric`.
+To set payment provider related options, use `Mutation.updateCartPaymentInvoice` or `Mutation.updateCartPaymentGeneric`.
 
 ## Delivery Provider configuration
 
@@ -121,8 +121,8 @@ query {
 By using `Mutation.updateCart` you can change the active delivery provider for that order (input
 parameter `deliveryProviderId`).
 
-To set delivery provider related options, use `Mutation.updateOrderDeliveryPickUp` or
-`Mutation.updateOrderDeliveryShipping`. Pick up providers usually want a pickup location, shipping
+To set delivery provider related options, use `Mutation.updateCartDeliveryPickUp` or
+`Mutation.updateCartDeliveryShipping`. Pick up providers usually want a pickup location, shipping
 providers usually want to know an address to ship a parcel to.
 
 ## Discounts

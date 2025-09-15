@@ -236,7 +236,7 @@ export default [
         @deprecated(reason: "Use updateCart or updateCartPayment* mutations instead")
 
       """
-      Update the cart using a Shipping Delivery Provider with specific configuration
+      Update the cart by changing the delivery provider and using a shipping specific configuration
       """
       updateCartDeliveryShipping(
         orderId: ID
@@ -246,7 +246,7 @@ export default [
       ): Order!
 
       """
-      Update the cart using a PickUp Delivery Provider with specific configuration
+      Update the cart by changing the delivery provider and using a pick up specific configuration
       """
       updateCartDeliveryPickUp(
         orderId: ID
@@ -256,12 +256,12 @@ export default [
       ): Order!
 
       """
-      Update the cart using an invoice-type payment provider with specific configuration
+      Update the cart by changing the payment provider and using an invoice-type specific configuration
       """
       updateCartPaymentInvoice(orderId: ID, paymentProviderId: ID!, meta: JSON): Order!
 
       """
-      Update the cart using a generic payment provider with specific configuration
+      Update the cart by changing the payment provider and using a generic specific configuration
       """
       updateCartPaymentGeneric(orderId: ID, paymentProviderId: ID!, meta: JSON): Order!
 
