@@ -47,6 +47,8 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
 
   const mcpChatHandler: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     if (req.method === 'OPTIONS') {
+      res.setHeader('access-control-allow-credentials', 'true');
+      res.setHeader('access-control-allow-private-network', 'true');
       res.status(200).end();
       return;
     }

@@ -54,17 +54,26 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
   const system = chatConfiguration.system ?? defaultSystemPrompt;
 
   const mcpChatHandler: RouteHandlerMethod = async (req: FastifyRequest, res) => {
-    const client = await createMCPClient({
-      transport: new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-        requestInit: {
-          headers: {
-            Cookie: req.headers.cookie || '',
-          },
-        },
-      }) as MCPTransport,
-    });
+    let client;
     try {
-      if (req.method === 'OPTIONS') return res.send();
+      if (req.method === 'OPTIONS') {
+        res.headers({
+          'access-control-allow-credentials': 'true',
+          'access-control-allow-private-network': 'true',
+        });
+        return res.status(200).send();
+      }
+
+      client = await createMCPClient({
+        transport: new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
+          authProvider: null,
+          requestInit: {
+            headers: {
+              Cookie: req.headers.cookie || '',
+            },
+          },
+        }) as MCPTransport,
+      });
 
       const defaultUnchainedTools = await client.tools();
       const tools: ToolSet = {

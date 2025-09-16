@@ -52,6 +52,9 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({ message, user }) => {
                 />
               );
 
+            case 'reasoning':
+              return null;
+
             default:
               return (
                 <div key={index} className="text-sm text-amber-600">

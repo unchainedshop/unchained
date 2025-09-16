@@ -34,6 +34,14 @@ Then navigate to http://localhost:4000/ to view the welcome screen. You can logi
 user: admin@unchained.local
 password: password
 
+### Run local AI for Copilot
+
+A minimum of 24GB VRAM is needed for this.
+
+```
+llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
+```
+
 ### Contribute
 
 ```bash
