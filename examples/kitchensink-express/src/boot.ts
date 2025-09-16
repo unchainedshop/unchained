@@ -27,7 +27,6 @@ try {
 
   connectDefaultPluginsToExpress(app, engine);
 
-  // llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
   if (process.env.OPENAI_BASE_URL && process.env.OPENAI_MODEL) {
     const provider = createOpenAICompatible({
       name: 'local',

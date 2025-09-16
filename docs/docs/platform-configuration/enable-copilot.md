@@ -18,7 +18,7 @@ export OPENAI_COMPAT_MODEL=gpt-oss
 Alternatively, you can choose any of the services or deploy your own LLM. It just needs to expose an OpenAI compatible API endpoint, and then you can connect the Admin UI with a pre-configured provider:
 
 ```ts
-import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
+import { connectChat, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 ...
 connect(fastify...
@@ -45,7 +45,7 @@ fastify.register(fastifyRouter, {
 If you have an OpenAI API Key at hand, go this way:
 
 ```ts
-import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
+import { connectChat, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
 import { openai } from '@ai-sdk/openai';
 ...
 connect(fastify...

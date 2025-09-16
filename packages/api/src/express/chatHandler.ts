@@ -17,14 +17,13 @@ import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
 export const expressRouter = () => {
   const router = express.Router();
 
-  const staticPath = import.meta.resolve('@unchainedshop/admin-ui/static/out');
+  const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+  const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
 
   router.use(express.static(staticPath));
 
   router.get(/(.*)/, (_, res) => {
-    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
-    const staticPath = new URL(staticURL).pathname;
-    res.sendFile(staticPath);
+    res.sendFile(`${staticPath}/index.html`);
   });
 
   return router;
