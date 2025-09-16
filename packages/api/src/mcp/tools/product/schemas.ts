@@ -111,15 +111,15 @@ export const ProductSchema = z.object({
               .min(2)
               .max(2)
               .describe(
-                'ISO country code (e.g., US, DE) make sure the country exists in the system before using it. if it does not exists prompt the user to add the country. NEVER add it automatically',
+                'ISO country code (e.g., US, DE) make sure the country/countryCode exists in the system before using it. if it does not exists prompt the user to add the country. NEVER add it automatically',
               ),
           }),
         )
         .nonempty()
-        .describe('List of price configurations'),
+        .describe('List of price configurations always use country and currency codes that are already registered in the system, don\'t use non existing iso codes.'),
     })
     .optional()
-    .describe('Commerce info - Available for ALL except CONFIGURABLE_PRODUCT & BUNDLE_PRODUCT'),
+    .describe('Commerce info - Available for ALL except CONFIGURABLE_PRODUCT'),
 });
 
 export const actionValidators = {
