@@ -116,7 +116,9 @@ export const ProductSchema = z.object({
           }),
         )
         .nonempty()
-        .describe('List of price configurations always use country and currency codes that are already registered in the system, don\'t use non existing iso codes.'),
+        .describe(
+          "List of price configurations always use country and currency codes that are already registered in the system, don't use non existing iso codes.",
+        ),
     })
     .optional()
     .describe('Commerce info - Available for ALL except CONFIGURABLE_PRODUCT'),
