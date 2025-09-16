@@ -1,0 +1,2983 @@
+{
+  "EW1jgi": {
+    "defaultMessage": "default_input_name",
+    "description": "DO not translate Skip this as it's the default given label when a component is not provided explicit label"
+  },
+  "access_restricted": {
+    "defaultMessage": "Access Restricted"
+  },
+  "account": {
+    "defaultMessage": "Account"
+  },
+  "account_deleted": {
+    "defaultMessage": "Account deleted successfully"
+  },
+  "account_notice": {
+    "defaultMessage": "This information will be displayed publicly so be careful what you share."
+  },
+  "account_status": {
+    "defaultMessage": "Account status"
+  },
+  "action_edit": {
+    "defaultMessage": "Edit"
+  },
+  "actions_column_header": {
+    "defaultMessage": "Actions"
+  },
+  "activate": {
+    "defaultMessage": "Activate"
+  },
+  "activate_assortment_description": {
+    "defaultMessage": "Will be visible on search"
+  },
+  "activate_button": {
+    "defaultMessage": "Activate"
+  },
+  "activate_header_conformation": {
+    "defaultMessage": "Are you sure you want to this subscription?"
+  },
+  "activate_header_title": {
+    "defaultMessage": "Activate subscription."
+  },
+  "activated": {
+    "defaultMessage": "Activated"
+  },
+  "active": {
+    "defaultMessage": "Active"
+  },
+  "active_types": {
+    "defaultMessage": "Active Worker Types ({count})"
+  },
+  "activities": {
+    "defaultMessage": "Activities"
+  },
+  "adapter": {
+    "defaultMessage": "Adapter"
+  },
+  "add": {
+    "defaultMessage": "Add"
+  },
+  "add_assortment": {
+    "defaultMessage": "Add Assortment"
+  },
+  "add_country": {
+    "defaultMessage": "Add Country"
+  },
+  "add_currency": {
+    "defaultMessage": "Add Currency"
+  },
+  "add_delivery_provider": {
+    "defaultMessage": "Add Delivery Provider"
+  },
+  "add_email": {
+    "defaultMessage": "Add email"
+  },
+  "add_filter": {
+    "defaultMessage": "Add Filter"
+  },
+  "add_filter_option": {
+    "defaultMessage": "Add option"
+  },
+  "add_language": {
+    "defaultMessage": "Add Language"
+  },
+  "add_option": {
+    "defaultMessage": "Add option"
+  },
+  "add_payment_provider": {
+    "defaultMessage": "Add Payment Provider"
+  },
+  "add_price_row": {
+    "defaultMessage": "Add Price Row"
+  },
+  "add_product": {
+    "defaultMessage": "Add Product"
+  },
+  "add_review": {
+    "defaultMessage": "Add Review"
+  },
+  "add_tag": {
+    "defaultMessage": "Add tag"
+  },
+  "add_user": {
+    "defaultMessage": "Add User"
+  },
+  "add_variation": {
+    "defaultMessage": "Add variation"
+  },
+  "add_variation_option": {
+    "defaultMessage": "Add option"
+  },
+  "add_warehousing_provider": {
+    "defaultMessage": "Add Warehousing Provider"
+  },
+  "add_web3_address": {
+    "defaultMessage": "Add address"
+  },
+  "add_web_auth": {
+    "defaultMessage": "Add WebAuth"
+  },
+  "add_work": {
+    "defaultMessage": "Add Work"
+  },
+  "address": {
+    "defaultMessage": "Address"
+  },
+  "address2": {
+    "defaultMessage": "Address 2"
+  },
+  "address_line_1": {
+    "defaultMessage": "Address line 1 (Street, House no)"
+  },
+  "address_line_2": {
+    "defaultMessage": "Address line 2"
+  },
+  "address_notice": {
+    "defaultMessage": "This information will be displayed publicly so be careful what you share."
+  },
+  "all": {
+    "defaultMessage": "All"
+  },
+  "allocate_work": {
+    "defaultMessage": "Allocate Work"
+  },
+  "already_got_a_user": {
+    "defaultMessage": "Already got a user?"
+  },
+  "apply": {
+    "defaultMessage": "Apply"
+  },
+  "are_you_sure": {
+    "defaultMessage": "Are you sure?"
+  },
+  "assign_product_needs_variations": {
+    "defaultMessage": "Please configure all variation options before assigning a product."
+  },
+  "assigned_product_column_header": {
+    "defaultMessage": "Assigned Product"
+  },
+  "assigned_products": {
+    "defaultMessage": "Assigned Products"
+  },
+  "assignment.sku": {
+    "defaultMessage": "SKU"
+  },
+  "assignment.title": {
+    "defaultMessage": "Product Assignment"
+  },
+  "assignment_matrix_help": {
+    "defaultMessage": "Each row represents a unique combination of your product variations. Assign a specific product to each combination to create a complete product catalog."
+  },
+  "assignments": {
+    "defaultMessage": "Assignments"
+  },
+  "assortment": {
+    "defaultMessage": "Assortment"
+  },
+  "assortment_activated": {
+    "defaultMessage": "Assortment activated successfully"
+  },
+  "assortment_added": {
+    "defaultMessage": "Assortment added successfully!"
+  },
+  "assortment_base": {
+    "defaultMessage": "Base"
+  },
+  "assortment_changed_to_leaf": {
+    "defaultMessage": "Assortment changed to leaf"
+  },
+  "assortment_changed_to_root": {
+    "defaultMessage": "Assortment changed to root"
+  },
+  "assortment_config_description": {
+    "defaultMessage": "Organize products into categories"
+  },
+  "assortment_deactivated": {
+    "defaultMessage": "Assortment deactivated successfully"
+  },
+  "assortment_deleted_success": {
+    "defaultMessage": "Deleted successfully"
+  },
+  "assortment_filter_deleted": {
+    "defaultMessage": "Assortment filter deleted successfully"
+  },
+  "assortment_filter_form_description": {
+    "defaultMessage": "<ul> <li>Assign filters that will be applied for the assortment </li> </ul>"
+  },
+  "assortment_filter_list_description": {
+    "defaultMessage": "<ul> <li>All filters that are applied when searching for this assortment </li> <li> Drag and drop list items to sort filters order </li> </ul>"
+  },
+  "assortment_filters_form_header": {
+    "defaultMessage": "Filters"
+  },
+  "assortment_filters_header": {
+    "defaultMessage": "Assortment filters"
+  },
+  "assortment_link": {
+    "defaultMessage": "Link deleted successfully"
+  },
+  "assortment_link_form_description": {
+    "defaultMessage": "<ul> <li>Assign assortment that are direct child of this assortment </li> </ul>"
+  },
+  "assortment_link_form_header": {
+    "defaultMessage": "Child assortments"
+  },
+  "assortment_link_list_description": {
+    "defaultMessage": "<ul> <li>All assortments found on the assortment relation tree</li> <li> Drag and drop list items to sort assortment links </li> <li> Parents are assortments found in the ancestors tree on any level </li> <li> Descendants are assortments found in the children tree on any level </li> </ul>"
+  },
+  "assortment_links_header": {
+    "defaultMessage": "Assortment links"
+  },
+  "assortment_made_base": {
+    "defaultMessage": "Assortment changed to base"
+  },
+  "assortment_management_tool_definition": {
+    "defaultMessage": "\"Manage product categories\""
+  },
+  "assortment_media": {
+    "defaultMessage": "Assortment Media"
+  },
+  "assortment_media_deleted": {
+    "defaultMessage": "Media deleted successfully"
+  },
+  "assortment_media_upload": {
+    "defaultMessage": "Media uploaded successfully"
+  },
+  "assortment_product_form_description": {
+    "defaultMessage": "<ul> <li>Products that belong to this assortment </li> </ul>"
+  },
+  "assortment_product_form_header": {
+    "defaultMessage": "Products"
+  },
+  "assortment_product_list_description": {
+    "defaultMessage": "<ul> <li>All products that belong to this assortment</li> <li> Drag and drop list items to sort products order </li> </ul>"
+  },
+  "assortment_products_header": {
+    "defaultMessage": "Assortment product"
+  },
+  "assortment_search_results": {
+    "defaultMessage": "Assortment Search Results"
+  },
+  "assortment_text_form_description": {
+    "defaultMessage": "<ul> <li><strong>Slug:</strong> The unique part of your category URL (e.g., 'electronics' or 'summer-collection'). Keep it short and descriptive.</li> <li><strong>Localization:</strong> Switch languages using the dropdown at the top left to translate content for different markets.</li> <li><strong>Description:</strong> Supports Markdown and HTML formatting. Use double backslash (\\\\\\\\\\\\\\\\) for line breaks.</li> <li><strong>Category Organization:</strong> Use clear, descriptive titles that help customers navigate your product catalog. Think about how customers would search for this category.</li> <li><strong>SEO Tip:</strong> Well-written category descriptions help search engines understand your product organization and improve discoverability.</li> </ul>"
+  },
+  "assortments": {
+    "defaultMessage": "Assortments"
+  },
+  "assortments_count_header": {
+    "defaultMessage": "{count} Assortments"
+  },
+  "assortments_header": {
+    "defaultMessage": "1 Assortment"
+  },
+  "assortments_page_title": {
+    "defaultMessage": "{count, plural, one {# Assortment} other {# Assortments}}"
+  },
+  "avatar": {
+    "defaultMessage": "Avatar"
+  },
+  "average_order_value": {
+    "defaultMessage": "Average order value"
+  },
+  "back_to_home": {
+    "defaultMessage": "Back to Home"
+  },
+  "base": {
+    "defaultMessage": "Base"
+  },
+  "baseUnit": {
+    "defaultMessage": "Base Unit"
+  },
+  "base_country": {
+    "defaultMessage": "Base"
+  },
+  "base_language": {
+    "defaultMessage": "Base"
+  },
+  "billing_address": {
+    "defaultMessage": "Billing address"
+  },
+  "billing_interval_unit": {
+    "defaultMessage": "Billing interval unit"
+  },
+  "billing_unit": {
+    "defaultMessage": "Billing Unit"
+  },
+  "birthday": {
+    "defaultMessage": "Birthday"
+  },
+  "brand": {
+    "defaultMessage": "Brand"
+  },
+  "browser": {
+    "defaultMessage": "Browser"
+  },
+  "bundle": {
+    "defaultMessage": "Bundle product"
+  },
+  "bundle_item_added": {
+    "defaultMessage": "Bundle product added successfully"
+  },
+  "bundle_item_deleted": {
+    "defaultMessage": "Bundle item deleted successfully"
+  },
+  "bundle_product_definition": {
+    "defaultMessage": "<h3>Bundle</h3> <p>As the name suggest this product type enables you to create a collection/bundle of products as one and set the price accordingly. This type of product is useful if you have christmas package for example. </p>"
+  },
+  "bundle_products": {
+    "defaultMessage": "Bundles"
+  },
+  "bundled_items": {
+    "defaultMessage": "Bundled items"
+  },
+  "cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "cart": {
+    "defaultMessage": "Cart"
+  },
+  "cart_created": {
+    "defaultMessage": "Warenkorb erstellt"
+  },
+  "categories_count": {
+    "defaultMessage": "Assortments"
+  },
+  "chain-id": {
+    "defaultMessage": "Chain ID {chainId}"
+  },
+  "chain-token-id": {
+    "defaultMessage": "Chain Token ID"
+  },
+  "change": {
+    "defaultMessage": "Change"
+  },
+  "change_language": {
+    "defaultMessage": "Change language"
+  },
+  "change_password": {
+    "defaultMessage": "Change password"
+  },
+  "chat.error.auth": {
+    "defaultMessage": "🔐 **Authentication Error** Your session has expired or the authentication token is invalid. *Please refresh or log in again.*"
+  },
+  "chat.error.connection": {
+    "defaultMessage": "🚫 **Connection Error** Cannot connect to the chat API server at {chatUrl}. **To enable chat:** 1. Start the backend 2. Ensure chat/MCP endpoint is configured 3. Check NEXT_PUBLIC_CHAT_URL **Current configuration:** - Chat URL: {chatUrl} *Please start the backend.*"
+  },
+  "chat.error.stream": {
+    "defaultMessage": "⚠️ **Stream Processing Error** There was an error processing the AI response stream. **Possible causes:** 1. Backend not running 2. MCP server not responding 3. Missing/invalid API keys 4. Network issues **Error details:** {details}"
+  },
+  "chat.error.submission": {
+    "defaultMessage": "❌ **Submission Error** Failed to send your message. **Error:** {details} *Please ensure the backend is running.*"
+  },
+  "chat.error.unexpected": {
+    "defaultMessage": "❌ **Chat Error** An unexpected error occurred: {details} *Please try again or check the console for details.*"
+  },
+  "chat_disabled_message": {
+    "defaultMessage": "Copilot chat is currently disabled in this shop. Please check your engine configuration"
+  },
+  "chat_disabled_title": {
+    "defaultMessage": "Chat is Disabled"
+  },
+  "chat_error_retry_message": {
+    "defaultMessage": "An error occurred while processing your request, please reload the conversation and submit something shorter."
+  },
+  "check_work_queue_details": {
+    "defaultMessage": "Check Work Queue for Details"
+  },
+  "child_assortment": {
+    "defaultMessage": "Sub-Assortment"
+  },
+  "children": {
+    "defaultMessage": "Children"
+  },
+  "children_count": {
+    "defaultMessage": "{count} children"
+  },
+  "city": {
+    "defaultMessage": "City"
+  },
+  "clear_history": {
+    "defaultMessage": "Clear History"
+  },
+  "close": {
+    "defaultMessage": "Close"
+  },
+  "close_sidebar": {
+    "defaultMessage": "Close sidebar"
+  },
+  "code": {
+    "defaultMessage": "Code"
+  },
+  "collapse_navigation": {
+    "defaultMessage": "Collapse navigation"
+  },
+  "commerce": {
+    "defaultMessage": "Commerce"
+  },
+  "commerce_setup": {
+    "defaultMessage": "Commerce Setup"
+  },
+  "commerce_setup_description": {
+    "defaultMessage": "Payment and delivery configuration for transactions"
+  },
+  "company": {
+    "defaultMessage": "Company"
+  },
+  "complete_shop_setup": {
+    "defaultMessage": "Complete Your Shop Setup"
+  },
+  "complete_system_setup": {
+    "defaultMessage": "Complete Setup"
+  },
+  "component_loading_error": {
+    "defaultMessage": "Component loading error. Please refresh the page."
+  },
+  "configurable_product_definition": {
+    "defaultMessage": "<h3>Configurable</h3> <p>Configurable Product is used to organize varieties of a product. A product might have a variation in color, size or other distinct property in that case you can use a configurable product type to organize all the variation under one category and outline-solid there difference. </p>"
+  },
+  "configuration": {
+    "defaultMessage": "Configuration"
+  },
+  "configuration_invalid": {
+    "defaultMessage": "Invalid configuration"
+  },
+  "configuration_status": {
+    "defaultMessage": "Configuration status"
+  },
+  "configuration_valid": {
+    "defaultMessage": "Valid configuration"
+  },
+  "configuration_valid_description": {
+    "defaultMessage": "All configuration parameters are correctly set and validated."
+  },
+  "confirm_order": {
+    "defaultMessage": "Confirm order"
+  },
+  "confirm_order_alert_button": {
+    "defaultMessage": "Confirm"
+  },
+  "confirm_order_alert_header": {
+    "defaultMessage": "Confirm order?"
+  },
+  "confirm_order_alert_message": {
+    "defaultMessage": "This will mark order as confirmed"
+  },
+  "confirm_password": {
+    "defaultMessage": "Confirm password"
+  },
+  "confirmed": {
+    "defaultMessage": "Confirmed"
+  },
+  "connection_status": {
+    "defaultMessage": "No Connection"
+  },
+  "connection_to_server_error": {
+    "defaultMessage": "Currently not connected to unchained engine, please check your connection to server and try again."
+  },
+  "contact": {
+    "defaultMessage": "Contact"
+  },
+  "contact_admin_help": {
+    "defaultMessage": "Contact system administrator for further information."
+  },
+  "content_setup": {
+    "defaultMessage": "Content Setup"
+  },
+  "content_setup_description": {
+    "defaultMessage": "Products and categories to start selling"
+  },
+  "continue": {
+    "defaultMessage": "Continue"
+  },
+  "continue_to_app": {
+    "defaultMessage": "Continue to App"
+  },
+  "continue_with_sso": {
+    "defaultMessage": "Login with SSO"
+  },
+  "contract-address-label": {
+    "defaultMessage": "Contract Address"
+  },
+  "contract-standard": {
+    "defaultMessage": "Contract standard"
+  },
+  "contract_address": {
+    "defaultMessage": "Contract Address"
+  },
+  "copied": {
+    "defaultMessage": "Copied"
+  },
+  "copilot": {
+    "defaultMessage": "Copilot"
+  },
+  "copilot-into-message": {
+    "defaultMessage": "Hello! Please introduce yourself and explain what you can help me with in managing my Unchained Commerce store. Be friendly and informative about your current capabilities."
+  },
+  "copilot_welcome_description": {
+    "defaultMessage": "Your AI assistant is ready to help you manage your Unchained Commerce store."
+  },
+  "copilot_welcome_title": {
+    "defaultMessage": "Welcome to Unchained Copilot"
+  },
+  "copy_to_clipboard": {
+    "defaultMessage": "Copy to clipboard"
+  },
+  "countries": {
+    "defaultMessage": "Countries"
+  },
+  "countries_config_description": {
+    "defaultMessage": "Configure countries and assign default currencies"
+  },
+  "countries_page_title": {
+    "defaultMessage": "{count, plural, one {# Country} other {# Countries}}"
+  },
+  "country": {
+    "defaultMessage": "Country"
+  },
+  "country_added": {
+    "defaultMessage": "Country added successfully!"
+  },
+  "country_code": {
+    "defaultMessage": "Country code"
+  },
+  "country_count_header": {
+    "defaultMessage": "{count} Countries"
+  },
+  "country_currency": {
+    "defaultMessage": "Currency"
+  },
+  "country_deleted": {
+    "defaultMessage": "Country deleted successfully"
+  },
+  "country_exists": {
+    "defaultMessage": "Country with the same ISO code already exists"
+  },
+  "country_header": {
+    "defaultMessage": "1 Country"
+  },
+  "country_updated": {
+    "defaultMessage": "Country updated successfully!"
+  },
+  "create_admin_account": {
+    "defaultMessage": "Create Administrator"
+  },
+  "create_filter": {
+    "defaultMessage": "Create Filter"
+  },
+  "create_new_account": {
+    "defaultMessage": "Create new account?"
+  },
+  "create_provider": {
+    "defaultMessage": "Create provider"
+  },
+  "created": {
+    "defaultMessage": "Created"
+  },
+  "created_colon": {
+    "defaultMessage": "Created:"
+  },
+  "currencies": {
+    "defaultMessage": "Currencies"
+  },
+  "currencies_page_title": {
+    "defaultMessage": "{count, plural, one {# Currency} other {# Currencies}}"
+  },
+  "currency": {
+    "defaultMessage": "Currency"
+  },
+  "currency_added": {
+    "defaultMessage": "Currency added successfully!"
+  },
+  "currency_config_description": {
+    "defaultMessage": "Set up currencies for pricing and payments"
+  },
+  "currency_contract_address_description": {
+    "defaultMessage": "Contract address is optional and represents address of the 40 character long deployed token contract on the ethereum network."
+  },
+  "currency_count_header": {
+    "defaultMessage": "{count} Currencies"
+  },
+  "currency_deleted": {
+    "defaultMessage": "Currency deleted successfully"
+  },
+  "currency_exists": {
+    "defaultMessage": "Currency with the same ISO code already exists"
+  },
+  "currency_header": {
+    "defaultMessage": "1 Currency"
+  },
+  "currency_updated": {
+    "defaultMessage": "Currency updated successfully!"
+  },
+  "current_password": {
+    "defaultMessage": "Current password"
+  },
+  "customer_reviews": {
+    "defaultMessage": "Customer Reviews"
+  },
+  "customers_count": {
+    "defaultMessage": "Customers"
+  },
+  "dashboard": {
+    "defaultMessage": "Dashboard"
+  },
+  "data": {
+    "defaultMessage": "Data"
+  },
+  "date": {
+    "defaultMessage": "Date"
+  },
+  "date_range_prefix": {
+    "defaultMessage": "Showing data from"
+  },
+  "date_range_to": {
+    "defaultMessage": "to"
+  },
+  "deactivate": {
+    "defaultMessage": "Deactivate"
+  },
+  "deactivate_assortment_description": {
+    "defaultMessage": "Will not be visible on search"
+  },
+  "deactivated": {
+    "defaultMessage": "Deactivated"
+  },
+  "decimals": {
+    "defaultMessage": "Decimals"
+  },
+  "default_country_info_description": {
+    "defaultMessage": "If you support multiple countries, please set the base country by adjusting the environment variable UNCHAINED_COUNTRY, for ex. UNCHAINED_COUNTRY=ch. That way, Unchained knows what localization needs to be sent if it can not determine country from user agent set header"
+  },
+  "default_country_info_title": {
+    "defaultMessage": "About base country"
+  },
+  "default_currency": {
+    "defaultMessage": "Default currency"
+  },
+  "default_currency_info_description": {
+    "defaultMessage": "Please set the base currency by adjusting the environment variable UNCHAINED_CURRENCY, for ex. UNCHAINED_CURRENCY=CHF. That way, Unchained knows what currency to use as a fallback if it is unable to determine it from context"
+  },
+  "default_currency_info_title": {
+    "defaultMessage": "About base currency"
+  },
+  "default_language_info_description": {
+    "defaultMessage": "If you support multiple languages, please set the base language by adjusting the environment variable UNCHAINED_LANG, for ex. UNCHAINED_LANG=en. That way, Unchained knows what localization needs to be sent if the user agent's language is unknown"
+  },
+  "default_language_info_title": {
+    "defaultMessage": "About base language"
+  },
+  "default_system_locale": {
+    "defaultMessage": "Default Locale"
+  },
+  "delete": {
+    "defaultMessage": "Delete"
+  },
+  "delete_account": {
+    "defaultMessage": "Delete account"
+  },
+  "delete_account_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it"
+  },
+  "delete_assortment": {
+    "defaultMessage": "Delete Assortment"
+  },
+  "delete_assortment_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it and it is nonreversible. Are you sure you want to delete this assortment?"
+  },
+  "delete_assortment_filter_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this language?"
+  },
+  "delete_assortment_link": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this language?"
+  },
+  "delete_assortment_media": {
+    "defaultMessage": "Delete media"
+  },
+  "delete_assortment_media_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this currency?"
+  },
+  "delete_assortment_warning": {
+    "defaultMessage": "This action will permanently delete this assortment and all associated data. Are you sure you want to continue?"
+  },
+  "delete_bundle_item": {
+    "defaultMessage": "Delete item"
+  },
+  "delete_bundle_item_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this bundle item?"
+  },
+  "delete_country": {
+    "defaultMessage": "Delete country"
+  },
+  "delete_country_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this country?"
+  },
+  "delete_currency": {
+    "defaultMessage": "Delete currency"
+  },
+  "delete_currency_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this currency?"
+  },
+  "delete_delivery_provider": {
+    "defaultMessage": "Delete delivery provider"
+  },
+  "delete_delivery_provider_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this delivery provider?"
+  },
+  "delete_email": {
+    "defaultMessage": "Delete email"
+  },
+  "delete_email_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this email?"
+  },
+  "delete_filter": {
+    "defaultMessage": "Delete filter"
+  },
+  "delete_filter_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this filter?"
+  },
+  "delete_filter_option": {
+    "defaultMessage": "Delete option"
+  },
+  "delete_filter_option_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this filter option?"
+  },
+  "delete_language": {
+    "defaultMessage": "Delete language"
+  },
+  "delete_language_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this language?"
+  },
+  "delete_link": {
+    "defaultMessage": "Delete link"
+  },
+  "delete_order": {
+    "defaultMessage": "Delete order"
+  },
+  "delete_order_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this order?"
+  },
+  "delete_paymentProvider_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this Payment provider?"
+  },
+  "delete_payment_provider": {
+    "defaultMessage": "Delete payment provider"
+  },
+  "delete_payment_provider_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this payment provider?"
+  },
+  "delete_product": {
+    "defaultMessage": "Delete Product"
+  },
+  "delete_product_assignment": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this assignment?"
+  },
+  "delete_product_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it and it is nonreversible. Are you sure you want to delete this product?"
+  },
+  "delete_product_media": {
+    "defaultMessage": "Delete media"
+  },
+  "delete_product_media_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this media?"
+  },
+  "delete_product_variation": {
+    "defaultMessage": "Delete variation"
+  },
+  "delete_product_variation_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this variation?"
+  },
+  "delete_product_warning": {
+    "defaultMessage": "This action will permanently delete this product and all associated data. Are you sure you want to continue?"
+  },
+  "delete_review": {
+    "defaultMessage": "Delete review"
+  },
+  "delete_review_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this review?"
+  },
+  "delete_user": {
+    "defaultMessage": "Delete User"
+  },
+  "delete_user_account": {
+    "defaultMessage": "Delete user"
+  },
+  "delete_user_account_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it"
+  },
+  "delete_user_warning": {
+    "defaultMessage": "This action will permanently delete this user and all associated data. Are you sure you want to continue?"
+  },
+  "delete_variation_assignment": {
+    "defaultMessage": "Delete assignment"
+  },
+  "delete_variation_option": {
+    "defaultMessage": "Delete option"
+  },
+  "delete_variation_option_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this option?"
+  },
+  "delete_warehousing_provider": {
+    "defaultMessage": "Delete warehousing Provider"
+  },
+  "delete_warehousing_provider_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this warehousing provider?"
+  },
+  "delete_web3_address": {
+    "defaultMessage": "Delete address?"
+  },
+  "delete_web3_address_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this address?"
+  },
+  "delete_web_auth_credential": {
+    "defaultMessage": "Are you sure you want to unlink this device from your account?"
+  },
+  "delete_work": {
+    "defaultMessage": "Delete work"
+  },
+  "delete_work_confirmation": {
+    "defaultMessage": "This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this work?"
+  },
+  "deleted": {
+    "defaultMessage": "Deleted"
+  },
+  "deleted_status": {
+    "defaultMessage": "Deleted"
+  },
+  "deleted_text": {
+    "defaultMessage": "Deleted"
+  },
+  "delivered": {
+    "defaultMessage": "Delivered"
+  },
+  "delivery": {
+    "defaultMessage": "Delivery"
+  },
+  "deliveryProviders_deleted": {
+    "defaultMessage": "DeliveryProviders deleted successfully"
+  },
+  "delivery_address": {
+    "defaultMessage": "Delivery address"
+  },
+  "delivery_processing": {
+    "defaultMessage": "Shipping & Delivery"
+  },
+  "delivery_processing_config_description": {
+    "defaultMessage": "Delivery methods are already configured"
+  },
+  "delivery_provider": {
+    "defaultMessage": "Delivery Provider"
+  },
+  "delivery_provider_deleted": {
+    "defaultMessage": "Delivery provider deleted successfully"
+  },
+  "delivery_provider_title": {
+    "defaultMessage": "Delivery provider {id}"
+  },
+  "delivery_providers": {
+    "defaultMessage": "Delivery providers"
+  },
+  "delivery_status": {
+    "defaultMessage": "Status"
+  },
+  "description": {
+    "defaultMessage": "Description"
+  },
+  "detail": {
+    "defaultMessage": "Detail"
+  },
+  "dimensions": {
+    "defaultMessage": "Dimensions"
+  },
+  "discount": {
+    "defaultMessage": "Discount"
+  },
+  "discount_amount": {
+    "defaultMessage": "Discount Amount"
+  },
+  "discount_information": {
+    "defaultMessage": "Discounts"
+  },
+  "discounts": {
+    "defaultMessage": "Discounts"
+  },
+  "dismiss": {
+    "defaultMessage": "Dismiss"
+  },
+  "displayName": {
+    "defaultMessage": "Display Name"
+  },
+  "display_as_graph": {
+    "defaultMessage": "Display as Graph"
+  },
+  "display_name": {
+    "defaultMessage": "Display name"
+  },
+  "documentation": {
+    "defaultMessage": "Documentation"
+  },
+  "dont_have_account": {
+    "defaultMessage": "Don't have an account yet?"
+  },
+  "draft": {
+    "defaultMessage": "Draft"
+  },
+  "draft_product_description": {
+    "defaultMessage": "Product will not be discoverable and can not be orderose"
+  },
+  "duration": {
+    "defaultMessage": "Duration"
+  },
+  "edit": {
+    "defaultMessage": "Edit"
+  },
+  "edit_tags": {
+    "defaultMessage": "Edit tags"
+  },
+  "editor": {
+    "defaultMessage": "Editor"
+  },
+  "email": {
+    "defaultMessage": "Email"
+  },
+  "email_added": {
+    "defaultMessage": "Email added successfully!"
+  },
+  "email_address": {
+    "defaultMessage": "Email Address"
+  },
+  "email_address_not_exist": {
+    "defaultMessage": "Provided email does not exist"
+  },
+  "email_addresses": {
+    "defaultMessage": "Email addresses"
+  },
+  "email_already_exists_error": {
+    "defaultMessage": "Email already exists"
+  },
+  "email_deleted": {
+    "defaultMessage": "email {id} deleted successfully"
+  },
+  "email_exists_error": {
+    "defaultMessage": "Email already exists"
+  },
+  "email_verification_error": {
+    "defaultMessage": "Verification Error"
+  },
+  "email_verification_failed": {
+    "defaultMessage": "Email verification failed"
+  },
+  "email_verified_default": {
+    "defaultMessage": "All"
+  },
+  "email_verified_false": {
+    "defaultMessage": "unverified"
+  },
+  "email_verified_label": {
+    "defaultMessage": "E-Mail verified"
+  },
+  "email_verified_successfully": {
+    "defaultMessage": "Email Verified"
+  },
+  "email_verified_true": {
+    "defaultMessage": "verified"
+  },
+  "end": {
+    "defaultMessage": "End"
+  },
+  "end_date": {
+    "defaultMessage": "End Date"
+  },
+  "engine_version": {
+    "defaultMessage": "Engine version"
+  },
+  "enrollment": {
+    "defaultMessage": "enrollment"
+  },
+  "enrollment_count_header": {
+    "defaultMessage": "{count} Enrollments"
+  },
+  "enrollment_detail": {
+    "defaultMessage": "Enrollment Detail"
+  },
+  "enrollment_detail_title": {
+    "defaultMessage": "Enrollment {id}"
+  },
+  "enrollment_error": {
+    "defaultMessage": "Failed sending email, please try again"
+  },
+  "enrollment_header": {
+    "defaultMessage": "1 Enrollment"
+  },
+  "enrollment_number": {
+    "defaultMessage": "Enrollment number"
+  },
+  "enrollment_page_title": {
+    "defaultMessage": "{count, plural, one {# Enrollment} other {# Enrollments}}"
+  },
+  "enrollment_success": {
+    "defaultMessage": "Email sent to the user successfully"
+  },
+  "enrollment_success_message": {
+    "defaultMessage": "Subscription activation email sent"
+  },
+  "enrollment_updated_successfully": {
+    "defaultMessage": "Enrollment saved successfully"
+  },
+  "enrollments": {
+    "defaultMessage": "Enrollments"
+  },
+  "enter_tag": {
+    "defaultMessage": "Enter tag..."
+  },
+  "error": {
+    "defaultMessage": "Error"
+  },
+  "error-loading-image-alt": {
+    "defaultMessage": "Error loading image"
+  },
+  "error-something-went-wrong": {
+    "defaultMessage": "Unable to complete the task successfully please try again"
+  },
+  "error_403": {
+    "defaultMessage": "403 Unauthorized"
+  },
+  "error_404": {
+    "defaultMessage": "404 Error"
+  },
+  "error_423": {
+    "defaultMessage": "423 Locked"
+  },
+  "error_500": {
+    "defaultMessage": "500 Error"
+  },
+  "error_commerce_quantity_null_required": {
+    "defaultMessage": "{label} should have one price with null /empty max quantity"
+  },
+  "error_contract_address": {
+    "defaultMessage": "Invalid contract address"
+  },
+  "error_country_code": {
+    "defaultMessage": "Invalid country code"
+  },
+  "error_currency_code": {
+    "defaultMessage": "Invalid currency code"
+  },
+  "error_date_after": {
+    "defaultMessage": "{label} must be after {dateToCompare}."
+  },
+  "error_date_before": {
+    "defaultMessage": "{label} must be before {dateToCompare}."
+  },
+  "error_email": {
+    "defaultMessage": "{label} must be a valid email address"
+  },
+  "error_invalid_date": {
+    "defaultMessage": "{label} is not a valid date"
+  },
+  "error_language_code": {
+    "defaultMessage": "Invalid language code"
+  },
+  "error_loading_media": {
+    "defaultMessage": "Error loading media:"
+  },
+  "error_number_not_int": {
+    "defaultMessage": "Invalid value please provide integer value"
+  },
+  "error_phone_number_invalid": {
+    "defaultMessage": "Invalid phone number"
+  },
+  "error_required": {
+    "defaultMessage": "{label} is a required field"
+  },
+  "error_same_product_prices": {
+    "defaultMessage": "{label} can not be equal for a price with the same country and currency"
+  },
+  "error_server": {
+    "defaultMessage": "{details}"
+  },
+  "error_tag_required": {
+    "defaultMessage": "{label} you must provide at least one tag"
+  },
+  "error_text_area_required": {
+    "defaultMessage": "{label} is required"
+  },
+  "essential_setup": {
+    "defaultMessage": "Essential Setup"
+  },
+  "essential_setup_description": {
+    "defaultMessage": "Core settings required for your shop to function"
+  },
+  "event": {
+    "defaultMessage": "Events"
+  },
+  "event_count_header": {
+    "defaultMessage": "{count} Events"
+  },
+  "event_detail": {
+    "defaultMessage": "Event Detail"
+  },
+  "event_detail_title": {
+    "defaultMessage": "Event {id}"
+  },
+  "event_header": {
+    "defaultMessage": "1 Event"
+  },
+  "event_page_title": {
+    "defaultMessage": "{count, plural, one {# Event} other {# Events}}"
+  },
+  "events": {
+    "defaultMessage": "Events"
+  },
+  "expand_navigation": {
+    "defaultMessage": "Expand navigation"
+  },
+  "expired": {
+    "defaultMessage": "Expired"
+  },
+  "expires": {
+    "defaultMessage": "Expires"
+  },
+  "export": {
+    "defaultMessage": "Export"
+  },
+  "exporting": {
+    "defaultMessage": "Exporting..."
+  },
+  "extended-fields": {
+    "defaultMessage": "Extended"
+  },
+  "extensions": {
+    "defaultMessage": "Extensions"
+  },
+  "fail_reorder": {
+    "defaultMessage": "Reordering failed, Try again!"
+  },
+  "fail_upload": {
+    "defaultMessage": "Media upload failed"
+  },
+  "failed_tool_response": {
+    "defaultMessage": "Failed to parse tool result."
+  },
+  "female": {
+    "defaultMessage": "Female"
+  },
+  "filer_options": {
+    "defaultMessage": "Filter options"
+  },
+  "filter": {
+    "defaultMessage": "Filter"
+  },
+  "filter.active": {
+    "defaultMessage": "Active"
+  },
+  "filter.created": {
+    "defaultMessage": "Created"
+  },
+  "filter.inactive": {
+    "defaultMessage": "Inactive"
+  },
+  "filter.noOptions": {
+    "defaultMessage": "No options"
+  },
+  "filter.sortKey": {
+    "defaultMessage": "Sort"
+  },
+  "filter.updated": {
+    "defaultMessage": "Updated"
+  },
+  "filter_activated": {
+    "defaultMessage": "Filter activated!",
+    "description": "shown on successful toggle of filter status"
+  },
+  "filter_by_creation_date": {
+    "defaultMessage": "Filter by creation date"
+  },
+  "filter_by_type": {
+    "defaultMessage": "Filter by type"
+  },
+  "filter_count_header": {
+    "defaultMessage": "{count} Filters"
+  },
+  "filter_created": {
+    "defaultMessage": "Filter created successfully!"
+  },
+  "filter_deactivated": {
+    "defaultMessage": "Filter deactivated!",
+    "description": "shown on successful toggle of filter status"
+  },
+  "filter_deleted": {
+    "defaultMessage": "Filter deleted successfully"
+  },
+  "filter_detail": {
+    "defaultMessage": "Filter Detail"
+  },
+  "filter_detail_title": {
+    "defaultMessage": "Filter {id}"
+  },
+  "filter_header": {
+    "defaultMessage": "1 Filter"
+  },
+  "filter_key": {
+    "defaultMessage": "Key",
+    "description": "Filter form key"
+  },
+  "filter_key_already_exists": {
+    "defaultMessage": "Filter key already exists, please provide unique key"
+  },
+  "filter_option_added_success": {
+    "defaultMessage": "Filter option added successfully"
+  },
+  "filter_option_title": {
+    "defaultMessage": "Title"
+  },
+  "filter_option_value": {
+    "defaultMessage": "Value"
+  },
+  "filter_page_title": {
+    "defaultMessage": "{count, plural, one {# Filter} other {# Filters}}"
+  },
+  "filter_text_form_description": {
+    "defaultMessage": "<ul> <li>You can change the language of filter using the dropdown found at top left corner</li> </ul>"
+  },
+  "filter_type": {
+    "defaultMessage": "Filter Type"
+  },
+  "filtered_results": {
+    "defaultMessage": "Filtered results"
+  },
+  "filters": {
+    "defaultMessage": "Filters"
+  },
+  "finished": {
+    "defaultMessage": "Finished"
+  },
+  "first_name": {
+    "defaultMessage": "First name"
+  },
+  "forget_password": {
+    "defaultMessage": "Forgot your password?"
+  },
+  "forgot_password_header_description": {
+    "defaultMessage": "Enter your email address below and we'll send you a link to reset your password!"
+  },
+  "from": {
+    "defaultMessage": "From"
+  },
+  "from_last_month": {
+    "defaultMessage": "from last month"
+  },
+  "fulfilled": {
+    "defaultMessage": "Fulfilled"
+  },
+  "fullName": {
+    "defaultMessage": "FullName"
+  },
+  "full_name": {
+    "defaultMessage": "Full name"
+  },
+  "gender": {
+    "defaultMessage": "Gender"
+  },
+  "general_text": {
+    "defaultMessage": "Text"
+  },
+  "general_tool_definition": {
+    "defaultMessage": "\"Help me with {toolName}\""
+  },
+  "go_back": {
+    "defaultMessage": "Go Back"
+  },
+  "go_back_home": {
+    "defaultMessage": "Go back home"
+  },
+  "go_to_login": {
+    "defaultMessage": "Go to Login"
+  },
+  "goodbye_simple": {
+    "defaultMessage": "Goodbye!"
+  },
+  "goodbye_user": {
+    "defaultMessage": "See you later, {name}!"
+  },
+  "gross_price": {
+    "defaultMessage": "Gross"
+  },
+  "guest": {
+    "defaultMessage": "Guest"
+  },
+  "header_conformation": {
+    "defaultMessage": "This action is nonreversible, are you sure you want to change it to base?"
+  },
+  "header_title": {
+    "defaultMessage": "Assortment base change."
+  },
+  "height": {
+    "defaultMessage": "Height (Millimeter)"
+  },
+  "hide_available_tools": {
+    "defaultMessage": "Hide Available Tools"
+  },
+  "hide_payload": {
+    "defaultMessage": "Hide Payload"
+  },
+  "home": {
+    "defaultMessage": "Home"
+  },
+  "id": {
+    "defaultMessage": "ID"
+  },
+  "image-not-found": {
+    "defaultMessage": "Image not found"
+  },
+  "image_not_available": {
+    "defaultMessage": "Image not available"
+  },
+  "import": {
+    "defaultMessage": "Import"
+  },
+  "import_results": {
+    "defaultMessage": "Import Results"
+  },
+  "importing": {
+    "defaultMessage": "Importing..."
+  },
+  "in_active": {
+    "defaultMessage": "In-Active"
+  },
+  "in_cart": {
+    "defaultMessage": "In cart"
+  },
+  "in_valid": {
+    "defaultMessage": "InValid"
+  },
+  "inactive": {
+    "defaultMessage": "Inactive"
+  },
+  "include_drafts": {
+    "defaultMessage": "Include drafts"
+  },
+  "include_inactive": {
+    "defaultMessage": "Include inactive"
+  },
+  "include_leaf": {
+    "defaultMessage": "Include leafs",
+    "description": "Assortment children"
+  },
+  "initial": {
+    "defaultMessage": "Initial"
+  },
+  "input": {
+    "defaultMessage": "Input"
+  },
+  "install": {
+    "defaultMessage": "Install"
+  },
+  "interface": {
+    "defaultMessage": "Interface"
+  },
+  "internal_server_error": {
+    "defaultMessage": "500 Internal Server Error"
+  },
+  "internal_server_error_message": {
+    "defaultMessage": "Sorry, something went wrong on our end. We are working to fix this."
+  },
+  "invalid_credential_error": {
+    "defaultMessage": "Invalid credential, please try again"
+  },
+  "invalid_signature_length": {
+    "defaultMessage": "Invalid signature"
+  },
+  "invalid_url": {
+    "defaultMessage": "Invalid page url"
+  },
+  "invalidate-token": {
+    "defaultMessage": "Invalidate"
+  },
+  "invalidated": {
+    "defaultMessage": "Invalidated"
+  },
+  "invoice": {
+    "defaultMessage": "INVOICE"
+  },
+  "ip": {
+    "defaultMessage": "IP Address"
+  },
+  "iso_code": {
+    "defaultMessage": "ISO code"
+  },
+  "item_quantity": {
+    "defaultMessage": "Quantity:"
+  },
+  "items": {
+    "defaultMessage": "Items"
+  },
+  "items_created": {
+    "defaultMessage": "{count} items created"
+  },
+  "items_failed": {
+    "defaultMessage": "{count} {entityName} failed to import"
+  },
+  "items_imported": {
+    "defaultMessage": "{count} {entityName} imported successfully ({created} created, {updated} updated)"
+  },
+  "items_purchased": {
+    "defaultMessage": "Items purchased"
+  },
+  "key": {
+    "defaultMessage": "Key"
+  },
+  "label": {
+    "defaultMessage": "Label"
+  },
+  "labels": {
+    "defaultMessage": "Labels"
+  },
+  "language": {
+    "defaultMessage": "Language"
+  },
+  "language_added": {
+    "defaultMessage": "Language added successfully!"
+  },
+  "language_config_description": {
+    "defaultMessage": "Configure languages for content localization"
+  },
+  "language_count_header": {
+    "defaultMessage": "{count} Languages"
+  },
+  "language_deleted": {
+    "defaultMessage": "Language deleted successfully"
+  },
+  "language_exists": {
+    "defaultMessage": "Language with the same ISO code already exists"
+  },
+  "language_header": {
+    "defaultMessage": "1 Language"
+  },
+  "language_page_title": {
+    "defaultMessage": "{count, plural, one {# Language} other {# Languages}}"
+  },
+  "language_updated": {
+    "defaultMessage": "Language updated successfully!"
+  },
+  "languages": {
+    "defaultMessage": "Languages"
+  },
+  "last_Name": {
+    "defaultMessage": "Last name"
+  },
+  "last_login": {
+    "defaultMessage": "Last log in"
+  },
+  "last_order_date": {
+    "defaultMessage": "Last order"
+  },
+  "last_updated": {
+    "defaultMessage": "Last Updated:"
+  },
+  "leaf": {
+    "defaultMessage": "Leaf"
+  },
+  "leaf_assortment_description": {
+    "defaultMessage": "Can be assigned as a child of another assortment"
+  },
+  "length_millimeter": {
+    "defaultMessage": "Length (Millimeter)"
+  },
+  "link_reorder": {
+    "defaultMessage": "Link reorder successfully"
+  },
+  "linked_assortment": {
+    "defaultMessage": "Linked assortment"
+  },
+  "links": {
+    "defaultMessage": "Links"
+  },
+  "list_product_tool_definition": {
+    "defaultMessage": "Show me all draft products"
+  },
+  "load-more-reviews": {
+    "defaultMessage": "Load reviews"
+  },
+  "load_more": {
+    "defaultMessage": "Load more"
+  },
+  "loading": {
+    "defaultMessage": "Loading ..."
+  },
+  "loading_media": {
+    "defaultMessage": "Loading media..."
+  },
+  "log_in": {
+    "defaultMessage": "Log in"
+  },
+  "log_out": {
+    "defaultMessage": "Log out"
+  },
+  "login_date_range": {
+    "defaultMessage": "Login Date Range"
+  },
+  "login_header": {
+    "defaultMessage": "Log in to your account"
+  },
+  "make-proposal-header": {
+    "defaultMessage": "Make quotation proposal"
+  },
+  "make_leaf": {
+    "defaultMessage": "Make leaf"
+  },
+  "make_root": {
+    "defaultMessage": "Make root"
+  },
+  "male": {
+    "defaultMessage": "Male"
+  },
+  "manage": {
+    "defaultMessage": "Manage"
+  },
+  "mark_as_base": {
+    "defaultMessage": "Mark as Base"
+  },
+  "mark_as_delivered": {
+    "defaultMessage": "Mark as delivered"
+  },
+  "mark_as_delivered_message": {
+    "defaultMessage": "This will change the order delivery status to delivered"
+  },
+  "mark_as_delivered_question": {
+    "defaultMessage": "Mark as delivered ?"
+  },
+  "mark_as_paid": {
+    "defaultMessage": "Mark as Paid"
+  },
+  "mark_as_paid_question": {
+    "defaultMessage": "This will change the order payment status to Paid."
+  },
+  "mark_as_paid_question_header": {
+    "defaultMessage": "Mark as paid?"
+  },
+  "max_quantity": {
+    "defaultMessage": "Max Quantity"
+  },
+  "media": {
+    "defaultMessage": "Media"
+  },
+  "media.created": {
+    "defaultMessage": "Created"
+  },
+  "media.id": {
+    "defaultMessage": "ID"
+  },
+  "media.size": {
+    "defaultMessage": "Size"
+  },
+  "media.type": {
+    "defaultMessage": "Type"
+  },
+  "media.updated": {
+    "defaultMessage": "Updated"
+  },
+  "media_add_tool_definition": {
+    "defaultMessage": "\"Add media files\""
+  },
+  "media_management_tool_definition": {
+    "defaultMessage": "\"Manage media files\""
+  },
+  "media_remover_tool_definition": {
+    "defaultMessage": "\"Remove media files\""
+  },
+  "media_subtitle": {
+    "defaultMessage": "Subtitle:"
+  },
+  "media_title": {
+    "defaultMessage": "Title:"
+  },
+  "media_updated": {
+    "defaultMessage": "Media updated"
+  },
+  "message": {
+    "defaultMessage": "Message"
+  },
+  "method": {
+    "defaultMessage": "Method"
+  },
+  "mobile_phone": {
+    "defaultMessage": "Mobile phone"
+  },
+  "name": {
+    "defaultMessage": "Name"
+  },
+  "net_price": {
+    "defaultMessage": "Net Price"
+  },
+  "new_assortment_header": {
+    "defaultMessage": "New Assortment"
+  },
+  "new_country_header": {
+    "defaultMessage": "New country"
+  },
+  "new_currency_header": {
+    "defaultMessage": "New currency"
+  },
+  "new_delivery_provider": {
+    "defaultMessage": "New delivery provider"
+  },
+  "new_filter_header": {
+    "defaultMessage": "New filter"
+  },
+  "new_language_header": {
+    "defaultMessage": "New language"
+  },
+  "new_password": {
+    "defaultMessage": "New password"
+  },
+  "new_payment_provider_header": {
+    "defaultMessage": "New payment provider"
+  },
+  "new_product_header": {
+    "defaultMessage": "New product"
+  },
+  "new_user_header": {
+    "defaultMessage": "New user"
+  },
+  "new_warehousing_provider_header": {
+    "defaultMessage": "New warehousing provider"
+  },
+  "next": {
+    "defaultMessage": "Next"
+  },
+  "no_active_types": {
+    "defaultMessage": "No active worker types found"
+  },
+  "no_assortments_found": {
+    "defaultMessage": "No assortments found matching your criteria"
+  },
+  "no_customers": {
+    "defaultMessage": "No top customers found."
+  },
+  "no_data_message": {
+    "defaultMessage": "<p>No <span> {message} available</span> </p>"
+  },
+  "no_event_found": {
+    "defaultMessage": "No event found"
+  },
+  "no_internet_access": {
+    "defaultMessage": "You aren't connected to a working internet connection."
+  },
+  "no_order_products_description": {
+    "defaultMessage": "Once you receive your first orders, your top-selling products will appear here."
+  },
+  "no_orders_description": {
+    "defaultMessage": "Once you receive your first orders, your sales analytics and top-selling products will appear here."
+  },
+  "no_orders_title": {
+    "defaultMessage": "No orders yet"
+  },
+  "no_payload": {
+    "defaultMessage": "Payload"
+  },
+  "no_price": {
+    "defaultMessage": "N/A"
+  },
+  "no_result_found": {
+    "defaultMessage": "No result found"
+  },
+  "no_statistics_available": {
+    "defaultMessage": "No statistics available"
+  },
+  "no_tag": {
+    "defaultMessage": "No Tag"
+  },
+  "no_users_found": {
+    "defaultMessage": "No users found"
+  },
+  "no_variations_configured": {
+    "defaultMessage": "No variations configured yet. Please add variations and their options in the Variations tab first."
+  },
+  "no_works_found": {
+    "defaultMessage": "No works found"
+  },
+  "non_taxable": {
+    "defaultMessage": "Non-Taxable"
+  },
+  "not-applicable": {
+    "defaultMessage": "N/A"
+  },
+  "not_access_message": {
+    "defaultMessage": "Sorry, the page you are trying to access has restricted access."
+  },
+  "not_base": {
+    "defaultMessage": "Mark as Base"
+  },
+  "not_found_message": {
+    "defaultMessage": "Sorry, we couldn't find the page you're looking for."
+  },
+  "not_published": {
+    "defaultMessage": "Not published"
+  },
+  "offline_help_message": {
+    "defaultMessage": "Please check your connection and try again."
+  },
+  "offline_mode": {
+    "defaultMessage": "You're Offline"
+  },
+  "ok": {
+    "defaultMessage": "Ok"
+  },
+  "open": {
+    "defaultMessage": "OPEN"
+  },
+  "open_sidebar": {
+    "defaultMessage": "Open sidebar"
+  },
+  "operation_failed": {
+    "defaultMessage": "Operation failed!!"
+  },
+  "operation_success": {
+    "defaultMessage": "Operation succeeded!"
+  },
+  "option": {
+    "defaultMessage": "Option"
+  },
+  "options": {
+    "defaultMessage": "Options"
+  },
+  "or_drag_and_drop": {
+    "defaultMessage": "or drag and drop"
+  },
+  "or_manually_enter_address": {
+    "defaultMessage": "Or enter address manually"
+  },
+  "order": {
+    "defaultMessage": "Order"
+  },
+  "order__marked_delivered": {
+    "defaultMessage": "Order marked as delivered successfully"
+  },
+  "order_confirmed_success": {
+    "defaultMessage": "Order confirmed successfully"
+  },
+  "order_count_header": {
+    "defaultMessage": "{count} Orders"
+  },
+  "order_date": {
+    "defaultMessage": "Order date"
+  },
+  "order_deleted": {
+    "defaultMessage": "Order deleted successfully"
+  },
+  "order_header": {
+    "defaultMessage": "1 Order"
+  },
+  "order_id": {
+    "defaultMessage": "Order"
+  },
+  "order_number": {
+    "defaultMessage": "Order #"
+  },
+  "order_page_title": {
+    "defaultMessage": "{count, plural, one {# Order} other {# Orders}}"
+  },
+  "order_paid": {
+    "defaultMessage": "Order payed successfully"
+  },
+  "order_payment_fees": {
+    "defaultMessage": "Fees"
+  },
+  "order_placed": {
+    "defaultMessage": "Order placed"
+  },
+  "order_reject_success": {
+    "defaultMessage": "Order rejected successfully"
+  },
+  "order_status": {
+    "defaultMessage": "Order status"
+  },
+  "order_total": {
+    "defaultMessage": "Order total"
+  },
+  "ordered": {
+    "defaultMessage": "Ordered"
+  },
+  "orders": {
+    "defaultMessage": "Orders"
+  },
+  "original_work_id": {
+    "defaultMessage": "Original Work Id"
+  },
+  "overall_progress": {
+    "defaultMessage": "Overall Progress"
+  },
+  "page_not_found": {
+    "defaultMessage": "Page Not Found"
+  },
+  "paginated-data": {
+    "defaultMessage": "<p> Showing <span>{from}</span> to <span>{to}</span> of <span>{total}</span> results </p>"
+  },
+  "paid": {
+    "defaultMessage": "Paid"
+  },
+  "password": {
+    "defaultMessage": "Password"
+  },
+  "password_change_failed": {
+    "defaultMessage": "Password change failed, try again later"
+  },
+  "password_changed_success": {
+    "defaultMessage": "Password changed successfully."
+  },
+  "password_identical": {
+    "defaultMessage": "Provided new password identical to previous password"
+  },
+  "password_insecure": {
+    "defaultMessage": "Password is invalid, maybe too insecure"
+  },
+  "password_mismatch": {
+    "defaultMessage": "Password fields don't match"
+  },
+  "password_success": {
+    "defaultMessage": "Password changed successfully."
+  },
+  "pay": {
+    "defaultMessage": "Mark paid"
+  },
+  "payload": {
+    "defaultMessage": "Payload"
+  },
+  "payment": {
+    "defaultMessage": "Payment"
+  },
+  "payment_credentials": {
+    "defaultMessage": "Payment Credentials"
+  },
+  "payment_detail_title": {
+    "defaultMessage": "Payment provider {id}"
+  },
+  "payment_processing": {
+    "defaultMessage": "Payment Processing"
+  },
+  "payment_processing_config_description": {
+    "defaultMessage": "Invoice payment provider is already configured"
+  },
+  "payment_provider": {
+    "defaultMessage": "Payment provider"
+  },
+  "payment_provider_deleted": {
+    "defaultMessage": "Payment provider deleted successfully"
+  },
+  "payment_providers": {
+    "defaultMessage": "Payment providers"
+  },
+  "pending": {
+    "defaultMessage": "PENDING"
+  },
+  "periods": {
+    "defaultMessage": "Periods"
+  },
+  "permission_missing": {
+    "defaultMessage": "You don't have the required permission"
+  },
+  "photo": {
+    "defaultMessage": "Photo"
+  },
+  "plan_product_definition": {
+    "defaultMessage": "<h3>Plan</h3> <p>Plan product is use when you have a product that is offered per subscription base. Since for this type of product the payment is usually recurring, you can adjust the interval of payment calculation. </p>"
+  },
+  "postal_code": {
+    "defaultMessage": "Postal/ZIP code"
+  },
+  "preferred": {
+    "defaultMessage": "Preferred"
+  },
+  "preview": {
+    "defaultMessage": "preview"
+  },
+  "previous": {
+    "defaultMessage": "Previous"
+  },
+  "price": {
+    "defaultMessage": "Price"
+  },
+  "price_range": {
+    "defaultMessage": "Price Range"
+  },
+  "priority": {
+    "defaultMessage": "Priority"
+  },
+  "process-quotation-submit": {
+    "defaultMessage": "Mark as processed"
+  },
+  "product": {
+    "defaultMessage": "Product"
+  },
+  "product-image": {
+    "defaultMessage": "Product image"
+  },
+  "product-scaffolded-success": {
+    "defaultMessage": "Product scaffolded successfully"
+  },
+  "product_added": {
+    "defaultMessage": "Product added successfully!"
+  },
+  "product_assignments_explanation_text": {
+    "defaultMessage": "Product assignments allow you to link specific products to each unique combination of variation options. For example, if you have a t-shirt with 'Size' and 'Color' variations, you can assign different product SKUs to each combination like 'Large + Red' or 'Small + Blue'. This is useful for managing inventory, pricing, and product details for each specific variant."
+  },
+  "product_assignments_explanation_title": {
+    "defaultMessage": "About Product Assignments"
+  },
+  "product_commerce_info": {
+    "defaultMessage": "One price list should have a max quantity field empty and no price should have the same max quantity along with currency and country specified"
+  },
+  "product_creation_failed": {
+    "defaultMessage": "Product creation failed"
+  },
+  "product_delete_blocked_action": {
+    "defaultMessage": "Please unlink it before trying to delete it."
+  },
+  "product_delete_blocked_header": {
+    "defaultMessage": "Remove links before deleting"
+  },
+  "product_delete_blocked_intro": {
+    "defaultMessage": "This product is linked to the following product types:"
+  },
+  "product_deleted": {
+    "defaultMessage": "Product deleted successfully"
+  },
+  "product_deleted_notice": {
+    "defaultMessage": "This product has been deleted and is no longer active. Some actions may be restricted."
+  },
+  "product_deleted_success": {
+    "defaultMessage": "Deleted successfully"
+  },
+  "product_drafted": {
+    "defaultMessage": "Drafted successfully"
+  },
+  "product_id": {
+    "defaultMessage": "ID"
+  },
+  "product_import.validation.invalid_type": {
+    "defaultMessage": "Invalid product type: {type}"
+  },
+  "product_import.validation.title_required": {
+    "defaultMessage": "Title is required"
+  },
+  "product_load_error": {
+    "defaultMessage": "Failed to load product"
+  },
+  "product_media": {
+    "defaultMessage": "Product Media"
+  },
+  "product_media_deleted": {
+    "defaultMessage": "Media deleted successfully"
+  },
+  "product_media_upload": {
+    "defaultMessage": "Media uploaded successfully"
+  },
+  "product_no_price": {
+    "defaultMessage": "No price"
+  },
+  "product_page_title": {
+    "defaultMessage": "{count, plural, one {# Product} other {# Products}}"
+  },
+  "product_publish_error": {
+    "defaultMessage": "Failed to publish product"
+  },
+  "product_published": {
+    "defaultMessage": "Published successfully"
+  },
+  "product_quantity": {
+    "defaultMessage": "Quantity"
+  },
+  "product_revenue": {
+    "defaultMessage": "Revenue"
+  },
+  "product_review_added": {
+    "defaultMessage": "Review added successfully!"
+  },
+  "product_review_updated": {
+    "defaultMessage": "Review updated successfully!"
+  },
+  "product_sold": {
+    "defaultMessage": "Sold"
+  },
+  "product_subscription_form_description": {
+    "defaultMessage": "<ul><li> Information that will be used to calculate price of a subscription based product </li> <li>The price specified in commerce section will be used when calculating fees on each interval. </li> <li>Price will not be included for the specified trial period </li> </ul>"
+  },
+  "product_text_form_description": {
+    "defaultMessage": "<ul> <li><strong>Slug:</strong> The unique part of your product URL (e.g., 'my-awesome-product'). Keep it short and descriptive.</li> <li><strong>Localization:</strong> Switch languages using the dropdown at the top left to translate content for different markets.</li> <li><strong>Description:</strong> Supports Markdown and HTML formatting. Use double backslash (\\\\\\\\) for line breaks.</li> <li><strong>Labels:</strong> Eye-catching badges that appear on your product (e.g., 'New Arrival', '50% Off', 'Limited Edition'). Perfect for promotions and highlighting special features. Each language can have unique labels.</li> <li><strong>Key Difference:</strong> Labels are customer-facing promotional badges, while Tags are internal keywords for organization and filtering.</li> </ul>"
+  },
+  "product_title": {
+    "defaultMessage": "Product"
+  },
+  "product_type": {
+    "defaultMessage": "Product type"
+  },
+  "product_unpublish_error": {
+    "defaultMessage": "Failed to unpublish product"
+  },
+  "product_untitled": {
+    "defaultMessage": "Untitled Product"
+  },
+  "product_variation_added": {
+    "defaultMessage": "Product variation added successfully"
+  },
+  "product_variation_deleted": {
+    "defaultMessage": "Variation deleted successfully"
+  },
+  "product_variation_key_help": {
+    "defaultMessage": "Unique identifier used internally (e.g., \"color\", \"size\"). Use lowercase without spaces."
+  },
+  "product_variation_option_deleted": {
+    "defaultMessage": "Variation option deleted successfully"
+  },
+  "product_variation_title_help": {
+    "defaultMessage": "The display name customers will see (e.g., \"Color\", \"Size\", \"Material\")"
+  },
+  "product_variations_explanation": {
+    "defaultMessage": "Variations allow customers to choose different options for your product (like color, size, material). Each variation can have multiple options that customers can select from."
+  },
+  "product_variations_explanation_title": {
+    "defaultMessage": "About Product Variations"
+  },
+  "products": {
+    "defaultMessage": "Products"
+  },
+  "products_config_description": {
+    "defaultMessage": "Create your first products"
+  },
+  "products_count": {
+    "defaultMessage": "Products"
+  },
+  "products_count_header": {
+    "defaultMessage": "{count} Products"
+  },
+  "products_data_unavailable": {
+    "defaultMessage": "Product data unavailable"
+  },
+  "products_found": {
+    "defaultMessage": "{count} products found"
+  },
+  "products_header": {
+    "defaultMessage": "1 Product"
+  },
+  "products_not_found": {
+    "defaultMessage": "No {status} products found in these results"
+  },
+  "profile": {
+    "defaultMessage": "Profile"
+  },
+  "profile_notice": {
+    "defaultMessage": "This information will be displayed publicly so be careful what you share."
+  },
+  "profile_updated": {
+    "defaultMessage": "Profile updated successfully!"
+  },
+  "provider_configuration_items": {
+    "defaultMessage": "Config items"
+  },
+  "provider_created_success": {
+    "defaultMessage": "Provider created successfully!"
+  },
+  "publish_product_description": {
+    "defaultMessage": "Product will be searchable and is available for orders"
+  },
+  "published": {
+    "defaultMessage": "Published"
+  },
+  "quantity": {
+    "defaultMessage": "Quantity"
+  },
+  "quotation": {
+    "defaultMessage": "quotation"
+  },
+  "quotation-context-input-label": {
+    "defaultMessage": "Quotation context"
+  },
+  "quotation-quoted-successfully": {
+    "defaultMessage": "Quoted successfully"
+  },
+  "quotation-rejection-successfully": {
+    "defaultMessage": "Quotation rejected successfully"
+  },
+  "quotation-verified-successfully": {
+    "defaultMessage": "Quotation verified successfully"
+  },
+  "quotation_count_header": {
+    "defaultMessage": "{count} Quotations"
+  },
+  "quotation_detail": {
+    "defaultMessage": "Quotation Detail"
+  },
+  "quotation_detail_title": {
+    "defaultMessage": "Quotation {id}"
+  },
+  "quotation_header": {
+    "defaultMessage": "1 Quotation"
+  },
+  "quotation_number": {
+    "defaultMessage": "Quotation number"
+  },
+  "quotation_page_title": {
+    "defaultMessage": "{count, plural, one {# Quotation} other {# Quotations}}"
+  },
+  "quotation_updated": {
+    "defaultMessage": "Quotation updated successfuly"
+  },
+  "quotations": {
+    "defaultMessage": "Quotations"
+  },
+  "recent_reviews": {
+    "defaultMessage": "Recent reviews"
+  },
+  "region": {
+    "defaultMessage": "Region"
+  },
+  "region_Code": {
+    "defaultMessage": "Region"
+  },
+  "register-with-web3": {
+    "defaultMessage": "Register"
+  },
+  "registered": {
+    "defaultMessage": "Registered"
+  },
+  "reject-quotation-quotation": {
+    "defaultMessage": "Reject quotation?"
+  },
+  "reject-quotation-submit": {
+    "defaultMessage": "Reject"
+  },
+  "reject_order": {
+    "defaultMessage": "Reject order"
+  },
+  "reject_order_alert_button": {
+    "defaultMessage": "Reject"
+  },
+  "reject_order_alert_header": {
+    "defaultMessage": "Reject order?"
+  },
+  "rejected": {
+    "defaultMessage": "REJECTED"
+  },
+  "reorder_original": {
+    "defaultMessage": "Reorder to original location"
+  },
+  "report-submit": {
+    "defaultMessage": "Submit"
+  },
+  "request_new_reset_link": {
+    "defaultMessage": "Request New Reset Link"
+  },
+  "request_new_verification": {
+    "defaultMessage": "Request New Verification"
+  },
+  "requested": {
+    "defaultMessage": "Requested"
+  },
+  "required-role-not-satisfied": {
+    "defaultMessage": "Current account does not have access, please log in with an account that has the required role."
+  },
+  "required_steps_note": {
+    "defaultMessage": "Required for basic shop functionality"
+  },
+  "reset_link_sent": {
+    "defaultMessage": "Password reset link sent to {email}"
+  },
+  "reset_password": {
+    "defaultMessage": "Reset Password"
+  },
+  "reset_password_header_description": {
+    "defaultMessage": "Enter your new password and make sure you don't forget it this time."
+  },
+  "reset_token_error": {
+    "defaultMessage": "Reset Token Error"
+  },
+  "reset_token_expired": {
+    "defaultMessage": "Token link invalid or has expired"
+  },
+  "reset_token_invalid_warning": {
+    "defaultMessage": "The reset token is either invalid or expired."
+  },
+  "resolved_country": {
+    "defaultMessage": "Resolved country"
+  },
+  "resolved_language": {
+    "defaultMessage": "Resolved language"
+  },
+  "rest_password": {
+    "defaultMessage": "Reset password"
+  },
+  "result": {
+    "defaultMessage": "Result"
+  },
+  "retries": {
+    "defaultMessage": "Retries"
+  },
+  "retry": {
+    "defaultMessage": "Retry Connection"
+  },
+  "retry-work": {
+    "defaultMessage": "Retry"
+  },
+  "retry_prompt": {
+    "defaultMessage": "Retry"
+  },
+  "review": {
+    "defaultMessage": "Review"
+  },
+  "review_data": {
+    "defaultMessage": "Review data"
+  },
+  "review_deleted": {
+    "defaultMessage": "Review deleted successfully"
+  },
+  "review_placeholder": {
+    "defaultMessage": "Share your thoughts about this product..."
+  },
+  "review_summary": {
+    "defaultMessage": "<div> Based on <cta> {total} </cta> reviews</div>"
+  },
+  "reviews": {
+    "defaultMessage": "Reviews"
+  },
+  "role_updated": {
+    "defaultMessage": "Role updated successfully!"
+  },
+  "roles": {
+    "defaultMessage": "Roles"
+  },
+  "root": {
+    "defaultMessage": "Root"
+  },
+  "root_assortment": {
+    "defaultMessage": "Root"
+  },
+  "root_assortment_description": {
+    "defaultMessage": "Can not be assigned as a child of another assortment"
+  },
+  "root_assortments_count": {
+    "defaultMessage": "{count} root assortments found"
+  },
+  "root_description": {
+    "defaultMessage": "This makes the assortment a top level category"
+  },
+  "root_node": {
+    "defaultMessage": "Root node"
+  },
+  "save": {
+    "defaultMessage": "Save"
+  },
+  "saved": {
+    "defaultMessage": "Saved"
+  },
+  "say_hi_get_to_know_me": {
+    "defaultMessage": "Say Hi and Get To Know Me"
+  },
+  "scaffold_product": {
+    "defaultMessage": "Scaffold"
+  },
+  "scheduled": {
+    "defaultMessage": "Scheduled"
+  },
+  "search": {
+    "defaultMessage": "Search"
+  },
+  "search_product": {
+    "defaultMessage": "Search product"
+  },
+  "select_language": {
+    "defaultMessage": "Select Language"
+  },
+  "select_option": {
+    "defaultMessage": "Select an option"
+  },
+  "select_options_toggle": {
+    "defaultMessage": "Change {type} status"
+  },
+  "select_role": {
+    "defaultMessage": "Select role"
+  },
+  "select_tab": {
+    "defaultMessage": "Select a tab"
+  },
+  "select_type": {
+    "defaultMessage": "Select type"
+  },
+  "select_valid_csv_error": {
+    "defaultMessage": "Please select a valid CSV file."
+  },
+  "send__enrollment_email_button": {
+    "defaultMessage": "Send enrollment Email"
+  },
+  "send_activation_email_confirm": {
+    "defaultMessage": "Are you sure you want to send email?"
+  },
+  "send_activation_email_header": {
+    "defaultMessage": "Send Email."
+  },
+  "send_button": {
+    "defaultMessage": "Send"
+  },
+  "send_email_button": {
+    "defaultMessage": "Send Email"
+  },
+  "send_reset_link": {
+    "defaultMessage": "Send reset link"
+  },
+  "send_verification_mail": {
+    "defaultMessage": "Send verification mail"
+  },
+  "sequence": {
+    "defaultMessage": "Display Order"
+  },
+  "set_password": {
+    "defaultMessage": "Set password"
+  },
+  "setup_complete": {
+    "defaultMessage": "Complete"
+  },
+  "setup_now": {
+    "defaultMessage": "Setup Now"
+  },
+  "shipping": {
+    "defaultMessage": "Shipping"
+  },
+  "shipping_method": {
+    "defaultMessage": "SHIPPING"
+  },
+  "shop_info": {
+    "defaultMessage": "Shop Info"
+  },
+  "shop_setup_complete": {
+    "defaultMessage": "Shop Setup Complete!"
+  },
+  "shop_setup_complete_description": {
+    "defaultMessage": "Congratulations! Your shop is fully configured and ready to accept orders."
+  },
+  "shop_setup_description": {
+    "defaultMessage": "Follow these steps to configure your shop and start selling."
+  },
+  "shortcuts": {
+    "defaultMessage": "Shortcuts"
+  },
+  "show_available_tools": {
+    "defaultMessage": "Show Available Tools"
+  },
+  "show_carts": {
+    "defaultMessage": "Show carts"
+  },
+  "show_error_details": {
+    "defaultMessage": "Show error details"
+  },
+  "show_full_response": {
+    "defaultMessage": "Show full response"
+  },
+  "show_guests": {
+    "defaultMessage": "Show Guests"
+  },
+  "show_inactive": {
+    "defaultMessage": "Show Inactive"
+  },
+  "show_less": {
+    "defaultMessage": "Show less"
+  },
+  "show_payload": {
+    "defaultMessage": "Show Payload"
+  },
+  "sign_address_header": {
+    "defaultMessage": "Sign address"
+  },
+  "sign_up": {
+    "defaultMessage": "Sign up"
+  },
+  "sign_up_header": {
+    "defaultMessage": "Create new account"
+  },
+  "signature_hash": {
+    "defaultMessage": "Signature hash"
+  },
+  "signature_not_match_error": {
+    "defaultMessage": "Signature does not match"
+  },
+  "simple_product_definition": {
+    "defaultMessage": "<h3>Simple</h3> <p>Simple product is the most commonly used type of product type. It accepts configuration values for price, dimension and warehousing. Most e-commerce product needs are satisfied by this type </p>"
+  },
+  "sku": {
+    "defaultMessage": "SKU"
+  },
+  "slug": {
+    "defaultMessage": "Slug"
+  },
+  "star_reviews": {
+    "defaultMessage": "Star reviews"
+  },
+  "start": {
+    "defaultMessage": "Start"
+  },
+  "start_date": {
+    "defaultMessage": "Start date"
+  },
+  "started": {
+    "defaultMessage": "Started"
+  },
+  "status": {
+    "defaultMessage": "Status"
+  },
+  "submit": {
+    "defaultMessage": "Submit"
+  },
+  "subscription": {
+    "defaultMessage": "Subscription"
+  },
+  "subscription_message": {
+    "defaultMessage": "Subscription"
+  },
+  "subscription_product_type_not_valid": {
+    "defaultMessage": "Status of the product does not allow this operation"
+  },
+  "subscriptions": {
+    "defaultMessage": "Subscriptions"
+  },
+  "subtitle": {
+    "defaultMessage": "Subtitle"
+  },
+  "subtotal": {
+    "defaultMessage": "Subtotal"
+  },
+  "success_message": {
+    "defaultMessage": "Subscription successfully activated."
+  },
+  "supply": {
+    "defaultMessage": "Supply"
+  },
+  "system": {
+    "defaultMessage": "System settings"
+  },
+  "system_information": {
+    "defaultMessage": "System Information"
+  },
+  "table_actions_menu": {
+    "defaultMessage": "Actions menu"
+  },
+  "tags": {
+    "defaultMessage": "Tags"
+  },
+  "tags_updated": {
+    "defaultMessage": "Tags updated successfully"
+  },
+  "tax": {
+    "defaultMessage": "Tax"
+  },
+  "taxable": {
+    "defaultMessage": "Taxable"
+  },
+  "terminate_enrollment": {
+    "defaultMessage": "Terminate Enrollment"
+  },
+  "terminate_enrollment_confirmation": {
+    "defaultMessage": "Are you sure you want to terminate this subscription?"
+  },
+  "terminate_enrollment_error": {
+    "defaultMessage": "Failed when sending subscription activation email, please try again"
+  },
+  "terminate_enrollment_success": {
+    "defaultMessage": "Subscription terminated successfully"
+  },
+  "terminate_subscription": {
+    "defaultMessage": "Terminate subscription"
+  },
+  "text": {
+    "defaultMessage": "Text"
+  },
+  "texts": {
+    "defaultMessage": "Texts"
+  },
+  "thank_you_for_verifying": {
+    "defaultMessage": "Thank you for verifying your email address."
+  },
+  "tiered_pricing": {
+    "defaultMessage": "Tiered Pricing"
+  },
+  "time": {
+    "defaultMessage": "Time"
+  },
+  "title": {
+    "defaultMessage": "Title"
+  },
+  "title_not_found": {
+    "defaultMessage": "Title not found"
+  },
+  "to": {
+    "defaultMessage": "To"
+  },
+  "token": {
+    "defaultMessage": "Token"
+  },
+  "token-id": {
+    "defaultMessage": "Token ID {chainTokenId}"
+  },
+  "token-id-label": {
+    "defaultMessage": "Token ID"
+  },
+  "token-supply": {
+    "defaultMessage": "Supply"
+  },
+  "token_count_header": {
+    "defaultMessage": "{count} Tokens"
+  },
+  "token_header": {
+    "defaultMessage": "1 Token"
+  },
+  "token_invalid_expired": {
+    "defaultMessage": "Token Invalid/Expired"
+  },
+  "token_invalidation_date": {
+    "defaultMessage": "Invalidated"
+  },
+  "token_page_title": {
+    "defaultMessage": "{count, plural, one {# Token} other {# Tokens}}"
+  },
+  "token_updated": {
+    "defaultMessage": "Token update successfully!"
+  },
+  "tokenized_product_text_form_description": {
+    "defaultMessage": "<b>Contract standards </b> <ol> <dt><b> ERC721 </b></dt> <dd> Buying multiple Products leads to multiple Tokens (make sure to set the tokenId to 0 to make it auto generate new id's) </dd> <dt> <b> ERC1155 </b></dt> <dd> Buying multiple Products leads to a new token with balance 3 of token with tokenId assigned </dd> <dt> <b> Contract address </b></dt> <dd> Address of a token on a given network </dd> </ol>"
+  },
+  "tokens": {
+    "defaultMessage": "Tokens"
+  },
+  "tool_fetch_failed_error": {
+    "defaultMessage": "Failed to fetch available tools"
+  },
+  "tool_response": {
+    "defaultMessage": "Tool Response"
+  },
+  "top_selling_no_products": {
+    "defaultMessage": "No top selling products found."
+  },
+  "top_selling_products": {
+    "defaultMessage": "Top selling products"
+  },
+  "total": {
+    "defaultMessage": "Total"
+  },
+  "total_orders": {
+    "defaultMessage": "Total orders"
+  },
+  "total_records": {
+    "defaultMessage": "{total} records found"
+  },
+  "total_sales": {
+    "defaultMessage": "Total sales"
+  },
+  "total_spent": {
+    "defaultMessage": "Spent"
+  },
+  "trial": {
+    "defaultMessage": "Trial"
+  },
+  "trial_interval_unit": {
+    "defaultMessage": "Trial interval unit"
+  },
+  "trial_unit": {
+    "defaultMessage": "Trial Unit"
+  },
+  "try_again": {
+    "defaultMessage": "Try Again"
+  },
+  "type": {
+    "defaultMessage": "Type"
+  },
+  "type_colon": {
+    "defaultMessage": "Type:"
+  },
+  "unauthorized_page": {
+    "defaultMessage": "Access Forbidden"
+  },
+  "unchained_logo": {
+    "defaultMessage": "Unchained Logo"
+  },
+  "unit": {
+    "defaultMessage": "Unit"
+  },
+  "untitled_assortment": {
+    "defaultMessage": "Untitled Assortment"
+  },
+  "untitled_product": {
+    "defaultMessage": "Untitled product"
+  },
+  "unverified": {
+    "defaultMessage": "Unverified"
+  },
+  "update": {
+    "defaultMessage": "Update"
+  },
+  "update_configuration": {
+    "defaultMessage": "Update configuration"
+  },
+  "update_country": {
+    "defaultMessage": "Update Country"
+  },
+  "update_currency": {
+    "defaultMessage": "Update Currency"
+  },
+  "update_delivery_configuration": {
+    "defaultMessage": "Update delivery provider"
+  },
+  "update_filter": {
+    "defaultMessage": "Update filter"
+  },
+  "update_language": {
+    "defaultMessage": "Update Language"
+  },
+  "update_payment_provider_header": {
+    "defaultMessage": "Update payment provider"
+  },
+  "update_profile": {
+    "defaultMessage": "Update profile / address"
+  },
+  "update_review": {
+    "defaultMessage": "Update Review"
+  },
+  "update_role": {
+    "defaultMessage": "Update role"
+  },
+  "update_token": {
+    "defaultMessage": "Update token"
+  },
+  "update_warehousing_provider_header": {
+    "defaultMessage": "Update warehousing provider"
+  },
+  "updated": {
+    "defaultMessage": "Updated"
+  },
+  "upload": {
+    "defaultMessage": "Upload"
+  },
+  "upload_file": {
+    "defaultMessage": "Upload a file"
+  },
+  "usage_calculation_type": {
+    "defaultMessage": "Usage calculation type"
+  },
+  "use-another-account": {
+    "defaultMessage": "Use Another Account"
+  },
+  "use_another_verification_token": {
+    "defaultMessage": "Please resend another verification email and try again."
+  },
+  "use_authenticator": {
+    "defaultMessage": "Use authenticator"
+  },
+  "use_latest_reset_link": {
+    "defaultMessage": "Please use the latest reset link sent to your email or request a new one."
+  },
+  "use_latest_verification_link": {
+    "defaultMessage": "Please use the latest verification link sent to your email."
+  },
+  "user": {
+    "defaultMessage": "User"
+  },
+  "user-activities": {
+    "defaultMessage": "Activity"
+  },
+  "user_avatar": {
+    "defaultMessage": "User avatar"
+  },
+  "user_count_header": {
+    "defaultMessage": "{count} Users"
+  },
+  "user_deleted": {
+    "defaultMessage": "User deleted successfully"
+  },
+  "user_detail_title": {
+    "defaultMessage": "User {id}"
+  },
+  "user_header": {
+    "defaultMessage": "1 User"
+  },
+  "user_page_title": {
+    "defaultMessage": "{count, plural, one {# User} other {# Users}}"
+  },
+  "user_password_not_set": {
+    "defaultMessage": "User password not set"
+  },
+  "user_profile_created": {
+    "defaultMessage": "User profile created successfully!"
+  },
+  "username": {
+    "defaultMessage": "Username"
+  },
+  "username_exists_error": {
+    "defaultMessage": "Username is taken please provide another"
+  },
+  "username_or_email": {
+    "defaultMessage": "Username/Email"
+  },
+  "username_or_email_taken": {
+    "defaultMessage": "Username taken, Please provided different username"
+  },
+  "username_updated": {
+    "defaultMessage": "Username updated successfully!"
+  },
+  "users": {
+    "defaultMessage": "users"
+  },
+  "users_setting_list_header": {
+    "defaultMessage": "User settings"
+  },
+  "valid": {
+    "defaultMessage": "Valid"
+  },
+  "value": {
+    "defaultMessage": "Value"
+  },
+  "variation.created": {
+    "defaultMessage": "Created"
+  },
+  "variation.id": {
+    "defaultMessage": "ID"
+  },
+  "variation.productId": {
+    "defaultMessage": "Product ID"
+  },
+  "variation.untitled": {
+    "defaultMessage": "Untitled Variation"
+  },
+  "variation.updated": {
+    "defaultMessage": "Updated"
+  },
+  "variation_id": {
+    "defaultMessage": "Variation ID"
+  },
+  "variation_option": {
+    "defaultMessage": "Variation option"
+  },
+  "variation_option_added": {
+    "defaultMessage": "Variation option added successfully!"
+  },
+  "variation_option_title_help": {
+    "defaultMessage": "Display name customers see (e.g., \"Red\", \"Large\", \"Cotton\")"
+  },
+  "variation_option_updated": {
+    "defaultMessage": "Variation option updated successfully!"
+  },
+  "variation_option_value_help": {
+    "defaultMessage": "Internal identifier (e.g., \"red\", \"large\", \"cotton\")"
+  },
+  "variation_options_explanation": {
+    "defaultMessage": "Add individual choices for this variation (e.g., \"Red\", \"Blue\", \"Green\" for a Color variation)"
+  },
+  "variations": {
+    "defaultMessage": "Variations"
+  },
+  "vat_suspect": {
+    "defaultMessage": "Vat Suspect"
+  },
+  "vendor": {
+    "defaultMessage": "Vendor"
+  },
+  "verification_failed": {
+    "defaultMessage": "verification failed"
+  },
+  "verification_failed_status": {
+    "defaultMessage": "Verification Failed"
+  },
+  "verification_sent_error": {
+    "defaultMessage": "Error occurred while sending verification email, please try again"
+  },
+  "verification_sent_success": {
+    "defaultMessage": "Verification email sent successfully"
+  },
+  "verification_successful": {
+    "defaultMessage": "Verification Successful"
+  },
+  "verification_token_expired": {
+    "defaultMessage": "Verification token expired"
+  },
+  "verification_web3_address": {
+    "defaultMessage": "Verify"
+  },
+  "verified": {
+    "defaultMessage": "Verified"
+  },
+  "verify-quotation-quotation": {
+    "defaultMessage": "Verify quotation?"
+  },
+  "verify-quotation-submit": {
+    "defaultMessage": "Verify"
+  },
+  "verify_email_token_invalid_error": {
+    "defaultMessage": "The email verification token is either invalid or expired."
+  },
+  "version": {
+    "defaultMessage": "Version"
+  },
+  "view": {
+    "defaultMessage": "View"
+  },
+  "wallet-address": {
+    "defaultMessage": "Wallet {walletAddress}"
+  },
+  "warehouse_detail_title": {
+    "defaultMessage": "Warehouse {id}"
+  },
+  "warehousing": {
+    "defaultMessage": "Warehousing"
+  },
+  "warehousing_provider": {
+    "defaultMessage": "Warehousing provider"
+  },
+  "warehousing_provider_deleted": {
+    "defaultMessage": "Warehousing provider deleted successfully"
+  },
+  "warning": {
+    "defaultMessage": "Warning!"
+  },
+  "web3_address": {
+    "defaultMessage": "Web3 Address"
+  },
+  "web3_address_added": {
+    "defaultMessage": "Address added successfully!"
+  },
+  "web3_address_deleted": {
+    "defaultMessage": "Address deleted successfully"
+  },
+  "web3_address_signature_instruction": {
+    "defaultMessage": "<p>Copy the following nonce <b> ({nonce})</b> and past the signature on the space provided below </p>"
+  },
+  "web3_address_verify_link": {
+    "defaultMessage": "<p> Go to <a> etherscan </a> to verify address </p>"
+  },
+  "web3_addresses": {
+    "defaultMessage": "Web3 addresses"
+  },
+  "web3_verified_success": {
+    "defaultMessage": "Address verified successfully!"
+  },
+  "web_auth_credential_removed": {
+    "defaultMessage": "Credential removed successfully"
+  },
+  "web_auth_icon": {
+    "defaultMessage": "Auth icon"
+  },
+  "web_auth_username_required": {
+    "defaultMessage": "A username is required to use WebAuthn"
+  },
+  "web_authentication": {
+    "defaultMessage": "Web Authentication"
+  },
+  "weight": {
+    "defaultMessage": "Weight"
+  },
+  "weight_gram": {
+    "defaultMessage": "Weight (Gram)"
+  },
+  "welcome_user": {
+    "defaultMessage": "Welcome back, {name}!"
+  },
+  "width": {
+    "defaultMessage": "Width (Millimeter)"
+  },
+  "with_children": {
+    "defaultMessage": "With Children"
+  },
+  "work_added_success": {
+    "defaultMessage": "Work added successfully!"
+  },
+  "work_allocated_success": {
+    "defaultMessage": "Allocate work successfully!"
+  },
+  "work_count_header": {
+    "defaultMessage": "{count} Work Items"
+  },
+  "work_created": {
+    "defaultMessage": "Created"
+  },
+  "work_deleted": {
+    "defaultMessage": "Work deleted successfully"
+  },
+  "work_detail": {
+    "defaultMessage": "Work Detail"
+  },
+  "work_detail_title": {
+    "defaultMessage": "Work {id}"
+  },
+  "work_finished": {
+    "defaultMessage": "Finished"
+  },
+  "work_header": {
+    "defaultMessage": "1 Work Item"
+  },
+  "work_management_setting_list_header": {
+    "defaultMessage": "Work Management Settings"
+  },
+  "work_original": {
+    "defaultMessage": "Original Work"
+  },
+  "work_page_title": {
+    "defaultMessage": "{count, plural, one {# Work Item} other {# Work Items}}"
+  },
+  "work_priority": {
+    "defaultMessage": "Priority"
+  },
+  "work_queue": {
+    "defaultMessage": "Work queue"
+  },
+  "work_queue_header": {
+    "defaultMessage": "Work queue"
+  },
+  "work_queue_problem_detected": {
+    "defaultMessage": "Problems detected in the Work Queue"
+  },
+  "work_retries": {
+    "defaultMessage": "Retries"
+  },
+  "work_scheduled": {
+    "defaultMessage": "Scheduled"
+  },
+  "work_started": {
+    "defaultMessage": "Started"
+  },
+  "work_status": {
+    "defaultMessage": "Work Status"
+  },
+  "work_type": {
+    "defaultMessage": "Work type"
+  },
+  "work_type_header": {
+    "defaultMessage": "Type"
+  },
+  "worker": {
+    "defaultMessage": "Worker"
+  },
+  "worker.dateRange": {
+    "defaultMessage": "Date Range"
+  },
+  "worker.deleteCount": {
+    "defaultMessage": "Deleted"
+  },
+  "worker.errorCount": {
+    "defaultMessage": "Error"
+  },
+  "worker.newCount": {
+    "defaultMessage": "New"
+  },
+  "worker.noStatistics": {
+    "defaultMessage": "No statistics available"
+  },
+  "worker.startCount": {
+    "defaultMessage": "Start"
+  },
+  "worker.successCount": {
+    "defaultMessage": "Success"
+  },
+  "worker_dynamic": {
+    "defaultMessage": "{worker}"
+  },
+  "workers": {
+    "defaultMessage": "Workers"
+  },
+  "write_review": {
+    "defaultMessage": "Write a Review"
+  }
+}

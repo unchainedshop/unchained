@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-blue-ribbon-50: #f7f7fe;
+  --color-blue-ribbon-100: #eff0fe;
+  --color-blue-ribbon-200: #d8d9fc;
+  --color-blue-ribbon-300: #c1c2f9;
+  --color-blue-ribbon-400: #9294f5;
+  --color-blue-ribbon-500: #6366f1;
+  --color-blue-ribbon-600: #595cd9;
+  --color-blue-ribbon-700: #4a4db5;
+  --color-blue-ribbon-800: #3b3d91;
+  --color-blue-ribbon-900: #313276;
+
+  /* Chart colors - Light mode */
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+}
+
+/* Dark mode chart colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+.dark {
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility autofill {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0px 1000px rgb(15 23 42) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@layer utilities {
+  option:not(:first-of-type),
+  html,
+  body,
+  a {
+    color: rgb(51 65 85);
+  }
+
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  .node {
+    stroke-linecap: round;
+  }
+
+  .ql-toolbar.ql-snow,
+  .ql-container.ql-snow {
+    border: 0;
+  }
+
+  .xl\:text-5xl {
+    line-height: 1.15 !important;
+  }
+
+  @media (min-width: 640px) {
+    table {
+      display: inline-table !important;
+    }
+
+    thead tr:not(:first-child) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 639px) {
+    thead tr {
+      @apply border border-slate-300;
+    }
+  }
+
+  .top-100 {
+    top: 100%;
+  }
+  .bottom-100 {
+    bottom: 100%;
+  }
+  .max-h-select {
+    max-height: 300px;
+  }
+
+  .quill-error-border .ql-editor {
+    @apply border border-rose-300;
+  }
+
+  .ql-editor:focus {
+    @apply outline outline-3 outline-slate-400 rounded;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: rgb(15 23 42);
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Checkbox styling */
+input[type="checkbox"]:not(:checked) {
+  background-color: white !important;
+  border-color: rgb(203 213 225) !important; /* slate-300 */
+}
+
+input[type="checkbox"]:checked {
+  background-color: rgb(15 23 42) !important; /* slate-900 */
+  border-color: rgb(15 23 42) !important;
+}
+
+.dark input[type="checkbox"]:not(:checked) {
+  background-color: rgb(30 41 59) !important; /* slate-800 */
+  border-color: rgb(71 85 105) !important; /* slate-600 */
+}
+
+.dark input[type="checkbox"]:checked {
+  background-color: rgb(30 41 59) !important; /* slate-800 */
+  border-color: rgb(30 41 59) !important;
+}
+
+
+.whistle {
+  width: 20%;
+  fill: rgb(251 113 133); /* rose-400 */
+  margin: 100px 40%;
+}
+
+iframe#external-page {
+  width: 100%;
+  height: 100vh;
+  border: none;
+}
+
+:root {
+  --toastify-color-success: var(--color-emerald-500);
+  --toastify-color-error: var(--color-rose-600);
+  --toastify-toast-min-height: 72px;
+  --toastify-font-family:
+    system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --toastify-color-light: #fff;
+  --toastify-color-dark: #1e293b;
+  --toastify-text-color-light: #475569;
+}
+
+.dark {
+  --toastify-color-light: #1e293b;
+  --toastify-color-dark: #0f172a;
+  --toastify-text-color-light: #cbd5e1;
+}
+
+.Toastify__progress-bar--wrp {
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1) !important;
+  bottom: 0 !important;
+  border-radius: 0 0 16px 16px !important;
+  overflow: hidden !important;
+}
+
+.Toastify__progress-bar {
+  height: 3px !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+.Toastify__close-button {
+  color: var(--color-slate-400);
+  opacity: 1;
+  top: 10px;
+  right: 10px;
+}
+
+/* Toast styles with transparent blur effect */
+.Toastify__toast {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(16px) brightness(1.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: var(--color-slate-700) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.Toastify__toast-body {
+  color: var(--color-slate-700) !important;
+}
+
+/* Dark theme styles for toast notifications */
+.dark .Toastify__toast {
+  background-color: rgba(30, 41, 59, 0.3) !important;
+  backdrop-filter: blur(16px) brightness(1.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--color-slate-200) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.dark .Toastify__toast-body {
+  color: var(--color-slate-200) !important;
+}
+
+.dark .Toastify__close-button {
+  color: var(--color-slate-400);
+}
+
+.dark .Toastify__close-button:hover {
+  color: var(--color-slate-200);
+}
+
+.dark .Toastify__progress-bar {
+  background: var(--color-slate-600);
+}
+
+.dark .Toastify__progress-bar--success {
+  background: var(--color-emerald-500);
+}
+
+.dark .Toastify__progress-bar--error {
+  background: var(--color-rose-600);
+}
+
+.shadow-none {
+  box-shadow: none !important;
+}
+
+/* Modal blur effect using backdrop-filter to avoid layout shifts */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(12px);
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  background-color: oklch(
+    12.9% 0.042 264.695 / 0.6
+  ); /* Semi-transparent white */
+}
+
+body.modal-blur-active::before {
+  opacity: 1;
+}

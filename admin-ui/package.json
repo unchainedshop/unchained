@@ -1,0 +1,139 @@
+{
+  "name": "@unchainedshop/admin-ui",
+  "license": "EUPL-1.2",
+  "version": "4.0.35",
+  "description": "Unchained Commerce Admin UI Template",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "out"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./express": {
+      "import": "./dist/express.js"
+    },
+    "./fastify": {
+      "import": "./dist/fastify.js"
+    }
+  },
+  "scripts": {
+    "dev": "NODE_OPTIONS='--inspect' next dev ",
+    "build": "node ./generate-permissions.js && NODE_ENV=production next build && npm run build:lib",
+    "build:lib": "tsc -p tsconfig.build.json",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "eslint --fix --ext .ts,.tsx,.js,.jsx .",
+    "extract-translation": "formatjs extract 'src/(pages|modules|components)/**/*.{ts,tsx,jsx}' --out-file src/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "compile-translation": "formatjs compile  ./src/lang/en.json  --out-file ./src/i18n/en.json --format custom-formatter.js && node extract-missing-translation-keys.js",
+    "serve": "npx serve out",
+    "cy:run": "cypress run",
+    "cy:open": "cypress run",
+    "test:e2e": "start-server-and-test serve http://localhost:3000 cy:run",
+    "test:component": "cypress open --component",
+    "test:e2e-record": "cypress run --browser chrome --record",
+    "version:patch": "npm version patch && npm run tag",
+    "version:minor": "npm version minor && npm run tag",
+    "version:major": "npm version major && npm run tag",
+    "tag": "git push --follow-tags",
+    "codegen": "graphql-codegen --config codegen.ts"
+  },
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
+  "contributors": [
+    "Vedran Rudelj <vedran@unchained.shop> (http://www.unchained.shop)",
+    "Pascal Kaufmann <pascal@unchained.shop> (http://www.unchained.shop)",
+    "Mikael Araya Mengistu <mikael@unchained.shop> (http://www.unchained.shop)"
+  ],
+  "devDependencies": {
+    "@ai-sdk/openai-compatible": "^1.0.17",
+    "@ai-sdk/react": "^2.0.44",
+    "@apollo/client": "^4.0.5",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.34.0",
+    "@formatjs/cli": "^6.7.2",
+    "@formatjs/intl-pluralrules": "^5.4.4",
+    "@formatjs/intl-relativetimeformat": "^11.4.11",
+    "@graphql-codegen/cli": "^6.0.0",
+    "@graphql-codegen/typescript-operations": "^5.0.0",
+    "@headlessui/react": "^2.2.8",
+    "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/express": "^5.0.3",
+    "@types/react": "^19.1.13",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "classnames": "^2.5.1",
+    "clsx": "^2.1.1",
+    "cypress": "^15.2.0",
+    "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "deepmerge": "^4.3.1",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "^15.5.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^5.1.1",
+    "eslint-plugin-formatjs": "^5.4.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "formik": "^2.4.6",
+    "globals": "^16.4.0",
+    "graphql": "^16.11.0",
+    "intl-messageformat": "^10.7.16",
+    "lodash.isequal": "^4.5.0",
+    "lucide-react": "^0.544.0",
+    "next": "^15.5.3",
+    "npm-run-all": "^4.1.5",
+    "papaparse": "^5.5.3",
+    "prettier": "^3.6.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-intl": "^7.1.11",
+    "react-markdown": "^10.1.0",
+    "react-select": "^5.10.2",
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.2.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "rxjs": "^7.8.2",
+    "start-server-and-test": "^2.1.0",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.12",
+    "typescript": "^5.9.2",
+    "validator": "^13.15.15"
+  },
+  "peerDependencies": {
+    "@fastify/static": "^8.2.0",
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "ai": "^5.0.5",
+    "express": "^5.1.0",
+    "fastify": "^5.6.0",
+    "file-type": "^21.0.0"
+  },
+  "peerDependencyMeta": {
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
+    "@fastify/static": {
+      "optional": true
+    }
+  }
+}

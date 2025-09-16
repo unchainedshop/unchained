@@ -1,0 +1,10 @@
+.cache
+.git
+.next
+.github
+.vscode
+.env*local
+node_modules
+Jenkinsfile
+dist
+out

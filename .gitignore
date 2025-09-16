@@ -3,7 +3,7 @@ node_modules
 tsconfig.tsbuildinfo
 .vscode
 .DS_Store
-.env
+/.env
 .npm
 /globalConfig.json
 /docs/static/api

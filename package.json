@@ -59,7 +59,8 @@
     "examples/kitchensink-express",
     "examples/minimal",
     "examples/oidc",
-    "examples/ticketing"
+    "examples/ticketing",
+    "admin-ui"
   ],
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && rm -Rf ./docs/static/types && mv ./typedocs ./docs/static/types",
@@ -68,6 +69,7 @@
     "test:start-engine": "cd examples/kitchensink && npm run integration-test",
     "test:run-test": "node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-global-setup=tests/helpers.js --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p dev:*",
+    "dev:adminui": "cd admin-ui && npm run dev",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch": "tsc --build -w",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
