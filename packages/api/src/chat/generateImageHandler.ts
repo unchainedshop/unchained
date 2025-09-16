@@ -1,6 +1,6 @@
 import { experimental_generateImage, ImageModel, tool } from 'ai';
-import { fileTypeFromBuffer } from 'file-type';
-import { z, ZodAny } from 'zod';
+import { fileTypeFromBuffer } from 'file-type'; // TODO: replace with native solution when available
+import { z } from 'zod';
 
 const inputSchema = z.object({
   prompt: z.string().describe('The prompt to generate the image from'),

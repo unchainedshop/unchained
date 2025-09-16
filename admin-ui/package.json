@@ -3,27 +3,14 @@
   "license": "EUPL-1.2",
   "version": "4.0.35",
   "description": "Unchained Commerce Admin UI Template",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./out/index.html",
   "files": [
     "dist",
     "out"
   ],
-  "exports": {
-    ".": {
-      "import": "./dist/index.js"
-    },
-    "./express": {
-      "import": "./dist/express.js"
-    },
-    "./fastify": {
-      "import": "./dist/fastify.js"
-    }
-  },
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev ",
-    "build": "node ./generate-permissions.js && NODE_ENV=production next build && npm run build:lib",
-    "build:lib": "tsc -p tsconfig.build.json",
+    "build": "node ./generate-permissions.js && NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
     "format": "eslint --fix --ext .ts,.tsx,.js,.jsx .",
@@ -118,22 +105,7 @@
     "validator": "^13.15.15"
   },
   "peerDependencies": {
-    "@fastify/static": "^8.2.0",
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "ai": "^5.0.5",
-    "express": "^5.1.0",
-    "fastify": "^5.6.0",
-    "file-type": "^21.0.0"
-  },
-  "peerDependencyMeta": {
-    "express": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    },
-    "@fastify/static": {
-      "optional": true
-    }
+    "ai": "^5.0.5"
   }
 }

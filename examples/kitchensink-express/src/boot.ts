@@ -1,11 +1,10 @@
 import express from 'express';
 import http from 'node:http';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import { connect } from '@unchainedshop/api/lib/express/index.js';
+import { connect, expressRouter, connectChat } from '@unchainedshop/api/lib/express/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
 import { createLogger } from '@unchainedshop/logger';
-import { expressRouter, connectChat } from '@unchainedshop/admin-ui/express';
 import seed from './seed.js';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { openai } from '@ai-sdk/openai';
@@ -40,7 +39,7 @@ try {
     });
   }
 
-  app.use('/', expressRouter);
+  app.use('/', expressRouter());
 
   // Seed Database and Set a super insecure Access Token for admin
   await seed(engine.unchainedAPI);

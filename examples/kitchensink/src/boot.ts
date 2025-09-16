@@ -1,10 +1,9 @@
 import Fastify from 'fastify';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect, unchainedLogger, connectChat, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
-import { connectChat, fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 import seed from './seed.js';
 import { useErrorHandler } from '@envelop/core';
 import { openai } from '@ai-sdk/openai';
@@ -55,9 +54,9 @@ try {
     });
   }
 
-  fastify.register(fastifyRouter, {
-    prefix: '/',
-  });
+  // fastify.register(fastifyRouter, {
+  //   prefix: '/',
+  // });
 
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');

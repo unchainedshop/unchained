@@ -16,6 +16,8 @@ import createTempUploadMiddleware from './createTempUploadMiddleware.js';
 import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
 
+export * from './chatHandler.js';
+
 const resolveUserRemoteAddress = (req: e.Request) => {
   const remoteAddress =
     (req.headers['x-real-ip'] as string) ||

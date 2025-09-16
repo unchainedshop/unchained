@@ -1,7 +1,6 @@
 import express from 'express';
 import type { Express, Request, RequestHandler, Response } from 'express';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import path from 'node:path';
 import {
   convertToModelMessages,
   experimental_createMCPClient as createMCPClient,
@@ -10,23 +9,28 @@ import {
   streamText,
   ToolSet,
 } from 'ai';
-import { ChatConfiguration, errorHandler } from './utils';
-import generateImageHandler from './generateImageHandler';
-import defaultSystemPrompt from './defaultSystemPrompt';
-import normalizeToolsIndex from './normalizeToolsIndex';
+import { ChatConfiguration, errorHandler } from '../chat/utils.js';
+import generateImageHandler from '../chat/generateImageHandler.js';
+import defaultSystemPrompt from '../chat/defaultSystemPrompt.js';
+import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
 
-export const expressRouter = express.Router();
-const staticPath = path.join(__dirname, '..', 'out');
+export const expressRouter = () => {
+  const router = express.Router();
 
-expressRouter.use(express.static(staticPath));
+  const staticPath = import.meta.resolve('@unchainedshop/admin-ui/static/out');
 
-expressRouter.get(/(.*)/, (_, res) => {
-  res.sendFile(path.join(staticPath, 'index.html'));
-});
+  router.use(express.static(staticPath));
 
-const setupMCPChatHandler = (
-  chatConfiguration: ChatConfiguration & any,
-): RequestHandler => {
+  router.get(/(.*)/, (_, res) => {
+    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+    const staticPath = new URL(staticURL).pathname;
+    res.sendFile(staticPath);
+  });
+
+  return router;
+};
+
+const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): RequestHandler => {
   if (!chatConfiguration || !chatConfiguration.model) {
     throw new Error('Model is required');
   }
@@ -41,10 +45,7 @@ const setupMCPChatHandler = (
 
   const system = chatConfiguration.system ?? defaultSystemPrompt;
 
-  const mcpChatHandler: RequestHandler = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => {
+  const mcpChatHandler: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     if (req.method === 'OPTIONS') {
       res.status(200).end();
       return;
@@ -71,9 +72,7 @@ const setupMCPChatHandler = (
         ...additionalTools,
       };
       if (imageGenerationTool) {
-        tools.generateImage = generateImageHandler(req)(
-          imageGenerationTool,
-        ) as any;
+        tools.generateImage = generateImageHandler(req)(imageGenerationTool) as any;
       }
 
       if (req.method === 'GET') {
@@ -111,10 +110,7 @@ const setupMCPChatHandler = (
   return mcpChatHandler;
 };
 
-export const connectChat = (
-  app: Express,
-  chatConfiguration: ChatConfiguration,
-) => {
+export const connectChat = (app: Express, chatConfiguration: ChatConfiguration) => {
   const handler = setupMCPChatHandler(chatConfiguration);
   if (!handler) {
     throw new Error('Invalid chat configuration: model is required.');

@@ -1,12 +1,5 @@
-import path from 'path';
-import {
-  FastifyInstance,
-  FastifyPluginAsync,
-  RouteHandlerMethod,
-  FastifyRequest,
-} from 'fastify';
+import { FastifyInstance, FastifyPluginAsync, RouteHandlerMethod, FastifyRequest } from 'fastify';
 import fastifyStatic from '@fastify/static';
-import { ChatConfiguration, errorHandler } from './utils';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {
   convertToModelMessages,
@@ -16,11 +9,10 @@ import {
   streamText,
   ToolSet,
 } from 'ai';
-import generateImageHandler from './generateImageHandler';
-import defaultSystemPrompt from './defaultSystemPrompt';
-import normalizeToolsIndex from './normalizeToolsIndex';
-
-const staticPath = path.join(__dirname, '..', 'out');
+import generateImageHandler from '../chat/generateImageHandler.js';
+import defaultSystemPrompt from '../chat/defaultSystemPrompt.js';
+import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
+import { ChatConfiguration, errorHandler } from '../chat/utils.js';
 
 interface FastifyRouterOptions {
   prefix?: string;
@@ -30,6 +22,9 @@ export const fastifyRouter: FastifyPluginAsync<FastifyRouterOptions> = async (
   fastify: FastifyInstance,
   opts,
 ) => {
+  const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+  const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+
   fastify.register(fastifyStatic, {
     root: staticPath,
     prefix: opts.prefix || '/',
@@ -58,10 +53,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
 
   const system = chatConfiguration.system ?? defaultSystemPrompt;
 
-  const mcpChatHandler: RouteHandlerMethod = async (
-    req: FastifyRequest,
-    res,
-  ) => {
+  const mcpChatHandler: RouteHandlerMethod = async (req: FastifyRequest, res) => {
     const client = await createMCPClient({
       transport: new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
         requestInit: {
@@ -71,7 +63,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         },
       }) as MCPTransport,
     });
-
     try {
       if (req.method === 'OPTIONS') return res.send();
 
@@ -81,9 +72,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         ...additionalTools,
       };
       if (imageGenerationTool) {
-        tools.generateImage = generateImageHandler(req)(
-          imageGenerationTool,
-        ) as any;
+        tools.generateImage = generateImageHandler(req)(imageGenerationTool) as any;
       }
 
       if (req.method === 'GET') {
@@ -114,6 +103,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         }),
       );
     } catch (err: any) {
+      console.log(err);
       await client?.close();
       res.status(500);
       return res.send(JSON.stringify({ error: errorHandler(err) }));
@@ -122,10 +112,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
   return mcpChatHandler;
 };
 
-export const connectChat = (
-  app: FastifyInstance,
-  chatConfiguration: ChatConfiguration,
-) => {
+export const connectChat = (app: FastifyInstance, chatConfiguration: ChatConfiguration) => {
   const handler = setupMCPChatHandler(chatConfiguration);
 
   app.route({

@@ -1,4 +1,4 @@
-import { categorizeTools } from './utils';
+import { categorizeTools } from './utils.js';
 
 export default function normalizeToolsIndex(mcpTools: any) {
   const tools = Object.entries(mcpTools).map(([name, tool]: any) => ({

@@ -35,8 +35,10 @@
     "@fastify/cookie": ">= 11 < 12",
     "@fastify/session": ">= 11 < 12",
     "@fastify/multipart": ">= 9 < 10",
+    "@fastify/static": ">= 8 < 9",
     "connect-mongo": ">= 5.1 < 6",
     "@modelcontextprotocol/sdk": ">= 1 < 2",
+    "ai": ">= 5 < 6",
     "express": ">= 5 < 6",
     "express-session": ">= 1.18 < 2",
     "multer": ">= 2 < 3",
@@ -48,6 +50,9 @@
   "peerDependenciesMeta": {
     "@modelcontextprotocol/sdk": {
       "optional": false
+    },
+    "ai": {
+      "optional": true
     },
     "graphql-yoga": {
       "optional": false
@@ -65,6 +70,9 @@
       "optional": true
     },
     "@fastify/session": {
+      "optional": true
+    },
+    "@fastify/static": {
       "optional": true
     },
     "express": {
@@ -101,6 +109,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "ai": "^5.0.5",
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
     "@fastify/cookie": "^11.0.2",

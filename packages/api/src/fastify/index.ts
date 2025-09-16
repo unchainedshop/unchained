@@ -15,6 +15,7 @@ import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.js';
 import tempUploadHandler from './tempUploadHandler.js';
+export * from './chatHandler.js';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
