@@ -105,7 +105,7 @@ export const configureOrderDeliveriesModule = ({
         Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
       );
 
-      const result = await OrderDeliveries.findOneAndUpdate(
+      const orderDelivery = await OrderDeliveries.findOneAndUpdate(
         selector,
         {
           $set: {
@@ -113,14 +113,14 @@ export const configureOrderDeliveriesModule = ({
             updated: new Date(),
           },
         },
-        { includeResultMetadata: true, returnDocument: 'after' },
+        { returnDocument: 'after' },
       );
 
-      if (result.ok) {
+      if (orderDelivery) {
         await emit('ORDER_UPDATE_DELIVERY', {
-          orderDelivery: result.value,
+          orderDelivery,
         });
-        return result.value;
+        return orderDelivery;
       }
 
       return null;

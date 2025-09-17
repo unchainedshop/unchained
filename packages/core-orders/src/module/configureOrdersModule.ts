@@ -214,7 +214,7 @@ export const configureOrdersModule = async ({
           })
         )._id;
 
-      const result = await Orders.findOneAndUpdate(
+      const order = await Orders.findOneAndUpdate(
         { _id: orderId, deliveryId: { $ne: deliveryId } },
         {
           $set: {
@@ -222,16 +222,16 @@ export const configureOrdersModule = async ({
             updated: new Date(),
           },
         },
-        { returnDocument: 'after', includeResultMetadata: true },
+        { returnDocument: 'after' },
       );
 
-      if (result.ok) {
+      if (order) {
         await emit('ORDER_SET_DELIVERY_PROVIDER', {
-          order: result.value,
+          order,
           deliveryProviderId,
         });
 
-        return result.value;
+        return order;
       }
 
       return null;
@@ -255,21 +255,21 @@ export const configureOrdersModule = async ({
           })
         )._id;
 
-      const result = await Orders.findOneAndUpdate(
+      const order = await Orders.findOneAndUpdate(
         { _id: orderId, paymentId: { $ne: paymentId } },
         {
           $set: { paymentId, updated: new Date() },
         },
-        { returnDocument: 'after', includeResultMetadata: true },
+        { returnDocument: 'after' },
       );
 
-      if (result.ok) {
+      if (order) {
         await emit('ORDER_SET_PAYMENT_PROVIDER', {
-          order: result.value,
+          order,
           paymentProviderId,
         });
 
-        return result.value;
+        return order;
       }
 
       return null;

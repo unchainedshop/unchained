@@ -175,7 +175,7 @@ export const configureOrderPaymentsModule = ({
       const contextSetters = Object.fromEntries(
         Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
       );
-      const result = await OrderPayments.findOneAndUpdate(
+      const orderPayment = await OrderPayments.findOneAndUpdate(
         selector,
         {
           $set: {
@@ -183,14 +183,14 @@ export const configureOrderPaymentsModule = ({
             updated: new Date(),
           },
         },
-        { includeResultMetadata: true, returnDocument: 'after' },
+        { returnDocument: 'after' },
       );
 
-      if (result.ok) {
+      if (orderPayment) {
         await emit('ORDER_UPDATE_PAYMENT', {
-          orderPayment: result.value,
+          orderPayment,
         });
-        return result.value;
+        return orderPayment;
       }
 
       return null;

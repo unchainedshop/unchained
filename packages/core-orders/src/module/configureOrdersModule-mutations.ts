@@ -155,7 +155,7 @@ export const configureOrderModuleMutations = ({
       const contextSetters = Object.fromEntries(
         Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
       );
-      const result = await Orders.findOneAndUpdate(
+      const order = await Orders.findOneAndUpdate(
         selector,
         {
           $set: {
@@ -163,12 +163,12 @@ export const configureOrderModuleMutations = ({
             updated: new Date(),
           },
         },
-        { includeResultMetadata: true, returnDocument: 'after' },
+        { returnDocument: 'after' },
       );
 
-      if (result.ok) {
-        await emit('ORDER_UPDATE', { order: result.value, field: 'context' });
-        return result.value;
+      if (order) {
+        await emit('ORDER_UPDATE', { order, field: 'context' });
+        return order;
       }
       return null;
     },
