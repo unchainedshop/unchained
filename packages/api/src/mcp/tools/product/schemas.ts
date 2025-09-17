@@ -117,11 +117,13 @@ export const ProductSchema = z.object({
         )
         .nonempty()
         .describe(
-          "List of price configurations always use country and currency codes that are already registered in the system, don't use non existing iso codes.",
+          "List of price configurations always use countryCode and currencyCodes that are already registered in the system, don't use non existing iso codes.",
         ),
     })
     .optional()
-    .describe('Commerce info - Available for ALL except CONFIGURABLE_PRODUCT'),
+    .describe(
+      "Commerce info - Available for ALL except CONFIGURABLE_PRODUCT. always use countryCode and currencyCodes that are already registered in the system, don't use non existing iso codes.",
+    ),
 });
 
 export const actionValidators = {

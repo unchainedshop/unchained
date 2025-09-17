@@ -1,6 +1,8 @@
 import { Context } from '../../../../context.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import {
+  CountryNotFoundError,
+  CurrencyNotFoundError,
   ProductNotFoundError,
   ProductWrongStatusError,
   ProductWrongTypeError,
@@ -9,7 +11,7 @@ import { getNormalizedProductDetails } from '../../../utils/getNormalizedProduct
 import { Params } from '../schemas.js';
 
 export default async function updateProduct(context: Context, params: Params<'UPDATE'>) {
-  const { modules } = context;
+  const { modules, loaders } = context;
   const { productId, product } = params;
 
   const existingProduct = await modules.products.findProduct({ productId });
@@ -64,6 +66,15 @@ export default async function updateProduct(context: Context, params: Params<'UP
   }
 
   if (product.commerce !== undefined) {
+    await Promise.all(
+      product.commerce.pricing.map(async ({ countryCode, currencyCode }) => {
+        const currency = await loaders.currencyLoader.load({ isoCode: currencyCode });
+        if (!currency) throw new CurrencyNotFoundError({ currencyCode });
+
+        const country = await loaders.countryLoader.load({ isoCode: countryCode });
+        if (!country) throw new CountryNotFoundError({ countryCode });
+      }),
+    );
     updateData.commerce = product.commerce;
   }
 
