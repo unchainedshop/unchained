@@ -1,6 +1,6 @@
 import { Context } from '../../../../context.js';
 import { ProductNotFoundError } from '../../../../errors.js';
-import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.js';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function addProductMedia(context: Context, params: Params<'ADD_MEDIA'>) {
@@ -39,8 +39,7 @@ export default async function addProductMedia(context: Context, params: Params<'
   if (file.expires && new Date(file.expires).getTime() < Date.now()) {
     throw new Error(`File upload expired: ${fileId}`);
   }
-
-  const linked = await services.files.linkFile({ fileId, size, type });
-  const media = await normalizeMediaUrl([{ ...linked, mediaId: linked._id }], context);
-  return { media };
+  await services.files.linkFile({ fileId, size, type });
+  const updatedProduct = await getNormalizedProductDetails(productId, context);
+  return { product: updatedProduct };
 }
