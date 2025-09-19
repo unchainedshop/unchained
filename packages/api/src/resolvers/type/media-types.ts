@@ -2,6 +2,9 @@ import { File as FileType, getFileAdapter } from '@unchainedshop/core-files';
 import { Context } from '../../context.js';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api');
 export interface MediaHelperTypes {
   url: (language: FileType, params: Record<string, any>, context: Context) => Promise<string>;
 }
@@ -16,7 +19,7 @@ export const Media: MediaHelperTypes = {
       const url = await fileUploadAdapter.createDownloadURL(file, params?.expires);
       return modules.files.normalizeUrl(url, params);
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       return null;
     }
   },

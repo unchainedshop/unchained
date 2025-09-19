@@ -13,8 +13,8 @@ export async function removeFilesService(this: Modules, { fileIds }: { fileIds: 
 
   try {
     await fileUploadAdapter.removeFiles(fileObjects, { modules: this });
-  } catch (e) {
-    console.warn(e);
+  } catch {
+    /**/
   }
 
   const fileIdsToDelete = fileObjects.map((f) => f._id).filter(Boolean);

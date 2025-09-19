@@ -28,7 +28,11 @@ export const stripeHandler: RouteHandlerMethod = async (
   } catch (err) {
     logger.error(`Error constructing event: ${err.message}`);
     reply.status(400);
-    return reply.send(err.message);
+    return reply.send({
+      success: false,
+      message: err.message,
+      name: err.name,
+    });
   }
 
   if (!Object.values(WebhookEventTypes).includes(event.type)) {
@@ -36,12 +40,12 @@ export const stripeHandler: RouteHandlerMethod = async (
       type: event.type,
     });
     reply.status(200);
-    return reply.send(
-      JSON.stringify({
-        ignored: true,
-        message: `Unhandled event type: ${event.type}. Supported types: ${Object.values(WebhookEventTypes).join(', ')}`,
-      }),
-    );
+    return reply.send({
+      success: false,
+      ignored: true,
+      name: 'UNHANDLED_EVENT_TYPE',
+      message: `Unhandled event type: ${event.type}. Supported types: ${Object.values(WebhookEventTypes).join(', ')}`,
+    });
   }
 
   const environmentInMetadata = event.data?.object?.metadata?.environment || '';
@@ -52,12 +56,12 @@ export const stripeHandler: RouteHandlerMethod = async (
       environment: environmentInMetadata,
     });
     reply.status(200);
-    return reply.send(
-      JSON.stringify({
-        ignored: true,
-        message: `Unhandled event environment: ${environmentInMetadata}. Supported environment: ${environmentInEnv}`,
-      }),
-    );
+    return reply.send({
+      success: false,
+      ignored: true,
+      name: 'UNHANDLED_EVENT_ENVIRONMENT',
+      message: `Unhandled event environment: ${environmentInMetadata}. Supported environment: ${environmentInEnv}`,
+    });
   }
 
   logger.info(`Processing event`, {
@@ -93,12 +97,10 @@ export const stripeHandler: RouteHandlerMethod = async (
         type: event.type,
       });
       reply.status(200);
-      return reply.send(
-        JSON.stringify({
-          message: 'checkout successful',
-          orderId: order._id,
-        }),
-      );
+      return reply.send({
+        success: true,
+        orderId: order._id,
+      });
     } else if (event.type === WebhookEventTypes.SETUP_INTENT_SUCCEEDED) {
       const setupIntent = event.data.object;
       const { paymentProviderId, userId } = setupIntent.metadata || {};
@@ -122,23 +124,21 @@ export const stripeHandler: RouteHandlerMethod = async (
         type: event.type,
       });
       reply.status(200);
-      return reply.send(
-        JSON.stringify({
-          message: 'payment credentials registration successful',
-          paymentCredentialsId: paymentCredentials?._id,
-        }),
-      );
+      return reply.send({
+        success: true,
+        message: 'payment credentials registration successful',
+        paymentCredentialsId: paymentCredentials?._id,
+      });
     }
   } catch (error) {
     logger.error(error, {
       type: event.type,
     });
     reply.status(500);
-    return reply.send(
-      JSON.stringify({
-        message: error.message,
-        name: error.name,
-      }),
-    );
+    return reply.send({
+      success: false,
+      message: error.message,
+      name: error.name,
+    });
   }
 };

@@ -20,24 +20,22 @@ export const payrexxHandler: RouteHandlerMethod = async (
       type: Object.keys(request.body).join(','),
     });
     reply.status(200);
-    return reply.send(
-      JSON.stringify({
-        ignored: true,
-        message: `Unhandled event type: ${Object.keys(request.body).join(',')}. Supported type: transaction`,
-      }),
-    );
+    return reply.send({
+      success: false,
+      ignored: true,
+      message: `Unhandled event type: ${Object.keys(request.body).join(',')}. Supported type: transaction`,
+    });
   }
   if (transaction.referenceId === '__IGNORE_WEBHOOK__' || transaction.status === 'waiting') {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
     // method in the payment adapter and could lead to double bookings.
     logger.info(`unhandled transaction state: ${transaction.status}`);
     reply.status(200);
-    return reply.send(
-      JSON.stringify({
-        ignored: true,
-        message: `Unhandled transaction state: ${transaction.status}`,
-      }),
-    );
+    return reply.send({
+      success: false,
+      ignored: true,
+      message: `Unhandled transaction state: ${transaction.status}`,
+    });
   }
 
   logger.info(`Processing event`, {
@@ -58,13 +56,11 @@ export const payrexxHandler: RouteHandlerMethod = async (
         userId,
       });
       reply.status(200);
-      return reply.send(
-        JSON.stringify({
-          message: 'registration successful',
-          paymentProviderId,
-          userId,
-        }),
-      );
+      return reply.send({
+        success: true,
+        paymentProviderId,
+        userId,
+      });
     } else {
       const { referenceId: orderPaymentId, invoice } = transaction;
       logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
@@ -89,23 +85,20 @@ export const payrexxHandler: RouteHandlerMethod = async (
         orderId: order._id,
       });
       reply.status(200);
-      return reply.send(
-        JSON.stringify({
-          message: 'checkout successful',
-          orderId: order._id,
-        }),
-      );
+      return reply.send({
+        success: true,
+        orderId: order._id,
+      });
     }
   } catch (error) {
     logger.error(error, {
       transactionId: transaction.id,
     });
     reply.status(500);
-    return reply.send(
-      JSON.stringify({
-        message: error.message,
-        name: error.name,
-      }),
-    );
+    return reply.send({
+      success: false,
+      message: error.message,
+      name: error.name,
+    });
   }
 };

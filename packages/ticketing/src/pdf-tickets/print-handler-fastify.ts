@@ -3,6 +3,9 @@ import { actions } from '@unchainedshop/api/lib/roles/index.js';
 import { RendererTypes, getRenderer } from '../template-registry.js';
 import { TicketingAPI } from '../types.js';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:ticketing:print-handler');
 
 const printTicketsHandler: RouteHandlerMethod = async (
   req: FastifyRequest & {
@@ -27,9 +30,13 @@ const printTicketsHandler: RouteHandlerMethod = async (
     reply.header('content-type', 'application/pdf');
     return reply.send(pdfStream);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     reply.status(403);
-    return reply.send();
+    return reply.send({
+      success: false,
+      message: 'Error generating PDF',
+      name: 'PDF_GENERATION_ERROR',
+    });
   }
 };
 

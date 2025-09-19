@@ -57,24 +57,21 @@ export const saferpayHandler: RouteHandlerMethod = async (
       orderId: order._id,
     });
     reply.status(200);
-    return reply.send(
-      JSON.stringify({
-        message: 'checkout successful',
-        orderPaymentId,
-        orderId: order._id,
-      }),
-    );
+    return reply.send({
+      success: true,
+      orderPaymentId,
+      orderId: order._id,
+    });
   } catch (error) {
     logger.error(error, {
       orderPaymentId,
       transactionId,
     });
     reply.status(500);
-    return reply.send(
-      JSON.stringify({
-        message: error.message,
-        name: error.name,
-      }),
-    );
+    return reply.send({
+      success: false,
+      message: error.message,
+      name: error.name,
+    });
   }
 };

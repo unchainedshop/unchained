@@ -38,15 +38,21 @@ const appleWalletHandler: RouteHandlerMethod = async (
       });
 
       if (!token) {
+        logger.error('Token not found', { tokenId });
         reply.status(404);
-        return reply.send('Token not found');
+        return reply.send();
       }
 
       const { hash } = req.query as Record<string, string>;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
       if (hash !== correctHash) {
+        logger.error('Token hash invalid for current owner', { tokenId });
         reply.status(403);
-        return reply.send('Token hash invalid for current owner');
+        return reply.send({
+          success: false,
+          message: 'Token hash invalid for current owner',
+          name: 'HASH_MISMATCH',
+        });
       }
 
       const passFile = await modules.passes.upsertAppleWalletPass(token, resolvedContext);
@@ -64,10 +70,14 @@ const appleWalletHandler: RouteHandlerMethod = async (
       reply.header('Content-Disposition', `attachment; filename=${tokenId}.pkpass`);
       return reply.send(uint8View);
     } catch (e) {
-      console.error(e);
+      logger.error(e);
+      reply.status(500);
+      return reply.send({
+        success: false,
+        message: 'Error generating pass',
+        name: 'PASS_GENERATION_ERROR',
+      });
     }
-    reply.status(500);
-    return reply.send();
   }
 
   const [, apiVersion, endpoint, ...pathComponents] = path.split("/"); /* eslint-disable-line */
@@ -86,6 +96,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
+          logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
           reply.status(401);
           return reply.send();
         }
@@ -101,11 +112,15 @@ const appleWalletHandler: RouteHandlerMethod = async (
 
         if (!newRegistration) {
           reply.status(200);
-          return reply.send();
+          return reply.send({
+            success: true,
+          });
         }
 
         reply.status(201);
-        return reply.send();
+        return reply.send({
+          success: true,
+        });
       }
     } else if (req.method === 'GET') {
       // Get the List of Updatable Passes
@@ -124,17 +139,15 @@ const appleWalletHandler: RouteHandlerMethod = async (
 
       if (serialNumbers?.length) {
         reply.status(200);
-        reply.header('content-type', 'application/json');
-        return reply.send(
-          JSON.stringify({
-            serialNumbers,
-            lastUpdated,
-          }),
-        );
+        return reply.send({
+          success: true,
+          serialNumbers,
+          lastUpdated,
+        });
       }
 
       reply.status(204);
-      return reply.send();
+      return reply.send({ success: true });
     } else if (req.method === 'DELETE') {
       // Unregister Device
       const [deviceLibraryIdentifier, , passTypeIdentifier, serialNumber] = pathComponents;
@@ -148,8 +161,13 @@ const appleWalletHandler: RouteHandlerMethod = async (
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
+          logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
           reply.status(401);
-          return reply.send();
+          return reply.send({
+            success: false,
+            message: 'Unauthorized',
+            name: 'UNAUTHORIZED',
+          });
         }
 
         await modules.passes.unregisterDeviceForAppleWalletPass(
@@ -160,7 +178,9 @@ const appleWalletHandler: RouteHandlerMethod = async (
 
         // Unregistered
         reply.status(200);
-        return reply.send();
+        return reply.send({
+          success: true,
+        });
       }
     }
   } else if (endpoint === 'log') {
@@ -172,7 +192,9 @@ const appleWalletHandler: RouteHandlerMethod = async (
       }
     });
     reply.status(200);
-    return reply.send();
+    return reply.send({
+      success: true,
+    });
   } else if (endpoint === 'passes') {
     if (req.method === 'GET') {
       // Get an updated Pass
@@ -187,8 +209,13 @@ const appleWalletHandler: RouteHandlerMethod = async (
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
+          logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
           reply.status(401);
-          return reply.send();
+          return reply.send({
+            success: false,
+            message: 'Unauthorized',
+            name: 'UNAUTHORIZED',
+          });
         }
 
         const { updated, created } = pass;
@@ -201,7 +228,11 @@ const appleWalletHandler: RouteHandlerMethod = async (
 
         if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
           reply.status(304);
-          return reply.send();
+          return reply.send({
+            success: true,
+            message: 'Not modified',
+            name: 'NOT_MODIFIED',
+          });
         }
 
         const fileUploadAdapter = getFileAdapter();

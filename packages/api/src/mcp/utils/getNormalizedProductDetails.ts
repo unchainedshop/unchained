@@ -1,6 +1,9 @@
 import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../context.js';
 import normalizeMediaUrl from './normalizeMediaUrl.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api:mcp');
 
 export async function getNormalizedProductDetails(productId: string, context: Context) {
   const { modules, locale, loaders } = context;
@@ -84,7 +87,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     });
   } catch {
     // Pricing might not be available for all products
-    console.warn('Pricing not available for product:', product._id);
+    logger.warn('Pricing not available for product:', product._id);
   }
 
   const productMedias = await modules.products.media.findProductMedias({ productId });

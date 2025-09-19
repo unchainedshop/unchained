@@ -13,6 +13,9 @@ import generateImageHandler from '../chat/generateImageHandler.js';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.js';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
 import { ChatConfiguration, errorHandler } from '../chat/utils.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api:chat');
 
 interface FastifyRouterOptions {
   prefix?: string;
@@ -34,7 +37,7 @@ export const fastifyRouter: FastifyPluginAsync<FastifyRouterOptions> = async (
     if (request.raw.method === 'GET') {
       reply.type('text/html').sendFile('index.html');
     } else {
-      reply.status(404).send({ error: 'Not Found' });
+      reply.status(404).send();
     }
   });
 };
@@ -112,7 +115,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         }),
       );
     } catch (err: any) {
-      console.log(err);
+      logger.error(err);
       await client?.close();
       res.status(500);
       return res.send(JSON.stringify({ error: errorHandler(err) }));

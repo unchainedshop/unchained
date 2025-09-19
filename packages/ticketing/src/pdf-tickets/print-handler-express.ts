@@ -4,6 +4,10 @@ import { Context } from '@unchainedshop/api';
 import { RendererTypes, getRenderer } from '../template-registry.js';
 import type { Request, Response } from 'express';
 
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:ticketing');
+
 export async function printTicketsHandler(req: Request & { unchainedContext: Context }, res: Response) {
   const { variant, orderId, otp } = req.query || {};
 
@@ -22,7 +26,7 @@ export async function printTicketsHandler(req: Request & { unchainedContext: Con
     res.setHeader('Content-Type', 'application/pdf');
     pdfStream.pipe(res);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(403);
     res.end();
   }

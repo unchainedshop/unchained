@@ -36,11 +36,11 @@ export const postfinanceCheckoutHandler: RouteHandlerMethod = async (
         `Transaction ${transaction.id} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
       );
       reply.status(200);
-      return reply.send(`Order marked as paid: ${order.orderNumber}`);
+      return reply.send({ success: true, orderNumber: order.orderNumber });
     } catch (e) {
       logger.error(e);
       reply.status(500);
-      return reply.send({ name: e.name, code: e.code, message: e.message });
+      return reply.send({ success: false, name: e.name, code: e.code, message: e.message });
     }
   } else {
     logger.error(`Received unknown listenerEntityTechnicalName ${data.listenerEntityTechnicalName}`);

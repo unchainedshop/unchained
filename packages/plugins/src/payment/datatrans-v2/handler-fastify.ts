@@ -32,9 +32,9 @@ export const datatransHandler: RouteHandlerMethod = async (
     })(timestamp, req.body as string);
 
     if (hash !== comparableSignature) {
-      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body as string);
+      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`);
       reply.status(403);
-      return reply.send('Hash mismatch');
+      return reply.send({ success: false, message: 'Invalid Signature', name: 'HASH_MISMATCH' });
     }
 
     const transaction: StatusResponseSuccess = JSON.parse(req.body as string) as StatusResponseSuccess;
@@ -77,9 +77,9 @@ export const datatransHandler: RouteHandlerMethod = async (
           return reply.send(order);
         }
       } catch (e) {
-        logger.error(`rejected to checkout with message`, e);
+        logger.error(e);
         reply.status(500);
-        return reply.send({ name: e.name, code: e.code, message: e.message });
+        return reply.send({ success: false, name: e.name, code: e.code, message: e.message });
       }
     }
   }

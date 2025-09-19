@@ -45,7 +45,7 @@ export const googleWalletHandler = async (
       res.redirect(await pass.asURL());
       return;
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
     res.writeHead(500);
     res.end();

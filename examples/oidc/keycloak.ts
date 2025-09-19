@@ -4,6 +4,9 @@ import { emit } from '@unchainedshop/events';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import jwt from 'jsonwebtoken';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:oidc:keycloak');
 
 const {
   UNCHAINED_KEYCLOAK_CALLBACK_PATH = '/login/keycloak/callback',
@@ -111,9 +114,13 @@ export default async function setupKeycloak(app: FastifyInstance) {
         request.session.keycloak = accessToken.token;
         return reply.redirect('http://localhost:4010/');
       } catch (e) {
-        console.error(e);
         reply.status(500);
-        return reply.send();
+        logger.error(e);
+        return reply.send({
+          success: false,
+          message: e.message,
+          name: e.name,
+        });
       }
     },
   );
@@ -155,13 +162,12 @@ export default async function setupKeycloak(app: FastifyInstance) {
     url: '/.well-known/oauth-protected-resource',
     method: ['GET'],
     handler: (req, reply) => {
-      reply.header('Content-Type', 'application/json');
       return reply.send(
-        JSON.stringify({
+        {
           resource: ROOT_URL,
           authorization_servers: [ROOT_URL],
           resource_documentation: 'https://docs.unchained.shop',
-        }),
+        },
       );
     },
   });
@@ -170,7 +176,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
     url: '/.well-known/oauth-authorization-server',
     method: ['GET'],
     handler: async (req, reply) => {
-      reply.header('Content-Type', 'application/json');
       return reply.send(discoveryData);
     },
   });

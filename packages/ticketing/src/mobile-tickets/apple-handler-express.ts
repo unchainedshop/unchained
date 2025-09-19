@@ -60,7 +60,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       res.end(uint8View);
       return;
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
     res.writeHead(500);
     res.end();

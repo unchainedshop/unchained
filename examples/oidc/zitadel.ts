@@ -4,6 +4,9 @@ import { emit } from '@unchainedshop/events';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import jwt from 'jsonwebtoken';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:oidc:zitadel');
 
 const {
   UNCHAINED_ZITADEL_CALLBACK_PATH = '/login/zitadel/callback',
@@ -116,9 +119,9 @@ export default async function setupZitadel(app: FastifyInstance) {
         request.session.zitadel = accessToken.token;
         return reply.redirect('http://localhost:4010');
       } catch (e) {
-        console.error(e);
+        logger.error(e);
         reply.status(500);
-        return reply.send();
+        return reply.send({ success: false, message: e.message, name: e.name });
       }
     },
   );

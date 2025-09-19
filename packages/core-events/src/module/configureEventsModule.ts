@@ -10,7 +10,9 @@ import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
+import { createLogger } from '@unchainedshop/logger';
 
+const logger = createLogger('unchained:core-events');
 export interface EventReport {
   emitCount: number;
   type: string;
@@ -155,7 +157,7 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
       ].filter(Boolean);
 
       const report = await Events.aggregate<EventReport>(pipeline).toArray();
-      console.log(report);
+      logger.info(report);
       return report ?? [];
     },
   };

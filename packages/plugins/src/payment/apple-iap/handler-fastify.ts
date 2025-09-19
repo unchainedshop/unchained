@@ -128,9 +128,9 @@ export const appleIAPHandler: RouteHandlerMethod = async (
     reply.status(200);
     return reply.send();
   } catch (e) {
-    logger.warn(`Apple IAP Webhook: ${e.message}`, e);
+    logger.error(e);
     reply.status(503);
-    return reply.send({ name: e.name, code: e.code, message: e.message });
+    return reply.send({ success: false, name: e.name, code: e.code, message: e.message });
   }
 };
 

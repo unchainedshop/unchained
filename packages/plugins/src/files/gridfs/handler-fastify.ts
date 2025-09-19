@@ -41,7 +41,12 @@ const gridfsHandler: RouteHandlerMethod = async (
         const file = await modules.files.findFile({ fileId });
         if (file.expires === null) {
           reply.status(400);
-          return reply.send('File already linked');
+          logger.error('File already linked', { fileId });
+          return reply.send({
+            success: false,
+            message: 'File already linked',
+            name: 'FILE_ALREADY_LINKED',
+          });
         }
         // If the type is octet-stream, prefer mimetype lookup from the filename
         // Else prefer the content-type header
@@ -72,11 +77,20 @@ const gridfsHandler: RouteHandlerMethod = async (
         await services.files.linkFile({ fileId, size: length, type });
 
         reply.status(200);
-        return reply.send();
+        return reply.send({
+          success: true,
+          fileId,
+          size: length,
+          type,
+        });
       }
-
+      logger.error('Invalid signature', { fileId, expiryDate });
       reply.status(403);
-      return reply.send();
+      return reply.send({
+        success: false,
+        message: 'Access restricted: Invalid signature.',
+        name: 'INVALID_SIGNATURE',
+      });
     }
 
     if (req.method === 'GET') {
@@ -87,8 +101,13 @@ const gridfsHandler: RouteHandlerMethod = async (
       if (fileDocument?.meta?.isPrivate) {
         const expiry = parseInt(expiryTimestamp as string, 10);
         if (expiry <= Date.now()) {
+          logger.error('URL Expired', { fileId, expiry });
           reply.status(403);
-          return reply.send('Access restricted: Expired.');
+          return reply.send({
+            success: false,
+            message: 'Access restricted: URL expired.',
+            name: 'URL_EXPIRED',
+          });
         }
 
         const fileUploadAdapter = getFileAdapter();
@@ -96,9 +115,15 @@ const gridfsHandler: RouteHandlerMethod = async (
 
         if (new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
           reply.status(403);
-          return reply.send('Access restricted: Invalid signature.');
+          logger.error('Invalid signature', { fileId, expiry });
+          return reply.send({
+            success: false,
+            message: 'Access restricted: Invalid signature.',
+            name: 'INVALID_SIGNATURE',
+          });
         }
       } else if (!fileDocument) {
+        logger.error('File not found', { fileId });
         reply.status(404);
         return reply.send();
       }
@@ -119,14 +144,14 @@ const gridfsHandler: RouteHandlerMethod = async (
     reply.status(404);
     return reply.send();
   } catch (e) {
+    logger.error(e);
+
     if (e.code === 'ENOENT') {
-      logger.warn(e);
       reply.status(404);
-      return reply.send({ name: e.name, code: e.code, message: e.message });
+      return reply.send();
     } else {
-      logger.warn(e);
       reply.status(504);
-      return reply.send({ name: e.name, code: e.code, message: e.message });
+      return reply.send({ success: false, name: e.name, code: e.code, message: e.message });
     }
   }
 };

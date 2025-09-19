@@ -21,34 +21,38 @@ export const startDb = async () => {
   } catch {
     /* */
   }
-  mongod = MongoMemoryServer.create({
-    instance:
-      process.env.NODE_ENV === 'test'
-        ? { dbName: 'test', port: parseInt(process.env.PORT, 10) + 1 }
-        : {
-            dbPath: `${process.cwd()}/.db`,
-            storageEngine: 'wiredTiger',
-            port: parseInt(process.env.PORT, 10) + 1,
-          },
-  }).catch((e) => {
-    console.log(e);
-    // Drop error
-    /* */
-  });
+  try {
+    mongod = MongoMemoryServer.create({
+      instance:
+        process.env.NODE_ENV === 'test'
+          ? { dbName: 'test', port: parseInt(process.env.PORT, 10) + 1 }
+          : {
+              dbPath: `${process.cwd()}/.db`,
+              storageEngine: 'wiredTiger',
+              port: parseInt(process.env.PORT, 10) + 1,
+            },
+    });
 
-  const mongoInstance = await mongod;
-  if (!mongoInstance) {
-    throw new Error(
-      "Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set",
-    );
+    const mongoInstance = await mongod;
+    if (mongoInstance) {
+      return `${mongoInstance.getUri()}${process.env.NODE_ENV === 'test' ? 'test' : 'unchained'}`;
+    }
+  } catch {
+    /* */
   }
-  return `${mongoInstance.getUri()}${process.env.NODE_ENV === 'test' ? 'test' : 'unchained'}`;
+  throw new Error(
+    "Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set",
+  );
 };
 
 export const stopDb = async () => {
-  await mongoClient?.close();
-  const mongoInstance = await mongod;
-  await (mongoInstance as any)?.stop();
+  try {
+    await mongoClient?.close();
+    const mongoInstance = await mongod;
+    await (mongoInstance as any)?.stop();
+  } catch {
+    /* */
+  }
 };
 
 const initDb = async (): Promise<Db> => {
