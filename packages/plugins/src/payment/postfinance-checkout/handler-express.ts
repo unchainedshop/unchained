@@ -29,16 +29,13 @@ export const postfinanceCheckoutHandler = async (req, res) => {
       logger.info(
         `Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
       );
-      res.writeHead(200);
-      res.end(`Order marked as paid: ${order.orderNumber}`);
+      res.status(200).send(`Order marked as paid: ${order.orderNumber}`);
     } catch (e) {
       logger.error(e);
-      res.writeHead(500);
-      res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+      res.status(500).send({ name: e.name, code: e.code, message: e.message });
     }
   } else {
     logger.error(`Received unknown listenerEntityTechnicalName ${data.listenerEntityTechnicalName}`);
-    res.writeHead(404);
-    res.end();
+    res.status(404).end();
   }
 };

@@ -27,8 +27,7 @@ export async function printTicketsHandler(req: Request & { unchainedContext: Con
     pdfStream.pipe(res);
   } catch (error) {
     logger.error(error);
-    res.status(403);
-    res.end();
+    res.status(403).end();
   }
 }
 

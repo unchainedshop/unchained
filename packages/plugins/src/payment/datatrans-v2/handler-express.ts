@@ -27,8 +27,7 @@ export const datatransHandler = async (req, res) => {
 
     if (hash !== comparableSignature) {
       logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body);
-      res.writeHead(403);
-      res.end('Hash mismatch');
+      res.status(403).send('Hash mismatch');
       return;
     }
 
@@ -52,8 +51,7 @@ export const datatransHandler = async (req, res) => {
           logger.info(`registered payment credentials for ${userId}`, {
             userId,
           });
-          res.writeHead(200);
-          res.end(JSON.stringify(paymentCredentials));
+          res.status(200).send(paymentCredentials);
           return;
         }
         if (transaction.type === 'payment') {
@@ -66,21 +64,18 @@ export const datatransHandler = async (req, res) => {
           const order = await services.orders.checkoutOrder(orderPayment.orderId, {
             paymentContext: { userId, transactionId: transaction.transactionId },
           });
-          res.writeHead(200);
           logger.info(`confirmed checkout for order ${order.orderNumber}`, {
             orderId: order._id,
           });
-          res.end(JSON.stringify(order));
+          res.status(200).send(order);
           return;
         }
       } catch (e) {
         logger.error(`rejected to checkout with message`, e);
-        res.writeHead(500);
-        res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+        res.status(500).send({ name: e.name, code: e.code, message: e.message });
         return;
       }
     }
   }
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
 };

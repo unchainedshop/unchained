@@ -7,8 +7,7 @@ const logger = createLogger('unchained:bulk-import');
 
 const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
   return;
 };
 
@@ -53,12 +52,10 @@ export default async function bulkImportMiddleware(
       priority: 10,
     });
 
-    res.writeHead(200);
-    res.end(JSON.stringify(work));
+    res.status(200).send(work);
   } catch (e) {
     logger.error(e.message);
-    res.writeHead(503);
-    res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    res.status(503).send({ name: e.name, code: e.code, message: e.message });
     return;
   }
 }

@@ -21,17 +21,14 @@ const minioHandler = async (req, res) => {
         const [fileId] = object.key.split('.');
         const { services } = req.unchainedContext;
         await services.files.linkFile({ fileId, type, size });
-        res.writeHead(200);
-        res.end();
+        res.status(200).end();
         return;
       }
     }
-    res.writeHead(404);
-    res.end();
+    res.status(404).end();
   } catch (e) {
     logger.error(e);
-    res.writeHead(503);
-    res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    res.status(503).send({ name: e.name, code: e.code, message: e.message });
   }
 };
 

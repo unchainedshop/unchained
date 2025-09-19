@@ -7,18 +7,15 @@ const cryptopayHandler = async (req, res) => {
   if (req.method === 'POST') {
     try {
       await handleWebhook(req.body, req.unchainedContext);
-      res.writeHead(200);
-      res.end(JSON.stringify({ success: true }));
+      res.status(200).send({ success: true });
       return;
     } catch (e) {
       logger.error(e);
-      res.writeHead(500);
-      res.end(JSON.stringify({ success: false, error: e.message }));
+      res.status(500).send({ success: false, error: e.message });
       return;
     }
   }
-  res.writeHead(404);
-  res.end(JSON.stringify({ success: false }));
+  res.status(404).send();
 };
 
 export default cryptopayHandler;

@@ -34,8 +34,7 @@ const gridfsHandler = async (
     res.setHeader('Access-Control-Allow-Origin', '*');
 
     if (req.method === 'OPTIONS') {
-      res.statusCode = 200;
-      res.end();
+      res.status(200).end();
       return;
     }
 
@@ -46,8 +45,7 @@ const gridfsHandler = async (
       if ((await sign(directoryName, fileId, expiryDate.getTime())) === signature) {
         const file = await modules.files.findFile({ fileId });
         if (file.expires === null) {
-          res.statusCode = 400;
-          res.end('File already linked');
+          res.status(400).send('File already linked');
           return;
         }
         // If the type is octet-stream, prefer mimetype lookup from the filename
@@ -77,12 +75,10 @@ const gridfsHandler = async (
         const { length } = writeStream;
         await services.files.linkFile({ fileId, size: length, type });
 
-        res.statusCode = 200;
-        res.end();
+        res.status(200).end();
         return;
       }
-      res.statusCode = 403;
-      res.end();
+      res.status(403).end();
       return;
     }
 
@@ -94,8 +90,7 @@ const gridfsHandler = async (
       if (fileDocument?.meta?.isPrivate) {
         const expiry = parseInt(expiryTimestamp as string, 10);
         if (expiry <= Date.now()) {
-          res.statusCode = 403;
-          res.end('Access restricted: Expired.');
+          res.status(403).send('Access restricted: Expired.');
           return;
         }
 
@@ -103,13 +98,11 @@ const gridfsHandler = async (
         const signedUrl = await fileUploadAdapter.createDownloadURL(fileDocument, expiry);
 
         if (new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
-          res.statusCode = 403;
-          res.end('Access restricted: Invalid signature.');
+          res.status(403).send('Access restricted: Invalid signature.');
           return;
         }
       } else if (!fileDocument) {
-        res.statusCode = 404;
-        res.end();
+        res.status(404).end();
         return;
       }
       if (file?.metadata?.['content-type']) {
@@ -122,21 +115,17 @@ const gridfsHandler = async (
       const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
       readStream.pipe(res, { end: false });
       await finished(readStream);
-      res.statusCode = 200;
-      res.end();
+      res.status(200).end();
       return;
     }
-    res.statusCode = 404;
-    res.end();
+    res.status(404).end();
   } catch (e) {
     if (e.code === 'ENOENT') {
       logger.warn(e);
-      res.statusCode = 404;
-      res.end(e.message);
+      res.status(404).send();
     } else {
       logger.warn(e);
-      res.statusCode = 503;
-      res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+      res.status(503).send({ name: e.name, code: e.code, message: e.message });
     }
   }
 };

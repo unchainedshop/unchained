@@ -37,7 +37,7 @@ const minioHandler: RouteHandlerMethod = async (
   } catch (e) {
     logger.error(e);
     res.status(503);
-    return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    return res.send({ name: e.name, code: e.code, message: e.message });
   }
 };
 

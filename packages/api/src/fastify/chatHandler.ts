@@ -118,7 +118,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       logger.error(err);
       await client?.close();
       res.status(500);
-      return res.send(JSON.stringify({ error: errorHandler(err) }));
+      return res.send({ error: errorHandler(err) });
     }
   };
   return mcpChatHandler;

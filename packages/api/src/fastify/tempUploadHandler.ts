@@ -37,15 +37,12 @@ const tempUploadHandler: RouteHandlerMethod = async (
     const fileUploadAdapter = getFileAdapter();
     const rawUrl = await fileUploadAdapter.createDownloadURL(file);
     const url = context.modules.files.normalizeUrl(rawUrl, {});
-    const body = JSON.stringify({ fileId: file._id, url, expires: expires.toISOString() });
     res.status(200);
-    res.header('Content-Length', new TextEncoder().encode(body).length);
-    res.header('Content-Type', 'application/json');
-    return res.send(body);
+    return res.send({ fileId: file._id, url, expires: expires.toISOString() });
   } catch (e) {
     logger.error(e.message);
     res.status(503);
-    return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    return res.send({ name: e.name, code: e.code, message: e.message });
   }
 };
 

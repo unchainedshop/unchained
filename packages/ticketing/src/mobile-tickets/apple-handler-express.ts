@@ -21,8 +21,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       const [tokenId] = passFileName.split('.pkpass');
 
       if (!tokenId) {
-        res.writeHead(404);
-        res.end();
+        res.status(404).end();
         return;
       }
 
@@ -31,16 +30,14 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       });
 
       if (!token) {
-        res.writeHead(404);
-        res.end('Token not found');
+        res.status(404).send('Token not found');
         return;
       }
 
       const { hash } = req.query;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
       if (hash !== correctHash) {
-        res.writeHead(403);
-        res.end('Token hash invalid for current owner');
+        res.status(403).send('Token hash invalid for current owner');
         return;
       }
 
@@ -57,13 +54,12 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       res.status(200);
       res.setHeader('Content-Type', 'application/vnd.apple.pkpass');
       res.setHeader('Content-Disposition', `attachment; filename=${tokenId}.pkpass`);
-      res.end(uint8View);
+      res.send(uint8View);
       return;
     } catch (e) {
       logger.error(e);
     }
-    res.writeHead(500);
-    res.end();
+    res.status(500).end();
     return;
   }
 
@@ -83,8 +79,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
-          res.writeHead(401);
-          res.end();
+          res.status(401).end();
           return;
         }
 
@@ -98,13 +93,11 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         );
 
         if (!newRegistration) {
-          res.writeHead(200);
-          res.end();
+          res.status(200).end();
           return;
         }
 
-        res.writeHead(201);
-        res.end();
+        res.status(201).end();
         return;
       }
     } else if (req.method === 'GET') {
@@ -122,21 +115,11 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       const serialNumbers = passes.map((t) => t.meta.serialNumber);
 
       if (serialNumbers?.length) {
-        res.writeHead(200, {
-          'Content-Type': 'application/json',
-        });
-        res.write(
-          JSON.stringify({
-            serialNumbers,
-            lastUpdated,
-          }),
-        );
-        res.end();
+        res.status(200).send({ serialNumbers, lastUpdated });
         return;
       }
 
-      res.writeHead(204);
-      res.end();
+      res.status(204).end();
       return;
     } else if (req.method === 'DELETE') {
       // Unregister Device
@@ -151,8 +134,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
-          res.writeHead(401);
-          res.end();
+          res.status(401).end();
           return;
         }
 
@@ -163,8 +145,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         );
 
         // Unregistered
-        res.writeHead(200);
-        res.end();
+        res.status(200).end();
         return;
       }
     }
@@ -176,8 +157,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         logger.info(log);
       }
     });
-    res.writeHead(200);
-    res.end();
+    res.status(200).end();
     return;
   } else if (endpoint === 'passes') {
     if (req.method === 'GET') {
@@ -193,8 +173,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
             (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
           )
         ) {
-          res.writeHead(401);
-          res.end();
+          res.status(401).end();
           return;
         }
 
@@ -207,8 +186,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         ifModifiedSinceDate.setMilliseconds(0);
 
         if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
-          res.writeHead(304);
-          res.end();
+          res.status(304).end();
           return;
         }
 
@@ -224,14 +202,13 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
           'Content-Type': 'application/vnd.apple.pkpass',
           'Last-Modified': lastModifiedDate.toUTCString(),
         });
-        res.end(uint8View);
+        res.send(uint8View);
         return;
       }
     }
   }
 
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
 };
 
 export default appleWalletHandler;

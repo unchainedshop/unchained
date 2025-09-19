@@ -17,8 +17,7 @@ export const googleWalletHandler = async (
       const [, , tokenId] = req.path.split('/');
 
       if (!tokenId) {
-        res.writeHead(404);
-        res.end();
+        res.status(404).end();
         return;
       }
 
@@ -27,16 +26,14 @@ export const googleWalletHandler = async (
       });
 
       if (!token) {
-        res.writeHead(404);
-        res.end('Token not found');
+        res.status(404).send('Token not found');
         return;
       }
 
       const { hash } = req.query;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
       if (hash !== correctHash) {
-        res.writeHead(403);
-        res.end('Token hash invalid for current owner');
+        res.status(403).send('Token hash invalid for current owner');
         return;
       }
 
@@ -47,12 +44,10 @@ export const googleWalletHandler = async (
     } catch (e) {
       logger.error(e);
     }
-    res.writeHead(500);
-    res.end();
+    res.status(500).end();
     return;
   }
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
 };
 
 export default googleWalletHandler;

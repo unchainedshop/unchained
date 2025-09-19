@@ -8,8 +8,7 @@ const { ROOT_URL = 'http://localhost:4010' } = process.env;
 
 const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
   return;
 };
 
@@ -51,15 +50,12 @@ const ercMetadataMiddleware: RequestHandler = async (
       return methodWrongHandler(res);
     }
 
-    const body = JSON.stringify(ercMetadata);
     res.status(200);
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Length', new TextEncoder().encode(body).length);
-    return res.send(body);
+    return res.send(ercMetadata);
   } catch (e) {
     logger.error(e.message);
-    res.writeHead(503);
-    res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    res.status(503);
+    res.send({ name: e.name, code: e.code, message: e.message });
     return;
   }
 };

@@ -39,15 +39,12 @@ const ercMetadataHandler: RouteHandlerMethod = async (
 
     if (!ercMetadata) return notFoundHandler(res);
 
-    const body = JSON.stringify(ercMetadata);
     res.status(200);
-    res.header('Content-Length', new TextEncoder().encode(body).length);
-    res.header('Content-Type', 'application/json');
-    return res.send(body);
+    return res.send(ercMetadata);
   } catch (e) {
     logger.error(e.message);
     res.status(503);
-    return res.send(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    return res.send({ name: e.name, code: e.code, message: e.message });
   }
 };
 

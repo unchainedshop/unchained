@@ -117,18 +117,15 @@ export const appleIAPHandler = async (req, res) => {
         logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
       }
 
-      res.writeHead(200);
-      res.end();
+      res.status(200).end();
       return;
     } catch (e) {
       logger.warn(`Apple IAP Webhook: ${e.message}`, e);
-      res.writeHead(503);
-      res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+      res.status(503).send({ name: e.name, code: e.code, message: e.message });
       return;
     }
   }
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
 };
 
 export default appleIAPHandler;

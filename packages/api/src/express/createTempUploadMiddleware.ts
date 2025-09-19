@@ -8,8 +8,7 @@ const logger = createLogger('unchained:temp-upload');
 
 const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
-  res.writeHead(404);
-  res.end();
+  res.status(404).end();
   return;
 };
 
@@ -47,14 +46,10 @@ export default async function tempUploadMiddleware(
     const fileUploadAdapter = getFileAdapter();
     const rawUrl = await fileUploadAdapter.createDownloadURL(file);
     const url = context.modules.files.normalizeUrl(rawUrl, {});
-    const body = JSON.stringify({ fileId: file._id, url, expires: expires.toISOString() });
-
-    res.writeHead(200);
-    res.end(body);
+    res.status(200).send({ fileId: file._id, url, expires: expires.toISOString() });
   } catch (e) {
     logger.error(e.message);
-    res.writeHead(503);
-    res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+    res.status(503).send({ name: e.name, code: e.code, message: e.message });
     return;
   }
 }
