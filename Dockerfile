@@ -29,7 +29,7 @@ ENV MONGOMS_VERSION=8.0.1
 ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 ENV NODE_NO_WARNINGS=1
 ENV NODE_ENV=test
-RUN npm install
+RUN npm ci
 
 ADD . /source/
 
