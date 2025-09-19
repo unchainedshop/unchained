@@ -22,7 +22,12 @@ export const stripeHandler = async (request, response) => {
   } catch (err) {
     logger.error(`Error constructing event: ${err.message}`);
     response.writeHead(400);
-    response.end(err.message);
+    response.end(
+      JSON.stringify({
+        message: err.message,
+        name: err.name,
+      }),
+    );
     return;
   }
 
@@ -131,6 +136,11 @@ export const stripeHandler = async (request, response) => {
       type: event.type,
     });
     response.writeHead(500);
-    response.end(error.message);
+    response.end(
+      JSON.stringify({
+        message: error.message,
+        name: error.name,
+      }),
+    );
   }
 };

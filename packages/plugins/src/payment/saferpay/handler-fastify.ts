@@ -70,6 +70,11 @@ export const saferpayHandler: RouteHandlerMethod = async (
       transactionId,
     });
     reply.status(500);
-    return reply.send(error.message);
+    return reply.send(
+      JSON.stringify({
+        message: error.message,
+        name: error.name,
+      }),
+    );
   }
 };

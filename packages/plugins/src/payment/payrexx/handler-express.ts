@@ -96,6 +96,11 @@ export const payrexxHandler = async (request, response) => {
       transactionId: transaction.id,
     });
     response.writeHead(500);
-    response.end(error.message);
+    response.end(
+      JSON.stringify({
+        message: error.message,
+        name: error.name,
+      }),
+    );
   }
 };

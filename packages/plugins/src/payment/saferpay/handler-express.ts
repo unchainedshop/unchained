@@ -65,6 +65,11 @@ export const saferpayHandler = async (request, response) => {
       transactionId,
     });
     response.writeHead(500);
-    response.end(error.message);
+    response.end(
+      JSON.stringify({
+        message: error.message,
+        name: error.name,
+      }),
+    );
   }
 };

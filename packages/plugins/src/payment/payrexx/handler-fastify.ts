@@ -68,15 +68,16 @@ export const payrexxHandler: RouteHandlerMethod = async (
     } else {
       const { referenceId: orderPaymentId, invoice } = transaction;
       logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
-      await modules.orders.payments.logEvent(orderPaymentId, {
-        transactionId: transaction.id,
-      });
       const orderPayment = await modules.orders.payments.findOrderPayment({
         orderPaymentId,
       });
       if (!orderPayment) {
         throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
       }
+
+      await modules.orders.payments.logEvent(orderPaymentId, {
+        transactionId: transaction.id,
+      });
 
       const order = await services.orders.checkoutOrder(orderPayment.orderId, {
         paymentContext: {
@@ -100,6 +101,11 @@ export const payrexxHandler: RouteHandlerMethod = async (
       transactionId: transaction.id,
     });
     reply.status(500);
-    return reply.send(error.message);
+    return reply.send(
+      JSON.stringify({
+        message: error.message,
+        name: error.name,
+      }),
+    );
   }
 };
