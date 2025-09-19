@@ -22,8 +22,7 @@ export const saferpayHandler = async (request, response) => {
 
   if ((request.method !== 'GET' && request.method !== 'HEAD') || !isValidRequest) {
     logger.warn(`unhandled http method ${request.method} or orderPaymentId missing in query`);
-    response.writeHead(404);
-    response.end();
+    response.status(404).end();
     return;
   }
 
@@ -51,25 +50,19 @@ export const saferpayHandler = async (request, response) => {
       orderPaymentId,
       orderId: order._id,
     });
-    response.writeHead(200);
-    response.end(
-      JSON.stringify({
-        message: 'checkout successful',
-        orderPaymentId,
-        orderId: order._id,
-      }),
-    );
+    response.status(200).send({
+      message: 'checkout successful',
+      orderPaymentId,
+      orderId: order._id,
+    });
   } catch (error) {
     logger.error(error, {
       orderPaymentId,
       transactionId,
     });
-    response.writeHead(500);
-    response.end(
-      JSON.stringify({
-        message: error.message,
-        name: error.name,
-      }),
-    );
+    response.status(500).send({
+      message: error.message,
+      name: error.name,
+    });
   }
 };
