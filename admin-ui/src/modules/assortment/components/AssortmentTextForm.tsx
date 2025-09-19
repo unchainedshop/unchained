@@ -14,11 +14,13 @@ import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import MarkdownTextAreaField from '../../forms/components/MarkdownTextAreaField';
 import useApp from '../../common/hooks/useApp';
+import useShopInfo from '../../common/hooks/useShopInfo';
 
 const AssortmentTextForm = ({ assortmentId }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const { selectedLocale } = useApp();
+  const { defaultLocale, shopInfo, loading: shopInfoLoading } = useShopInfo();
+  const { selectedLocale, setSelectedLocale, languageDialectList } = useApp();
 
   const { translatedAssortmentTexts, loading } = useTranslatedAssortmentTexts({
     assortmentId,
@@ -80,6 +82,40 @@ const AssortmentTextForm = ({ assortmentId }) => {
       });
     }
   }, [translatedAssortmentTexts, selectedLocale, loading]);
+
+  useEffect(() => {
+    if (shopInfo && translatedAssortmentTexts?.length) {
+      if (
+        translatedAssortmentTexts?.find(
+          ({ locale }) => locale === selectedLocale,
+        )
+      ) {
+        return;
+      }
+      if (
+        defaultLocale &&
+        translatedAssortmentTexts?.find(
+          ({ locale }) => locale === defaultLocale,
+        )
+      ) {
+        setSelectedLocale(defaultLocale);
+      } else if (
+        defaultLocale &&
+        translatedAssortmentTexts?.find(
+          ({ locale }) => locale === defaultLocale.split('-')[0],
+        )
+      ) {
+        setSelectedLocale(defaultLocale.split('-')[0]);
+      } else {
+        const firstAvailableText = translatedAssortmentTexts?.find(
+          ({ locale }) =>
+            locale &&
+            languageDialectList?.find(({ isoCode }) => isoCode === locale),
+        );
+        setSelectedLocale(firstAvailableText.locale);
+      }
+    }
+  }, [shopInfoLoading, translatedAssortmentTexts]);
 
   return (
     <SelfDocumentingView

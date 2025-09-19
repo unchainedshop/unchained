@@ -18,8 +18,6 @@ const CopilotInput: React.FC = () => {
     [],
   );
 
-  const [historyIndex, setHistoryIndex] = useState(-1);
-
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isStopped, setIsStopped] = useState(false);
@@ -43,15 +41,20 @@ const CopilotInput: React.FC = () => {
     e.preventDefault();
     try {
       if (input.trim() || imageUrls.length > 0) {
+        const trimmedInput = input.trim();
         setInput('');
-        setInputHistory((prev) => [...prev, input]);
-        setHistoryIndex(-1);
+        if (
+          trimmedInput &&
+          (inputHistory.length === 0 ||
+            inputHistory[inputHistory.length - 1] !== trimmedInput)
+        ) {
+          setInputHistory((prev) => [...prev, trimmedInput]);
+        }
         const imgs = [...imageUrls];
         setImageUrls([]);
         handleSubmit(input as any, imgs);
       }
     } catch (e) {
-      // Don't log authentication errors to console as they're handled in the UI
       const errorMessage = e instanceof Error ? e.message : String(e);
       if (
         !errorMessage.includes('401') &&
@@ -99,132 +102,165 @@ const CopilotInput: React.FC = () => {
     setUploading(false);
   };
 
-  const setInputValue = (value: string) => setInput(value);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      let newIndex = historyIndex;
-      if (e.key === 'ArrowUp') {
-        newIndex =
-          historyIndex === -1
-            ? inputHistory.length - 1
-            : Math.max(0, historyIndex - 1);
-      } else if (e.key === 'ArrowDown') {
-        newIndex = historyIndex + 1;
-        if (newIndex >= inputHistory.length) {
-          newIndex = -1;
-        }
+      if (input.trim() || imageUrls.length > 0) {
+        const form = e.currentTarget.closest('form');
+        form?.requestSubmit();
       }
-
-      setHistoryIndex(newIndex);
-      setInputValue(newIndex === -1 ? '' : inputHistory[newIndex]);
+      return;
     }
   };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (inputHistory.length > 0) {
-        setInputHistory(JSON.stringify(inputHistory.slice(-50)));
+        localStorage.setItem(
+          'copilot-input-history',
+          JSON.stringify(inputHistory.slice(-50)),
+        );
       }
     }, 500);
     return () => clearTimeout(timeout);
-  }, [inputHistory]);
+  }, [inputHistory, setInputHistory]);
+
+  useEffect(() => {
+    if (input === '') {
+      const textarea = document.getElementById(
+        'copilot-input',
+      ) as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.style.height = '20px';
+      }
+    }
+  }, [input]);
 
   return (
-    <div className="sticky bottom-6 max-w-4xl mx-auto w-full">
-      <form
-        onSubmit={onSubmit}
-        className="bg-white dark:bg-slate-800 shadow-2xl border border-slate-300 dark:border-slate-700 rounded-md p-3"
-      >
-        <div className="flex items-center gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="flex-1 border-0 bg-slate-50 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-400 rounded-md px-4 py-2 focus:ring-2 focus:ring-slate-400"
-          />
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileChange}
-            className="hidden"
-            id="image-upload"
-          />
-          <label
-            htmlFor="image-upload"
-            className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer focus:ring-2 focus:ring-sky-300 focus:outline-hidden rounded"
-            title="Upload images"
-            tabIndex={0}
-          >
-            <CameraIcon className="h-6 w-6" strokeWidth={2} />
-          </label>
-
-          {(status === 'submitted' || status === 'streaming') && !isStopped ? (
-            <button
-              type="button"
-              onClick={handleStop}
-              className="p-2 bg-slate-900 dark:bg-slate-700 text-white rounded transition-colors"
-              title="Stop generation"
-            >
-              <StopIcon className="h-6 w-6" strokeWidth={2} />
-            </button>
-          ) : (
-            <>
-              <button
-                type="submit"
-                disabled={!input.trim() && imageUrls.length === 0}
-                className="p-2 bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 dark:hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-900 dark:disabled:bg-slate-600 disabled:cursor-not-allowed focus:ring-2 focus:ring-sky-300 focus:outline-hidden rounded transition-colors"
-              >
-                <PaperAirplaneIcon className="h-6 w-6" strokeWidth={2} />
-              </button>
-              {(status === 'ready' || isStopped) && (
-                <button
-                  type="button"
-                  onClick={reload}
-                  className="p-2 bg-slate-500 dark:bg-slate-600 text-white hover:bg-slate-600 dark:hover:bg-slate-500 rounded transition-colors ml-2"
-                  title="Regenerate last response"
-                >
-                  <ArrowPathIcon className="h-4 w-4" />
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
-        {uploading && (
-          <p className="mt-2 text-sm text-slate-500">Uploading...</p>
-        )}
-
-        {imageUrls.length > 0 && (
-          <div className="mt-2 flex gap-3 flex-wrap">
-            {imageUrls.map((img, i) => (
-              <div key={img} className="relative">
-                <Image
-                  src={img}
-                  alt={`Selected ${i}`}
-                  width={64}
-                  height={64}
-                  className="h-16 w-16 object-cover rounded-md"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setImageUrls((prev) =>
-                      prev.filter((_, index) => index !== i),
-                    )
-                  }
-                  className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                >
-                  <XMarkIcon className="h-4 w-4" strokeWidth={2} />
-                </button>
+    <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <div className="max-w-4xl mx-auto px-4 py-4">
+        <form onSubmit={onSubmit} className="relative">
+          <div className="flex items-end bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-gray-400 dark:focus-within:border-gray-500">
+            {imageUrls.length > 0 && (
+              <div className="p-3 pb-0">
+                <div className="flex gap-2 flex-wrap">
+                  {imageUrls.map((img, i) => (
+                    <div key={img} className="relative">
+                      <Image
+                        src={img}
+                        alt={`Selected ${i}`}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setImageUrls((prev) =>
+                            prev.filter((_, index) => index !== i),
+                          )
+                        }
+                        className="absolute -top-1 -right-1 bg-gray-600 hover:bg-gray-700 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs transition-colors"
+                      >
+                        <XMarkIcon className="h-3 w-3" strokeWidth={2} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
+
+            <div className="flex-1 flex items-center min-h-12">
+              <div className="flex-1 px-3">
+                <textarea
+                  value={input}
+                  id="copilot-input"
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Message Copilot..."
+                  className="w-full border-0 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0 focus:outline-none resize-none text-base leading-5 overflow-hidden py-1"
+                  rows={1}
+                  style={{
+                    height: '20px',
+                    minHeight: '20px',
+                    maxHeight: '120px',
+                  }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = '20px';
+                    const scrollHeight = target.scrollHeight;
+                    target.style.height = Math.min(scrollHeight, 120) + 'px';
+                    if (scrollHeight > 120) {
+                      target.style.overflowY = 'auto';
+                    } else {
+                      target.style.overflowY = 'hidden';
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center gap-1 p-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-200"
+                  title="Attach images"
+                  tabIndex={0}
+                >
+                  <CameraIcon className="h-5 w-5" strokeWidth={1.5} />
+                </label>
+
+                {(status === 'ready' || isStopped) && (
+                  <button
+                    type="button"
+                    onClick={reload}
+                    className="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-200"
+                    title="Regenerate last response"
+                  >
+                    <ArrowPathIcon className="h-5 w-5" strokeWidth={1.5} />
+                  </button>
+                )}
+
+                {(status === 'submitted' || status === 'streaming') &&
+                !isStopped ? (
+                  <button
+                    type="button"
+                    onClick={handleStop}
+                    className="flex items-center justify-center w-8 h-8 bg-gray-600 dark:bg-gray-700 text-white hover:bg-gray-700 dark:hover:bg-gray-600 rounded-full transition-all duration-200"
+                    title="Stop generation"
+                  >
+                    <StopIcon className="h-5 w-5" strokeWidth={1.5} />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!input.trim() && imageUrls.length === 0}
+                    className="flex items-center justify-center w-8 h-8 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:text-gray-500 dark:disabled:text-gray-400 disabled:cursor-not-allowed rounded-full transition-all duration-200"
+                    title="Send message"
+                  >
+                    <PaperAirplaneIcon className="h-5 w-5" strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-        )}
-      </form>
+
+          {uploading && (
+            <div className="mt-2 px-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Uploading images...
+              </p>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 };

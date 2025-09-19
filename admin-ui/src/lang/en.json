@@ -138,6 +138,9 @@
   "all": {
     "defaultMessage": "All"
   },
+  "all_workers": {
+    "defaultMessage": "All Workers"
+  },
   "allocate_work": {
     "defaultMessage": "Allocate Work"
   },
@@ -399,6 +402,9 @@
   "clear_history": {
     "defaultMessage": "Clear History"
   },
+  "click_to_copy": {
+    "defaultMessage": "Click to copy ID"
+  },
   "close": {
     "defaultMessage": "Close"
   },
@@ -505,7 +511,7 @@
     "defaultMessage": "Contract Address"
   },
   "copied": {
-    "defaultMessage": "Copied"
+    "defaultMessage": "Copied!"
   },
   "copilot": {
     "defaultMessage": "Copilot"
@@ -882,9 +888,6 @@
   "description": {
     "defaultMessage": "Description"
   },
-  "detail": {
-    "defaultMessage": "Detail"
-  },
   "dimensions": {
     "defaultMessage": "Dimensions"
   },
@@ -1176,8 +1179,8 @@
   "filter.inactive": {
     "defaultMessage": "Inactive"
   },
-  "filter.noOptions": {
-    "defaultMessage": "No options"
+  "filter.options": {
+    "defaultMessage": "Options"
   },
   "filter.sortKey": {
     "defaultMessage": "Sort"
@@ -1597,6 +1600,21 @@
   "message": {
     "defaultMessage": "Message"
   },
+  "message_status_processing": {
+    "defaultMessage": "Processing"
+  },
+  "message_status_sending": {
+    "defaultMessage": "Sending"
+  },
+  "message_status_sent": {
+    "defaultMessage": "Sent"
+  },
+  "message_status_undeliverable": {
+    "defaultMessage": "Undeliverable"
+  },
+  "messages": {
+    "defaultMessage": "Messages"
+  },
   "method": {
     "defaultMessage": "Method"
   },
@@ -1680,6 +1698,9 @@
   },
   "no_result_found": {
     "defaultMessage": "No result found"
+  },
+  "no_retries": {
+    "defaultMessage": "No retries"
   },
   "no_statistics_available": {
     "defaultMessage": "No statistics available"
@@ -2220,6 +2241,9 @@
   },
   "retry_prompt": {
     "defaultMessage": "Retry"
+  },
+  "retry_remaining": {
+    "defaultMessage": "retry"
   },
   "review": {
     "defaultMessage": "Review"
@@ -2887,9 +2911,6 @@
   "work_allocated_success": {
     "defaultMessage": "Allocate work successfully!"
   },
-  "work_count_header": {
-    "defaultMessage": "{count} Work Items"
-  },
   "work_created": {
     "defaultMessage": "Created"
   },
@@ -2905,17 +2926,11 @@
   "work_finished": {
     "defaultMessage": "Finished"
   },
-  "work_header": {
-    "defaultMessage": "1 Work Item"
-  },
   "work_management_setting_list_header": {
     "defaultMessage": "Work Management Settings"
   },
   "work_original": {
     "defaultMessage": "Original Work"
-  },
-  "work_page_title": {
-    "defaultMessage": "{count, plural, one {# Work Item} other {# Work Items}}"
   },
   "work_priority": {
     "defaultMessage": "Priority"

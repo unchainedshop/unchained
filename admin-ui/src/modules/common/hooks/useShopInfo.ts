@@ -45,8 +45,15 @@ const useShopInfo = () => {
   >(ShopInfoQuery, {
     fetchPolicy: 'cache-first',
   });
+  const { shopInfo } = data || {};
   return {
-    shopInfo: data?.shopInfo,
+    shopInfo,
+    defaultLocale: [
+      shopInfo?.language?.isoCode,
+      shopInfo?.country?.isoCode?.toUpperCase(),
+    ]
+      ?.filter(Boolean)
+      ?.join('-'),
     loading,
     error,
   };

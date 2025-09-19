@@ -7,8 +7,6 @@ import useApp from '../hooks/useApp';
 
 const LocaleWrapper = ({ children, onlyFull = false }) => {
   const { languageDialectList, selectedLocale, setSelectedLocale } = useApp();
-
-  const { locale } = useIntl();
   const isInsideFormWrapper = useContext(FormWrapperContext);
 
   const displayedLanguages = languageDialectList.filter(

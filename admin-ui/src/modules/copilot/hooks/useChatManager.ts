@@ -97,16 +97,11 @@ export const useChatManager = () => {
       setMessages((prev) => [...prev, errorMessage]);
     },
   });
+
   useEffect(() => {
-    const validMessages = messages.filter((m) => {
-      if (m.role !== 'assistant') return true;
-      return !!m?.parts?.every((p) => {
-        if (p.type === 'dynamic-tool') return !!p.input && !!p.output;
-        return true;
-      });
-    });
-    setChatHistory(validMessages as ChatMessage[]);
-  }, [messages]);
+    if (status === 'streaming') return;
+    setChatHistory(messages as ChatMessage[]);
+  }, [status]);
 
   const clearHistory = () => {
     setMessages([]);
@@ -137,18 +132,18 @@ export const useChatManager = () => {
       const localizedError =
         errorMessage.includes('401') || errorMessage.includes('Unauthorized')
           ? intl.formatMessage({
-              id: 'chat.error.auth',
-              defaultMessage:
-                '🔐 **Authentication Error**\n\nYour session has expired or the authentication token is invalid.\n\n*Please refresh or log in again.*',
-            })
+            id: 'chat.error.auth',
+            defaultMessage:
+              '🔐 **Authentication Error**\n\nYour session has expired or the authentication token is invalid.\n\n*Please refresh or log in again.*',
+          })
           : intl.formatMessage(
-              {
-                id: 'chat.error.submission',
-                defaultMessage:
-                  '❌ **Submission Error**\n\nFailed to send your message.\n\n**Error:** {details}\n\n*Please ensure the backend is running.*',
-              },
-              { details: errorMessage },
-            );
+            {
+              id: 'chat.error.submission',
+              defaultMessage:
+                '❌ **Submission Error**\n\nFailed to send your message.\n\n**Error:** {details}\n\n*Please ensure the backend is running.*',
+            },
+            { details: errorMessage },
+          );
 
       const chatError: UIMessage = {
         id: `error-${Date.now()}`,

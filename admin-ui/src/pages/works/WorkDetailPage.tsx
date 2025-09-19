@@ -19,7 +19,7 @@ import { IWorkStatus } from '../../gql/types';
 
 const WorkDetailPage = ({ workerId }) => {
   const { formatMessage } = useIntl();
-  const { query, push } = useRouter();
+  const { push } = useRouter();
 
   const { work, loading } = useWork({
     workId: workerId as string,

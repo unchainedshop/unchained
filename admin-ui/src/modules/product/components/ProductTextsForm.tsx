@@ -16,15 +16,17 @@ import MarkdownTextAreaField from '../../forms/components/MarkdownTextAreaField'
 import TagInputField from '../../forms/components/TagInputField';
 import HelpText from '../../common/components/HelpText';
 import useApp from '../../common/hooks/useApp';
+import useShopInfo from '../../common/hooks/useShopInfo';
 
 const ProductTextsForm = ({
   productId,
 
   disabled = false,
 }) => {
-  const { selectedLocale } = useApp();
+  const { selectedLocale, setSelectedLocale, languageDialectList } = useApp();
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
+  const { defaultLocale, shopInfo, loading: shopInfoLoading } = useShopInfo();
   const { translatedTexts } = useTranslatedProductTexts({ productId });
   const successMessage = formatMessage({
     id: 'saved',
@@ -89,6 +91,33 @@ const ProductTextsForm = ({
       ...(value || {}),
     });
   }, [translatedTexts, selectedLocale]);
+  useEffect(() => {
+    if (shopInfo && translatedTexts?.length) {
+      if (translatedTexts?.find(({ locale }) => locale === selectedLocale)) {
+        return;
+      }
+      if (
+        defaultLocale &&
+        translatedTexts?.find(({ locale }) => locale === defaultLocale)
+      ) {
+        setSelectedLocale(defaultLocale);
+      } else if (
+        defaultLocale &&
+        translatedTexts?.find(
+          ({ locale }) => locale === defaultLocale.split('-')[0],
+        )
+      ) {
+        setSelectedLocale(defaultLocale.split('-')[0]);
+      } else {
+        const firstAvailableText = translatedTexts?.find(
+          ({ locale }) =>
+            locale &&
+            languageDialectList?.find(({ isoCode }) => isoCode === locale),
+        );
+        setSelectedLocale(firstAvailableText.locale);
+      }
+    }
+  }, [shopInfoLoading, translatedTexts]);
 
   return (
     <SelfDocumentingView

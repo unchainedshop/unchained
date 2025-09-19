@@ -1000,5 +1000,16 @@
   "worker.successCount": null,
   "workers": null,
   "ordered": null,
-  "registered": null
+  "registered": null,
+  "all_works": null,
+  "click_to_copy": null,
+  "filter.options": null,
+  "message_status_processing": null,
+  "message_status_sending": null,
+  "message_status_sent": null,
+  "message_status_undeliverable": null,
+  "messages": null,
+  "no_retries": null,
+  "retry_remaining": null,
+  "all_workers": null
 }

@@ -55,7 +55,7 @@ const Copilot = () => {
         cancelAnimationFrame(id);
       }
     };
-  }, [messages.length]);
+  }, [messages]);
 
   const visibleMessages = useMemo(() => {
     if (!Array.isArray(messages)) return [];
