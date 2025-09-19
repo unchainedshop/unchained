@@ -117,7 +117,7 @@ export const startPlatform = async ({
     await graphqlHandler.dispose();
     defaultLogger.debug('Stopping DB Connection', { signal });
     await stopDb();
-    defaultLogger.info(`Unchained Engine stopped`, { signal, version: packageJson.version });
+    defaultLogger.debug(`Unchained Engine exiting`, { signal, version: packageJson.version });
     process.exit(0);
   };
 

@@ -32,7 +32,6 @@ export const startDb = async () => {
               port: parseInt(process.env.PORT, 10) + 1,
             },
     });
-
     const mongoInstance = await mongod;
     if (mongoInstance) {
       return `${mongoInstance.getUri()}${process.env.NODE_ENV === 'test' ? 'test' : 'unchained'}`;
@@ -40,16 +39,16 @@ export const startDb = async () => {
   } catch {
     /* */
   }
+
   throw new Error(
-    "Can't connect to MongoDB: could not start mongodb-memory-server and MONGO_URL env is not set",
+    "Can't connect to MongoDB: Could not start mongodb-memory-server and MONGO_URL env is not set",
   );
 };
 
 export const stopDb = async () => {
   try {
     await mongoClient?.close();
-    const mongoInstance = await mongod;
-    await (mongoInstance as any)?.stop();
+    await (await mongod)?.stop();
   } catch {
     /* */
   }
