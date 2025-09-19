@@ -74,7 +74,9 @@
     "dev:watch": "tsc --build -w",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "clean": "tsc --build --clean",
-    "build": "npm run clean && tsc --build"
+    "build": "run-p build:*",
+    "build:packages": "npm run clean && tsc --build",
+    "build:admin-ui": "cd admin-ui && npm run build"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
@@ -94,12 +96,10 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.36.0",
     "wait-on": "^8.0.3",
-    "workspaces-run": "^1.0.2"
+    "workspaces-run": "^1.0.2",
+    "@modelcontextprotocol/sdk": "^1.15.1"
   },
   "trustedDependencies": [
     "@mongodb-js/zstd"
-  ],
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.1"
-  }
+  ]
 }

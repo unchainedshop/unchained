@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/admin-ui",
   "license": "EUPL-1.2",
-  "version": "4.0.35",
+  "version": "4.0.0-rc.15",
   "description": "Unchained Commerce Admin UI Template",
   "main": "./out/index.html",
   "files": [
@@ -9,6 +9,7 @@
     "out"
   ],
   "scripts": {
+    "prepublishOnly": "npm run build",
     "dev": "next dev",
     "build": "node ./generate-permissions.js && NODE_ENV=production next build",
     "start": "next start",
