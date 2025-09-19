@@ -9,7 +9,7 @@
     "out"
   ],
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev ",
+    "dev": "next dev",
     "build": "node ./generate-permissions.js && NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
