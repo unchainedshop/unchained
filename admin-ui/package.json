@@ -38,7 +38,6 @@
     "Mikael Araya Mengistu <mikael@unchained.shop> (http://www.unchained.shop)"
   ],
   "devDependencies": {
-    "@ai-sdk/openai-compatible": "^1.0.17",
     "@ai-sdk/react": "^2.0.44",
     "@apollo/client": "^4.0.5",
     "@dnd-kit/core": "^6.3.1",
@@ -53,7 +52,6 @@
     "@graphql-codegen/typescript-operations": "^5.0.0",
     "@headlessui/react": "^2.2.8",
     "@heroicons/react": "^2.2.0",
-    "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/typography": "^0.5.16",
@@ -102,10 +100,7 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.2",
-    "validator": "^13.15.15"
-  },
-  "peerDependencies": {
-    "@modelcontextprotocol/sdk": "^1.18.0",
+    "validator": "^13.15.15",
     "ai": "^5.0.5"
   }
 }
