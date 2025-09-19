@@ -73,6 +73,17 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
 
+        if (
+          event.entity === '__PROTO__' ||
+          event.entity === 'CONSTRUCTOR' ||
+          event.entity === 'PROTOTYPE' ||
+          event.operation === '__PROTO__' ||
+          event.operation === 'CONSTRUCTOR' ||
+          event.operation === 'PROTOTYPE'
+        ) {
+          throw new Error(`Invalid entity: ${event.entity}`);
+        }
+
         const handler = getOperation(entity, operation);
 
         const payloadId = event.payload?._id || 'global';
