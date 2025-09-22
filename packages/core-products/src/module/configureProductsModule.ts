@@ -600,6 +600,13 @@ export const configureProductsModule = async ({
     },
 
     texts: productTexts,
+    existingTags: async (): Promise<string[]> => {
+      const tags = await Products.distinct('tags', {
+        tags: { $exists: true },
+        status: { $ne: ProductStatus.DELETED },
+      });
+      return tags.sort();
+    },
   };
 };
 

@@ -29,6 +29,8 @@ export interface CustomAdminUiProperties {
 export interface AdminUiConfig {
   customProperties?: CustomAdminUiProperties[];
   singleSignOnURL?: string;
+  defaultProductTags?: string[];
+  defaultAssortmentTags?: string[];
 }
 
 export interface UnchainedHTTPServerContext {

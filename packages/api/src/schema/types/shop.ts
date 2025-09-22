@@ -25,6 +25,8 @@ export default [
       customProperties: [AdminUiConfigCustomEntityInterface!]!
       externalLinks: [AdminUiLink!]!
       singleSignOnURL: String
+      productTags: [String!]!
+      assortmentTags: [String!]!
     }
 
     type Shop @cacheControl(maxAge: 180) {

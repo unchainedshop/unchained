@@ -5,7 +5,6 @@ import { checkAction } from '../../acl.js';
 import { allRoles, actions } from '../../roles/index.js';
 
 type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
-
 export interface ShopHelperTypes {
   _id: () => string;
   country: HelperType<Country>;
