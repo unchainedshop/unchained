@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises';
 import { Context } from '../../context.js';
 import { log } from '@unchainedshop/logger';
 
@@ -10,14 +11,22 @@ export default function shopInfo(
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
 } {
-  const { adminUiConfig } = context;
+  const { adminUiConfig, modules } = context;
   log('query shopInfo', { userId: context.userId });
 
   return {
     version: context.version,
     adminUiConfig: {
-      customProperties: adminUiConfig?.customProperties ?? [],
-      singleSignOnURL: adminUiConfig?.singleSignOnURL,
+      customProperties: async () => {
+        try {
+          const raw = await readFile(process.env.UNCHAINED_ADMIN_UI_CUSTOM_PROPERTIES, 'utf-8');
+          const parsed = JSON.parse(raw);
+          return parsed;
+        } catch {
+          return adminUiConfig?.customProperties ?? [];
+        }
+      },
+      singleSignOnURL: process.env.UNCHAINED_SINGLE_SIGN_ON_URL || adminUiConfig?.singleSignOnURL,
       externalLinks: () => {
         try {
           const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
@@ -25,6 +34,30 @@ export default function shopInfo(
         } catch {
           return [];
         }
+      },
+      productTags: async () => {
+        const existingProductTags = await modules.products.existingTags();
+        const envTags = (process.env.UNCHAINED_DEFAULT_PRODUCT_TAGS || '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+        const normalizedDefaultTags = envTags?.length
+          ? envTags
+          : (adminUiConfig?.defaultProductTags || []).filter(Boolean);
+        const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingProductTags)));
+        return normalizedTags;
+      },
+      assortmentTags: async () => {
+        const existingAssortmentTags = await modules.assortments.existingTags();
+        const envTags = (process.env.UNCHAINED_DEFAULT_ASSORTMENT_TAGS || '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+        const normalizedDefaultTags = envTags?.length
+          ? envTags
+          : (adminUiConfig?.defaultAssortmentTags || []).filter(Boolean);
+        const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingAssortmentTags)));
+        return normalizedTags;
       },
     },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,

@@ -96,8 +96,8 @@ export const buildFindSelector = ({
     selector.status = !includeDrafts
       ? { $eq: ProductStatus.ACTIVE }
       : {
-        $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
-      };
+          $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
+        };
   }
 
   return selector;

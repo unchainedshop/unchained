@@ -73,42 +73,42 @@ export const createContextResolver =
     unchainedAPI: UnchainedCore,
     unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
   ): UnchainedContextResolver =>
-    async ({
-      getHeader,
-      setHeader,
-      remoteAddress,
-      remotePort,
-      userId,
-      impersonatorId,
-      accessToken,
-      login,
-      logout,
-    }) => {
-      const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
-      const loaders = instantiateLoaders(unchainedAPI);
-      const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
+  async ({
+    getHeader,
+    setHeader,
+    remoteAddress,
+    remotePort,
+    userId,
+    impersonatorId,
+    accessToken,
+    login,
+    logout,
+  }) => {
+    const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
+    const loaders = instantiateLoaders(unchainedAPI);
+    const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
 
-      const userContext: UnchainedUserContext = { login, logout, impersonatorId };
+    const userContext: UnchainedUserContext = { login, logout, impersonatorId };
 
-      if (accessToken) {
-        const accessTokenUser = await unchainedAPI.modules.users.findUserByToken(accessToken);
-        if (accessTokenUser) {
-          userContext.user = accessTokenUser;
-          userContext.userId = accessTokenUser._id;
-        }
+    if (accessToken) {
+      const accessTokenUser = await unchainedAPI.modules.users.findUserByToken(accessToken);
+      if (accessTokenUser) {
+        userContext.user = accessTokenUser;
+        userContext.userId = accessTokenUser._id;
       }
-      if (userId && !userContext.userId) {
-        userContext.user = await unchainedAPI.modules.users.findUserById(userId);
-        userContext.userId = userId;
-      }
+    }
+    if (userId && !userContext.userId) {
+      userContext.user = await unchainedAPI.modules.users.findUserById(userId);
+      userContext.userId = userId;
+    }
 
-      return {
-        ...unchainedAPI,
-        ...unchainedConfig,
-        ...localeContext,
-        ...userContext,
-        ...abstractHttpServerContext,
-        loaders,
-        version: UNCHAINED_API_VERSION,
-      };
+    return {
+      ...unchainedAPI,
+      ...unchainedConfig,
+      ...localeContext,
+      ...userContext,
+      ...abstractHttpServerContext,
+      loaders,
+      version: UNCHAINED_API_VERSION,
     };
+  };
