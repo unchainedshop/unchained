@@ -514,6 +514,10 @@ export const configureAssortmentsModule = async ({
     links: assortmentLinks,
     products: assortmentProducts,
     texts: assortmentTexts,
+    existingTags: async (): Promise<string[]> => {
+      const tags = await Assortments.distinct('tags', { tags: { $exists: true } });
+      return assortmentsSettings.defaultTags.concat(tags.sort());
+    },
   };
 };
 

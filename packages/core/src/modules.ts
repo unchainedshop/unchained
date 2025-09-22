@@ -154,6 +154,7 @@ const initModules = async (
   const products = await configureProductsModule({
     db,
     migrationRepository,
+    options: options.products,
   });
   const quotations = await configureQuotationsModule({
     db,

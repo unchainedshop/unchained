@@ -12,6 +12,7 @@ export interface AssortmentsSettingsOptions {
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: string[]) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<string[]>;
+  defaultTags?: string[];
 }
 
 export interface AssortmentsSettings {
@@ -19,6 +20,7 @@ export interface AssortmentsSettings {
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: string[]) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<string[]>;
+  defaultTags?: string[];
   configureSettings: (options: AssortmentsSettingsOptions, db: mongodb.Db) => void;
 }
 
@@ -33,10 +35,12 @@ export const assortmentsSettings: AssortmentsSettings = {
       getCachedProductIds,
       zipTree = zipTreeByDeepness,
       slugify = defaultSlugify,
+      defaultTags,
     }: AssortmentsSettingsOptions,
     db,
   ) => {
     const defaultCache = await makeMongoDBCache(db);
+    assortmentsSettings.defaultTags = (defaultTags ?? []).filter(Boolean);
     assortmentsSettings.zipTree = zipTree;
     assortmentsSettings.slugify = slugify;
     assortmentsSettings.setCachedProductIds = setCachedProductIds || defaultCache.setCachedProductIds;
