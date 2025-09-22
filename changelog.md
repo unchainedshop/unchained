@@ -36,9 +36,9 @@ registerProductDiscoverabilityFilter({ hiddenTagValue: 'hidden' });
 - Add filters to `Query.orders` to filter by payment and delivery providers
 - Allow to call `Query.deliveryInterfaces` without a type
 - Add support for SMS providers BudgetSMS and Bulkgate next to Twilio on our privacy-focused mission to always support European alternatives.
-- Add `productTags` & `assortmentTags` field in `shopInfo.adminUiConfig` that will return existing tags used for products and assortments and can also be customized to include default tags using `UNCHAINED_DEFAULT_PRODUCT_TAGS` and/or `UNCHAINED_DEFAULT_ASSORTMENT_TAGS`.
+- Add `productTags` & `assortmentTags` field in `shopInfo.adminUiConfig` that will return existing tags used for products and assortments and can also be customized to include default tags using `UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS` and/or `UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS`.
 - Add option to configure `adminUiConfig.customProperties` through `UNCHAINED_ADMIN_UI_CUSTOM_PROPERTIES` env in addition to platform configuration option that accepts a json file
-- Add option to configure `adminUiConfig.singleSignOnURL` through `UNCHAINED_SINGLE_SIGN_ON_URL` env in addition to platform configuration option
+- Add option to configure `adminUiConfig.singleSignOnURL` through `UNCHAINED_ADMIN_UI_SINGLE_SIGN_ON_URL` env in addition to platform configuration option
 
 ## Patch
 - Update to ESlint 9

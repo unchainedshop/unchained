@@ -26,7 +26,8 @@ export default function shopInfo(
           return adminUiConfig?.customProperties ?? [];
         }
       },
-      singleSignOnURL: process.env.UNCHAINED_SINGLE_SIGN_ON_URL || adminUiConfig?.singleSignOnURL,
+      singleSignOnURL:
+        process.env.UNCHAINED_ADMIN_UI_SINGLE_SIGN_ON_URL || adminUiConfig?.singleSignOnURL,
       externalLinks: () => {
         try {
           const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
@@ -37,7 +38,7 @@ export default function shopInfo(
       },
       productTags: async () => {
         const existingProductTags = await modules.products.existingTags();
-        const envTags = (process.env.UNCHAINED_DEFAULT_PRODUCT_TAGS || '')
+        const envTags = (process.env.UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS || '')
           .split(',')
           .map((t) => t.trim())
           .filter(Boolean);
@@ -49,7 +50,7 @@ export default function shopInfo(
       },
       assortmentTags: async () => {
         const existingAssortmentTags = await modules.assortments.existingTags();
-        const envTags = (process.env.UNCHAINED_DEFAULT_ASSORTMENT_TAGS || '')
+        const envTags = (process.env.UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS || '')
           .split(',')
           .map((t) => t.trim())
           .filter(Boolean);

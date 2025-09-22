@@ -515,7 +515,10 @@ export const configureAssortmentsModule = async ({
     products: assortmentProducts,
     texts: assortmentTexts,
     existingTags: async (): Promise<string[]> => {
-      const tags = await Assortments.distinct('tags', { tags: { $exists: true } });
+      const tags = await Assortments.distinct('tags', {
+        tags: { $exists: true },
+        deleted: { $exists: false },
+      });
       return tags.sort();
     },
   };
