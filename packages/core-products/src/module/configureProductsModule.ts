@@ -96,8 +96,8 @@ export const buildFindSelector = ({
     selector.status = !includeDrafts
       ? { $eq: ProductStatus.ACTIVE }
       : {
-          $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
-        };
+        $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
+      };
   }
 
   return selector;
@@ -602,7 +602,7 @@ export const configureProductsModule = async ({
     texts: productTexts,
     existingTags: async (): Promise<string[]> => {
       const tags = await Products.distinct('tags', { tags: { $exists: true } });
-      return productsSettings.defaultTags.concat(tags.sort());
+      return tags.sort();
     },
   };
 };

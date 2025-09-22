@@ -35,28 +35,30 @@ export const Shop: ShopHelperTypes = {
       .map(({ name }) => name)
       .filter((name) => name.substring(0, 2) !== '__');
   },
-  productTags: async (root, _, { modules }: Context) => {
+  productTags: async (root, _, { modules, adminUiConfig }: Context) => {
     const existingProductTags = await modules.products.existingTags();
+    const envTags = (UNCHAINED_DEFAULT_PRODUCT_TAGS || '')
+      .split(',')
+      .map((t) => t.trim()).filter(Boolean)
+    const normalizedDefaultTags = envTags?.length ? envTags : (adminUiConfig?.defaultProductTags || []).filter(Boolean)
     const normalizedTags = Array.from(
       new Set(
-        (UNCHAINED_DEFAULT_PRODUCT_TAGS || '')
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean)
+        normalizedDefaultTags
           .concat(existingProductTags),
       ),
     );
     return normalizedTags;
   },
-  assortmentTags: async (root, _, { modules }: Context) => {
-    const existingProductTags = await modules.assortments.existingTags();
+  assortmentTags: async (root, _, { modules, adminUiConfig }: Context) => {
+    const existingAssortmentTags = await modules.assortments.existingTags();
+    const envTags = (UNCHAINED_DEFAULT_ASSORTMENT_TAGS || '')
+      .split(',')
+      .map((t) => t.trim()).filter(Boolean)
+    const normalizedDefaultTags = envTags?.length ? envTags : (adminUiConfig?.defaultAssortmentTags || []).filter(Boolean)
     const normalizedTags = Array.from(
       new Set(
-        (UNCHAINED_DEFAULT_ASSORTMENT_TAGS || '')
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean)
-          .concat(existingProductTags),
+        normalizedDefaultTags
+          .concat(existingAssortmentTags),
       ),
     );
     return normalizedTags;
