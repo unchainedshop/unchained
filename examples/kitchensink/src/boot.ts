@@ -54,9 +54,9 @@ try {
     });
   }
 
-  // fastify.register(fastifyRouter, {
-  //   prefix: '/',
-  // });
+  fastify.register(fastifyRouter, {
+    prefix: '/',
+  });
 
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');

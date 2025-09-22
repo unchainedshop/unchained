@@ -11,10 +11,11 @@ import { User } from '@unchainedshop/core-users';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
 import fastifyMultipart from '@fastify/multipart';
-import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.js';
 import tempUploadHandler from './tempUploadHandler.js';
+import fastifyStatic from '@fastify/static';
 export * from './chatHandler.js';
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
@@ -234,4 +235,38 @@ export const connect = (
     });
     registered();
   });
+};
+
+interface FastifyRouterOptions {
+  prefix?: string;
+}
+
+export const fastifyRouter: FastifyPluginAsync<FastifyRouterOptions> = async (
+  fastify: FastifyInstance,
+  opts,
+) => {
+  try {
+    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+    const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+
+    await fastify.register(fastifyStatic, {
+      root: staticPath,
+      prefix: opts.prefix || '/',
+    });
+
+    fastify.setNotFoundHandler((request, reply) => {
+      if (request.raw.method === 'GET') {
+        return reply.type('text/html').sendFile('index.html');
+      } else {
+        return reply.status(404).send();
+      }
+    });
+  } catch {
+    if (process.env.NODE_ENV !== 'production') {
+      // Trying the default admin ui dev port
+      fastify.get('/', async (request, reply) => {
+        return reply.redirect('http://localhost:3000');
+      });
+    }
+  }
 };

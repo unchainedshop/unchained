@@ -43,7 +43,7 @@ const copilotCount = (
       }),
       USER: formatMessage({
         id: 'users',
-        defaultMessage: 'users',
+        defaultMessage: 'Users',
       }),
       ORDER: formatMessage({
         id: 'orders',

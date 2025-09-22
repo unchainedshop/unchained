@@ -1,5 +1,4 @@
-import { FastifyInstance, FastifyPluginAsync, RouteHandlerMethod, FastifyRequest } from 'fastify';
-import fastifyStatic from '@fastify/static';
+import { FastifyInstance, RouteHandlerMethod, FastifyRequest } from 'fastify';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {
   convertToModelMessages,
@@ -16,31 +15,6 @@ import { ChatConfiguration, errorHandler } from '../chat/utils.js';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
-
-interface FastifyRouterOptions {
-  prefix?: string;
-}
-
-export const fastifyRouter: FastifyPluginAsync<FastifyRouterOptions> = async (
-  fastify: FastifyInstance,
-  opts,
-) => {
-  const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
-  const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
-
-  fastify.register(fastifyStatic, {
-    root: staticPath,
-    prefix: opts.prefix || '/',
-  });
-
-  fastify.setNotFoundHandler((request, reply) => {
-    if (request.raw.method === 'GET') {
-      reply.type('text/html').sendFile('index.html');
-    } else {
-      reply.status(404).send();
-    }
-  });
-};
 
 const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
   if (!chatConfiguration?.model) {
