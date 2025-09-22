@@ -27,6 +27,7 @@ export default [
       singleSignOnURL: String
       productTags: [String!]!
       assortmentTags: [String!]!
+      userTags: [String!]!
     }
 
     type Shop @cacheControl(maxAge: 180) {

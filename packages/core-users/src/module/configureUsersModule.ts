@@ -816,6 +816,16 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
         {},
       );
     },
+    existingTags: async (): Promise<string[]> => {
+      const tags = (await Users.distinct('tags', {
+        tags: { $exists: true },
+        deleted: { $exists: false },
+      })) as string[];
+      return tags
+        .filter(Boolean)
+        .map((t) => t.trim())
+        .filter(Boolean);
+    },
   };
 };
 

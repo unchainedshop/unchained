@@ -60,6 +60,18 @@ export default function shopInfo(
         const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingAssortmentTags)));
         return normalizedTags;
       },
+      userTags: async () => {
+        const existingUserTags = await modules.users.existingTags();
+        const envTags = (process.env.UNCHAINED_ADMIN_UI_DEFAULT_USER_TAGS || '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+        const normalizedDefaultTags = envTags?.length
+          ? envTags
+          : (adminUiConfig?.defaultUserTags || []).filter(Boolean);
+        const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingUserTags)));
+        return normalizedTags;
+      },
     },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,
   };

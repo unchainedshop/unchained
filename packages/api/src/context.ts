@@ -31,6 +31,7 @@ export interface AdminUiConfig {
   singleSignOnURL?: string;
   defaultProductTags?: string[];
   defaultAssortmentTags?: string[];
+  defaultUserTags?: string[];
 }
 
 export interface UnchainedHTTPServerContext {
