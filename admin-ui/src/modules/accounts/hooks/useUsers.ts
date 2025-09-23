@@ -11,6 +11,7 @@ const UsersQuery = gql`
     $queryString: String
     $lastLogin: DateFilterInput
     $emailVerified: Boolean
+    $tags: [LowerCaseString!]
   ) {
     users(
       limit: $limit
@@ -19,6 +20,7 @@ const UsersQuery = gql`
       queryString: $queryString
       lastLogin: $lastLogin
       emailVerified: $emailVerified
+      tags: $tags
     ) {
       ...UserFragment
     }
@@ -27,6 +29,7 @@ const UsersQuery = gql`
       queryString: $queryString
       lastLogin: $lastLogin
       emailVerified: $emailVerified
+      tags: $tags
     )
   }
   ${UserFragment}
@@ -39,6 +42,7 @@ const useUsers = ({
   queryString = null,
   lastLogin = null,
   emailVerified = null,
+  tags = null,
 }: IUsersQueryVariables) => {
   const { data, loading, error, fetchMore } = useQuery<
     IUsersQuery,
@@ -51,6 +55,7 @@ const useUsers = ({
       queryString,
       lastLogin,
       emailVerified,
+      tags,
     },
   });
 
