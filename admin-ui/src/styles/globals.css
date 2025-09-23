@@ -300,3 +300,17 @@ body::before {
 body.modal-blur-active::before {
   opacity: 1;
 }
+
+.tag-input-portal {
+  pointer-events: none !important;
+  z-index: 9999999 !important;
+}
+
+.tag-input-portal .react-select__menu {
+  pointer-events: auto !important;
+  z-index: 9999999 !important;
+}
+
+.tag-input-portal .react-select__option {
+  pointer-events: auto !important;
+}

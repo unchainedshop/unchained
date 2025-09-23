@@ -15,11 +15,13 @@ import NoData from '../../modules/common/components/NoData';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import UserDetailPage from './UserDetailPage';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import useApp from '../../modules/common/hooks/useApp';
 
 const Users = () => {
   const { formatMessage } = useIntl();
   const { query, push, isReady } = useRouter();
-  const { queryString, userId, ...rest } = query;
+  const { shopInfo } = useApp();
+  const { queryString, tags, userId, ...rest } = query;
 
   const setQueryString = (searchString) => {
     const { skip, ...withoutSkip } = rest || { skip: null };
@@ -60,6 +62,7 @@ const Users = () => {
     offset,
     lastLogin,
     emailVerified,
+    tags: tags as string[],
   });
   if (!isReady) {
     return null; // or a loading spinner
@@ -113,6 +116,10 @@ const Users = () => {
       <SearchWithTags
         onSearchChange={setQueryString}
         defaultSearchValue={queryString}
+        showTagFilter
+        availableTagOptions={(shopInfo?.adminUiConfig?.userTags || []).map(
+          (tag) => ({ label: tag, value: tag }),
+        )}
       >
         <InfiniteScroll
           loading={loading}

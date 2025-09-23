@@ -29,6 +29,7 @@ import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import AlertMessage from '../../modal/components/AlertMessage';
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
+import useApp from '../../common/hooks/useApp';
 
 const GetCurrentTab = ({ id, selectedView, ...extendedData }) => {
   if (selectedView === 'texts')
@@ -66,6 +67,7 @@ const AssortmentDetail = ({
 }) => {
   const { isActive, isBase, isRoot } = assortment || {};
   const { hasRole } = useAuth();
+  const { shopInfo } = useApp();
   const { formatMessage } = useIntl();
   const { updateAssortment } = useUpdateAssortment();
   const { setBaseAssortment } = useSetBaseAssortment();
@@ -330,6 +332,12 @@ const AssortmentDetail = ({
           defaultValue={assortment?.tags}
           onSubmit={updateAssortmentTags}
           enableEdit={hasRole('editAssortment')}
+          availableTagOptions={
+            shopInfo?.adminUiConfig?.assortmentTags?.map((tag) => ({
+              value: tag,
+              label: tag,
+            })) || []
+          }
         />
         {!hideControls && (
           <div className="mt-5 flex flex-wrap gap-3">

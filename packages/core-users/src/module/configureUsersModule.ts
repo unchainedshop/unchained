@@ -58,6 +58,7 @@ export const buildFindSelector = ({
   queryString,
   emailVerified,
   lastLogin,
+  tags,
   ...rest
 }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest };
@@ -65,6 +66,9 @@ export const buildFindSelector = ({
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (emailVerified === true) {
     selector['emails.verified'] = true;
+  }
+  if (Array.isArray(tags) && tags?.length) {
+    selector.tags = { $in: tags };
   }
   if (emailVerified === false) {
     // We need to use $ne here else we'd also find users with many emails where one is

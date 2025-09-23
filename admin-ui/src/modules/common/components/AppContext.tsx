@@ -4,6 +4,7 @@ import useLanguages from '../../language/hooks/useLanguages';
 import useCountries from '../../country/hooks/useCountries';
 import useShopInfo from '../hooks/useShopInfo';
 import useLocalStorage from '../hooks/useLocalStorage';
+import { IShopInfoQuery } from '../../../gql/types';
 
 const isSupportedLocale = (locale) => {
   try {
@@ -15,12 +16,12 @@ const isSupportedLocale = (locale) => {
   }
 };
 
-interface AppContextProps {
+type AppContextProps = IShopInfoQuery & {
   selectedLocale: string;
   isSystemReady: boolean;
   setSelectedLocale: (locale: string) => void;
   languageDialectList: { _id: string; isoCode: string }[];
-}
+};
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 const createLanguageDialectList = (languages, countries) => {
@@ -82,6 +83,7 @@ export const AppContextWrapper = ({
     countries,
   ).filter((l) => !onlyFull || l.isoCode.includes('-'));
   const isSystemReady = !!shopInfo?.language && !!shopInfo?.country;
+
   return (
     <AppContext.Provider
       value={{
@@ -89,6 +91,7 @@ export const AppContextWrapper = ({
         setSelectedLocale: setSelectedLocaleWrapper,
         languageDialectList,
         isSystemReady,
+        shopInfo,
       }}
     >
       {children}

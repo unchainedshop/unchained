@@ -29,6 +29,7 @@ const useSetUserTags = () => {
         tags,
         userId,
       },
+      refetchQueries: ['Users', 'User', 'ShopStatus', 'ShopInfo'],
     });
   };
 

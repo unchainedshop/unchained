@@ -12,9 +12,14 @@ const UserOrdersQuery = gql`
     $userId: ID
     $queryString: String
     $sort: [SortOptionInput!]
+    $includeCarts: Boolean
   ) {
     user(userId: $userId) {
-      orders(queryString: $queryString, sort: $sort) {
+      orders(
+        queryString: $queryString
+        sort: $sort
+        includeCarts: $includeCarts
+      ) {
         ...OrderFragment
       }
     }
@@ -26,6 +31,7 @@ const useUserOrders = ({
   userId = null,
   queryString = '',
   sort: sortOptions = [],
+  includeCarts = false,
 }: IUserOrderQueryVariables = {}) => {
   const { data, loading, error } = useQuery<
     IUserOrderQuery,
@@ -35,6 +41,7 @@ const useUserOrders = ({
     variables: {
       userId,
       queryString,
+      includeCarts,
       sort: sortOptions.length
         ? sortOptions
         : [{ key: 'ordered', value: ISortDirection.Desc }],

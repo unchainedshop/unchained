@@ -89,6 +89,7 @@ const keyMappings: any = {
           'emailVerified',
           'lastLogin',
           'limit',
+          'tags',
         ]),
       },
       filters: {

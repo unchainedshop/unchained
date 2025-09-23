@@ -12,7 +12,7 @@ import useApp from '../../common/hooks/useApp';
 const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const { selectedLocale } = useApp();
+  const { selectedLocale, shopInfo } = useApp();
   const successMessage = formatMessage({
     id: 'assortment_added',
     defaultMessage: 'Assortment added successfully!',
@@ -59,6 +59,9 @@ const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
           name="tags"
           id="tags"
           label={formatMessage({ id: 'tags', defaultMessage: 'Tags' })}
+          selectOptions={(shopInfo?.adminUiConfig?.assortmentTags || []).map(
+            (tag) => ({ value: tag, label: tag }),
+          )}
         />
       </div>
       <div className="mx-5 mb-5">

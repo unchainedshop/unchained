@@ -22,6 +22,7 @@ export default [
         sort: [SortOptionInput!]
         emailVerified: Boolean
         lastLogin: DateFilterInput
+        tags: [LowerCaseString!]
       ): [User!]!
 
       """
@@ -32,6 +33,7 @@ export default [
         queryString: String
         emailVerified: Boolean
         lastLogin: DateFilterInput
+        tags: [LowerCaseString!]
       ): Int!
 
       """

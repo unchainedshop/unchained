@@ -33,6 +33,9 @@ const ShopInfoQuery = gql`
           entityName
           inlineFragment
         }
+        productTags
+        assortmentTags
+        userTags
       }
     }
   }

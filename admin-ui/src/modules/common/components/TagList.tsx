@@ -1,12 +1,15 @@
-import { PencilSquareIcon, TagIcon } from '@heroicons/react/24/outline';
-
 import { useIntl } from 'react-intl';
 import useModal from '../../modal/hooks/useModal';
 
 import Badge from './Badge';
 import TagListForm from './TagListForm';
 
-const TagList = ({ defaultValue, onSubmit, enableEdit }) => {
+const TagList = ({
+  defaultValue,
+  onSubmit,
+  enableEdit,
+  availableTagOptions = [],
+}) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
 
@@ -39,6 +42,7 @@ const TagList = ({ defaultValue, onSubmit, enableEdit }) => {
                 tags={defaultValue || []}
                 onCancel={() => setModal('')}
                 onSubmit={onSubmit}
+                selectOptions={availableTagOptions}
               />,
             )
           }

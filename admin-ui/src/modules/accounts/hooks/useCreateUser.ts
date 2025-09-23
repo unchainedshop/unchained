@@ -55,7 +55,7 @@ const useCreateUser = () => {
     variables.plainPassword = plainPassword;
     const result = await createUserMutation({
       variables,
-      refetchQueries: ['Users'],
+      refetchQueries: ['Users', 'ShopStatus', 'ShopInfo'],
     });
 
     await client.resetStore();

@@ -41,6 +41,13 @@ const UserList = ({ users }) => {
 
           <Table.Cell>
             {formatMessage({
+              id: 'tags',
+              defaultMessage: 'Tags',
+            })}
+          </Table.Cell>
+
+          <Table.Cell>
+            {formatMessage({
               id: 'cart',
               defaultMessage: 'Cart',
             })}

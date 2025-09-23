@@ -16,19 +16,22 @@ import useAssortmentsCount from '../../modules/assortment/hooks/useAssortmentsCo
 import AssortmentDetailPage from './AssortmentDetailPage';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import useApp from '../../modules/common/hooks/useApp';
 
 const GetCurrentView = ({
   options,
   queryString,
   onSearchChange,
   defaultSearchValue,
+  availableTagOptions,
 }) => {
   const { graph, ...rest } = options;
-
   return (
     <SearchWithTags
       onSearchChange={onSearchChange}
       defaultSearchValue={defaultSearchValue}
+      showTagFilter
+      availableTagOptions={availableTagOptions}
     >
       <LocaleWrapper onlyFull>
         {graph === 'true' ? (
@@ -47,6 +50,7 @@ const GetCurrentView = ({
 
 const AssortmentsView = () => {
   const { formatMessage } = useIntl();
+  const { shopInfo } = useApp();
   const router = useRouter();
   const { hasRole } = useAuth();
   const { query, push } = router;
@@ -155,6 +159,9 @@ const AssortmentsView = () => {
           </div>
         </ListHeader>
         <GetCurrentView
+          availableTagOptions={(
+            shopInfo?.adminUiConfig?.assortmentTags || []
+          ).map((tag) => ({ value: tag, label: tag }))}
           queryString={queryString}
           onSearchChange={setQueryString}
           defaultSearchValue={queryString}

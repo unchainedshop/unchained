@@ -34,6 +34,7 @@ const useUpdateProduct = () => {
           meta,
         },
       },
+      refetchQueries: ['Products', 'ShopStatus', 'ShopInfo'],
     });
   };
 

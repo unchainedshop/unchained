@@ -19,10 +19,11 @@ import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
 import ProductExport from '../../modules/product/components/ProductExport';
 import ProductImport from '../../modules/product/components/ProductImport';
+import useApp from '../../modules/common/hooks/useApp';
 
 const Products = () => {
   const { formatMessage } = useIntl();
-
+  const { shopInfo } = useApp();
   const { query, push } = useRouter();
   const limit = parseInt(query?.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query?.skip as string, 10) || 0;
@@ -66,6 +67,10 @@ const Products = () => {
           },
           { count: <AnimatedCounter value={productsCount ?? 0} /> },
         );
+
+  const tagFilterOptions = (shopInfo?.adminUiConfig?.productTags || []).map(
+    (tag) => ({ value: tag, label: tag }),
+  );
   return (
     <>
       <BreadCrumbs />
@@ -106,6 +111,7 @@ const Products = () => {
           onSearchChange={setQueryString}
           defaultSearchValue={queryString}
           showTagFilter
+          availableTagOptions={tagFilterOptions}
         >
           <LocaleWrapper onlyFull>
             <ProductList

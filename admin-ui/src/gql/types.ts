@@ -58,9 +58,12 @@ export type IAddressInput = {
 };
 
 export type IAdminUiConfig = {
+  assortmentTags: Array<Scalars['String']['output']>;
   customProperties: Array<IAdminUiConfigCustomEntityInterface>;
   externalLinks: Array<IAdminUiLink>;
+  productTags: Array<Scalars['String']['output']>;
   singleSignOnURL?: Maybe<Scalars['String']['output']>;
+  userTags: Array<Scalars['String']['output']>;
 };
 
 export type IAdminUiConfigCustomEntityInterface = {
@@ -3272,6 +3275,7 @@ export type IQueryUsersArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
 export type IQueryUsersCountArgs = {
@@ -3279,6 +3283,7 @@ export type IQueryUsersCountArgs = {
   includeGuests?: InputMaybe<Scalars['Boolean']['input']>;
   lastLogin?: InputMaybe<IDateFilterInput>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
 export type IQueryValidateResetPasswordTokenArgs = {
@@ -5885,6 +5890,7 @@ export type IUsersQueryVariables = Exact<{
   queryString?: InputMaybe<Scalars['String']['input']>;
   lastLogin?: InputMaybe<IDateFilterInput>;
   emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
+  tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 }>;
 
 export type IUsersQuery = {
@@ -7724,6 +7730,9 @@ export type IShopInfoQuery = {
     } | null;
     adminUiConfig: {
       singleSignOnURL?: string | null;
+      productTags: Array<string>;
+      assortmentTags: Array<string>;
+      userTags: Array<string>;
       externalLinks: Array<{
         href?: string | null;
         title?: string | null;
@@ -10000,6 +10009,7 @@ export type IUserOrderQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['ID']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 export type IUserOrderQuery = {

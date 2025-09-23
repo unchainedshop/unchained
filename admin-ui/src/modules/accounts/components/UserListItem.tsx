@@ -15,7 +15,7 @@ import Loading from '../../common/components/Loading';
 import { ShoppingBagIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 
 const UserLastLogin = ({ lastLogin }) => {
-  const { formatMessage, locale } = useIntl();
+  const { locale } = useIntl();
   const loginDate = new Date(lastLogin?.timestamp);
   if (!loginDate?.getTime()) return null;
   const formattedDate = loginDate.toLocaleDateString(locale, {
@@ -29,9 +29,6 @@ const UserLastLogin = ({ lastLogin }) => {
   });
   return (
     <div className="text-sm text-slate-500">
-      <span>
-        {formatMessage({ id: 'last_login', defaultMessage: 'Last Login: ' })}
-      </span>{' '}
       {formattedDate}, {formattedTime}
     </div>
   );
@@ -138,6 +135,19 @@ const UserListItem = ({ user }) => {
 
       <Table.Cell>
         <Link href={`/users?userId=${user._id}`} className="block">
+          <div className="flex flex-wrap gap-2">
+            {user.tags?.map((tag) => (
+              <Badge key={tag} text={tag} color="slate" />
+            ))}
+          </div>
+        </Link>
+      </Table.Cell>
+
+      <Table.Cell>
+        <Link
+          href={`/users?userId=${user._id}&tab=orders&includeCarts=true`}
+          className="block"
+        >
           <div className="flex items-center gap-1">
             <ShoppingCartIcon className="w-4 h-4 text-slate-500" />
             <span className="text-sm">{user?.cart?.items?.length || 0}</span>
@@ -146,7 +156,7 @@ const UserListItem = ({ user }) => {
       </Table.Cell>
 
       <Table.Cell>
-        <Link href={`/users?userId=${user._id}`} className="block">
+        <Link href={`/users?userId=${user._id}&tab=orders`} className="block">
           <div className="flex items-center gap-1">
             <ShoppingBagIcon className="w-4 h-4 text-slate-500" />
             <span className="text-sm">{user?.orders?.length || 0}</span>
