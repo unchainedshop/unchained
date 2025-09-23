@@ -4,13 +4,12 @@ import TagInputField from '../../forms/components/TagInputField';
 import useForm from '../../forms/hooks/useForm';
 import SaveAndCancelButtons from './SaveAndCancelButtons';
 
-const TagListForm = ({ tags, onSubmit, onCancel }) => {
+const TagListForm = ({ tags, onSubmit, onCancel, selectOptions = [] }) => {
   const { formatMessage } = useIntl();
   const successMessage = formatMessage({
     id: 'tags_updated',
     defaultMessage: 'Tags updated successfully',
   });
-
   const form = useForm({
     submit: onSubmit,
     successMessage,
@@ -27,6 +26,7 @@ const TagListForm = ({ tags, onSubmit, onCancel }) => {
           id="tags"
           label={formatMessage({ id: 'tags', defaultMessage: 'Tags' })}
           tagList={tags}
+          selectOptions={selectOptions}
         />
       </div>
       <div className="border border-t-slate-100 bg-slate-50 mt-6 -mx-6 -mb-6 px-6 dark:bg-slate-900 dark:border-0">

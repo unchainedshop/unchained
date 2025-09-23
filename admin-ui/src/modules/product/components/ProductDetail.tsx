@@ -33,6 +33,7 @@ import ProductTokenizationForm from './ProductTokenizationForm';
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import ErrorBoundary from '../../common/components/ErrorBoundary';
 import { IProductDetailFragment, IProductStatus } from '../../../gql/types';
+import useApp from '../../common/hooks/useApp';
 
 interface GetCurrentTabProps {
   id: string;
@@ -101,6 +102,7 @@ const GetCurrentTab = ({
 const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
+  const { shopInfo } = useApp();
   const { updateProduct } = useUpdateProduct();
   const { __typename } = product || {};
 
@@ -209,6 +211,9 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
           defaultValue={product?.tags}
           onSubmit={onUpdateTags}
           enableEdit={hasRole('editProduct')}
+          availableTagOptions={(shopInfo?.adminUiConfig?.productTags || []).map(
+            (tag) => ({ value: tag, label: tag }),
+          )}
         />
       </div>
       <Tab tabItems={productOptions} defaultTab="texts">

@@ -23,7 +23,7 @@ const ProductForm = ({
 }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const { selectedLocale } = useApp();
+  const { selectedLocale, shopInfo } = useApp();
 
   const successMessage = formatMessage({
     id: 'product_added',
@@ -98,6 +98,9 @@ const ProductForm = ({
             id: 'enter_tag',
             defaultMessage: 'Enter tag...',
           })}
+          selectOptions={(shopInfo?.adminUiConfig.productTags || []).map(
+            (tag) => ({ value: tag, label: tag }),
+          )}
         />
         <HelpText
           messageKey="product_tags_help"

@@ -8,14 +8,14 @@ import FieldWrapper from './FieldWrapper';
 const TagInputField = ({
   buttonText = '',
   validators = [],
+  selectOptions = [],
   ...props
-}: FieldHookProps) => {
+}: FieldHookProps & { selectOption?: string[] }) => {
   const field = useField({
     validators: [...validators, validateRequiredTag(props?.required)],
     label: 'Tags',
     ...props,
   });
-
   return (
     <FieldWrapper {...field}>
       <TagInput
@@ -29,6 +29,7 @@ const TagInputField = ({
         placeholder={field.placeholder}
         tagList={field.value}
         buttonText={buttonText}
+        selectOptions={selectOptions}
       />
     </FieldWrapper>
   );

@@ -58,9 +58,12 @@ export type IAddressInput = {
 };
 
 export type IAdminUiConfig = {
+  assortmentTags: Array<Scalars['String']['output']>;
   customProperties: Array<IAdminUiConfigCustomEntityInterface>;
   externalLinks: Array<IAdminUiLink>;
+  productTags: Array<Scalars['String']['output']>;
   singleSignOnURL?: Maybe<Scalars['String']['output']>;
+  userTags: Array<Scalars['String']['output']>;
 };
 
 export type IAdminUiConfigCustomEntityInterface = {
@@ -7724,6 +7727,9 @@ export type IShopInfoQuery = {
     } | null;
     adminUiConfig: {
       singleSignOnURL?: string | null;
+      productTags: Array<string>;
+      assortmentTags: Array<string>;
+      userTags: Array<string>;
       externalLinks: Array<{
         href?: string | null;
         title?: string | null;

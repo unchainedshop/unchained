@@ -37,6 +37,7 @@ const useCreateAssortment = () => {
         'Assortments',
         'TranslatedAssortmentTexts',
         'ShopStatus',
+        'ShopInfo',
       ],
     });
   };

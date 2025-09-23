@@ -57,7 +57,7 @@ const useCreateProduct = () => {
   }: ICreateProductMutationVariables) => {
     return createProductMutation({
       variables: { product: { type, tags }, texts },
-      refetchQueries: ['Products', 'ShopStatus'],
+      refetchQueries: ['Products', 'ShopStatus', 'ShopInfo'],
     });
   };
   const newProduct = data?.createProduct;
