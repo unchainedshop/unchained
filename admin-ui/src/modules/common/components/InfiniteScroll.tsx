@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useIntl } from 'react-intl';
 import Loading from './Loading';
 
 interface InfiniteScrollProps {
@@ -17,7 +16,6 @@ const InfiniteScroll = ({
   children,
   threshold = 200,
 }: InfiniteScrollProps) => {
-  const { formatMessage } = useIntl();
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const handleIntersect = useCallback(

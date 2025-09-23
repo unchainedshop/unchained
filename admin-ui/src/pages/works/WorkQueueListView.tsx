@@ -32,7 +32,14 @@ const WorkQueueListView = () => {
       end: query?.end,
     },
     status: (query?.status as string)?.split(',') as IWorkStatus[],
-    types: (query?.types as string)?.split(',') as IWorkType[],
+    types:
+      query?.tab === 'messages'
+        ? ([
+            'MESSAGE',
+            'EMAIL',
+            ...((query.types as string) ?? '').split(','),
+          ].filter(Boolean) as IWorkType[])
+        : ((query?.types as string)?.split(',') as IWorkType[]),
   };
   const limit = parseInt(query?.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query?.skip as string, 10) || 0;
@@ -105,22 +112,35 @@ const WorkQueueListView = () => {
   }, []);
 
   const WorkQueueContent = useCallback(
-    ({ selectedView = 'all' }) => (
-      <InfiniteScroll loading={loading} hasMore={hasMore} onLoadMore={loadMore}>
-        {loading && workQueue?.length === 0 ? (
-          <Loading />
-        ) : selectedView === 'messages' ? (
-          <MessagesList
-            messageGroups={messageGroups}
-            sortable
-            expandedMessages={expandedMessages}
-            onToggleExpanded={toggleExpanded}
-          />
-        ) : (
-          <WorkList workQueue={workQueue} sortable />
-        )}
-      </InfiniteScroll>
-    ),
+    ({ selectedView = 'all' }) => {
+      const isMessagesView = selectedView === 'messages';
+      const messagesHasMore = isMessagesView
+        ? hasMore && messageGroups.length > 0
+        : hasMore;
+      const threshold = isMessagesView ? 600 : 200; // Use larger threshold for messages to prevent infinite loops
+
+      return (
+        <InfiniteScroll
+          loading={loading}
+          hasMore={messagesHasMore}
+          onLoadMore={loadMore}
+          threshold={threshold}
+        >
+          {loading && workQueue?.length === 0 ? (
+            <Loading />
+          ) : isMessagesView ? (
+            <MessagesList
+              messageGroups={messageGroups}
+              sortable
+              expandedMessages={expandedMessages}
+              onToggleExpanded={toggleExpanded}
+            />
+          ) : (
+            <WorkList workQueue={workQueue} sortable />
+          )}
+        </InfiniteScroll>
+      );
+    },
     [
       loading,
       hasMore,
@@ -134,7 +154,9 @@ const WorkQueueListView = () => {
 
   return (
     <>
-      <WorkFilter workTypes={activeWorkTypes} />
+      <WorkFilter
+        workTypes={query?.tab === 'messages' ? [] : activeWorkTypes}
+      />
       <SearchWithTags
         onSearchChange={setQueryStringCallback}
         defaultSearchValue={queryString}

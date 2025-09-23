@@ -51,22 +51,22 @@ const WorkFilter = ({ workTypes = [] }) => {
       <div className="mt-3">
         <DateRangeFilterInput />
       </div>
-
-      <div className="mt-5">
-        <MultipleSelect
-          label={formatMessage({
-            id: 'select_type',
-            defaultMessage: 'Select type',
-          })}
-          tagList={appliedTypes}
-          onChange={typeChangeHandler}
-          options={workTypes.map((type) => ({
-            label: type,
-            value: type,
-          }))}
-        />
-      </div>
-
+      {workTypes?.length ? (
+        <div className="mt-5">
+          <MultipleSelect
+            label={formatMessage({
+              id: 'select_type',
+              defaultMessage: 'Select type',
+            })}
+            tagList={appliedTypes}
+            onChange={typeChangeHandler}
+            options={workTypes.map((type) => ({
+              label: type,
+              value: type,
+            }))}
+          />
+        </div>
+      ) : null}
       <div className="mt-5">
         <div className="text-md text-slate-800 dark:text-slate-200">
           {formatMessage({ id: 'status', defaultMessage: 'Status' })}
