@@ -84,18 +84,44 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         return;
       }
       const { messages } = req.body;
+
+
+      const cacheControlledTools = { ...tools };
+      const keys = Object.keys(cacheControlledTools);
+      const lastKey = keys[keys.length - 1];
+
+      cacheControlledTools[lastKey] = {
+        ...cacheControlledTools[lastKey],
+        providerOptions: {
+          anthropic: { cacheControl: { type: 'ephemeral' } },
+        },
+      };
+
+      const normalizedMessages = convertToModelMessages(messages, { tools: cacheControlledTools });
+
+      if (normalizedMessages.length > 0) {
+        const lastIndex = normalizedMessages.length - 1;
+        normalizedMessages[lastIndex] = {
+          ...normalizedMessages[lastIndex],
+          providerOptions: { anthropic: { cacheControl: { type: 'ephemeral' } } },
+        };
+      }
       const result = streamText({
         stopWhen: stepCountIs(10),
         ...restChatConfig,
         system,
         model,
-        messages: convertToModelMessages(messages, {
-          tools,
-          ignoreIncompleteToolCalls: true,
-        }),
-        tools,
+        tools: cacheControlledTools,
         onFinish: async () => {
           await client?.close();
+        },
+        messages: normalizedMessages,
+        providerOptions: {
+          anthropic: {
+            cacheControl: {
+              type: 'ephemeral'
+            },
+          },
         },
       });
 
