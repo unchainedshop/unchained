@@ -22,6 +22,7 @@ export const Price = {
       return Number(obj.amount).toLocaleString(undefined, {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
+        useGrouping: false,
       });
     }
     return 0;

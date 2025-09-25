@@ -41,12 +41,12 @@
     "@unchainedshop/mongodb": "^4.0.0-rc.15"
   },
   "peerDependencies": {
-    "@hyperlink/node-apn": "^5.1.4",
+    "@parse/node-apn": "^6.5.0",
     "express": "5.x",
     "fastify": ">= 5.2 < 6"
   },
   "peerDependenciesMeta": {
-    "@hyperlink/node-apn": {
+    "@parse/node-apn": {
       "optional": false
     },
     "express": {
