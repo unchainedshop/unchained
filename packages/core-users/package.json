@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@node-rs/bcrypt": "^1.10.7",
+    "bcryptjs": "^3.0.2",
     "@unchainedshop/events": "^4.0.0-rc.15",
     "@unchainedshop/file-upload": "^4.0.0-rc.15",
     "@unchainedshop/logger": "^4.0.0-rc.15",
