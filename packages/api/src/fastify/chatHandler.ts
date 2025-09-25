@@ -93,7 +93,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       const result = streamText({
         stopWhen: stepCountIs(500),
         ...restChatConfig,
-        messages: normalizedMessages,
+        messages: normalizedMessages.slice(-20),
         system,
         tools: cacheControlledTools,
         onFinish: async () => {
@@ -102,7 +102,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         providerOptions: {
           anthropic: {
             cacheControl: {
-              type: 'ephemeral'
+              type: 'ephemeral',
             },
           },
         },

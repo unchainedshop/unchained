@@ -85,7 +85,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       }
       const { messages } = req.body;
 
-
       const cacheControlledTools = { ...tools };
       const keys = Object.keys(cacheControlledTools);
       const lastKey = keys[keys.length - 1];
@@ -115,11 +114,11 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         onFinish: async () => {
           await client?.close();
         },
-        messages: normalizedMessages,
+        messages: normalizedMessages.slice(-20),
         providerOptions: {
           anthropic: {
             cacheControl: {
-              type: 'ephemeral'
+              type: 'ephemeral',
             },
           },
         },
