@@ -1,11 +1,13 @@
+import JSONStream from 'minipass-json-stream';
+import { PassThrough, Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { mongodb } from '@unchainedshop/mongodb';
-import { BulkImporter, UnchainedCore } from '@unchainedshop/core';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
 import * as ProductHandlers from './handlers/product/index.js';
 import { createLogger } from '@unchainedshop/logger';
-import { pipeline } from 'node:stream/promises';
-import JSONStream from 'minipass-json-stream';
+import { Modules } from '../modules.js';
+import { Services } from '../services/index.js';
 
 const logger = createLogger('unchained:bulk-import');
 
@@ -14,7 +16,7 @@ export interface BulkImportOperationResult {
   operation: string;
   success: boolean;
 }
-export type BulkImportOperation = (
+export type BulkImportOperation<T> = (
   payload: any,
   options: {
     bulk: (collection: string) => typeof mongodb.BulkOperationBase;
@@ -22,14 +24,14 @@ export type BulkImportOperation = (
     updateShouldUpsertIfIDNotExists?: boolean;
     skipCacheInvalidation?: boolean;
   },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: T,
 ) => Promise<BulkImportOperationResult>;
 
-export type BulkImportHandler = Record<string, BulkImportOperation>;
+export type BulkImportHandler<T> = Record<string, BulkImportOperation<T>>;
 
-let bulkOperationHandlers: Record<string, BulkImportHandler> = {};
+let bulkOperationHandlers: Record<string, BulkImportHandler<any>> = {};
 
-export const getOperation = (entity: string, operation: string): BulkImportOperation => {
+export const getOperation = (entity: string, operation: string): BulkImportOperation<any> => {
   if (
     entity === '__PROTO__' ||
     entity === 'CONSTRUCTOR' ||
@@ -45,7 +47,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
     throw new Error(`Entity ${entity} unknown`);
   }
 
-  const entityOperation = handlers[operation] as BulkImportOperation;
+  const entityOperation = handlers[operation] as BulkImportOperation<any>;
 
   if (!entityOperation || typeof entityOperation !== 'function') {
     throw new Error(`Operation ${operation} for entity ${entity} invalid`);
@@ -54,7 +56,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
   return entityOperation;
 };
 
-export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImporter => {
+export default function createBulkImporterFactory(db, bulkImporterOptions: any) {
   bulkOperationHandlers = {
     ASSORTMENT: AssortmentHandlers,
     PRODUCT: ProductHandlers,
@@ -62,28 +64,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     ...(bulkImporterOptions?.handlers || {}),
   };
 
-  const validateEventStream = async (readStream) => {
-    await pipeline(
-      readStream,
-      JSONStream.parse('events.*'),
-      async function* (source: AsyncIterable<any>, { signal }) {
-        for await (const event of source) {
-          try {
-            if (signal.aborted) break;
-            const entity = event.entity.toUpperCase();
-            const operation = event.operation.toLowerCase();
-
-            getOperation(entity, operation);
-          } catch (e) {
-            throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
-          }
-        }
-        yield true;
-      },
-    );
-  };
-
-  const createBulkImporter: BulkImporter['createBulkImporter'] = (options) => {
+  const createBulkImporter = (options) => {
     const bulkOperations = {};
     const preparationIssues = [];
     const processedOperations = {};
@@ -102,7 +83,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     );
 
     return {
-      prepare: async (event, unchainedAPI: UnchainedCore) => {
+      prepare: async (event, unchainedAPI: { modules: Modules; services: Services }) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
 
@@ -151,7 +132,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
         logger.debug(`Import finished without errors`);
         return [operationResults, null];
       },
-      invalidateCaches: async (unchainedAPI: UnchainedCore) => {
+      invalidateCaches: async (unchainedAPI: { modules: Modules; services: Services }) => {
         if (skipCacheInvalidation) return;
         await unchainedAPI.modules.assortments.invalidateCache({}, { skipUpstreamTraversal: true });
         await unchainedAPI.services.filters.invalidateFilterCache();
@@ -159,10 +140,54 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     };
   };
 
+  const validateEventStream = async (readStream: Readable) => {
+    await pipeline(
+      readStream,
+      JSONStream.parse('events.*'),
+      async function* (source: AsyncIterable<any>, { signal }) {
+        for await (const event of source) {
+          try {
+            if (signal.aborted) break;
+            const entity = event.entity.toUpperCase();
+            const operation = event.operation.toLowerCase();
+
+            getOperation(entity, operation);
+          } catch (e) {
+            throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
+          }
+        }
+        yield true;
+      },
+    );
+  };
+
+  const pipeEventStream = async (
+    readStream: Readable,
+    bulkImporter: ReturnType<typeof createBulkImporter>,
+    unchainedAPI: { modules: Modules; services: Services },
+  ) => {
+    await pipeline(
+      readStream,
+      new PassThrough({
+        highWaterMark: 100,
+      }),
+      JSONStream.parse('events.*'),
+      async function* (source) {
+        for await (const event of source) {
+          await bulkImporter.prepare(event, unchainedAPI);
+        }
+        yield true;
+      },
+    );
+  };
+
   return {
     createBulkImporter,
     validateEventStream,
+    pipeEventStream,
   };
-};
+}
+
+export type BulkImporter = ReturnType<typeof createBulkImporterFactory>;
 
 export { AssortmentHandlers, ProductHandlers, FilterHandlers };

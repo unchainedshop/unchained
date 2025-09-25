@@ -1,9 +1,10 @@
 import { ProductMedia } from '@unchainedshop/core-products';
-import { UnchainedCore } from '@unchainedshop/core';
+import { Modules } from '../../../modules.js';
+import { Services } from '../../../services/index.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import upsertAsset from '../../upsertAsset.js';
 
-const upsertProductMedia = async (productMedia: ProductMedia, { modules }: UnchainedCore) => {
+const upsertProductMedia = async (productMedia: ProductMedia, { modules }: { modules: Modules }) => {
   try {
     const productMediaObj = await modules.products.media.create(productMedia);
     return productMediaObj;
@@ -14,7 +15,10 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules }: Uncha
   }
 };
 
-export default async function upsertMedia({ media, productId }, unchainedAPI: UnchainedCore) {
+export default async function upsertMedia(
+  { media, productId },
+  unchainedAPI: { modules: Modules; services: Services },
+) {
   const { modules } = unchainedAPI;
 
   const productMediaObjects = await Promise.all(

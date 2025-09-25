@@ -1,9 +1,9 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { Modules } from '../../../modules.js';
 
 export default async function createFilter(
   payload: any,
   { logger, createShouldUpsertIfIDExists },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: Modules },
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;

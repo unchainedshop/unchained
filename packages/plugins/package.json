@@ -45,8 +45,7 @@
     "@unchainedshop/events": "^4.0.0-rc.15",
     "@unchainedshop/file-upload": "^4.0.0-rc.15",
     "@unchainedshop/logger": "^4.0.0-rc.15",
-    "@unchainedshop/utils": "^4.0.0-rc.15",
-    "minipass-json-stream": "^1.0.2"
+    "@unchainedshop/utils": "^4.0.0-rc.15"
   },
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": ">= 3.714 < 4",

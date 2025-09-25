@@ -1,7 +1,8 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { Services } from '../../../services/index.js';
+import { Modules } from '../../../modules.js';
 import upsertAsset from '../../upsertAsset.js';
 
-const upsertMediaObject = async (media, unchainedAPI: UnchainedCore) => {
+const upsertMediaObject = async (media, unchainedAPI: { modules: Modules; services: Services }) => {
   const { modules } = unchainedAPI;
   try {
     const assortmentMedia = await modules.assortments.media.create(media);
@@ -12,7 +13,10 @@ const upsertMediaObject = async (media, unchainedAPI: UnchainedCore) => {
   }
 };
 
-export default async ({ media, assortmentId }, unchainedAPI: UnchainedCore) => {
+export default async (
+  { media, assortmentId },
+  unchainedAPI: { modules: Modules; services: Services },
+) => {
   const { modules } = unchainedAPI;
   const mediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {

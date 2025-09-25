@@ -1,4 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { Modules } from '../../../modules.js';
+import { Services } from '../../../services/index.js';
 import upsertVariations from './upsertVariations.js';
 import upsertMedia from './upsertMedia.js';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure.js';
@@ -6,7 +7,7 @@ import transformSpecificationToProductStructure from './transformSpecificationTo
 export default async function createProduct(
   payload: any,
   { logger, createShouldUpsertIfIDExists },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: Modules; services: Services },
 ) {
   const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;

@@ -1,14 +1,15 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import upsertAssortmentChildren from './upsertAssortmentChildren.js';
 import upsertAssortmentFilters from './upsertAssortmentFilters.js';
 import upsertAssortmentProducts from './upsertAssortmentProducts.js';
 import upsertMedia from './upsertMedia.js';
+import { Modules } from '../../../modules.js';
+import { Services } from '../../../services/index.js';
 
 export default async function createAssortment(
   payload: any,
   { logger, createShouldUpsertIfIDExists },
-  unchainedAPI: UnchainedCore,
+  unchainedAPI: { modules: Modules; services: Services },
 ) {
   const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;

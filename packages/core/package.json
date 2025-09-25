@@ -50,7 +50,8 @@
     "@unchainedshop/core-warehousing": "^4.0.0-rc.15",
     "@unchainedshop/core-worker": "^4.0.0-rc.15",
     "@unchainedshop/logger": "^4.0.0-rc.15",
-    "@unchainedshop/utils": "^4.0.0-rc.15"
+    "@unchainedshop/utils": "^4.0.0-rc.15",
+    "minipass-json-stream": "^1.0.2"
   },
   "devDependencies": {
     "@types/breejs__later": "^4.1.5",

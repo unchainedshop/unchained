@@ -1,5 +1,5 @@
 import { experimental_generateImage, ImageModel, tool } from 'ai';
-import { fileTypeFromBuffer } from 'file-type'; // TODO: replace with native solution when available
+import { fileTypeFromBuffer } from 'file-type';
 import { z } from 'zod';
 
 const inputSchema = z.object({

@@ -1,5 +1,3 @@
-import accounting from 'accounting';
-
 export interface PriceType {
   isTaxable?: boolean;
   isNetPrice?: boolean;
@@ -21,7 +19,10 @@ export const Price = {
   },
   amount(obj: PriceType) {
     if (obj.amount) {
-      return accounting.toFixed(obj.amount, 0);
+      return Number(obj.amount).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
     }
     return 0;
   },

@@ -1,8 +1,8 @@
 import { AssortmentProduct } from '@unchainedshop/core-assortments';
-import { UnchainedCore } from '@unchainedshop/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
+import { Modules } from '../../../modules.js';
 
-const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: UnchainedCore) => {
+const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;
   if (
     !(await modules.products.productExists({
@@ -23,7 +23,7 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Unchai
   }
 };
 
-export default async ({ products, assortmentId }, unchainedAPI: UnchainedCore) => {
+export default async ({ products, assortmentId }, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
     products.map(async (product: AssortmentProduct) => {

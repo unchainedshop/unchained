@@ -1,6 +1,10 @@
 import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
 import initServices, { CustomServices, Services } from './services/index.js';
 import initModules, { Modules, ModuleOptions } from './modules.js';
+import createBulkImporterFactory, {
+  BulkImporter,
+  BulkImportHandler,
+} from './bulk-importer/createBulkImporter.js';
 
 import {
   WorkerDirector,
@@ -18,17 +22,17 @@ import {
   WarehousingDirector,
 } from './directors/index.js';
 
+export * from './bulk-importer/createBulkImporter.js';
 export * from './services/index.js';
 export * from './directors/index.js';
 export * from './factory/index.js';
-export interface BulkImporter {
-  createBulkImporter: (options: any) => any;
-}
 
 export interface UnchainedCoreOptions {
   db: mongodb.Db;
   migrationRepository: MigrationRepository<UnchainedCore>;
-  bulkImporter: any;
+  bulkImporter?: {
+    handlers?: Record<string, BulkImportHandler<UnchainedCore>>;
+  };
   modules?: Record<
     string,
     {
@@ -49,13 +53,14 @@ export interface UnchainedCore {
 export const initCore = async ({
   db,
   migrationRepository,
-  bulkImporter,
+  bulkImporter: bulkImporterOptions = {},
   modules: customModules = {},
   services: customServices = {},
   options = {},
 }: UnchainedCoreOptions): Promise<UnchainedCore> => {
   // Configure custom modules
 
+  const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions);
   const modules = await initModules({ db, migrationRepository, options }, customModules);
   const services = initServices(modules, customServices);
 

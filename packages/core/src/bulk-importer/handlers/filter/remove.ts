@@ -1,6 +1,10 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { Modules } from '../../../modules.js';
 
-export default async function removeFilter(payload: any, { logger }, unchainedAPI: UnchainedCore) {
+export default async function removeFilter(
+  payload: any,
+  { logger },
+  unchainedAPI: { modules: Modules },
+) {
   const { modules } = unchainedAPI;
   const { _id } = payload;
   logger.debug('remove filter');

@@ -3,7 +3,6 @@ import { initCore, UnchainedCoreOptions } from '@unchainedshop/core';
 import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
-import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { setupAccounts } from './setup/setupAccounts.js';
 import { setupUploadHandlers } from './setup/setupUploadHandlers.js';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
@@ -14,12 +13,9 @@ import { IRoleOptionConfig } from '@unchainedshop/roles';
 export { MessageTypes };
 
 export type PlatformOptions = {
-  bulkImporter?: {
-    handlers?: Record<string, BulkImportHandler>;
-  };
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions;
-} & Omit<UnchainedCoreOptions, 'bulkImporter' | 'migrationRepository' | 'db'> &
+} & Omit<UnchainedCoreOptions, 'migrationRepository' | 'db'> &
   Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 
 const REQUIRED_ENV_VARIABLES = [
@@ -52,7 +48,7 @@ export const startPlatform = async ({
   services,
   options,
   rolesOptions = {},
-  bulkImporter: bulkImporterOptions,
+  bulkImporter,
   workQueueOptions,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
@@ -70,7 +66,6 @@ export const startPlatform = async ({
 
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);
-  const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions);
 
   // Initialise core api using the database
   const unchainedAPI = await initCore({

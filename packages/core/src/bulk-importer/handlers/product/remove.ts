@@ -1,6 +1,11 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { Modules } from '../../../modules.js';
+import { Services } from '../../../services/index.js';
 
-export default async function removeProduct(payload: any, { logger }, unchainedAPI: UnchainedCore) {
+export default async function removeProduct(
+  payload: any,
+  { logger },
+  unchainedAPI: { modules: Modules; services: Services },
+) {
   const { services } = unchainedAPI;
   const { _id } = payload;
   logger.debug(`remove product ${_id}`);
