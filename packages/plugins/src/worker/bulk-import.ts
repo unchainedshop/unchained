@@ -1,8 +1,9 @@
 import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import JSONStream from 'JSONStream';
-import { EventIterator } from 'event-iterator';
+import JSONStream from 'minipass-json-stream';
 import { UnchainedCore } from '@unchainedshop/core';
+import { pipeline } from 'node:stream/promises';
+import { PassThrough } from 'node:stream';
 
 const logger = createLogger('unchained:worker:bulk-import');
 
@@ -21,32 +22,19 @@ const streamPayloadToBulkImporter = async (
     );
   }
 
-  const eventIterator = new EventIterator(
-    (queue) => {
-      const jsonStream = JSONStream.parse('events.*'); // rows, ANYTHING, doc
-      jsonStream.on('data', queue.push);
-      jsonStream.on('close', queue.stop);
-      jsonStream.on('error', queue.fail);
-
-      queue.on('highWater', () => readStream.pause());
-      queue.on('lowWater', () => readStream.resume());
-
-      readStream.pipe(jsonStream);
-      readStream.on('error', queue.fail);
-
-      return () => {
-        jsonStream.removeListener('data', queue.push);
-        jsonStream.removeListener('close', queue.stop);
-        jsonStream.removeListener('error', queue.fail);
-        jsonStream.destroy();
-      };
+  await pipeline(
+    readStream,
+    new PassThrough({
+      highWaterMark: 100,
+    }),
+    JSONStream.parse('events.*'),
+    async function* (source) {
+      for await (const event of source) {
+        await bulkImporter.prepare(event, unchainedAPI);
+      }
+      yield true;
     },
-    { highWaterMark: 100, lowWaterMark: 5 },
   );
-
-  for await (const event of eventIterator) {
-    await bulkImporter.prepare(event, unchainedAPI);
-  }
 
   logger.trace(`parseAsync done`);
 };

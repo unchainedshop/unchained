@@ -85,7 +85,7 @@ const mcpHandler: RouteHandlerMethod = async (
 
     return res.status(405).send('Method Not Allowed');
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e);
     return res.status(503).send({ name: e.name, code: e.code, message: e.message });
   }
 };

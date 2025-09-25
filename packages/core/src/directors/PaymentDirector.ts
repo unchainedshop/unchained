@@ -101,7 +101,7 @@ export const PaymentDirector: IPaymentDirector = {
         try {
           return adapter.isActive(paymentContext.transactionContext);
         } catch (error) {
-          logger.error(error.message);
+          logger.error(error);
           return false;
         }
       },
@@ -110,7 +110,7 @@ export const PaymentDirector: IPaymentDirector = {
         try {
           return adapter.isPayLaterAllowed(paymentContext.transactionContext);
         } catch (error) {
-          logger.error(error.message);
+          logger.error(error);
           return false;
         }
       },

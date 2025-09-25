@@ -40,7 +40,7 @@ const tempUploadHandler: RouteHandlerMethod = async (
     res.status(200);
     return res.send({ fileId: file._id, url, expires: expires.toISOString() });
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e);
     res.status(503);
     return res.send({ name: e.name, code: e.code, message: e.message });
   }

@@ -53,7 +53,7 @@ const ercMetadataMiddleware: RequestHandler = async (
     res.status(200);
     return res.send(ercMetadata);
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e);
     res.status(503);
     res.send({ name: e.name, code: e.code, message: e.message });
     return;

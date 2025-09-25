@@ -28,6 +28,16 @@ export type BulkImportHandler = Record<string, BulkImportOperation>;
 let bulkOperationHandlers: Record<string, BulkImportHandler> = {};
 
 export const getOperation = (entity: string, operation: string): BulkImportOperation => {
+  if (
+    entity === '__PROTO__' ||
+    entity === 'CONSTRUCTOR' ||
+    entity === 'PROTOTYPE' ||
+    operation === '__PROTO__' ||
+    operation === 'CONSTRUCTOR' ||
+    operation === 'PROTOTYPE'
+  ) {
+    throw new Error(`Dude!`);
+  }
   const handlers = bulkOperationHandlers[entity];
   if (!handlers) {
     throw new Error(`Entity ${entity} unknown`);
@@ -69,20 +79,23 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     );
 
     return {
+      asyncValidatorIterator: async function* (source: AsyncIterable<any>, { signal }) {
+        for await (const event of source) {
+          try {
+            if (signal.aborted) break;
+            const entity = event.entity.toUpperCase();
+            const operation = event.operation.toLowerCase();
+
+            getOperation(entity, operation);
+          } catch (e) {
+            throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
+          }
+        }
+        yield true;
+      },
       prepare: async (event, unchainedAPI: UnchainedCore) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
-
-        if (
-          event.entity === '__PROTO__' ||
-          event.entity === 'CONSTRUCTOR' ||
-          event.entity === 'PROTOTYPE' ||
-          event.operation === '__PROTO__' ||
-          event.operation === 'CONSTRUCTOR' ||
-          event.operation === 'PROTOTYPE'
-        ) {
-          throw new Error(`Invalid entity: ${event.entity}`);
-        }
 
         const handler = getOperation(entity, operation);
 

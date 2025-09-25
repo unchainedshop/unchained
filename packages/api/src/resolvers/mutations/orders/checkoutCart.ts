@@ -30,7 +30,7 @@ export default async function checkoutCart(
     const checkedOutOrder = await services.orders.checkoutOrder(order._id, transactionContext);
     return checkedOutOrder;
   } catch (error) {
-    logger.error(error.message, { userId, orderId: order._id });
+    logger.error(error, { userId, orderId: order._id });
     throw new OrderCheckoutError({
       userId,
       orderId: order._id,

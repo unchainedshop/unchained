@@ -3,6 +3,8 @@ import { checkAction } from '../acl.js';
 import { actions } from '../roles/index.js';
 import { Context } from '../context.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { pipeline } from 'node:stream/promises';
+import JSONStream from 'minipass-json-stream';
 
 const logger = createLogger('unchained:bulk-import');
 
@@ -32,6 +34,10 @@ const bulkImportHandler: RouteHandlerMethod = async (
       chunkSizeBytes: 1024 * 1024 * 5, // 5MB chunks
     });
 
+    const validationStream = await context.services.files.createDownloadStream({ fileId: file._id });
+    const bulkImporter = context.bulkImporter.createBulkImporter({});
+    await pipeline(validationStream, JSONStream.parse('events.*'), bulkImporter.asyncValidatorIterator);
+
     input.payloadId = file._id;
     input.payloadSize = file.size;
 
@@ -47,7 +53,7 @@ const bulkImportHandler: RouteHandlerMethod = async (
     res.status(200);
     return res.send(work);
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e);
     res.status(503);
     return res.send({ name: e.name, code: e.code, message: e.message });
   }

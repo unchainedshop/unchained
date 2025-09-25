@@ -48,7 +48,7 @@ export default async function tempUploadMiddleware(
     const url = context.modules.files.normalizeUrl(rawUrl, {});
     res.status(200).send({ fileId: file._id, url, expires: expires.toISOString() });
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e);
     res.status(503).send({ name: e.name, code: e.code, message: e.message });
     return;
   }

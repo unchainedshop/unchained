@@ -107,7 +107,8 @@
     "graphql-scalars": "^1.24.2",
     "moniker": "0.1.2",
     "p-memoize": "^8.0.0",
-    "zod": "^3.25.76 || ^4"
+    "zod": "^3.25.76 || ^4",
+    "minipass-json-stream": "^1.0.2"
   },
   "devDependencies": {
     "ai": "^5.0.5",
