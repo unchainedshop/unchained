@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/utils",
-  "version": "4.0.0-rc.15",
+  "version": "4.0.0-rc.16",
   "main": "lib/utils-index.js",
   "types": "lib/utils-index.d.ts",
   "type": "module",
