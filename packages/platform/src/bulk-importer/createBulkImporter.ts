@@ -4,6 +4,8 @@ import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
 import * as ProductHandlers from './handlers/product/index.js';
 import { createLogger } from '@unchainedshop/logger';
+import { pipeline } from 'node:stream/promises';
+import JSONStream from 'minipass-json-stream';
 
 const logger = createLogger('unchained:bulk-import');
 
@@ -60,6 +62,27 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     ...(bulkImporterOptions?.handlers || {}),
   };
 
+  const validateEventStream = async (readStream) => {
+    await pipeline(
+      readStream,
+      JSONStream.parse('events.*'),
+      async function* (source: AsyncIterable<any>, { signal }) {
+        for await (const event of source) {
+          try {
+            if (signal.aborted) break;
+            const entity = event.entity.toUpperCase();
+            const operation = event.operation.toLowerCase();
+
+            getOperation(entity, operation);
+          } catch (e) {
+            throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
+          }
+        }
+        yield true;
+      },
+    );
+  };
+
   const createBulkImporter: BulkImporter['createBulkImporter'] = (options) => {
     const bulkOperations = {};
     const preparationIssues = [];
@@ -79,20 +102,6 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     );
 
     return {
-      asyncValidatorIterator: async function* (source: AsyncIterable<any>, { signal }) {
-        for await (const event of source) {
-          try {
-            if (signal.aborted) break;
-            const entity = event.entity.toUpperCase();
-            const operation = event.operation.toLowerCase();
-
-            getOperation(entity, operation);
-          } catch (e) {
-            throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
-          }
-        }
-        yield true;
-      },
       prepare: async (event, unchainedAPI: UnchainedCore) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
@@ -152,6 +161,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
 
   return {
     createBulkImporter,
+    validateEventStream,
   };
 };
 

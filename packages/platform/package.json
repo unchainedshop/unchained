@@ -45,7 +45,8 @@
     "@unchainedshop/roles": "^4.0.0-rc.15",
     "@unchainedshop/utils": "^4.0.0-rc.15",
     "mustache": "^4.2.0",
-    "safe-stable-stringify": "^2.5.0"
+    "safe-stable-stringify": "^2.5.0",
+    "minipass-json-stream": "^1.0.2"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.6",
