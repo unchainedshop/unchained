@@ -443,11 +443,15 @@ export const configureAssortmentsModule = async ({
       await assortmentTexts.deleteMany({ assortmentId });
       await assortmentMedia.deleteMediaFiles({ assortmentId });
 
-      const deletedAssortment = await Assortments.findOneAndUpdate(generateDbFilterById(assortmentId), {
-        $set: {
-          deleted: new Date(),
+      const deletedAssortment = await Assortments.findOneAndUpdate(
+        generateDbFilterById(assortmentId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
         },
-      });
+        { returnDocument: 'after' },
+      );
       if (!deletedAssortment) return null;
       if (!options?.skipInvalidation) {
         // Invalidate all assortments

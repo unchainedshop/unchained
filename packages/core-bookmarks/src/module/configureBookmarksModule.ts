@@ -26,7 +26,7 @@ export const configureBookmarksModule = async ({ db }: ModuleInput<Record<string
     // Queries
     findBookmarksByUserId: async (userId: string): Promise<Bookmark[]> =>
       Bookmarks.find({ userId }).toArray(),
-    findBookmarkById: async (bookmarkId: string): Promise<Bookmark> => {
+    findBookmarkById: async (bookmarkId: string) => {
       const filter = generateDbFilterById(bookmarkId);
       return Bookmarks.findOne(filter, {});
     },
