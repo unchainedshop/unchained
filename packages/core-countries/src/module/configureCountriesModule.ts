@@ -49,14 +49,12 @@ export const configureCountriesModule = async ({ db }: ModuleInput<Record<string
       return countryCount;
     },
 
-    findCountry: async ({
-      countryId,
-      isoCode,
-    }: {
-      countryId?: string;
-      isoCode?: string;
-    }): Promise<Country> => {
-      return Countries.findOne(countryId ? generateDbFilterById(countryId) : { isoCode });
+    findCountry: async (params: { countryId: string } | { isoCode: string }) => {
+      if ('countryId' in params) {
+        return Countries.findOne(generateDbFilterById(params.countryId));
+      } else {
+        return Countries.findOne({ isoCode: params.isoCode });
+      }
     },
 
     findCountries: async (
