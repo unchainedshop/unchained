@@ -33,13 +33,8 @@ const ENROLLMENT_EVENTS: string[] = [
 ];
 
 export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
-  const selector: {
-    deleted: Date;
-    status?: any;
-    $text?: { $search: string };
-    userId?: string;
-  } = {
-    deleted: null,
+  const selector: mongodb.Filter<Enrollment> = {
+    deleted: { $exists: false },
   };
   if (status) selector.status = { $in: status };
   if (userId) selector.userId = userId;
@@ -63,6 +58,7 @@ export const configureEnrollmentsModule = async ({
 
   const isExpired = (enrollment: Enrollment, { referenceDate }: { referenceDate?: Date }) => {
     const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
+    if (!enrollment.expires) return false;
     const expiryDate = new Date(enrollment.expires);
     return relevantDate.getTime() > expiryDate.getTime();
   };
@@ -78,10 +74,11 @@ export const configureEnrollmentsModule = async ({
   const updateStatus = async (
     enrollmentId: string,
     { status, info = '' }: { status: EnrollmentStatus; info?: string },
-  ): Promise<Enrollment> => {
+  ) => {
     const selector = generateDbFilterById(enrollmentId);
     const enrollment = await Enrollments.findOne(selector, {});
 
+    if (!enrollment) return null;
     if (enrollment.status === status) return enrollment;
 
     const date = new Date();
@@ -142,21 +139,23 @@ export const configureEnrollmentsModule = async ({
       const enrollmentCount = await Enrollments.countDocuments(buildFindSelector(query));
       return enrollmentCount;
     },
-    openEnrollmentWithProduct: async ({ productId }: { productId: string }): Promise<Enrollment> => {
+    openEnrollmentWithProduct: async ({ productId }: { productId: string }) => {
       const selector: mongodb.Filter<Enrollment> = { productId };
       selector.status = { $in: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED] };
       return Enrollments.findOne(selector);
     },
 
     findEnrollment: async (
-      { enrollmentId, orderId }: { enrollmentId?: string; orderId?: string },
+      params: { enrollmentId: string } | { orderId: string },
       options?: mongodb.FindOptions,
-    ): Promise<Enrollment> => {
-      const selector = enrollmentId
-        ? generateDbFilterById(enrollmentId)
-        : { 'periods.orderId': orderId };
-
-      return Enrollments.findOne(selector, options);
+    ) => {
+      if ('enrollmentId' in params) {
+        return Enrollments.findOne(generateDbFilterById(params.enrollmentId), options);
+      }
+      return Enrollments.findOne(
+        { 'periods.orderId': params.orderId, deleted: { $exists: false } },
+        options,
+      );
     },
 
     findEnrollments: async ({
@@ -189,7 +188,7 @@ export const configureEnrollmentsModule = async ({
     isExpired,
 
     // Mutations
-    addEnrollmentPeriod: async (enrollmentId: string, period: EnrollmentPeriod): Promise<Enrollment> => {
+    addEnrollmentPeriod: async (enrollmentId: string, period: EnrollmentPeriod) => {
       const { start, end, orderId, isTrial } = period;
       const selector = generateDbFilterById(enrollmentId);
       const enrollment = await Enrollments.findOneAndUpdate(
@@ -212,8 +211,8 @@ export const configureEnrollmentsModule = async ({
         },
       );
 
+      if (!enrollment) return null;
       await emit('ENROLLMENT_ADD_PERIOD', { enrollment });
-
       return enrollment;
     },
 
@@ -235,9 +234,9 @@ export const configureEnrollmentsModule = async ({
         log: [],
       });
 
-      const enrollment = await Enrollments.findOne({
+      const enrollment = (await Enrollments.findOne({
         _id: enrollmentId,
-      });
+      })) as Enrollment;
       await emit('ENROLLMENT_CREATE', { enrollment });
       return enrollment;
     },
@@ -255,10 +254,7 @@ export const configureEnrollmentsModule = async ({
       return deletedCount;
     },
 
-    removeEnrollmentPeriodByOrderId: async (
-      enrollmentId: string,
-      orderId: string,
-    ): Promise<Enrollment> => {
+    removeEnrollmentPeriodByOrderId: async (enrollmentId: string, orderId: string) => {
       const selector = generateDbFilterById(enrollmentId);
       return Enrollments.findOneAndUpdate(
         selector,
@@ -267,7 +263,7 @@ export const configureEnrollmentsModule = async ({
             updated: new Date(),
           },
           $pull: {
-            periods: { orderId: { $in: [orderId, undefined, null] } },
+            periods: { orderId: { $in: [orderId, undefined] } },
           },
         },
         { returnDocument: 'after' },
@@ -280,7 +276,7 @@ export const configureEnrollmentsModule = async ({
     updateDelivery: updateEnrollmentField<Enrollment['delivery']>('delivery'),
     updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),
 
-    updatePlan: async (enrollmentId: string, plan: EnrollmentPlan): Promise<Enrollment> => {
+    updatePlan: async (enrollmentId: string, plan: EnrollmentPlan) => {
       const enrollment = await Enrollments.findOneAndUpdate(
         generateDbFilterById(enrollmentId),
         {
@@ -293,7 +289,7 @@ export const configureEnrollmentsModule = async ({
         },
         { returnDocument: 'after' },
       );
-
+      if (!enrollment) return null;
       await emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
       return enrollment;
     },

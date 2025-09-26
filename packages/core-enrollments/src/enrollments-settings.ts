@@ -4,19 +4,19 @@ import { Enrollment } from './db/EnrollmentsCollection.js';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');
 
-export interface EnrollmentsSettingsOptions {
-  autoSchedulingSchedule?: later.ScheduleData;
-  enrollmentNumberHashFn?: (enrollment: Enrollment, index: number) => string;
+export interface EnrollmentSettings {
+  autoSchedulingSchedule: later.ScheduleData;
+  enrollmentNumberHashFn: (enrollment: Enrollment, index: number) => string;
+  configureSettings: (options?: EnrollmentsSettingsOptions) => void;
 }
 
-export const enrollmentsSettings = {
-  autoSchedulingSchedule: null,
-  enrollmentNumberHashFn: null,
-  configureSettings({
-    autoSchedulingSchedule = everyHourSchedule,
-    enrollmentNumberHashFn = generateRandomHash,
-  }: EnrollmentsSettingsOptions = {}) {
-    this.autoSchedulingSchedule = autoSchedulingSchedule;
-    this.enrollmentNumberHashFn = enrollmentNumberHashFn;
+export type EnrollmentsSettingsOptions = Omit<Partial<typeof enrollmentsSettings>, 'configureSettings'>;
+
+export const enrollmentsSettings: EnrollmentSettings = {
+  autoSchedulingSchedule: everyHourSchedule,
+  enrollmentNumberHashFn: generateRandomHash,
+  configureSettings({ autoSchedulingSchedule, enrollmentNumberHashFn } = {}) {
+    this.autoSchedulingSchedule = autoSchedulingSchedule || everyHourSchedule;
+    this.enrollmentNumberHashFn = enrollmentNumberHashFn || generateRandomHash;
   },
 };
