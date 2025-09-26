@@ -49,6 +49,11 @@ const googleWalletHandler: RouteHandlerMethod = async (
       }
 
       const pass = await modules.passes.upsertGoogleWalletPass(token, resolvedContext);
+
+      if (!pass) {
+        throw new Error('Could not create Google Wallet pass');
+      }
+
       return reply.redirect(await pass.asURL());
     } catch (e) {
       logger.error(e);

@@ -39,6 +39,10 @@ export const googleWalletHandler = async (
 
       const pass = await modules.passes.upsertGoogleWalletPass(token, resolvedContext);
 
+      if (!pass) {
+        throw new Error('Could not create Google Wallet pass');
+      }
+
       res.redirect(await pass.asURL());
       return;
     } catch (e) {

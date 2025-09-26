@@ -96,8 +96,8 @@ export const Roles: RolesInterface = {
   /**
    * Returns true if the user passes the allow check
    */
-  async allow(context, roles, action, [obj, params]) {
-    const userRoles = Roles.getUserRoles(context.userId, roles, true);
+  async allow(context, roles, action: string, [obj, params]: any) {
+    const userRoles = Roles.getUserRoles(context.userId!, roles, true);
 
     return userRoles.reduce(async (roleIsAllowedPromise: Promise<boolean>, role) => {
       const roleIsAllowed = await roleIsAllowedPromise;

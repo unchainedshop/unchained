@@ -7,7 +7,7 @@ export const calculateAmountToSplit = (
 ) => {
   const deductionAmount = configuration.rate
     ? amount * configuration.rate
-    : Math.min(configuration.fixedRate, amount);
+    : Math.min(configuration.fixedRate || 0, amount);
 
   const leftInDiscount = Math.max(0, deductionAmount);
   return leftInDiscount;
@@ -26,9 +26,9 @@ export const resolveAmountAndTax = (
   { ratio, taxDivisor }: { ratio?: number; taxDivisor?: number },
   amount: number,
 ) => {
-  const shareAmount = Number.isFinite(ratio) ? amount * ratio : 0;
+  const shareAmount = Number.isFinite(ratio) ? amount * ratio! : 0;
   const shareTaxAmount =
-    Number.isFinite(taxDivisor) && taxDivisor !== 0 ? shareAmount - shareAmount / taxDivisor : 0;
+    Number.isFinite(taxDivisor) && taxDivisor !== 0 ? shareAmount - shareAmount / taxDivisor! : 0;
   return [shareAmount, shareTaxAmount];
 };
 

@@ -16,8 +16,8 @@ export type PassRenderer = (
   token: TokenSurrogate,
   context: UnchainedCore,
 ) => Promise<{
-  asURL?: () => Promise<string>;
-  asBuffer?: () => Promise<Buffer>;
+  asURL: () => Promise<string>;
+  asBuffer: () => Promise<Buffer>;
   serialNumber?: string;
   passTypeIdentifier?: string;
 }>;

@@ -31,8 +31,8 @@ export const resolveBestSupported = (
     countries: { isoCode: string }[];
     languages: { isoCode: string }[];
   },
-): Intl.Locale => {
-  const supportedLocales: string[] = languages.reduce((accumulator, language) => {
+): Intl.Locale | null => {
+  const supportedLocales: string[] = languages.reduce<string[]>((accumulator, language) => {
     const added = countries
       .filter((country) => {
         if (acceptCountry) {
@@ -52,7 +52,7 @@ export const resolveBestSupported = (
     const { match } = resolveAcceptLanguage(
       acceptLanguage || '',
       supportedLocales,
-      fallbackLocale?.baseName,
+      fallbackLocale!.baseName,
       {
         returnMatchType: true,
       },

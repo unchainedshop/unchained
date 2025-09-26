@@ -84,7 +84,7 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     return pass;
   };
 
-  const findAppleWalletPass = async (passTypeIdentifier, serialNumber): Promise<File> => {
+  const findAppleWalletPass = async (passTypeIdentifier, serialNumber) => {
     const mediaObject = await MediaObjects.findOne({
       path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
       'meta.passTypeIdentifier': passTypeIdentifier,
@@ -172,7 +172,7 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
 
     for (const pass of allPasses) {
       // Check if binary is already invalidated, if so, skip
-      const rawData = pass.meta.rawData as TokenSurrogate;
+      const rawData = pass.meta?.rawData as TokenSurrogate;
       if (rawData.invalidatedDate) continue;
 
       const redeemedToken = allTokens.find((t) => t._id === rawData._id && t.invalidatedDate);

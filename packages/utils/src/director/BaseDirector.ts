@@ -2,7 +2,7 @@ import { IBaseAdapter } from './BaseAdapter.js';
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {
   getAdapters: (options?: { adapterFilter?: (adapter: Adapter) => boolean }) => Adapter[];
-  getAdapter: (key: string) => Adapter;
+  getAdapter: (key: string) => Adapter | null;
   registerAdapter: (A: Adapter) => void;
   unregisterAdapter: (key: string) => boolean;
 }
@@ -19,7 +19,7 @@ export const BaseDirector = <AdapterType extends IBaseAdapter>(
 
   return {
     getAdapter: (key) => {
-      return Adapters.get(key);
+      return Adapters.get(key) || null;
     },
 
     getAdapters: ({ adapterFilter } = {}) => {

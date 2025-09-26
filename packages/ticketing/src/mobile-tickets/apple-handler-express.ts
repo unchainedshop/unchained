@@ -47,6 +47,16 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       const signedUrl = await fileUploadAdapter.createDownloadURL(passFile);
       const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
 
+      if (!url) {
+        res.status(500);
+        res.send({
+          success: false,
+          message: 'Could not create download URL',
+          name: 'URL_SIGNING_FAILED',
+        });
+        return;
+      }
+
       const response = await fetch(url);
       const data = await response.arrayBuffer();
       const uint8View = new Uint8Array(data);
@@ -76,7 +86,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         if (
           !isAuthenticationTokenCorrect(
             req,
-            (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
+            (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId,
           )
         ) {
           res.status(401).end();
@@ -112,7 +122,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         deviceLibraryIdentifier,
         passesUpdatedSince,
       );
-      const serialNumbers = passes.map((t) => t.meta.serialNumber);
+      const serialNumbers = passes.map((t) => t.meta?.serialNumber).filter(Boolean) as string[];
 
       if (serialNumbers?.length) {
         res.status(200).send({ serialNumbers, lastUpdated });
@@ -131,7 +141,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
         if (
           !isAuthenticationTokenCorrect(
             req,
-            (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
+            (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId,
           )
         ) {
           res.status(401).end();
@@ -166,45 +176,58 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
 
       const pass = await modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
 
-      if (pass) {
-        if (
-          !isAuthenticationTokenCorrect(
-            req,
-            (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
-          )
-        ) {
-          res.status(401).end();
-          return;
-        }
-
-        const { updated, created } = pass;
-
-        const lastModifiedDate = new Date(updated || created);
-        lastModifiedDate.setMilliseconds(0);
-
-        const ifModifiedSinceDate = new Date(req.header('if-modified-since'));
-        ifModifiedSinceDate.setMilliseconds(0);
-
-        if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
-          res.status(304).end();
-          return;
-        }
-
-        const fileUploadAdapter = getFileAdapter();
-        const signedUrl = await fileUploadAdapter.createDownloadURL(pass);
-        const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
-
-        const result = await fetch(url);
-        const data = await result.arrayBuffer();
-        const uint8View = new Uint8Array(data);
-
-        res.writeHead(200, {
-          'Content-Type': 'application/vnd.apple.pkpass',
-          'Last-Modified': lastModifiedDate.toUTCString(),
-        });
-        res.send(uint8View);
+      if (!pass) {
+        res.status(404).end();
         return;
       }
+
+      if (
+        !isAuthenticationTokenCorrect(
+          req,
+          (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId,
+        )
+      ) {
+        res.status(401).end();
+        return;
+      }
+
+      const { updated, created } = pass;
+
+      const lastModifiedDate = new Date(updated || created);
+      lastModifiedDate.setMilliseconds(0);
+
+      const ifModifiedSinceDate = new Date(req.header('if-modified-since')!);
+      ifModifiedSinceDate.setMilliseconds(0);
+
+      if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
+        res.status(304).end();
+        return;
+      }
+
+      const fileUploadAdapter = getFileAdapter();
+      const signedUrl = await fileUploadAdapter.createDownloadURL(pass);
+      const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
+
+      if (!url) {
+        res.status(500);
+        res.send({
+          success: false,
+          message: 'Could not create download URL',
+          name: 'URL_SIGNING_FAILED',
+        });
+        return;
+      }
+
+      const result = await fetch(url);
+      const data = await result.arrayBuffer();
+      const uint8View = new Uint8Array(data);
+
+      res.writeHead(200, {
+        'Content-Type': 'application/vnd.apple.pkpass',
+        'Last-Modified': lastModifiedDate.toUTCString(),
+      });
+      res.send(uint8View);
+      return;
     }
   }
 

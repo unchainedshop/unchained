@@ -61,6 +61,15 @@ const appleWalletHandler: RouteHandlerMethod = async (
       const signedUrl = await fileUploadAdapter.createDownloadURL(passFile);
       const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
 
+      if (!url) {
+        reply.status(500);
+        return reply.send({
+          success: false,
+          message: 'Could not create download URL',
+          name: 'URL_SIGNING_FAILED',
+        });
+      }
+
       const response = await fetch(url);
       const data = await response.arrayBuffer();
       const uint8View = new Uint8Array(data);
@@ -93,7 +102,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
         if (
           !isAuthenticationTokenCorrect(
             req,
-            (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
+            (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId,
           )
         ) {
           logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
@@ -135,7 +144,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
         deviceLibraryIdentifier,
         passesUpdatedSince,
       );
-      const serialNumbers = passes.map((t) => t.meta.serialNumber);
+      const serialNumbers = passes.map((t) => t.meta?.serialNumber).filter(Boolean) as string[];
 
       if (serialNumbers?.length) {
         reply.status(200);
@@ -158,7 +167,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
         if (
           !isAuthenticationTokenCorrect(
             req,
-            (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
+            (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId,
           )
         ) {
           logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
@@ -202,52 +211,64 @@ const appleWalletHandler: RouteHandlerMethod = async (
 
       const pass = await modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
 
-      if (pass) {
-        if (
-          !isAuthenticationTokenCorrect(
-            req,
-            (pass.meta.rawData as any)._id || (pass.meta.rawData as any).tokenId,
-          )
-        ) {
-          logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
-          reply.status(401);
-          return reply.send({
-            success: false,
-            message: 'Unauthorized',
-            name: 'UNAUTHORIZED',
-          });
-        }
-
-        const { updated, created } = pass;
-
-        const lastModifiedDate = new Date(updated || created);
-        lastModifiedDate.setMilliseconds(0);
-
-        const ifModifiedSinceDate = new Date(req.headers['if-modified-since']);
-        ifModifiedSinceDate.setMilliseconds(0);
-
-        if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
-          reply.status(304);
-          return reply.send({
-            success: true,
-            message: 'Not modified',
-            name: 'NOT_MODIFIED',
-          });
-        }
-
-        const fileUploadAdapter = getFileAdapter();
-        const signedUrl = await fileUploadAdapter.createDownloadURL(pass);
-        const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
-
-        const result = await fetch(url);
-        const data = await result.arrayBuffer();
-        const uint8View = new Uint8Array(data);
-
-        reply.status(200);
-        reply.header('content-type', 'application/vnd.apple.pkpass');
-        reply.header('last-modified', lastModifiedDate.toUTCString());
-        return reply.send(uint8View);
+      if (!pass) {
+        reply.status(404);
+        return reply.send();
       }
+
+      if (
+        !isAuthenticationTokenCorrect(
+          req,
+          (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId,
+        )
+      ) {
+        logger.error('Unauthorized', { passTypeIdentifier, serialNumber });
+        reply.status(401);
+        return reply.send({
+          success: false,
+          message: 'Unauthorized',
+          name: 'UNAUTHORIZED',
+        });
+      }
+
+      const { updated, created } = pass;
+
+      const lastModifiedDate = new Date(updated || created);
+      lastModifiedDate.setMilliseconds(0);
+
+      const ifModifiedSinceDate = new Date(req.headers['if-modified-since']!);
+      ifModifiedSinceDate.setMilliseconds(0);
+
+      if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
+        reply.status(304);
+        return reply.send({
+          success: true,
+          message: 'Not modified',
+          name: 'NOT_MODIFIED',
+        });
+      }
+
+      const fileUploadAdapter = getFileAdapter();
+      const signedUrl = await fileUploadAdapter.createDownloadURL(pass);
+      const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
+
+      if (!url) {
+        reply.status(500);
+        return reply.send({
+          success: false,
+          message: 'Could not create download URL',
+          name: 'URL_SIGNING_FAILED',
+        });
+      }
+
+      const result = await fetch(url);
+      const data = await result.arrayBuffer();
+      const uint8View = new Uint8Array(data);
+
+      reply.status(200);
+      reply.header('content-type', 'application/vnd.apple.pkpass');
+      reply.header('last-modified', lastModifiedDate.toUTCString());
+      return reply.send(uint8View);
     }
   }
 

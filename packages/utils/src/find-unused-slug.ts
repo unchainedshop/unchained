@@ -13,14 +13,14 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
 
 export default (
   checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
-  { slugify }: { slugify?: (text: string) => string },
+  { slugify }: { slugify: (text: string) => string },
 ): ((params: { title?: string; existingSlug?: string; newSlug?: string }) => Promise<string>) => {
   const findUnusedSlug = async ({
     title,
     existingSlug,
     newSlug,
   }: {
-    title?: string;
+    title: string;
     existingSlug?: string;
     newSlug?: string;
   }) => {
@@ -28,6 +28,8 @@ export default (
     if (!(await checkSlugIsUniqueFn(slug))) {
       const isSlugAlreadySuffixed = !!newSlug;
       return findUnusedSlug({
+        title,
+        existingSlug,
         newSlug: isSlugAlreadySuffixed ? incrementSuffixedSlug(slug) : addSuffixToSlug(slug),
       });
     }
