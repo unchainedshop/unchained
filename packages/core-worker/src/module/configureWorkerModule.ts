@@ -25,8 +25,9 @@ const logger = createLogger('unchained:core-worker');
 
 export type WorkData = Pick<
   Partial<Work>,
-  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker' | 'scheduleId'
-> & { type: string };
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'worker' | 'scheduleId'
+> &
+  Pick<Work, 'type' | 'scheduled'>;
 
 export interface WorkResult<Result = unknown> {
   success: boolean;
@@ -162,7 +163,7 @@ const defaultSort: { key: string; value: SortDirection }[] = [
   { key: 'created', value: SortDirection.ASC },
 ];
 
-const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
+const normalizeWorkQueueAggregateResult = (data: mongodb.Document[] = []): WorkerReport[] => {
   const statusToFieldMap = {
     NEW: 'newCount',
     ALLOCATED: 'startCount',
@@ -204,7 +205,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
   }: {
     types: string[];
     worker: string;
-  }): Promise<Work> => {
+  }) => {
     // Find a work item that is scheduled for now and is not started.
     // Also:
     // - Restrict by types and worker if provided
@@ -223,10 +224,8 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       { sort: buildSortOptions(defaultSort), returnDocument: 'after' },
     );
 
-    if (result) {
-      emit(WorkerEventTypes.ALLOCATED, removePrivateFields(result));
-    }
-
+    if (!result) return null;
+    emit(WorkerEventTypes.ALLOCATED, removePrivateFields(result));
     return result;
   };
 
@@ -244,7 +243,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       started?: Date;
       worker?: string;
     },
-  ): Promise<Work> => {
+  ) => {
     const workBeforeUpdate = await WorkQueue.findOne(
       buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] }),
     );
@@ -267,7 +266,9 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       { returnDocument: 'after' },
     );
 
-    const duration = new Date(work.finished).getTime() - new Date(work.started).getTime();
+    if (!work) return null;
+
+    const duration = new Date(work.finished!).getTime() - new Date(work.started!).getTime();
     if (work.success) {
       logger.debug(`${work.type} finished with success (${duration}ms)`, {
         workId,
@@ -295,14 +296,20 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       return typeList.map((t) => t._id as string);
     },
 
-    findWork: async ({
-      workId,
-      originalWorkId,
-    }: {
-      workId?: string;
-      originalWorkId?: string;
-    }): Promise<Work> =>
-      WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {}),
+    findWork: async (
+      params:
+        | {
+            workId: string;
+          }
+        | {
+            originalWorkId: string;
+          },
+    ) => {
+      if ('workId' in params) {
+        return WorkQueue.findOne(generateDbFilterById(params.workId), {});
+      }
+      return WorkQueue.findOne({ originalWorkId: params.originalWorkId }, {});
+    },
 
     findWorkQueue: async ({
       limit,
@@ -405,13 +412,14 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       originalWorkId,
       worker = null,
       retries = 20,
-    }: WorkData): Promise<Work> {
+    }: Pick<Work, 'type' | 'originalWorkId' | 'worker'> &
+      Pick<Partial<Work>, 'scheduled' | 'priority' | 'input' | 'retries'>): Promise<Work> {
       const created = new Date();
       const { insertedId: workId } = await WorkQueue.insertOne({
         _id: generateDbObjectId(),
         created,
         type,
-        input,
+        input: input || {},
         priority,
         scheduled: scheduled || created,
         originalWorkId,
@@ -423,13 +431,13 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         workId,
       });
 
-      const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
+      const work = (await WorkQueue.findOne(generateDbFilterById(workId), {})) as Work;
       emit(WorkerEventTypes.ADDED, removePrivateFields(work));
 
       return work;
     },
 
-    rescheduleWork: async (currentWork: Work, scheduled: Date): Promise<Work> => {
+    rescheduleWork: async (currentWork: Work, scheduled: Date) => {
       const work = await WorkQueue.findOneAndUpdate(
         generateDbFilterById(currentWork._id),
         {
@@ -441,6 +449,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         { returnDocument: 'after' },
       );
 
+      if (!work) return null;
       emit(WorkerEventTypes.RESCHEDULED, {
         work: removePrivateFields(work),
         oldScheduled: currentWork.scheduled,
@@ -484,7 +493,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       originalWorkId,
       retries = 20,
       scheduleId,
-    }: WorkData): Promise<Work> => {
+    }: WorkData) => {
       const workId = `${scheduleId}:${scheduled.getTime()}`;
 
       const created = new Date();
@@ -528,7 +537,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
           },
         );
 
-        if (!result.lastErrorObject.updatedExisting) {
+        if (!result.lastErrorObject) {
           logger.debug(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
             workId,
           });
@@ -547,7 +556,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
 
     finishWork,
 
-    deleteWork: async (workId: string): Promise<Work> => {
+    deleteWork: async (workId: string) => {
       const workBeforeRemoval = await WorkQueue.findOne(
         buildQuerySelector({
           workId,
@@ -566,8 +575,8 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         { returnDocument: 'after' },
       );
 
+      if (!work) return null;
       emit(WorkerEventTypes.DELETED, removePrivateFields(work));
-
       return work;
     },
 
@@ -590,21 +599,23 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         { projection: { _id: true }, sort: { test: 1 } },
       ).toArray();
 
-      return Promise.all(
-        workQueue.map(({ _id }) =>
-          finishWork(_id as string, {
-            finished: new Date(),
-            result: null,
-            success: false,
-            error: {
-              name: DIRECTOR_MARKED_FAILED_ERROR,
-              message:
-                'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
-            },
-            worker,
-          }),
-        ),
-      );
+      return (
+        await Promise.all(
+          workQueue.map(({ _id }) =>
+            finishWork(_id as string, {
+              finished: new Date(),
+              result: null,
+              success: false,
+              error: {
+                name: DIRECTOR_MARKED_FAILED_ERROR,
+                message:
+                  'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
+              },
+              worker,
+            }),
+          ),
+        )
+      ).filter(Boolean) as Work[];
     },
 
     getReport: async ({
@@ -614,13 +625,13 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       types?: string[];
       dateRange?: DateFilterInput;
     }): Promise<WorkerReport[]> => {
-      const pipeline = [];
-      const matchConditions = [];
+      const pipeline: mongodb.BSON.Document[] = [];
+      const matchConditions: any[] = [];
       // build date filter based on provided values it can be a range if both to and from is supplied
       // a upper or lowe limit if either from or to is provided
       // or all if none is provided
       if (dateRange?.start || dateRange?.end) {
-        const dateConditions = [];
+        const dateConditions: any[] = [];
         if (dateRange?.start) {
           const fromDate = new Date(dateRange?.start);
           dateConditions.push({
