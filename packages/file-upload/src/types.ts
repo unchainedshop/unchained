@@ -11,7 +11,7 @@ export interface UploadFileData {
 }
 
 export interface UploadedFile {
-  _id?: string;
+  _id: string;
   path: string;
   meta?: Record<string, unknown>;
   name: string;

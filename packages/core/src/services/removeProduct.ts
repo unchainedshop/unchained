@@ -16,7 +16,7 @@ export async function removeProductService(
     case ProductStatus.DRAFT:
       {
         await this.bookmarks.deleteByProductId(productId);
-        await this.assortments.products.delete(productId);
+        await this.assortments.products.deleteMany({ productId });
         await this.products.removeAllAssignmentsAndBundleItems(productId);
         const orderIdsToRecalculate =
           await this.orders.positions.removeProductByIdFromAllOpenPositions(productId);

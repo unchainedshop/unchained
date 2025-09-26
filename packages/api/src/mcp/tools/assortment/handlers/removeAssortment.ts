@@ -9,6 +9,6 @@ export default async function removeAssortment(context: Context, params: Params<
   const assortment = await modules.assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-  await modules.assortments.delete(assortmentId);
-  return { success: true };
+  const deletedAssortment = await modules.assortments.delete(assortmentId);
+  return { success: Boolean(deletedAssortment) };
 }

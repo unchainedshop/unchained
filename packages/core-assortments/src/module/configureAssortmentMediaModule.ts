@@ -97,8 +97,8 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       sortKey,
       tags = [],
       ...doc
-    }: Omit<AssortmentMediaType, 'sortKey' | 'tags'> &
-      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags'>>) => {
+    }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id'> &
+      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id'>>) => {
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentMedia = (await AssortmentMedia.findOne(

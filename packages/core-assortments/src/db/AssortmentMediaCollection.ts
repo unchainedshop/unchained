@@ -1,7 +1,7 @@
 import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
 
 export type AssortmentMediaText = {
-  _id?: string;
+  _id: string;
   assortmentMediaId: string;
   locale: string;
   title?: string;
@@ -9,7 +9,7 @@ export type AssortmentMediaText = {
 } & TimestampFields;
 
 export type AssortmentMediaType = {
-  _id?: string;
+  _id: string;
   mediaId: string;
   assortmentId: string;
   sortKey: number;

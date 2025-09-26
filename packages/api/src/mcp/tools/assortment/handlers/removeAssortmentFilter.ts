@@ -5,6 +5,6 @@ export default async function removeAssortmentFilter(context: Context, params: P
   const { modules } = context;
   const { assortmentFilterId } = params;
 
-  await modules.assortments.filters.delete(assortmentFilterId);
-  return { success: true };
+  const deletedAssortmentFilter = await modules.assortments.filters.delete(assortmentFilterId);
+  return { success: Boolean(deletedAssortmentFilter) };
 }

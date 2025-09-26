@@ -15,7 +15,7 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
     rawFile: any,
     unchainedAPI: Context,
     options?: Record<string, any>,
-  ) => Promise<UploadFileData | null>;
+  ) => Promise<UploadFileData>;
   uploadFileFromURL: (
     directoryName: string,
     fileInput: {
@@ -25,7 +25,7 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
       headers?: Record<string, unknown>;
     },
     unchainedAPI: Context,
-  ) => Promise<UploadFileData | null>;
+  ) => Promise<UploadFileData>;
   createDownloadStream: (file: UploadedFile, unchainedAPI: Context) => Promise<Readable>;
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {

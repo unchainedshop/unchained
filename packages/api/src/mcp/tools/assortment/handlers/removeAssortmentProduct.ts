@@ -8,6 +8,6 @@ export default async function removeAssortmentProduct(
   const { modules } = context;
   const { assortmentProductId } = params;
 
-  await modules.assortments.products.delete(assortmentProductId);
-  return { success: true };
+  const deletedAssortmentProduct = await modules.assortments.products.delete(assortmentProductId);
+  return { success: Boolean(deletedAssortmentProduct) };
 }

@@ -7,7 +7,7 @@ export type OrderDiscount = {
   code?: string;
   total?: Price;
   trigger?: OrderDiscountTrigger;
-  discountKey?: string;
+  discountKey: string;
   reservation?: any;
   context?: any;
 } & TimestampFields;

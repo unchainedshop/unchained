@@ -152,14 +152,11 @@ export const configureAssortmentProductsModule = ({
       return assortmentProduct;
     },
 
-    delete: async (
-      assortmentProductId: string,
-      options?: { skipInvalidation?: boolean },
-    ): Promise<AssortmentProduct[]> => {
+    delete: async (assortmentProductId: string, options?: { skipInvalidation?: boolean }) => {
       const selector = generateDbFilterById(assortmentProductId);
 
       const assortmentProduct = await AssortmentProducts.findOneAndDelete(selector);
-      if (!assortmentProduct) return [];
+      if (!assortmentProduct) return null;
 
       await emit('ASSORTMENT_REMOVE_PRODUCT', {
         assortmentProductId: assortmentProduct._id,
@@ -169,7 +166,7 @@ export const configureAssortmentProductsModule = ({
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
 
-      return [assortmentProduct];
+      return assortmentProduct;
     },
 
     deleteMany: async (

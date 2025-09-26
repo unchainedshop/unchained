@@ -168,21 +168,16 @@ export const configureAssortmentLinksModule = ({
 
     delete: async (assortmentLinkId: string, options?: { skipInvalidation?: boolean }) => {
       const selector = generateDbFilterById(assortmentLinkId);
-
       const assortmentLink = await AssortmentLinks.findOneAndDelete(selector);
-
-      if (assortmentLink) {
-        await emit('ASSORTMENT_REMOVE_LINK', {
-          assortmentLinkId: assortmentLink._id,
+      if (!assortmentLink) return null;
+      await emit('ASSORTMENT_REMOVE_LINK', {
+        assortmentLinkId: assortmentLink._id,
+      });
+      if (!options?.skipInvalidation) {
+        await invalidateCache({
+          assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
         });
-
-        if (!options?.skipInvalidation) {
-          await invalidateCache({
-            assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
-          });
-        }
       }
-
       return assortmentLink;
     },
 

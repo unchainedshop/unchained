@@ -3,7 +3,8 @@
   "compilerOptions": {
     "declarationDir": "./lib",
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "strictNullChecks": false
   },
   "exclude": ["**/*.test.ts", "**/*.test.js", "tests", "lib"]
 }

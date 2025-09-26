@@ -26,7 +26,7 @@ export interface QuotationItemConfiguration {
 }
 
 export type Quotation = {
-  _id?: string;
+  _id: string;
   configuration?: { key: string; value: string }[];
   context?: any;
   countryCode?: string;

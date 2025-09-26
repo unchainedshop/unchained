@@ -1,3 +1,4 @@
+import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import { Context } from '../../../../context.js';
 import { AssortmentMediaNotFoundError } from '../../../../errors.js';
 import { Params } from '../schemas.js';
@@ -14,7 +15,7 @@ export default async function updateAssortmentMediaTexts(
 
   const texts_updated = await modules.assortments.media.texts.updateMediaTexts(
     assortmentMediaId,
-    mediaTexts,
+    mediaTexts as AssortmentMediaText[],
   );
   return { texts: texts_updated };
 }

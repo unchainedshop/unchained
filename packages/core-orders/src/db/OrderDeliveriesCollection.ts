@@ -8,7 +8,7 @@ export enum OrderDeliveryStatus {
 }
 
 export type OrderDelivery = {
-  _id?: string;
+  _id: string;
   orderId: string;
   deliveryProviderId: string;
   delivered?: Date;

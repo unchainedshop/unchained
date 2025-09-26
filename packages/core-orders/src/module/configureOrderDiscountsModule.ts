@@ -70,7 +70,7 @@ export const configureOrderDiscountsModule = ({
       });
     },
 
-    update: async (orderDiscountId: string, doc: OrderDiscount): Promise<OrderDiscount> => {
+    update: async (orderDiscountId: string, doc: Partial<OrderDiscount>) => {
       const discount = await OrderDiscounts.findOneAndUpdate(
         { _id: orderDiscountId },
         {

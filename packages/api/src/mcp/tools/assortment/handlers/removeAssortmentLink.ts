@@ -9,6 +9,6 @@ export default async function removeAssortmentLink(context: Context, params: Par
   const existing = await modules.assortments.links.findLink({ assortmentLinkId });
   if (!existing) throw new Error(`Assortment link not found: ${assortmentLinkId}`);
 
-  await modules.assortments.links.delete(assortmentLinkId);
-  return { success: true };
+  const deletedAssortmentLink = await modules.assortments.links.delete(assortmentLinkId);
+  return { success: Boolean(deletedAssortmentLink) };
 }

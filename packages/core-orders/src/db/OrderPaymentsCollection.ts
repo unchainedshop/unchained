@@ -8,7 +8,7 @@ export enum OrderPaymentStatus {
 }
 
 export type OrderPayment = {
-  _id?: string;
+  _id: string;
   orderId: string;
   context?: any;
   paid?: Date;

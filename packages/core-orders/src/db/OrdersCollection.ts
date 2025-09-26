@@ -17,7 +17,7 @@ export enum OrderStatus {
 }
 
 export type Order = {
-  _id?: string;
+  _id: string;
   billingAddress?: Address;
   calculation: any[];
   confirmed?: Date;

@@ -2,7 +2,7 @@ import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import { TimestampFields } from '@unchainedshop/mongodb';
 
 export type File = {
-  _id?: string;
+  _id: string;
   expires?: Date;
   path: string;
   meta?: Record<string, unknown>;

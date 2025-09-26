@@ -421,17 +421,16 @@ export const configureAssortmentsModule = async ({
         },
         { returnDocument: 'after' },
       );
-      if (assortment) {
-        await emit('ASSORTMENT_UPDATE', { assortmentId });
+      if (!assortment) return null;
+      await emit('ASSORTMENT_UPDATE', { assortmentId });
 
-        if (!options?.skipInvalidation) {
-          await invalidateCache({ assortmentIds: [assortmentId] });
-        }
+      if (!options?.skipInvalidation) {
+        await invalidateCache({ assortmentIds: [assortmentId] });
       }
       return assortment;
     },
 
-    delete: async (assortmentId: string, options?: { skipInvalidation?: boolean }): Promise<number> => {
+    delete: async (assortmentId: string, options?: { skipInvalidation?: boolean }) => {
       await assortmentLinks.deleteMany(
         {
           $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
@@ -444,23 +443,20 @@ export const configureAssortmentsModule = async ({
       await assortmentTexts.deleteMany({ assortmentId });
       await assortmentMedia.deleteMediaFiles({ assortmentId });
 
-      const { modifiedCount: deletedCount } = await Assortments.updateOne(
-        generateDbFilterById(assortmentId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
+      const deletedAssortment = await Assortments.findOneAndUpdate(generateDbFilterById(assortmentId), {
+        $set: {
+          deleted: new Date(),
         },
-      );
-
-      if (deletedCount === 1 && !options?.skipInvalidation) {
+      });
+      if (!deletedAssortment) return null;
+      if (!options?.skipInvalidation) {
         // Invalidate all assortments
         await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
       await emit('ASSORTMENT_REMOVE', { assortmentId });
 
-      return deletedCount;
+      return deletedAssortment;
     },
 
     invalidateCache,

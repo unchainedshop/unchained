@@ -83,9 +83,11 @@ export async function updateCalculationService(this: Modules, orderId: string) {
     }),
   );
 
-  let orderDelivery = await this.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
-  });
+  let orderDelivery = order.deliveryId
+    ? await this.orders.deliveries.findDelivery({
+        orderDeliveryId: order.deliveryId,
+      })
+    : null;
   if (orderDelivery) {
     const deliveryCalculation = await DeliveryPricingDirector.rebuildCalculation(
       {
@@ -99,9 +101,11 @@ export async function updateCalculationService(this: Modules, orderId: string) {
       deliveryCalculation,
     );
   }
-  let orderPayment = await this.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
-  });
+  let orderPayment = order.paymentId
+    ? await this.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      })
+    : null;
   if (orderPayment) {
     const paymentCalculation = await PaymentPricingDirector.rebuildCalculation(
       {
