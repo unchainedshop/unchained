@@ -37,14 +37,18 @@ export const configureCurrenciesModule = async ({ db }: ModuleInput<Record<strin
   const Currencies = await CurrenciesCollection(db);
 
   return {
-    findCurrency: async ({
-      currencyId,
-      isoCode,
-    }: {
-      currencyId?: string;
-      isoCode?: string;
-    }): Promise<Currency> => {
-      return Currencies.findOne(currencyId ? generateDbFilterById(currencyId) : { isoCode });
+    findCurrency: async (
+      params:
+        | {
+            isoCode: string;
+          }
+        | { currencyId: string },
+    ) => {
+      if ('currencyId' in params) {
+        return Currencies.findOne(generateDbFilterById(params.currencyId));
+      } else {
+        return Currencies.findOne({ isoCode: params.isoCode });
+      }
     },
 
     findCurrencies: async ({
@@ -81,7 +85,7 @@ export const configureCurrenciesModule = async ({ db }: ModuleInput<Record<strin
       return !!currencyCount;
     },
 
-    create: async (doc: Currency) => {
+    create: async (doc: Omit<Currency, '_id'> & Pick<Partial<Currency>, '_id'>) => {
       await Currencies.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const { insertedId: currencyId } = await Currencies.insertOne({
         _id: generateDbObjectId(),
@@ -95,11 +99,13 @@ export const configureCurrenciesModule = async ({ db }: ModuleInput<Record<strin
     },
 
     update: async (currencyId: string, doc: Partial<Currency>) => {
+      if (doc.isoCode) {
+        doc.isoCode = doc.isoCode.toUpperCase();
+      }
       await Currencies.updateOne(generateDbFilterById(currencyId), {
         $set: {
           updated: new Date(),
           ...doc,
-          isoCode: doc.isoCode.toUpperCase(),
         },
       });
       await emit('CURRENCY_UPDATE', { currencyId });

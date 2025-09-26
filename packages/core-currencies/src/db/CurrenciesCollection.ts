@@ -6,7 +6,7 @@ import {
 } from '@unchainedshop/mongodb';
 
 export type Currency = {
-  _id?: string;
+  _id: string;
   isoCode: string;
   isActive: boolean;
   contractAddress?: string;
@@ -22,18 +22,23 @@ export type CurrencyQuery = mongodb.Filter<Currency> & {
 export const CurrenciesCollection = async (db: mongodb.Db) => {
   const Currencies = db.collection<Currency>('currencies');
 
+  if (!isDocumentDBCompatModeEnabled()) {
+    await buildDbIndexes<Currency>(Currencies, [
+      {
+        index: { isoCode: 'text', _id: 'text' },
+        options: {
+          weights: {
+            _id: 8,
+            isoCode: 6,
+          },
+          name: 'currencies_fulltext_search',
+        },
+      },
+    ]);
+  }
+
   await buildDbIndexes<Currency>(Currencies, [
     { index: { isoCode: 1 }, options: { unique: true } },
-    !isDocumentDBCompatModeEnabled() && {
-      index: { isoCode: 'text', _id: 'text' },
-      options: {
-        weights: {
-          _id: 8,
-          isoCode: 6,
-        },
-        name: 'currencies_fulltext_search',
-      },
-    },
     {
       index: {
         deleted: 1,
