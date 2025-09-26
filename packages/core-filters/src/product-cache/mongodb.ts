@@ -3,7 +3,6 @@ import { sha256 } from '@unchainedshop/utils';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 import { FiltersCollection } from '../db/FiltersCollection.js';
-import { FiltersSettingsOptions } from '../filters-settings.js';
 
 const updateIfHashChanged = async (Collection, selector, doc) => {
   const _id = Object.values(selector).join(':');
@@ -43,14 +42,16 @@ export default async function mongodbCache(db: mongodb.Db) {
         { projection: { productIds: 1, filterOptionValue: 1 } },
       ).toArray();
 
+      if (!filterProductIdCache.length) return null;
+
       const allProductIds =
         filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
       const productIdsMap = Object.fromEntries(
         filterProductIdCache
           .filter((cache) => cache.filterOptionValue !== null)
-          .map((cache) => [cache.filterOptionValue, cache.productIds]),
+          .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
       );
-      return [allProductIds, productIdsMap];
+      return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
     },
     {
       cache: memoizeCache,
@@ -58,7 +59,7 @@ export default async function mongodbCache(db: mongodb.Db) {
   );
 
   return {
-    async getCachedProductIds(filterId) {
+    async getCachedProductIds(filterId: string) {
       return getCachedProductIdsFromMemoryCache(filterId);
     },
     async setCachedProductIds(filterId, productIds, productIdsMap) {
@@ -79,8 +80,5 @@ export default async function mongodbCache(db: mongodb.Db) {
       const allCacheRecords = cacheIds.concat([baseCacheId]).filter(Boolean);
       return allCacheRecords.length;
     },
-  } as {
-    getCachedProductIds: FiltersSettingsOptions['getCachedProductIds'];
-    setCachedProductIds: FiltersSettingsOptions['setCachedProductIds'];
   };
 }

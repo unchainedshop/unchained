@@ -1,3 +1,4 @@
+import { FilterText } from '@unchainedshop/core-filters';
 import { Context } from '../../../../context.js';
 import { FilterNotFoundError } from '../../../../errors.js';
 import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
@@ -13,7 +14,7 @@ export default async function updateFilterTexts(context: Context, params: Params
 
   const updatedTexts = await modules.filters.texts.updateTexts(
     { filterId, filterOptionValue: filterOptionValue || null },
-    textUpdates,
+    textUpdates as FilterText[],
   );
 
   const normalizedFilter = await getNormalizedFilterDetails(filterId, context);

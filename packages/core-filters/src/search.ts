@@ -79,7 +79,7 @@ export const defaultSortStage = ({ orderBy }: { orderBy?: string }): mongodb.Fin
   const maybeDirection = orderBySlices.pop();
 
   const direction = normalizeDirection(maybeDirection);
-  if (direction === null) orderBySlices.push(maybeDirection);
+  if (direction === null && maybeDirection) orderBySlices.push(maybeDirection);
 
   const keyPath = orderBySlices.join('.');
 

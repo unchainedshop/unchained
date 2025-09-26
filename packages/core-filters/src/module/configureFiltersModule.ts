@@ -59,11 +59,11 @@ export const configureFiltersModule = async ({
 
   return {
     // Queries
-    findFilter: async ({ filterId, key }: { filterId?: string; key?: string }): Promise<Filter> => {
-      if (key) {
-        return Filters.findOne({ key }, {});
+    findFilter: async (params: { filterId: string } | { key: string }) => {
+      if ('key' in params) {
+        return Filters.findOne({ key: params.key }, {});
       }
-      return Filters.findOne(generateDbFilterById(filterId), {});
+      return Filters.findOne(generateDbFilterById(params.filterId), {});
     },
 
     findFilters: async (
@@ -117,8 +117,7 @@ export const configureFiltersModule = async ({
         ...filterData,
       });
 
-      const filter = await Filters.findOne(generateDbFilterById(filterId), {});
-
+      const filter = (await Filters.findOne(generateDbFilterById(filterId), {})) as Filter;
       await emit('FILTER_CREATE', { filter });
       return filter;
     },
@@ -129,7 +128,7 @@ export const configureFiltersModule = async ({
       return parse(values, allKeys);
     },
 
-    createFilterOption: async (filterId: string, { value }: { value: string }): Promise<Filter> => {
+    createFilterOption: async (filterId: string, { value }: { value: string }) => {
       const selector = generateDbFilterById(filterId);
       const filter = await Filters.findOneAndUpdate(
         selector,
@@ -144,8 +143,8 @@ export const configureFiltersModule = async ({
         { returnDocument: 'after' },
       );
 
+      if (!filter) return null;
       await emit('FILTER_UPDATE', { filterId, options: filter.options, updated: filter.updated });
-
       return filter;
     },
 
@@ -162,7 +161,7 @@ export const configureFiltersModule = async ({
     }: {
       filterId: string;
       filterOptionValue?: string;
-    }): Promise<Filter> => {
+    }) => {
       const selector = generateDbFilterById(filterId);
       const filter = await Filters.findOneAndUpdate(
         selector,
@@ -177,12 +176,12 @@ export const configureFiltersModule = async ({
         { returnDocument: 'after' },
       );
 
+      if (!filter) return null;
       await emit('FILTER_UPDATE', { filterId, options: filter.options, updated: filter.updated });
-
       return filter;
     },
 
-    update: async (filterId: string, doc: Filter): Promise<Filter> => {
+    update: async (filterId: string, doc: Partial<Filter>) => {
       const filter = await Filters.findOneAndUpdate(
         generateDbFilterById(filterId),
         {
@@ -194,10 +193,8 @@ export const configureFiltersModule = async ({
         { returnDocument: 'after' },
       );
 
-      if (filter) {
-        await emit('FILTER_UPDATE', { filterId: filter._id, ...filter });
-      }
-
+      if (!filter) return null;
+      await emit('FILTER_UPDATE', { filterId: filter._id, ...filter });
       return filter;
     },
 

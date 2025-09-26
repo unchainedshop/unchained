@@ -24,7 +24,7 @@ export const configureFilterTextsModule = ({
     const filterText = await FilterTexts.findOneAndUpdate(
       {
         filterId,
-        filterOptionValue: filterOptionValue || { $eq: null },
+        filterOptionValue: filterOptionValue || { $eq: undefined },
         locale: locale.baseName,
       },
       {
@@ -36,7 +36,7 @@ export const configureFilterTextsModule = ({
           _id: generateDbObjectId(),
           created: new Date(),
           filterId,
-          filterOptionValue: filterOptionValue || null,
+          filterOptionValue,
           locale: locale.baseName,
         },
       },
@@ -79,7 +79,7 @@ export const configureFilterTextsModule = ({
         FilterTexts,
         {
           filterId,
-          filterOptionValue: filterOptionValue || { $eq: null },
+          filterOptionValue: filterOptionValue || { $eq: undefined },
         },
         locale,
       );
