@@ -3,6 +3,7 @@ import { Services } from '../../../services/index.js';
 import { Modules } from '../../../modules.js';
 import upsertAsset, { AssetSchema } from '../../upsertAsset.js';
 import { LocalizedContentSchema } from '../utils/event-schema.js';
+import { AssortmentMediaType } from '@unchainedshop/core-assortments';
 
 export const MediaSchema = z.object({
   _id: z.string().optional(),
@@ -15,11 +16,11 @@ export const MediaSchema = z.object({
 const upsertMediaObject = async (media, unchainedAPI: { modules: Modules; services: Services }) => {
   const { modules } = unchainedAPI;
   try {
-    const assortmentMedia = await modules.assortments.media.create(media);
+    const assortmentMedia = (await modules.assortments.media.create(media)) as AssortmentMediaType;
     return assortmentMedia;
   } catch {
     const { _id, ...mediaData } = media;
-    return modules.assortments.media.update(_id, mediaData);
+    return (await modules.assortments.media.update(_id, mediaData)) as AssortmentMediaType;
   }
 };
 
@@ -46,7 +47,7 @@ export default async (
         unchainedAPI,
       );
 
-      if (!mediaObject) throw new Error(`Unable to create media object ${mediaObject._id}`);
+      if (!mediaObject) throw new Error(`Unable to create media object ${mediaData._id}`);
 
       if (content) {
         await modules.assortments.media.texts.updateMediaTexts(

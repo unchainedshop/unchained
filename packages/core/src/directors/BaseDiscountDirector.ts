@@ -11,7 +11,7 @@ export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
   ) => Promise<{
     resolveDiscountAdapterFromStaticCode: (params: {
       code: string;
-    }) => Promise<IDiscountAdapter<DiscountConfiguration>>;
+    }) => Promise<IDiscountAdapter<DiscountConfiguration> | null>;
     findSystemDiscounts: () => Promise<string[]>;
   }>;
 };
@@ -46,7 +46,7 @@ export const BaseDiscountDirector = <DiscountConfigurationType>(
               }),
           );
 
-          return discounts.find(({ isValid }) => isValid === true)?.Adapter;
+          return discounts.find(({ isValid }) => isValid === true)?.Adapter || null;
         },
 
         async findSystemDiscounts() {

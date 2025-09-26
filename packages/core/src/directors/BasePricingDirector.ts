@@ -70,7 +70,7 @@ export const BasePricingDirector = <
     async rebuildCalculation(this: typeof director, pricingContext, unchainedAPI) {
       const context = await this.buildPricingContext(pricingContext, unchainedAPI);
 
-      let calculation: Calculation[] = [];
+      let calculation: Calculation[] | null = [];
 
       const Adapters = baseDirector.getAdapters({
         adapterFilter: (Adapter) => {
@@ -78,52 +78,55 @@ export const BasePricingDirector = <
         },
       });
 
-      calculation = await Adapters.reduce(async (previousPromise, Adapter) => {
-        const resolvedCalculation = await previousPromise;
-        if (!resolvedCalculation) return null;
+      calculation = await Adapters.reduce(
+        async (previousPromise, Adapter) => {
+          const resolvedCalculation = await previousPromise;
+          if (!resolvedCalculation) return null;
 
-        const discounts: Discount<any>[] = await Promise.all(
-          context.discounts.map(async (orderDiscount) => {
-            const order = await unchainedAPI.modules.orders.findOrder({
-              orderId: orderDiscount.orderId,
+          const discounts: (Discount<any> | null)[] = await Promise.all(
+            context.discounts.map(async (orderDiscount) => {
+              const order = await unchainedAPI.modules.orders.findOrder({
+                orderId: orderDiscount.orderId,
+              });
+              const DiscountAdapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
+              if (!DiscountAdapter) return null;
+
+              const adapter = await DiscountAdapter.actions({
+                context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
+              });
+
+              const configuration = adapter.discountForPricingAdapterKey({
+                pricingAdapterKey: Adapter.key,
+                calculationSheet: this.calculationSheet(pricingContext, resolvedCalculation),
+              });
+
+              return {
+                discountId: orderDiscount._id,
+                configuration,
+              };
+            }),
+          );
+
+          try {
+            const adapter = Adapter.actions({
+              context,
+              calculationSheet: this.calculationSheet(pricingContext, resolvedCalculation),
+              discounts: discounts.filter((d) => d?.configuration !== null) as Discount<any>[],
             });
-            const DiscountAdapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
-            if (!DiscountAdapter) return null;
 
-            const adapter = await DiscountAdapter.actions({
-              context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
-            });
+            const nextCalculationResult = await adapter.calculate();
+            if (!nextCalculationResult) return null;
+            calculation = resolvedCalculation.concat(nextCalculationResult);
+            return calculation;
+          } catch (error) {
+            logger.error(error);
+          }
+          return resolvedCalculation;
+        },
+        Promise.resolve([] as Calculation[]),
+      );
 
-            const configuration = adapter.discountForPricingAdapterKey({
-              pricingAdapterKey: Adapter.key,
-              calculationSheet: this.calculationSheet(pricingContext, calculation),
-            });
-
-            return {
-              discountId: orderDiscount._id,
-              configuration,
-            };
-          }),
-        );
-
-        try {
-          const adapter = Adapter.actions({
-            context,
-            calculationSheet: this.calculationSheet(pricingContext, calculation),
-            discounts: discounts.filter((d) => d?.configuration !== null),
-          });
-
-          const nextCalculationResult = await adapter.calculate();
-          if (!nextCalculationResult) return null;
-          calculation = resolvedCalculation.concat(nextCalculationResult);
-          return calculation;
-        } catch (error) {
-          logger.error(error);
-        }
-        return resolvedCalculation;
-      }, Promise.resolve([]));
-
-      return calculation;
+      return calculation || ([] as Calculation[]);
     },
   };
 

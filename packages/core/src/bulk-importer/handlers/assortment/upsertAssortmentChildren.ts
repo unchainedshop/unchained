@@ -3,14 +3,18 @@ import { AssortmentLink } from '@unchainedshop/core-assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import { Modules } from '../../../modules.js';
 
-export const AssortmentChildSchema = z.object({
+export const AssortmentLinkSchema = z.object({
   _id: z.string().optional(),
+  parentAssortmentId: z.string(),
   childAssortmentId: z.string(),
-  tags: z.array(z.string()).optional(),
-  sortKey: z.number().optional(),
+  tags: z.array(z.string()),
+  sortKey: z.number(),
 });
 
-const upsert = async (assortmentLink: AssortmentLink, { modules }: { modules: Modules }) => {
+const upsert = async (
+  assortmentLink: z.infer<typeof AssortmentLinkSchema>,
+  { modules }: { modules: Modules },
+) => {
   if (
     !(await modules.assortments.assortmentExists({
       assortmentId: assortmentLink.childAssortmentId,
@@ -22,11 +26,11 @@ const upsert = async (assortmentLink: AssortmentLink, { modules }: { modules: Mo
     const newAssortmentLink = await modules.assortments.links.create(assortmentLink, {
       skipInvalidation: true,
     });
-    return newAssortmentLink;
+    return newAssortmentLink!;
   } catch {
-    return modules.assortments.links.update(assortmentLink._id, assortmentLink, {
+    return (await modules.assortments.links.update(assortmentLink._id!, assortmentLink, {
       skipInvalidation: true,
-    });
+    }))!;
   }
 };
 

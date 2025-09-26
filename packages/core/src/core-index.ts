@@ -18,6 +18,7 @@ import {
   QuotationDirector,
   WarehousingDirector,
 } from './directors/index.js';
+import { IBaseAdapter } from '@unchainedshop/utils';
 
 export * from './bulk-importer/index.js';
 export * from './services/index.js';
@@ -84,7 +85,7 @@ export const getAllAdapters = () => {
   const quotation = QuotationDirector.getAdapters();
   const warehousing = WarehousingDirector.getAdapters();
 
-  return [].concat(
+  return ([] as IBaseAdapter[]).concat(
     worker,
     delivery,
     deliveryPricing,

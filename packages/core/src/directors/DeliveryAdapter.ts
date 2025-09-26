@@ -23,7 +23,7 @@ export interface DeliveryAdapterActions {
   estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
   isActive: () => boolean;
   isAutoReleaseAllowed: () => boolean;
-  pickUpLocationById: (locationId: string) => Promise<DeliveryLocation>;
+  pickUpLocationById: (locationId: string) => Promise<DeliveryLocation | null>;
   pickUpLocations: () => Promise<DeliveryLocation[]>;
   send: () => Promise<boolean | Work>;
 }

@@ -19,10 +19,15 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules }: { modules
     throw new Error(`Can't link non-existing filter ${assortmentFilter.filterId}`);
   }
   try {
-    const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter);
+    const newAssortmentFilter = (await modules.assortments.filters.create(
+      assortmentFilter,
+    )) as AssortmentFilter;
     return newAssortmentFilter;
   } catch {
-    return modules.assortments.filters.update(assortmentFilter._id, assortmentFilter);
+    return (await modules.assortments.filters.update(
+      assortmentFilter._id,
+      assortmentFilter,
+    )) as AssortmentFilter;
   }
 };
 
@@ -30,11 +35,13 @@ export default async ({ filters, assortmentId }, unchainedAPI: { modules: Module
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {
-      const tags = convertTagsToLowerCase(filter?.tags);
+      const adjustedFilter = { ...filter };
+      if (adjustedFilter.tags) {
+        adjustedFilter.tags = convertTagsToLowerCase(adjustedFilter.tags) as string[];
+      }
       const assortmentFilter = await upsert(
         {
-          ...filter,
-          tags,
+          ...adjustedFilter,
           assortmentId,
         },
         unchainedAPI,

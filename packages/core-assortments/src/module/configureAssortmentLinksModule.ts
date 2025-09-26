@@ -74,7 +74,10 @@ export const configureAssortmentLinksModule = ({
     },
 
     // Mutations
-    create: async (doc: AssortmentLink, options?: { skipInvalidation?: boolean }) => {
+    create: async (
+      doc: Omit<AssortmentLink, '_id' | 'created'> & Pick<Partial<AssortmentLink>, '_id' | 'created'>,
+      options?: { skipInvalidation?: boolean },
+    ) => {
       const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
 
       const assortmentLinksPath = await walkUpFromAssortment({
@@ -146,7 +149,7 @@ export const configureAssortmentLinksModule = ({
     // This action is specifically used for the bulk migration scripts in the platform package
     update: async (
       assortmentLinkId: string,
-      doc: AssortmentLink,
+      doc: Partial<AssortmentLink>,
       options?: { skipInvalidation?: boolean },
     ) => {
       const selector = generateDbFilterById(assortmentLinkId);

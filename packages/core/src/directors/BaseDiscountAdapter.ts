@@ -67,7 +67,7 @@ export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label
 
     // return void, allows you to free up any reservations in backend systems
     release: async () => {
-      return null;
+      return;
     },
 
     // return true if a discount is valid to be part of the order.

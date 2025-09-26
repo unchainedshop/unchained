@@ -8,10 +8,15 @@ const upsert = async (
 ) => {
   const { modules } = unchainedAPI;
   try {
-    const newVariation = await modules.products.variations.create(productVariation);
+    const newVariation = (await modules.products.variations.create(
+      productVariation,
+    )) as ProductVariation;
     return newVariation;
   } catch {
-    return modules.products.variations.update(productVariation._id, productVariation);
+    return (await modules.products.variations.update(
+      productVariation._id!,
+      productVariation,
+    )) as ProductVariation;
   }
 };
 

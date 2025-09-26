@@ -20,14 +20,14 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: { modu
     throw new Error(`Can't link non-existing product ${assortmentProduct.productId}`);
   }
   try {
-    const newAssortmentProduct = await modules.assortments.products.create(assortmentProduct, {
+    const newAssortmentProduct = (await modules.assortments.products.create(assortmentProduct, {
       skipInvalidation: true,
-    });
+    })) as AssortmentProduct;
     return newAssortmentProduct;
   } catch {
-    return modules.assortments.products.update(assortmentProduct._id, assortmentProduct, {
+    return (await modules.assortments.products.update(assortmentProduct._id, assortmentProduct, {
       skipInvalidation: true,
-    });
+    })) as AssortmentProduct;
   }
 };
 
@@ -35,11 +35,13 @@ export default async ({ products, assortmentId }, unchainedAPI: { modules: Modul
   const { modules } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
     products.map(async (product: AssortmentProduct) => {
-      const tags = convertTagsToLowerCase(product?.tags);
+      const adjustedProduct = { ...product };
+      if (adjustedProduct.tags) {
+        adjustedProduct.tags = convertTagsToLowerCase(adjustedProduct.tags) as string[];
+      }
       const assortmentProduct = await upsert(
         {
-          ...product,
-          tags,
+          ...adjustedProduct,
           assortmentId,
         },
         unchainedAPI,

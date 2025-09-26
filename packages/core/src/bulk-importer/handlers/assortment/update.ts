@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.js';
-import upsertAssortmentChildren, { AssortmentChildSchema } from './upsertAssortmentChildren.js';
+import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortmentChildren.js';
 import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.js';
 import upsertMedia, { MediaSchema } from './upsertMedia.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
@@ -13,7 +13,7 @@ export const AssortmentUpdatePayloadSchema = z.object({
   _id: z.string(),
   specification: z
     .object({
-      isActive: z.boolean().optional(),
+      isActive: z.boolean(),
       isBase: z.boolean().optional(),
       isRoot: z.boolean().optional(),
       sequence: z.number(),
@@ -24,7 +24,7 @@ export const AssortmentUpdatePayloadSchema = z.object({
     .optional(),
   media: z.array(MediaSchema).optional(),
   products: z.array(AssortmentProductSchema).optional(),
-  children: z.array(AssortmentChildSchema).optional(),
+  children: z.array(AssortmentLinkSchema).optional(),
   filters: z.array(AssortmentFilterSchema).optional(),
 });
 
@@ -37,8 +37,19 @@ export default async function updateAssortment(
   const { media, specification, products, children, filters, _id } = payload;
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
-    if (updateShouldUpsertIfIDNotExists) {
-      return createAssortment(payload, { logger, createShouldUpsertIfIDExists }, unchainedAPI);
+    if (updateShouldUpsertIfIDNotExists && specification) {
+      return createAssortment(
+        {
+          _id,
+          specification,
+          media,
+          products,
+          children,
+          filters,
+        },
+        { logger, createShouldUpsertIfIDExists },
+        unchainedAPI,
+      );
     }
     throw new Error(`Can't update non-existing assortment ${_id}`);
   }
@@ -46,7 +57,9 @@ export default async function updateAssortment(
   if (specification) {
     logger.debug('update assortment object', specification);
 
-    specification.tags = convertTagsToLowerCase(specification?.tags);
+    if (specification.tags) {
+      specification.tags = convertTagsToLowerCase(specification.tags!)!;
+    }
 
     await unchainedAPI.modules.assortments.update(_id, { ...specification });
 

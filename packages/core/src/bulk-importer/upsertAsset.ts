@@ -1,4 +1,3 @@
-import type { File } from '@unchainedshop/core-files';
 import { Modules } from '../modules.js';
 import { Services } from '../services/index.js';
 import { z } from 'zod';
@@ -7,11 +6,13 @@ export const AssetSchema = z.object({
   _id: z.string(),
   url: z.string(),
   meta: z.record(z.unknown()).optional(),
+  fileName: z.string(),
+  headers: z.record(z.string()).optional(),
 });
 
 const upsertAsset = async (
   directoryName: string,
-  asset: File & { fileName: string; headers?: Record<string, unknown> },
+  asset: z.infer<typeof AssetSchema>,
   unchainedAPI: { modules: Modules; services: Services },
 ) => {
   const { modules, services } = unchainedAPI;

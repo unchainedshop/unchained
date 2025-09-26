@@ -93,7 +93,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
         (oldCalculation, filterKey) =>
           oldCalculation.filter(
             (row: Calculation) =>
-              !!row && (filter[filterKey] === undefined || row[filterKey] === filter[filterKey]),
+              !!row && (filter![filterKey] === undefined || row[filterKey] === filter![filterKey]),
           ),
         this.calculation,
       );

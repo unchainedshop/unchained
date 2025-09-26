@@ -66,7 +66,13 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
 
   const createBulkImporter = (options) => {
     const bulkOperations = {};
-    const preparationIssues = [];
+    const preparationIssues: {
+      operation: string;
+      entity: string;
+      payloadId: string;
+      errorCode: string;
+      errorMessage: string;
+    }[] = [];
     const processedOperations = {};
     const { createShouldUpsertIfIDExists, skipCacheInvalidation, updateShouldUpsertIfIDNotExists } =
       options;
