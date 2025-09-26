@@ -68,14 +68,11 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     findProvider: async (
       { warehousingProviderId }: { warehousingProviderId: string },
       options?: mongodb.FindOptions,
-    ): Promise<WarehousingProvider> => {
+    ) => {
       return WarehousingProviders.findOne(generateDbFilterById(warehousingProviderId), options);
     },
 
-    findToken: async (
-      { tokenId }: { tokenId: string },
-      options?: mongodb.FindOptions,
-    ): Promise<TokenSurrogate> => {
+    findToken: async ({ tokenId }: { tokenId: string }, options?: mongodb.FindOptions) => {
       return TokenSurrogates.findOne({ _id: tokenId }, options);
     },
 
@@ -147,7 +144,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       tokenId: string;
       userId: string;
       walletAddress: string;
-    }): Promise<TokenSurrogate> => {
+    }) => {
       const token = await TokenSurrogates.findOneAndUpdate(
         { _id: tokenId },
         {
@@ -158,13 +155,14 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
         },
         { returnDocument: 'after' },
       );
+      if (!token) return null;
       await emit('TOKEN_OWNERSHIP_CHANGED', { token });
       return token;
     },
 
-    invalidateToken: async (tokenId: string): Promise<TokenSurrogate> => {
+    invalidateToken: async (tokenId: string) => {
       const token = await TokenSurrogates.findOneAndUpdate(
-        { _id: tokenId, invalidatedDate: null },
+        { _id: tokenId, invalidatedDate: { $exists: false } },
         {
           $set: {
             invalidatedDate: new Date(),
@@ -174,14 +172,15 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
           returnDocument: 'after',
         },
       );
-      if (token) {
-        await emit('TOKEN_INVALIDATED', { token });
-      }
+      if (!token) return null;
+      await emit('TOKEN_INVALIDATED', { token });
       return token;
     },
 
-    buildAccessKeyForToken: async (tokenId: string): Promise<string> => {
+    buildAccessKeyForToken: async (tokenId: string): Promise<string | null> => {
       const token = await TokenSurrogates.findOne(generateDbFilterById(tokenId));
+      if (!token) return null;
+
       const payload = [
         token._id,
         token.walletAddress || token.userId,
@@ -196,14 +195,18 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     // Mutations
-    create: async (doc: WarehousingProvider): Promise<WarehousingProvider> => {
+    create: async (
+      doc: Omit<WarehousingProvider, '_id' | 'created'> & Pick<Partial<WarehousingProvider>, '_id'>,
+    ) => {
       const { insertedId: warehousingProviderId } = await WarehousingProviders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
         ...doc,
       });
 
-      const warehousingProvider = await WarehousingProviders.findOne({ _id: warehousingProviderId });
+      const warehousingProvider = (await WarehousingProviders.findOne({
+        _id: warehousingProviderId,
+      })) as WarehousingProvider;
       allProvidersCache.clear();
       await emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
       return warehousingProvider;
@@ -220,15 +223,13 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
         },
         { returnDocument: 'after' },
       );
-
       if (!warehousingProvider) return null;
-
       allProvidersCache.clear();
       await emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
       return warehousingProvider;
     },
 
-    delete: async (providerId: string): Promise<WarehousingProvider> => {
+    delete: async (providerId: string) => {
       const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
         generateDbFilterById(providerId),
         {
@@ -238,7 +239,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
         },
         { returnDocument: 'after' },
       );
-
+      if (!warehousingProvider) return null;
       allProvidersCache.clear();
       await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
       return warehousingProvider;

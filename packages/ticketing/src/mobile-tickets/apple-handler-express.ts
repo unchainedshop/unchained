@@ -36,7 +36,7 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
 
       const { hash } = req.query;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
-      if (hash !== correctHash) {
+      if (!hash || hash !== correctHash) {
         res.status(403).send('Token hash invalid for current owner');
         return;
       }

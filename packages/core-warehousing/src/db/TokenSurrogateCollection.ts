@@ -24,6 +24,33 @@ export enum TokenStatus {
 export const TokenSurrogateCollection = async (db: mongodb.Db) => {
   const TokenSurrogates = db.collection<TokenSurrogate>('token_surrogates');
 
+  if (!isDocumentDBCompatModeEnabled()) {
+    await buildDbIndexes<TokenSurrogate>(TokenSurrogates, [
+      {
+        index: {
+          chainTokenId: 'text',
+          userId: 'text',
+          productId: 'text',
+          _id: 'text',
+          walletAddress: 'text',
+          contractAddress: 'text',
+        } as any,
+        options: {
+          weights: {
+            _id: 9,
+            chainTokenId: 8,
+            userId: 3,
+            productId: 6,
+            contractAddress: 5,
+            walletAddress: 4,
+            status: 1,
+          },
+          name: 'token_fulltext_search',
+        },
+      },
+    ]);
+  }
+
   await buildDbIndexes<TokenSurrogate>(TokenSurrogates, [
     {
       index: {
@@ -43,28 +70,6 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
     {
       index: {
         orderPositionId: 1,
-      },
-    },
-    !isDocumentDBCompatModeEnabled() && {
-      index: {
-        chainTokenId: 'text',
-        userId: 'text',
-        productId: 'text',
-        _id: 'text',
-        walletAddress: 'text',
-        contractAddress: 'text',
-      } as any,
-      options: {
-        weights: {
-          _id: 9,
-          chainTokenId: 8,
-          userId: 3,
-          productId: 6,
-          contractAddress: 5,
-          walletAddress: 4,
-          status: 1,
-        },
-        name: 'token_fulltext_search',
       },
     },
   ]);
