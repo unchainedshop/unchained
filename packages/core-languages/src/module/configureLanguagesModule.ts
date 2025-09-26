@@ -9,7 +9,6 @@ import {
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { Language, LanguagesCollection } from '../db/LanguagesCollection.js';
-import { UpdateFilter } from 'mongodb';
 
 export type LanguageQuery = mongodb.Filter<Language> & {
   includeInactive?: boolean;
@@ -97,7 +96,7 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
       return languageId;
     },
 
-    update: async (languageId: string, doc: UpdateFilter<Language>['$set']) => {
+    update: async (languageId: string, doc: mongodb.UpdateFilter<Language>['$set']) => {
       const modifier = { ...doc };
       if (modifier?.isoCode) {
         modifier.isoCode = modifier.isoCode.toLowerCase();

@@ -2,7 +2,6 @@ import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 import buildFindSelector from './buildFindSelector.js';
 import { Order, OrderQuery } from '../db/OrdersCollection.js';
-import { Document } from 'mongodb';
 
 export interface OrderReport {
   newCount: number;
@@ -140,8 +139,8 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       limit,
       addFields,
       pipeline,
-    }: OrderAggregateParams): Promise<Document[]> => {
-      const stages: Document[] = [];
+    }: OrderAggregateParams): Promise<mongodb.Document[]> => {
+      const stages: mongodb.Document[] = [];
       if (pipeline?.length) {
         return await Orders.aggregate(pipeline).toArray();
       }

@@ -2,7 +2,6 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { PricingCalculation } from '@unchainedshop/utils';
 import { OrderPosition } from '../db/OrderPositionsCollection.js';
-import { Document } from 'mongodb';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
@@ -12,14 +11,14 @@ const ORDER_POSITION_EVENTS: string[] = [
 ];
 
 interface OrderPositionAggregateParams {
-  match?: Document;
-  matchAfterGroup?: Document;
-  project?: Document;
-  group?: Document;
-  addFields?: Document;
-  sort?: Document;
+  match?: mongodb.Document;
+  matchAfterGroup?: mongodb.Document;
+  project?: mongodb.Document;
+  group?: mongodb.Document;
+  addFields?: mongodb.Document;
+  sort?: mongodb.Document;
   limit?: number;
-  pipeline?: Document[];
+  pipeline?: mongodb.Document[];
 }
 
 export const buildFindOrderPositionByIdSelector = (orderPositionId: string, orderId?: string) =>
@@ -228,8 +227,8 @@ export const configureOrderPositionsModule = ({
       sort,
       limit,
       pipeline,
-    }: OrderPositionAggregateParams): Promise<Document[]> => {
-      const stages: Document[] = [];
+    }: OrderPositionAggregateParams): Promise<mongodb.Document[]> => {
+      const stages: mongodb.Document[] = [];
 
       if (pipeline?.length) {
         return await OrderPositions.aggregate(pipeline).toArray();

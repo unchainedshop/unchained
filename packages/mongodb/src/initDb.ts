@@ -4,6 +4,8 @@ let zstdEnabled = false;
 let mongod;
 let mongoClient: MongoClient | null;
 
+const { PORT = '4010' } = process.env;
+
 try {
   // eslint-disable-next-line
   // @ts-expect-error
@@ -25,11 +27,11 @@ export const startDb = async () => {
     mongod = MongoMemoryServer.create({
       instance:
         process.env.NODE_ENV === 'test'
-          ? { dbName: 'test', port: parseInt(process.env.PORT, 10) + 1 }
+          ? { dbName: 'test', port: parseInt(PORT, 10) + 1 }
           : {
               dbPath: `${process.cwd()}/.db`,
               storageEngine: 'wiredTiger',
-              port: parseInt(process.env.PORT, 10) + 1,
+              port: parseInt(PORT, 10) + 1,
             },
     });
     const mongoInstance = await mongod;

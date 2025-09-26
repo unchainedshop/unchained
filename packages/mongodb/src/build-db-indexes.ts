@@ -8,20 +8,27 @@ export type Indexes = {
   options?: CreateIndexesOptions;
 }[];
 
-const buildIndexes = <T>(collection: Collection<T>, indexes: Indexes): Promise<(false | Error)[]> =>
-  Promise.all(
-    indexes.map(async (indexOptions) => {
-      if (!indexOptions) return;
-      const { index, options } = indexOptions;
-      try {
-        await collection.createIndex(index, options);
-        return false;
-      } catch (e: any) {
-        logger.error(e);
-        return e as Error;
-      }
-    }),
-  );
+const buildIndexes = async <T extends Document>(
+  collection: Collection<T>,
+  indexes: Indexes,
+): Promise<Error[]> => {
+  const errors = (
+    await Promise.all(
+      indexes.map(async (indexOptions) => {
+        if (!indexOptions) return null;
+        const { index, options } = indexOptions;
+        try {
+          await collection.createIndex(index, options);
+          return null;
+        } catch (e: any) {
+          logger.error(e);
+          return e as Error;
+        }
+      }),
+    )
+  ).filter(Boolean) as Error[];
+  return errors;
+};
 
 export const buildDbIndexes = async <T extends Document>(
   collection: Collection<T>,

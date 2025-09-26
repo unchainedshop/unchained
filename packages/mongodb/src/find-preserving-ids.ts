@@ -1,4 +1,4 @@
-import { Collection, FindOptions, Filter } from 'mongodb';
+import { Collection, FindOptions, Filter, Document } from 'mongodb';
 
 const sortByIndex = {
   index: 1,
@@ -7,7 +7,7 @@ const sortByIndex = {
 const defaultSort = sortByIndex;
 
 export const findPreservingIds =
-  <T>(
+  <T extends Document>(
     collection: Collection<T>,
   ): ((selector: Filter<T>, ids: string[], options?: FindOptions) => Promise<T[]>) =>
   async (selector: Filter<T>, ids: string[], options?: FindOptions): Promise<T[]> => {
@@ -17,7 +17,7 @@ export const findPreservingIds =
       _id: { $in: ids },
     };
 
-    const filteredPipeline = [
+    const filteredPipeline: any = [
       {
         $match: filteredSelector,
       },
