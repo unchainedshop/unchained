@@ -2,7 +2,7 @@ import { MessagingDirector, IWorkerAdapter, WorkerAdapter, WorkerDirector } from
 import { Work } from '@unchainedshop/core-worker';
 
 export const MessageWorker: IWorkerAdapter<
-  { template: string; _id?: string; [x: string]: any },
+  { template: string; _id: string; [x: string]: any },
   { info?: string; forked?: Work[] }
 > = {
   ...WorkerAdapter,

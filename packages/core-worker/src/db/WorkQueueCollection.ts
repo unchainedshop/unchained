@@ -12,7 +12,7 @@ export enum WorkStatus {
 }
 
 export type Work = {
-  _id?: string;
+  _id: string;
   priority: number;
   retries: number;
   scheduled: Date;

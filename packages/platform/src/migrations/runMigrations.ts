@@ -12,7 +12,12 @@ export const runMigrations = async ({
   logger?: any;
   unchainedAPI: UnchainedCore;
 }) => {
-  const LastMigration = migrationRepository.db.collection('last-migration');
+  const LastMigration = migrationRepository.db.collection<{
+    _id: string;
+    action: string;
+    category: string;
+    timestamp: Date;
+  }>('last-migration');
 
   const findCurrentId = async () => {
     const last = await LastMigration.findOne({ category: 'unchained' }, { sort: { _id: -1 } });

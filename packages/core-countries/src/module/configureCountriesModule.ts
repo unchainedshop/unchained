@@ -11,7 +11,7 @@ import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 
 export type Country = {
-  _id?: string;
+  _id: string;
   isoCode: string;
   isActive?: boolean;
   defaultCurrencyCode?: string;

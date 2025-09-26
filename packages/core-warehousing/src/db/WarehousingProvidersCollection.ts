@@ -8,7 +8,7 @@ export enum WarehousingProviderType {
 export type WarehousingConfiguration = { key: string; value: string }[];
 
 export type WarehousingProvider = {
-  _id?: string;
+  _id: string;
   type: WarehousingProviderType;
   adapterKey: string;
   configuration: WarehousingConfiguration;

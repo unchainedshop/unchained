@@ -56,7 +56,10 @@ export const EventDirector = {
     logger.debug(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
-  subscribe: <T>(eventName: string, callback: (payload: RawPayloadType<T>) => void): void => {
+  subscribe: <T extends Record<string, any>>(
+    eventName: string,
+    callback: (payload: RawPayloadType<T>) => void,
+  ): void => {
     const currentSubscription = `${eventName}${callback?.toString()}`; // used to avaoid registering the same event handler callback
 
     if (!RegisteredEventsSet.has(eventName))

@@ -22,7 +22,7 @@ export enum EnrollmentStatus {
 }
 
 export type Enrollment = {
-  _id?: string;
+  _id: string;
   billingAddress: Address;
   configuration?: { key: string; value: string }[];
   contact: Contact;

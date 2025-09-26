@@ -13,7 +13,7 @@ export enum FilterType {
 }
 
 export type Filter = {
-  _id?: string;
+  _id: string;
   isActive?: boolean;
   key: string;
   meta?: any;
@@ -22,6 +22,7 @@ export type Filter = {
 } & TimestampFields;
 
 export type FilterText = {
+  _id: string;
   filterId: string;
   filterOptionValue: string | null;
   locale: string;

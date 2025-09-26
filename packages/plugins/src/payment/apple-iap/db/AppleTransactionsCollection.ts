@@ -2,7 +2,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { TimestampFields } from '@unchainedshop/mongodb';
 
 export type AppleTransaction = {
-  _id?: string;
+  _id: string;
   matchedTransaction: any;
   orderId: string;
 } & TimestampFields;

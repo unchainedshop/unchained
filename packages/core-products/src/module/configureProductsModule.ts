@@ -35,7 +35,7 @@ export interface ProductQuery {
 }
 
 export interface ProductDiscount {
-  _id?: string;
+  _id: string;
   productId: string;
   code: string;
   total?: Price;

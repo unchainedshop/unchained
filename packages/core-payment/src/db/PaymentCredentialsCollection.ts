@@ -1,7 +1,7 @@
 import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
 
 export type PaymentCredentials = {
-  _id?: string;
+  _id: string;
   paymentProviderId: string;
   userId: string;
   token?: string;

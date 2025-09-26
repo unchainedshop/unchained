@@ -20,7 +20,7 @@ export type OrderPayment = {
   TimestampFields;
 
 export type OrderPaymentDiscount = Omit<Price, '_id'> & {
-  _id?: string;
+  _id: string;
   discountId: string;
   item: OrderPayment;
 };

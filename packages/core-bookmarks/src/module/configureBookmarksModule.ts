@@ -11,7 +11,7 @@ import { BookmarksCollection } from '../db/BookmarksCollection.js';
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
 
 export type Bookmark = {
-  _id?: string;
+  _id: string;
   userId: string;
   productId: string;
   meta?: any;

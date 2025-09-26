@@ -11,7 +11,7 @@ export type PaymentConfiguration = {
 }[];
 
 export type PaymentProvider = {
-  _id?: string;
+  _id: string;
   type: PaymentProviderType;
   adapterKey: string;
   configuration: PaymentConfiguration;

@@ -16,7 +16,7 @@ export const configureFilterTextsModule = ({
     locale: Intl.Locale,
     text: Omit<
       FilterText,
-      'filterId' | 'filterOptionValue' | 'locale' | 'created' | 'updated' | 'deleted'
+      '_id' | 'filterId' | 'filterOptionValue' | 'locale' | 'created' | 'updated' | 'deleted'
     >,
   ) => {
     const { filterId, filterOptionValue } = params;
@@ -87,7 +87,7 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (
       params: { filterId: string; filterOptionValue?: string },
-      texts: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'created'>[],
+      texts: Omit<FilterText, '_id' | 'filterId' | 'filterOptionValue' | 'created'>[],
     ) => {
       const filterTexts = (
         await Promise.all(

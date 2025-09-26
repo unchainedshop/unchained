@@ -1,3 +1,4 @@
+import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { AppleTransaction, AppleTransactionsCollection } from './db/AppleTransactionsCollection.js';
 
 export const configureAppleTransactionsModule = async ({ db }) => {
@@ -13,6 +14,7 @@ export const configureAppleTransactionsModule = async ({ db }) => {
         Pick<Partial<AppleTransaction>, '_id' | 'created'>,
     ) => {
       await AppleTransactions.insertOne({
+        _id: generateDbObjectId(),
         ...doc,
         created: new Date(),
       });

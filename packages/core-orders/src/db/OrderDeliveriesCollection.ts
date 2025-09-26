@@ -19,7 +19,7 @@ export type OrderDelivery = {
   TimestampFields;
 
 export type OrderDeliveryDiscount = Omit<Price, '_id'> & {
-  _id?: string;
+  _id: string;
   discountId: string;
   item: OrderDelivery;
 };

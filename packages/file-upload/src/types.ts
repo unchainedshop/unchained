@@ -1,5 +1,5 @@
 export interface UploadFileData {
-  _id?: string;
+  _id: string;
   directoryName: string;
   expiryDate: Date;
   fileName: string;

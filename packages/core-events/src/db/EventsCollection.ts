@@ -5,7 +5,7 @@ import { TimestampFields } from '@unchainedshop/mongodb';
 const TWO_DAYS_SEC = 172800;
 
 export type Event = {
-  _id?: string;
+  _id: string;
   type: string;
   context?: Record<string, unknown>;
   payload?: Record<string, unknown>;

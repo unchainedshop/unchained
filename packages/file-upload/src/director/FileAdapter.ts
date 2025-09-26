@@ -30,33 +30,23 @@ export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
 }
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+
+  async createSignedURL() {
+    throw new Error('Method not implemented');
+  },
+  async removeFiles() {
+    throw new Error('Method not implemented');
+  },
   async createDownloadURL() {
     throw new Error('Method not implemented');
   },
-  createSignedURL() {
-    return new Promise<null>((resolve) => {
-      resolve(null);
-    });
+  async uploadFileFromStream() {
+    throw new Error('Method not implemented');
   },
-
-  removeFiles() {
-    return new Promise<void>((resolve) => {
-      resolve();
-    });
+  async createDownloadStream() {
+    throw new Error('Method not implemented');
   },
-  uploadFileFromStream() {
-    return new Promise<null>((resolve) => {
-      resolve(null);
-    });
-  },
-  createDownloadStream() {
-    return new Promise<null>((resolve) => {
-      resolve(null);
-    });
-  },
-  uploadFileFromURL() {
-    return new Promise<null>((resolve) => {
-      resolve(null);
-    });
+  async uploadFileFromURL() {
+    throw new Error('Method not implemented');
   },
 };

@@ -2,7 +2,7 @@ import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb
 import { Price } from '@unchainedshop/utils';
 
 export type OrderDiscount = {
-  _id?: string;
+  _id: string;
   orderId: string;
   code?: string;
   total?: Price;

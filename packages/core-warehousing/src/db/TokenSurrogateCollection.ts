@@ -1,7 +1,7 @@
 import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 
 export interface TokenSurrogate {
-  _id?: string;
+  _id: string;
   userId?: string;
   walletAddress?: string;
   invalidatedDate?: Date;

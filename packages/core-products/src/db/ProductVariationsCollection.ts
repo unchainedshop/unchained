@@ -24,7 +24,7 @@ export type ProductVariationText = {
 } & TimestampFields;
 
 export interface ProductVariationOption {
-  _id?: string;
+  _id: string;
   texts: ProductVariationText;
   value: string;
 }

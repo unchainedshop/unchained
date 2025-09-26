@@ -1,6 +1,6 @@
 import { Filter } from 'mongodb';
 
-export const generateDbFilterById = <T extends { _id?: string }>(
+export const generateDbFilterById = <T extends { _id: string }>(
   id: unknown,
   query: Filter<T> = {},
 ): Filter<T> => {

@@ -2,7 +2,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { TimestampFields } from '@unchainedshop/mongodb';
 
 export type CryptopayTransaction = {
-  _id?: string;
+  _id: string;
   blockHeight: number;
   mostRecentBlockHeight: number;
   amount: mongodb.Decimal128;

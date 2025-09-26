@@ -20,7 +20,7 @@ export const FileDirector = {
     }
   },
 
-  getFileUploadCallback(directoryName: string): UploadFileCallback {
-    return FileUploadRegistry.get(directoryName);
+  getFileUploadCallback(directoryName: string) {
+    return FileUploadRegistry.get(directoryName) || null;
   },
 };

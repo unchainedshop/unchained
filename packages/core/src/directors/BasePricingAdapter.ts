@@ -4,7 +4,7 @@ import { Discount } from './BasePricingDirector.js';
 import { Order, OrderDiscount } from '@unchainedshop/core-orders';
 
 interface IDiscountableItem {
-  _id?: string;
+  _id: string;
   orderId?: string;
 }
 
