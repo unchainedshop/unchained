@@ -8,10 +8,12 @@ export const fillToSameLengthArray = <T>(a: T[], b: T[]) => {
   return [fillUp(a, length), fillUp(b, length)];
 };
 
-export const divideTreeByLevels = (
-  array: Tree<string>,
-  level = 0,
-): { level: number; items: string[] }[] => {
+interface Level {
+  level: number;
+  items: string[];
+}
+
+export const divideTreeByLevels = (array: Tree<string>, level = 0): Level[] => {
   const currentLevel: string[] = array.reduce((acc, item) => {
     if (typeof item === 'object') {
       return acc;
@@ -24,12 +26,14 @@ export const divideTreeByLevels = (
       return [...acc, ...divideTreeByLevels(item, level + 1)];
     }
     return acc;
-  }, []) as { level: number; items: string[] }[];
+  }, []);
 
-  return [currentLevel.length && { level, items: currentLevel }, ...nextLevels].filter(Boolean);
+  return [currentLevel.length ? { level, items: currentLevel } : null, ...nextLevels].filter(
+    Boolean,
+  ) as Level[];
 };
 
-export const concatItemsByLevels = (levelArray: { level: number; items: string[] }[]) => {
+export const concatItemsByLevels = (levelArray: Level[]) => {
   return Object.values(
     levelArray.reduce<Record<number, string[][]>>((acc, { level, items }) => {
       return {

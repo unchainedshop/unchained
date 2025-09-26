@@ -16,11 +16,7 @@ export const configureAssortmentFiltersModule = ({
   registerEvents(ASSORTMENT_FILTER_EVENTS);
 
   return {
-    findFilter: async ({
-      assortmentFilterId,
-    }: {
-      assortmentFilterId: string;
-    }): Promise<AssortmentFilter> => {
+    findFilter: async ({ assortmentFilterId }: { assortmentFilterId: string }) => {
       return AssortmentFilters.findOne(generateDbFilterById(assortmentFilterId), {});
     },
 
@@ -47,7 +43,7 @@ export const configureAssortmentFiltersModule = ({
 
       return filters.toArray();
     },
-    create: async (doc: AssortmentFilter): Promise<AssortmentFilter> => {
+    create: async (doc: AssortmentFilter) => {
       const { _id, assortmentId, filterId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -92,14 +88,15 @@ export const configureAssortmentFiltersModule = ({
       return assortmentFilter;
     },
 
-    delete: async (assortmentFilterId: string): Promise<AssortmentFilter> => {
+    delete: async (assortmentFilterId: string) => {
       const selector: mongodb.Filter<AssortmentFilter> = generateDbFilterById(assortmentFilterId);
 
       const assortmentFilter = await AssortmentFilters.findOneAndDelete(selector);
-
-      await emit('ASSORTMENT_REMOVE_FILTER', {
-        assortmentFilterId: assortmentFilter._id,
-      });
+      if (assortmentFilter) {
+        await emit('ASSORTMENT_REMOVE_FILTER', {
+          assortmentFilterId: assortmentFilter._id,
+        });
+      }
 
       return assortmentFilter;
     },
@@ -123,12 +120,10 @@ export const configureAssortmentFiltersModule = ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (
-      assortmentFilterId: string,
-      doc: Partial<AssortmentFilter>,
-    ): Promise<AssortmentFilter> => {
+    update: async (assortmentFilterId: string, doc: Partial<AssortmentFilter>) => {
       const selector = generateDbFilterById(assortmentFilterId);
       const modifier = { $set: doc };
+
       return AssortmentFilters.findOneAndUpdate(selector, modifier, {
         returnDocument: 'after',
       });

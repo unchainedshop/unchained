@@ -1,6 +1,16 @@
+import { z } from 'zod';
 import { Services } from '../../../services/index.js';
 import { Modules } from '../../../modules.js';
-import upsertAsset from '../../upsertAsset.js';
+import upsertAsset, { AssetSchema } from '../../upsertAsset.js';
+import { LocalizedContentSchema } from '../utils/event-schema.js';
+
+export const MediaSchema = z.object({
+  _id: z.string().optional(),
+  asset: AssetSchema,
+  content: LocalizedContentSchema.optional(),
+  tags: z.array(z.string()).optional(),
+  sortKey: z.number().optional(),
+});
 
 const upsertMediaObject = async (media, unchainedAPI: { modules: Modules; services: Services }) => {
   const { modules } = unchainedAPI;

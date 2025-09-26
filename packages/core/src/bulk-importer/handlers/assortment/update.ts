@@ -1,14 +1,35 @@
-import upsertAssortmentProducts from './upsertAssortmentProducts.js';
-import upsertAssortmentChildren from './upsertAssortmentChildren.js';
-import upsertAssortmentFilters from './upsertAssortmentFilters.js';
-import upsertMedia from './upsertMedia.js';
+import { z } from 'zod';
+import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.js';
+import upsertAssortmentChildren, { AssortmentChildSchema } from './upsertAssortmentChildren.js';
+import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.js';
+import upsertMedia, { MediaSchema } from './upsertMedia.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import createAssortment from './create.js';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
+import { LocalizedContentSchema } from '../utils/event-schema.js';
+
+export const AssortmentUpdatePayloadSchema = z.object({
+  _id: z.string(),
+  specification: z
+    .object({
+      isActive: z.boolean().optional(),
+      isBase: z.boolean().optional(),
+      isRoot: z.boolean().optional(),
+      sequence: z.number(),
+      tags: z.array(z.string()).optional(),
+      meta: z.record(z.unknown()).optional(),
+      content: LocalizedContentSchema,
+    })
+    .optional(),
+  media: z.array(MediaSchema).optional(),
+  products: z.array(AssortmentProductSchema).optional(),
+  children: z.array(AssortmentChildSchema).optional(),
+  filters: z.array(AssortmentFilterSchema).optional(),
+});
 
 export default async function updateAssortment(
-  payload: any,
+  payload: z.infer<typeof AssortmentUpdatePayloadSchema>,
   { logger, createShouldUpsertIfIDExists, updateShouldUpsertIfIDNotExists },
   unchainedAPI: { modules: Modules; services: Services },
 ) {

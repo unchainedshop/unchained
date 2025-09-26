@@ -1,6 +1,14 @@
+import { z } from 'zod';
 import { AssortmentProduct } from '@unchainedshop/core-assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import { Modules } from '../../../modules.js';
+
+export const AssortmentProductSchema = z.object({
+  _id: z.string().optional(),
+  productId: z.string(),
+  tags: z.array(z.string()).optional(),
+  sortKey: z.number().optional(),
+});
 
 const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: { modules: Modules }) => {
   const { modules } = unchainedAPI;

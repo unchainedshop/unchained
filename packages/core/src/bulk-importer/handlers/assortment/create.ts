@@ -1,13 +1,32 @@
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import upsertAssortmentChildren from './upsertAssortmentChildren.js';
-import upsertAssortmentFilters from './upsertAssortmentFilters.js';
-import upsertAssortmentProducts from './upsertAssortmentProducts.js';
-import upsertMedia from './upsertMedia.js';
+import upsertAssortmentChildren, { AssortmentChildSchema } from './upsertAssortmentChildren.js';
+import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.js';
+import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.js';
+import upsertMedia, { MediaSchema } from './upsertMedia.js';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
+import { z } from 'zod';
+import { LocalizedContentSchema } from '../utils/event-schema.js';
+
+export const AssortmentCreatePayloadSchema = z.object({
+  _id: z.string(),
+  specification: z.object({
+    isActive: z.boolean(),
+    isBase: z.boolean().optional(),
+    isRoot: z.boolean().optional(),
+    sequence: z.number(),
+    tags: z.array(z.string()).optional(),
+    meta: z.record(z.unknown()).optional(),
+    content: LocalizedContentSchema,
+  }),
+  media: z.array(MediaSchema).optional(),
+  products: z.array(AssortmentProductSchema).optional(),
+  children: z.array(AssortmentChildSchema).optional(),
+  filters: z.array(AssortmentFilterSchema).optional(),
+});
 
 export default async function createAssortment(
-  payload: any,
+  payload: z.infer<typeof AssortmentCreatePayloadSchema>,
   { logger, createShouldUpsertIfIDExists },
   unchainedAPI: { modules: Modules; services: Services },
 ) {
@@ -22,7 +41,7 @@ export default async function createAssortment(
 
   logger.debug('create assortment object', specification);
   try {
-    await modules.assortments.create({ ...specification, _id });
+    await modules.assortments.create({ ...specification, _id } as any);
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
     logger.debug('entity already exists, falling back to update', specification);

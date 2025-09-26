@@ -1,6 +1,14 @@
+import { z } from 'zod';
 import { AssortmentFilter } from '@unchainedshop/core-assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import { Modules } from '../../../modules.js';
+
+export const AssortmentFilterSchema = z.object({
+  _id: z.string().optional(),
+  filterId: z.string(),
+  tags: z.array(z.string()).optional(),
+  sortKey: z.number().optional(),
+});
 
 const upsert = async (assortmentFilter: AssortmentFilter, { modules }: { modules: Modules }) => {
   if (

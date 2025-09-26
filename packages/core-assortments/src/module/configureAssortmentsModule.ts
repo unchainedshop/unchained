@@ -243,13 +243,7 @@ export const configureAssortmentsModule = async ({
    */
 
   return {
-    findAssortment: async ({
-      assortmentId,
-      slug,
-    }: {
-      assortmentId?: string;
-      slug?: string;
-    }): Promise<Assortment> => {
+    findAssortment: async ({ assortmentId, slug }: { assortmentId?: string; slug?: string }) => {
       let selector: mongodb.Filter<Assortment> = {};
 
       if (assortmentId) {
@@ -394,7 +388,7 @@ export const configureAssortmentsModule = async ({
       meta = {},
       sequence,
       ...rest
-    }: Assortment): Promise<Assortment> => {
+    }: Assortment) => {
       if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
       const { insertedId: assortmentId } = await Assortments.insertOne({
         _id: _id || generateDbObjectId(),
@@ -406,7 +400,7 @@ export const configureAssortmentsModule = async ({
         meta,
         ...rest,
       });
-      const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
+      const assortment = (await Assortments.findOne(generateDbFilterById(assortmentId))) as Assortment;
       await emit('ASSORTMENT_CREATE', { assortment });
 
       return assortment;
@@ -414,21 +408,27 @@ export const configureAssortmentsModule = async ({
 
     update: async (
       assortmentId: string,
-      doc: Assortment,
+      doc: Partial<Assortment>,
       options?: { skipInvalidation?: boolean },
-    ): Promise<string> => {
-      await Assortments.updateOne(generateDbFilterById(assortmentId), {
-        $set: {
-          updated: new Date(),
-          ...doc,
+    ) => {
+      const assortment = await Assortments.findOneAndUpdate(
+        generateDbFilterById(assortmentId),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
         },
-      });
-      await emit('ASSORTMENT_UPDATE', { assortmentId });
+        { returnDocument: 'after' },
+      );
+      if (assortment) {
+        await emit('ASSORTMENT_UPDATE', { assortmentId });
 
-      if (!options?.skipInvalidation) {
-        await invalidateCache({ assortmentIds: [assortmentId] });
+        if (!options?.skipInvalidation) {
+          await invalidateCache({ assortmentIds: [assortmentId] });
+        }
       }
-      return assortmentId;
+      return assortment;
     },
 
     delete: async (assortmentId: string, options?: { skipInvalidation?: boolean }): Promise<number> => {

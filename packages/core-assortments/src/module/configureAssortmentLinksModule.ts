@@ -28,7 +28,7 @@ export const configureAssortmentLinksModule = ({
       assortmentLinkId?: string;
       parentAssortmentId?: string;
       childAssortmentId?: string;
-    }): Promise<AssortmentLink> => {
+    }) => {
       return AssortmentLinks.findOne(
         assortmentLinkId
           ? generateDbFilterById(assortmentLinkId)
@@ -74,10 +74,7 @@ export const configureAssortmentLinksModule = ({
     },
 
     // Mutations
-    create: async (
-      doc: AssortmentLink,
-      options?: { skipInvalidation?: boolean },
-    ): Promise<AssortmentLink> => {
+    create: async (doc: AssortmentLink, options?: { skipInvalidation?: boolean }) => {
       const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
 
       const assortmentLinksPath = await walkUpFromAssortment({
@@ -151,7 +148,7 @@ export const configureAssortmentLinksModule = ({
       assortmentLinkId: string,
       doc: AssortmentLink,
       options?: { skipInvalidation?: boolean },
-    ): Promise<AssortmentLink> => {
+    ) => {
       const selector = generateDbFilterById(assortmentLinkId);
       const modifier = {
         $set: {
@@ -163,28 +160,27 @@ export const configureAssortmentLinksModule = ({
         returnDocument: 'after',
       });
 
-      if (!options?.skipInvalidation) {
+      if (!options?.skipInvalidation && assortmentLink) {
         await invalidateCache({ assortmentIds: [assortmentLink.childAssortmentId] });
       }
       return assortmentLink;
     },
 
-    delete: async (
-      assortmentLinkId: string,
-      options?: { skipInvalidation?: boolean },
-    ): Promise<AssortmentLink> => {
+    delete: async (assortmentLinkId: string, options?: { skipInvalidation?: boolean }) => {
       const selector = generateDbFilterById(assortmentLinkId);
 
       const assortmentLink = await AssortmentLinks.findOneAndDelete(selector);
 
-      await emit('ASSORTMENT_REMOVE_LINK', {
-        assortmentLinkId: assortmentLink._id,
-      });
-
-      if (!options?.skipInvalidation) {
-        await invalidateCache({
-          assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
+      if (assortmentLink) {
+        await emit('ASSORTMENT_REMOVE_LINK', {
+          assortmentLinkId: assortmentLink._id,
         });
+
+        if (!options?.skipInvalidation) {
+          await invalidateCache({
+            assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
+          });
+        }
       }
 
       return assortmentLink;

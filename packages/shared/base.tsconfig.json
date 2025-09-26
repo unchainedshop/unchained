@@ -11,6 +11,7 @@
     "moduleResolution": "NodeNext",
     "preserveWatchOutput": true,
     "skipLibCheck": true,
+    "strictNullChecks": false,
     "noEmitOnError": true,
     "sourceMap": true,
     "target": "esnext",

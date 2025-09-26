@@ -3,7 +3,7 @@ import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb
 export type AssortmentMediaText = {
   _id?: string;
   assortmentMediaId: string;
-  locale?: string;
+  locale: string;
   title?: string;
   subtitle?: string;
 } & TimestampFields;

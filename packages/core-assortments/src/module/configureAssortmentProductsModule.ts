@@ -51,11 +51,7 @@ export const configureAssortmentProductsModule = ({
         .toArray();
     },
 
-    findAssortmentProduct: async ({
-      assortmentProductId,
-    }: {
-      assortmentProductId: string;
-    }): Promise<AssortmentProduct> => {
+    findAssortmentProduct: async ({ assortmentProductId }: { assortmentProductId: string }) => {
       return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId), {});
     },
 
@@ -106,10 +102,7 @@ export const configureAssortmentProductsModule = ({
     },
 
     // Mutations
-    create: async (
-      doc: AssortmentProduct,
-      options?: { skipInvalidation?: boolean },
-    ): Promise<AssortmentProduct> => {
+    create: async (doc: AssortmentProduct, options?: { skipInvalidation?: boolean }) => {
       const { _id, assortmentId, productId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -210,7 +203,7 @@ export const configureAssortmentProductsModule = ({
       assortmentProductId: string,
       doc: AssortmentProduct,
       options?: { skipInvalidation?: boolean },
-    ): Promise<AssortmentProduct> => {
+    ) => {
       const selector = generateDbFilterById(assortmentProductId);
       const modifier = {
         $set: {
@@ -222,7 +215,7 @@ export const configureAssortmentProductsModule = ({
         returnDocument: 'after',
       });
 
-      if (!options?.skipInvalidation) {
+      if (!options?.skipInvalidation && assortmentProduct) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
       return assortmentProduct;

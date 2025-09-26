@@ -6,12 +6,12 @@ import {
 } from '@unchainedshop/mongodb';
 
 export type AssortmentProductIdCacheRecord = {
-  _id?: string;
+  _id: string;
   productIds: string[];
 } & TimestampFields;
 
 export type AssortmentText = {
-  _id?: string;
+  _id: string;
   assortmentId: string;
   description?: string;
   locale: string;
@@ -21,7 +21,7 @@ export type AssortmentText = {
 } & TimestampFields;
 
 export type AssortmentProduct = {
-  _id?: string;
+  _id: string;
   assortmentId: string;
   meta?: any;
   productId: string;
@@ -30,7 +30,7 @@ export type AssortmentProduct = {
 } & TimestampFields;
 
 export type AssortmentLink = {
-  _id?: string;
+  _id: string;
   childAssortmentId: string;
   meta?: any;
   parentAssortmentId: string;
@@ -39,7 +39,7 @@ export type AssortmentLink = {
 } & TimestampFields;
 
 export type AssortmentFilter = {
-  _id?: string;
+  _id: string;
   assortmentId: string;
   filterId: string;
   meta?: any;
@@ -48,13 +48,13 @@ export type AssortmentFilter = {
 } & TimestampFields;
 
 export type Assortment = {
-  _id?: string;
+  _id: string;
   isActive: boolean;
   isBase: boolean;
   isRoot: boolean;
   meta?: any;
   sequence: number;
-  slugs: string[];
+  slugs?: string[];
   tags: string[];
 } & TimestampFields;
 
@@ -84,36 +84,51 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
   );
 
   // Assortment Indexes
+
+  if (!isDocumentDBCompatModeEnabled()) {
+    // Text indexes are not supported in DocumentDB
+    // Assortments full-text search index
+    // Note: This index is only created if not in DocumentDB compatibility mode
+    await buildDbIndexes(Assortments, [
+      {
+        index: { slugs: 'text' },
+        options: {
+          name: 'assortments_fulltext_search',
+        },
+      },
+    ]);
+  }
+
   await buildDbIndexes(Assortments, [
     { index: { isActive: 1 } },
     { index: { isRoot: 1 } },
     { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
-    !isDocumentDBCompatModeEnabled() && {
-      index: { slugs: 'text' },
-      options: {
-        name: 'assortments_fulltext_search',
-      },
-    },
   ]);
 
   // AssortmentTexts indexes
+
+  if (!isDocumentDBCompatModeEnabled()) {
+    await buildDbIndexes(AssortmentTexts, [
+      {
+        index: { title: 'text', subtitle: 'text' },
+        options: {
+          weights: {
+            title: 8,
+            subtitle: 6,
+          },
+          name: 'assortments_texts_fulltext_search',
+        },
+      },
+    ]);
+  }
+
   await buildDbIndexes(AssortmentTexts, [
     { index: { assortmentId: 1 } },
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
-    !isDocumentDBCompatModeEnabled() && {
-      index: { title: 'text', subtitle: 'text' },
-      options: {
-        weights: {
-          title: 8,
-          subtitle: 6,
-        },
-        name: 'assortments_texts_fulltext_search',
-      },
-    },
   ]);
 
   // AssortmentProducts indexes

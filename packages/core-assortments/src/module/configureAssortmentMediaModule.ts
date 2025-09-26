@@ -25,7 +25,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     assortmentMediaId: string,
     locale: Intl.Locale,
     text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
-  ): Promise<AssortmentMediaText> => {
+  ) => {
     const currentText = await AssortmentMediaTexts.findOneAndUpdate(
       {
         assortmentMediaId,
@@ -60,11 +60,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
 
   return {
     // Queries
-    findAssortmentMedia: async ({
-      assortmentMediaId,
-    }: {
-      assortmentMediaId: string;
-    }): Promise<AssortmentMediaType> => {
+    findAssortmentMedia: async ({ assortmentMediaId }: { assortmentMediaId: string }) => {
       return AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
     },
 
@@ -98,11 +94,11 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     },
 
     create: async ({
-      sortKey = null,
+      sortKey,
       tags = [],
       ...doc
     }: Omit<AssortmentMediaType, 'sortKey' | 'tags'> &
-      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags'>>): Promise<AssortmentMediaType> => {
+      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags'>>) => {
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentMedia = (await AssortmentMedia.findOne(
@@ -183,10 +179,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (
-      assortmentMediaId: string,
-      doc: Partial<AssortmentMediaType>,
-    ): Promise<AssortmentMediaType> => {
+    update: async (assortmentMediaId: string, doc: Partial<AssortmentMediaType>) => {
       const selector = generateDbFilterById(assortmentMediaId);
       const modifier = { $set: doc };
       return AssortmentMedia.findOneAndUpdate(selector, modifier, {
@@ -256,7 +249,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       updateMediaTexts: async (
         assortmentMediaId: string,
         texts: Omit<AssortmentMediaText, 'assortmentMediaId'>[],
-      ): Promise<AssortmentMediaText[]> => {
+      ) => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...text }) =>
             upsertLocalizedText(assortmentMediaId, new Intl.Locale(locale), text),

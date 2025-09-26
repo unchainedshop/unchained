@@ -21,7 +21,7 @@ export const configureAssortmentTextsModule = ({
     assortmentId,
   }: {
     slug?: string;
-    title: string;
+    title?: string;
     assortmentId: string;
   }): Promise<string> => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
@@ -47,7 +47,7 @@ export const configureAssortmentTextsModule = ({
     assortmentId: string,
     locale: Intl.Locale,
     text: Omit<AssortmentText, 'assortmentId' | 'locale'>,
-  ): Promise<AssortmentText> => {
+  ) => {
     const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
@@ -146,11 +146,13 @@ export const configureAssortmentTextsModule = ({
       assortmentId: string,
       texts: Omit<AssortmentText, 'assortmentId'>[],
     ): Promise<AssortmentText[]> => {
-      const assortmentTexts = await Promise.all(
-        texts.map(async ({ locale, ...text }) =>
-          upsertLocalizedText(assortmentId, new Intl.Locale(locale), text),
-        ),
-      );
+      const assortmentTexts = (
+        await Promise.all(
+          texts.map(async ({ locale, ...text }) =>
+            upsertLocalizedText(assortmentId, new Intl.Locale(locale), text),
+          ),
+        )
+      ).filter(Boolean) as AssortmentText[];
       return assortmentTexts;
     },
 
