@@ -62,7 +62,7 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
     findEvent: async (
       { eventId, ...rest }: mongodb.Filter<Event> & { eventId: string },
       options?: mongodb.FindOptions,
-    ): Promise<Event> => {
+    ) => {
       const selector = eventId ? generateDbFilterById<Event>(eventId) : rest;
       return Events.findOne(selector, options);
     },
@@ -156,7 +156,7 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
           },
         },
         { $sort: { type: 1 } },
-      ].filter(Boolean);
+      ].filter(Boolean) as mongodb.BSON.Document[];
 
       const report = await Events.aggregate<EventReport>(pipeline).toArray();
       logger.info(report);
