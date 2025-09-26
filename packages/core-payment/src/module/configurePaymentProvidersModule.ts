@@ -42,7 +42,7 @@ export const configurePaymentProvidersModule = (
         paymentProviderId: string;
       },
       options?: mongodb.FindOptions,
-    ): Promise<PaymentProvider> => {
+    ) => {
       return PaymentProviders.findOne(
         paymentProviderId ? generateDbFilterById(paymentProviderId) : query,
         options,
@@ -84,16 +84,16 @@ export const configurePaymentProvidersModule = (
         ...doc,
       });
 
-      const paymentProvider = await PaymentProviders.findOne(
+      const paymentProvider = (await PaymentProviders.findOne(
         generateDbFilterById(paymentProviderId),
         {},
-      );
+      )) as PaymentProvider;
       allProvidersCache.clear();
       await emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
       return paymentProvider;
     },
 
-    update: async (_id: string, doc: PaymentProvider): Promise<PaymentProvider> => {
+    update: async (_id: string, doc: PaymentProvider) => {
       const paymentProvider = await PaymentProviders.findOneAndUpdate(
         generateDbFilterById(_id),
         {
@@ -104,12 +104,13 @@ export const configurePaymentProvidersModule = (
         },
         { returnDocument: 'after' },
       );
+      if (!paymentProvider) return null;
       allProvidersCache.clear();
       await emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
       return paymentProvider;
     },
 
-    delete: async (_id: string): Promise<PaymentProvider> => {
+    delete: async (_id: string) => {
       const paymentProvider = await PaymentProviders.findOneAndUpdate(
         generateDbFilterById(_id),
         {
@@ -119,6 +120,7 @@ export const configurePaymentProvidersModule = (
         },
         { returnDocument: 'after' },
       );
+      if (!paymentProvider) return null;
       allProvidersCache.clear();
       await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;

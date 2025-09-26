@@ -10,8 +10,8 @@ export const configurePaymentCredentialsModule = (
   }: {
     userId: string;
     paymentCredentialsId: string;
-  }): Promise<void> => {
-    await PaymentCredentials.updateOne(
+  }) => {
+    const paymentCredentials = await PaymentCredentials.findOneAndUpdate(
       {
         _id: paymentCredentialsId,
       },
@@ -20,6 +20,7 @@ export const configurePaymentCredentialsModule = (
           isPreferred: true,
         },
       },
+      { returnDocument: 'after' },
     );
     await PaymentCredentials.updateMany(
       {
@@ -32,6 +33,7 @@ export const configurePaymentCredentialsModule = (
         },
       },
     );
+    return paymentCredentials;
   };
 
   return {
@@ -63,7 +65,7 @@ export const configurePaymentCredentialsModule = (
         paymentProviderId?: string;
       },
       options?: mongodb.FindOptions,
-    ): Promise<PaymentCredentialsType> => {
+    ) => {
       return PaymentCredentials.findOne(
         paymentCredentialsId
           ? generateDbFilterById(paymentCredentialsId)
@@ -87,9 +89,9 @@ export const configurePaymentCredentialsModule = (
       token,
       ...meta
     }: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> &
-      Record<string, any>): Promise<string> => {
+      Record<string, any>) => {
       const insertedId = _id || generateDbObjectId();
-      const result = await PaymentCredentials.updateOne(
+      await PaymentCredentials.findOneAndUpdate(
         _id
           ? generateDbFilterById(_id)
           : {
@@ -112,20 +114,19 @@ export const configurePaymentCredentialsModule = (
         },
         {
           upsert: true,
+          returnDocument: 'after',
         },
       );
 
-      if (result.upsertedCount > 0) {
-        await markPreferred({
-          userId,
-          paymentCredentialsId: insertedId,
-        });
-        return insertedId;
-      }
-      return null;
+      const paymentCredentials = await markPreferred({
+        userId,
+        paymentCredentialsId: insertedId,
+      });
+
+      return paymentCredentials as PaymentCredentialsType;
     },
 
-    removeCredentials: async (paymentCredentialsId: string): Promise<PaymentCredentialsType> => {
+    removeCredentials: async (paymentCredentialsId: string) => {
       const selector = generateDbFilterById(paymentCredentialsId);
       const paymentCredentials = await PaymentCredentials.findOneAndDelete(selector, {});
       return paymentCredentials;

@@ -16,15 +16,11 @@ export async function registerPaymentCredentialsService(
 
   if (!registration) return null;
 
-  const paymentCredentialsId = await this.payment.paymentCredentials.upsertCredentials({
+  const paymentCredentials = await this.payment.paymentCredentials.upsertCredentials({
     userId: paymentContext.userId,
     paymentProviderId,
     ...registration,
   });
 
-  return this.payment.paymentCredentials.findPaymentCredential({
-    paymentCredentialsId,
-    userId: paymentContext.userId,
-    paymentProviderId,
-  });
+  return paymentCredentials;
 }
