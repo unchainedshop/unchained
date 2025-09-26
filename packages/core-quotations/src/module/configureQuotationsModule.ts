@@ -65,9 +65,11 @@ export const configureQuotationsModule = async ({
   const updateStatus = async (
     quotationId: string,
     { status, info = '' }: { status: QuotationStatus; info?: string },
-  ): Promise<Quotation> => {
+  ) => {
     const selector = generateDbFilterById(quotationId);
     const quotation = await Quotations.findOne(selector, {});
+
+    if (!quotation) return null;
 
     if (quotation.status === status) return quotation;
 
@@ -117,20 +119,17 @@ export const configureQuotationsModule = async ({
     return updatedQuotation;
   };
 
-  const updateQuotationFields =
-    (fieldKeys: string[]) =>
-    async (quotationId: string, values: any): Promise<Quotation> => {
-      const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
-        $set: {
-          updated: new Date(),
-          ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
-        },
-      });
-
-      await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
-
-      return quotation;
-    };
+  const updateQuotationFields = (fieldKeys: string[]) => async (quotationId: string, values: any) => {
+    const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
+      $set: {
+        updated: new Date(),
+        ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
+      },
+    });
+    if (!quotation) return null;
+    await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
+    return quotation;
+  };
 
   return {
     // Queries
@@ -138,17 +137,16 @@ export const configureQuotationsModule = async ({
       const quotationCount = await Quotations.countDocuments(buildFindSelector(query));
       return quotationCount;
     },
-    openQuotationWithProduct: async ({ productId }: { productId: string }): Promise<Quotation> => {
+    openQuotationWithProduct: async ({ productId }: { productId: string }) => {
       const selector: mongodb.Filter<Quotation> = { productId };
       selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] };
-
       return Quotations.findOne(selector);
     },
 
     findQuotation: async (
       { quotationId }: { quotationId: string },
       options?: mongodb.FindOptions<Quotation>,
-    ): Promise<Quotation> => {
+    ) => {
       const selector = generateDbFilterById(quotationId);
       return Quotations.findOne(selector, options);
     },
@@ -186,6 +184,7 @@ export const configureQuotationsModule = async ({
 
     isExpired(quotation: Quotation, { referenceDate }: { referenceDate: Date }) {
       const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
+      if (!quotation.expires) return false;
       const expiryDate = new Date(quotation.expires);
       const isQuotationExpired = relevantDate.getTime() > expiryDate.getTime();
       return isQuotationExpired;
@@ -200,7 +199,7 @@ export const configureQuotationsModule = async ({
       countryCode,
       currencyCode,
       ...quotationData
-    }: QuotationData & { currencyCode: string }): Promise<Quotation> => {
+    }: QuotationData & { currencyCode: string }) => {
       const { insertedId: quotationId } = await Quotations.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -212,10 +211,8 @@ export const configureQuotationsModule = async ({
         status: QuotationStatus.REQUESTED,
       });
 
-      const quotation = await Quotations.findOne(generateDbFilterById(quotationId), {});
-
+      const quotation = (await Quotations.findOne(generateDbFilterById(quotationId), {})) as Quotation;
       await emit('QUOTATION_REQUEST_CREATE', { quotation });
-
       return quotation;
     },
     deleteRequestedUserQuotations: async (userId: string) => {

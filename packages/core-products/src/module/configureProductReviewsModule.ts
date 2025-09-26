@@ -72,7 +72,7 @@ const userIdsThatVoted = (
     .filter(Boolean) as string[];
 };
 
-export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
+export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
   registerEvents(PRODUCT_REVIEW_EVENTS);
 
   const { ProductReviews } = await ProductReviewsCollection(db);

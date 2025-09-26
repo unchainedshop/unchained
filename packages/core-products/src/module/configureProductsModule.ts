@@ -103,10 +103,9 @@ export const buildFindSelector = ({
   return selector;
 };
 
-export const configureProductsModule = async ({
-  db,
-  options: productsOptions = {},
-}: ModuleInput<ProductsSettingsOptions>) => {
+export const configureProductsModule = async (moduleInput: ModuleInput<ProductsSettingsOptions>) => {
+  const { db, options: productsOptions = {} } = moduleInput;
+
   registerEvents(PRODUCT_EVENTS);
   await productsSettings.configureSettings(productsOptions);
 
@@ -121,9 +120,9 @@ export const configureProductsModule = async ({
     ProductTexts,
   });
 
-  const productMedia = await configureProductMediaModule({ db });
-  const productReviews = await configureProductReviewsModule({ db });
-  const productVariations = await configureProductVariationsModule({ db });
+  const productMedia = await configureProductMediaModule(moduleInput);
+  const productReviews = await configureProductReviewsModule(moduleInput);
+  const productVariations = await configureProductVariationsModule(moduleInput);
 
   const deleteProductPermanently = async (
     { productId }: { productId: string },

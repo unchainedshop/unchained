@@ -21,7 +21,7 @@ const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_REMOVE_VARIATION_OPTION',
 ];
 
-export const configureProductVariationsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
+export const configureProductVariationsModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
   registerEvents(PRODUCT_VARIATION_EVENTS);
 
   const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);

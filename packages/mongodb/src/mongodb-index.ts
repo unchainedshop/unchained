@@ -63,6 +63,6 @@ export interface MigrationRepository<Context = unknown> {
 
 export interface ModuleInput<Options extends Record<string, any>> {
   db: mongodb.Db;
-  migrationRepository?: MigrationRepository;
+  migrationRepository: MigrationRepository;
   options?: Options;
 }

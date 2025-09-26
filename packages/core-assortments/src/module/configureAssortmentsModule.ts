@@ -88,10 +88,10 @@ export const buildFindSelector = ({
   return selector;
 };
 
-export const configureAssortmentsModule = async ({
-  db,
-  options: assortmentOptions = {},
-}: ModuleInput<AssortmentsSettingsOptions>) => {
+export const configureAssortmentsModule = async (
+  moduleInput: ModuleInput<AssortmentsSettingsOptions>,
+) => {
+  const { db, options: assortmentOptions = {} } = moduleInput;
   // Events
   registerEvents(ASSORTMENT_EVENTS);
 
@@ -236,7 +236,7 @@ export const configureAssortmentsModule = async ({
     Assortments,
     AssortmentTexts,
   });
-  const assortmentMedia = await configureAssortmentMediaModule({ db });
+  const assortmentMedia = await configureAssortmentMediaModule(moduleInput);
 
   /*
    * Assortment Module

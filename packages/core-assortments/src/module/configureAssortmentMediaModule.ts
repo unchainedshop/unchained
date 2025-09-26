@@ -16,7 +16,7 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
 
-export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<string, never>>) => {
+export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
   const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);

@@ -15,7 +15,7 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
 
-export const configureProductMediaModule = async ({ db }: ModuleInput<Record<string, never>>) => {
+export const configureProductMediaModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
   registerEvents(PRODUCT_MEDIA_EVENTS);
 
   const { ProductMedias, ProductMediaTexts } = await ProductMediaCollection(db);

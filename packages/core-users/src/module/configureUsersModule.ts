@@ -91,12 +91,13 @@ export const buildFindSelector = ({
   return selector;
 };
 
-export const configureUsersModule = async ({ db, options }: ModuleInput<UserSettingsOptions>) => {
+export const configureUsersModule = async (moduleInput: ModuleInput<UserSettingsOptions>) => {
+  const { db, options } = moduleInput;
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
-  const webAuthn = await configureUsersWebAuthnModule({ db, options });
+  const webAuthn = await configureUsersWebAuthnModule(moduleInput);
 
   return {
     // Queries
