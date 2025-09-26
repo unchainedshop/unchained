@@ -43,6 +43,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
 
         await events.reduce(async (currentEventPromise, nextEvent) => {
           await currentEventPromise;
+          await bulkImporter.validate(nextEvent);
           return bulkImporter.prepare(nextEvent, unchainedAPI);
         }, Promise.resolve());
       }

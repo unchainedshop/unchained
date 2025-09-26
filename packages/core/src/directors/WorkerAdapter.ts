@@ -2,7 +2,7 @@ import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { WorkResult } from '@unchainedshop/core-worker';
 import { ModuleOptions, Modules } from '../modules.js';
 import { Services } from '../services/index.js';
-import { BulkImporter } from '../bulk-importer/createBulkImporter.js';
+import { BulkImporter } from '../bulk-importer/index.js';
 
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;

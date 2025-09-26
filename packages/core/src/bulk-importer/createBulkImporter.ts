@@ -83,6 +83,11 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
     );
 
     return {
+      validate: async (event) => {
+        const entity = event.entity.toUpperCase();
+        const operation = event.operation.toLowerCase();
+        getOperation(entity, operation);
+      },
       prepare: async (event, unchainedAPI: { modules: Modules; services: Services }) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
@@ -141,6 +146,7 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
   };
 
   const validateEventStream = async (readStream: Readable) => {
+    const bulkImporter = createBulkImporter({});
     await pipeline(
       readStream,
       JSONStream.parse('events.*'),
@@ -148,10 +154,7 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
         for await (const event of source) {
           try {
             if (signal.aborted) break;
-            const entity = event.entity.toUpperCase();
-            const operation = event.operation.toLowerCase();
-
-            getOperation(entity, operation);
+            bulkImporter.validate(event);
           } catch (e) {
             throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
           }

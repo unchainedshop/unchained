@@ -1,10 +1,7 @@
 import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
 import initServices, { CustomServices, Services } from './services/index.js';
 import initModules, { Modules, ModuleOptions } from './modules.js';
-import createBulkImporterFactory, {
-  BulkImporter,
-  BulkImportHandler,
-} from './bulk-importer/createBulkImporter.js';
+import createBulkImporterFactory, { BulkImporter, BulkImportHandler } from './bulk-importer/index.js';
 
 import {
   WorkerDirector,
@@ -22,7 +19,7 @@ import {
   WarehousingDirector,
 } from './directors/index.js';
 
-export * from './bulk-importer/createBulkImporter.js';
+export * from './bulk-importer/index.js';
 export * from './services/index.js';
 export * from './directors/index.js';
 export * from './factory/index.js';
