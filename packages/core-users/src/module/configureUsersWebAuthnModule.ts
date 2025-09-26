@@ -6,7 +6,7 @@ import type { PublicKeyCredentialCreationOptions, PublicKeyCredentialRequestOpti
 
 const logger = createLogger('unchained:core-users');
 
-const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
+const { ROOT_URL = 'http://localhost:4010', EMAIL_WEBSITE_NAME = 'Unchained' } = process.env;
 
 type SerializedOptions<T> = Omit<T, 'challenge' | 'requestId'> & {
   challenge: string;
@@ -103,11 +103,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       } as SerializedOptions<PublicKeyCredentialCreationOptions>;
     },
 
-    createCredentialRequestOptions: async (
-      origin: string,
-      username?: string,
-      extensionOptions?: any,
-    ) => {
+    createCredentialRequestOptions: async (origin: string, username: string, extensionOptions?: any) => {
       if (!f2l) return null;
 
       const loginOptions = await f2l.assertionOptions(extensionOptions);
@@ -137,6 +133,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
         },
         { sort: { _id: -1 } },
       );
+      if (!request) return null;
 
       const attestationExpectations = {
         challenge: request.challenge,
@@ -186,6 +183,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
         },
         { sort: { _id: -1 } },
       );
+      if (!request) return null;
 
       const id = Buffer.from(credentials.id, 'base64');
       const authenticatorData = Buffer.from(credentials.response.authenticatorData, 'base64');

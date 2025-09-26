@@ -62,8 +62,8 @@ export const buildFindSelector = ({
   ...rest
 }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest };
-  if (!includeDeleted) selector.deleted = null;
-  if (!includeGuests) selector.guest = { $in: [false, null] };
+  if (!includeDeleted) selector.deleted = { $exists: false };
+  if (!includeGuests) selector.guest = { $ne: true };
   if (emailVerified === true) {
     selector['emails.verified'] = true;
   }
@@ -107,17 +107,17 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return userCount;
     },
 
-    async findUserById(userId: string): Promise<User> {
+    async findUserById(userId: string) {
       if (!userId) return null;
       return Users.findOne(generateDbFilterById(userId), {});
     },
 
-    async findUserByUsername(username: string): Promise<User> {
+    async findUserByUsername(username: string) {
       if (!username) return null;
       return Users.findOne({ username: insensitiveTrimmedRegexOperator(username) }, {});
     },
 
-    async findUserByEmail(email: string): Promise<User> {
+    async findUserByEmail(email: string) {
       if (!email) return null;
       return Users.findOne({ 'emails.address': insensitiveTrimmedRegexOperator(email) }, {});
     },
@@ -126,7 +126,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       userId: string;
       address: string;
       when: Date;
-    }> {
+    } | null> {
       if (!plainToken) return null;
       const token = await sha256(plainToken);
       const user = await Users.findOne(
@@ -179,7 +179,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       userId: string;
       address: string;
       when: Date;
-    }> {
+    } | null> {
       const token = await sha256(plainToken);
       const user = await Users.findOne(
         {
@@ -200,7 +200,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       };
     },
 
-    async findUserByToken(plainToken: string): Promise<User> {
+    async findUserByToken(plainToken: string) {
       const token = await sha256(plainToken);
 
       if (token) {
@@ -212,10 +212,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return null;
     },
 
-    async findUser(
-      query: UserQuery & { sort?: SortOption[] },
-      findOptions?: mongodb.FindOptions,
-    ): Promise<User> {
+    async findUser(query: UserQuery & { sort?: SortOption[] }, findOptions?: mongodb.FindOptions) {
       const selector = buildFindSelector(query);
       return Users.findOne(selector, findOptions);
     },
@@ -249,7 +246,10 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {
-      const userCount = await Users.countDocuments({ _id: userId, deleted: null }, { limit: 1 });
+      const userCount = await Users.countDocuments(
+        { _id: userId, deleted: { $exists: false } },
+        { limit: 1 },
+      );
       return userCount === 1;
     },
 
@@ -349,7 +349,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         /* */
       }
 
-      const user = await Users.findOne({ _id: userId }, {});
+      const user = (await Users.findOne({ _id: userId }, {})) as User;
       await emit('USER_CREATE', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -458,39 +458,46 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       });
     },
 
-    addRoles: async (userId: string, roles: string[]): Promise<number> => {
+    addRoles: async (userId: string, roles: string[]) => {
       const selector = generateDbFilterById(userId);
-      const updateResult = await Users.updateOne(selector, {
-        $addToSet: { roles: { $each: roles } },
-      });
+      const user = await Users.findOneAndUpdate(
+        selector,
+        {
+          $addToSet: { roles: { $each: roles } },
+        },
+        { returnDocument: 'after' },
+      );
 
-      const user = await Users.findOne(selector, {});
+      if (!user) return null;
+
       await emit('USER_ADD_ROLES', {
         user: removeConfidentialServiceHashes(user),
       });
 
-      return updateResult.modifiedCount;
+      return user;
     },
 
     async setUsername(userId: string, username: string) {
       if (!(await userSettings.validateUsername(username))) {
         throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
       }
-      await Users.updateOne(
+      const user = await Users.findOneAndUpdate(
         { _id: userId },
         {
           $set: {
             username: username.trim(),
           },
         },
+        { returnDocument: 'after' },
       );
-      const user = await Users.findOne({ _id: userId }, {});
+      if (!user) return null;
       await emit('USER_UPDATE_USERNAME', {
         user: removeConfidentialServiceHashes(user),
       });
+      return user;
     },
 
-    async setPassword(userId: string, plainPassword: string): Promise<User> {
+    async setPassword(userId: string, plainPassword: string) {
       if (!(await userSettings.validatePassword(plainPassword))) {
         throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
       }
@@ -507,13 +514,14 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         },
         { returnDocument: 'after' },
       );
+      if (!user) return null;
       await emit('USER_UPDATE_PASSWORD', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
 
-    async resetPassword(token: string, newPassword: string): Promise<User> {
+    async resetPassword(token: string, newPassword: string) {
       const resetToken = await this.findResetToken(token);
       if (!resetToken) return null;
       const updatedUser = await this.setPassword(resetToken.userId, newPassword);
@@ -541,7 +549,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return updatedUser;
     },
 
-    updateAvatar: async (_id: string, fileId: string): Promise<User> => {
+    updateAvatar: async (_id: string, fileId: string) => {
       const userFilter = generateDbFilterById(_id);
       const modifier = {
         $set: {
@@ -554,44 +562,54 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         returnDocument: 'after',
       });
 
+      if (!user) return null;
       await emit('USER_UPDATE_AVATAR', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
 
-    updateGuest: async (user: User, guest: boolean): Promise<void> => {
-      const modifier = { $set: { guest } };
-      await Users.updateOne(generateDbFilterById(user._id), modifier);
+    updateGuest: async (user: User, guest: boolean) => {
+      const updatedUser = await Users.findOneAndUpdate(
+        generateDbFilterById(user._id),
+        {
+          $set: { guest },
+        },
+        { returnDocument: 'after' },
+      );
+      if (!updatedUser) return null;
       await emit('USER_UPDATE_GUEST', {
         user: removeConfidentialServiceHashes({
-          ...user,
+          ...updatedUser,
           guest,
         }),
       });
+      return updatedUser;
     },
 
-    updateHeartbeat: async (userId: string, lastLogin: UserLastLogin): Promise<User> => {
-      const modifier = {
-        $set: {
-          lastLogin: {
-            timestamp: new Date(),
-            ...lastLogin,
+    updateHeartbeat: async (userId: string, lastLogin: UserLastLogin) => {
+      const user = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $set: {
+            lastLogin: {
+              timestamp: new Date(),
+              ...lastLogin,
+            },
           },
         },
-      };
-
-      const user = await Users.findOneAndUpdate(generateDbFilterById(userId), modifier, {
-        returnDocument: 'after',
-      });
-
+        {
+          returnDocument: 'after',
+        },
+      );
+      if (!user) return null;
       await emit('USER_UPDATE_HEARTBEAT', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
 
-    markDeleted: async (userId: string): Promise<User> => {
+    markDeleted: async (userId: string) => {
       await db.collection('sessions').deleteMany({
         session: insensitiveTrimmedRegexOperator(`"user":"${userId}"`),
       });
@@ -603,18 +621,21 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
             deleted: new Date(),
             emails: [],
             roles: [],
-            profile: null,
-            lastBillingAddress: null,
             services: {},
             pushSubscriptions: [],
-            avatarId: null,
             initialPassword: false,
-            lastContact: null,
-            lastLogin: null,
+          },
+          $unset: {
+            profile: 1,
+            lastBillingAddress: 1,
+            lastContact: 1,
+            lastLogin: 1,
+            avatarId: 1,
           },
         },
         { returnDocument: 'after' },
       );
+      if (!user) return null;
 
       await emit('USER_REMOVE', {
         user,
@@ -622,14 +643,11 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return user;
     },
 
-    deletePermanently: async ({ userId }: { userId: string }): Promise<User> => {
+    deletePermanently: async ({ userId }: { userId: string }) => {
       return Users.findOneAndDelete({ _id: userId });
     },
 
-    updateProfile: async (
-      userId: string,
-      updatedData: { profile?: UserProfile; meta?: any },
-    ): Promise<User> => {
+    updateProfile: async (userId: string, updatedData: { profile?: UserProfile; meta?: any }) => {
       const userFilter = generateDbFilterById(userId);
       const { meta, profile } = updatedData;
 
@@ -658,16 +676,17 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         returnDocument: 'after',
       });
 
+      if (!user) return null;
       await emit('USER_UPDATE_PROFILE', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
 
-    updateLastBillingAddress: async (_id: string, lastBillingAddress: Address): Promise<User> => {
+    updateLastBillingAddress: async (_id: string, lastBillingAddress: Address) => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
-
+      if (!user) return null;
       if (!lastBillingAddress) return user;
 
       const modifier = {
@@ -692,18 +711,17 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         returnDocument: 'after',
       });
 
-      if (updatedUser) {
-        await emit('USER_UPDATE_BILLING_ADDRESS', {
-          user: removeConfidentialServiceHashes(updatedUser),
-        });
-      }
-
+      if (!updatedUser) return null;
+      await emit('USER_UPDATE_BILLING_ADDRESS', {
+        user: removeConfidentialServiceHashes(updatedUser),
+      });
       return updatedUser;
     },
 
-    updateLastContact: async (_id: string, lastContact: Contact): Promise<User> => {
+    updateLastContact: async (_id: string, lastContact: Contact) => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
+      if (!user) return null;
       const profile = user.profile || {};
       const isGuest = !!user.guest;
 
@@ -723,13 +741,14 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         returnDocument: 'after',
       });
 
+      if (!updatedUser) return null;
       await emit('USER_UPDATE_LAST_CONTACT', {
         user: removeConfidentialServiceHashes(user),
       });
       return updatedUser;
     },
 
-    updateRoles: async (_id: string, roles: string[]): Promise<User> => {
+    updateRoles: async (_id: string, roles: string[]) => {
       const modifier = {
         $set: {
           updated: new Date(),
@@ -740,23 +759,27 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
         returnDocument: 'after',
       });
-
+      if (!user) return null;
       await emit('USER_UPDATE_ROLE', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
 
-    updateTags: async (_id: string, tags: string[]): Promise<User> => {
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          tags,
+    updateTags: async (_id: string, tags: string[]) => {
+      const user = await Users.findOneAndUpdate(
+        generateDbFilterById(_id),
+        {
+          $set: {
+            updated: new Date(),
+            tags,
+          },
         },
-      };
-      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
-        returnDocument: 'after',
-      });
+        {
+          returnDocument: 'after',
+        },
+      );
+      if (!user) return null;
       await emit('USER_UPDATE_TAGS', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -767,11 +790,12 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       selector: mongodb.Filter<User>,
       modifier: mongodb.UpdateFilter<User>,
       updateOptions?: mongodb.FindOneAndUpdateOptions,
-    ): Promise<User> => {
+    ) => {
       const user = await Users.findOneAndUpdate(selector, modifier, {
         ...updateOptions,
         returnDocument: 'after',
       });
+      if (!user) return null;
       await emit('USER_UPDATE', {
         user: removeConfidentialServiceHashes(user),
       });

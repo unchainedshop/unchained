@@ -40,7 +40,7 @@ export interface Email {
 }
 
 export type User = {
-  _id?: string;
+  _id: string;
   deleted?: Date;
   avatarId?: string;
   emails: Email[];
@@ -68,6 +68,37 @@ export type UserQuery = mongodb.Filter<User> & {
 
 export const UsersCollection = async (db: mongodb.Db) => {
   const Users = db.collection<User>('users');
+
+  if (!isDocumentDBCompatModeEnabled()) {
+    await buildDbIndexes<User>(Users, [
+      {
+        index: {
+          _id: 'text',
+          username: 'text',
+          'emails.address': 'text',
+          'profile.displayName': 'text',
+          'lastBillingAddress.firstName': 'text',
+          'lastBillingAddress.lastName': 'text',
+          'lastBillingAddress.company': 'text',
+          'lastBillingAddress.addressLine': 'text',
+          'lastBillingAddress.addressLine2': 'text',
+        } as any,
+        options: {
+          weights: {
+            _id: 9,
+            'emails.address': 7,
+            'profile.displayName': 5,
+            'lastBillingAddress.firstName': 3,
+            'lastBillingAddress.lastName': 3,
+            'lastBillingAddress.company': 1,
+            'lastBillingAddress.addressLine': 1,
+            'lastBillingAddress.addressLine2': 1,
+          },
+          name: 'user_fulltext_search',
+        },
+      },
+    ]);
+  }
 
   await buildDbIndexes<User>(Users, [
     {
@@ -135,33 +166,6 @@ export const UsersCollection = async (db: mongodb.Db) => {
       },
       options: {
         sparse: true,
-      },
-    },
-
-    !isDocumentDBCompatModeEnabled() && {
-      index: {
-        _id: 'text',
-        username: 'text',
-        'emails.address': 'text',
-        'profile.displayName': 'text',
-        'lastBillingAddress.firstName': 'text',
-        'lastBillingAddress.lastName': 'text',
-        'lastBillingAddress.company': 'text',
-        'lastBillingAddress.addressLine': 'text',
-        'lastBillingAddress.addressLine2': 'text',
-      } as any,
-      options: {
-        weights: {
-          _id: 9,
-          'emails.address': 7,
-          'profile.displayName': 5,
-          'lastBillingAddress.firstName': 3,
-          'lastBillingAddress.lastName': 3,
-          'lastBillingAddress.company': 1,
-          'lastBillingAddress.addressLine': 1,
-          'lastBillingAddress.addressLine2': 1,
-        },
-        name: 'user_fulltext_search',
       },
     },
   ]);
