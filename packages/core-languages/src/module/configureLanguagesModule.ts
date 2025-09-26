@@ -34,14 +34,11 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
   const Languages = await LanguagesCollection(db);
 
   return {
-    findLanguage: async ({
-      languageId,
-      isoCode,
-    }: {
-      languageId?: string;
-      isoCode?: string;
-    }): Promise<Language> => {
-      return Languages.findOne(languageId ? generateDbFilterById(languageId) : { isoCode }, {});
+    findLanguage: async (params: { languageId: string } | { isoCode: string }) => {
+      if ('languageId' in params) {
+        return Languages.findOne(generateDbFilterById(params.languageId), {});
+      }
+      return Languages.findOne({ isoCode: params.isoCode }, {});
     },
 
     findLanguages: async (
@@ -101,11 +98,14 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
     },
 
     update: async (languageId: string, doc: UpdateFilter<Language>['$set']) => {
+      const modifier = { ...doc };
+      if (modifier?.isoCode) {
+        modifier.isoCode = modifier.isoCode.toLowerCase();
+      }
       await Languages.updateOne(generateDbFilterById(languageId), {
         $set: {
           updated: new Date(),
-          ...doc,
-          isoCode: doc.isoCode.toLowerCase(),
+          ...modifier,
         },
       });
       await emit('LANGUAGE_UPDATE', { languageId });
