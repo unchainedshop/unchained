@@ -14,11 +14,14 @@ export const configureFilterTextsModule = ({
   const upsertLocalizedText = async (
     params: { filterId: string; filterOptionValue?: string },
     locale: Intl.Locale,
-    text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
-  ): Promise<FilterText> => {
+    text: Omit<
+      FilterText,
+      'filterId' | 'filterOptionValue' | 'locale' | 'created' | 'updated' | 'deleted'
+    >,
+  ) => {
     const { filterId, filterOptionValue } = params;
 
-    const updateResult = await FilterTexts.findOneAndUpdate(
+    const filterText = await FilterTexts.findOneAndUpdate(
       {
         filterId,
         filterOptionValue: filterOptionValue || { $eq: null },
@@ -27,8 +30,7 @@ export const configureFilterTextsModule = ({
       {
         $set: {
           updated: new Date(),
-          title: text.title,
-          subtitle: text.subtitle,
+          ...text,
         },
         $setOnInsert: {
           _id: generateDbObjectId(),
@@ -41,18 +43,17 @@ export const configureFilterTextsModule = ({
       {
         upsert: true,
         returnDocument: 'after',
-        includeResultMetadata: true,
       },
     );
-
-    if (updateResult.ok) {
+    if (!filterText) return null;
+    if (filterText) {
       await emit('FILTER_UPDATE_TEXT', {
         filterId: params.filterId,
         filterOptionValue: params.filterOptionValue || null,
-        text: updateResult.value,
+        text: filterText,
       });
     }
-    return updateResult.value;
+    return filterText;
   };
 
   return {
@@ -89,13 +90,15 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (
       params: { filterId: string; filterOptionValue?: string },
-      texts: Omit<FilterText, 'filterId' | 'filterOptionValue'>[],
-    ): Promise<FilterText[]> => {
-      const filterTexts = await Promise.all(
-        texts.map(async ({ locale, ...text }) =>
-          upsertLocalizedText(params, new Intl.Locale(locale), text),
-        ),
-      );
+      texts: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'created'>[],
+    ) => {
+      const filterTexts = (
+        await Promise.all(
+          texts.map(async ({ locale, ...text }) =>
+            upsertLocalizedText(params, new Intl.Locale(locale), text),
+          ),
+        )
+      ).filter(Boolean) as FilterText[];
 
       return filterTexts;
     },

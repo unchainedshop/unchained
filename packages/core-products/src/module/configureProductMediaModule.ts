@@ -23,7 +23,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
   const upsertLocalizedText = async (
     productMediaId: string,
     locale: Intl.Locale,
-    text: Omit<ProductMediaText, 'productMediaId' | 'locale'>,
+    text: Omit<ProductMediaText, 'productMediaId' | 'locale' | 'created' | 'updated' | 'deleted'>,
   ): Promise<ProductMediaText> => {
     const updateResult = await ProductMediaTexts.findOneAndUpdate(
       {
@@ -33,7 +33,8 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       {
         $set: {
           updated: new Date(),
-          ...text,
+          title: text.title,
+          subtitle: text.subtitle,
         },
         $setOnInsert: {
           _id: generateDbObjectId(),
@@ -96,8 +97,8 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     create: async ({
       sortKey,
       ...doc
-    }: Omit<ProductMedia, 'sortKey' | 'tags'> &
-      Partial<Pick<ProductMedia, 'sortKey' | 'tags'>>): Promise<ProductMedia> => {
+    }: Omit<ProductMedia, 'sortKey' | 'tags' | '_id' | 'created'> &
+      Partial<Pick<ProductMedia, 'sortKey' | 'tags' | '_id'>>): Promise<ProductMedia> => {
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastProductMedia = (await ProductMedias.findOne(
@@ -250,13 +251,15 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       // Mutations
       updateMediaTexts: async (
         productMediaId: string,
-        texts: Omit<ProductMediaText, 'productMediaId'>[],
+        texts: Omit<ProductMediaText, 'productMediaId' | 'created' | 'updated' | 'deleted'>[],
       ): Promise<ProductMediaText[]> => {
-        const mediaTexts = await Promise.all(
-          texts.map(async ({ locale, ...localizations }) =>
-            upsertLocalizedText(productMediaId, new Intl.Locale(locale), localizations),
-          ),
-        );
+        const mediaTexts = (
+          await Promise.all(
+            texts.map(async ({ locale, ...localizations }) =>
+              upsertLocalizedText(productMediaId, new Intl.Locale(locale), localizations),
+            ),
+          )
+        ).filter(Boolean) as ProductMediaText[];
 
         return mediaTexts;
       },

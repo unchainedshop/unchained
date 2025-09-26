@@ -14,12 +14,8 @@ export type DetermineDefaultProvider<Order = unknown, UnchainedAPI = unknown> = 
     order: Order;
   },
   unchainedAPI: UnchainedAPI,
-) => Promise<DeliveryProvider>;
-export interface DeliverySettingsOptions {
-  sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
-  filterSupportedProviders?: FilterProviders;
-  determineDefaultProvider?: DetermineDefaultProvider;
-}
+) => Promise<DeliveryProvider | null>;
+export type DeliverySettingsOptions = Omit<Partial<DeliverySettings>, 'configureSettings'>;
 
 export interface DeliverySettings {
   filterSupportedProviders: FilterProviders;
@@ -36,13 +32,12 @@ const allProviders: FilterProviders = async ({ providers }) => {
 };
 
 const firstProviderIsDefault: DetermineDefaultProvider = async ({ providers }) => {
-  return providers?.length > 0 && providers[0];
+  return (providers?.length > 0 && providers[0]) || null;
 };
 
 export const deliverySettings: DeliverySettings = {
-  filterSupportedProviders: null,
-  determineDefaultProvider: null,
-
+  filterSupportedProviders: allProviders,
+  determineDefaultProvider: firstProviderIsDefault,
   configureSettings({
     filterSupportedProviders = allProviders,
     determineDefaultProvider = firstProviderIsDefault,

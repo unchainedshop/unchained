@@ -105,7 +105,9 @@ export const configureCountriesModule = async ({ db }: ModuleInput<Record<string
       return country.isoCode === systemLocale.region;
     },
 
-    create: async (doc: Country) => {
+    create: async (
+      doc: Omit<Country, '_id' | 'created'> & Pick<Partial<Country>, '_id' | 'created'>,
+    ) => {
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const { insertedId: countryId } = await Countries.insertOne({
         _id: generateDbObjectId(),

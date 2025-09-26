@@ -26,7 +26,7 @@ export interface LogFields {
 }
 
 export interface TimestampFields {
-  created?: Date;
+  created: Date;
   updated?: Date;
   deleted?: Date | null;
 }

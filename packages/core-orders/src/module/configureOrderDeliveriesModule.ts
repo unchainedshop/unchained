@@ -70,7 +70,9 @@ export const configureOrderDeliveriesModule = ({
 
     // Mutations
 
-    create: async (doc: Omit<OrderDelivery, '_id'>): Promise<OrderDelivery> => {
+    create: async (
+      doc: Omit<OrderDelivery, '_id' | 'created'> & Pick<Partial<OrderDelivery>, '_id' | 'created'>,
+    ): Promise<OrderDelivery> => {
       const { insertedId: orderDeliveryId } = await OrderDeliveries.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),

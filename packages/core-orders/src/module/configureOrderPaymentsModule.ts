@@ -126,7 +126,9 @@ export const configureOrderPaymentsModule = ({
 
     // Mutations
 
-    create: async (doc: Omit<OrderPayment, '_id'>): Promise<OrderPayment> => {
+    create: async (
+      doc: Omit<OrderPayment, '_id' | 'created'> & Pick<Partial<OrderPayment>, '_id' | 'created'>,
+    ): Promise<OrderPayment> => {
       const { insertedId: orderPaymentId } = await OrderPayments.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),

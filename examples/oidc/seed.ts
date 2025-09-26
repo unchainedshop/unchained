@@ -84,14 +84,12 @@ export default async (unchainedAPI: UnchainedCore) => {
           value: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
         },
       ],
-      created: new Date(),
     });
 
     const paymentProvider = await modules.payment.paymentProviders.create({
       adapterKey: 'shop.unchained.invoice',
       type: PaymentProviderType.INVOICE,
       configuration: [],
-      created: new Date(),
     });
 
     logger.log(`

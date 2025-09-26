@@ -1,7 +1,11 @@
 import { ProductVariation } from '@unchainedshop/core-products';
 import { Modules } from '../../../modules.js';
 
-const upsert = async (productVariation: ProductVariation, unchainedAPI: { modules: Modules }) => {
+const upsert = async (
+  productVariation: Omit<ProductVariation, '_id' | 'created'> &
+    Pick<Partial<ProductVariation>, '_id' | 'created'>,
+  unchainedAPI: { modules: Modules },
+) => {
   const { modules } = unchainedAPI;
   try {
     const newVariation = await modules.products.variations.create(productVariation);

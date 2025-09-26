@@ -32,7 +32,10 @@ export const configureOrderDiscountsModule = ({
       return discounts.toArray();
     },
 
-    create: async (doc: OrderDiscount): Promise<OrderDiscount> => {
+    create: async (
+      doc: Omit<OrderDiscount, '_id' | 'created' | 'trigger'> &
+        Pick<Partial<OrderDiscount>, '_id' | 'created' | 'trigger'>,
+    ): Promise<OrderDiscount> => {
       const normalizedTrigger = doc.trigger || OrderDiscountTrigger.USER;
       const { insertedId: discountId } = await OrderDiscounts.insertOne({
         _id: generateDbObjectId(),

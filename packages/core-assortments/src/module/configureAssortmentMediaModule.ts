@@ -34,7 +34,8 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       {
         $set: {
           updated: new Date(),
-          ...text,
+          title: text.title,
+          subtitle: text.subtitle,
         },
         $setOnInsert: {
           _id: generateDbObjectId(),
@@ -97,8 +98,8 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       sortKey,
       tags = [],
       ...doc
-    }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id'> &
-      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id'>>) => {
+    }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'> &
+      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'>>) => {
       if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentMedia = (await AssortmentMedia.findOne(

@@ -388,7 +388,7 @@ export const configureAssortmentsModule = async ({
       meta = {},
       sequence,
       ...rest
-    }: Assortment) => {
+    }: Omit<Assortment, '_id' | 'created'> & Pick<Partial<Assortment>, '_id'>) => {
       if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
       const { insertedId: assortmentId } = await Assortments.insertOne({
         _id: _id || generateDbObjectId(),

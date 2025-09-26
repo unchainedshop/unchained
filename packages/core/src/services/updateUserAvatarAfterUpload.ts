@@ -5,7 +5,10 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');
 
-export async function updateUserAvatarAfterUploadService(this: Modules, { file }: { file: File }) {
+export async function updateUserAvatarAfterUploadService(
+  this: Modules,
+  { file }: { file: Pick<File, '_id' | 'path' | 'meta'> },
+) {
   const { userId } = file.meta as { userId: string };
 
   const files = await this.files.findFiles({

@@ -35,7 +35,10 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       productVariationOptionValue?: string;
     },
     locale: Intl.Locale,
-    text: Omit<ProductVariationText, 'locale' | 'productVariationId' | 'productVariationOptionValue'>,
+    text: Omit<
+      ProductVariationText,
+      'locale' | 'productVariationId' | 'productVariationOptionValue' | 'created' | 'updated' | 'deleted'
+    >,
   ): Promise<ProductVariationText> => {
     const updateResult = await ProductVariationTexts.findOneAndUpdate(
       {
@@ -126,7 +129,11 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     create: async ({
       type,
       ...doc
-    }: ProductVariation & { locale?: string; title?: string }): Promise<ProductVariation> => {
+    }: Omit<ProductVariation, '_id' | 'created'> &
+      Pick<Partial<ProductVariation>, '_id' | 'created'> & {
+        locale?: string;
+        title?: string;
+      }): Promise<ProductVariation> => {
       const { insertedId: productVariationId } = await ProductVariations.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -184,7 +191,10 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (productVariationId: string, doc: ProductVariation): Promise<ProductVariation> => {
+    update: async (
+      productVariationId: string,
+      doc: Partial<ProductVariation>,
+    ): Promise<ProductVariation> => {
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
       return ProductVariations.findOneAndUpdate(selector, modifier, {
@@ -271,7 +281,10 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       // Mutations
       updateVariationTexts: async (
         productVariationId: string,
-        texts: Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>[],
+        texts: Omit<
+          ProductVariationText,
+          'productVariationId' | 'productVariationOptionValue' | 'created' | 'updated' | 'deleted'
+        >[],
         productVariationOptionValue?: string,
       ): Promise<ProductVariationText[]> => {
         const productVariationTexts = await Promise.all(

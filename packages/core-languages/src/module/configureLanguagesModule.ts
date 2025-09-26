@@ -85,7 +85,9 @@ export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string
       return language.isoCode === systemLocale.language;
     },
 
-    create: async (doc: Language) => {
+    create: async (
+      doc: Omit<Language, '_id' | 'created'> & Pick<Partial<Language>, '_id' | 'created'>,
+    ) => {
       await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
       const { insertedId: languageId } = await Languages.insertOne({
         _id: generateDbObjectId(),

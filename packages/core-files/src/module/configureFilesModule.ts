@@ -51,7 +51,7 @@ export const configureFilesModule = async ({
       return deletionResult.deletedCount;
     },
 
-    create: async (doc: File) => {
+    create: async (doc: Omit<File, '_id' | 'created'> & Pick<Partial<File>, '_id' | 'created'>) => {
       const { insertedId: fileId } = await Files.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),

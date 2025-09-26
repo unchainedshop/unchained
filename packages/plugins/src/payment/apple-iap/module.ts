@@ -8,7 +8,10 @@ export const configureAppleTransactionsModule = async ({ db }) => {
       return AppleTransactions.findOne({ _id: transactionIdentifier });
     },
 
-    createTransaction: async (doc: AppleTransaction) => {
+    createTransaction: async (
+      doc: Omit<AppleTransaction, '_id' | 'created'> &
+        Pick<Partial<AppleTransaction>, '_id' | 'created'>,
+    ) => {
       await AppleTransactions.insertOne({
         ...doc,
         created: new Date(),

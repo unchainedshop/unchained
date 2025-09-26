@@ -75,7 +75,9 @@ export const configurePaymentProvidersModule = (
     },
 
     // Mutations
-    create: async (doc: PaymentProvider): Promise<PaymentProvider> => {
+    create: async (
+      doc: Omit<PaymentProvider, '_id' | 'created'> & Pick<Partial<PaymentProvider>, '_id' | 'created'>,
+    ): Promise<PaymentProvider> => {
       const { insertedId: paymentProviderId } = await PaymentProviders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),

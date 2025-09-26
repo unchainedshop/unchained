@@ -221,7 +221,8 @@ export const configureEnrollmentsModule = async ({
       countryCode,
       currencyCode,
       ...enrollmentData
-    }: Omit<Enrollment, 'status' | 'periods' | 'log'>): Promise<Enrollment> => {
+    }: Omit<Enrollment, 'status' | 'periods' | 'log' | '_id' | 'created'> &
+      Pick<Partial<Enrollment>, '_id' | 'created'>): Promise<Enrollment> => {
       const { insertedId: enrollmentId } = await Enrollments.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),

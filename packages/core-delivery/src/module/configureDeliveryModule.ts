@@ -48,7 +48,7 @@ export const configureDeliveryModule = async ({
         deliveryProviderId: string;
       } & mongodb.Filter<DeliveryProvider>,
       options?: mongodb.FindOptions<DeliveryProvider>,
-    ): Promise<DeliveryProvider> => {
+    ) => {
       return DeliveryProviders.findOne(
         deliveryProviderId ? generateDbFilterById(deliveryProviderId) : query,
         options,
@@ -81,19 +81,24 @@ export const configureDeliveryModule = async ({
     },
 
     // Mutations
-    create: async (doc: DeliveryProvider): Promise<DeliveryProvider> => {
+    create: async (
+      doc: Omit<DeliveryProvider, '_id' | 'created'> & Pick<Partial<DeliveryProvider>, '_id'>,
+    ) => {
       const { insertedId: deliveryProviderId } = await DeliveryProviders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
         ...doc,
       });
-      const deliveryProvider = await DeliveryProviders.findOne({ _id: deliveryProviderId }, {});
+      const deliveryProvider = (await DeliveryProviders.findOne(
+        { _id: deliveryProviderId },
+        {},
+      )) as DeliveryProvider;
       allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
       return deliveryProvider;
     },
 
-    update: async (_id: string, doc: DeliveryProvider): Promise<DeliveryProvider> => {
+    update: async (_id: string, doc: DeliveryProvider) => {
       const deliveryProvider = await DeliveryProviders.findOneAndUpdate(
         generateDbFilterById(_id),
         {
@@ -104,12 +109,13 @@ export const configureDeliveryModule = async ({
         },
         { returnDocument: 'after' },
       );
+      if (!deliveryProvider) return null;
       allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
 
-    delete: async (_id: string): Promise<DeliveryProvider> => {
+    delete: async (_id: string) => {
       const deliveryProvider = await DeliveryProviders.findOneAndUpdate(
         generateDbFilterById(_id),
         {
@@ -119,6 +125,7 @@ export const configureDeliveryModule = async ({
         },
         { returnDocument: 'after' },
       );
+      if (!deliveryProvider) return null;
       allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;

@@ -85,7 +85,9 @@ export const configureCurrenciesModule = async ({ db }: ModuleInput<Record<strin
       return !!currencyCount;
     },
 
-    create: async (doc: Omit<Currency, '_id'> & Pick<Partial<Currency>, '_id'>) => {
+    create: async (
+      doc: Omit<Currency, '_id' | 'created'> & Pick<Partial<Currency>, '_id' | 'created'>,
+    ) => {
       await Currencies.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const { insertedId: currencyId } = await Currencies.insertOne({
         _id: generateDbObjectId(),

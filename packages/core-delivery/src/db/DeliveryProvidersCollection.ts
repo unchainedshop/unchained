@@ -10,7 +10,7 @@ export type DeliveryConfiguration = {
 }[];
 
 export type DeliveryProvider = {
-  _id?: string;
+  _id: string;
   type: DeliveryProviderType;
   adapterKey: string;
   configuration: DeliveryConfiguration;

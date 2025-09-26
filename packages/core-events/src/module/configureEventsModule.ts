@@ -43,7 +43,9 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
 export const configureEventsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   const Events = await EventsCollection(db);
 
-  const create = async (doc: Event) => {
+  const create = async (
+    doc: Omit<Event, '_id' | 'created'> & Pick<Partial<Event>, '_id' | 'created'>,
+  ) => {
     const result = await Events.insertOne({
       _id: generateDbObjectId(),
       created: new Date(),

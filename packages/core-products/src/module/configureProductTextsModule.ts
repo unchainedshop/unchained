@@ -51,7 +51,7 @@ export const configureProductTextsModule = ({
   const upsertLocalizedText = async (
     productId: string,
     locale: Intl.Locale,
-    text: Omit<ProductText, 'productId' | 'locale'>,
+    text: Omit<ProductText, 'productId' | 'locale' | 'created' | 'updated' | 'deleted'>,
   ): Promise<ProductText> => {
     const { slug: textSlug, title = null, ...textFields } = text;
     const slug = await makeSlug({
@@ -148,7 +148,7 @@ export const configureProductTextsModule = ({
     // Mutations
     updateTexts: async (
       productId: string,
-      texts: Omit<ProductText, 'productId'>[],
+      texts: Omit<ProductText, 'productId' | 'created' | 'updated' | 'deleted'>[],
     ): Promise<ProductText[]> => {
       const productTexts = await Promise.all(
         texts.map(async ({ locale, ...text }) =>

@@ -347,7 +347,12 @@ export const configureProductsModule = async ({
     prices: configureProductPricesModule({ proxyProducts, db }),
 
     // Mutations
-    create: async ({ type, sequence, ...productData }: Product): Promise<Product> => {
+    create: async ({
+      type,
+      sequence,
+      ...productData
+    }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted'> &
+      Pick<Partial<Product>, '_id' | 'created' | 'updated' | 'deleted'>): Promise<Product> => {
       if (productData._id) {
         await deleteProductPermanently(
           {

@@ -10,9 +10,15 @@ const logger = createLogger('unchained:core');
 export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
     item: { orderPosition: OrderPosition; product: Product },
-    doc: Omit<Enrollment, 'configuration' | 'productId' | 'quantity' | 'status' | 'periods' | 'log'>,
+    doc: Omit<
+      Enrollment,
+      'configuration' | 'productId' | 'quantity' | 'status' | 'periods' | 'log' | '_id' | 'created'
+    >,
     unchainedAPI,
-  ) => Promise<Omit<Enrollment, 'status' | 'periods' | 'log'>>;
+  ) => Promise<
+    Omit<Enrollment, 'status' | 'periods' | 'log' | '_id' | 'created'> &
+      Pick<Partial<Enrollment>, '_id' | 'created'>
+  >;
 
   actions: (enrollmentContext: EnrollmentContext, unchainedAPI) => Promise<EnrollmentAdapterActions>;
 };
