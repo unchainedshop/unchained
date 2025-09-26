@@ -24,7 +24,7 @@ export const configureOrderDeliveriesModule = ({
   const updateStatus = async (
     orderDeliveryId: string,
     { status, info }: { status: OrderDeliveryStatus; info?: string },
-  ): Promise<OrderDelivery> => {
+  ) => {
     const date = new Date();
     const modifier: mongodb.UpdateFilter<OrderDelivery> = {
       $set: { status, updated: new Date() },
@@ -51,7 +51,7 @@ export const configureOrderDeliveriesModule = ({
     findDelivery: async (
       { orderDeliveryId }: { orderDeliveryId: string },
       options?: mongodb.FindOptions,
-    ): Promise<OrderDelivery> => {
+    ) => {
       return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
     },
 
@@ -72,7 +72,7 @@ export const configureOrderDeliveriesModule = ({
 
     create: async (
       doc: Omit<OrderDelivery, '_id' | 'created'> & Pick<Partial<OrderDelivery>, '_id' | 'created'>,
-    ): Promise<OrderDelivery> => {
+    ) => {
       const { insertedId: orderDeliveryId } = await OrderDeliveries.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -81,7 +81,9 @@ export const configureOrderDeliveriesModule = ({
         status: null,
       });
 
-      const orderDelivery = await OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId));
+      const orderDelivery = (await OrderDeliveries.findOne(
+        buildFindByIdSelector(orderDeliveryId),
+      )) as OrderDelivery;
       return orderDelivery;
     },
 
@@ -100,7 +102,7 @@ export const configureOrderDeliveriesModule = ({
       return updatedOrderDelivery;
     },
 
-    updateContext: async (orderDeliveryId: string, context: any): Promise<OrderDelivery> => {
+    updateContext: async (orderDeliveryId: string, context: any) => {
       const selector = buildFindByIdSelector(orderDeliveryId);
       if (!context || Object.keys(context).length === 0) return OrderDeliveries.findOne(selector, {});
       const contextSetters = Object.fromEntries(
@@ -118,14 +120,11 @@ export const configureOrderDeliveriesModule = ({
         { returnDocument: 'after' },
       );
 
-      if (orderDelivery) {
-        await emit('ORDER_UPDATE_DELIVERY', {
-          orderDelivery,
-        });
-        return orderDelivery;
-      }
-
-      return null;
+      if (!orderDelivery) return null;
+      await emit('ORDER_UPDATE_DELIVERY', {
+        orderDelivery,
+      });
+      return orderDelivery;
     },
 
     updateStatus,
@@ -133,7 +132,7 @@ export const configureOrderDeliveriesModule = ({
     updateCalculation: async <T extends PricingCalculation>(
       orderDeliveryId: string,
       calculation: T[],
-    ): Promise<OrderDelivery> => {
+    ) => {
       return OrderDeliveries.findOneAndUpdate(
         { _id: orderDeliveryId },
         {

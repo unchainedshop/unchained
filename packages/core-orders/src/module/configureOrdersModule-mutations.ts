@@ -9,28 +9,6 @@ import {
 import { Order, OrderStatus } from '../db/OrdersCollection.js';
 import { OrderPosition } from '../db/OrderPositionsCollection.js';
 
-export interface OrderMutations {
-  create: (doc: {
-    userId: string;
-    billingAddress?: Address;
-    contact?: Contact;
-    countryCode: string;
-    currencyCode: string;
-    orderNumber?: string;
-    originEnrollmentId?: string;
-  }) => Promise<Order>;
-
-  delete: (orderId: string) => Promise<number>;
-
-  setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
-  moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
-
-  updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
-  updateContact: (orderId: string, contact: Contact) => Promise<Order>;
-  updateContext: (orderId: string, context: any) => Promise<Order>;
-  updateCalculationSheet: (orderId: string, calculation) => Promise<Order>;
-}
-
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',
   'ORDER_REMOVE',
@@ -45,11 +23,26 @@ export const configureOrderModuleMutations = ({
 }: {
   Orders: mongodb.Collection<Order>;
   OrderPositions: mongodb.Collection<OrderPosition>;
-}): OrderMutations => {
+}) => {
   registerEvents(ORDER_EVENTS);
 
   return {
-    create: async ({ userId, orderNumber, currencyCode, countryCode, billingAddress, contact }) => {
+    create: async ({
+      userId,
+      orderNumber,
+      currencyCode,
+      countryCode,
+      billingAddress,
+      contact,
+    }: {
+      userId: string;
+      billingAddress?: Address;
+      contact?: Contact;
+      countryCode: string;
+      currencyCode: string;
+      orderNumber?: string;
+      originEnrollmentId?: string;
+    }) => {
       const { insertedId: orderId } = await Orders.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
@@ -70,13 +63,14 @@ export const configureOrderModuleMutations = ({
       return order;
     },
 
-    delete: async (orderId) => {
+    delete: async (orderId: string) => {
       const { deletedCount } = await Orders.deleteOne({ _id: orderId });
+      if (!deletedCount) return 0;
       await emit('ORDER_REMOVE', { orderId });
       return deletedCount;
     },
 
-    setCartOwner: async ({ orderId, userId }) => {
+    setCartOwner: async ({ orderId, userId }: { orderId: string; userId: string }) => {
       await Orders.updateOne(generateDbFilterById(orderId), {
         $set: {
           userId,
@@ -84,7 +78,13 @@ export const configureOrderModuleMutations = ({
       });
     },
 
-    moveCartPositions: async ({ fromOrderId, toOrderId }) => {
+    moveCartPositions: async ({
+      fromOrderId,
+      toOrderId,
+    }: {
+      fromOrderId: string;
+      toOrderId: string;
+    }) => {
       await OrderPositions.updateMany(
         { orderId: fromOrderId },
         {
@@ -95,7 +95,7 @@ export const configureOrderModuleMutations = ({
       );
     },
 
-    updateBillingAddress: async (orderId, billingAddress) => {
+    updateBillingAddress: async (orderId: string, billingAddress: Address) => {
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
         selector,
@@ -107,12 +107,12 @@ export const configureOrderModuleMutations = ({
         },
         { returnDocument: 'after' },
       );
-
+      if (!order) return null;
       await emit('ORDER_UPDATE', { order, field: 'billingAddress' });
       return order;
     },
 
-    updateContact: async (orderId, contact) => {
+    updateContact: async (orderId: string, contact: Contact) => {
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
         selector,
@@ -124,12 +124,12 @@ export const configureOrderModuleMutations = ({
         },
         { returnDocument: 'after' },
       );
-
+      if (!order) return null;
       await emit('ORDER_UPDATE', { order, field: 'contact' });
       return order;
     },
 
-    updateCalculationSheet: async (orderId, calculation) => {
+    updateCalculationSheet: async (orderId: string, calculation: any) => {
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
         selector,
@@ -141,12 +141,12 @@ export const configureOrderModuleMutations = ({
         },
         { returnDocument: 'after' },
       );
-
+      if (!order) return null;
       await emit('ORDER_UPDATE', { order, field: 'calculation' });
       return order;
     },
 
-    updateContext: async (orderId, context) => {
+    updateContext: async (orderId: string, context: any) => {
       const selector = generateDbFilterById<Order>(orderId);
       selector.status = { $in: [null, OrderStatus.PENDING] };
 
@@ -165,12 +165,11 @@ export const configureOrderModuleMutations = ({
         },
         { returnDocument: 'after' },
       );
-
-      if (order) {
-        await emit('ORDER_UPDATE', { order, field: 'context' });
-        return order;
-      }
-      return null;
+      if (!order) return null;
+      await emit('ORDER_UPDATE', { order, field: 'context' });
+      return order;
     },
   };
 };
+
+export type OrderMutations = ReturnType<typeof configureOrderModuleMutations>;

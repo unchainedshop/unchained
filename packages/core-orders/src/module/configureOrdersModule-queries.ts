@@ -17,8 +17,7 @@ export interface OrderStatisticsRecord {
     currency: string;
   };
 }
-
-interface OrderAggregateParams {
+export interface OrderAggregateParams {
   match?: Record<string, any>;
   matchAfterGroup?: Record<string, any>;
   project?: Record<string, any>;
@@ -43,7 +42,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       countryCode?: string;
       orderNumber?: string;
       userId: string;
-    }): Promise<Order> => {
+    }) => {
       const selector: mongodb.Filter<Order> = {
         countryCode,
         status: { $eq: null },
@@ -75,7 +74,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         orderNumber?: string;
       },
       options?: mongodb.FindOptions,
-    ): Promise<Order> => {
+    ) => {
       const selector = orderId ? generateDbFilterById(orderId) : { orderNumber };
       return Orders.findOne(selector, options);
     },

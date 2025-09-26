@@ -18,11 +18,18 @@ export * from './documentdb-compat-mode.js';
 export { mongodb };
 
 export interface LogFields {
-  log: {
-    date: Date;
-    status?: string;
-    info: string;
-  }[];
+  log: (
+    | {
+        date: Date;
+        status: string;
+        info?: string;
+      }
+    | {
+        date: Date;
+        status?: string;
+        info: string;
+      }
+  )[];
 }
 
 export interface TimestampFields {

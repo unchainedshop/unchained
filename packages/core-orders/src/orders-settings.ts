@@ -8,15 +8,17 @@ export interface OrderSettingsOrderPositionValidation<Product = unknown> {
   configuration?: { key: string; value: string }[];
 }
 
-export interface OrdersSettingsOptions {
-  ensureUserHasCart?: boolean;
-  orderNumberHashFn?: (order: Order, index: number) => string;
-  validateOrderPosition?: <UnchainedAPI = unknown>(
+export interface OrdersSettings {
+  ensureUserHasCart: boolean;
+  orderNumberHashFn: (order: Order, index: number) => string;
+  validateOrderPosition: <UnchainedAPI = unknown>(
     validationParams: OrderSettingsOrderPositionValidation,
     unchainedAPI: UnchainedAPI,
   ) => Promise<void>;
-  lockOrderDuringCheckout?: boolean;
+  lockOrderDuringCheckout: boolean;
+  configureSettings: (options?: OrdersSettingsOptions) => void;
 }
+export type OrdersSettingsOptions = Omit<Partial<OrdersSettings>, 'configureSettings'>;
 
 export const defaultValidateOrderPosition = async ({ product }, { modules }: any) => {
   if (!modules.products.isActive(product)) {
@@ -24,21 +26,20 @@ export const defaultValidateOrderPosition = async ({ product }, { modules }: any
   }
 };
 
-export const ordersSettings = {
-  ensureUserHasCart: null,
-  orderNumberHashFn: null,
-  validateOrderPosition: null,
+export const ordersSettings: OrdersSettings = {
+  ensureUserHasCart: false,
+  orderNumberHashFn: generateRandomHash,
+  validateOrderPosition: defaultValidateOrderPosition,
   lockOrderDuringCheckout: false,
-
   configureSettings({
-    ensureUserHasCart = false,
-    orderNumberHashFn = generateRandomHash,
-    validateOrderPosition = defaultValidateOrderPosition,
-    lockOrderDuringCheckout = false,
-  }: OrdersSettingsOptions = {}) {
-    this.ensureUserHasCart = ensureUserHasCart;
-    this.orderNumberHashFn = orderNumberHashFn;
-    this.validateOrderPosition = validateOrderPosition;
-    this.lockOrderDuringCheckout = lockOrderDuringCheckout;
+    ensureUserHasCart,
+    orderNumberHashFn,
+    validateOrderPosition,
+    lockOrderDuringCheckout,
+  } = {}) {
+    this.ensureUserHasCart = ensureUserHasCart || false;
+    this.orderNumberHashFn = orderNumberHashFn || generateRandomHash;
+    this.validateOrderPosition = validateOrderPosition || defaultValidateOrderPosition;
+    this.lockOrderDuringCheckout = lockOrderDuringCheckout || false;
   },
 };

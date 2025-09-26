@@ -8,7 +8,7 @@ const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYM
 export const buildFindOrderPaymentByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;
 
-export const buildFindByContextDataSelector = (context: any): mongodb.Filter<OrderPayment> => {
+export const buildFindByContextDataSelector = (context: any) => {
   const contextKeys = Object.keys(context);
 
   if (contextKeys.length === 0) return null;
@@ -46,7 +46,7 @@ export const configureOrderPaymentsModule = ({
       status,
       info,
     }: { transactionId?: string; status: OrderPaymentStatus; info?: string },
-  ): Promise<OrderPayment> => {
+  ) => {
     const date = new Date();
     const modifier: mongodb.UpdateFilter<OrderPayment> = {
       $set: { status, updated: new Date() },
@@ -82,7 +82,7 @@ export const configureOrderPaymentsModule = ({
         orderPaymentId: string;
       },
       options?: mongodb.FindOptions,
-    ): Promise<OrderPayment> => {
+    ) => {
       return OrderPayments.findOne(buildFindOrderPaymentByIdSelector(orderPaymentId), options);
     },
 
@@ -104,9 +104,9 @@ export const configureOrderPaymentsModule = ({
         context: any;
       },
       options?: mongodb.FindOptions,
-    ): Promise<OrderPayment> => {
+    ) => {
       const selector = buildFindByContextDataSelector(context);
-
+      if (!selector) return null;
       return OrderPayments.findOne(selector, options);
     },
     countOrderPaymentsByContextData: async (
@@ -118,7 +118,7 @@ export const configureOrderPaymentsModule = ({
       options?: mongodb.FindOptions,
     ) => {
       const selector = buildFindByContextDataSelector(context);
-
+      if (!selector) return 0;
       return OrderPayments.countDocuments(selector, options);
     },
 
@@ -137,9 +137,9 @@ export const configureOrderPaymentsModule = ({
         context: doc.context || {},
       });
 
-      const orderPayment = await OrderPayments.findOne(
+      const orderPayment = (await OrderPayments.findOne(
         buildFindOrderPaymentByIdSelector(orderPaymentId),
-      );
+      )) as OrderPayment;
 
       return orderPayment;
     },
@@ -170,7 +170,7 @@ export const configureOrderPaymentsModule = ({
       await emit('ORDER_PAY', { orderPayment });
     },
 
-    updateContext: async (orderPaymentId: string, context: any): Promise<OrderPayment> => {
+    updateContext: async (orderPaymentId: string, context: any) => {
       const selector = buildFindOrderPaymentByIdSelector(orderPaymentId);
       if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
 
@@ -188,14 +188,11 @@ export const configureOrderPaymentsModule = ({
         { returnDocument: 'after' },
       );
 
-      if (orderPayment) {
-        await emit('ORDER_UPDATE_PAYMENT', {
-          orderPayment,
-        });
-        return orderPayment;
-      }
-
-      return null;
+      if (!orderPayment) return null;
+      await emit('ORDER_UPDATE_PAYMENT', {
+        orderPayment,
+      });
+      return orderPayment;
     },
 
     updateStatus,

@@ -6,36 +6,15 @@ import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.js';
 import { OrderPositionsCollection } from '../db/OrderPositionsCollection.js';
 import { OrdersCollection, Order, OrderStatus } from '../db/OrdersCollection.js';
 import { ordersSettings, OrdersSettingsOptions } from '../orders-settings.js';
-import {
-  configureOrderDeliveriesModule,
-  OrderDeliveriesModule,
-} from './configureOrderDeliveriesModule.js';
-import { configureOrderDiscountsModule, OrderDiscountsModule } from './configureOrderDiscountsModule.js';
-import { configureOrderPaymentsModule, OrderPaymentsModule } from './configureOrderPaymentsModule.js';
-import { configureOrderPositionsModule, OrderPositionsModule } from './configureOrderPositionsModule.js';
-import { configureOrderModuleMutations, OrderMutations } from './configureOrdersModule-mutations.js';
-import { configureOrdersModuleQueries, OrderQueries } from './configureOrdersModule-queries.js';
+import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.js';
+import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.js';
+import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.js';
+import { configureOrderPositionsModule } from './configureOrderPositionsModule.js';
+import { configureOrderModuleMutations } from './configureOrdersModule-mutations.js';
+import { configureOrdersModuleQueries } from './configureOrdersModule-queries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
-
-export type OrdersModule = OrderQueries &
-  OrderMutations & {
-    // Sub entities
-    deliveries: OrderDeliveriesModule;
-    discounts: OrderDiscountsModule;
-    positions: OrderPositionsModule;
-    payments: OrderPaymentsModule;
-
-    updateStatus: (orderId: string, params: { status: OrderStatus; info?: string }) => Promise<Order>;
-    acquireLock: (
-      orderId: string,
-      identifier: string,
-      timeout?: number,
-    ) => Promise<{ release: () => void }>;
-    setDeliveryProvider: (orderId: string, deliveryProviderId: string) => Promise<Order | null>;
-    setPaymentProvider: (orderId: string, paymentProviderId: string) => Promise<Order | null>;
-  };
 
 // @kontsedal/locco uses a deprecated way of importing files in ESM (node16 behavior)
 const require = createRequire(import.meta.url);
@@ -52,7 +31,7 @@ export const configureOrdersModule = async ({
   db,
   migrationRepository,
   options: orderOptions = {},
-}: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule> => {
+}: ModuleInput<OrdersSettingsOptions>) => {
   // Migration v3 -> v4
   renameCurrencyCode(migrationRepository);
 
@@ -117,10 +96,11 @@ export const configureOrdersModule = async ({
     positions: orderPositionsModule,
     payments: orderPaymentsModule,
 
-    updateStatus: async (orderId, { status, info }) => {
+    updateStatus: async (orderId: string, { status, info }: { status: OrderStatus; info?: string }) => {
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOne(selector, {});
 
+      if (!order) return null;
       if (order.status === status) return order;
 
       const date = new Date();
@@ -197,7 +177,7 @@ export const configureOrdersModule = async ({
       return await locker.lock(`order:${identifier}:${orderId}`, timeout).acquire();
     },
 
-    setDeliveryProvider: async (orderId, deliveryProviderId) => {
+    setDeliveryProvider: async (orderId: string, deliveryProviderId: string) => {
       const delivery = await OrderDeliveries.findOne({
         orderId,
         deliveryProviderId,
@@ -225,19 +205,16 @@ export const configureOrdersModule = async ({
         { returnDocument: 'after' },
       );
 
-      if (order) {
-        await emit('ORDER_SET_DELIVERY_PROVIDER', {
-          order,
-          deliveryProviderId,
-        });
+      if (!order) return null;
+      await emit('ORDER_SET_DELIVERY_PROVIDER', {
+        order,
+        deliveryProviderId,
+      });
 
-        return order;
-      }
-
-      return null;
+      return order;
     },
 
-    setPaymentProvider: async (orderId, paymentProviderId) => {
+    setPaymentProvider: async (orderId: string, paymentProviderId: string) => {
       const payment = await OrderPayments.findOne({
         orderId,
         paymentProviderId,
@@ -263,16 +240,15 @@ export const configureOrdersModule = async ({
         { returnDocument: 'after' },
       );
 
-      if (order) {
-        await emit('ORDER_SET_PAYMENT_PROVIDER', {
-          order,
-          paymentProviderId,
-        });
+      if (!order) return null;
+      await emit('ORDER_SET_PAYMENT_PROVIDER', {
+        order,
+        paymentProviderId,
+      });
 
-        return order;
-      }
-
-      return null;
+      return order;
     },
   };
 };
+
+export type OrdersModule = Awaited<ReturnType<typeof configureOrdersModule>>;

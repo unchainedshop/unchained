@@ -50,32 +50,37 @@ export interface OrderQuery extends mongodb.Filter<Order> {
 export const OrdersCollection = async (db: mongodb.Db) => {
   const Orders = db.collection<Order>('orders');
 
+  if (!isDocumentDBCompatModeEnabled()) {
+    await buildDbIndexes<Order>(Orders, [
+      {
+        index: {
+          _id: 'text',
+          userId: 'text',
+          orderNumber: 'text',
+          status: 'text',
+          'contact.emailAddress': 'text',
+          'contact.telNumber': 'text',
+        } as any,
+        options: {
+          weights: {
+            _id: 8,
+            userId: 3,
+            orderNumber: 6,
+            'contact.telNumber': 5,
+            'contact.emailAddress': 4,
+            status: 1,
+          },
+          name: 'order_fulltext_search',
+        },
+      },
+    ]);
+  }
+
   // Order Indexes
   await buildDbIndexes<Order>(Orders, [
     { index: { userId: 1 } },
     { index: { status: 1 } },
     { index: { orderNumber: 1 } },
-    !isDocumentDBCompatModeEnabled() && {
-      index: {
-        _id: 'text',
-        userId: 'text',
-        orderNumber: 'text',
-        status: 'text',
-        'contact.emailAddress': 'text',
-        'contact.telNumber': 'text',
-      } as any,
-      options: {
-        weights: {
-          _id: 8,
-          userId: 3,
-          orderNumber: 6,
-          'contact.telNumber': 5,
-          'contact.emailAddress': 4,
-          status: 1,
-        },
-        name: 'order_fulltext_search',
-      },
-    },
   ]);
 
   return Orders;

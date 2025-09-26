@@ -20,10 +20,7 @@ export const configureOrderDiscountsModule = ({
 
   return {
     // Queries
-    findOrderDiscount: async (
-      { discountId }: { discountId: string },
-      options?: mongodb.FindOptions,
-    ): Promise<OrderDiscount> => {
+    findOrderDiscount: async ({ discountId }: { discountId: string }, options?: mongodb.FindOptions) => {
       return OrderDiscounts.findOne(buildFindOrderDiscountByIdSelector(discountId), options);
     },
 
@@ -43,14 +40,14 @@ export const configureOrderDiscountsModule = ({
         ...doc,
         trigger: normalizedTrigger,
       });
-      const discount = await OrderDiscounts.findOne({
+      const discount = (await OrderDiscounts.findOne({
         _id: discountId,
-      });
+      })) as OrderDiscount;
       await emit('ORDER_CREATE_DISCOUNT', { discount });
       return discount;
     },
 
-    delete: async (orderDiscountId: string): Promise<OrderDiscount> => {
+    delete: async (orderDiscountId: string) => {
       const selector = buildFindOrderDiscountByIdSelector(orderDiscountId);
       const orderDiscount = await OrderDiscounts.findOneAndDelete(selector);
       await emit('ORDER_REMOVE_DISCOUNT', { discount: orderDiscount });
@@ -66,10 +63,10 @@ export const configureOrderDiscountsModule = ({
       );
     },
 
-    findSpareDiscount: async ({ code }): Promise<OrderDiscount> => {
+    findSpareDiscount: async ({ code }) => {
       return OrderDiscounts.findOne({
         code,
-        orderId: { $in: [undefined, null] },
+        orderId: { $exists: false },
       });
     },
 

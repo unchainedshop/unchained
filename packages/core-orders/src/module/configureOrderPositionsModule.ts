@@ -10,7 +10,7 @@ const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_ADD_PRODUCT',
 ];
 
-interface OrderPositionAggregateParams {
+export interface OrderPositionAggregateParams {
   match?: mongodb.Document;
   matchAfterGroup?: mongodb.Document;
   project?: mongodb.Document;
@@ -36,10 +36,7 @@ export const configureOrderPositionsModule = ({
 
   return {
     // Queries
-    findOrderPosition: async (
-      { itemId }: { itemId: string },
-      options?: mongodb.FindOptions,
-    ): Promise<OrderPosition> => {
+    findOrderPosition: async ({ itemId }: { itemId: string }, options?: mongodb.FindOptions) => {
       return OrderPositions.findOne(buildFindOrderPositionByIdSelector(itemId), options);
     },
 
@@ -48,13 +45,13 @@ export const configureOrderPositionsModule = ({
       return positions.toArray();
     },
 
-    delete: async (orderPositionId: string): Promise<OrderPosition> => {
+    delete: async (orderPositionId: string) => {
       const selector = buildFindOrderPositionByIdSelector(orderPositionId);
       const orderPosition = await OrderPositions.findOneAndDelete(selector, {});
       await emit('ORDER_REMOVE_CART_ITEM', {
         orderPosition,
       });
-      return { ...orderPosition, calculation: [] };
+      return orderPosition;
     },
 
     removePositions: async ({ orderId }: { orderId: string }): Promise<number> => {
@@ -71,7 +68,7 @@ export const configureOrderPositionsModule = ({
       orderPositionId: string;
       configuration?: { key: string; value: string }[];
       quantity?: number;
-    }): Promise<OrderPosition> => {
+    }) => {
       const modifier: any = {
         $set: {
           updated: new Date(),
@@ -96,6 +93,7 @@ export const configureOrderPositionsModule = ({
         },
       );
 
+      if (!updatedOrderPosition) return null;
       await emit('ORDER_UPDATE_CART_ITEM', {
         orderPosition: updatedOrderPosition,
       });
@@ -139,7 +137,7 @@ export const configureOrderPositionsModule = ({
       return orderIdsToRecalculate;
     },
 
-    updateScheduling: async (orderPositionId, scheduling): Promise<OrderPosition> => {
+    updateScheduling: async (orderPositionId, scheduling) => {
       return OrderPositions.findOneAndUpdate(
         generateDbFilterById(orderPositionId),
         {
@@ -154,7 +152,7 @@ export const configureOrderPositionsModule = ({
     updateCalculation: async <T extends PricingCalculation>(
       orderPositionId: string,
       calculation: T[],
-    ): Promise<OrderPosition> => {
+    ) => {
       return OrderPositions.findOneAndUpdate(
         { _id: orderPositionId },
         {
@@ -182,11 +180,11 @@ export const configureOrderPositionsModule = ({
         orderId,
         productId,
         originalProductId,
-        configuration: configuration || { $in: [null, undefined] },
+        configuration: configuration || { $exists: false },
         ...scope,
       };
 
-      await OrderPositions.updateOne(
+      const upsertedOrderPosition = (await OrderPositions.findOneAndUpdate(
         selector,
         {
           $set: {
@@ -205,13 +203,10 @@ export const configureOrderPositionsModule = ({
             ...scope,
           },
         },
-        { upsert: true },
-      );
-
-      const upsertedOrderPosition = await OrderPositions.findOne(selector);
+        { upsert: true, returnDocument: 'after' },
+      )) as OrderPosition;
 
       await emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
-
       return upsertedOrderPosition;
     },
     deleteOrderPositions: async (orderId: string) => {
