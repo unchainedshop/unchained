@@ -26,7 +26,7 @@ export const configureProductTextsModule = ({
     productId,
   }: {
     slug?: string;
-    title: string;
+    title?: string;
     productId: string;
   }): Promise<string> => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
@@ -53,7 +53,7 @@ export const configureProductTextsModule = ({
     locale: Intl.Locale,
     text: Omit<ProductText, 'productId' | 'locale' | 'created' | 'updated' | 'deleted'>,
   ): Promise<ProductText> => {
-    const { slug: textSlug, title = null, ...textFields } = text;
+    const { slug: textSlug, title, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
       title,
@@ -80,47 +80,44 @@ export const configureProductTextsModule = ({
       modifier.$setOnInsert.slug = slug;
     }
 
-    const updateResult = await ProductTexts.findOneAndUpdate(
+    const productText = (await ProductTexts.findOneAndUpdate(
       { productId, locale: locale.baseName },
       modifier,
       {
         upsert: true,
         returnDocument: 'after',
-        includeResultMetadata: true,
       },
-    );
+    )) as ProductText;
 
-    if (updateResult.ok) {
-      await Products.updateOne(generateDbFilterById(productId), {
+    await Products.updateOne(generateDbFilterById(productId), {
+      $set: {
+        updated: new Date(),
+      },
+      $addToSet: {
+        slugs: slug,
+      },
+    });
+
+    await Products.updateMany(
+      {
+        _id: { $ne: productId },
+        slugs: slug,
+      },
+      {
         $set: {
           updated: new Date(),
         },
-        $addToSet: {
+        $pull: {
           slugs: slug,
         },
-      });
+      },
+    );
+    await emit('PRODUCT_UPDATE_TEXT', {
+      productId,
+      text: productText,
+    });
 
-      await Products.updateMany(
-        {
-          _id: { $ne: productId },
-          slugs: slug,
-        },
-        {
-          $set: {
-            updated: new Date(),
-          },
-          $pull: {
-            slugs: slug,
-          },
-        },
-      );
-      await emit('PRODUCT_UPDATE_TEXT', {
-        productId,
-        text: updateResult.value,
-      });
-    }
-
-    return updateResult.value;
+    return productText;
   };
 
   return {

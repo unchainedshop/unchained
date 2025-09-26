@@ -26,7 +26,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     locale: Intl.Locale,
     text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
   ) => {
-    const currentText = await AssortmentMediaTexts.findOneAndUpdate(
+    const assortmentMediaText = (await AssortmentMediaTexts.findOneAndUpdate(
       {
         assortmentMediaId,
         locale: locale.baseName,
@@ -47,16 +47,13 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       {
         upsert: true,
         returnDocument: 'after',
-        includeResultMetadata: true,
       },
-    );
-    if (currentText.ok) {
-      await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
-        assortmentMediaId,
-        text: currentText.value,
-      });
-    }
-    return currentText.value;
+    )) as AssortmentMediaText;
+    await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
+      assortmentMediaId,
+      text: assortmentMediaText,
+    });
+    return assortmentMediaText;
   };
 
   return {

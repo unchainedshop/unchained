@@ -98,7 +98,7 @@ export interface ProductWarehousing {
 }
 
 export type Product = {
-  _id?: string;
+  _id: string;
   bundleItems: ProductBundleItem[];
   commerce?: ProductCommerce;
   meta?: any;
@@ -107,16 +107,16 @@ export type Product = {
   published?: Date;
   sequence: number;
   slugs: string[];
-  status?: string;
+  status?: string | null;
   supply: ProductSupply;
-  tags?: string[];
+  tags: string[];
   type: string;
   warehousing?: ProductWarehousing;
   tokenization?: ProductTokenization;
 } & TimestampFields;
 
 export type ProductText = {
-  _id?: string;
+  _id: string;
   productId: string;
   description?: string;
   locale: string;
@@ -132,6 +132,31 @@ export const ProductsCollection = async (db: mongodb.Db) => {
   const Products = db.collection<Product>('products');
   const ProductTexts = db.collection<ProductText>('product_texts');
 
+  if (!isDocumentDBCompatModeEnabled()) {
+    await buildDbIndexes(Products, [
+      {
+        index: { 'warehousing.sku': 'text', slugs: 'text' },
+        options: {
+          name: 'products_fulltext_search',
+        },
+      },
+    ]);
+    await buildDbIndexes(ProductTexts, [
+      {
+        index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
+        options: {
+          weights: {
+            title: 8,
+            subtitle: 6,
+            vendor: 5,
+            brand: 4,
+          },
+          name: 'product_texts_fulltext_search',
+        },
+      },
+    ]);
+  }
+
   // Product Indexes
   await buildDbIndexes(Products, [
     { index: { sequence: 1 } },
@@ -139,13 +164,6 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     { index: { status: 1 } },
     { index: { tags: 1 } },
     { index: { 'warehousing.sku': 1 } },
-    !isDocumentDBCompatModeEnabled() &&
-      ({
-        index: { 'warehousing.sku': 'text', slugs: 'text' },
-        options: {
-          name: 'products_fulltext_search',
-        },
-      } as any),
   ]);
 
   // ProductTexts indexes
@@ -154,18 +172,6 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, productId: 1 } },
-    !isDocumentDBCompatModeEnabled() && {
-      index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
-      options: {
-        weights: {
-          title: 8,
-          subtitle: 6,
-          vendor: 5,
-          brand: 4,
-        },
-        name: 'product_texts_fulltext_search',
-      },
-    },
   ]);
 
   return {

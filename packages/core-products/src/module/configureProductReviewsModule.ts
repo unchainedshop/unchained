@@ -68,7 +68,8 @@ const userIdsThatVoted = (
 ): string[] => {
   return (productReview.votes || [])
     .filter(({ type: currentType }) => type === currentType)
-    .map(({ userId }) => userId);
+    .map(({ userId }) => userId)
+    .filter(Boolean) as string[];
 };
 
 export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
@@ -86,11 +87,8 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
 
   return {
     // Queries
-    findProductReview: async ({
-      productReviewId,
-    }: {
-      productReviewId: string;
-    }): Promise<ProductReview> => ProductReviews.findOne(generateDbFilterById(productReviewId), {}),
+    findProductReview: async ({ productReviewId }: { productReviewId: string }) =>
+      ProductReviews.findOne(generateDbFilterById(productReviewId), {}),
 
     findProductReviews: async ({
       offset,
@@ -127,14 +125,19 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
     },
 
     // Mutations
-    create: async (doc: ProductReview): Promise<ProductReview> => {
+    create: async (
+      doc: Omit<ProductReview, '_id' | 'created'> & Pick<Partial<ProductReview>, 'created' | '_id'>,
+    ): Promise<ProductReview> => {
       const { insertedId: productReviewId } = await ProductReviews.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
         ...doc,
       });
 
-      const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId), {});
+      const productReview = (await ProductReviews.findOne(
+        generateDbFilterById(productReviewId),
+        {},
+      )) as ProductReview;
 
       await emit('PRODUCT_REVIEW_CREATE', {
         productReview,
@@ -178,7 +181,7 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
       return deletionResult.deletedCount;
     },
 
-    update: async (productReviewId: string, doc: Partial<ProductReview>): Promise<ProductReview> => {
+    update: async (productReviewId: string, doc: Partial<ProductReview>) => {
       const productReview = await ProductReviews.findOneAndUpdate(
         generateDbFilterById(productReviewId),
         {
@@ -190,8 +193,8 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
         { returnDocument: 'after' },
       );
 
+      if (!productReview) return null;
       await emit('PRODUCT_UPDATE_REVIEW', { productReview });
-
       return productReview;
     },
     votes: {
@@ -206,8 +209,12 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
 
       addVote: async (
         productReview: ProductReview,
-        { userId, type = ProductReviewVoteType.UPVOTE as ProductReviewVoteType, meta }: ProductVote,
-      ): Promise<ProductReview> => {
+        {
+          userId,
+          type = ProductReviewVoteType.UPVOTE as ProductReviewVoteType,
+          meta,
+        }: { userId: string; type: ProductReviewVoteType; meta?: Record<string, any> },
+      ) => {
         if (!userIdsThatVoted(productReview, { type }).includes(userId)) {
           const selector = generateDbFilterById(productReview._id, {
             deleted: null,
@@ -243,10 +250,10 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
             { returnDocument: 'after' },
           );
 
+          if (!updatedProductReview) return null;
           await emit('PRODUCT_REVIEW_ADD_VOTE', {
             productReview: updatedProductReview,
           });
-
           return updatedProductReview;
         }
 

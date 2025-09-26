@@ -31,7 +31,7 @@ export const normalizeRate = (
   },
   rateRecord: ProductPriceRate,
 ) => {
-  let rate = null;
+  let rate: number | null = null;
   if (rateRecord.quoteCurrency === quoteCurrency.isoCode) {
     rate = rateRecord.rate;
   } else {
@@ -61,7 +61,7 @@ export const configureProductPricesModule = ({
       currencyCode,
       quantity = 1,
     }: { countryCode: string; currencyCode?: string; quantity?: number },
-  ): Promise<ProductPrice> => {
+  ): Promise<ProductPrice | null> => {
     const pricing = getPriceLevels({
       product,
       currencyCode,
@@ -69,17 +69,16 @@ export const configureProductPricesModule = ({
     });
 
     const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
+    if (!foundPrice) return null;
 
     const normalizedPrice = {
-      amount: null,
-      currencyCode,
       countryCode,
       isTaxable: false,
       isNetPrice: false,
       ...foundPrice,
     };
 
-    if (normalizedPrice.amount !== undefined && normalizedPrice.amount !== null) {
+    if (normalizedPrice.amount !== null) {
       return normalizedPrice;
     }
     return null;
@@ -109,7 +108,7 @@ export const configureProductPricesModule = ({
         quantity?: number;
         vectors: ProductConfiguration[];
       },
-    ): Promise<ProductPriceRange> => {
+    ): Promise<ProductPriceRange | null> => {
       const products = await proxyProducts(product, vectors, {
         includeInactive,
       });
@@ -124,7 +123,7 @@ export const configureProductPricesModule = ({
             }),
           ),
         )
-      ).filter(Boolean);
+      ).filter(Boolean) as ProductPrice[];
 
       if (!filteredPrices.length) return null;
 
@@ -149,7 +148,7 @@ export const configureProductPricesModule = ({
         price: ProductPrice;
       }[]
     > => {
-      let previousMax = null;
+      let previousMax: number | undefined;
 
       const filteredAndSortedPriceLevels = getPriceLevels({
         product,
@@ -157,24 +156,25 @@ export const configureProductPricesModule = ({
         countryCode,
       });
 
-      return Promise.all(
-        filteredAndSortedPriceLevels.map(async (priceLevel, i) => {
-          const max = priceLevel.maxQuantity || null;
-          const min = previousMax ? previousMax + 1 : 0;
-          previousMax = priceLevel.maxQuantity;
+      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
+        const max = priceLevel.maxQuantity || 0;
+        const min = previousMax ? previousMax + 1 : 0;
+        previousMax = priceLevel.maxQuantity;
 
-          return {
-            minQuantity: min,
-            maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
-            price: {
-              isTaxable: !!priceLevel.isTaxable,
-              isNetPrice: !!priceLevel.isNetPrice,
-              amount: priceLevel.amount,
-              currencyCode,
-            },
-          };
-        }),
-      );
+        return {
+          minQuantity: min,
+          maxQuantity:
+            i === 0 && priceLevel.maxQuantity && priceLevel.maxQuantity > 0
+              ? priceLevel.maxQuantity
+              : max,
+          price: {
+            isTaxable: !!priceLevel.isTaxable,
+            isNetPrice: !!priceLevel.isNetPrice,
+            amount: priceLevel.amount,
+            currencyCode,
+          },
+        };
+      });
     },
 
     rates: {
@@ -188,7 +188,7 @@ export const configureProductPricesModule = ({
           decimals?: number;
         },
         referenceDate: Date = new Date(),
-      ): Promise<{ rate: number; expiresAt: Date } | null> => {
+      ): Promise<{ rate: number; expiresAt?: Date } | null> => {
         const priceRates = await (await ProductPriceRates(db)).ProductRates;
         const mostRecentCurrencyRate = await priceRates.findOne(
           {

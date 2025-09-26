@@ -23,7 +23,7 @@ export type Filter = {
 
 export type FilterText = {
   filterId: string;
-  filterOptionValue?: string;
+  filterOptionValue: string | null;
   locale: string;
   subtitle?: string;
   title?: string;
@@ -31,7 +31,7 @@ export type FilterText = {
 
 export interface FilterProductIdCacheRecord {
   filterId: string;
-  filterOptionValue?: string;
+  filterOptionValue: string | null;
   productIds: string[];
 }
 

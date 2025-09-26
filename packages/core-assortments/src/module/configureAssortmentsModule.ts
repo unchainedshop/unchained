@@ -519,7 +519,7 @@ export const configureAssortmentsModule = async ({
         tags: { $exists: true },
         deleted: { $exists: false },
       });
-      return tags.sort();
+      return tags.filter(Boolean).toSorted();
     },
   };
 };

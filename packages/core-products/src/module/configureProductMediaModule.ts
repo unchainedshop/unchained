@@ -25,7 +25,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     locale: Intl.Locale,
     text: Omit<ProductMediaText, 'productMediaId' | 'locale' | 'created' | 'updated' | 'deleted'>,
   ): Promise<ProductMediaText> => {
-    const updateResult = await ProductMediaTexts.findOneAndUpdate(
+    const productMediaText = (await ProductMediaTexts.findOneAndUpdate(
       {
         productMediaId,
         locale: locale.baseName,
@@ -46,21 +46,18 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       {
         upsert: true,
         returnDocument: 'after',
-        includeResultMetadata: true,
       },
-    );
-    if (updateResult.ok) {
-      await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
-        productMediaId,
-        text: updateResult.value,
-      });
-    }
-    return updateResult.value;
+    )) as ProductMediaText;
+    await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
+      productMediaId,
+      text: productMediaText,
+    });
+    return productMediaText;
   };
 
   return {
     // Queries
-    findProductMedia: async ({ productMediaId }: { productMediaId: string }): Promise<ProductMedia> => {
+    findProductMedia: async ({ productMediaId }: { productMediaId: string }) => {
       return ProductMedias.findOne(generateDbFilterById(productMediaId), {});
     },
 
@@ -79,7 +76,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       options?: mongodb.FindOptions<ProductMedia>,
     ): Promise<ProductMedia[]> => {
       const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
-      if (tags?.length > 0) {
+      if (tags?.length && tags?.length > 0) {
         selector.tags = { $all: tags };
       }
 
@@ -120,7 +117,10 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
         sortKey,
       });
 
-      const productMedia = await ProductMedias.findOne(generateDbFilterById(productMediaId), {});
+      const productMedia = (await ProductMedias.findOne(
+        generateDbFilterById(productMediaId),
+        {},
+      )) as ProductMedia;
 
       await emit('PRODUCT_ADD_MEDIA', {
         productMedia,
@@ -180,7 +180,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (productMediaId: string, doc: Partial<ProductMedia>): Promise<ProductMedia> => {
+    update: async (productMediaId: string, doc: Partial<ProductMedia>) => {
       const selector = generateDbFilterById(productMediaId);
       const modifier = { $set: doc };
       return ProductMedias.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });

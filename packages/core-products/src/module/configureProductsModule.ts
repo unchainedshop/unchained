@@ -165,17 +165,19 @@ export const configureProductsModule = async ({
 
   const unpublishProduct = async (product: Product): Promise<boolean> => {
     if (product.status === ProductStatus.ACTIVE) {
-      await Products.updateOne(generateDbFilterById(product._id), {
+      const result = await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
           status: InternalProductStatus.DRAFT,
           updated: new Date(),
-          published: null,
+        },
+        $unset: {
+          published: 1,
         },
       });
 
       await emit('PRODUCT_UNPUBLISH', { product });
 
-      return true;
+      return Boolean(result.modifiedCount);
     }
 
     return false;
@@ -212,20 +214,25 @@ export const configureProductsModule = async ({
 
   return {
     // Queries
-    findProduct: async ({
-      productId,
-      slug,
-      sku,
-    }: {
-      productId?: string;
-      slug?: string;
-      sku?: string;
-    }): Promise<Product> => {
-      if (sku) {
-        return Products.findOne({ 'warehousing.sku': sku }, { sort: { sequence: 1 } });
+    findProduct: async (
+      params:
+        | {
+            productId: string;
+          }
+        | {
+            slug: string;
+          }
+        | {
+            sku: string;
+          },
+    ): Promise<Product | null> => {
+      if ('sku' in params) {
+        return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1 } });
       }
-      const selector = productId ? generateDbFilterById(productId) : { slugs: slug };
-      return Products.findOne(selector, {});
+      if ('slug' in params) {
+        return Products.findOne({ slugs: params.slug }, {});
+      }
+      return Products.findOne(generateDbFilterById(params.productId), {});
     },
 
     findProducts: async (
@@ -371,7 +378,7 @@ export const configureProductsModule = async ({
         ...productData,
       });
 
-      const product = await Products.findOne(generateDbFilterById(productId), {});
+      const product = (await Products.findOne(generateDbFilterById(productId), {})) as Product;
       await emit('PRODUCT_CREATE', { product });
 
       return product;
@@ -399,28 +406,26 @@ export const configureProductsModule = async ({
 
       return productId;
     },
-    firstActiveProductProxy: async (productId: string): Promise<Product> => {
+    firstActiveProductProxy: async (productId: string) => {
       return Products.findOne({ 'proxy.assignments.productId': productId });
     },
-    firstActiveProductBundle: async (productId: string): Promise<Product> => {
+    firstActiveProductBundle: async (productId: string) => {
       return Products.findOne({ 'bundleItems.productId': productId });
     },
     delete: async (productId: string) => {
-      const product = await Products.findOne(generateDbFilterById(productId), {});
-      if (product.status !== InternalProductStatus.DRAFT) {
-        throw new Error(`Invalid status', ${product.status}`);
-      }
-
-      const updatedResult = await Products.updateOne(generateDbFilterById(productId), {
-        $set: {
-          status: ProductStatus.DELETED,
-          updated: new Date(),
+      const deletedProduct = await Products.findOneAndUpdate(
+        generateDbFilterById(productId),
+        {
+          $set: {
+            status: ProductStatus.DELETED,
+            updated: new Date(),
+          },
         },
-      });
-
+        { returnDocument: 'after' },
+      );
+      if (!deletedProduct) return null;
       await emit('PRODUCT_REMOVE', { productId });
-
-      return updatedResult.modifiedCount;
+      return deletedProduct;
     },
 
     deleteProductPermanently,
@@ -519,8 +524,10 @@ export const configureProductsModule = async ({
         return productId;
       },
 
-      removeBundleItem: async (productId: string, index: number): Promise<ProductBundleItem> => {
+      removeBundleItem: async (productId: string, index: number) => {
         const product = await Products.findOne(generateDbFilterById(productId), {});
+
+        if (!product) return null;
 
         const { bundleItems = [] } = product;
         const removedItems = bundleItems.splice(index, 1);
@@ -544,7 +551,7 @@ export const configureProductsModule = async ({
       },
     },
 
-    removeAllAssignmentsAndBundleItems: async (productId: string): Promise<Product> => {
+    removeAllAssignmentsAndBundleItems: async (productId: string) => {
       return Products.findOneAndUpdate(
         generateDbFilterById(productId),
         {
@@ -610,7 +617,7 @@ export const configureProductsModule = async ({
         tags: { $exists: true },
         status: { $ne: ProductStatus.DELETED },
       });
-      return tags.sort();
+      return tags.filter(Boolean).toSorted();
     },
   };
 };

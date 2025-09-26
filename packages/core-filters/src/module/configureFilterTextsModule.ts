@@ -21,10 +21,10 @@ export const configureFilterTextsModule = ({
   ) => {
     const { filterId, filterOptionValue } = params;
 
-    const filterText = await FilterTexts.findOneAndUpdate(
+    const filterText = (await FilterTexts.findOneAndUpdate(
       {
         filterId,
-        filterOptionValue: filterOptionValue || { $eq: undefined },
+        filterOptionValue: filterOptionValue || { $eq: null },
         locale: locale.baseName,
       },
       {
@@ -44,15 +44,12 @@ export const configureFilterTextsModule = ({
         upsert: true,
         returnDocument: 'after',
       },
-    );
-    if (!filterText) return null;
-    if (filterText) {
-      await emit('FILTER_UPDATE_TEXT', {
-        filterId: params.filterId,
-        filterOptionValue: params.filterOptionValue || null,
-        text: filterText,
-      });
-    }
+    )) as FilterText;
+    await emit('FILTER_UPDATE_TEXT', {
+      filterId: params.filterId,
+      filterOptionValue: params.filterOptionValue || null,
+      text: filterText,
+    });
     return filterText;
   };
 
@@ -79,7 +76,7 @@ export const configureFilterTextsModule = ({
         FilterTexts,
         {
           filterId,
-          filterOptionValue: filterOptionValue || { $eq: undefined },
+          filterOptionValue: filterOptionValue || { $eq: null },
         },
         locale,
       );

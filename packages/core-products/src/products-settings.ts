@@ -1,18 +1,15 @@
 import { slugify as defaultSlugify } from '@unchainedshop/utils';
 
-export interface ProductsSettingsOptions {
-  slugify?: (title: string) => string;
-}
-
 export interface ProductsSettings {
-  slugify?: (title: string) => string;
+  slugify: (title: string) => string;
   configureSettings: (options?: ProductsSettingsOptions) => void;
 }
 
-export const productsSettings: ProductsSettings = {
-  slugify: null,
+export type ProductsSettingsOptions = Omit<Partial<ProductsSettings>, 'configureSettings'>;
 
-  configureSettings: async ({ slugify = defaultSlugify }: ProductsSettingsOptions) => {
-    productsSettings.slugify = slugify;
+export const productsSettings: ProductsSettings = {
+  slugify: defaultSlugify,
+  configureSettings: async ({ slugify }: ProductsSettingsOptions) => {
+    productsSettings.slugify = slugify || defaultSlugify;
   },
 };

@@ -16,7 +16,7 @@ const upsert = async (
 };
 
 export default async function upsertVariations(
-  { variations, productId },
+  { variations, productId }: { variations: any[]; productId: string },
   unchainedAPI: { modules: Modules },
 ) {
   const { modules } = unchainedAPI;

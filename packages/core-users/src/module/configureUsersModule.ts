@@ -825,10 +825,7 @@ export const configureUsersModule = async ({ db, options }: ModuleInput<UserSett
         tags: { $exists: true },
         deleted: { $exists: false },
       })) as string[];
-      return tags
-        .filter(Boolean)
-        .map((t) => t.trim())
-        .filter(Boolean);
+      return tags.filter(Boolean).toSorted();
     },
   };
 };

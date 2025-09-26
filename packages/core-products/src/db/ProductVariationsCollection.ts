@@ -6,19 +6,19 @@ export enum ProductVariationType {
 }
 
 export type ProductVariation = {
-  _id?: string;
+  _id: string;
   key?: string;
   tags?: string[];
   options: string[];
   productId: string;
-  type?: string;
+  type: string;
 } & TimestampFields;
 
 export type ProductVariationText = {
-  _id?: string;
+  _id: string;
   locale: string;
   productVariationId: string;
-  productVariationOptionValue?: string;
+  productVariationOptionValue: string | null;
   subtitle?: string;
   title?: string;
 } & TimestampFields;

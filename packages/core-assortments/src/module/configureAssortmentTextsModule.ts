@@ -73,50 +73,47 @@ export const configureAssortmentTextsModule = ({
       modifier.$setOnInsert.slug = slug;
     }
 
-    const updateResult = await AssortmentTexts.findOneAndUpdate(
+    const assortmentText = (await AssortmentTexts.findOneAndUpdate(
       { assortmentId, locale: locale.baseName },
       modifier,
       {
         upsert: true,
         returnDocument: 'after',
-        includeResultMetadata: true,
+      },
+    )) as AssortmentText;
+
+    await Assortments.updateOne(
+      { _id: assortmentId },
+      {
+        $set: {
+          updated: new Date(),
+        },
+        $addToSet: {
+          slugs: slug,
+        },
       },
     );
 
-    if (updateResult.ok) {
-      await Assortments.updateOne(
-        { _id: assortmentId },
-        {
-          $set: {
-            updated: new Date(),
-          },
-          $addToSet: {
-            slugs: slug,
-          },
+    await Assortments.updateMany(
+      {
+        _id: { $ne: assortmentId },
+        slugs: slug,
+      },
+      {
+        $set: {
+          updated: new Date(),
         },
-      );
-
-      await Assortments.updateMany(
-        {
-          _id: { $ne: assortmentId },
+        $pull: {
           slugs: slug,
         },
-        {
-          $set: {
-            updated: new Date(),
-          },
-          $pull: {
-            slugs: slug,
-          },
-        },
-      );
-      await emit('ASSORTMENT_UPDATE_TEXT', {
-        assortmentId,
-        text: updateResult.value,
-      });
-    }
+      },
+    );
+    await emit('ASSORTMENT_UPDATE_TEXT', {
+      assortmentId,
+      text: assortmentText,
+    });
 
-    return updateResult.value;
+    return assortmentText;
   };
 
   return {

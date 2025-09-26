@@ -1,3 +1,4 @@
+import { ProductMediaText } from '@unchainedshop/core-products';
 import { Context } from '../../../../context.js';
 import { ProductMediaNotFoundError } from '../../../../errors.js';
 import { Params } from '../schemas.js';
@@ -12,6 +13,9 @@ export default async function updateProductMediaTexts(
   const media = await modules.products.media.findProductMedia({ productMediaId });
   if (!media) throw new ProductMediaNotFoundError({ productMediaId });
 
-  const texts = await modules.products.media.texts.updateMediaTexts(productMediaId, mediaTexts);
+  const texts = await modules.products.media.texts.updateMediaTexts(
+    productMediaId,
+    mediaTexts as ProductMediaText[], // TODO: Fix with correct zod schema
+  );
   return { texts };
 }

@@ -29,7 +29,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
   const upsertLocalizedText = async (
     {
       productVariationId,
-      productVariationOptionValue = null,
+      productVariationOptionValue,
     }: {
       productVariationId: string;
       productVariationOptionValue?: string;
@@ -37,10 +37,16 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     locale: Intl.Locale,
     text: Omit<
       ProductVariationText,
-      'locale' | 'productVariationId' | 'productVariationOptionValue' | 'created' | 'updated' | 'deleted'
+      | '_id'
+      | 'locale'
+      | 'productVariationId'
+      | 'productVariationOptionValue'
+      | 'created'
+      | 'updated'
+      | 'deleted'
     >,
   ): Promise<ProductVariationText> => {
-    const updateResult = await ProductVariationTexts.findOneAndUpdate(
+    const productVariationText = (await ProductVariationTexts.findOneAndUpdate(
       {
         productVariationId,
         productVariationOptionValue: productVariationOptionValue || {
@@ -64,29 +70,20 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       {
         upsert: true,
         returnDocument: 'after',
-        includeResultMetadata: true,
       },
-    );
+    )) as ProductVariationText;
 
-    if (updateResult.ok) {
-      await emit('PRODUCT_UPDATE_VARIATION_TEXT', {
-        productVariationId,
-        productVariationOptionValue,
-        text: updateResult.value,
-      });
-    }
-    return updateResult.value;
+    await emit('PRODUCT_UPDATE_VARIATION_TEXT', {
+      productVariationId,
+      productVariationOptionValue,
+      text: productVariationText,
+    });
+    return productVariationText;
   };
 
   return {
     // Queries
-    findProductVariationByKey: async ({
-      productId,
-      key,
-    }: {
-      productId: string;
-      key: string;
-    }): Promise<ProductVariation> => {
+    findProductVariationByKey: async ({ productId, key }: { productId: string; key: string }) => {
       const selector: mongodb.Filter<ProductVariation> = {
         productId,
         key,
@@ -94,11 +91,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       return ProductVariations.findOne(selector, {});
     },
 
-    findProductVariation: async ({
-      productVariationId,
-    }: {
-      productVariationId: string;
-    }): Promise<ProductVariation> => {
+    findProductVariation: async ({ productVariationId }: { productVariationId: string }) => {
       return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
     },
 
@@ -141,10 +134,10 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
         ...doc,
       });
 
-      const productVariation = await ProductVariations.findOne(
+      const productVariation = (await ProductVariations.findOne(
         generateDbFilterById(productVariationId),
         {},
-      );
+      )) as ProductVariation;
 
       await emit('PRODUCT_CREATE_VARIATION', {
         productVariation,
@@ -191,10 +184,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (
-      productVariationId: string,
-      doc: Partial<ProductVariation>,
-    ): Promise<ProductVariation> => {
+    update: async (productVariationId: string, doc: Partial<ProductVariation>) => {
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
       return ProductVariations.findOneAndUpdate(selector, modifier, {
@@ -202,10 +192,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       });
     },
 
-    addVariationOption: async (
-      productVariationId,
-      { value }: { value: string },
-    ): Promise<ProductVariation> => {
+    addVariationOption: async (productVariationId, { value }: { value: string }) => {
       const productVariation = await ProductVariations.findOneAndUpdate(
         generateDbFilterById(productVariationId),
         {
@@ -218,8 +205,9 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
         },
         { returnDocument: 'after' },
       );
-      await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
 
+      if (!productVariation) return null;
+      await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
       return productVariation;
     },
 
@@ -283,7 +271,12 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
         productVariationId: string,
         texts: Omit<
           ProductVariationText,
-          'productVariationId' | 'productVariationOptionValue' | 'created' | 'updated' | 'deleted'
+          | '_id'
+          | 'productVariationId'
+          | 'productVariationOptionValue'
+          | 'created'
+          | 'updated'
+          | 'deleted'
         >[],
         productVariationOptionValue?: string,
       ): Promise<ProductVariationText[]> => {
