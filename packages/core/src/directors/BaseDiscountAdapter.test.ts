@@ -32,7 +32,7 @@ describe('BaseDiscountAdapter instantiation', () => {
 
     it('release', async () => {
       const result = await adapter.actions(context);
-      assert.equal(await result.release(), null);
+      assert.equal(await result.release(), undefined);
     });
 
     it('isValidForCodeTriggering', async () => {

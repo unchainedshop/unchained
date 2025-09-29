@@ -9,9 +9,14 @@ export async function deleteUserService(this: Modules, { userId }: { userId: str
   await this.quotations.deleteRequestedUserQuotations(userId);
   await this.enrollments.deleteInactiveUserEnrollments(userId);
   await this.payment.paymentCredentials.deleteUserPaymentCredentials(userId);
-  await this.users.webAuthn.deleteUserWebAuthnCredentials(user.username);
 
-  const carts = await this.orders.findOrders({ userId, status: null });
+  if (user.username) {
+    await this.users.webAuthn.deleteUserWebAuthnCredentials(user.username);
+  }
+
+  const carts = (await this.orders.findOrders({ userId, includeCarts: true })).filter(
+    (c) => c.status === null,
+  );
 
   await Array.fromAsync(carts, async (userCart) => {
     await this.orders.positions.deleteOrderPositions(userCart?._id);

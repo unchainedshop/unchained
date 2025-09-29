@@ -11,6 +11,7 @@ export async function createDownloadStreamService(
 ) {
   const fileAdapter = getFileAdapter();
   const file = await this.files.findFile({ fileId });
+  if (!file) return null;
   const stream = fileAdapter.createDownloadStream(file, { modules: this });
   return stream;
 }

@@ -2,6 +2,7 @@ import { Order, OrderDelivery, OrderPosition } from '@unchainedshop/core-orders'
 import { WarehousingDirector } from '../directors/index.js';
 import { Modules } from '../modules.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
+import { Product } from '@unchainedshop/core-products';
 
 export async function updateSchedulingService(
   this: Modules,
@@ -9,7 +10,7 @@ export async function updateSchedulingService(
     orderPositions,
     order,
     orderDelivery,
-  }: { orderPositions: OrderPosition[]; order: Order; orderDelivery: OrderDelivery },
+  }: { orderPositions: OrderPosition[]; order: Order; orderDelivery: OrderDelivery | null },
 ) {
   const deliveryProvider =
     orderDelivery &&
@@ -17,14 +18,14 @@ export async function updateSchedulingService(
       deliveryProviderId: orderDelivery.deliveryProviderId,
     }));
 
+  if (!deliveryProvider) return [];
+
   return (await Promise.all(
     orderPositions.map(async (orderPosition) => {
       // scheduling (store in db for auditing)
-      const product = await this.products.findProduct({
+      const product = (await this.products.findProduct({
         productId: orderPosition.productId,
-      });
-
-      const { countryCode, userId } = order;
+      })) as Product;
 
       const scheduling = await Promise.all(
         (
@@ -33,22 +34,20 @@ export async function updateSchedulingService(
             deliveryProvider,
           })
         ).map(async (warehousingProvider) => {
-          const context = {
+          const director = await WarehousingDirector.actions(
             warehousingProvider,
-            deliveryProvider,
-            product,
-            item: orderPosition,
-            delivery: deliveryProvider,
-            order,
-            userId,
-            countryCode,
-            referenceDate: order.ordered,
-            quantity: orderPosition.quantity,
-          };
-
-          const director = await WarehousingDirector.actions(warehousingProvider, context, {
-            modules: this,
-          });
+            {
+              deliveryProvider,
+              product,
+              orderPosition,
+              order,
+              referenceDate: order.ordered,
+              quantity: orderPosition.quantity,
+            },
+            {
+              modules: this,
+            },
+          );
           const dispatch = await director.estimatedDispatch();
 
           return {

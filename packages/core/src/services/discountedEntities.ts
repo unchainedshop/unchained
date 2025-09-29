@@ -15,32 +15,32 @@ export async function discountedEntitiesService(
 ): Promise<OrderPricingDiscount[]> {
   // Delivery discounts
   const orderDelivery = await this.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
+    orderDeliveryId: order.deliveryId!,
   });
 
   const deliveryPricingSheet = DeliveryPricingSheet({
-    calculation: orderDelivery.calculation || [],
+    calculation: orderDelivery!.calculation || [],
     currencyCode: order.currencyCode,
   });
   const orderDeliveryDiscounts = deliveryPricingSheet
     .discountPrices(orderDiscount._id)
     .map((discount) => ({
-      delivery: orderDelivery,
+      delivery: orderDelivery!,
       ...discount,
     }));
 
   // Payment discounts
   const orderPayment = await this.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
+    orderPaymentId: order.paymentId!,
   });
   const paymentPricingSheet = PaymentPricingSheet({
-    calculation: orderPayment.calculation || [],
+    calculation: orderPayment!.calculation || [],
     currencyCode: order.currencyCode,
   });
   const orderPaymentDiscounts = paymentPricingSheet
     .discountPrices(orderDiscount._id)
     .map((discount) => ({
-      payment: orderPayment,
+      payment: orderPayment!,
       ...discount,
     }));
 

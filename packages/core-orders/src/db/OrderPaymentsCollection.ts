@@ -13,7 +13,7 @@ export type OrderPayment = {
   context?: any;
   paid?: Date;
   transactionId?: string;
-  paymentProviderId?: string;
+  paymentProviderId: string;
   status?: OrderPaymentStatus | null;
   calculation?: any[];
 } & LogFields &

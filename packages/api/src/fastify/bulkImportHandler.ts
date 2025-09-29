@@ -33,6 +33,8 @@ const bulkImportHandler: RouteHandlerMethod = async (
     });
 
     const validationStream = await context.services.files.createDownloadStream({ fileId: file._id });
+    if (!validationStream) throw new Error('Could not create download stream from uploaded file');
+
     await context.bulkImporter.validateEventStream(validationStream);
 
     input.payloadId = file._id;

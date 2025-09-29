@@ -96,7 +96,10 @@ export const configureOrdersModule = async ({
     positions: orderPositionsModule,
     payments: orderPaymentsModule,
 
-    updateStatus: async (orderId: string, { status, info }: { status: OrderStatus; info?: string }) => {
+    updateStatus: async (
+      orderId: string,
+      { status, info }: { status: OrderStatus | null; info?: string },
+    ) => {
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOne(selector, {});
 

@@ -19,8 +19,8 @@ export async function activateEnrollmentService(this: Modules, enrollment: Enrol
   await addMessageService.bind(this)('ENROLLMENT_STATUS', {
     reason: 'status_change',
     locale: locale.baseName,
-    enrollmentId: updatedEnrollment._id,
+    enrollmentId: updatedEnrollment!._id,
   });
 
-  return updatedEnrollment;
+  return updatedEnrollment!;
 }

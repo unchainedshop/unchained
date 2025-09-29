@@ -59,12 +59,7 @@ export const EnrollmentDirector: IEnrollmentDirector = {
   actions: async (enrollmentContext, unchainedAPI) => {
     const context = { ...enrollmentContext, ...unchainedAPI };
 
-    // Resolve adapter
-    const product = await context.modules.products.findProduct({
-      productId: context.enrollment.productId,
-    });
-
-    const Adapter = findAppropriateAdapters(product?.plan)?.[0];
+    const Adapter = findAppropriateAdapters(enrollmentContext.product.plan)?.[0];
 
     if (!Adapter) {
       throw new Error('No suitable enrollment plugin available for this plan configuration');

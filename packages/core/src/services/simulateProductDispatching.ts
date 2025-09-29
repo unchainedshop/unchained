@@ -13,7 +13,7 @@ export async function simulateProductDispatchingService(
     referenceDate,
   }: {
     product: Product;
-    quantity?: number;
+    quantity: number;
     referenceDate?: Date;
   },
 ) {

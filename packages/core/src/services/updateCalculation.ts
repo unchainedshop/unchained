@@ -1,4 +1,9 @@
-import { OrderDiscountTrigger } from '@unchainedshop/core-orders';
+import {
+  OrderDelivery,
+  OrderDiscountTrigger,
+  OrderPayment,
+  OrderPosition,
+} from '@unchainedshop/core-orders';
 import { initCartProvidersService } from './initCartProviders.js';
 import { Modules } from '../modules.js';
 import { updateSchedulingService } from './updateScheduling.js';
@@ -12,6 +17,7 @@ import {
 
 export async function updateCalculationService(this: Modules, orderId: string) {
   let order = await this.orders.findOrder({ orderId });
+  if (!order) throw new Error('Order not found');
 
   // Don't recalculate orders, only carts
   if (order.status !== null) return order;
@@ -27,15 +33,17 @@ export async function updateCalculationService(this: Modules, orderId: string) {
       const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
       if (!Adapter) return null;
       const adapter = await Adapter.actions({
-        context: { order, orderDiscount, code: orderDiscount.code, modules: this },
+        context: { order: order!, orderDiscount, code: orderDiscount.code, modules: this },
       });
 
-      const isValid =
-        orderDiscount.trigger === OrderDiscountTrigger.SYSTEM
-          ? await adapter.isValidForSystemTriggering()
-          : await adapter.isValidForCodeTriggering({
-              code: orderDiscount.code,
-            });
+      let isValid = false;
+      if (orderDiscount.trigger === OrderDiscountTrigger.SYSTEM) {
+        isValid = await adapter.isValidForSystemTriggering();
+      } else if (orderDiscount.trigger === OrderDiscountTrigger.USER && orderDiscount.code) {
+        isValid = await adapter.isValidForCodeTriggering({
+          code: orderDiscount.code,
+        });
+      }
 
       if (!isValid) {
         if (orderDiscount.trigger === OrderDiscountTrigger.USER) {
@@ -52,14 +60,14 @@ export async function updateCalculationService(this: Modules, orderId: string) {
   });
 
   const currentDiscountKeys = cleanedDiscounts.map(({ discountKey }) => discountKey);
-  const director = await OrderDiscountDirector.actions({ order, code: null }, { modules: this });
+  const director = await OrderDiscountDirector.actions({ order }, { modules: this });
   const systemDiscounts = await director.findSystemDiscounts();
   await Promise.all(
     systemDiscounts
       .filter((key) => currentDiscountKeys.indexOf(key) === -1)
       .map(async (discountKey) =>
         this.orders.discounts.create({
-          orderId: order._id,
+          orderId: order!._id,
           discountKey,
           trigger: OrderDiscountTrigger.SYSTEM,
         }),
@@ -73,21 +81,22 @@ export async function updateCalculationService(this: Modules, orderId: string) {
     orderPositions.map(async (orderPosition) => {
       const positionCalculation = await ProductPricingDirector.rebuildCalculation(
         {
-          currencyCode: order.currencyCode,
+          currencyCode: order!.currencyCode,
           quantity: orderPosition.quantity,
           item: orderPosition,
         },
         { modules: this },
       );
-      return this.orders.positions.updateCalculation(orderPosition._id, positionCalculation);
+      return (await this.orders.positions.updateCalculation(
+        orderPosition._id,
+        positionCalculation,
+      )) as OrderPosition;
     }),
   );
 
-  let orderDelivery = order.deliveryId
-    ? await this.orders.deliveries.findDelivery({
-        orderDeliveryId: order.deliveryId,
-      })
-    : null;
+  let orderDelivery = await this.orders.deliveries.findDelivery({
+    orderDeliveryId: order.deliveryId!,
+  });
   if (orderDelivery) {
     const deliveryCalculation = await DeliveryPricingDirector.rebuildCalculation(
       {
@@ -96,16 +105,14 @@ export async function updateCalculationService(this: Modules, orderId: string) {
       },
       { modules: this },
     );
-    orderDelivery = await this.orders.deliveries.updateCalculation(
+    orderDelivery = (await this.orders.deliveries.updateCalculation(
       orderDelivery._id,
       deliveryCalculation,
-    );
+    )) as OrderDelivery;
   }
-  let orderPayment = order.paymentId
-    ? await this.orders.payments.findOrderPayment({
-        orderPaymentId: order.paymentId,
-      })
-    : null;
+  let orderPayment = await this.orders.payments.findOrderPayment({
+    orderPaymentId: order.paymentId!,
+  });
   if (orderPayment) {
     const paymentCalculation = await PaymentPricingDirector.rebuildCalculation(
       {
@@ -114,7 +121,10 @@ export async function updateCalculationService(this: Modules, orderId: string) {
       },
       { modules: this },
     );
-    orderPayment = await this.orders.payments.updateCalculation(orderPayment._id, paymentCalculation);
+    orderPayment = (await this.orders.payments.updateCalculation(
+      orderPayment._id,
+      paymentCalculation,
+    )) as OrderPayment;
   }
 
   orderPositions = await updateSchedulingService.bind(this)({

@@ -1,7 +1,7 @@
 import { Modules } from '../modules.js';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
 import { Product } from '@unchainedshop/core-products';
-import { EstimatedStock, WarehousingDirector } from '../directors/WarehousingDirector.js';
+import { WarehousingDirector } from '../directors/WarehousingDirector.js';
 import { WarehousingContext } from '../directors/WarehousingAdapter.js';
 import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
@@ -18,7 +18,11 @@ export async function simulateProductInventoryService(
   const deliveryProviders = await this.delivery.allProviders();
 
   return deliveryProviders.reduce<
-    Promise<(WarehousingContext & EstimatedStock & { warehousingProvider: WarehousingProvider })[]>
+    Promise<
+      (WarehousingContext & { quantity?: number } & {
+        warehousingProvider: WarehousingProvider;
+      })[]
+    >
   >(async (oldResult, deliveryProvider) => {
     const result = await oldResult;
 
@@ -31,7 +35,7 @@ export async function simulateProductInventoryService(
 
     const mappedWarehousingProviders = await Promise.all(
       warehousingProviders.map(async (warehousingProvider) => {
-        const warehousingContext: WarehousingContext = {
+        const warehousingContext = {
           deliveryProvider,
           product,
           referenceDate,

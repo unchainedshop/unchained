@@ -96,7 +96,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       searchAssortments: async (params, options) => {
-        return reduceAdapters<string[]>(async (lastSearchPromise, adapter) => {
+        return reduceAdapters<string[] | undefined>(async (lastSearchPromise, adapter) => {
           const assortmentIds = await lastSearchPromise;
           return adapter.searchAssortments({ assortmentIds }, options);
         }, params.assortmentIds);

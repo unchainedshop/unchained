@@ -2,9 +2,18 @@ import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { Modules } from '../modules.js';
 import { EnrollmentDirector } from '../core-index.js';
 
-const findNextStatus = async (enrollment: Enrollment, modules: Modules): Promise<EnrollmentStatus> => {
+const findNextStatus = async (
+  enrollment: Enrollment,
+  modules: Modules,
+): Promise<EnrollmentStatus | null> => {
   let status = enrollment.status;
-  const director = await EnrollmentDirector.actions({ enrollment }, { modules });
+  const product = await modules.products.findProduct({
+    productId: enrollment.productId,
+  });
+
+  if (!product) throw new Error('Product not found for enrollment');
+
+  const director = await EnrollmentDirector.actions({ enrollment, product }, { modules });
 
   if (status === EnrollmentStatus.INITIAL || status === EnrollmentStatus.PAUSED) {
     if (await director.isValidForActivation()) {
@@ -30,8 +39,11 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
     // status = await findNextStatus(nextEnrollment, unchainedAPI);
   }
 
-  return this.enrollments.updateStatus(enrollment._id, {
-    status,
-    info: 'enrollment processed',
-  });
+  if (status) {
+    return this.enrollments.updateStatus(enrollment._id, {
+      status,
+      info: 'enrollment processed',
+    });
+  }
+  return enrollment;
 }

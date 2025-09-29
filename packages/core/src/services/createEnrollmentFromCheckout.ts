@@ -25,25 +25,25 @@ export async function createEnrollmentFromCheckoutService(
   const orderId = order._id;
 
   const payment = await this.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
+    orderPaymentId: order.paymentId!,
   });
   const delivery = await this.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
+    orderDeliveryId: order.deliveryId!,
   });
 
   const template = {
-    billingAddress: order.billingAddress,
-    contact: order.contact,
+    billingAddress: order.billingAddress!,
+    contact: order.contact!,
     countryCode: order.countryCode,
     currencyCode: order.currencyCode,
     delivery: {
-      deliveryProviderId: delivery.deliveryProviderId,
-      context: delivery.context,
+      deliveryProviderId: delivery!.deliveryProviderId,
+      context: delivery!.context,
     },
     orderIdForFirstPeriod: orderId,
     payment: {
-      paymentProviderId: payment.paymentProviderId,
-      context: payment.context,
+      paymentProviderId: payment!.paymentProviderId,
+      context: payment!.context,
     },
     userId: order.userId,
     meta: order.context,

@@ -2,7 +2,7 @@ import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
 import { PaymentError, IPaymentActions, IPaymentAdapter, PaymentContext } from './PaymentAdapter.js';
 import { PaymentProvider } from '@unchainedshop/core-payment';
-import { OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
+import { Order, OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
 
 const buildPaymentProviderActionsContext = (
   orderPayment: OrderPayment,
@@ -19,7 +19,7 @@ const buildPaymentProviderActionsContext = (
 
 export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   confirmOrderPayment: (
-    orderPayment: OrderPayment,
+    order: Order,
     paymentContext: {
       transactionContext: any;
       userId: string;
@@ -28,7 +28,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   ) => Promise<OrderPayment>;
 
   cancelOrderPayment: (
-    orderPayment: OrderPayment,
+    order: Order,
     paymentContext: {
       transactionContext: any;
       userId: string;
@@ -37,7 +37,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   ) => Promise<OrderPayment>;
 
   chargeOrderPayment: (
-    orderPayment: OrderPayment,
+    order: Order,
     context: {
       transactionContext: any;
       userId: string;
@@ -143,7 +143,7 @@ export const PaymentDirector: IPaymentDirector = {
   },
 
   confirmOrderPayment: async (
-    orderPayment: OrderPayment,
+    order: Order,
     paymentContext: {
       transactionContext: any;
       userId: string;
@@ -151,6 +151,14 @@ export const PaymentDirector: IPaymentDirector = {
     unchainedAPI,
   ): Promise<OrderPayment> => {
     const { modules } = unchainedAPI;
+
+    const orderPayment =
+      order.paymentId &&
+      (await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      }));
+
+    if (!orderPayment) throw new Error('Order payment not set');
 
     if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
       return orderPayment;
@@ -178,7 +186,7 @@ export const PaymentDirector: IPaymentDirector = {
   },
 
   cancelOrderPayment: async (
-    orderPayment: OrderPayment,
+    order: Order,
     paymentContext: {
       transactionContext: any;
       userId: string;
@@ -186,6 +194,14 @@ export const PaymentDirector: IPaymentDirector = {
     unchainedAPI,
   ): Promise<OrderPayment> => {
     const { modules } = unchainedAPI;
+
+    const orderPayment =
+      order.paymentId &&
+      (await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      }));
+
+    if (!orderPayment) throw new Error('Order payment not set');
 
     if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
       return orderPayment;
@@ -212,7 +228,7 @@ export const PaymentDirector: IPaymentDirector = {
   },
 
   chargeOrderPayment: async (
-    orderPayment: OrderPayment,
+    order: Order,
     context: {
       transactionContext: any;
       userId: string;
@@ -220,6 +236,14 @@ export const PaymentDirector: IPaymentDirector = {
     unchainedAPI,
   ): Promise<OrderPayment> => {
     const { modules } = unchainedAPI;
+
+    const orderPayment =
+      order.paymentId &&
+      (await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      }));
+
+    if (!orderPayment) throw new Error('Order payment not set');
 
     if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
       return orderPayment;

@@ -14,7 +14,7 @@ export async function initCartProvidersService(this: Modules, order: Order) {
   });
 
   const orderDelivery = await this.orders.deliveries.findDelivery({
-    orderDeliveryId: updatedOrder.deliveryId,
+    orderDeliveryId: updatedOrder.deliveryId!,
   });
   const deliveryProviderId = orderDelivery?.deliveryProviderId;
 
@@ -45,7 +45,7 @@ export async function initCartProvidersService(this: Modules, order: Order) {
   });
 
   const orderPayment = await this.orders.payments.findOrderPayment({
-    orderPaymentId: updatedOrder.paymentId,
+    orderPaymentId: updatedOrder.paymentId!,
   });
   const paymentProviderId = orderPayment?.paymentProviderId;
 

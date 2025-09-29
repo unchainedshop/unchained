@@ -29,7 +29,7 @@ export async function searchAssortmentsService(
     filterSelector,
     assortmentSelector,
     sortStage,
-    forceLiveCollection,
+    forceLiveCollection: !!forceLiveCollection,
     locale,
   };
 

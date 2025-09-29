@@ -72,6 +72,20 @@ export const configureFilesModule = async ({
       return fileId;
     },
 
+    unexpire: async (fileId: string) => {
+      await Files.updateOne(
+        { _id: fileId },
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $unset: { expires: 1 },
+        },
+      );
+      await emit('FILE_UPDATE', { fileId });
+      return fileId;
+    },
+
     delete: async (fileId: string) => {
       const { deletedCount } = await Files.deleteOne({ _id: fileId });
       await emit('FILE_REMOVE', { fileId });

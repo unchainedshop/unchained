@@ -47,6 +47,7 @@ export const PlanProduct = {
       countryCode,
       currencyCode,
       quantity,
+      discounts: [],
       configuration,
     };
 

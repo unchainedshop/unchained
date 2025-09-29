@@ -117,6 +117,7 @@ export const ConfigurableProduct = {
             product: proxyProduct,
             user: requestContext.user,
             countryCode,
+            discounts: [],
             currencyCode,
             quantity,
           };

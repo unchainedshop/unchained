@@ -6,7 +6,7 @@ import { Modules } from '../modules.js';
 export interface DiscountContext {
   code?: string;
   orderDiscount?: OrderDiscount;
-  order?: Order;
+  order: Order;
 }
 
 export type IDiscountAdapter<DiscountConfiguration> = IBaseAdapter & {
@@ -29,7 +29,7 @@ export interface DiscountAdapterActions<DiscountConfiguration> {
     calculationSheet: IPricingSheet<PricingCalculation>;
   }) => DiscountConfiguration;
 
-  reserve: (params: { code: string }) => Promise<any>;
+  reserve: (params: { code?: string }) => Promise<any>;
   release: () => Promise<void>;
 }
 

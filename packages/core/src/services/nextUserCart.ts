@@ -30,7 +30,7 @@ export async function nextUserCartService(
 
   const countryObject = await this.countries.findCountry({ isoCode: countryCode });
   const currencies = await this.currencies.findCurrencies({ includeInactive: false });
-  const currencyCode = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
+  const currencyCode = resolveBestCurrency(countryObject?.defaultCurrencyCode || null, currencies);
 
   const order = await this.orders.create({
     userId: user._id,

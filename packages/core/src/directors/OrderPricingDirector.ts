@@ -13,9 +13,9 @@ import { Order, OrderDelivery, OrderPayment, OrderPosition } from '@unchainedsho
 export interface OrderPricingContext {
   currencyCode: string;
   order: Order;
-  orderDelivery: OrderDelivery;
+  orderDelivery: OrderDelivery | null;
   orderPositions: OrderPosition[];
-  orderPayment: OrderPayment;
+  orderPayment: OrderPayment | null;
 }
 
 export type OrderPricingDiscount = PricingDiscount & {

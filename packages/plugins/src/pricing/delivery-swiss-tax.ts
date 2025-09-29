@@ -5,7 +5,7 @@ import {
   DeliveryPricingDirector,
 } from '@unchainedshop/core';
 
-import { Order } from '@unchainedshop/core-orders';
+import { Order, OrderDelivery } from '@unchainedshop/core-orders';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { SwissTaxCategories } from './tax/ch.js';
 
@@ -23,6 +23,10 @@ const isDeliveryAddressInSwitzerland = ({
   orderDelivery,
   order,
   countryCode: forceCountryCode = null,
+}: {
+  orderDelivery?: OrderDelivery;
+  order?: Order;
+  countryCode?: string | null;
 }) => {
   let countryCode = forceCountryCode?.toUpperCase().trim() || order.countryCode;
 

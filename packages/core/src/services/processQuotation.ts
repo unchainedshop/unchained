@@ -34,30 +34,30 @@ export async function processQuotationService(
     await director.submitRequest(params.quotationContext);
   }
 
-  quotation = await this.quotations.findQuotation({ quotationId });
+  quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
   nextStatus = await findNextStatus(quotation, this);
   if (nextStatus !== QuotationStatus.PROCESSING) {
     await director.verifyRequest(params.quotationContext);
   }
 
-  quotation = await this.quotations.findQuotation({ quotationId });
+  quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
   nextStatus = await findNextStatus(quotation, this);
   if (nextStatus === QuotationStatus.REJECTED) {
     await director.rejectRequest(params.quotationContext);
   }
 
-  quotation = await this.quotations.findQuotation({ quotationId });
+  quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
   nextStatus = await findNextStatus(quotation, this);
   if (nextStatus === QuotationStatus.PROPOSED) {
     const proposal = await director.quote();
-    quotation = await this.quotations.updateProposal(quotation._id, proposal);
+    quotation = (await this.quotations.updateProposal(quotation._id, proposal)) as Quotation;
     nextStatus = await findNextStatus(quotation, this);
   }
 
-  const updatedQuotation = await this.quotations.updateStatus(quotation._id, {
+  const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {
     status: nextStatus,
     info: 'quotation processed',
-  });
+  })) as Quotation;
 
   const user = await this.users.findUserById(updatedQuotation.userId);
   const locale = this.users.userLocale(user);

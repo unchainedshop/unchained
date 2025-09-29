@@ -21,5 +21,7 @@ export async function uploadFileFromStreamService(
   );
   const fileData = getFileFromFileData(uploadFileData, meta);
   const fileId = await this.files.create(fileData);
-  return this.files.findFile({ fileId });
+  const file = await this.files.findFile({ fileId });
+  if (!file) throw new Error('File not found after upload');
+  return file;
 }

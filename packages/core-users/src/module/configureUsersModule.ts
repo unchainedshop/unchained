@@ -260,7 +260,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       )?.[0];
     },
 
-    userLocale(user: User): Intl.Locale {
+    userLocale(user: User | null): Intl.Locale {
       if (!user?.lastLogin?.locale) return systemLocale;
       try {
         return new Intl.Locale(user.lastLogin.locale);

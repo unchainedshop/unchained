@@ -32,9 +32,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
           fileId: rawPayload.payloadId,
         });
         if (!readStream) {
-          throw new Error(
-            'The current file adapter does not support streams when downloading required for streamed events. Please use a different file adapter.',
-          );
+          throw new Error('Could not create download stream from uploaded file');
         }
         await unchainedAPI.bulkImporter.pipeEventStream(readStream, bulkImporter, unchainedAPI);
       } else {

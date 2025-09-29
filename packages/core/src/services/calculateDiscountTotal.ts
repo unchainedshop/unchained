@@ -20,19 +20,19 @@ export async function calculateDiscountTotalService(
 
   // Delivery discounts
   const orderDelivery = await this.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
+    orderDeliveryId: order.deliveryId!,
   });
   const orderDeliveryDiscountSum = DeliveryPricingSheet({
-    calculation: orderDelivery.calculation || [],
+    calculation: orderDelivery?.calculation || [],
     currencyCode: order.currencyCode,
   }).total({ category: DeliveryPricingRowCategory.Discount, discountId: orderDiscountId });
 
   // Payment discounts
   const orderPayment = await this.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
+    orderPaymentId: order.paymentId!,
   });
   const orderPaymentDiscountSum = PaymentPricingSheet({
-    calculation: orderPayment.calculation || [],
+    calculation: orderPayment?.calculation || [],
     currencyCode: order.currencyCode,
   }).total({ category: PaymentPricingRowCategory.Discount, discountId: orderDiscountId });
 

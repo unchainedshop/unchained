@@ -84,7 +84,7 @@ const signedUrl = await fileAdapter.createSignedURL(
 
 ```javascript
 const downloadUrl = await fileAdapter.createDownloadURL(file);
-const stream = await fileAdapter.createDownloadStream(file);
+const stream = await fileAdapter.createDownloadStream({ fileId: file._id });
 ```
 
 ### Path Structure

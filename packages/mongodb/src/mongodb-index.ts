@@ -21,7 +21,7 @@ export interface LogFields {
   log: (
     | {
         date: Date;
-        status: string;
+        status: string | null;
         info?: string;
       }
     | {

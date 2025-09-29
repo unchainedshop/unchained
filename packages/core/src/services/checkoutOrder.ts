@@ -15,6 +15,7 @@ export async function checkoutOrderService(
   },
 ) {
   const order = await this.orders.findOrder({ orderId });
+  if (!order) return null;
   if (order.status !== null) return order;
 
   await validateOrderService.bind(this)(order);

@@ -21,7 +21,7 @@ export interface FilterAdapterActions {
 
   searchAssortments: (
     params: {
-      assortmentIds: string[];
+      assortmentIds?: string[];
     },
     options: {
       filterSelector: mongodb.Filter<Filter>;
@@ -29,7 +29,7 @@ export interface FilterAdapterActions {
       sortStage: mongodb.FindOptions['sort'];
       locale: Intl.Locale;
     },
-  ) => Promise<string[]>;
+  ) => Promise<string[] | undefined>;
 
   searchProducts: (
     params: {

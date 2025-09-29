@@ -6,11 +6,13 @@ export async function linkFileService(
   { fileId, size, type }: { fileId: string; size?: number; type?: string },
 ) {
   const file = await this.files.findFile({ fileId });
+  if (!file) return null;
+
   await this.files.update(file._id, {
     size: size || file.size,
     type: type || file.type,
-    expires: null,
   });
+  await this.files.unexpire(file._id);
   if (file?.expires) {
     const callback = FileDirector.getFileUploadCallback(file.path);
     if (callback) {

@@ -4,11 +4,12 @@ import {
   OrderDeliveryStatus,
   OrderPayment,
   OrderPaymentStatus,
+  OrderPosition,
   OrderStatus,
 } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.js';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { Product, ProductTypes } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.js';
 import { fullfillQuotationService } from './fullfillQuotation.js';
@@ -24,10 +25,12 @@ const isAutoConfirmationEnabled = async (
   modules: Modules,
 ) => {
   if (orderPayment.status !== OrderPaymentStatus.PAID) {
-    const provider = await modules.payment.paymentProviders.findProvider({
+    const paymentProvider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: orderPayment.paymentProviderId,
     });
-    const actions = await PaymentDirector.actions(provider, {}, { modules });
+    if (!paymentProvider)
+      throw new Error('Payment provider not found: ' + orderPayment.paymentProviderId);
+    const actions = await PaymentDirector.actions(paymentProvider, {}, { modules });
     if (!actions.isPayLaterAllowed()) return false;
   }
 
@@ -35,6 +38,8 @@ const isAutoConfirmationEnabled = async (
     const deliveryProvider = await modules.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
+    if (!deliveryProvider)
+      throw new Error('Delivery provider not found: ' + orderDelivery.deliveryProviderId);
     const director = await DeliveryDirector.actions(deliveryProvider, {}, { modules });
     if (!director.isAutoReleaseAllowed()) return false;
   }
@@ -56,14 +61,18 @@ const findNextStatus = async (
     return status;
   }
 
-  const orderPayment = await modules.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
-  });
+  const orderPayment =
+    order.paymentId &&
+    (await modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    }));
   if (!orderPayment) return status;
 
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
-  });
+  const orderDelivery =
+    order.deliveryId &&
+    (await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    }));
   if (!orderDelivery) return status;
 
   // Ok, we have a payment and a delivery and the correct status,
@@ -108,26 +117,18 @@ export async function processOrderService(
 
   if (nextStatus === OrderStatus.PENDING) {
     // auto charge during transition to pending
-    const orderPayment = await this.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
-    });
-
     await PaymentDirector.chargeOrderPayment(
-      orderPayment,
+      order,
       { userId: order.userId, transactionContext: paymentContext },
       { modules: this },
     );
-
     nextStatus = await findNextStatus(nextStatus, order, this);
   }
 
   if (nextStatus === OrderStatus.REJECTED) {
     // auto cancel during transition to rejected
-    const orderPayment = await this.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
-    });
     await PaymentDirector.cancelOrderPayment(
-      orderPayment,
+      order,
       { userId: order.userId, transactionContext: paymentContext },
       { modules: this },
     );
@@ -135,11 +136,8 @@ export async function processOrderService(
 
   if (nextStatus === OrderStatus.CONFIRMED) {
     // confirm pre-authorized payments
-    const orderPayment = await this.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
-    });
     await PaymentDirector.confirmOrderPayment(
-      orderPayment,
+      order,
       { userId: order.userId, transactionContext: paymentContext },
       { modules: this },
     );
@@ -172,7 +170,8 @@ export async function processOrderService(
       );
       const tokenizedItems = mappedProductOrderPositions.filter(
         (item) => item.product?.type === ProductTypes.TokenizedProduct,
-      );
+      ) as { orderPosition: OrderPosition; product: Product }[];
+
       if (tokenizedItems.length > 0) {
         // Give virtual warehouse a chance to instantiate new virtual objects
         const virtualProviders = (await this.warehousing.allProviders()).filter(
@@ -221,7 +220,8 @@ export async function processOrderService(
       // Quotations: If we came here, the checkout succeeded, so we can fullfill underlying quotations
       const quotationItems = mappedProductOrderPositions.filter(
         (item) => item.orderPosition.quotationId,
-      );
+      ) as { orderPosition: OrderPosition & { quotationId: string }; product: Product }[];
+
       await Promise.all(
         quotationItems.map(async ({ orderPosition }) => {
           const quotation = await this.quotations.findQuotation({

@@ -1,11 +1,11 @@
-import { Order, OrderDiscount } from '@unchainedshop/core-orders';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderDiscountDirector } from '../directors/OrderDiscountDirector.js';
 import { Modules } from '../modules.js';
 
 export async function createManualOrderDiscountService(
   this: Modules,
   { order, code }: { code: string; order: Order },
-): Promise<OrderDiscount> {
+) {
   // Use an already existing discount if available!
   const spareDiscount = await this.orders.discounts.findSpareDiscount({ code });
   if (spareDiscount) {

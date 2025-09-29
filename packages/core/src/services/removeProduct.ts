@@ -8,7 +8,7 @@ export async function removeProductService(
 ): Promise<boolean> {
   const product = await this.products.findProduct({ productId });
 
-  switch (product.status) {
+  switch (product?.status) {
     case ProductStatus.ACTIVE:
       await this.products.unpublish(product);
     // falls through
@@ -29,7 +29,7 @@ export async function removeProductService(
       }
       break;
     default:
-      throw new Error(`Invalid status', ${product.status}`);
+      throw new Error(`Invalid status: ${product?.status}`);
   }
 
   return true;

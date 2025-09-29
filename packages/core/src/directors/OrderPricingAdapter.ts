@@ -20,9 +20,9 @@ export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   currencyCode?: string;
   discounts: OrderDiscount[];
   order: Order;
-  orderDelivery: OrderDelivery;
   orderPositions: OrderPosition[];
-  orderPayment: OrderPayment;
+  orderDelivery: OrderDelivery | null;
+  orderPayment: OrderPayment | null;
   user: User;
 }
 

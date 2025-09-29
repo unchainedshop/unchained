@@ -32,7 +32,7 @@ export async function searchProductsService(
     filterSelector,
     productSelector,
     sortStage,
-    forceLiveCollection,
+    forceLiveCollection: !!forceLiveCollection,
     locale,
   };
 

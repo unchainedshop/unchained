@@ -81,9 +81,9 @@ export const WarehousingDirector: IWarehousingDirector = {
       try {
         const { quantity } = context;
         const stock = await adapter.stock(referenceDate);
-        const notInStockQuantity = Math.max(quantity - stock, 0);
+        const notInStockQuantity = Math.max((quantity || 1) - stock, 0);
         const productionTime = await adapter.productionTime(notInStockQuantity);
-        const commissioningTime = await adapter.commissioningTime(quantity);
+        const commissioningTime = await adapter.commissioningTime(quantity || 1);
         return Math.max(commissioningTime + productionTime, 0);
       } catch (error) {
         logger.error(error);
@@ -184,9 +184,9 @@ export const WarehousingDirector: IWarehousingDirector = {
           return tokens.map((token) => {
             return {
               ...token,
-              userId: order.userId,
-              productId: orderPosition.productId,
-              orderPositionId: orderPosition._id,
+              userId: order!.userId,
+              productId: orderPosition!.productId,
+              orderPositionId: orderPosition!._id,
             };
           });
         } catch (error) {
