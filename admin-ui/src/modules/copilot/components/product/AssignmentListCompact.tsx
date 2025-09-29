@@ -13,7 +13,8 @@ const AssignmentListCompact = ({ assignments }) => {
 
   return (
     <div className="space-y-4">
-      {assignments.map(({ assignment, product: assignedProduct }, idx) => {
+      {assignments.map(({ assignment }, idx) => {
+        const assignedProduct = assignment?.product;
         const price = formatPrice(assignedProduct?.commerce?.pricing?.[0]);
         const image = assignedProduct?.media?.[0]?.file?.url;
         return (

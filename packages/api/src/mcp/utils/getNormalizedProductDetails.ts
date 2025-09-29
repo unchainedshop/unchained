@@ -2,8 +2,32 @@ import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../context.js';
 import normalizeMediaUrl from './normalizeMediaUrl.js';
 import { createLogger } from '@unchainedshop/logger';
+import normalizeProxyAssignments from './normalizeProxyAssignments.js';
 
 const logger = createLogger('unchained:api:mcp');
+const removeUnnecessaryFields = ({
+  texts,
+  media,
+  assignments,
+  variations,
+  bundleItems,
+  pricing,
+  reviews,
+  ...product
+}) => {
+  const normalizedTexts = { ...texts };
+  if (normalizedTexts?.description) delete normalizedTexts?.description;
+  return {
+    ...product,
+    texts: normalizedTexts,
+    media,
+    assignments,
+    variations,
+    bundleItems,
+    pricing,
+    reviews,
+  };
+};
 
 export async function getNormalizedProductDetails(productId: string, context: Context) {
   const { modules, locale, loaders } = context;
@@ -27,29 +51,9 @@ export async function getNormalizedProductDetails(productId: string, context: Co
       productId: product?._id,
     });
     assignments = await Promise.all(
-      (product?.proxy?.assignments || [])?.map(async (assignment) => {
-        const product = await loaders.productLoader.load({
-          productId: assignment.productId,
-        });
-        const productMedias = await modules.products.media.findProductMedias({
-          productId: assignment.productId,
-        });
-        const media = await normalizeMediaUrl(productMedias, context);
-        const texts = await loaders.productTextLoader.load({
-          productId: assignment.productId,
-          locale,
-        });
-        return {
-          assignment: {
-            ...(assignment || {}),
-            product: {
-              ...product,
-              media,
-              texts,
-            },
-          },
-        };
-      }),
+      (product?.proxy?.assignments || [])?.map(async (assignment) =>
+        normalizeProxyAssignments(assignment, context),
+      ),
     );
   }
 
@@ -92,8 +96,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
 
   const productMedias = await modules.products.media.findProductMedias({ productId });
   const media = await normalizeMediaUrl(productMedias, context);
-
-  return {
+  return removeUnnecessaryFields({
     ...product,
     texts,
     media,
@@ -102,5 +105,5 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     bundleItems,
     pricing,
     reviews,
-  };
+  });
 }

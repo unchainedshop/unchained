@@ -1,17 +1,17 @@
 import { Context } from '../../../../context.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
+import normalizeProxyAssignments from '../../../utils/normalizeProxyAssignments.js';
 
 export default async function getProductAssignments(
   context: Context,
   params: Params<'GET_ASSIGNMENTS'>,
 ) {
   const { modules } = context;
-  const { productId, includeInactive = false } = params;
+  const { productId } = params;
 
-  const product = await getNormalizedProductDetails(productId, context);
+  const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
   if (product.type !== ProductTypes.ConfigurableProduct) {
@@ -22,6 +22,10 @@ export default async function getProductAssignments(
     });
   }
 
-  const assignments = await modules.products.proxyAssignments(product, { includeInactive });
+  const assignments = await Promise.all(
+    (product?.proxy?.assignments || [])?.map(async (assignment) =>
+      normalizeProxyAssignments(assignment, context),
+    ),
+  );
   return { assignments };
 }
