@@ -1,6 +1,6 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
-import { BaseDirector } from './BaseDirector.js';
+import { BaseDirector, IBaseDirector } from './BaseDirector.js';
 
 const adapter1 = {
   key: 'adapter1',
@@ -24,7 +24,7 @@ const adapter3 = {
 };
 
 describe('BaseDirector', () => {
-  let director;
+  let director: IBaseDirector<any>;
 
   beforeEach(() => {
     director = BaseDirector('TestDirector');
@@ -69,7 +69,7 @@ describe('BaseDirector', () => {
       const directorName = 'TestDirector';
       const adapterKeyField = 'key';
       director = BaseDirector(directorName, { adapterKeyField });
-      assert.strictEqual(director.getAdapter(adapter1.key), undefined);
+      assert.strictEqual(director.getAdapter(adapter1.key), null);
     });
   });
 
@@ -79,7 +79,7 @@ describe('BaseDirector', () => {
     });
 
     it('should return undefined if no Adapter is registered with the given key', () => {
-      assert.strictEqual(director.getAdapter('invalid-key'), undefined);
+      assert.strictEqual(director.getAdapter('invalid-key'), null);
     });
 
     it('should return the correct Adapter object when the keyField is set to a property other than "key"', () => {
