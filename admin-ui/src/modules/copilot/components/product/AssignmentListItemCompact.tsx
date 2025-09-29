@@ -4,33 +4,31 @@ import { useIntl } from 'react-intl';
 import generateUniqueId from '../../../common/utils/getUniqueId';
 
 interface AssignmentListItemCompactProps {
-  assignment: {
-    product?: {
-      _id: string;
-      texts?: {
-        title?: string;
-        subtitle?: string;
-        brand?: string;
-      };
-      warehousing?: {
-        sku?: string;
-      };
-      tags?: string[];
-      pricing?: {
-        amount: number;
-        currencyCode: string;
-      };
+  product?: {
+    _id: string;
+    texts?: {
+      title?: string;
+      subtitle?: string;
+      brand?: string;
     };
-    vectors: { key: string; value: string }[];
+    warehousing?: {
+      sku?: string;
+    };
+    tags?: string[];
+    pricing?: {
+      amount: number;
+      currencyCode: string;
+    };
   };
+  vectors: { key: string; value: string }[];
 }
 
 const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
-  assignment,
+  product,
+  vectors,
 }) => {
   const { formatMessage } = useIntl();
 
-  const product = assignment.product;
   const title =
     product?.texts?.title ||
     formatMessage({
@@ -86,10 +84,10 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
         )}
       </div>
 
-      {assignment.vectors?.length > 0 && (
+      {vectors?.length > 0 && (
         <div className="flex flex-col items-end gap-1 max-w-[40%]">
           <div className="flex flex-wrap gap-1 justify-end">
-            {assignment.vectors.map((vector, idx) => (
+            {vectors.map((vector, idx) => (
               <span
                 key={idx}
                 className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium text-blue-700 bg-blue-100 dark:bg-blue-800 dark:text-blue-200 rounded"

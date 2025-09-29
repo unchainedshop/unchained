@@ -52,11 +52,7 @@ const ProductVariationOptionItem = ({ option, onDelete, variationId }) => {
       <div className="my-2 rounded-sm border dark:border-slate-700 mx-4 ">
         <div className="p-2 bg-white dark:bg-slate-900 dark:text-slate-200">
           <div className="flex gap-2 w-full items-center justify-between">
-            <Badge
-              text={option?.texts?.title}
-              color="slate"
-              className="rounded-md"
-            />
+            <Badge text={option?.value} color="slate" className="rounded-md" />
             <div className="flex items-center gap-4 w-full">
               <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-400">
                 {isEdit ? (
@@ -70,7 +66,7 @@ const ProductVariationOptionItem = ({ option, onDelete, variationId }) => {
                     })}
                   />
                 ) : (
-                  option?.value
+                  option?.texts?.title
                 )}
               </p>
               <p className="truncate text-sm text-slate-500">
