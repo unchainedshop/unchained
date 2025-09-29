@@ -269,7 +269,7 @@ export const actionValidators = {
   ADD_BUNDLE_ITEM: z.object({
     bundleId: z.string().min(1).describe('Bundle product ID'),
     bundleProductId: z.string().min(1).describe('Product to add to bundle'),
-    quantity: z.number().int().positive().optional().describe('Quantity'),
+    quantity: z.number().int().positive().default(1).describe('Quantity'),
   }),
 
   REMOVE_BUNDLE_ITEM: z.object({

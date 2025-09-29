@@ -15,11 +15,9 @@ const removeUnnecessaryFields = ({
   reviews,
   ...product
 }) => {
-  const normalizedTexts = { ...texts };
-  if (normalizedTexts?.description) delete normalizedTexts?.description;
   return {
     ...product,
-    texts: normalizedTexts,
+    texts: { ...(texts || {}), description: null },
     media,
     assignments,
     variations,
@@ -75,7 +73,10 @@ export async function getNormalizedProductDetails(productId: string, context: Co
           product: {
             ...bundleItemProduct,
             media,
-            texts,
+            texts: {
+              ...texts,
+              description: null,
+            },
           },
           ...item,
         };

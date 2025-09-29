@@ -1,38 +1,39 @@
 import { Context } from '../../../../context.js';
 import { ProductTypes } from '@unchainedshop/core-products';
-import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
+import {
+  CyclicProductBundlingNotSupportedError,
+  ProductNotFoundError,
+  ProductWrongTypeError,
+} from '../../../../errors.js';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
 
 export default async function addBundleItem(context: Context, params: Params<'ADD_BUNDLE_ITEM'>) {
   const { modules } = context;
   const { bundleId, bundleProductId, quantity } = params;
+  const product = await modules.products.findProduct({ productId: bundleId });
+  if (!product) throw new ProductNotFoundError({ productId: bundleId });
 
-  const bundle = await modules.products.findProduct({ productId: bundleId });
-  if (!bundle) throw new ProductNotFoundError({ productId: bundleId });
-
-  if (bundle.type !== ProductTypes.BundleProduct) {
+  if (product.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
       productId: bundleId,
-      received: bundle.type,
+      received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  }
 
-  const bundleProduct = await modules.products.findProduct({ productId: bundleProductId });
-  if (!bundleProduct) throw new ProductNotFoundError({ productId: bundleProductId });
+  const itemProduct = await modules.products.findProduct({ productId: bundleProductId });
+  if (!itemProduct) throw new ProductNotFoundError({ productId: bundleProductId });
 
-  await modules.products.update(bundleId, {
-    ...bundle,
-    bundleItems: [
-      ...(bundle.bundleItems || []),
-      {
-        productId: bundleProductId,
-        quantity: quantity || 1,
-      },
-    ],
+  if (itemProduct._id === product._id)
+    throw new CyclicProductBundlingNotSupportedError({
+      productId: itemProduct._id,
+    });
+
+  await modules.products.bundleItems.addBundleItem(bundleId, {
+    productId: bundleProductId,
+    quantity,
+    configuration: [],
   });
 
-  const product = await getNormalizedProductDetails(bundleId, context);
-  return { product };
+  return { product: await getNormalizedProductDetails(bundleId, context) };
 }
