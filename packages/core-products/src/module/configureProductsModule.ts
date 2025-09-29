@@ -228,10 +228,13 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       if ('sku' in params) {
         return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1 } });
       }
-      if ('slug' in params) {
+      if ('slug' in params && params.slug != null) {
         return Products.findOne({ slugs: params.slug }, {});
       }
-      return Products.findOne(generateDbFilterById(params.productId), {});
+      if ('productId' in params && params.productId != null) {
+        return Products.findOne(generateDbFilterById(params.productId), {});
+      }
+      return null;
     },
 
     findProducts: async (
