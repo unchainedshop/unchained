@@ -7,11 +7,11 @@ export default async function removeWebAuthnCredentials(
   { credentialsId }: { credentialsId: string },
   { modules, userId, user }: Context,
 ) {
-  log(`mutation removeWebAuthnCredentials ${credentialsId} ${user.username}`, {
+  log(`mutation removeWebAuthnCredentials ${credentialsId} ${user?.username}`, {
     userId,
   });
 
-  const foundCredentials = user.services?.webAuthn?.find((service) => service.id === credentialsId);
+  const foundCredentials = user?.services?.webAuthn?.find((service) => service.id === credentialsId);
   if (!foundCredentials) {
     throw new UserWebAuthnCredentialsNotFoundError({ userId, credentialsId });
   }

@@ -4,6 +4,7 @@ import { log } from '@unchainedshop/logger';
 import {
   InvalidIdError,
   OrderNotFoundError,
+  OrderPaymentNotFoundError,
   OrderPaymentTypeError,
   OrderWrongStatusError,
 } from '../../../errors.js';
@@ -23,7 +24,7 @@ export default async function updateCartPaymentGeneric(
 
   let order = await services.orders.findOrInitCart({
     orderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
@@ -42,6 +43,8 @@ export default async function updateCartPaymentGeneric(
     });
 
   order = (await modules.orders.setPaymentProvider(order._id, paymentProviderId)) || order;
+
+  if (!order.paymentId) throw new OrderPaymentNotFoundError({ orderId: order._id });
 
   await modules.orders.payments.updateContext(order.paymentId, {
     meta,

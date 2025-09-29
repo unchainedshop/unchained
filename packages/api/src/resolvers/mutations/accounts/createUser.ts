@@ -1,4 +1,4 @@
-import { UserRegistrationData } from '@unchainedshop/core-users';
+import { User, UserRegistrationData } from '@unchainedshop/core-users';
 import { Context } from '../../../context.js';
 import { log } from '@unchainedshop/logger';
 import {
@@ -38,13 +38,13 @@ export default async function createUser(root: never, params: UserRegistrationDa
       {},
     );
 
-    const user = await context.modules.users.updateHeartbeat(newUserId, {
+    const user = (await context.modules.users.updateHeartbeat(newUserId, {
       remoteAddress: context.remoteAddress,
       remotePort: context.remotePort,
       userAgent: context.getHeader('user-agent'),
       locale: context.locale?.baseName,
       countryCode: context.countryCode,
-    });
+    })) as User;
 
     await context.services.orders.nextUserCart({ user, countryCode: context.countryCode });
 

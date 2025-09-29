@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { ProductTypes, ProductVariation } from '@unchainedshop/core-products';
+import { ProductTypes } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
 import { Params } from '../schemas.js';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
@@ -26,7 +26,7 @@ export default async function createProductVariation(
     tags: [],
     productId,
     ...variation,
-  } as ProductVariation); // TODO: Fix with correct zod schema
+  });
 
   if (variationTexts) {
     await modules.products.variations.texts.updateVariationTexts(

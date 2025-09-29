@@ -5,7 +5,7 @@ export default async function removeUserEmail(context: Context, params: Params<'
   const { modules } = context;
   const { userId, email } = params;
 
-  await modules.users.removeEmail(userId, email);
-  await modules.users.findUserById(userId);
+  await modules.users.removeEmail(userId!, email);
+  await modules.users.findUserById(userId!);
   return { success: true };
 }

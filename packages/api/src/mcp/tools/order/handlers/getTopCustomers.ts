@@ -74,15 +74,19 @@ export default async function getTopCustomers(context: Context, params: Params<'
   const normalizedCustomers = await Promise.all(
     topCustomers.map(async (c) => {
       const user = await modules.users.findUserById(c._id);
-      const avatar = await loaders.fileLoader.load({
-        fileId: user?.avatarId,
-      });
+      const avatar =
+        user?.avatarId &&
+        (await loaders.fileLoader.load({
+          fileId: user?.avatarId,
+        }));
       return {
         userId: c._id?.toString?.() ?? null,
-        user: {
-          ...user,
-          avatar,
-        },
+        user: avatar
+          ? {
+              ...user,
+              avatar,
+            }
+          : null,
         currencyCode: c?.currencyCode || null,
         totalSpent: c?.totalSpent,
         orderCount: c?.orderCount,

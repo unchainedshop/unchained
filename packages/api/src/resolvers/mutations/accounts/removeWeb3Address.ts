@@ -7,11 +7,11 @@ export default async function removeWeb3Address(
   { address }: { address: string },
   { modules, userId, user }: Context,
 ) {
-  log(`mutation removeWeb3Address ${address} ${user.username}`, {
+  log(`mutation removeWeb3Address ${address} ${user?.username}`, {
     userId,
   });
 
-  const foundCredentials = user.services?.web3?.find(
+  const foundCredentials = user?.services?.web3?.find(
     (service) => service.address.toLowerCase() === address.toLowerCase(),
   );
   if (!foundCredentials) {

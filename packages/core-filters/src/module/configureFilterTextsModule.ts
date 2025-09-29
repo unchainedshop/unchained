@@ -12,7 +12,7 @@ export const configureFilterTextsModule = ({
   registerEvents(FILTER_TEXT_EVENTS);
 
   const upsertLocalizedText = async (
-    params: { filterId: string; filterOptionValue?: string },
+    params: { filterId: string; filterOptionValue?: string | null },
     locale: Intl.Locale,
     text: Omit<
       FilterText,
@@ -86,7 +86,7 @@ export const configureFilterTextsModule = ({
 
     // Mutations
     updateTexts: async (
-      params: { filterId: string; filterOptionValue?: string },
+      params: { filterId: string; filterOptionValue?: string | null },
       texts: Omit<FilterText, '_id' | 'filterId' | 'filterOptionValue' | 'created'>[],
     ) => {
       const filterTexts = (

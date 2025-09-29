@@ -452,6 +452,9 @@ export const ProductManagementSchema = {
     .array(ProductAssignmentVectorSchema)
     .optional()
     .describe('Complete variation combination vectors'),
+
+  // eslint-disable-next-line
+  // @ts-expect-error
   includeInactive: z.boolean().optional().describe('Include inactive variants in results'),
 
   bundleId: z

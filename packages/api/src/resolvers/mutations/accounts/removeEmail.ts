@@ -11,10 +11,10 @@ export default async function removeEmail(
 
   log(`mutation removeEmail ${params.email} ${normalizedUserId}`, { userId });
 
-  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+  if (!(await modules.users.userExists({ userId: normalizedUserId! })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.users.removeEmail(normalizedUserId, params.email);
+  await modules.users.removeEmail(normalizedUserId!, params.email);
 
-  return modules.users.findUserById(normalizedUserId);
+  return modules.users.findUserById(normalizedUserId!);
 }

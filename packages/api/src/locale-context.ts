@@ -37,13 +37,13 @@ const uncachedResolveDefaultContext = async (
     (country) => country.isoCode.toUpperCase() === locale?.region?.toUpperCase(),
   )?.defaultCurrencyCode;
 
-  const currencyCode = resolveBestCurrency(defaultCurrencyCode, currencies);
+  const currencyCode = resolveBestCurrency(defaultCurrencyCode || null, currencies);
 
   logger.debug(`Locale Context: Resolved ${locale?.baseName} ${currencyCode}`);
 
   const newContext: UnchainedLocaleContext = {
-    locale,
-    countryCode: locale?.region,
+    locale: locale!,
+    countryCode: locale?.region as string,
     currencyCode,
   };
 

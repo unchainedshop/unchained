@@ -4,6 +4,7 @@ import {
   OrderNotFoundError,
   OrderWrongDeliveryStatusError,
   OrderWrongStatusError,
+  OrderDeliveryNotFoundError,
 } from '../../../../errors.js';
 import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
 import { Params } from '../schemas.js';
@@ -18,9 +19,13 @@ export default async function deliverOrder(context: Context, params: Params<'DEL
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
-  });
+  const orderDelivery =
+    order.deliveryId &&
+    (await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    }));
+
+  if (!orderDelivery) throw new OrderDeliveryNotFoundError({ orderDeliveryId: order.deliveryId });
 
   if (
     modules.orders.deliveries.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN &&

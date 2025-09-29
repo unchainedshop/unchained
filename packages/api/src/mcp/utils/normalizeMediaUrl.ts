@@ -1,6 +1,8 @@
+import { AssortmentMediaType } from '@unchainedshop/core-assortments';
 import { getFileAdapter } from '@unchainedshop/core-files';
+import { ProductMedia } from '@unchainedshop/core-products';
 
-const normalizeMediaUrl = async (medias = [], context) => {
+const normalizeMediaUrl = async (medias: (AssortmentMediaType | ProductMedia)[] = [], context) => {
   if (medias?.length) {
     const normalizedMedias = await Promise.all(
       medias

@@ -14,7 +14,7 @@ export default async function createCart(
   if (order) throw new OrderNumberAlreadyExistsError({ orderNumber });
 
   return services.orders.nextUserCart({
-    user,
+    user: user!,
     orderNumber,
     countryCode: context.countryCode,
     forceCartCreation: true,

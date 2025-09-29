@@ -37,9 +37,9 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     productId,
     locale,
   });
-  let variations = [];
-  let bundleItems = [];
-  let assignments = [];
+  let variations: any = [];
+  let bundleItems: any = [];
+  let assignments: any = [];
   const reviews = await modules.products.reviews.findProductReviews({
     productId,
   });
@@ -85,7 +85,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
   }
 
   // Get pricing information
-  let pricing = null;
+  let pricing: any = null;
   try {
     pricing = await context.modules.products.prices.price(product, {
       countryCode: context.countryCode,

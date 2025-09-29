@@ -45,7 +45,7 @@ export default async function createEnrollment(
     payment,
     productId,
     quantity,
-    userId,
+    userId: userId!,
   });
 
   return await services.enrollments.initializeEnrollment(enrollment, {

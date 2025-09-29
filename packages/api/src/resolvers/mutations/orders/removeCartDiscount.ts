@@ -1,7 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
 
-import { OrderDiscountNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.js';
+import {
+  OrderDiscountNotFoundError,
+  OrderWrongStatusError,
+  InvalidIdError,
+  OrderNotFoundError,
+} from '../../../errors.js';
 import { OrderDiscountTrigger } from '@unchainedshop/core-orders';
 import { OrderDiscountDirector } from '@unchainedshop/core';
 
@@ -24,8 +29,11 @@ export default async function removeCartDiscount(
   const order = await modules.orders.findOrder({
     orderId: orderDiscount.orderId,
   });
+
+  if (!order) throw new OrderNotFoundError({ orderId: orderDiscount.orderId });
+
   if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order.status });
+    throw new OrderWrongStatusError({ status: order!.status });
   }
 
   if (orderDiscount.trigger === OrderDiscountTrigger.USER) {

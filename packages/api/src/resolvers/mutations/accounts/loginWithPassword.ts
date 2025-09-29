@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { InvalidCredentialsError, UsernameOrEmailRequiredError } from '../../../errors.js';
 import { Context } from '../../../context.js';
+import { User } from '@unchainedshop/core-users';
 
 export default async function loginWithPassword(
   root: never,
@@ -18,7 +19,7 @@ export default async function loginWithPassword(
 
   let user = username
     ? await context.modules.users.findUserByUsername(username)
-    : await context.modules.users.findUserByEmail(email);
+    : await context.modules.users.findUserByEmail(email!);
 
   if (!user) throw new InvalidCredentialsError({ username, email });
 
@@ -32,13 +33,13 @@ export default async function loginWithPassword(
     await context.modules.users.updateGuest(user, false);
   }
 
-  user = await context.modules.users.updateHeartbeat(user._id, {
+  user = (await context.modules.users.updateHeartbeat(user._id, {
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
     locale: context.locale?.baseName,
     countryCode: context.countryCode,
-  });
+  })) as User;
 
   if (context.userId) {
     await context.services.users.migrateUserData(context.userId, user._id);

@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { InvalidEmailVerificationTokenError } from '../../../errors.js';
 import { Context } from '../../../context.js';
+import { User } from '@unchainedshop/core-users';
 
 export default async function verifyEmail(root: never, { token }: { token: any }, context: Context) {
   const { modules, userId } = context;
@@ -15,13 +16,13 @@ export default async function verifyEmail(root: never, { token }: { token: any }
 
   await modules.users.verifyEmail(unverifiedToken.userId, unverifiedToken.address);
 
-  const user = await context.modules.users.updateHeartbeat(unverifiedToken.userId, {
+  const user = (await context.modules.users.updateHeartbeat(unverifiedToken.userId, {
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
     locale: context.locale?.baseName,
     countryCode: context.countryCode,
-  });
+  })) as User;
 
   if (context.userId) {
     await context.services.users.migrateUserData(context.userId, user._id);

@@ -3,5 +3,5 @@ import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetail
 
 export default async function getCurrentUser(context: Context) {
   const { userId } = context;
-  return { user: await getNormalizedUserDetails(userId, context) };
+  return { user: await getNormalizedUserDetails(userId!, context) };
 }

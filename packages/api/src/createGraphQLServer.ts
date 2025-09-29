@@ -1,22 +1,25 @@
 import { createLogger } from '@unchainedshop/logger';
-import { createYoga, createSchema, YogaServerOptions } from 'graphql-yoga';
+import { createYoga, createSchema, YogaServerOptions, YogaSchemaDefinition } from 'graphql-yoga';
 
 const logger = createLogger('unchained:api');
 
-export type GraphQLServerOptions = YogaServerOptions<any, any> & {
-  typeDefs?: string[];
-  resolvers?: Record<string, any>[];
-};
+export type UnchainedSchemaExtension =
+  | {
+      typeDefs: string[];
+      resolvers: Record<string, any>[];
+    }
+  | { schema: YogaSchemaDefinition<any, any> };
+
+export type GraphQLServerOptions = YogaServerOptions<any, any> & UnchainedSchemaExtension;
 
 export default async (options: GraphQLServerOptions) => {
-  const { typeDefs, resolvers, schema: customSchema, ...graphQLServerOptions } = options || {};
-
   const schema =
-    customSchema ||
-    createSchema({
-      typeDefs,
-      resolvers,
-    });
+    'schema' in options
+      ? options.schema
+      : createSchema({
+          typeDefs: options.typeDefs,
+          resolvers: options.resolvers,
+        });
 
   const server = createYoga({
     schema,
@@ -24,7 +27,7 @@ export default async (options: GraphQLServerOptions) => {
     context: async (ctx: any) => {
       return (ctx.req as any)?.unchainedContext;
     },
-    ...graphQLServerOptions,
+    ...options,
   });
 
   return server;

@@ -34,7 +34,7 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
       }
     };
 
-    const roles = req.unchainedContext.user.roles || [];
+    const roles = req.unchainedContext.user?.roles || [];
     const server = createMcpServer(req.unchainedContext, roles);
     await server.connect(transport);
   } else {

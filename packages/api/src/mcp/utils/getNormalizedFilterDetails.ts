@@ -10,13 +10,13 @@ export async function getNormalizedFilterDetails(filterId: string, context: Cont
     locale,
   });
 
-  const options = await (filter.options || []).map((filterOption) => ({
-    ...filter,
+  const options = await (filter!.options || []).map((filterOption) => ({
+    ...filter!,
     filterOption,
   }));
 
   return {
-    ...filter,
+    ...filter!,
     options,
     texts,
   };

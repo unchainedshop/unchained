@@ -19,7 +19,7 @@ export default async function removeFilterOption(
     filterId,
     filterOptionValue,
   });
-  await FilterDirector.invalidateProductIdCache(filter, context);
+  await FilterDirector.invalidateProductIdCache(filter!, context);
 
   return filter;
 }

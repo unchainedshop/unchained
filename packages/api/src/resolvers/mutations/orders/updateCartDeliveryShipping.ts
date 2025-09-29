@@ -3,6 +3,7 @@ import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
 import {
   InvalidIdError,
+  OrderDeliveryNotFoundError,
   OrderDeliveryTypeError,
   OrderNotFoundError,
   OrderWrongStatusError,
@@ -23,7 +24,7 @@ export default async function updateCartDeliveryShipping(
 
   let order = await services.orders.findOrInitCart({
     orderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
@@ -42,6 +43,8 @@ export default async function updateCartDeliveryShipping(
     });
 
   order = (await modules.orders.setDeliveryProvider(order._id, deliveryProviderId)) || order;
+
+  if (!order.deliveryId) throw new OrderDeliveryNotFoundError({ orderId: order._id });
 
   await modules.orders.deliveries.updateContext(order.deliveryId, {
     address,

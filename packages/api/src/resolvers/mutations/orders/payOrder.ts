@@ -6,6 +6,7 @@ import {
   OrderWrongPaymentStatusError,
   OrderWrongStatusError,
   InvalidIdError,
+  OrderPaymentNotFoundError,
 } from '../../../errors.js';
 
 export default async function payOrder(root: never, { orderId }: { orderId: string }, context: Context) {
@@ -22,9 +23,13 @@ export default async function payOrder(root: never, { orderId }: { orderId: stri
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const payment = await modules.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
-  });
+  const payment =
+    order.paymentId &&
+    (await modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    }));
+
+  if (!payment) throw new OrderPaymentNotFoundError({ orderPaymentId: order.paymentId });
 
   if (modules.orders.payments.normalizedStatus(payment) !== OrderPaymentStatus.OPEN) {
     throw new OrderWrongPaymentStatusError({

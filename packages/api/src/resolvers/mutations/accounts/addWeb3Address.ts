@@ -7,7 +7,7 @@ export default async function addWeb3Address(
   { address }: { address: any },
   { modules, userId, user }: Context,
 ) {
-  log(`mutation addWeb3Address ${user.username}`, {
+  log(`mutation addWeb3Address ${user!.username}`, {
     userId,
   });
 
@@ -15,7 +15,7 @@ export default async function addWeb3Address(
     throw new UserWeb3InvalidAddressError({ userId, address });
   }
 
-  const foundAlreadyExistingEntryForAddress = user.services?.web3?.some((service) => {
+  const foundAlreadyExistingEntryForAddress = user!.services?.web3?.some((service) => {
     return service.address === address;
   });
 

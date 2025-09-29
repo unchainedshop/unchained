@@ -94,7 +94,7 @@ export default async function verifyWeb3Address(
   { address, hash }: { address: string; hash: `0x${string}` },
   { modules, userId, user }: Context,
 ) {
-  log(`mutation verifyWeb3Address ${address} ${user.username}`, {
+  log(`mutation verifyWeb3Address ${address} ${user?.username}`, {
     userId,
   });
 
@@ -106,7 +106,7 @@ export default async function verifyWeb3Address(
     );
   }
 
-  const foundCredentials = user.services?.web3?.find(
+  const foundCredentials = user?.services?.web3?.find(
     (service) => service.address.toLowerCase() === address.toLowerCase(),
   );
   if (!foundCredentials) {
@@ -132,7 +132,7 @@ export default async function verifyWeb3Address(
     throw new UserWeb3AddressSignatureError({ userId, address: foundCredentials.address });
   }
 
-  const web3Services: any[] = user.services.web3.map((service) => {
+  const web3Services: any[] = user?.services?.web3.map((service) => {
     if (foundCredentials.address === service.address) {
       return {
         ...service,

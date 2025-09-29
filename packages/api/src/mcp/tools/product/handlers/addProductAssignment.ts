@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductTypes, ProductVariation } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
@@ -21,15 +21,15 @@ export default async function addProductAssignment(context: Context, params: Par
 
   // Extract variation matrix and validate vectors
   const variations = await modules.products.variations.findProductVariations({ productId: proxyId });
-  const extractVariationMatrix = (variations = []) => {
+  const extractVariationMatrix = (variations: ProductVariation[] = []) => {
     const cartesianProduct = (arrays) => {
       return arrays.reduce(
         (acc, array) => acc.flatMap((item) => array.map((value) => [...item, value])),
         [[]],
       );
     };
-    const keys = variations.map((item) => item.key);
-    const options = variations.map((item) => item.options);
+    const keys = variations.map((item: any) => item.key);
+    const options = variations.map((item: any) => item.options);
     const combinations = cartesianProduct(options);
     return combinations.map((combination) =>
       combination.reduce((acc, value, index) => {

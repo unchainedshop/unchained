@@ -6,6 +6,7 @@ import {
   OrderWrongDeliveryStatusError,
   OrderWrongStatusError,
   InvalidIdError,
+  OrderDeliveryNotFoundError,
 } from '../../../errors.js';
 
 export default async function deliverOrder(
@@ -25,9 +26,13 @@ export default async function deliverOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
-  });
+  const orderDelivery =
+    order.deliveryId &&
+    (await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    }));
+
+  if (!orderDelivery) throw new OrderDeliveryNotFoundError({ orderDeliveryId: order.deliveryId });
 
   if (
     modules.orders.deliveries.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN &&

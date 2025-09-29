@@ -7,7 +7,7 @@ export async function getNormalizedAssortmentDetails(
 ) {
   const { modules, locale, loaders } = context;
   const assortment = await modules.assortments.findAssortment({ assortmentId, slug });
-  const normalizedAssortmentId = assortmentId || assortment._id;
+  const normalizedAssortmentId = assortmentId || assortment!._id;
   if (!assortment) return null;
 
   const texts = await loaders.assortmentTextLoader.load({

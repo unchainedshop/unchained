@@ -7,9 +7,9 @@ export default (unchainedAPI: UnchainedCore) =>
     { parentAssortmentId?: string; childAssortmentId?: string; assortmentId?: string },
     AssortmentLink[]
   >(async (queries) => {
-    const parentAssortmentIds = queries.flatMap((q) => q.parentAssortmentId).filter(Boolean);
-    const childAssortmentIds = queries.flatMap((q) => q.childAssortmentId).filter(Boolean);
-    const assortmentIds = queries.flatMap((q) => q.assortmentId).filter(Boolean);
+    const parentAssortmentIds = queries.flatMap((q) => q.parentAssortmentId).filter(Boolean) as string[];
+    const childAssortmentIds = queries.flatMap((q) => q.childAssortmentId).filter(Boolean) as string[];
+    const assortmentIds = queries.flatMap((q) => q.assortmentId).filter(Boolean) as string[];
 
     const allLinks = await unchainedAPI.modules.assortments.links.findLinks({
       assortmentIds: [...new Set([...parentAssortmentIds, ...childAssortmentIds, ...assortmentIds])],
@@ -38,9 +38,12 @@ export default (unchainedAPI: UnchainedCore) =>
       } else if (q.childAssortmentId) {
         return childAssortmentLinkMap[q.childAssortmentId] || [];
       }
-      return [
-        ...(parentAssortmentLinkMap[q.assortmentId] || []),
-        ...(childAssortmentLinkMap[q.assortmentId] || []),
-      ];
+      if (q.assortmentId) {
+        return [
+          ...(parentAssortmentLinkMap[q.assortmentId] || []),
+          ...(childAssortmentLinkMap[q.assortmentId] || []),
+        ];
+      }
+      return [];
     });
   });

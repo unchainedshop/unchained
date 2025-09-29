@@ -2,6 +2,7 @@ import { OrderPaymentStatus } from '@unchainedshop/core-orders';
 import { Context } from '../../../../context.js';
 import {
   OrderNotFoundError,
+  OrderPaymentNotFoundError,
   OrderWrongPaymentStatusError,
   OrderWrongStatusError,
 } from '../../../../errors.js';
@@ -19,9 +20,13 @@ export default async function payOrder(context: Context, params: Params<'PAY_ORD
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const payment = await modules.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
-  });
+  const payment =
+    order.paymentId &&
+    (await modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    }));
+
+  if (!payment) throw new OrderPaymentNotFoundError({ orderPaymentId: order.paymentId });
 
   if (modules.orders.payments.normalizedStatus(payment) !== OrderPaymentStatus.OPEN) {
     throw new OrderWrongPaymentStatusError({

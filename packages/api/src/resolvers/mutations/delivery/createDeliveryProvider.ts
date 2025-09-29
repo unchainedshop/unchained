@@ -6,7 +6,7 @@ import { DeliveryDirector } from '@unchainedshop/core';
 
 export default async function createDeliveryProvider(
   root: never,
-  { deliveryProvider }: { deliveryProvider: DeliveryProvider },
+  { deliveryProvider }: { deliveryProvider: Pick<DeliveryProvider, 'type' | 'adapterKey'> },
   { modules, userId }: Context,
 ) {
   log('mutation createDeliveryProvider', { userId });

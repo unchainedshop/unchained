@@ -23,7 +23,7 @@ const upsert = async (
     throw new Error(`Can't link non-existing assortment ${assortmentLink.childAssortmentId}`);
   }
   try {
-    const newAssortmentLink = await modules.assortments.links.create(assortmentLink, {
+    const newAssortmentLink = await modules.assortments.links.create(assortmentLink as AssortmentLink, {
       skipInvalidation: true,
     });
     return newAssortmentLink!;

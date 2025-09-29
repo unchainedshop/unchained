@@ -12,17 +12,17 @@ export default async function changePassword(
 ) {
   log('mutation changePassword', { userId });
 
-  const user = await modules.users.findUserById(userId);
+  const user = await modules.users.findUserById(userId!);
 
   const isValidCurrentPassword =
-    user.services?.password &&
-    (await modules.users.verifyPassword(user.services?.password, params.oldPassword));
+    user!.services?.password &&
+    (await modules.users.verifyPassword(user!.services?.password, params.oldPassword));
   if (!isValidCurrentPassword) throw new InvalidCredentialsError({});
 
   let success = false;
 
   try {
-    await modules.users.setPassword(user._id, params.newPassword);
+    await modules.users.setPassword(user!._id, params.newPassword);
     success = true;
   } catch (e) {
     success = false;

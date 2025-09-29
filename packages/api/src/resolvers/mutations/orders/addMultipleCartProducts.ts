@@ -6,7 +6,7 @@ import {
   OrderWrongStatusError,
   OrderNotFoundError,
 } from '../../../errors.js';
-import { ordersSettings } from '@unchainedshop/core-orders';
+import { OrderPosition, ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addMultipleCartProducts(
   root: never,
@@ -43,7 +43,7 @@ export default async function addMultipleCartProducts(
 
   const order = await services.orders.findOrInitCart({
     orderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
@@ -52,7 +52,7 @@ export default async function addMultipleCartProducts(
   // Reduce is used to wait for each product to be added before processing the next (sequential processing)
   await itemsWithProducts.reduce(
     async (positionsPromise, { originalProduct, quantity, configuration }) => {
-      const positions = await positionsPromise;
+      const positions: OrderPosition[] = await positionsPromise;
       if (quantity < 1)
         throw new OrderQuantityTooLowError({
           quantity,

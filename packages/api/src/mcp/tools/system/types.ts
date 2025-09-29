@@ -5,7 +5,7 @@ export interface WorkListOptions {
   limit?: number;
   offset?: number;
   queryString?: string;
-  status?: WorkStatus[];
+  status: WorkStatus[];
   types?: string[];
   sort?: SortOption[];
   created?: {

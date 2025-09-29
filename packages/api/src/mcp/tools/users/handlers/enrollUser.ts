@@ -8,7 +8,7 @@ export default async function enrollUser(context: Context, params: Params<'ENROL
 
   const userId = await modules.users.createUser({
     email,
-    password,
+    password: password || null,
     ...profile,
   });
 

@@ -7,12 +7,12 @@ export default async function addWebAuthnCredentials(
   { credentials }: { credentials: any },
   { modules, userId, user }: Context,
 ) {
-  log(`mutation addWebAuthnCredentials ${user.username}`, {
+  log(`mutation addWebAuthnCredentials ${user!.username}`, {
     userId,
   });
 
   const webAuthnService = await modules.users.webAuthn.verifyCredentialCreation(
-    user.username,
+    user!.username!,
     credentials,
   );
 

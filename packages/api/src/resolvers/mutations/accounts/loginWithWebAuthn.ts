@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
 import { UserNotFoundError, WebAuthnDisabledError } from '../../../errors.js';
+import { User } from '@unchainedshop/core-users';
 
 export default async function loginWithWebAuthn(
   root: never,
@@ -19,19 +20,19 @@ export default async function loginWithWebAuthn(
 
   const verification = await context.modules.users.webAuthn.verifyCredentialRequest(
     user.services?.webAuthn,
-    user.username,
+    user.username!,
     params.webAuthnPublicKeyCredentials,
   );
 
   if (!verification) throw new WebAuthnDisabledError();
 
-  user = await context.modules.users.updateHeartbeat(user._id, {
+  user = (await context.modules.users.updateHeartbeat(user._id, {
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.getHeader('user-agent'),
     locale: context.locale?.baseName,
     countryCode: context.countryCode,
-  });
+  })) as User;
 
   if (context.userId) {
     await context.services.users.migrateUserData(context.userId, user._id);

@@ -1,6 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
-import { OrderItemNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.js';
+import {
+  OrderItemNotFoundError,
+  OrderWrongStatusError,
+  InvalidIdError,
+  OrderNotFoundError,
+} from '../../../errors.js';
 
 export default async function removeCartItem(
   root: never,
@@ -19,6 +24,8 @@ export default async function removeCartItem(
   if (!orderItem) throw new OrderItemNotFoundError({ orderItem });
 
   const order = await modules.orders.findOrder({ orderId: orderItem.orderId });
+
+  if (!order) throw new OrderNotFoundError({ orderId: orderItem.orderId });
 
   if (!modules.orders.isCart(order)) {
     throw new OrderWrongStatusError({ status: order.status });

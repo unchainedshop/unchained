@@ -18,7 +18,7 @@ export default async function addCartDiscount(
 
   const order = await services.orders.findOrInitCart({
     orderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });

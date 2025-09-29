@@ -14,9 +14,9 @@ export async function getNormalizedUserDetails(userId: string, context: Context)
   if (!user) return null;
 
   const avatar = await loaders.fileLoader.load({
-    fileId: user.avatarId,
+    fileId: user.avatarId!,
   });
-  const normalizedAvatar = await normalizeMediaUrl([{ mediaId: avatar?._id }], context);
+  const normalizedAvatar = await normalizeMediaUrl([{ mediaId: avatar?._id } as any], context);
 
   const primaryEmail = getPrimaryEmail(user);
   const { profile } = user;
@@ -36,7 +36,7 @@ export async function getNormalizedUserDetails(userId: string, context: Context)
   const userLocale = await modules.users.userLocale(user);
 
   const country = await loaders.countryLoader.load({
-    isoCode: userLocale.region,
+    isoCode: userLocale.region!,
   });
 
   const enrollments = await modules.enrollments.findEnrollments({

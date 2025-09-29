@@ -3,7 +3,7 @@ import { ProductMedia } from '@unchainedshop/core-products';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
-  new DataLoader<{ productId?: string }, ProductMedia[]>(async (queries) => {
+  new DataLoader<{ productId: string }, ProductMedia[]>(async (queries) => {
     const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
     const productMediaItems = await unchainedAPI.modules.products.media.findProductMedias({
       productId: { $in: productIds },

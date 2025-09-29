@@ -14,10 +14,10 @@ export async function getNormalizedOrderDetails(
     orderId: order._id,
   });
   const payment = await modules.orders.payments.findOrderPayment({
-    orderPaymentId: order?.paymentId,
+    orderPaymentId: order?.paymentId as string,
   });
   const delivery = await modules.orders.deliveries.findDelivery({
-    orderDeliveryId: order?.deliveryId,
+    orderDeliveryId: order?.deliveryId as string,
   });
   const [
     items,
@@ -49,7 +49,7 @@ export async function getNormalizedOrderDetails(
     }),
     modules.orders.discounts.findOrderDiscounts({ orderId: order._id }),
   ]);
-  let total = null;
+  let total: any = null;
   const pricing = OrderPricingSheet({
     calculation: order.calculation,
     currencyCode: order.currencyCode,

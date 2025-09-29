@@ -20,7 +20,9 @@ export default async function getCatalogPrice(context: Context, params: Params<'
   };
 
   const pricing = await services.products.simulateProductPricing(pricingContext as any);
-  const unitPrice = pricing?.unitPrice();
+  const unitPrice = pricing?.unitPrice({});
+
+  if (!pricing) return { price: null };
 
   const price = {
     ...unitPrice,

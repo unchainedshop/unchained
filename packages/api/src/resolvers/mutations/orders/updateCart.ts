@@ -21,7 +21,7 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
 
   const order = await services.orders.findOrInitCart({
     orderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });

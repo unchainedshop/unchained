@@ -11,15 +11,15 @@ export default async function addEmail(
 
   log(`mutation addEmail ${params.email} ${normalizedUserId}`, { userId });
 
-  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+  if (!(await modules.users.userExists({ userId: normalizedUserId! })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
   try {
-    await modules.users.addEmail(normalizedUserId, params.email);
+    await modules.users.addEmail(normalizedUserId!, params.email);
   } catch (e) {
     if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
     else throw e;
   }
 
-  return modules.users.findUserById(normalizedUserId);
+  return modules.users.findUserById(normalizedUserId!);
 }

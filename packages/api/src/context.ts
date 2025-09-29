@@ -99,8 +99,11 @@ export const createContextResolver =
       }
     }
     if (userId && !userContext.userId) {
-      userContext.user = await unchainedAPI.modules.users.findUserById(userId);
-      userContext.userId = userId;
+      const user = await unchainedAPI.modules.users.findUserById(userId);
+      if (user) {
+        userContext.user = user;
+        userContext.userId = user._id;
+      }
     }
 
     return {

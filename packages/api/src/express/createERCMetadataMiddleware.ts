@@ -29,6 +29,8 @@ const ercMetadataMiddleware: RequestHandler = async (
     if (!pathname.toLowerCase().endsWith('.json')) throw new Error('Invalid ERC Metadata URI');
 
     const fileName = pathname.split('/').pop();
+
+    if (!fileName) throw new Error('Invalid ERC Metadata URI');
     const chainTokenId = fileName.slice(0, fileName.lastIndexOf('.'));
 
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');

@@ -6,7 +6,7 @@ export default async function addUserEmail(context: Context, params: Params<'ADD
   const { modules } = context;
   const { userId, email } = params;
 
-  await modules.users.addEmail(userId, email);
-  const user = await getNormalizedUserDetails(userId, context);
+  await modules.users.addEmail(userId || context.userId!, email);
+  const user = await getNormalizedUserDetails(userId || context.userId!, context);
   return { user };
 }

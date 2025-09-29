@@ -7,6 +7,7 @@ import {
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
   OrderWrongPaymentStatusError,
+  PaymentProviderNotFoundError,
   UserNoCartError,
 } from '../../../errors.js';
 import { PaymentDirector } from '@unchainedshop/core';
@@ -33,18 +34,23 @@ export default async function signPaymentProviderForCheckout(
   } else {
     const order = await modules.orders.cart({
       countryCode: context.countryCode,
-      userId,
+      userId: userId!,
     });
     if (!order) throw new UserNoCartError({ userId });
-    orderPayment = await modules.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
-    });
+    orderPayment =
+      order.paymentId &&
+      (await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      }));
     if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
   }
 
   const provider = await modules.payment.paymentProviders.findProvider({
     paymentProviderId: orderPayment.paymentProviderId,
   });
+
+  if (!provider) throw new PaymentProviderNotFoundError({ id: orderPayment.paymentProviderId });
+
   const providerType = provider?.type;
 
   if (providerType !== PaymentProviderType.GENERIC)

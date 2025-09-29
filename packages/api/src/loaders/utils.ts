@@ -21,7 +21,7 @@ export function buildLocaleMap(
     Object.fromEntries(queries.map((q) => [q.locale.baseName, q.locale])),
   );
 
-  const textLocales: string[] = [...new Set(texts.map((t) => t.locale))];
+  const textLocales = [...new Set(texts.map((t) => t.locale))].filter(Boolean) as string[];
   const localeMap = {};
   for (const queryLocale of queryLocales) {
     const potentialMatches = getLocaleStrings(queryLocale);

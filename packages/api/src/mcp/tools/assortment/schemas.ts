@@ -199,7 +199,7 @@ export const actionValidators = {
   }),
 
   GET_CHILDREN: z.object({
-    assortmentId: z.string().min(1).optional().describe('Assortment ID (optional for root-level)'),
+    assortmentId: z.string().min(1).describe('Assortment ID (optional for root-level)'),
     includeInactive: z.boolean().optional().describe('Include inactive children'),
   }),
 

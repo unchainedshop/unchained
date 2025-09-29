@@ -21,7 +21,7 @@ export default async function checkoutCart(
   // Do not check for order status here! The checkout method will act accordingly
   const order = await services.orders.findOrInitCart({
     orderId: forceOrderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId: forceOrderId });

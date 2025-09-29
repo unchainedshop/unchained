@@ -33,10 +33,13 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     context: customContext,
     roles,
     adminUiConfig = {},
-    typeDefs: additionalTypeDefs = [],
-    resolvers: additionalResolvers = [],
+    typeDefs: additionalTypeDefs,
+    resolvers: additionalResolvers,
     ...serverOptions
-  } = options || {};
+  } = options as UnchainedServerOptions & {
+    typeDefs?: string[];
+    resolvers?: Record<string, any>[];
+  };
 
   const contextResolver = createContextResolver(unchainedAPI, {
     roles,
@@ -56,9 +59,9 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
       ...buildDefaultTypeDefs({
         actions: Object.keys(actions),
       }),
-      ...additionalTypeDefs,
+      ...(additionalTypeDefs || []),
     ],
-    resolvers: [resolvers, ...additionalResolvers],
+    resolvers: [resolvers, ...(additionalResolvers || [])],
     ...serverOptions,
   });
 };

@@ -38,23 +38,26 @@ export default async function updateEnrollment(
   }
 
   if (meta) {
-    enrollment = await modules.enrollments.updateContext(enrollmentId, meta);
+    enrollment = (await modules.enrollments.updateContext(enrollmentId, meta)) as Enrollment;
   }
 
   if (billingAddress) {
-    enrollment = await modules.enrollments.updateBillingAddress(enrollmentId, billingAddress);
+    enrollment = (await modules.enrollments.updateBillingAddress(
+      enrollmentId,
+      billingAddress,
+    )) as Enrollment;
   }
 
   if (contact) {
-    enrollment = await modules.enrollments.updateContact(enrollmentId, contact);
+    enrollment = (await modules.enrollments.updateContact(enrollmentId, contact)) as Enrollment;
   }
 
   if (payment) {
-    enrollment = await modules.enrollments.updatePayment(enrollmentId, payment);
+    enrollment = (await modules.enrollments.updatePayment(enrollmentId, payment)) as Enrollment;
   }
 
   if (delivery) {
-    enrollment = await modules.enrollments.updateDelivery(enrollmentId, delivery);
+    enrollment = (await modules.enrollments.updateDelivery(enrollmentId, delivery)) as Enrollment;
   }
 
   if (plan) {
@@ -64,7 +67,7 @@ export default async function updateEnrollment(
         'TODO: Unchained currently does not support order splitting for enrollments, therefore updates to quantity, product and configuration of a enrollment is forbidden for non initial enrollments',
       );
     }
-    enrollment = await modules.enrollments.updatePlan(enrollmentId, plan);
+    enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
     enrollment = await services.enrollments.initializeEnrollment(enrollment, { reason: 'updated_plan' });
   }
 

@@ -46,7 +46,7 @@ export default async function addCartQuotation(
 
   const order = await services.orders.findOrInitCart({
     orderId,
-    user,
+    user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
@@ -68,7 +68,7 @@ export default async function addCartQuotation(
   if (!quotationConfiguration) throw new QuotationItemConfigurationError({ configuration });
 
   const updatedOrderPosition = await modules.orders.positions.addProductItem({
-    quantity: quotationConfiguration.quantity,
+    quantity: quotationConfiguration.quantity || 1,
     configuration: quotationConfiguration.configuration,
     quotationId,
     productId: quotation.productId,

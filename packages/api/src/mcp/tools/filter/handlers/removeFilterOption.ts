@@ -16,6 +16,9 @@ export default async function removeFilterOption(context: Context, params: Param
     filterId,
     filterOptionValue: option,
   });
+
+  if (!removedFilterOption) return { filter: null };
+
   await FilterDirector.invalidateProductIdCache(removedFilterOption, context);
 
   const normalizedFilter = await getNormalizedFilterDetails(filterId, context);

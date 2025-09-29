@@ -14,5 +14,5 @@ export default async function getUserAvatar(context: Context, params: Params<'GE
     fileId: user.avatarId,
   });
 
-  return { avatar: await normalizeMediaUrl([avatar], context) };
+  return { avatar: await normalizeMediaUrl([{ mediaId: avatar._id as string } as any], context) };
 }

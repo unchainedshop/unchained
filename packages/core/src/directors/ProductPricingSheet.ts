@@ -33,7 +33,7 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
     meta?: any;
   }) => void;
 
-  unitPrice: (params?: { useNetPrice: boolean }) => Price;
+  unitPrice: (params: { useNetPrice?: boolean }) => Price;
 }
 
 export const ProductPricingSheet = (

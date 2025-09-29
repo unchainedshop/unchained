@@ -36,6 +36,7 @@ const tempUploadHandler: RouteHandlerMethod = async (
 
     const fileUploadAdapter = getFileAdapter();
     const rawUrl = await fileUploadAdapter.createDownloadURL(file);
+    if (!rawUrl) throw new Error('Could not create download URL for file');
     const url = context.modules.files.normalizeUrl(rawUrl, {});
     res.status(200);
     return res.send({ fileId: file._id, url, expires: expires.toISOString() });

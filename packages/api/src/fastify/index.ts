@@ -38,7 +38,7 @@ const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
-  UNCHAINED_COOKIE_SAMESITE,
+  UNCHAINED_COOKIE_SAMESITE = 'none',
   UNCHAINED_COOKIE_INSECURE,
 } = process.env;
 
@@ -160,7 +160,7 @@ export const connect = (
   if (!fastify.hasPlugin('@fastify/cookie')) {
     fastify.register(fastifyCookie);
   }
-  fastify.register(fastifySession, {
+  fastify.register(fastifySession as any, {
     secret: process.env.UNCHAINED_TOKEN_SECRET,
     cookieName,
     store: MongoStore.create({
