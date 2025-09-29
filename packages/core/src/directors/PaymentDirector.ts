@@ -51,7 +51,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
     unchainedAPI,
   ) => Promise<IPaymentActions>;
 };
-const logger = createLogger('unchained:core-payment');
+const logger = createLogger('unchained:core:payment');
 const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 
 export const PaymentDirector: IPaymentDirector = {

@@ -52,23 +52,22 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
         orderId: item.orderId,
       });
       const provider = await modules.payment.paymentProviders.findProvider({
-        paymentProviderId: item.paymentProviderId,
+        paymentProviderId: item.paymentProviderId!,
       });
-      const user = await modules.users.findUserById(order.userId);
+      const user = await modules.users.findUserById(order!.userId);
       const discounts = await modules.orders.discounts.findOrderDiscounts({
         orderId: item.orderId,
       });
 
       return {
         ...unchainedAPI,
-        countryCode: order.countryCode,
+        countryCode: order!.countryCode,
         currencyCode,
-        order,
-        provider,
-        user,
+        order: order!,
+        provider: provider!,
+        user: user!,
         discounts,
         orderPayment: item,
-        providerContext: null,
       };
     }
 
@@ -80,7 +79,6 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
       provider: context.provider,
       user: context.user,
       discounts: [],
-      orderPayment: null,
       providerContext: context.providerContext,
     };
   },

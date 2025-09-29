@@ -10,7 +10,7 @@ export interface QuotationContext {
 }
 
 export interface QuotationAdapterActions {
-  configurationError: () => QuotationError;
+  configurationError: () => QuotationError | null;
   isManualProposalRequired: () => Promise<boolean>;
   isManualRequestVerificationRequired: () => Promise<boolean>;
   quote: () => Promise<QuotationProposal>;
@@ -20,7 +20,7 @@ export interface QuotationAdapterActions {
 
   transformItemConfiguration: (
     params: QuotationItemConfiguration,
-  ) => Promise<QuotationItemConfiguration>;
+  ) => Promise<QuotationItemConfiguration | null>;
 }
 
 export type IQuotationAdapter = IBaseAdapter & {

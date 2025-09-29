@@ -21,7 +21,7 @@ export interface PaymentPricingAdapterContext extends BasePricingAdapterContext 
   countryCode?: string;
   currency?: string;
   user: User;
-  orderPayment: OrderPayment;
+  orderPayment?: OrderPayment;
   order: Order;
   provider: PaymentProvider;
   discounts: OrderDiscount[];

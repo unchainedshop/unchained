@@ -4,7 +4,7 @@ import {
   ProductDiscountConfiguration,
 } from '../directors/index.js';
 
-export const ProductDiscountAdapter: Omit<
+export const ProductDiscountAdapter = BaseDiscountAdapter as Omit<
   IDiscountAdapter<ProductDiscountConfiguration>,
   'key' | 'label' | 'version'
-> = BaseDiscountAdapter;
+>;

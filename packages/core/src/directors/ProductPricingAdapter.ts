@@ -16,7 +16,7 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   currencyCode: string;
   product: Product;
   quantity: number;
-  configuration: ProductConfiguration[];
+  configuration?: ProductConfiguration[];
   order?: Order;
   user?: User;
 }

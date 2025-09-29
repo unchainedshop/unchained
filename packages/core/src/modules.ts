@@ -87,7 +87,7 @@ const initModules = async (
   }: {
     db: mongodb.Db;
     migrationRepository: MigrationRepository<unknown>;
-    options?: ModuleOptions;
+    options: ModuleOptions;
   },
   customModules: Record<
     string,

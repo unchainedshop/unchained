@@ -130,10 +130,7 @@ export const WarehousingDirector: IWarehousingDirector = {
 
           const warehousingThroughputTime = await throughputTime(referenceDate);
           if (!Number.isFinite(warehousingThroughputTime)) {
-            return {
-              shipping: null,
-              earliestDelivery: null,
-            };
+            return {};
           }
 
           // Calculate shipping date
@@ -141,12 +138,12 @@ export const WarehousingDirector: IWarehousingDirector = {
           const shipping = new Date(shippingTimestamp);
 
           // Calculate earliest delivery date
-          const actions = await DeliveryDirector.actions(deliveryProvider, context, unchainedAPI);
+          const actions = await DeliveryDirector.actions(deliveryProvider!, context, unchainedAPI);
           const deliveryThroughputTime =
             await actions.estimatedDeliveryThroughput(warehousingThroughputTime);
           const earliestDelivery = Number.isFinite(deliveryThroughputTime)
-            ? new Date(shippingTimestamp + deliveryThroughputTime)
-            : null;
+            ? new Date(shippingTimestamp + deliveryThroughputTime!)
+            : undefined;
 
           return {
             shipping,

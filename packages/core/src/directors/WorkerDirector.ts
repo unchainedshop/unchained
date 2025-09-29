@@ -13,7 +13,7 @@ export type WorkScheduleConfiguration = Pick<
 > & {
   type: string;
   input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
-  schedule: ScheduleData;
+  schedule?: ScheduleData;
   scheduleId?: string;
 };
 
@@ -24,7 +24,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => [string, WorkScheduleConfiguration][];
   doWork: (work: Work, unchainedAPI) => Promise<WorkResult>;
-  processNextWork: (unchainedAPI: { modules: Modules }, workerId?: string) => Promise<Work>;
+  processNextWork: (unchainedAPI: { modules: Modules }, workerId?: string) => Promise<Work | null>;
 };
 
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
@@ -36,7 +36,7 @@ const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
 export const WorkerDirector: IWorkerDirector = {
   ...baseDirector,
 
-  getActivePluginTypes: ({ external } = { external: null }) => {
+  getActivePluginTypes: ({ external } = {}) => {
     return WorkerDirector.getAdapters()
       .filter((adapter) => {
         if (external === null || external === undefined) return true;
@@ -55,8 +55,7 @@ export const WorkerDirector: IWorkerDirector = {
   },
 
   disableAutoscheduling: (type) => {
-    const config = AutoScheduleMap.get(type);
-    AutoScheduleMap.set(type, { ...config, schedule: null });
+    AutoScheduleMap.delete(type);
   },
 
   unregisterAdapter: (key) => {
@@ -110,7 +109,7 @@ export const WorkerDirector: IWorkerDirector = {
     }
   },
 
-  processNextWork: async (unchainedAPI: { modules: Modules }, workerId?: string): Promise<Work> => {
+  processNextWork: async (unchainedAPI: { modules: Modules }, workerId?: string) => {
     const adapters = WorkerDirector.getAdapters();
 
     const allocationMap = await unchainedAPI.modules.worker.allocationMap();

@@ -19,8 +19,8 @@ export enum DeliveryError {
 }
 
 export interface DeliveryAdapterActions {
-  configurationError: (transactionContext?: any) => DeliveryError;
-  estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
+  configurationError: (transactionContext?: any) => DeliveryError | null;
+  estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number | null>;
   isActive: () => boolean;
   isAutoReleaseAllowed: () => boolean;
   pickUpLocationById: (locationId: string) => Promise<DeliveryLocation | null>;

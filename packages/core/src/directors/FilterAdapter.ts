@@ -41,7 +41,7 @@ export interface FilterAdapterActions {
       sortStage: mongodb.FindOptions['sort'];
       locale: Intl.Locale;
     },
-  ) => Promise<string[] | null>;
+  ) => Promise<string[] | undefined>;
 
   transformFilterSelector: (
     query: mongodb.Filter<Filter>,

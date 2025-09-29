@@ -27,15 +27,15 @@ export interface WarehousingAdapterActions {
 }
 
 export interface WarehousingContext {
-  deliveryProvider?: DeliveryProvider;
-  product?: Product;
+  deliveryProvider: DeliveryProvider;
+  product: Product;
   token?: TokenSurrogate;
-  quantity?: number;
+  quantity: number;
   referenceDate?: Date;
   locale?: Intl.Locale;
-  order?: Order;
+  order: Order;
   warehousingProviderId?: string;
-  orderPosition?: OrderPosition;
+  orderPosition: OrderPosition;
 }
 
 export type IWarehousingAdapter = IBaseAdapter & {

@@ -12,7 +12,7 @@ import {
 import { Product } from '@unchainedshop/core-products';
 import { Modules } from '../modules.js';
 
-export const parseQueryArray = (query: SearchFilterQuery): Record<string, string[]> =>
+export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({
       ...accumulator,
@@ -103,7 +103,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       searchProducts: async (params, options) => {
-        return reduceAdapters<string[]>(async (lastSearchPromise, adapter) => {
+        return reduceAdapters<string[] | undefined>(async (lastSearchPromise, adapter) => {
           const productIds = await lastSearchPromise;
           return adapter.searchProducts({ productIds }, options);
         }, params.productIds);
@@ -187,7 +187,7 @@ export const FilterDirector: IFilterDirector = {
       values,
       Object.keys(keyToProductIdMap),
     );
-    const result = [];
+    const result: string[] = [];
     for (const key of filteredKeys) {
       const additionalValues = key === undefined ? allProductIds : keyToProductIdMap[key];
       if (additionalValues) {
@@ -244,7 +244,7 @@ export const FilterDirector: IFilterDirector = {
   async filterFacets(filter, params, unchainedAPI) {
     const { allProductIds, searchQuery, forceLiveCollection, otherFilters } = params;
 
-    const filterQueryParsed = parseQueryArray(searchQuery?.filterQuery);
+    const filterQueryParsed = parseQueryArray(searchQuery.filterQuery);
 
     // The examinedProductIdSet is a set of product id's that:
     // - Fit this filter generally

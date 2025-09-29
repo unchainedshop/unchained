@@ -172,6 +172,12 @@ export const QuotationWrongStatusError = createError(
   'QuotationWrongStatusError',
   'The current status of the quotation does not allow this operation',
 );
+
+export const QuotationItemConfigurationError = createError(
+  'QuotationItemConfigurationError',
+  'Could not transform quotation item',
+);
+
 export const QuotationNotFoundError = createError('QuotationNotFoundError', 'Quotation not found');
 export const BookmarkAlreadyExistsError = createError(
   'BookmarkAlreadyExistsError',

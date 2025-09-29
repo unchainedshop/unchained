@@ -26,6 +26,6 @@ export const WorkerAdapter: Omit<IWorkerAdapter<any, void>, 'key' | 'label' | 't
   external: false,
 
   async doWork() {
-    return { success: false, result: null };
+    return { success: false };
   },
 };

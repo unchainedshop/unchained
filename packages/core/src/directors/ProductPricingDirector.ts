@@ -16,9 +16,9 @@ export type ProductPricingContext =
       currencyCode: string;
       countryCode: string;
       quantity: number;
-      discounts?: OrderDiscount[];
+      discounts: OrderDiscount[];
       order?: Order;
-      product?: Product;
+      product: Product;
       configuration?: ProductConfiguration[];
       user?: User;
     }
@@ -59,21 +59,21 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
       const order = await modules.orders.findOrder({
         orderId: item.orderId,
       });
-      const user = await modules.users.findUserById(order.userId);
+      const user = await modules.users.findUserById(order!.userId);
       const discounts = await modules.orders.discounts.findOrderDiscounts({
         orderId: item.orderId,
       });
 
       return {
         ...unchainedAPI,
-        countryCode: order.countryCode,
+        countryCode: order!.countryCode,
         currencyCode,
         discounts,
-        order,
-        product,
+        order: order!,
+        product: product!,
         quantity,
         configuration: item.configuration,
-        user,
+        user: user!,
       };
     }
 

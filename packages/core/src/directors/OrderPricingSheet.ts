@@ -122,7 +122,8 @@ export const OrderPricingSheet = (
           category: OrderPricingRowCategory.Discounts,
           discountId: explicitDiscountId,
         })
-        .map(({ discountId }) => discountId);
+        .map(({ discountId }) => discountId)
+        .filter(Boolean) as string[];
 
       return [...new Set(discountIds)]
         .map((discountId) => {
@@ -139,7 +140,7 @@ export const OrderPricingSheet = (
             currencyCode: basePricingSheet.currencyCode,
           };
         })
-        .filter(Boolean);
+        .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];
     },
   };
 

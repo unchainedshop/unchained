@@ -10,13 +10,14 @@ import type { OrderPosition } from '@unchainedshop/core-orders';
 
 export interface EnrollmentContext {
   enrollment: Enrollment;
+  product: Product;
 }
 
 export interface EnrollmentAdapterActions {
   configurationForOrder: (params: { period: EnrollmentPeriod; products: Product[] }) => Promise<any>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
-  nextPeriod: () => Promise<EnrollmentPeriod>;
+  nextPeriod: () => Promise<EnrollmentPeriod | null>;
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
@@ -71,10 +72,8 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
       isValidForActivation: async () => false,
 
       nextPeriod: async () => {
-        const { enrollment } = context;
-        const product = await (context as any).modules.products.findProduct({
-          productId: enrollment.productId,
-        });
+        const { enrollment, product } = context;
+
         const plan = product?.plan;
         const referenceDate = new Date();
         if (!plan) return null;

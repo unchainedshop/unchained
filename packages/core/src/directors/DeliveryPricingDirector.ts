@@ -52,18 +52,18 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
       const provider = await modules.delivery.findProvider({
         deliveryProviderId: item.deliveryProviderId,
       });
-      const user = await modules.users.findUserById(order.userId);
+      const user = await modules.users.findUserById(order!.userId);
       const discounts = await modules.orders.discounts.findOrderDiscounts({
         orderId: item.orderId,
       });
 
       return {
         ...unchainedAPI,
-        countryCode: order.countryCode,
+        countryCode: order!.countryCode,
         currencyCode,
-        order,
-        provider,
-        user,
+        order: order!,
+        provider: provider!,
+        user: user!,
         discounts,
         orderDelivery: item,
         providerContext: null,
@@ -78,7 +78,6 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
       provider: context.provider,
       user: context.user,
       discounts: [],
-      orderDelivery: null,
       providerContext: context.providerContext,
     };
   },

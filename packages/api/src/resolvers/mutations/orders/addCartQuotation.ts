@@ -9,6 +9,7 @@ import {
   OrderWrongStatusError,
   ProductNotFoundError,
   OrderNotFoundError,
+  QuotationItemConfigurationError,
 } from '../../../errors.js';
 import { QuotationDirector } from '@unchainedshop/core';
 
@@ -63,6 +64,8 @@ export default async function addCartQuotation(
     quantity,
     configuration,
   });
+
+  if (!quotationConfiguration) throw new QuotationItemConfigurationError({ configuration });
 
   const updatedOrderPosition = await modules.orders.positions.addProductItem({
     quantity: quotationConfiguration.quantity,

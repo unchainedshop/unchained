@@ -147,20 +147,16 @@ export async function processOrderService(
       // we have to stop here shortly to complete the confirmation
       // before auto delivery is started, else we have no chance to create
       // numbers that are needed for delivery
-      order = await this.orders.updateStatus(orderId, {
+      order = (await this.orders.updateStatus(orderId, {
         status: OrderStatus.CONFIRMED,
         info: comment,
-      });
-
-      const orderDelivery = await this.orders.deliveries.findDelivery({
-        orderDeliveryId: order.deliveryId,
-      });
+      })) as Order;
 
       // TODO: What happens if this THROWS?
       // Tokenization would be skipped?
       // Enrollments will not be there?
       // Quotations would not fulfil?
-      await DeliveryDirector.sendOrderDelivery(orderDelivery, deliveryContext, { modules: this });
+      await DeliveryDirector.sendOrderDelivery(order, deliveryContext, { modules: this });
 
       const orderPositions = await this.orders.positions.findOrderPositions({ orderId });
       const mappedProductOrderPositions = await Promise.all(

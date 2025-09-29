@@ -61,7 +61,7 @@ export const OrderPricingDirector: IOrderPricingDirector<any> = {
       orderDelivery: context.orderDelivery,
       orderPayment: context.orderPayment,
       orderPositions: context.orderPositions,
-      user,
+      user: user!,
     };
   },
 

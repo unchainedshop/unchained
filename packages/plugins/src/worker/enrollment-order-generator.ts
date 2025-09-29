@@ -86,7 +86,13 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
+            const product = await unchainedAPI.modules.products.findProduct({
+              productId: enrollment.productId,
+            });
+            const director = await EnrollmentDirector.actions(
+              { enrollment, product: product! },
+              unchainedAPI,
+            );
             const period = await director.nextPeriod();
             if (period) {
               if (period.isTrial) {

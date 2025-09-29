@@ -65,7 +65,7 @@ export const QuotationDirector: IQuotationDirector = {
               ...error,
             },
           );
-          return null;
+          return true;
         }
       },
 
@@ -77,7 +77,7 @@ export const QuotationDirector: IQuotationDirector = {
           logger.error('QuotationDirector -> Error while checking if is manual proposal required', {
             ...error,
           });
-          return null;
+          return true;
         }
       },
 

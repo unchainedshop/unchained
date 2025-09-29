@@ -6,7 +6,7 @@ import {
   DeliveryError,
 } from './DeliveryAdapter.js';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { OrderDelivery, OrderDeliveryStatus } from '@unchainedshop/core-orders';
+import { Order, OrderDeliveryStatus } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -14,10 +14,10 @@ const logger = createLogger('unchained:core');
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   sendOrderDelivery: (
-    orderDelivery: OrderDelivery,
+    order: Order,
     transactionContext: Record<string, any>,
     unchainedAPI: { modules: Modules },
-  ) => Promise<OrderDelivery>;
+  ) => Promise<void>;
   actions: (
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
@@ -33,21 +33,24 @@ export const DeliveryDirector: IDeliveryDirector = {
   actions: async (deliveryProvider, deliveryContext, unchainedAPI) => {
     const Adapter = baseDirector.getAdapter(deliveryProvider.adapterKey);
 
+    if (!Adapter) {
+      throw new Error(`Delivery Plugin ${deliveryProvider.adapterKey} not available`);
+    }
+
     const context = { ...deliveryContext, ...unchainedAPI };
-    const adapter = Adapter?.actions(deliveryProvider.configuration, context);
+    const adapter = Adapter.actions(deliveryProvider.configuration, context);
 
     return {
       configurationError: () => {
-        try {
-          return adapter.configurationError();
-        } catch {
+        if (!adapter) {
           return DeliveryError.ADAPTER_NOT_FOUND;
         }
+        return adapter.configurationError();
       },
 
       estimatedDeliveryThroughput: async (warehousingThroughputTime) => {
         try {
-          const throughput = await adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
+          const throughput = await adapter?.estimatedDeliveryThroughput(warehousingThroughputTime);
           return throughput;
         } catch (error) {
           logger.warn('Delivery Director -> Error while estimating delivery throughput', {
@@ -58,6 +61,7 @@ export const DeliveryDirector: IDeliveryDirector = {
       },
 
       isActive: () => {
+        if (!adapter) return false;
         try {
           return adapter.isActive();
         } catch (error) {
@@ -69,6 +73,7 @@ export const DeliveryDirector: IDeliveryDirector = {
       },
 
       isAutoReleaseAllowed: () => {
+        if (!adapter) return false;
         try {
           return adapter.isAutoReleaseAllowed();
         } catch (error) {
@@ -80,39 +85,47 @@ export const DeliveryDirector: IDeliveryDirector = {
       },
 
       send: async () => {
+        if (!adapter) throw new Error('Delivery adapter not found');
         return adapter.send();
       },
 
       pickUpLocationById: async (locationId) => {
-        return adapter.pickUpLocationById(locationId);
+        if (!adapter) throw new Error('Delivery adapter not found');
+        return adapter?.pickUpLocationById(locationId);
       },
 
       pickUpLocations: async () => {
+        if (!adapter) throw new Error('Delivery adapter not found');
         return adapter.pickUpLocations();
       },
     };
   },
 
-  sendOrderDelivery: async (orderDelivery, transactionContext, unchainedAPI) => {
-    if (
-      unchainedAPI.modules.orders.deliveries.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN
-    )
-      return orderDelivery;
-
-    const order = await unchainedAPI.modules.orders.findOrder({ orderId: orderDelivery.orderId });
-    const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
-      deliveryProviderId: orderDelivery.deliveryProviderId,
+  sendOrderDelivery: async (order, transactionContext, unchainedAPI) => {
+    const orderDelivery = await unchainedAPI.modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId!,
     });
-    const address = orderDelivery.context?.address || order || order.billingAddress;
+
+    if (
+      unchainedAPI.modules.orders.deliveries.normalizedStatus(orderDelivery!) !==
+      OrderDeliveryStatus.OPEN
+    )
+      return;
+
+    const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
+      deliveryProviderId: orderDelivery!.deliveryProviderId,
+    });
+
+    const address = orderDelivery!.context?.address || order!.billingAddress;
 
     const adapter = await DeliveryDirector.actions(
-      deliveryProvider,
+      deliveryProvider!,
       {
-        order,
-        orderDelivery,
+        order: order!,
+        orderDelivery: orderDelivery!,
         transactionContext: {
           ...(transactionContext || {}),
-          ...(orderDelivery.context || {}),
+          ...(orderDelivery!.context || {}),
           ...(address || {}),
         },
       },
@@ -120,14 +133,11 @@ export const DeliveryDirector: IDeliveryDirector = {
     );
 
     const arbitraryResponseData = await adapter.send();
-
     if (arbitraryResponseData) {
-      return await unchainedAPI.modules.orders.deliveries.updateStatus(orderDelivery._id, {
+      await unchainedAPI.modules.orders.deliveries.updateStatus(orderDelivery!._id, {
         status: OrderDeliveryStatus.DELIVERED,
         info: JSON.stringify(arbitraryResponseData),
       });
     }
-
-    return orderDelivery;
   },
 };

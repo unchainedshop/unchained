@@ -2,12 +2,12 @@ import { mongodb } from '@unchainedshop/mongodb';
 import makeMongoDBCache from './product-cache/mongodb.js';
 
 export interface FiltersSettings {
-  setCachedProductIds?: (
+  setCachedProductIds: (
     filterId: string,
     productIds: string[],
     productIdsMap: Record<string, string[]>,
   ) => Promise<number>;
-  getCachedProductIds?: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
+  getCachedProductIds: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
   configureSettings: (options: FiltersSettingsOptions, db: mongodb.Db) => void;
 }
 

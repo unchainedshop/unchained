@@ -66,7 +66,8 @@ export const PaymentPricingSheet = (
           category: PaymentPricingRowCategory.Discount,
           discountId: explicitDiscountId,
         })
-        .map(({ discountId }) => discountId);
+        .map(({ discountId }) => discountId)
+        .filter(Boolean) as string[];
 
       return [...new Set(discountIds)]
         .map((discountId) => {
@@ -83,7 +84,7 @@ export const PaymentPricingSheet = (
             currencyCode: basePricingSheet.currencyCode,
           };
         })
-        .filter(Boolean);
+        .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];
     },
   };
 

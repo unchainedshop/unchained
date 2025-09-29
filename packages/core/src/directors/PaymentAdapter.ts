@@ -27,7 +27,7 @@ export interface IPaymentActions {
   isActive: (transactionContext?: any) => boolean;
   isPayLaterAllowed: (transactionContext?: any) => boolean;
   register: (transactionContext?: any) => Promise<any>;
-  sign: (transactionContext?: any) => Promise<string>;
+  sign: (transactionContext?: any) => Promise<string | null>;
   validate: (token?: any) => Promise<boolean>;
   cancel: (transactionContext?: any) => Promise<boolean>;
   confirm: (transactionContext?: any) => Promise<boolean>;

@@ -42,7 +42,7 @@ export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext
   provider: DeliveryProvider;
   providerContext?: any;
   order: Order;
-  orderDelivery: OrderDelivery;
+  orderDelivery?: OrderDelivery;
   user: User;
   discounts: OrderDiscount[];
 }
