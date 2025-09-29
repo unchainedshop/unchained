@@ -4,11 +4,18 @@ import { buildFindSelector } from './configureUsersModule.js';
 
 describe('buildFindSelector', () => {
   it('Return the correct filter when no parameter is passed', () => {
-    assert.deepStrictEqual(buildFindSelector({}), { deleted: null, guest: { $in: [false, null] } });
+    assert.deepStrictEqual(buildFindSelector({}), {
+      deleted: {
+        $exists: false,
+      },
+      guest: { $ne: true },
+    });
   });
   it('Return the correct filter when no parameter is passed queryString and includeGuest: true', () => {
     assert.deepStrictEqual(buildFindSelector({ queryString: 'Hello world', includeGuests: true }), {
-      deleted: null,
+      deleted: {
+        $exists: false,
+      },
       $text: { $search: 'Hello world' },
     });
   });
@@ -22,8 +29,10 @@ describe('buildFindSelector', () => {
       }),
       {
         'profile.displayName': 'mikael',
-        deleted: null,
-        guest: { $in: [false, null] },
+        deleted: {
+          $exists: false,
+        },
+        guest: { $ne: true },
         $text: { $search: 'Hello world' },
       },
     );

@@ -12,7 +12,9 @@ describe('buildFindSelector', () => {
         userId: 'admin-id',
       }),
       {
-        deleted: null,
+        deleted: {
+          $exists: false,
+        },
         status: { $in: ['ACTIVE'] },
         userId: 'admin-id',
         $text: { $search: 'Hello World' },
@@ -22,7 +24,9 @@ describe('buildFindSelector', () => {
 
   it('Should correct filter when passed userId and queryString', () => {
     assert.deepStrictEqual(buildFindSelector({ queryString: 'Hello World', userId: 'admin-id' }), {
-      deleted: null,
+      deleted: {
+        $exists: false,
+      },
       userId: 'admin-id',
       $text: { $search: 'Hello World' },
     });
@@ -30,14 +34,18 @@ describe('buildFindSelector', () => {
 
   it('Should correct filter when passed queryString', () => {
     assert.deepStrictEqual(buildFindSelector({ queryString: 'Hello World' }), {
-      deleted: null,
+      deleted: {
+        $exists: false,
+      },
       $text: { $search: 'Hello World' },
     });
   });
 
   it('Should correct filter when passed no argument', () => {
     assert.deepStrictEqual(buildFindSelector({}), {
-      deleted: null,
+      deleted: {
+        $exists: false,
+      },
     });
   });
 });
