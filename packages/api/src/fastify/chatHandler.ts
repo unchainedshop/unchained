@@ -137,6 +137,8 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       }
       const result = streamText({
         stopWhen: stepCountIs(500),
+        temperature: 0,
+        maxRetries: 3,
         ...restChatConfig,
         messages: normalizedMessages.slice(-20),
         system: system + resourceContext,

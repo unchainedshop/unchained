@@ -9,6 +9,11 @@ export const registerLocalizationResources = (server: McpServer, context: Contex
       description:
         'Available languages configured in the shop. Use these ISO codes when creating or updating products, filters, and assortments. Includes valid language-country dialect combinations.',
       mimeType: 'application/json',
+      annotations: {
+        audience: ['assistant'],
+        priority: 1,
+        lastModified: '2025-09-30T15:00:58Z',
+      },
     },
     async () => {
       const [languages, countries] = await Promise.all([
@@ -53,6 +58,11 @@ export const registerLocalizationResources = (server: McpServer, context: Contex
       description:
         'Available currencies configured in the shop. Check decimal points for price conversions. All prices are stored as integers.',
       mimeType: 'application/json',
+      annotations: {
+        audience: ['assistant'],
+        priority: 1,
+        lastModified: '2025-09-30T15:00:58Z',
+      },
     },
     async () => {
       const currencies = await context.modules.currencies.findCurrencies({ includeInactive: false });
@@ -86,6 +96,11 @@ export const registerLocalizationResources = (server: McpServer, context: Contex
       description:
         'Available countries configured in the shop. Use these ISO codes for geographic operations.',
       mimeType: 'application/json',
+      annotations: {
+        audience: ['assistant'],
+        priority: 1,
+        lastModified: '2025-09-30T15:00:58Z',
+      },
     },
     async () => {
       const countries = await context.modules.countries.findCountries({ includeInactive: false });
