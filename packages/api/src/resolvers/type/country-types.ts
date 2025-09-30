@@ -7,8 +7,8 @@ export type HelperType<P, T> = (country: CountryType, params: P, context: Contex
 export interface CountryHelperTypes {
   flagEmoji: HelperType<never, string>;
   isBase: HelperType<never, boolean>;
-  name: HelperType<{ forceLocale?: string }, string>;
-  defaultCurrency: HelperType<never, Promise<Currency>>;
+  name: HelperType<{ forceLocale?: string }, string | undefined>;
+  defaultCurrency: HelperType<never, Promise<Currency | null>>;
 }
 
 export const Country: CountryHelperTypes = {

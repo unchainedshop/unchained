@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductTypes, ProductVariation } from '@unchainedshop/core-products';
 
 import { Context } from '../../../context.js';
 import { ProductConfiguration } from '@unchainedshop/core-products';
@@ -11,7 +11,7 @@ import {
   ProductVariationVectorAlreadySet,
   ProductVariationInfinityLoop,
 } from '../../../errors.js';
-const extractVariationMatrix = (variations = []) => {
+const extractVariationMatrix = (variations: ProductVariation[] = []) => {
   const cartesianProduct = (arrays) => {
     return arrays.reduce(
       (acc, array) => acc.flatMap((item) => array.map((value) => [...item, value])),

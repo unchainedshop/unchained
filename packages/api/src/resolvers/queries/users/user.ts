@@ -6,7 +6,7 @@ export default async function user(
   params: { userId?: string },
   { modules, userId }: Context,
 ) {
-  log(`query user ${params.userId}`, { Id: userId });
+  log(`query user ${params.userId}`, { self: userId });
 
-  return modules.users.findUserById(params.userId || userId);
+  return modules.users.findUserById(params.userId || userId!);
 }

@@ -22,7 +22,7 @@ export default async function makePaymentCredentialsPreferred(
 
   await modules.payment.paymentCredentials.markPreferred({
     paymentCredentialsId,
-    userId,
+    userId: userId!,
   });
 
   return modules.payment.paymentCredentials.findPaymentCredential({

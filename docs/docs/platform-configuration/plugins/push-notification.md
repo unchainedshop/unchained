@@ -60,7 +60,7 @@ the only difference is push notification worker expects a input type that is sli
 ```
  {
   endpoint: string;
-  expirationTime?: number;
+  expirationTime: number;
   keys: {
     auth: string;
     p256dh: string;

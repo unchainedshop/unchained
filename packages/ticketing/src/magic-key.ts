@@ -37,7 +37,7 @@ const isMagicKeyValidForToken = async (
 };
 
 export default () => {
-  roles.allRoles.ALL.allow(roles.actions.viewOrder, isMagicKeyValidForOrder);
-  roles.allRoles.ALL.allow(roles.actions.viewToken, isMagicKeyValidForToken);
-  roles.allRoles.ALL.allow(roles.actions.updateToken, isMagicKeyValidForToken);
+  roles.allRoles?.ALL?.allow(roles.actions.viewOrder, isMagicKeyValidForOrder);
+  roles.allRoles?.ALL?.allow(roles.actions.viewToken, isMagicKeyValidForToken);
+  roles.allRoles?.ALL?.allow(roles.actions.updateToken, isMagicKeyValidForToken);
 };

@@ -18,5 +18,5 @@ export default async function addProductReviewVote(
   });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
 
-  return modules.products.reviews.votes.addVote(productReview, { meta, type, userId });
+  return modules.products.reviews.votes.addVote(productReview, { meta, type, userId: userId! });
 }

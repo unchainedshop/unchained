@@ -59,7 +59,7 @@ export interface WorkerReport {
 export interface WorkQueueQuery {
   created?: { end?: Date; start?: Date };
   types?: string[];
-  status: WorkStatus[];
+  status?: WorkStatus[];
   queryString?: string;
   scheduled?: { end?: Date; start?: Date };
 }

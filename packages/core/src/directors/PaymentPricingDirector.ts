@@ -15,7 +15,7 @@ export type PaymentPricingContext =
   | {
       countryCode?: string;
       currencyCode?: string;
-      user: User;
+      user?: User;
       order: Order;
       provider: PaymentProvider;
       providerContext?: any;
@@ -65,7 +65,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
         currencyCode,
         order: order!,
         provider: provider!,
-        user: user!,
+        user,
         discounts,
         orderPayment: item,
       };
@@ -77,7 +77,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
       currencyCode: context.currencyCode,
       order: context.order,
       provider: context.provider,
-      user: context.user,
+      user: context.user || null,
       discounts: [],
       providerContext: context.providerContext,
     };

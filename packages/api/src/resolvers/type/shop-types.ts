@@ -27,7 +27,8 @@ export const Shop: ShopHelperTypes = {
   userRoles: async (_root, _params, context) => {
     await checkAction(context, (actions as any).manageUsers);
     return Object.values(allRoles)
-      .map(({ name }) => name)
-      .filter((name) => name.substring(0, 2) !== '__');
+      .map((i) => i?.name)
+      .filter(Boolean)
+      .filter((name: string) => name.substring(0, 2) !== '__') as string[];
   },
 };

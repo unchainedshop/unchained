@@ -28,7 +28,7 @@ export const ProductReview: ProductReviewHelperTypes = {
   },
 
   ownVotes: async (obj, _, { modules, userId }) => {
-    return modules.products.reviews.votes.ownVotes(obj, { userId });
+    return modules.products.reviews.votes.ownVotes(obj, { userId: userId! });
   },
 
   voteCount: (obj, { type }, { modules }) => {

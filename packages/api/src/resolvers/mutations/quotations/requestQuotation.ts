@@ -20,7 +20,7 @@ export default async function requestQuotation(
     throw new ProductNotFoundError({ productId });
 
   const newQuotation = await modules.quotations.create({
-    userId,
+    userId: userId!,
     productId,
     countryCode,
     currencyCode,

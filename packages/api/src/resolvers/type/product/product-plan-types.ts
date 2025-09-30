@@ -13,7 +13,7 @@ export const PlanProduct = {
     product: ProductType,
     { quantity, currencyCode: forcedCurrencyCode }: { quantity?: number; currencyCode?: string },
     requestContext: Context,
-  ): Promise<ProductPrice> {
+  ): Promise<ProductPrice | null> {
     const { modules, countryCode } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
     return modules.products.prices.price(product, {
@@ -37,7 +37,7 @@ export const PlanProduct = {
       configuration?: ProductConfiguration[];
     },
     requestContext: Context,
-  ): Promise<ProductPrice> {
+  ): Promise<ProductPrice | null> {
     const { countryCode, user, services } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
@@ -46,7 +46,7 @@ export const PlanProduct = {
       user,
       countryCode,
       currencyCode,
-      quantity,
+      quantity: quantity || 1,
       discounts: [],
       configuration,
     };
@@ -59,7 +59,8 @@ export const PlanProduct = {
       ...unitPrice,
       isNetPrice: useNetPrice,
       isTaxable: pricing.taxSum() > 0,
-      currencyCode: pricing.currencyCode,
+      currencyCode: pricing.currencyCode || requestContext.currencyCode,
+      countryCode: requestContext.countryCode,
     };
   },
 
@@ -79,13 +80,13 @@ export const PlanProduct = {
     return modules.products.prices.catalogPricesLeveled(product, { currencyCode, countryCode });
   },
 
-  salesUnit({ commerce }: ProductType): string {
-    return commerce?.salesUnit;
+  salesUnit({ commerce }: ProductType): string | null {
+    return commerce?.salesUnit || null;
   },
-  salesQuantityPerUnit({ commerce }: ProductType): string {
-    return commerce?.salesQuantityPerUnit;
+  salesQuantityPerUnit({ commerce }: ProductType): string | null {
+    return commerce?.salesQuantityPerUnit || null;
   },
-  defaultOrderQuantity({ commerce }: ProductType): number {
-    return commerce?.defaultOrderQuantity;
+  defaultOrderQuantity({ commerce }: ProductType): number | null {
+    return commerce?.defaultOrderQuantity || null;
   },
 };

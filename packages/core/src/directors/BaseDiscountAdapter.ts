@@ -12,7 +12,7 @@ export interface DiscountContext {
 export type IDiscountAdapter<DiscountConfiguration> = IBaseAdapter & {
   orderIndex: number;
 
-  isManualAdditionAllowed: (code: string) => Promise<boolean>;
+  isManualAdditionAllowed: (code?: string) => Promise<boolean>;
   isManualRemovalAllowed: () => Promise<boolean>;
 
   actions: (params: {

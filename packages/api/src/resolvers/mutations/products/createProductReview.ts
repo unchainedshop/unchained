@@ -6,7 +6,10 @@ import { InvalidIdError, ProductNotFoundError } from '../../../errors.js';
 
 export default async function createProductReview(
   root: never,
-  { productId, productReview }: { productId: string; productReview: ProductReview },
+  {
+    productId,
+    productReview,
+  }: { productId: string; productReview: Pick<ProductReview, 'title' | 'rating' | 'meta'> },
   { modules, userId }: Context,
 ) {
   log('mutation createProductReview', { userId, productId });
@@ -17,8 +20,8 @@ export default async function createProductReview(
     throw new ProductNotFoundError({ productId });
 
   return modules.products.reviews.create({
-    productId,
-    authorId: userId,
     ...productReview,
+    productId,
+    authorId: userId!,
   });
 }

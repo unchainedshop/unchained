@@ -44,10 +44,10 @@ export interface UserHelperTypes {
   created: HelperType<any, Date>;
   updated: HelperType<any, Date>;
   deleted: HelperType<any, Date>;
-  avatar: HelperType<{ locale: Intl.Locale }, File>;
+  avatar: HelperType<{ locale: Intl.Locale }, File | null>;
   bookmarks: HelperType<any, Bookmark[]>;
-  cart: HelperType<{ orderNumber?: string }, Order>;
-  country: HelperType<{ locale: Intl.Locale }, Country>;
+  cart: HelperType<{ orderNumber?: string }, Order | null>;
+  country: HelperType<{ locale: Intl.Locale }, Country | null>;
   emails: HelperType<any, string[]>;
   enrollments: HelperType<
     {
@@ -162,6 +162,7 @@ export const User: UserHelperTypes = {
   avatar: async (user, params, context) => {
     await checkAction(context, viewUserPublicInfos, [user, params]);
     const { loaders } = context;
+    if (!user.avatarId) return null;
     return loaders.fileLoader.load({
       fileId: user.avatarId,
     });
@@ -199,7 +200,7 @@ export const User: UserHelperTypes = {
   async country(user, params, context) {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     const userLocale = context.modules.users.userLocale(user);
-
+    if (!userLocale.region) return null;
     return context.loaders.countryLoader.load({
       isoCode: userLocale.region,
     });

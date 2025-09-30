@@ -19,6 +19,8 @@ export default function shopInfo(
     adminUiConfig: {
       customProperties: async () => {
         try {
+          if (!process.env.UNCHAINED_ADMIN_UI_CUSTOM_PROPERTIES)
+            return adminUiConfig?.customProperties ?? [];
           const raw = await readFile(process.env.UNCHAINED_ADMIN_UI_CUSTOM_PROPERTIES, 'utf-8');
           const parsed = JSON.parse(raw);
           return parsed;
@@ -30,6 +32,7 @@ export default function shopInfo(
         process.env.UNCHAINED_ADMIN_UI_SINGLE_SIGN_ON_URL || adminUiConfig?.singleSignOnURL,
       externalLinks: () => {
         try {
+          if (!process.env.EXTERNAL_LINKS) return [];
           const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
           return parsed;
         } catch {

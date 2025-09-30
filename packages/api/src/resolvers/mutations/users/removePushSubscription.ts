@@ -7,9 +7,9 @@ const removePushSubscription = async (_, { p256dh }, context: Context) => {
 
   log(`mutation removePushSubscription ${userId} ${userAgent}`, { userId });
 
-  await modules.users.removePushSubscription(userId, p256dh);
+  await modules.users.removePushSubscription(userId!, p256dh);
 
-  return modules.users.findUserById(userId);
+  return modules.users.findUserById(userId!);
 };
 
 export default removePushSubscription;

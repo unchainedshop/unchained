@@ -10,12 +10,12 @@ const addPushSubscription = async (
   const userAgent = context.getHeader('user-agent');
   log(`mutation addPushSubscription ${userAgent}`, { userId });
 
-  await modules.users.addPushSubscription(userId, subscription, {
+  await modules.users.addPushSubscription(userId!, subscription, {
     userAgent,
     unsubscribeFromOtherUsers,
   });
 
-  return modules.users.findUserById(userId);
+  return modules.users.findUserById(userId!);
 };
 
 export default addPushSubscription;

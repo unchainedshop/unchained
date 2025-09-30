@@ -13,11 +13,11 @@ export default async function removeUser(
 
   log(`mutation removeUser ${normalizedUserId}`, { userId: currentUserId });
 
-  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+  if (!(await modules.users.userExists({ userId: normalizedUserId! })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
   if (removeUserReviews) {
-    await modules.products.reviews.deleteMany({ authorId: normalizedUserId });
+    await modules.products.reviews.deleteMany({ authorId: normalizedUserId! });
   }
-  return services.users.deleteUser({ userId: normalizedUserId });
+  return services.users.deleteUser({ userId: normalizedUserId! });
 }

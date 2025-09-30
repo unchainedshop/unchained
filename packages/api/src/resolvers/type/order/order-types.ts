@@ -39,16 +39,23 @@ export const Order = {
     return modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
   },
 
-  async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery> {
-    return modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
-    });
+  async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery | null> {
+    const orderDelivery =
+      order.deliveryId &&
+      modules.orders.deliveries.findDelivery({
+        orderDeliveryId: order.deliveryId,
+      });
+
+    if (!orderDelivery) return null;
+    return orderDelivery;
   },
 
-  async enrollment(order: OrderType, _, { modules }: Context): Promise<Enrollment> {
-    return modules.enrollments.findEnrollment({
+  async enrollment(order: OrderType, _, { modules }: Context): Promise<Enrollment | null> {
+    const enrollment = await modules.enrollments.findEnrollment({
       orderId: order._id,
     });
+    if (!enrollment) return null;
+    return enrollment;
   },
 
   async items(order: OrderType, _, { modules }: Context): Promise<OrderPosition[]> {
@@ -57,10 +64,14 @@ export const Order = {
     });
   },
 
-  async payment(order: OrderType, _, { modules }: Context): Promise<OrderPayment> {
-    return modules.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
-    });
+  async payment(order: OrderType, _, { modules }: Context): Promise<OrderPayment | null> {
+    const payment =
+      order.paymentId &&
+      (await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      }));
+    if (!payment) return null;
+    return payment;
   },
 
   status(order: OrderType): string {
@@ -70,7 +81,7 @@ export const Order = {
     return order.status;
   },
 
-  total(order: OrderType, params: { category: string; useNetPrice: boolean }): Price {
+  total(order: OrderType, params: { category: string; useNetPrice: boolean }): Price | null {
     const pricing = OrderPricingSheet({
       calculation: order.calculation,
       currencyCode: order.currencyCode,

@@ -14,11 +14,11 @@ import { actions } from '../../../roles/index.js';
 export const TokenizedProduct = {
   ...PlanProduct,
 
-  contractAddress({ tokenization }: Product): string {
-    return tokenization?.contractAddress;
+  contractAddress({ tokenization }: Product): string | null {
+    return tokenization?.contractAddress || null;
   },
 
-  contractConfiguration({ tokenization }: Product): ProductContractConfiguration {
+  contractConfiguration({ tokenization }: Product): ProductContractConfiguration | null {
     if (!tokenization) return null;
     return {
       supply: tokenization.supply,
@@ -27,8 +27,8 @@ export const TokenizedProduct = {
     };
   },
 
-  contractStandard({ tokenization }: Product): ProductContractStandard {
-    return tokenization?.contractStandard;
+  contractStandard({ tokenization }: Product): ProductContractStandard | null {
+    return tokenization?.contractStandard || null;
   },
 
   async simulatedStocks(
@@ -61,6 +61,6 @@ export const TokenizedProduct = {
   },
 };
 
-delete TokenizedProduct.salesUnit;
-delete TokenizedProduct.salesQuantityPerUnit;
-delete TokenizedProduct.defaultOrderQuantity;
+delete (TokenizedProduct as any).salesUnit;
+delete (TokenizedProduct as any).salesQuantityPerUnit;
+delete (TokenizedProduct as any).defaultOrderQuantity;

@@ -11,5 +11,5 @@ export default async function product(
 
   if (!productId === !slug) throw new InvalidIdError({ productId, slug });
 
-  return modules.products.findProduct({ productId, slug });
+  return modules.products.findProduct({ productId, slug: slug! });
 }

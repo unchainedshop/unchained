@@ -60,7 +60,7 @@ export interface ProductBundleItem {
 export interface ProductPrice extends Price {
   isTaxable?: boolean;
   isNetPrice?: boolean;
-  countryCode?: string;
+  countryCode: string;
   maxQuantity?: number;
 }
 

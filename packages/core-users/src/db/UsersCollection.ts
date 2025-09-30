@@ -27,7 +27,7 @@ export interface UserLastLogin {
 export interface PushSubscriptionObject {
   userAgent: string;
   endpoint: string;
-  expirationTime?: number;
+  expirationTime: number;
   keys: {
     auth: string;
     p256dh: string;

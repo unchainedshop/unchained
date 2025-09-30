@@ -3,10 +3,10 @@ import { Context } from '../../context.js';
 
 export const Quotation = {
   country: async (obj: QuotationType, _: never, { loaders }: Context) =>
-    loaders.countryLoader.load({ isoCode: obj.countryCode }),
+    obj.countryCode ? loaders.countryLoader.load({ isoCode: obj.countryCode }) : null,
 
   currency: async (obj: QuotationType, _: never, { loaders }: Context) =>
-    loaders.currencyLoader.load({ isoCode: obj.currencyCode }),
+    obj.currencyCode ? loaders.currencyLoader.load({ isoCode: obj.currencyCode }) : null,
 
   isExpired: (obj: QuotationType, { referenceDate }: { referenceDate: Date }, { modules }: Context) =>
     modules.quotations.isExpired(obj, { referenceDate }),

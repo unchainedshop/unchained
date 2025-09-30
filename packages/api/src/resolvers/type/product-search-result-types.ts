@@ -59,9 +59,9 @@ export const ProductSearchResult = {
     const relevantProductIds = await modules.products.findProductIds({
       productSelector: searchConfiguration.productSelector,
       productIds: totalProductIds,
-      includeDrafts: searchConfiguration.searchQuery.includeInactive,
+      includeDrafts: searchConfiguration.searchQuery?.includeInactive,
     });
-    return services.filters.loadFilters(searchConfiguration.searchQuery, {
+    return services.filters.loadFilters(searchConfiguration.searchQuery || {}, {
       productIds: relevantProductIds,
       forceLiveCollection: searchConfiguration.forceLiveCollection,
     });

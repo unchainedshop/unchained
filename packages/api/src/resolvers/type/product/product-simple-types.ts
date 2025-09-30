@@ -59,7 +59,7 @@ export const SimpleProduct = {
     return warehousing?.sku;
   },
 
-  dimensions({ supply }): ProductSupply {
+  dimensions({ supply }): ProductSupply | null {
     if (!supply) return null;
     const { weightInGram, heightInMillimeters, lengthInMillimeters, widthInMillimeters } = supply;
     return {

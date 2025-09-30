@@ -7,7 +7,7 @@ export enum ProductVariationType {
 
 export type ProductVariation = {
   _id: string;
-  key?: string;
+  key: string;
   tags?: string[];
   options: string[];
   productId: string;

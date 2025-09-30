@@ -25,7 +25,7 @@ export type UnchainedServerOptions = {
   adminUiConfig?: AdminUiConfig;
   unchainedAPI: UnchainedCore;
   context?: (defaultResolver: UnchainedContextResolver) => UnchainedContextResolver;
-} & GraphQLServerOptions;
+} & Partial<GraphQLServerOptions>;
 
 export const startAPIServer = async (options: UnchainedServerOptions) => {
   const {
@@ -33,13 +33,8 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     context: customContext,
     roles,
     adminUiConfig = {},
-    typeDefs: additionalTypeDefs,
-    resolvers: additionalResolvers,
     ...serverOptions
-  } = options as UnchainedServerOptions & {
-    typeDefs?: string[];
-    resolvers?: Record<string, any>[];
-  };
+  } = options as UnchainedServerOptions;
 
   const contextResolver = createContextResolver(unchainedAPI, {
     roles,
@@ -53,6 +48,9 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
         }
       : contextResolver,
   );
+
+  const additionalTypeDefs = 'typeDefs' in serverOptions ? serverOptions.typeDefs : [];
+  const additionalResolvers = 'resolvers' in serverOptions ? serverOptions.resolvers : [];
 
   return createGraphQLServer({
     typeDefs: [

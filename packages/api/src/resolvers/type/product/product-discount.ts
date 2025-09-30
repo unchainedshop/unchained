@@ -16,7 +16,7 @@ export const ProductDiscount = {
 
   total(productDiscount: ProductDiscountType) {
     const { total } = productDiscount;
-    if (productDiscount.total) {
+    if (total) {
       return {
         amount: total.amount,
         currencyCode: total.currencyCode,

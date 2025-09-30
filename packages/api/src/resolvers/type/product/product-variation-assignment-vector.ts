@@ -10,8 +10,8 @@ export type AssignmentVectorHelperType<T> = (
 
 export interface ProductVariationAssignmentVectorHelperTypes {
   _id: AssignmentVectorHelperType<string>;
-  option: AssignmentVectorHelperType<Promise<{ _id: string; productVariationOption: string }>>;
-  variation: AssignmentVectorHelperType<Promise<ProductVariation>>;
+  option: AssignmentVectorHelperType<Promise<{ _id: string; productVariationOption: string } | null>>;
+  variation: AssignmentVectorHelperType<Promise<ProductVariation | null>>;
 }
 
 export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorHelperTypes = {

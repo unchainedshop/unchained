@@ -6,7 +6,7 @@ import { PaymentDirector } from '@unchainedshop/core';
 
 export default async (
   root: never,
-  { paymentProvider }: { paymentProvider: PaymentProvider },
+  { paymentProvider }: { paymentProvider: Pick<PaymentProvider, 'type' | 'adapterKey'> },
   { modules, userId }: Context,
 ) => {
   log('mutation createPaymentProvider', { userId });

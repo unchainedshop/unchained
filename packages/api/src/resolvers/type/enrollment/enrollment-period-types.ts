@@ -3,6 +3,7 @@ import { EnrollmentPeriod as EnrollmentPeriodType } from '@unchainedshop/core-en
 
 export const EnrollmentPeriod = {
   async order(period: EnrollmentPeriodType, _: never, { loaders }: Context) {
+    if (!period.orderId) return null;
     return loaders.orderLoader.load({ orderId: period.orderId });
   },
 };

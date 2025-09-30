@@ -17,12 +17,14 @@ describe('Price Range', () => {
           isNetPrice: false,
           amount: 750,
           currencyCode: 'CHF',
+          countryCode: 'CH',
         },
         maxPrice: {
           isTaxable: false,
           isNetPrice: false,
           amount: 1000,
           currencyCode: 'CHF',
+          countryCode: 'CH',
         },
       },
     );
@@ -40,12 +42,14 @@ describe('Price Range', () => {
           isNetPrice: false,
           amount: NaN,
           currencyCode: undefined,
+          countryCode: undefined,
         },
         maxPrice: {
           isTaxable: false,
           isNetPrice: false,
           amount: NaN,
           currencyCode: undefined,
+          countryCode: undefined,
         },
       },
     );

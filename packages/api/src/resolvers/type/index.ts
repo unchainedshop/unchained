@@ -6,7 +6,6 @@ import { AssortmentPathLink } from './assortment/assortment-path-link-types.js';
 import { AssortmentProduct } from './assortment/assortment-product-types.js';
 import { Bookmark } from './bookmark-types.js';
 import { BundleProduct } from './product/product-bundle-types.js';
-import { Color } from './color-types.js';
 import { ConfigurableProduct } from './product/product-configurable-types.js';
 import { Country } from './country-types.js';
 import { Currency } from './currency-types.js';
@@ -78,7 +77,6 @@ const types = {
   AssortmentProduct,
   Bookmark,
   BundleProduct,
-  Color,
   ConfigurableProduct,
   Country,
   Currency,

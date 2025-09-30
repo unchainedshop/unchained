@@ -4,6 +4,7 @@ import {
   ProductConfiguration,
   ProductPriceRange,
   ProductVariation,
+  ProductPrice,
 } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 import { Product } from './product-types.js';
@@ -56,14 +57,14 @@ export const ConfigurableProduct = {
       vectors: ProductConfiguration[];
     },
     requestContext: Context,
-  ): Promise<ProductPriceRange> {
+  ): Promise<ProductPriceRange | null> {
     const { countryCode, modules } = requestContext;
     return modules.products.prices.catalogPriceRange(product, {
       quantity,
       vectors,
       includeInactive,
       countryCode,
-      currencyCode,
+      currencyCode: currencyCode || requestContext.currencyCode,
     });
   },
 
@@ -101,7 +102,7 @@ export const ConfigurableProduct = {
       useNetPrice: boolean;
     },
     requestContext: Context,
-  ): Promise<ProductPriceRange> {
+  ): Promise<ProductPriceRange | null> {
     const { countryCode, modules, services } = requestContext;
 
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
@@ -119,7 +120,7 @@ export const ConfigurableProduct = {
             countryCode,
             discounts: [],
             currencyCode,
-            quantity,
+            quantity: quantity || 1,
           };
 
           const pricing = await services.products.simulateProductPricing(pricingContext);
@@ -134,7 +135,7 @@ export const ConfigurableProduct = {
           };
         }),
       )
-    ).filter(Boolean);
+    ).filter(Boolean) as ProductPrice[];
 
     if (!filteredPrices.length) return null;
 

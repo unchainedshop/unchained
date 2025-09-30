@@ -38,13 +38,14 @@ export const OrderItem = {
     _: never,
     { modules, loaders }: Context,
   ): Promise<
-    {
-      _id: string;
-      deliveryProvider: DeliveryProvider;
-      warehousingProvider: WarehousingProvider;
-      shipping: Date;
-      earliestDelivery: Date;
-    }[]
+    | {
+        _id: string;
+        deliveryProvider: DeliveryProvider;
+        warehousingProvider: WarehousingProvider;
+        shipping: Date;
+        earliestDelivery: Date;
+      }[]
+    | null
   > {
     const scheduling = orderPosition.scheduling || [];
     const order = await loaders.orderLoader.load({
@@ -52,9 +53,13 @@ export const OrderItem = {
     });
     const { countryCode, userId } = order;
 
-    const orderDelivery = await modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
-    });
+    const orderDelivery =
+      order.deliveryId &&
+      (await modules.orders.deliveries.findDelivery({
+        orderDeliveryId: order.deliveryId,
+      }));
+
+    if (!orderDelivery) return null;
 
     const deliveryProvider = await loaders.deliveryProviderLoader.load({
       deliveryProviderId: orderDelivery.deliveryProviderId,
@@ -62,6 +67,8 @@ export const OrderItem = {
     const product = await loaders.productLoader.load({
       productId: orderPosition.productId,
     });
+
+    if (!deliveryProvider || !product) return null;
 
     return Promise.all(
       scheduling.map(async (schedule) => {
@@ -107,7 +114,7 @@ export const OrderItem = {
     return product;
   },
 
-  async quotation(orderPosition: OrderPosition, _, { modules }: Context): Promise<Quotation> {
+  async quotation(orderPosition: OrderPosition, _, { modules }: Context): Promise<Quotation | null> {
     if (!orderPosition.quotationId) return null;
     // TODO: use quotation loader
     return modules.quotations.findQuotation({ quotationId: orderPosition.quotationId });
@@ -117,7 +124,7 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: { category: string; useNetPrice: boolean },
     context: Context,
-  ): Promise<Price> {
+  ): Promise<Price | null> {
     const pricing = await getPricingSheet(orderPosition, context);
 
     if (pricing.isValid()) {
@@ -130,7 +137,7 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: { useNetPrice: boolean },
     context: Context,
-  ): Promise<Price> {
+  ): Promise<Price | null> {
     const pricing = await getPricingSheet(orderPosition, context);
 
     if (pricing.isValid()) {

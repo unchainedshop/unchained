@@ -39,7 +39,7 @@ export interface ProductDiscount {
   productId: string;
   code: string;
   total?: Price;
-  discountKey?: string;
+  discountKey: string;
   context?: any;
 }
 

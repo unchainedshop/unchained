@@ -4,7 +4,7 @@ import { Context } from '../../../context.js';
 export default async function tokens(
   root: never,
   {
-    queryString = null,
+    queryString,
     limit = 10,
     offset = 0,
   }: {

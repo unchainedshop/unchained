@@ -6,7 +6,7 @@ import { WarehousingDirector } from '@unchainedshop/core';
 
 export default async function createWarehousingProvider(
   root: never,
-  { warehousingProvider }: { warehousingProvider: WarehousingProvider },
+  { warehousingProvider }: { warehousingProvider: Pick<WarehousingProvider, 'type' | 'adapterKey'> },
   { modules, userId }: Context,
 ) {
   log('mutation createWarehousingProvider', { userId });

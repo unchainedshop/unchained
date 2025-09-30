@@ -72,7 +72,6 @@ export const configureProductPricesModule = ({
     if (!foundPrice) return null;
 
     const normalizedPrice = {
-      countryCode,
       isTaxable: false,
       isNetPrice: false,
       ...foundPrice,
@@ -172,6 +171,7 @@ export const configureProductPricesModule = ({
             isNetPrice: !!priceLevel.isNetPrice,
             amount: priceLevel.amount,
             currencyCode,
+            countryCode,
           },
         };
       });

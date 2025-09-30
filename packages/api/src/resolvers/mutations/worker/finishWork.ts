@@ -10,12 +10,12 @@ export default async function finishWork(
     finished?: Date;
     result?: any;
     started?: Date;
-    success?: boolean;
+    success: boolean;
     worker?: string;
   },
   { modules, userId }: Context,
 ) {
-  const { workId, error, success } = data;
+  const { workId, error, success, ...workData } = data;
 
   log(`mutation finishWork ${workId} ${success}`, {
     userId,
@@ -26,7 +26,7 @@ export default async function finishWork(
   const work = await modules.worker.finishWork(workId, {
     error,
     success,
-    ...data,
+    ...workData,
   });
 
   if (!work) throw new WorkNotFoundOrWrongStatus({ workId });

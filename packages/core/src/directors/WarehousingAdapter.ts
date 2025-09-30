@@ -16,7 +16,7 @@ export enum WarehousingError {
 }
 
 export interface WarehousingAdapterActions {
-  configurationError: () => WarehousingError;
+  configurationError: () => WarehousingError | null;
   isActive: () => boolean;
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;

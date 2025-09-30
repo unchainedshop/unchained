@@ -126,11 +126,13 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
 
     // Mutations
     create: async (
-      doc: Omit<ProductReview, '_id' | 'created'> & Pick<Partial<ProductReview>, 'created' | '_id'>,
+      doc: Omit<ProductReview, '_id' | 'created' | 'votes'> &
+        Pick<Partial<ProductReview>, 'created' | '_id'>,
     ): Promise<ProductReview> => {
       const { insertedId: productReviewId } = await ProductReviews.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
+        votes: [],
         ...doc,
       });
 

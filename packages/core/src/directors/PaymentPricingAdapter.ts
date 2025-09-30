@@ -20,7 +20,7 @@ export interface PaymentPricingCalculation extends PricingCalculation {
 export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
   countryCode?: string;
   currency?: string;
-  user: User;
+  user: User | null;
   orderPayment?: OrderPayment;
   order: Order;
   provider: PaymentProvider;

@@ -5,8 +5,8 @@ import { Context } from '../../context.js';
 export type HelperType<P, T> = (provider: WarehousingProviderType, params: P, context: Context) => T;
 
 export interface WarehousingProviderHelperTypes {
-  configurationError: HelperType<never, Promise<WarehousingError>>;
-  interface: HelperType<never, WarehousingInterface>;
+  configurationError: HelperType<never, Promise<WarehousingError | null>>;
+  interface: HelperType<never, WarehousingInterface | null>;
   isActive: HelperType<never, Promise<boolean>>;
 }
 

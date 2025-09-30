@@ -11,7 +11,7 @@ export interface WorkHelperTypes {
   result: HelperType<never, any>;
   input: HelperType<never, any>;
   error: HelperType<never, any>;
-  original: HelperType<never, Promise<WorkType>>;
+  original: HelperType<never, Promise<WorkType | null>>;
 }
 
 export const Work: WorkHelperTypes = {

@@ -126,11 +126,17 @@ const actions: Record<string, string> = [
   return newValue;
 }, {});
 
-const configureRoles = ({ additionalRoles = {}, additionalActions = [] }) => {
-  additionalActions.forEach((action) => {
+const configureRoles = ({
+  additionalRoles,
+  additionalActions,
+}: {
+  additionalRoles?: Record<string, any>;
+  additionalActions?: string[];
+}) => {
+  additionalActions?.forEach((action) => {
     actions[action] = action;
   });
-  Object.entries(additionalRoles).forEach(([key, val]: [string, any]) => {
+  Object.entries(additionalRoles || {}).forEach(([key, val]: [string, any]) => {
     allRoles[key] = new Role(key);
     val(allRoles[key], actions);
   });

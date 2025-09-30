@@ -47,7 +47,7 @@ export const startPlatform = async ({
   modules,
   services,
   options,
-  rolesOptions = {},
+  rolesOptions,
   bulkImporter,
   workQueueOptions,
   ...arbitraryAPIServerConfiguration
@@ -59,7 +59,7 @@ export const startPlatform = async ({
   exitOnMissingEnvironmentVariables();
   existOnInvalidEnvironmentVariables();
 
-  const configuredRoles = roles.configureRoles(rolesOptions);
+  const configuredRoles = roles.configureRoles(rolesOptions || {});
 
   // Configure database
   const db = await initDb();

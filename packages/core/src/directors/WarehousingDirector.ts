@@ -43,7 +43,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     warehousingContext: WarehousingContext,
     unchainedAPI: { modules: Modules },
   ) => Promise<{
-    configurationError: () => WarehousingError;
+    configurationError: () => WarehousingError | null;
     isActive: () => boolean;
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;

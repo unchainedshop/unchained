@@ -1,3 +1,4 @@
+import { mongodb } from '@unchainedshop/mongodb';
 import { Context } from '../../../context.js';
 
 function buildDateMatch(dateField: string, dateRange?: { start?: string; end?: string }) {
@@ -16,9 +17,8 @@ async function aggregateOrders(
   dateRange?: { start?: string; end?: string },
   options?: { includeAmount?: boolean; includeCarts?: boolean },
 ) {
-  const match = buildDateMatch(dateField, dateRange);
-
-  const pipeline: any[] = [{ $match: match }];
+  const match: mongodb.BSON.Document = buildDateMatch(dateField, dateRange);
+  const pipeline: mongodb.BSON.Document[] = [{ $match: match }];
 
   if (options?.includeCarts) {
     match.status = null;

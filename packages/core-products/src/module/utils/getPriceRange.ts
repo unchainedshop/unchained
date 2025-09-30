@@ -1,9 +1,9 @@
-import { ProductPrice } from '../../db/ProductsCollection.js';
+import { ProductPrice, ProductPriceRange } from '../../db/ProductsCollection.js';
 
 export const getPriceRange = (params: {
   productId: string;
   prices: ProductPrice[];
-}): { minPrice: ProductPrice; maxPrice: ProductPrice } => {
+}): ProductPriceRange => {
   const { min, max } = params.prices.reduce(
     (m, current) => {
       return {
@@ -23,12 +23,14 @@ export const getPriceRange = (params: {
       isNetPrice: !!min?.isNetPrice,
       amount: Math.round(min?.amount),
       currencyCode: min?.currencyCode,
+      countryCode: min?.countryCode,
     },
     maxPrice: {
       isTaxable: !!max?.isTaxable,
       isNetPrice: !!max?.isNetPrice,
       amount: Math.round(max?.amount),
       currencyCode: max?.currencyCode,
+      countryCode: max?.countryCode,
     },
   };
 };

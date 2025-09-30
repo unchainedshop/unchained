@@ -1,6 +1,6 @@
 import { Context } from '../../../context.js';
 import { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
-import { PaymentDirector, PaymentPricingDirector } from '@unchainedshop/core';
+import { PaymentDirector, PaymentPricingContext, PaymentPricingDirector } from '@unchainedshop/core';
 
 export const PaymentProvider = {
   interface(provider: PaymentProviderType) {
@@ -32,7 +32,7 @@ export const PaymentProvider = {
 
     const order = await loaders.orderLoader.load({ orderId });
     const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
-    const pricingContext = {
+    const pricingContext: PaymentPricingContext = {
       countryCode,
       currencyCode,
       provider: paymentProvider,

@@ -48,7 +48,7 @@ export const DeliveryProvider = {
       provider: deliveryProvider,
       order,
       providerContext,
-      user,
+      user: user!,
     };
 
     const calculated = await DeliveryPricingDirector.rebuildCalculation(pricingContext, requestContext);
