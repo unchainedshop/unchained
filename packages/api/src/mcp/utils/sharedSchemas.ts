@@ -34,7 +34,7 @@ export const LocalizationTextSchema = z.object({
     .string()
     .min(2)
     .describe(
-      'Locale code (e.g., "en-US", "de-CH") when a user provides locale make sure it exists in the system languages first. and if not prompt them to add the language before using it. if they provide a dialect at least base language should be registered in the system. if it does not exists prompt the user to add the language. NEVER add it automatically',
+      'Locale code (e.g., "en-US", "de-CH"). Must match an available language from the shop languages resource. If the language does not exist, prompt the user to add it first. NEVER add it automatically unless explicitly specified by the user.',
     ),
   title: z.string().min(1).describe('Localized title'),
   subtitle: z.string().optional().describe('Optional localized subtitle'),

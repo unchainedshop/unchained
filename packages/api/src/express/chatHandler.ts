@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Express, Request, RequestHandler, Response } from 'express';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import {
   convertToModelMessages,
   experimental_createMCPClient as createMCPClient,
@@ -55,19 +56,59 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
       return;
     }
+    const resourceTransport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
+      requestInit: {
+        headers: {
+          Cookie: req.headers.cookie || '',
+        },
+      },
+    });
+
+    const sdkClient = new Client(
+      { name: 'unchained-chat-client', version: '1.0.0' },
+      {
+        capabilities: { resources: {} },
+      },
+    );
+    await sdkClient.connect(resourceTransport as any);
+    const transport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
+      requestInit: {
+        headers: {
+          Cookie: req.headers.cookie || '',
+        },
+      },
+    });
 
     const client = await createMCPClient({
-      transport: new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-        requestInit: {
-          headers: {
-            Cookie: req.headers.cookie || '',
-          },
-        },
-      }) as MCPTransport,
+      transport: transport as MCPTransport,
     });
 
     try {
       const defaultUnchainedTools = await client.tools();
+      let resourceContext = '';
+      try {
+        const resources = await sdkClient.listResources();
+        if (resources?.resources) {
+          const resourceTexts = await Promise.all(
+            resources.resources.map(async (resource) => {
+              try {
+                const content = await sdkClient.readResource({ uri: resource.uri });
+                if (content?.contents?.[0]?.text) {
+                  return `${resource.name}:\n${content.contents[0].text}`;
+                }
+              } catch (e) {
+                console.error(`Failed to read resource ${resource.uri}:`, e);
+              }
+              return null;
+            }),
+          );
+          resourceContext =
+            '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
+        }
+      } catch (e) {
+        console.error('Failed to fetch MCP resources:', e);
+      }
+
       const tools: ToolSet = {
         ...defaultUnchainedTools,
         ...additionalTools,
@@ -108,7 +149,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       const result = streamText({
         stopWhen: stepCountIs(10),
         ...restChatConfig,
-        system,
+        system: system + resourceContext,
         model,
         tools: cacheControlledTools,
         onFinish: async () => {
@@ -129,6 +170,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       });
     } catch (err) {
       await client?.close();
+      await sdkClient?.close();
       res.status(500).json({ error: errorHandler(err) });
     }
   };

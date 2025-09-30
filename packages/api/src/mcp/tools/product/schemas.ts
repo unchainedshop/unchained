@@ -104,25 +104,25 @@ export const ProductSchema = z.object({
               .min(3)
               .max(3)
               .describe(
-                'ISO currency code (e.g., USD, EUR) make sure the currency code provided exists in the system currencies before using it. if it does not exists prompt the user to add the currency. NEVER add it automatically',
+                'ISO currency code (e.g., USD, EUR). Must match an available currency from the shop currencies resource. If it does not exist, prompt the user to add the currency. NEVER add it automatically unless explicitly specified by the user.',
               ),
             countryCode: z
               .string()
               .min(2)
               .max(2)
               .describe(
-                'ISO country code (e.g., US, DE) make sure the country/countryCode exists in the system before using it. if it does not exists prompt the user to add the country. NEVER add it automatically',
+                'ISO country code (e.g., US, DE). Must match an available country from the shop countries resource. If it does not exist, prompt the user to add the country. NEVER add it automatically unless explicitly specified by the user.',
               ),
           }),
         )
         .nonempty()
         .describe(
-          "List of price configurations always use countryCode and currencyCodes that are already registered in the system, don't use non existing iso codes.",
+          'List of price configurations. Use only countryCode and currencyCode values from the shop resources.',
         ),
     })
     .optional()
     .describe(
-      "Commerce info - Available for ALL except CONFIGURABLE_PRODUCT. always use countryCode and currencyCodes that are already registered in the system, don't use non existing iso codes.",
+      'Commerce info - Available for ALL except CONFIGURABLE_PRODUCT. Use only registered countries and currencies from shop resources.',
     ),
 });
 

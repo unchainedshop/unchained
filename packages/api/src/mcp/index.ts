@@ -9,6 +9,7 @@ import { registerOrderTools } from './tools/order/index.js';
 import { registerAssortmentTools } from './tools/assortment/index.js';
 import { registerUsersTools } from './tools/users/index.js';
 import { registerSystemTools } from './tools/system/index.js';
+import { registerLocalizationResources } from './resources/localization.js';
 
 export default function createMcpServer(context: Context, roles) {
   const server = new McpServer({
@@ -19,6 +20,9 @@ export default function createMcpServer(context: Context, roles) {
   if (!roles?.includes('admin')) {
     return server;
   }
+
+  registerLocalizationResources(server, context);
+
   registerFilterTools(server, context);
   registerProductTools(server, context);
   registerAssortmentTools(server, context);

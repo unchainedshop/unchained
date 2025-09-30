@@ -1,5 +1,6 @@
 import { FastifyInstance, RouteHandlerMethod, FastifyRequest } from 'fastify';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import {
   convertToModelMessages,
   experimental_createMCPClient as createMCPClient,
@@ -41,18 +42,62 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         return res.status(200).send();
       }
 
-      client = await createMCPClient({
-        transport: new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-          authProvider: null,
-          requestInit: {
-            headers: {
-              Cookie: req.headers.cookie || '',
-            },
+      const resourceTransport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
+        authProvider: null,
+        requestInit: {
+          headers: {
+            Cookie: req.headers.cookie || '',
           },
-        }) as MCPTransport,
+        },
+      });
+
+      const sdkClient = new Client(
+        { name: 'unchained-chat-client', version: '1.0.0' },
+        {
+          capabilities: { resources: {} },
+        },
+      );
+      await sdkClient.connect(resourceTransport as any);
+
+      const transport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
+        authProvider: null,
+        requestInit: {
+          headers: {
+            Cookie: req.headers.cookie || '',
+          },
+        },
+      });
+
+      client = await createMCPClient({
+        transport: transport as MCPTransport,
       });
 
       const defaultUnchainedTools = await client.tools();
+
+      let resourceContext = '';
+      try {
+        const resources = await sdkClient.listResources();
+        if (resources?.resources) {
+          const resourceTexts = await Promise.all(
+            resources.resources.map(async (resource) => {
+              try {
+                const content = await sdkClient.readResource({ uri: resource.uri });
+                if (content?.contents?.[0]?.text) {
+                  return `${resource.name}:\n${content.contents[0].text}`;
+                }
+              } catch (e) {
+                logger.error(`Failed to read resource ${resource.uri}:`, e);
+              }
+              return null;
+            }),
+          );
+          resourceContext =
+            '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
+        }
+      } catch (e) {
+        logger.error('Failed to fetch MCP resources:', e);
+      }
+
       const tools: ToolSet = {
         ...defaultUnchainedTools,
         ...additionalTools,
@@ -94,7 +139,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         stopWhen: stepCountIs(500),
         ...restChatConfig,
         messages: normalizedMessages.slice(-20),
-        system,
+        system: system + resourceContext,
         tools: cacheControlledTools,
         onFinish: async () => {
           await client?.close();
