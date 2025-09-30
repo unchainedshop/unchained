@@ -144,7 +144,7 @@ export const actionValidators = {
       .string()
       .min(1)
       .describe(
-        'Product ID, (the product to remove must be inactive or in DRAFT state other wise it will throw error)',
+        'Product ID, (the product status to remove must be inactive or in DRAFT state other wise it will throw error) so if it is active please unpublish it first before removing the product',
       ),
   }),
 
