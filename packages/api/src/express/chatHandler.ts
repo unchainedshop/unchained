@@ -146,6 +146,19 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
           providerOptions: { anthropic: { cacheControl: { type: 'ephemeral' } } },
         };
       }
+
+      const MAX_MESSAGES = 10;
+      let startIndex = Math.max(0, normalizedMessages.length - MAX_MESSAGES);
+      while (startIndex < normalizedMessages.length) {
+        const msg = normalizedMessages[startIndex];
+        const hasOrphanedToolResult =
+          Array.isArray(msg.content) && msg.content.some((c: any) => c.type === 'tool-result');
+
+        if (!hasOrphanedToolResult) break;
+        startIndex++;
+      }
+      const messagesToInclude = normalizedMessages.slice(startIndex);
+
       const result = streamText({
         stopWhen: stepCountIs(10),
         temperature: 0,
@@ -157,7 +170,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         onFinish: async () => {
           await client?.close();
         },
-        messages: normalizedMessages.slice(-10),
+        messages: messagesToInclude,
         providerOptions: {
           anthropic: {
             cacheControl: {
