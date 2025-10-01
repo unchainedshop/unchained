@@ -54,13 +54,13 @@ export const ProductPriceRateConversion: IProductPricingAdapter = {
 
         const rateData = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
 
-        if (rateData?.rate > 0) {
+        if (rateData && rateData.rate > 0) {
           const convertedAmount = Math.round(productPrice.amount * rateData.rate);
           pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,
-            isTaxable: productPrice?.isTaxable,
-            isNetPrice: productPrice?.isNetPrice,
+            isTaxable: Boolean(productPrice?.isTaxable),
+            isNetPrice: Boolean(productPrice?.isNetPrice),
             meta: { adapter: ProductPriceRateConversion.key, rate: rateData.rate },
           });
         }

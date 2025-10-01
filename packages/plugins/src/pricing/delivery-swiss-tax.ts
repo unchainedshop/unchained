@@ -5,9 +5,9 @@ import {
   DeliveryPricingDirector,
 } from '@unchainedshop/core';
 
-import { Order, OrderDelivery } from '@unchainedshop/core-orders';
+import { Order } from '@unchainedshop/core-orders';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { SwissTaxCategories } from './tax/ch.js';
+import { isDeliveryAddressInSwitzerland, SwissTaxCategories } from './tax/ch.js';
 
 const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryProvider }) => {
   const taxCategoryFromProvider = provider?.configuration?.find(({ key }) => {
@@ -19,26 +19,6 @@ const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryPro
     ? SwissTaxCategories[taxCategoryFromProvider] || SwissTaxCategories.DEFAULT
     : SwissTaxCategories.DEFAULT;
   return taxCategory.rate(order?.ordered);
-};
-
-const isDeliveryAddressInSwitzerland = ({
-  orderDelivery,
-  order,
-  countryCode: forceCountryCode = null,
-}: {
-  orderDelivery: OrderDelivery;
-  order: Order;
-  countryCode?: string | null;
-}) => {
-  let countryCode = forceCountryCode?.toUpperCase().trim() || order.countryCode;
-
-  const address = orderDelivery.context?.address || order.billingAddress;
-
-  if (address?.countryCode > '') {
-    countryCode = address.countryCode?.toUpperCase().trim();
-  }
-
-  return countryCode === 'CH' || countryCode === 'LI';
 };
 
 export const DeliverySwissTax: IDeliveryPricingAdapter = {

@@ -34,8 +34,8 @@ export const ProductPrice: IProductPricingAdapter = {
           const itemTotal = price.amount * quantity;
           pricingAdapter.resultSheet().addItem({
             amount: itemTotal,
-            isTaxable: price.isTaxable,
-            isNetPrice: price.isNetPrice,
+            isTaxable: Boolean(price.isTaxable),
+            isNetPrice: Boolean(price.isNetPrice),
             meta: { adapter: ProductPrice.key },
           });
         } else if (product.type === ProductTypes.BundleProduct) {
@@ -53,8 +53,8 @@ export const ProductPrice: IProductPricingAdapter = {
                 const bundleItemTotal = bundleItemPrice.amount * bundleItem.quantity * quantity;
                 pricingAdapter.resultSheet().addItem({
                   amount: bundleItemTotal,
-                  isTaxable: bundleItemPrice.isTaxable,
-                  isNetPrice: bundleItemPrice.isNetPrice,
+                  isTaxable: Boolean(bundleItemPrice.isTaxable),
+                  isNetPrice: Boolean(bundleItemPrice.isNetPrice),
                   meta: { adapter: ProductPrice.key },
                 });
               }

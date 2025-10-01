@@ -4,9 +4,8 @@ import {
   ProductPricingAdapterContext,
   IProductPricingAdapter,
   ProductPricingRowCategory,
-  UnchainedCore,
 } from '@unchainedshop/core';
-import { SwissTaxCategories } from './tax/ch.js';
+import { isDeliveryAddressInSwitzerland, SwissTaxCategories } from './tax/ch.js';
 
 export const getTaxRate = (context: ProductPricingAdapterContext) => {
   const { product, order } = context;
@@ -20,27 +19,6 @@ export const getTaxRate = (context: ProductPricingAdapterContext) => {
     ) || SwissTaxCategories.DEFAULT;
 
   return taxCategory.rate(order?.ordered);
-};
-
-export const isDeliveryAddressInSwitzerland = async ({
-  order,
-  countryCode: forceCountryCode,
-  modules,
-}: ProductPricingAdapterContext & { modules: UnchainedCore['modules'] }) => {
-  let countryCode = forceCountryCode?.toUpperCase().trim() || order.countryCode;
-
-  if (order) {
-    const orderDelivery = await modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
-    });
-    const address = orderDelivery?.context?.address || order.billingAddress;
-
-    if (address?.countryCode > '') {
-      countryCode = address.countryCode?.toUpperCase().trim();
-    }
-  }
-
-  return countryCode === 'CH' || countryCode === 'LI';
 };
 
 export const ProductSwissTax: IProductPricingAdapter = {
@@ -63,7 +41,16 @@ export const ProductSwissTax: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        if (!(await isDeliveryAddressInSwitzerland(context))) {
+        if (
+          !isDeliveryAddressInSwitzerland({
+            ...context,
+            orderDelivery: context.order?.deliveryId
+              ? await context.modules.orders.deliveries.findDelivery({
+                  orderDeliveryId: context.order?.deliveryId,
+                })
+              : null,
+          })
+        ) {
           return pricingAdapter.calculate();
         }
         const taxRate = getTaxRate(context);

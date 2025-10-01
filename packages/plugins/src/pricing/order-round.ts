@@ -75,13 +75,12 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           useNetPrice: true,
         });
         if (discountAmount) {
-          pricingAdapter.resultSheet().addDiscount({
+          pricingAdapter.resultSheet().calculation.push({
+            category: OrderPricingRowCategory.Discounts,
             amount: calculateDifference(discountAmount, currencyCode),
-            taxAmount: 0,
             meta: {
               adapter: OrderPriceRound.key,
             },
-            discountId: null,
           });
         }
 
@@ -128,7 +127,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           // WORKAROUND BECAUSE ORDER TOTAL GROSS PRICE IS CALCULATED WITH A SUM OF EVERYTHING EXCEPT TAXES
           // AS OF UNCHAINED <= 2.6
           pricingAdapter.resultSheet().calculation.push({
-            category: null,
+            category: null as any as string,
             amount: taxDifference,
             meta: {
               adapter: OrderPriceRound.key,
