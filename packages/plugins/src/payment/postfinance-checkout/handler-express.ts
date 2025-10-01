@@ -27,7 +27,7 @@ export const postfinanceCheckoutHandler = async (req, res) => {
         },
       });
       logger.info(
-        `Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
+        `Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData?.orderPaymentId} as paid`,
       );
       res.status(200).send(`Order marked as paid: ${order.orderNumber}`);
     } catch (e) {

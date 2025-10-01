@@ -9,10 +9,10 @@ const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = proces
 
 let stripe: Awaited<ReturnType<typeof initStripeClient>> | null;
 
-export const initStripeClient = async (): Promise<StripeType> => {
+export const initStripeClient = async (): Promise<StripeType | null> => {
   if (!STRIPE_SECRET) {
     logger.warn('STRIPE_SECRET is not set, skipping initialization');
-    return null;
+    return Promise.resolve(null);
   }
   // eslint-disable-next-line
   // @ts-ignore
@@ -25,7 +25,10 @@ export const initStripeClient = async (): Promise<StripeType> => {
 
 initStripeClient().catch(logger.warn);
 
-export default function () {
+export default function getStripe() {
+  if (!stripe) {
+    throw new Error('Stripe client not initialized');
+  }
   return stripe;
 }
 
@@ -33,7 +36,7 @@ const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
 export const upsertCustomer = async ({ userId, name, email }): Promise<string> => {
   try {
-    const { data } = await stripe.customers.search({ query: `metadata["userId"]:"${userId}"` });
+    const { data } = await getStripe().customers.search({ query: `metadata["userId"]:"${userId}"` });
     const existingCustomer = data[0];
 
     if (
@@ -41,7 +44,7 @@ export const upsertCustomer = async ({ userId, name, email }): Promise<string> =
       existingCustomer.email !== email ||
       existingCustomer.metadata.environment !== environment
     ) {
-      const updatedCustomer = await stripe.customers.update(existingCustomer.id, {
+      const updatedCustomer = await getStripe().customers.update(existingCustomer.id, {
         metadata: {
           userId,
           environment,
@@ -54,7 +57,7 @@ export const upsertCustomer = async ({ userId, name, email }): Promise<string> =
 
     return existingCustomer.id;
   } catch {
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
       metadata: {
         userId,
         environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
@@ -86,7 +89,7 @@ export const createRegistrationIntent = async (
   const description =
     `${options?.description || descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
 
-  const setupIntent = await stripe.setupIntents.create({
+  const setupIntent = await getStripe().setupIntents.create({
     description,
     customer,
     metadata: {
@@ -126,7 +129,7 @@ export const createOrderPaymentIntent = async (
 
   const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
-  const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripe().paymentIntents.create({
     amount: Math.round(amount),
     currency: currencyCode.toLowerCase(),
     description,

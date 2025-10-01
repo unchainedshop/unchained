@@ -38,7 +38,7 @@ const SendMessage: IDeliveryAdapter = {
           retries: 0,
           input: {
             template: 'DELIVERY',
-            orderId: order._id,
+            orderId: order!._id,
             config,
           },
         });

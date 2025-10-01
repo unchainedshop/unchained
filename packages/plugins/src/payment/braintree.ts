@@ -108,6 +108,9 @@ const BraintreeDirect: IPaymentAdapter = {
 
       charge: async ({ paypalPaymentMethodNonce }) => {
         const { order } = context;
+
+        if (!order) throw new Error('Order is missing in payment context');
+
         if (!paypalPaymentMethodNonce)
           throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
 

@@ -37,9 +37,7 @@ export default (xpub, index) => {
 
   const child = hardenedMaster.deriveChild(0).deriveChild(index);
 
-  // We don't need this AFAIK:
-  // const derivationPath = resolvePath(prefix);
-  // const child = hardenedMaster.derive(`${derivationPath}/0/${btcDerivationNumber}`);
+  if (!child.publicKey) throw new Error('Cannot derive public key from extended public key');
 
   const network = resolveNetwork(prefix);
   const pubKey = p2wpkh(child.publicKey /* hex.decode( as string)*/, network);

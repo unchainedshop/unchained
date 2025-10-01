@@ -37,8 +37,8 @@ export type Enrollment = {
   orderIdForFirstPeriod?: string;
   expires?: Date;
   meta?: any;
-  payment: {
-    paymentProviderId?: string;
+  payment?: {
+    paymentProviderId: string;
     context?: any;
   };
   periods: EnrollmentPeriod[];

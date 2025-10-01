@@ -19,6 +19,8 @@ import {
   PaymentPricingSheet,
   OrderPricingSheet,
 } from '@unchainedshop/core';
+import { Order, OrderPayment } from '@unchainedshop/core-orders';
+import { PaymentConfiguration } from '@unchainedshop/core-payment';
 
 const logger = createLogger('unchained:core-payment:datatrans');
 
@@ -41,6 +43,56 @@ const throwIfResponseError = (result) => {
     const rawError = (result as ResponseError).error;
     throw newDatatransError(rawError);
   }
+};
+
+const getMarketplaceSplits = async ({
+  order,
+  orderPayment,
+  config,
+}: {
+  order: Order;
+  orderPayment: OrderPayment;
+  config: PaymentConfiguration;
+}): Promise<
+  {
+    subMerchantId: string;
+    amount: number;
+    commission: number;
+  }[]
+> => {
+  const pricingForOrderPayment = PaymentPricingSheet({
+    calculation: orderPayment.calculation,
+    currencyCode: order.currencyCode,
+  });
+  const pricing = OrderPricingSheet({
+    calculation: order.calculation,
+    currencyCode: order.currencyCode,
+  });
+
+  const { amount: total } = pricing.total({ useNetPrice: false });
+
+  return Promise.all(
+    config
+      .filter((item) => item.key === 'marketplaceSplit')
+      .map((item) => {
+        const [subMerchantId, staticDiscountId, sharePercentage] =
+          item.value || ''.split(';').map((f) => f.trim());
+
+        const { amount: discountSum } = pricingForOrderPayment.total({
+          category: PaymentPricingRowCategory.Discount,
+          discountId: staticDiscountId,
+        });
+        const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
+        const amount = Math.round(total * shareFactor);
+        const commission = Math.round(discountSum * -1 * shareFactor);
+
+        return {
+          subMerchantId,
+          amount,
+          commission,
+        };
+      }),
+  );
 };
 
 const Datatrans: IPaymentAdapter = {
@@ -67,8 +119,11 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const api = () => {
-      if (!DATATRANS_SECRET) throw new Error('Credentials not Set');
-      return createDatatransAPI(DATATRANS_API_ENDPOINT, getMerchantId(), DATATRANS_SECRET);
+      const merchantId = getMerchantId();
+      if (!DATATRANS_SECRET) throw new Error('Credential DATATRANS_SECRET not Set');
+      if (!merchantId) throw new Error('Credential Merchant ID not configured');
+      if (!DATATRANS_API_ENDPOINT) throw new Error('Credential DATATRANS_API_ENDPOINT not Set');
+      return createDatatransAPI(DATATRANS_API_ENDPOINT, merchantId!, DATATRANS_SECRET);
     };
 
     const shouldSettleInUnchained = () => {
@@ -78,58 +133,21 @@ const Datatrans: IPaymentAdapter = {
       }, true);
     };
 
-    const getMarketplaceSplits = async (): Promise<
-      {
-        subMerchantId: string;
-        amount: number;
-        commission: number;
-      }[]
-    > => {
-      const { order, orderPayment } = context;
-
-      const pricingForOrderPayment = PaymentPricingSheet({
-        calculation: orderPayment.calculation,
-        currencyCode: order.currencyCode,
-      });
-      const pricing = OrderPricingSheet({
-        calculation: order.calculation,
-        currencyCode: order.currencyCode,
-      });
-
-      const { amount: total } = pricing.total({ useNetPrice: false });
-
-      return Promise.all(
-        config
-          .filter((item) => item.key === 'marketplaceSplit')
-          .map((item) => {
-            const [subMerchantId, staticDiscountId, sharePercentage] = item.value
-              .split(';')
-              .map((f) => f.trim());
-
-            const { amount: discountSum } = pricingForOrderPayment.total({
-              category: PaymentPricingRowCategory.Discount,
-              discountId: staticDiscountId,
-            });
-            const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
-            const amount = Math.round(total * shareFactor);
-            const commission = Math.round(discountSum * -1 * shareFactor);
-
-            return {
-              subMerchantId,
-              amount,
-              commission,
-            };
-          }),
-      );
-    };
-
     const authorize = async ({ paymentCredentials, ...arbitraryFields }): Promise<string> => {
       const { order, orderPayment } = context;
+
+      if (!orderPayment) throw new Error('Order Payment missing in context');
+      if (!order) throw new Error('Order missing in context');
+
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
       const userId = order?.userId || context?.userId;
       const refno2 = userId;
       const { currencyCode, amount } = roundedAmountFromOrder(order);
-      const splits = await getMarketplaceSplits();
+      const splits = await getMarketplaceSplits({
+        orderPayment,
+        order,
+        config,
+      });
       const result = await api().authorize({
         ...arbitraryFields,
         amount,
@@ -158,6 +176,7 @@ const Datatrans: IPaymentAdapter = {
       ...arbitraryFields
     }): Promise<string> => {
       const { order } = context;
+      if (!order) throw new Error('Order missing in context');
       const { currencyCode, amount } = roundedAmountFromOrder(order);
       const result = await api().authorizeAuthenticated({
         ...arbitraryFields,
@@ -174,6 +193,7 @@ const Datatrans: IPaymentAdapter = {
 
     const isTransactionAmountValid = (transaction: StatusResponseSuccess): boolean => {
       const { order } = context;
+      if (!order) throw new Error('Order missing in context');
       const { currencyCode, amount } = roundedAmountFromOrder(order);
       if (
         transaction.currency !== currencyCode ||
@@ -207,9 +227,15 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
-      const { order } = context;
+      const { order, orderPayment } = context;
+      if (!orderPayment) throw new Error('Order Payment missing in context');
+      if (!order) throw new Error('Order missing in context');
       const { currencyCode, amount } = roundedAmountFromOrder(order);
-      const splits = await getMarketplaceSplits();
+      const splits = await getMarketplaceSplits({
+        orderPayment,
+        order,
+        config,
+      });
       const result = await api().settle({
         transactionId,
         amount,
@@ -320,6 +346,9 @@ const Datatrans: IPaymentAdapter = {
       async confirm() {
         if (!shouldSettleInUnchained()) return false;
         const { orderPayment, transactionContext } = context;
+
+        if (!orderPayment) throw new Error('Order Payment missing in context');
+
         const { transactionId } = orderPayment;
 
         const { extensions } = transactionContext || {};
@@ -350,6 +379,9 @@ const Datatrans: IPaymentAdapter = {
       async cancel() {
         if (!shouldSettleInUnchained()) return false;
         const { orderPayment } = context;
+
+        if (!orderPayment) throw new Error('Order Payment missing in context');
+
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;

@@ -1,4 +1,4 @@
-export const addressToString = (address: {
+export const addressToString = (address?: {
   addressLine?: string;
   addressLine2?: string;
   city?: string;
@@ -8,7 +8,9 @@ export const addressToString = (address: {
   lastName?: string;
   postalCode?: string;
   regionCode?: string;
-}) => {
+}): string => {
+  if (!address) return '';
+
   return [
     [address.firstName, address.lastName].filter(Boolean).join(' '),
     address.company,

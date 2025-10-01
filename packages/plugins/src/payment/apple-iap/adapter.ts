@@ -22,6 +22,8 @@ const AppleIAP: IPaymentAdapter = {
   actions: (params, context) => {
     const { order, modules } = context as typeof context & { modules: AppleTransactionsModule };
 
+    if (!order) throw new Error('Order not found');
+
     const adapterActions = {
       ...PaymentAdapter.actions(params, context),
 
@@ -42,7 +44,7 @@ const AppleIAP: IPaymentAdapter = {
       },
 
       async sign() {
-        throw new Error('Apple IAP does not support payment signing');
+        throw new Error('Payment signing not supported');
       },
 
       async validate() {
@@ -60,7 +62,7 @@ const AppleIAP: IPaymentAdapter = {
         const { status, latest_receipt_info: latestReceiptInfo } = response;
 
         if (status === 0) {
-          logger.debug('Apple IAP Plugin: Receipt validated and updated for the user');
+          logger.debug('Receipt validated and updated for the user');
           const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1];
           return {
             token: latestTransaction.web_order_line_item_id,
@@ -68,7 +70,7 @@ const AppleIAP: IPaymentAdapter = {
           };
         }
 
-        logger.warn('Apple IAP Plugin: Receipt invalid', {
+        logger.warn('Receipt invalid', {
           status: response.status,
         });
         return null;
@@ -79,7 +81,7 @@ const AppleIAP: IPaymentAdapter = {
         const { transactionIdentifier } = meta || {};
 
         if (!transactionIdentifier) {
-          throw new Error('Apple IAP Plugin: You have to set the transaction id on the order payment');
+          throw new Error('You have to set the transaction id on the order payment');
         }
 
         const receiptResponse =
@@ -90,7 +92,7 @@ const AppleIAP: IPaymentAdapter = {
           }));
 
         if (receiptResponse && receiptResponse.status !== 0) {
-          throw new Error('Apple IAP Plugin: Receipt invalid');
+          throw new Error('Receipt invalid');
         }
 
         const transactions =
@@ -99,9 +101,7 @@ const AppleIAP: IPaymentAdapter = {
           (transaction) => transaction?.transaction_id === transactionIdentifier,
         );
         if (!matchedTransaction) {
-          throw new Error(
-            `Apple IAP Plugin: Cannot match transaction with identifier ${transactionIdentifier}`,
-          );
+          throw new Error(`Cannot match transaction with identifier ${transactionIdentifier}`);
         }
 
         const orderPositions = await modules.orders.positions.findOrderPositions({
@@ -117,7 +117,7 @@ const AppleIAP: IPaymentAdapter = {
         );
 
         if (items.length !== 1) {
-          throw new Error('Apple IAP Plugin: You can only checkout 1 unique product at once');
+          throw new Error('You can only checkout 1 unique product at once');
         }
 
         const [[productId, quantity]] = items;
@@ -126,14 +126,12 @@ const AppleIAP: IPaymentAdapter = {
           parseInt(matchedTransaction.quantity, 10) === quantity &&
           matchedTransaction.product_id === productId;
 
-        if (!isMatchesTransaction)
-          throw new Error('Apple IAP Plugin: Product in order does not match transaction');
+        if (!isMatchesTransaction) throw new Error('Product in order does not match transaction');
 
         const alreadyProcessedTransaction =
           await modules.appleTransactions.findTransactionById(transactionIdentifier);
 
-        if (alreadyProcessedTransaction)
-          throw new Error('Apple IAP Plugin: Transaction already processed');
+        if (alreadyProcessedTransaction) throw new Error('Transaction already processed');
 
         // All good
         await modules.appleTransactions.createTransaction({

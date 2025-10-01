@@ -3,7 +3,7 @@ import { TimestampFields } from '@unchainedshop/mongodb';
 
 export type File = {
   _id: string;
-  expires?: Date;
+  expires: Date | null;
   path: string;
   meta?: Record<string, unknown>;
   name: string;

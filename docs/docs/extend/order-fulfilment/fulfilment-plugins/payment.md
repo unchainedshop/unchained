@@ -40,7 +40,7 @@ const ShopPayment: IPaymentAdapter = {
 
     return {
 
-      configurationError: (transactionContext?: any): PaymentError => {
+      configurationError: (transactionContext?: any) => {
         return null;
       },
       isActive: (transactionContext?: any): boolean => {

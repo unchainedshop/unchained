@@ -11,12 +11,22 @@ export const getOrderSummaryData = async (
 ) => {
   const { modules } = context;
   const { useNetPrice, format = ch.priceToString } = params || {};
-  const orderDelivery = await modules.orders.deliveries.findDelivery({
-    orderDeliveryId: order.deliveryId,
-  });
-  const orderPayment = await modules.orders.payments.findOrderPayment({
-    orderPaymentId: order.paymentId,
-  });
+  const orderDelivery =
+    order.deliveryId &&
+    (await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    }));
+
+  if (!orderDelivery) throw new Error('Order delivery not found');
+
+  const orderPayment =
+    order.paymentId &&
+    (await modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    }));
+
+  if (!orderPayment) throw new Error('Order payment not found');
+
   const paymentProvider = await modules.payment.paymentProviders.findProvider({
     paymentProviderId: orderPayment.paymentProviderId,
   });
@@ -55,8 +65,8 @@ export const getOrderSummaryData = async (
 
   const total = orderPricing.total({ useNetPrice });
 
-  const payment = paymentProvider.adapterKey;
-  const delivery = deliveryProvider.adapterKey;
+  const payment = paymentProvider?.adapterKey;
+  const delivery = deliveryProvider?.adapterKey;
 
   return {
     rawPrices: {

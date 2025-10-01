@@ -42,7 +42,7 @@ export const transformOrderToText = async (
   return mustache.render(
     textTemplate,
     {
-      orderDate: new Date(order.ordered).toLocaleString(),
+      orderDate: new Date(order.ordered!).toLocaleString(),
       orderNumber: order.orderNumber,
       summary: await getOrderSummaryData(order, { locale }, context),
       positions: await getOrderPositionsData(order, { locale }, context),

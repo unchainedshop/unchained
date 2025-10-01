@@ -44,6 +44,12 @@ const gridfsHandler = async (
       const fileId = await buildHashedFilename(directoryName, fileName, expiryDate);
       if ((await sign(directoryName, fileId, expiryDate.getTime())) === signature) {
         const file = await modules.files.findFile({ fileId });
+
+        if (!file) {
+          res.status(404).send('File not found');
+          return;
+        }
+
         if (file.expires === null) {
           res.status(400).send('File already linked');
           return;
@@ -97,7 +103,7 @@ const gridfsHandler = async (
         const fileUploadAdapter = getFileAdapter();
         const signedUrl = await fileUploadAdapter.createDownloadURL(fileDocument, expiry);
 
-        if (new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
+        if (!signedUrl || new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
           res.status(403).send('Access restricted: Invalid signature.');
           return;
         }

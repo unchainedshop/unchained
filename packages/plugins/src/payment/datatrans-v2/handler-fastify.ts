@@ -21,6 +21,12 @@ export const datatransHandler: RouteHandlerMethod = async (
   const resolvedContext = req.unchainedContext as Context;
   const { modules, services } = resolvedContext;
   const signature = req.headers['datatrans-signature'] as string;
+
+  if (!DATATRANS_SIGN_KEY && !DATATRANS_SIGN2_KEY) {
+    logger.warn('No sign key configured');
+    return reply.send({ success: false, message: 'No sign key configured', name: 'NO_SIGN_KEY' });
+  }
+
   if (signature) {
     const [rawTimestamp, rawHash] = signature.split(',');
     const [, hash] = rawHash.split('=');
@@ -28,7 +34,7 @@ export const datatransHandler: RouteHandlerMethod = async (
 
     const comparableSignature = await generateSignature({
       security: DATATRANS_SECURITY as any,
-      signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
+      signKey: DATATRANS_SIGN2_KEY! || DATATRANS_SIGN_KEY!,
     })(timestamp, req.body as string);
 
     if (hash !== comparableSignature) {

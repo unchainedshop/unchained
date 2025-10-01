@@ -45,7 +45,7 @@ const ShopPickUp: IDeliveryAdapter = {
         return true;
       },
 
-      configurationError(transactionContext?: any): DeliveryError {
+      configurationError(transactionContext?: any) {
         return null;
       },
 

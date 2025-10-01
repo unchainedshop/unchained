@@ -25,11 +25,12 @@ const Payrexx: IPaymentAdapter = {
   actions: (config, context) => {
     const { modules } = context;
 
-    const getInstance = () => {
-      return config.find((c) => c.key === 'instance')?.value;
-    };
+    const instance = config.find((c) => c.key === 'instance')?.value;
 
-    const api = createPayrexxAPI(getInstance(), process.env.PAYREXX_SECRET);
+    if (!instance) throw new Error('No Payrexx instance configured');
+    if (!process.env.PAYREXX_SECRET) throw new Error('No Payrexx secret configured in env');
+
+    const api = createPayrexxAPI(instance, process.env.PAYREXX_SECRET);
 
     const adapterActions = {
       ...PaymentAdapter.actions(config, context),
@@ -38,7 +39,7 @@ const Payrexx: IPaymentAdapter = {
         if (!process.env.PAYREXX_SECRET) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
-        if (!getInstance()) {
+        if (!instance) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
@@ -55,6 +56,9 @@ const Payrexx: IPaymentAdapter = {
 
       sign: async (transactionContext = {}) => {
         const { orderPayment, userId, order } = context;
+
+        if (!order) throw new Error('No order in context, can only sign with order context');
+
         if (orderPayment) {
           // Order Checkout signing (One-time payment)
           const pricing = OrderPricingSheet({
@@ -70,7 +74,10 @@ const Payrexx: IPaymentAdapter = {
         }
 
         // Payment Credential Registration signing
-        const user = await modules.users.findUserById(userId);
+
+        const user = userId && (await modules.users.findUserById(userId));
+        if (!user) throw new Error('User not found, can only sign registrations with user context');
+
         const emailAddress = modules.users.primaryEmail(user)?.address;
         const gateway = await api.createGateway(
           mapUserToGatewayObject({
@@ -107,11 +114,11 @@ const Payrexx: IPaymentAdapter = {
 
       async confirm() {
         const { orderPayment } = context;
-        const { transactionId } = orderPayment;
 
-        if (!transactionId) {
+        if (!orderPayment?.transactionId) {
           return false;
         }
+        const { transactionId } = orderPayment;
 
         const gatewayObject = await api.getGateway(transactionId);
 
@@ -140,11 +147,10 @@ const Payrexx: IPaymentAdapter = {
 
       async cancel() {
         const { orderPayment } = context;
-        const { transactionId } = orderPayment;
-        if (!transactionId) {
+        if (!orderPayment?.transactionId) {
           return false;
         }
-
+        const { transactionId } = orderPayment;
         const gatewayObject = await api.getGateway(transactionId);
 
         if (!gatewayObject) {
@@ -170,10 +176,10 @@ const Payrexx: IPaymentAdapter = {
           throw new Error('You have to provide gatewayId or paymentCredentials');
         }
 
-        const { order } = context;
-        const orderPayment = await modules.orders.payments.findOrderPayment({
-          orderPaymentId: order.paymentId,
-        });
+        const { order, orderPayment } = context;
+
+        if (!order) throw new Error('No order in context, can only charge with order context');
+        if (!orderPayment) throw new Error('Order payment not found');
 
         const gatewayObject = await api.getGateway(gatewayId);
 

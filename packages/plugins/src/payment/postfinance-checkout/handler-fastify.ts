@@ -33,7 +33,7 @@ export const postfinanceCheckoutHandler: RouteHandlerMethod = async (
         },
       });
       logger.info(
-        `Transaction ${transaction.id} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
+        `Transaction ${transaction.id} marked order payment ID ${transaction.metaData?.orderPaymentId} as paid`,
       );
       reply.status(200);
       return reply.send({ success: true, orderNumber: order.orderNumber });

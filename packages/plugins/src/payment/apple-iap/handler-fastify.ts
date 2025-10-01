@@ -55,6 +55,9 @@ export const appleIAPHandler: RouteHandlerMethod = async (
       const enrollment = await modules.enrollments.findEnrollment({
         orderId,
       });
+
+      if (!enrollment) throw new Error('Enrollent not found');
+
       await fixPeriods(
         {
           transactionId: latestTransaction.original_transaction_id,
@@ -65,7 +68,7 @@ export const appleIAPHandler: RouteHandlerMethod = async (
         resolvedContext,
       );
 
-      logger.info(`Apple IAP Webhook: Confirmed checkout for order ${order.orderNumber}`, {
+      logger.info(`Webhook confirmed checkout for order ${order.orderNumber}`, {
         orderId: order._id,
       });
     } else {
@@ -80,9 +83,13 @@ export const appleIAPHandler: RouteHandlerMethod = async (
       const originalOrder = await modules.orders.findOrder({
         orderId: originalOrderPayment.orderId,
       });
-      const enrollment = await modules.enrollments.findEnrollment({
-        orderId: originalOrder._id,
-      });
+      const enrollment =
+        originalOrder &&
+        (await modules.enrollments.findEnrollment({
+          orderId: originalOrder._id,
+        }));
+
+      if (!enrollment?.payment) throw new Error('Could not find a valid enrollment payment method');
 
       await services.orders.registerPaymentCredentials(enrollment.payment.paymentProviderId, {
         transactionContext: {
@@ -96,13 +103,13 @@ export const appleIAPHandler: RouteHandlerMethod = async (
           transactionId: latestTransaction.original_transaction_id,
           transactions,
           enrollmentId: enrollment._id,
-          orderId: originalOrder._id,
+          orderId: originalOrder!._id,
         },
         resolvedContext,
       );
 
       logger.info(
-        `Apple IAP Webhook: Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
+        `Webhook rocessed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
       );
 
       if (responseBody.notification_type === AppleNotificationTypes.DID_RECOVER) {

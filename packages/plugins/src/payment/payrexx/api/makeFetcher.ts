@@ -6,8 +6,8 @@ const logger = createLogger('unchained:payrexx');
 
 export default (
   baseUrl = 'https://api.payrexx.com/v1.0/',
-  instance: string = null,
-  secret: string = null,
+  instance: string,
+  secret: string,
 ): ((path: string, method: 'GET' | 'DELETE' | 'PUT' | 'POST', data?: any) => Promise<Response>) => {
   if (MOCK_APIS) {
     return async (path): Promise<Response> => {

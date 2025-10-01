@@ -75,6 +75,7 @@ export async function setupWorkqueue({
     await Promise.all(
       users.map((user) => {
         const locale = unchainedAPI.modules.users.userLocale(user);
+        if (!locale.region) return null;
         return unchainedAPI.services.orders.nextUserCart({
           user,
           countryCode: locale.region,

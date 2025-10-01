@@ -15,6 +15,13 @@ export const datatransHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context;
   const { modules, services } = resolvedContext;
   const signature = req.headers['datatrans-signature'];
+
+  if (!DATATRANS_SIGN_KEY && !DATATRANS_SIGN2_KEY) {
+    logger.warn('No sign key configured');
+    res.status(404).end();
+    return;
+  }
+
   if (req.method === 'POST' && signature) {
     const [rawTimestamp, rawHash] = signature.split(',');
     const [, hash] = rawHash.split('=');
@@ -22,7 +29,7 @@ export const datatransHandler = async (req, res) => {
 
     const comparableSignature = await generateSignature({
       security: DATATRANS_SECURITY as any,
-      signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
+      signKey: DATATRANS_SIGN2_KEY! || DATATRANS_SIGN_KEY!,
     })(timestamp, req.body);
 
     if (hash !== comparableSignature) {

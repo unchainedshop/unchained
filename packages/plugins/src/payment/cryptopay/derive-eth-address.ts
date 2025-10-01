@@ -28,6 +28,8 @@ export default (xpub, index) => {
 
   const child = hardenedMaster.deriveChild(0).deriveChild(index);
 
+  if (!child.publicKey) throw new Error('Could not derive child key from extended public key');
+
   // ETH Address (secp256k1 + keccak_256 + checksum)
   const childSigningKey = secp256k1.Point.fromBytes(child.publicKey).toBytes(false);
   const address = Buffer.from(keccak_256(childSigningKey.slice(1)))

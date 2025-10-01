@@ -5,7 +5,7 @@ export const configureAppleTransactionsModule = async ({ db }) => {
   const AppleTransactions = await AppleTransactionsCollection(db);
 
   return {
-    findTransactionById: async (transactionIdentifier: string): Promise<AppleTransaction> => {
+    findTransactionById: async (transactionIdentifier: string): Promise<AppleTransaction | null> => {
       return AppleTransactions.findOne({ _id: transactionIdentifier });
     },
 
@@ -13,12 +13,12 @@ export const configureAppleTransactionsModule = async ({ db }) => {
       doc: Omit<AppleTransaction, '_id' | 'created'> &
         Pick<Partial<AppleTransaction>, '_id' | 'created'>,
     ) => {
-      await AppleTransactions.insertOne({
+      const { insertedId } = await AppleTransactions.insertOne({
         _id: generateDbObjectId(),
         ...doc,
         created: new Date(),
       });
-      return doc._id;
+      return insertedId;
     },
   };
 };

@@ -51,7 +51,7 @@ const createPayrexxAPI = (instance: string, secret: string) => {
       throw new Error(await result.text());
     },
 
-    async getGateway(id): Promise<GatewayObject> {
+    async getGateway(id): Promise<GatewayObject | null> {
       const result = await fetchPayrexx(`Gateway/${id}`, 'GET');
       if (!result.ok) throw new Error(await result.text());
       const { status, data } = await result.json();

@@ -36,7 +36,7 @@ export const GridFSAdapter: IFileAdapter<
   ...FileAdapter,
   async createDownloadURL(file, expiry) {
     // If public, just return the stored path from the db
-    if (!file?.meta?.isPrivate) return file?.url;
+    if (!file?.meta?.isPrivate) return file?.url || null;
 
     const expiryTimestamp =
       expiry ||

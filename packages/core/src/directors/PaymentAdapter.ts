@@ -23,7 +23,7 @@ export type PaymentChargeActionResult = ChargeResult & {
 };
 export interface IPaymentActions {
   charge: (transactionContext?: any) => Promise<PaymentChargeActionResult | false>;
-  configurationError: (transactionContext?: any) => PaymentError;
+  configurationError: (transactionContext?: any) => PaymentError | null;
   isActive: (transactionContext?: any) => boolean;
   isPayLaterAllowed: (transactionContext?: any) => boolean;
   register: (transactionContext?: any) => Promise<any>;

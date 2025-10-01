@@ -1,10 +1,8 @@
 export interface UploadFileData {
   _id: string;
   directoryName: string;
-  expiryDate: Date;
+  expiryDate: Date | null;
   fileName: string;
-  hash: string;
-  hashedName: string;
   size?: number;
   type: string;
   url: string;

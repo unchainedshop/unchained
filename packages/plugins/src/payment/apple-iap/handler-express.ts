@@ -47,6 +47,9 @@ export const appleIAPHandler = async (req, res) => {
         const enrollment = await modules.enrollments.findEnrollment({
           orderId,
         });
+
+        if (!enrollment) throw new Error('Could not find any matching enrollment');
+
         await fixPeriods(
           {
             transactionId: latestTransaction.original_transaction_id,
@@ -72,9 +75,12 @@ export const appleIAPHandler = async (req, res) => {
         const originalOrder = await modules.orders.findOrder({
           orderId: originalOrderPayment.orderId,
         });
-        const enrollment = await modules.enrollments.findEnrollment({
-          orderId: originalOrder._id,
-        });
+        const enrollment =
+          originalOrder &&
+          (await modules.enrollments.findEnrollment({
+            orderId: originalOrder._id,
+          }));
+        if (!enrollment?.payment) throw new Error('Could not find a valid enrollment payment method');
 
         await services.orders.registerPaymentCredentials(enrollment.payment.paymentProviderId, {
           transactionContext: {
@@ -88,7 +94,7 @@ export const appleIAPHandler = async (req, res) => {
             transactionId: latestTransaction.original_transaction_id,
             transactions,
             enrollmentId: enrollment._id,
-            orderId: originalOrder._id,
+            orderId: originalOrder!._id,
           },
           resolvedContext,
         );

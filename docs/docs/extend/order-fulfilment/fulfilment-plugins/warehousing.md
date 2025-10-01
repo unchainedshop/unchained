@@ -49,7 +49,7 @@ const Store: IWarehousingAdapter = {
         return true;
       },
 
-      configurationError: async (): WarehousingError => {
+      configurationError: async () => {
         return null;
       },
 

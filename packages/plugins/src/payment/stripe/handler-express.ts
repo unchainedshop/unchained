@@ -18,6 +18,12 @@ export const stripeHandler = async (request, response) => {
   try {
     const stripe = stripeClient();
     const sig = request.headers['stripe-signature'];
+    if (!sig) {
+      throw new Error('stripe-signature header was not provided for webhook');
+    }
+    if (!process.env.STRIPE_ENDPOINT_SECRET) {
+      throw new Error('env STRIPE_ENDPOINT_SECRET is required for webhook handling');
+    }
     event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_ENDPOINT_SECRET);
   } catch (err) {
     logger.error(`Error constructing event: ${err.message}`);

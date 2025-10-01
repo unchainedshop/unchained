@@ -39,6 +39,17 @@ const gridfsHandler: RouteHandlerMethod = async (
       const fileId = await buildHashedFilename(directoryName, fileName, expiryDate);
       if ((await sign(directoryName, fileId, expiryDate.getTime())) === signature) {
         const file = await modules.files.findFile({ fileId });
+
+        if (!file) {
+          reply.status(404);
+          logger.error('File not found', { fileId });
+          return reply.send({
+            success: false,
+            message: 'File not found',
+            name: 'FILE_NOT_FOUND',
+          });
+        }
+
         if (file.expires === null) {
           reply.status(400);
           logger.error('File already linked', { fileId });
@@ -113,7 +124,7 @@ const gridfsHandler: RouteHandlerMethod = async (
         const fileUploadAdapter = getFileAdapter();
         const signedUrl = await fileUploadAdapter.createDownloadURL(fileDocument, expiry);
 
-        if (new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
+        if (!signedUrl || new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
           reply.status(403);
           logger.error('Invalid signature', { fileId, expiry });
           return reply.send({

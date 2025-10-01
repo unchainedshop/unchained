@@ -72,11 +72,13 @@ const PaypalCheckout: IPaymentAdapter = {
       },
 
       sign: async () => {
-        return PAYPAL_CLIENT_ID;
+        return PAYPAL_CLIENT_ID || null;
       },
 
       charge: async ({ orderID }) => {
         const { order } = context;
+
+        if (!order) throw new Error('Order missing in payment context');
 
         if (!orderID) {
           throw new Error('You have to provide orderID in paymentContext');

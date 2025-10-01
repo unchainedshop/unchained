@@ -24,13 +24,14 @@ const Stripe: IPaymentAdapter = {
   actions: (config, context) => {
     const { modules } = context;
 
-    const descriptorPrefix = config.find(({ key }) => key === 'descriptorPrefix')?.value;
+    const descriptorPrefix = config.find(({ key }) => key === 'descriptorPrefix')?.value || '';
 
-    const getUserData = async (forcedUserId) => {
+    const assertUserData = async (forcedUserId) => {
       const userId = forcedUserId || context?.userId;
       const user = await modules.users.findUserById(userId);
+      if (!user) throw new Error('User not found');
       const email = modules.users.primaryEmail(user)?.address;
-      const name = user.profile.displayName || user.username || email;
+      const name = user.profile?.displayName || user.username || email;
       return {
         email,
         name,
@@ -41,8 +42,9 @@ const Stripe: IPaymentAdapter = {
       ...PaymentAdapter.actions(config, context),
 
       configurationError() {
-        const stripe = stripeClient();
-        if (!stripe) {
+        try {
+          stripeClient();
+        } catch {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
@@ -86,13 +88,15 @@ const Stripe: IPaymentAdapter = {
 
       sign: async (transactionContext = {}) => {
         const { orderPayment, order, paymentProviderId } = context;
+        const { userId, name, email } = await assertUserData(order?.userId);
+
+        if (!order) throw new Error('order not found in context');
 
         if (orderPayment) {
           const pricing = OrderPricingSheet({
             calculation: order.calculation,
             currencyCode: order.currencyCode,
           });
-          const { userId, name, email } = await getUserData(order?.userId);
           const paymentIntent = await createOrderPaymentIntent(
             { userId, name, email, order, orderPayment, pricing, descriptorPrefix },
             transactionContext,
@@ -100,7 +104,6 @@ const Stripe: IPaymentAdapter = {
           return paymentIntent.client_secret;
         }
 
-        const { userId, name, email } = await getUserData(order?.userId);
         const paymentIntent = await createRegistrationIntent(
           { userId, name, email, paymentProviderId, descriptorPrefix },
           transactionContext,
@@ -114,11 +117,12 @@ const Stripe: IPaymentAdapter = {
           throw new Error('You have to provide paymentIntentId or paymentCredentials');
         }
 
-        const { order } = context;
-        const orderPayment = await modules.orders.payments.findOrderPayment({
-          orderPaymentId: order.paymentId,
-        });
-        const { userId, name, email } = await getUserData(order?.userId);
+        const { order, orderPayment } = context;
+
+        if (!order) throw new Error('order not found in context');
+        if (!orderPayment) throw new Error('orderPayment not found in context');
+
+        const { userId, name, email } = await assertUserData(order?.userId);
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currencyCode: order.currencyCode,

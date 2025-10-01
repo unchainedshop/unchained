@@ -24,6 +24,12 @@ export const stripeHandler: RouteHandlerMethod = async (
   try {
     const stripe = stripeClient();
     const sig = req.headers['stripe-signature'];
+    if (!process.env.STRIPE_ENDPOINT_SECRET) {
+      throw new Error('env STRIPE_ENDPOINT_SECRET is required for webhook handling');
+    }
+    if (!sig) {
+      throw new Error('stripe-signature header was not provided for webhook');
+    }
     event = stripe.webhooks.constructEvent(req.body as string, sig, process.env.STRIPE_ENDPOINT_SECRET);
   } catch (err) {
     logger.error(`Error constructing event: ${err.message}`);

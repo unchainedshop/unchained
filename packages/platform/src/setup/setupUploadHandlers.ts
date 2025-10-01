@@ -15,7 +15,7 @@ export const setupUploadHandlers = ({ services, modules }: UnchainedCore) => {
 
   FileDirector.registerFileUploadCallback('assortment-media', async (file) => {
     await modules.assortments.media.create({
-      assortmentId: file.meta.assortmentId as string,
+      assortmentId: file.meta?.assortmentId as string,
       mediaId: file._id,
     });
   });

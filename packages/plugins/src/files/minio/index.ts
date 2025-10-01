@@ -28,7 +28,7 @@ const {
   AMAZON_S3_SESSION_TOKEN,
 } = process.env;
 
-let client: Client;
+let client: Client | null = null;
 
 export async function connectToMinio() {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
@@ -56,8 +56,8 @@ export async function connectToMinio() {
     if (MINIO_STS_ENDPOINT) {
       const ap = new AssumeRoleProvider({
         stsEndpoint: MINIO_STS_ENDPOINT,
-        accessKey: MINIO_ACCESS_KEY,
-        secretKey: MINIO_SECRET_KEY,
+        accessKey: MINIO_ACCESS_KEY!,
+        secretKey: MINIO_SECRET_KEY!,
       });
       // eslint-disable-next-line
       // @ts-ignore
@@ -76,17 +76,17 @@ const generateMinioPath = (directoryName: string, fileName: string) => {
 };
 
 const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
-  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${generateMinioPath(directoryName, hashedFilename)}`;
+  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME!}/${generateMinioPath(directoryName, hashedFilename)}`;
 };
 
 connectToMinio().then(function setClient(c) {
-  client = c;
+  client = c || client;
 });
 
 const getObjectStats = async (fileName: string) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
-  return client.statObject(MINIO_BUCKET_NAME, fileName);
+  return client.statObject(MINIO_BUCKET_NAME!, fileName);
 };
 
 const bufferToStream = (buffer: any) => {
@@ -116,7 +116,7 @@ export const MinioAdapter: IFileAdapter = {
     const _id = await buildHashedFilename(directoryName, fileName, expiryDate);
 
     const url = await client.presignedPutObject(
-      MINIO_BUCKET_NAME,
+      MINIO_BUCKET_NAME!,
       generateMinioPath(directoryName, _id),
       expiryOffsetInMs() / 1000,
     );
@@ -139,7 +139,7 @@ export const MinioAdapter: IFileAdapter = {
       return `${path}/${_id}`;
     });
 
-    await client.removeObjects(MINIO_BUCKET_NAME, fileIds);
+    await client.removeObjects(MINIO_BUCKET_NAME!, fileIds);
   },
 
   async uploadFileFromStream(directoryName: string, rawFile: any) {
@@ -164,7 +164,7 @@ export const MinioAdapter: IFileAdapter = {
     };
 
     await client.putObject(
-      MINIO_BUCKET_NAME,
+      MINIO_BUCKET_NAME!,
       generateMinioPath(directoryName, _id),
       stream,
       undefined,
@@ -200,7 +200,7 @@ export const MinioAdapter: IFileAdapter = {
     };
 
     await client.putObject(
-      MINIO_BUCKET_NAME,
+      MINIO_BUCKET_NAME!,
       generateMinioPath(directoryName, hashedFilename),
       readable,
       undefined,
@@ -222,7 +222,7 @@ export const MinioAdapter: IFileAdapter = {
   async createDownloadStream(file) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
-    const stream = await client.getObject(MINIO_BUCKET_NAME, generateMinioPath(file.path, file._id));
+    const stream = await client.getObject(MINIO_BUCKET_NAME!, generateMinioPath(file.path, file._id));
     return stream;
   },
 };

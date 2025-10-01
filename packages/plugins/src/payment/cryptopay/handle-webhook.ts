@@ -54,7 +54,7 @@ export default async function handleWebhook(
       blockHeight,
       amount,
       contract,
-      decimals,
+      decimals: decimals ?? 0,
       currencyCode,
     });
 
@@ -68,10 +68,10 @@ export default async function handleWebhook(
       // Try to process order to next status
       // TODO: Not sure if it's correct to use processOrder here if status is PENDING!
       const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
-      if (order.status === null) {
-        await services.orders.checkoutOrder(order._id, {});
-      } else if (order.status === OrderStatus.PENDING) {
-        await services.orders.processOrder(order, {});
+      if (order!.status === null) {
+        await services.orders.checkoutOrder(order!._id, {});
+      } else if (order!.status === OrderStatus.PENDING) {
+        await services.orders.processOrder(order!, {});
       } else {
         throw new Error('Already processed');
       }

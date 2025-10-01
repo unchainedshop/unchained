@@ -44,6 +44,9 @@ const Cryptopay: IPaymentAdapter = {
 
     const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
       const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });
+
+      if (!originCurrencyObj?.isActive) throw new Error('Origin currency is not supported');
+
       const updatedAddresses = await Promise.all(
         existingAddresses.map(async (addressData) => {
           const targetCurrencyObj = await modules.currencies.findCurrency({
@@ -113,6 +116,8 @@ const Cryptopay: IPaymentAdapter = {
         if (!orderPayment)
           throw new Error('Payment Credential Registration is not yet supported for Cryptopay');
 
+        if (!order) throw new Error('Order context is required for signing with Cryptopay');
+
         const existingAddresses = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
           orderPayment._id,
         );
@@ -166,6 +171,11 @@ const Cryptopay: IPaymentAdapter = {
       charge: async () => {
         const { order, orderPayment } = context;
 
+        if (!orderPayment)
+          throw new Error('Order Payment context is required for charging with Cryptopay');
+
+        if (!order) throw new Error('Order context is required for charging with Cryptopay');
+
         const foundWalletsWithBalances = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
           orderPayment._id,
         );
@@ -180,17 +190,24 @@ const Cryptopay: IPaymentAdapter = {
         });
         const totalAmount = BigInt(pricing?.total({ useNetPrice: false }).amount);
 
-        if (walletForOrderPayment.currencyCode !== order.currencyCode) {
+        if (walletForOrderPayment && walletForOrderPayment.currencyCode !== order.currencyCode) {
           const baseCurrency = await modules.currencies.findCurrency({
             isoCode: walletForOrderPayment.currencyCode,
           });
+
+          if (!baseCurrency) throw new Error('Base currency not found');
+
           const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currencyCode });
 
-          const { /* min, */ max } = await modules.products.prices.rates.getRateRange(
+          if (!quoteCurrency) throw new Error('Quote currency not found');
+
+          const rate = await modules.products.prices.rates.getRateRange(
             baseCurrency,
             quoteCurrency,
             order.confirmed || new Date(),
           );
+
+          if (!rate) throw new Error('No conversion rate found');
 
           const convertedAmount = denoteAmount(
             walletForOrderPayment.amount.toString(),
@@ -199,7 +216,7 @@ const Cryptopay: IPaymentAdapter = {
 
           // Add a Promille 🍻
           // const minAmount = parseFloat(convertedAmount.toString()) * min * 0.999;
-          const maxAmount = parseFloat(convertedAmount.toString()) * max * 1.001;
+          const maxAmount = parseFloat(convertedAmount.toString()) * rate.max * 1.001;
 
           if (maxAmount && maxAmount >= totalAmount) {
             // Enough sent

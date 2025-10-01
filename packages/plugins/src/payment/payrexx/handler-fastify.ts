@@ -7,14 +7,13 @@ const logger = createLogger('unchained:core-payment:payrexx:handler');
 export const payrexxHandler: RouteHandlerMethod = async (
   request: FastifyRequest & {
     unchainedContext: Context;
-  },
+  } & { body: Record<string, any> },
   reply,
 ) => {
   const resolvedContext = request.unchainedContext as Context;
   const { modules, services } = resolvedContext;
 
-  const { transaction } = request.body as Record<string, any>;
-
+  const { transaction } = request.body;
   if (!transaction) {
     logger.info(`unhandled event type`, {
       type: Object.keys(request.body).join(','),

@@ -104,6 +104,10 @@ const PostfinanceCheckout: IPaymentAdapter = {
       sign: async (transactionContext: any = {}) => {
         const { orderPayment, order } = context;
 
+        if (!order) throw new Error('No order in context, can only sign with order context');
+        if (!orderPayment)
+          throw new Error('No order payment in context, can only sign with order payment context');
+
         const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
           transactionContext;
         const completionMode = adapter.getCompletionMode();
@@ -146,7 +150,10 @@ const PostfinanceCheckout: IPaymentAdapter = {
         }
 
         const transactionId = await createTransaction(transaction);
-        let location = null;
+
+        if (!transactionId) throw new Error('Could not create transaction');
+
+        let location: string | null = null;
         if (integrationMode === IntegrationModes.PaymentPage) {
           location = await getPaymentPageUrl(transactionId);
         } else if (integrationMode === IntegrationModes.Lightbox) {
@@ -185,7 +192,11 @@ const PostfinanceCheckout: IPaymentAdapter = {
           });
         }
 
-        const isPaid = await orderIsPaid(context.order, transaction);
+        const { order, orderPayment } = context;
+        if (!orderPayment) throw new Error('No order payment in context, cannot charge payment');
+        if (!order) throw new Error('No order in context, can only sign with order context');
+
+        const isPaid = await orderIsPaid(order, transaction);
         if (!isPaid) {
           logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
           throw newError({
@@ -194,7 +205,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           });
         }
 
-        if (transaction.metaData.orderPaymentId !== context.orderPayment._id) {
+        if (transaction.metaData?.orderPaymentId !== orderPayment._id) {
           logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
           throw newError({
             code: `TRANSACTION_ALREADY_USED`,
@@ -216,10 +227,11 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
       cancel: async () => {
         const { orderPayment, order } = context;
-        const { transactionId } = orderPayment;
-        if (!transactionId) {
+        if (!order) throw new Error('No order in context, can only cancel with order context');
+        if (!orderPayment?.transactionId) {
           return false;
         }
+        const { transactionId } = orderPayment;
         const transaction = await getTransaction(transactionId);
         const refund = transaction.state === TransactionState.FULFILL;
         const pricing = OrderPricingSheet({
@@ -237,10 +249,10 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
       confirm: async () => {
         const { orderPayment } = context;
-        const { transactionId } = orderPayment;
-        if (!transactionId) {
+        if (!orderPayment?.transactionId) {
           return false;
         }
+        const { transactionId } = orderPayment;
         const transaction = await getTransaction(transactionId);
         if (transaction.state === TransactionState.AUTHORIZED) {
           return confirmDeferredTransaction(transactionId);

@@ -4,7 +4,10 @@ import { CryptopayTransaction, CryptopayTransactionsCollection } from './db/Cryp
 const configureCryptopayModule = ({ db }) => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
-  const getWalletAddress = async (address: string, contract?: string): Promise<CryptopayTransaction> => {
+  const getWalletAddress = async (
+    address: string,
+    contract?: string,
+  ): Promise<CryptopayTransaction | null> => {
     const addressId = [address, contract].filter(Boolean).join(':');
     return CryptoTransactions.findOne({ _id: addressId });
   };
@@ -35,7 +38,7 @@ const configureCryptopayModule = ({ db }) => {
   }): Promise<CryptopayTransaction> => {
     const addressId = [address, contract].filter(Boolean).join(':');
 
-    return CryptoTransactions.findOneAndUpdate(
+    return (await CryptoTransactions.findOneAndUpdate(
       {
         _id: addressId,
       },
@@ -54,7 +57,7 @@ const configureCryptopayModule = ({ db }) => {
         },
       },
       { upsert: true, returnDocument: 'after' },
-    );
+    )) as CryptopayTransaction;
   };
 
   const getNextDerivationNumber = async (currencyCode: string): Promise<number> => {
@@ -92,7 +95,7 @@ const configureCryptopayModule = ({ db }) => {
     decimals: number;
   }): Promise<CryptopayTransaction> => {
     const addressId = [address, contract].filter(Boolean).join(':');
-    return CryptoTransactions.findOneAndUpdate(
+    return (await CryptoTransactions.findOneAndUpdate(
       {
         _id: addressId,
       },
@@ -111,7 +114,7 @@ const configureCryptopayModule = ({ db }) => {
         },
       },
       { upsert: true, returnDocument: 'after' },
-    );
+    )) as CryptopayTransaction;
   };
 
   return {

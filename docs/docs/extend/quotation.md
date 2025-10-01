@@ -34,7 +34,7 @@ export const ManualOffering: IQuotationAdapter = {
 
   actions: (params: QuotationContext & Context): QuotationAdapterActions => {
     return {
-      configurationError: (): QuotationError => {
+      configurationError: () => {
         return QuotationError.NOT_IMPLEMENTED;
       },
 
