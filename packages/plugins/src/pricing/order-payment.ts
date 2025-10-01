@@ -26,7 +26,7 @@ const OrderPayment: IOrderPricingAdapter = {
 
       calculate: async () => {
         // just add tax + net price to order pricing
-        if (!orderPayment) return pricingAdapter.calculate();
+        if (!orderPayment) return null;
 
         const pricing = PaymentPricingSheet({
           calculation: orderPayment.calculation,

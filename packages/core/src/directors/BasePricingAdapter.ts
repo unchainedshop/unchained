@@ -26,7 +26,7 @@ export interface IPricingAdapterActions<
   Calculation extends PricingCalculation,
   Sheet extends IPricingSheet<Calculation>,
 > {
-  calculate: () => Promise<Calculation[]>;
+  calculate: () => Promise<Calculation[] | null>;
   resultSheet: () => Sheet;
 }
 
