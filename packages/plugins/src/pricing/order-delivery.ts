@@ -32,7 +32,7 @@ export const OrderDelivery: IOrderPricingAdapter = {
           currencyCode: order.currencyCode,
         });
         const tax = pricing.taxSum();
-        const shipping = pricing.gross();
+        const shipping = pricing.net();
 
         pricingAdapter
           .resultSheet()
