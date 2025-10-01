@@ -157,7 +157,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         onFinish: async () => {
           await client?.close();
         },
-        messages: normalizedMessages.slice(-20),
+        messages: normalizedMessages.slice(-10),
         providerOptions: {
           anthropic: {
             cacheControl: {

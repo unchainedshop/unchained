@@ -140,7 +140,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         temperature: 0,
         maxRetries: 3,
         ...restChatConfig,
-        messages: normalizedMessages.slice(-20),
+        messages: normalizedMessages.slice(-10),
         system: system + resourceContext,
         tools: cacheControlledTools,
         onFinish: async () => {
