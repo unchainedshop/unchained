@@ -54,6 +54,8 @@ export const OrderPriceRound: IOrderPricingAdapter & {
       calculate: async () => {
         const { currencyCode } = params.context;
 
+        if (!currencyCode) return pricingAdapter.calculate();
+
         const { amount: deliveryAmount } = params.calculationSheet.total({
           category: OrderPricingRowCategory.Delivery,
           useNetPrice: true,

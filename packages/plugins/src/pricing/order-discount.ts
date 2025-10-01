@@ -31,6 +31,8 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
       ...pricingAdapter,
 
       calculate: async () => {
+        if (!order) return pricingAdapter.calculate();
+
         const totalAmountOfItems = params.calculationSheet.total({
           category: OrderPricingRowCategory.Items,
           useNetPrice: false,
@@ -57,7 +59,7 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
 
         const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
           DeliveryPricingSheet({
-            calculation: orderDelivery.calculation || [],
+            calculation: orderDelivery?.calculation || [],
             currencyCode: order.currencyCode,
           }),
           totalAmountOfPaymentAndDelivery,
@@ -65,7 +67,7 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
 
         const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
           PaymentPricingSheet({
-            calculation: orderPayment.calculation || [],
+            calculation: orderPayment?.calculation || [],
             currencyCode: order.currencyCode,
           }),
           totalAmountOfPaymentAndDelivery,
@@ -86,8 +88,8 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
           // If it's a fixed rate we need to deduct the already deducted amount from the fixed rate
           // before we hand it over to the split calculation
           const fixedRate =
-            configuration.fixedRate > 0
-              ? Math.max(0, configuration.fixedRate - itemsDiscountAmount)
+            Number(configuration.fixedRate) > 0
+              ? Math.max(0, configuration.fixedRate! - itemsDiscountAmount)
               : undefined;
           const leftInFeesToSplit = calcUtils.calculateAmountToSplit(
             { ...configuration, fixedRate },

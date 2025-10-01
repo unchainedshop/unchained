@@ -26,7 +26,7 @@ export const OrderDelivery: IOrderPricingAdapter = {
 
       calculate: async () => {
         // just add tax + net price to order pricing
-        if (!orderDelivery) return null;
+        if (!orderDelivery) return pricingAdapter.calculate();
         const pricing = DeliveryPricingSheet({
           calculation: orderDelivery.calculation,
           currencyCode: order.currencyCode,
