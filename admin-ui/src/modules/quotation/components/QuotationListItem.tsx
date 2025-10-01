@@ -6,14 +6,7 @@ import Table from '../../common/components/Table';
 import formatUsername from '../../common/utils/formatUsername';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-
-const QUOTATION_STATUS = {
-  REQUESTED: 'orange',
-  PROCESSING: 'yellow',
-  PROPOSED: 'cyan',
-  REJECTED: 'amber',
-  FULLFILLED: 'emerald',
-};
+import { QUOTATION_STATUS } from '../../common/data/miscellaneous';
 
 const QuotationListItem = ({ quotation, showUser }) => {
   const { formatMessage } = useIntl();

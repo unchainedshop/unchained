@@ -10,6 +10,7 @@ import { renderLocalizationToolResponses } from './tool-renderers/localizationRe
 import renderImage from './tool-renderers/imageRenderer';
 import userRenderers from './tool-renderers/userRenderers';
 import filterRenderers from './tool-renderers/filterRenderers';
+import { QuotationRenderers } from './tool-renderers/quotationRenderers';
 
 type ToolRenderFn = (data: any) => ReactNode | null;
 
@@ -20,6 +21,7 @@ const ToolRenderer: Record<string, ToolRenderFn> = {
   localization_management: renderLocalizationToolResponses,
   assortment_management: assortmentRenderers,
   order_management: renderOrderToolResponses,
+  quotation_management: QuotationRenderers,
   provider_management: renderProvidersToolResponses,
   filter_manage: filterRenderers,
   filter_management: filterRenderers,

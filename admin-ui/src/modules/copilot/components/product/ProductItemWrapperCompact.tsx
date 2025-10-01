@@ -9,8 +9,7 @@ import CopyableId from '../shared/CopyableId';
 const ProductItemWrapperCompact = ({
   product,
   tab = null,
-  children,
-  ...rest
+  children = null,
 }) => {
   const { formatMessage } = useIntl();
   const { formatPrice } = useFormatPrice();

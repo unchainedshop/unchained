@@ -856,3 +856,11 @@ export const DELIVERY_STATUSES = {
   RETURNED: 'red',
   OPEN: 'yellow',
 };
+
+export const QUOTATION_STATUS = {
+  REQUESTED: 'orange',
+  PROCESSING: 'yellow',
+  PROPOSED: 'cyan',
+  REJECTED: 'red',
+  FULLFILLED: 'emerald',
+};

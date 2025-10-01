@@ -16,7 +16,8 @@ const copilotCount = (
     | 'LANGUAGE'
     | 'USER'
     | 'ORDER'
-    | 'FILTER',
+    | 'FILTER'
+    | 'QUOTATION',
 ) => {
   const Component = ({ count }: CopilotCountProps) => {
     const { formatMessage } = useIntl();

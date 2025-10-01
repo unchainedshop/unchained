@@ -4,6 +4,7 @@ import React from 'react';
 import Badge from '../../common/components/Badge';
 import { useIntl } from 'react-intl';
 import CopyableId from './shared/CopyableId';
+import ConfigurationDisplay from './shared/ConfigurationDisplay';
 
 const getNormalizedDetailPageLink = (type, provider) => {
   if (type === 'PAYMENT')
@@ -56,25 +57,7 @@ export const CopilotProviderListItem = ({ provider, type }) => {
           </div>
         </div>
       </div>
-      {provider.configuration?.length > 0 && (
-        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg shadow-inner border border-slate-200 dark:border-slate-700">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300">
-            {provider.configuration.map(({ key, value }) => (
-              <div
-                key={key}
-                className="flex justify-between items-center gap-2 truncate"
-              >
-                <span className="font-medium text-slate-700 dark:text-slate-200 truncate">
-                  {key}
-                </span>
-                <span className="truncate text-right text-slate-500 dark:text-slate-400">
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <ConfigurationDisplay configuration={provider.configuration} />
     </div>
   );
 };
