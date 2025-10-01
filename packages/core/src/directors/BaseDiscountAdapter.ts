@@ -27,7 +27,7 @@ export interface DiscountAdapterActions<DiscountConfiguration> {
   discountForPricingAdapterKey: (params: {
     pricingAdapterKey: string;
     calculationSheet: IPricingSheet<PricingCalculation>;
-  }) => DiscountConfiguration;
+  }) => DiscountConfiguration | null;
 
   reserve: (params: { code?: string }) => Promise<any>;
   release: () => Promise<void>;

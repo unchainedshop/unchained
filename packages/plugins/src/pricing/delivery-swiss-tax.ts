@@ -15,7 +15,9 @@ const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryPro
     return null;
   })?.value;
 
-  const taxCategory = SwissTaxCategories[taxCategoryFromProvider] || SwissTaxCategories.DEFAULT;
+  const taxCategory = taxCategoryFromProvider
+    ? SwissTaxCategories[taxCategoryFromProvider] || SwissTaxCategories.DEFAULT
+    : SwissTaxCategories.DEFAULT;
   return taxCategory.rate(order?.ordered);
 };
 
@@ -24,13 +26,13 @@ const isDeliveryAddressInSwitzerland = ({
   order,
   countryCode: forceCountryCode = null,
 }: {
-  orderDelivery?: OrderDelivery;
-  order?: Order;
+  orderDelivery: OrderDelivery;
+  order: Order;
   countryCode?: string | null;
 }) => {
   let countryCode = forceCountryCode?.toUpperCase().trim() || order.countryCode;
 
-  const address = orderDelivery?.context?.address || order?.billingAddress;
+  const address = orderDelivery.context?.address || order.billingAddress;
 
   if (address?.countryCode > '') {
     countryCode = address.countryCode?.toUpperCase().trim();
@@ -48,7 +50,13 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   orderIndex: 80,
 
   isActivatedFor: (context) => {
-    return isDeliveryAddressInSwitzerland(context);
+    if (!context.order) return false;
+    if (!context.orderDelivery) return false;
+    return isDeliveryAddressInSwitzerland({
+      order: context.order,
+      orderDelivery: context.orderDelivery,
+      countryCode: context.countryCode,
+    });
   },
 
   actions: (params) => {
