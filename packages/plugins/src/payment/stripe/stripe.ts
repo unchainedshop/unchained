@@ -65,7 +65,8 @@ export const createRegistrationIntent = async (
   options: Record<string, any> = {},
 ) => {
   const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
-  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
+  const description =
+    `${options?.description || descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
 
   const setupIntent = await stripe.setupIntents.create({
     description,
@@ -101,7 +102,8 @@ export const createOrderPaymentIntent = async (
   },
   options: Record<string, any> = {},
 ) => {
-  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
+  const description =
+    `${options?.description || descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
   const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
   const { currency, amount } = pricing.total({ useNetPrice: false });
 
