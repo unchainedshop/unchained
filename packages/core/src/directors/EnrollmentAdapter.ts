@@ -1,6 +1,7 @@
 import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import {
   Enrollment,
+  EnrollmentOrderPositionTemplate,
   EnrollmentPeriod,
   EnrollmentPlan,
   addToDate,
@@ -14,7 +15,10 @@ export interface EnrollmentContext {
 }
 
 export interface EnrollmentAdapterActions {
-  configurationForOrder: (params: { period: EnrollmentPeriod; products: Product[] }) => Promise<any>;
+  configurationForOrder: (params: { period: EnrollmentPeriod }) => Promise<{
+    orderContext?: Record<string, any>;
+    orderPositionTemplates: EnrollmentOrderPositionTemplate[];
+  } | null>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
   nextPeriod: () => Promise<EnrollmentPeriod | null>;

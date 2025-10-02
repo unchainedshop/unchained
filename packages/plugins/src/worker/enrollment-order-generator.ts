@@ -1,73 +1,7 @@
-import { Enrollment } from '@unchainedshop/core-enrollments';
-import { OrderPosition } from '@unchainedshop/core-orders';
 import { enrollmentsSettings, EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import {
-  EnrollmentDirector,
-  UnchainedCore,
-  WorkerDirector,
-  WorkerAdapter,
-  IWorkerAdapter,
-} from '@unchainedshop/core';
+import { EnrollmentDirector, WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
 
-const generateOrder = async (
-  enrollment: Enrollment,
-  params: {
-    orderPositions: OrderPosition[];
-  } & Record<string, any>,
-  unchainedAPI: Pick<UnchainedCore, 'modules' | 'services'>,
-) => {
-  if (!enrollment.payment || !enrollment.delivery) return null;
-
-  const { modules, services } = unchainedAPI;
-  const { orderPositions, ...configuration } = params;
-  let order = await modules.orders.create({
-    userId: enrollment.userId,
-    currencyCode: enrollment.currencyCode,
-    countryCode: enrollment.countryCode,
-    contact: enrollment.contact,
-    billingAddress: enrollment.billingAddress,
-    originEnrollmentId: enrollment._id,
-    ...configuration,
-  });
-  const orderId = order._id;
-
-  if (orderPositions) {
-    await Promise.all(
-      orderPositions.map((orderPosition) => modules.orders.positions.addProductItem(orderPosition)),
-    );
-  } else {
-    const product = await modules.products.findProduct({
-      productId: enrollment.productId,
-    });
-    await modules.orders.positions.addProductItem({
-      quantity: 1,
-      productId: product._id,
-      originalProductId: product._id,
-      orderId: order._id,
-    });
-  }
-
-  const { paymentProviderId, context: paymentContext } = enrollment.payment;
-  if (paymentProviderId) {
-    await modules.orders.setPaymentProvider(orderId, paymentProviderId);
-  }
-
-  const { deliveryProviderId, context: deliveryContext } = enrollment.delivery;
-  if (deliveryProviderId) {
-    await modules.orders.setDeliveryProvider(orderId, deliveryProviderId);
-  }
-
-  await services.orders.updateCalculation(orderId);
-
-  order = await services.orders.checkoutOrder(order._id, {
-    paymentContext,
-    deliveryContext,
-  });
-
-  return order;
-};
-
-const GenerateOrderWorker: IWorkerAdapter<any, any> = {
+const GenerateOrderWorker: IWorkerAdapter<never, any> = {
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.generate-enrollment-orders',
@@ -76,7 +10,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
   type: 'ENROLLMENT_ORDER_GENERATOR',
 
   doWork: async (input, unchainedAPI) => {
-    const { modules } = unchainedAPI;
+    const { modules, services } = unchainedAPI;
 
     const enrollments = await modules.enrollments.findEnrollments({
       status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED],
@@ -102,11 +36,13 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
                 return null;
               }
               const configuration = await director.configurationForOrder({
-                ...input,
                 period,
               });
               if (configuration) {
-                const order = await generateOrder(enrollment, configuration, unchainedAPI);
+                const order = await services.enrollments.generateOrderFromEnrollment(
+                  enrollment,
+                  configuration,
+                );
                 if (order) {
                   await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
                     ...period,

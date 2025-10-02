@@ -21,7 +21,6 @@ export const configureExportToken = (unchainedAPI: UnchainedCore) => {
     if (work.type === 'EXPORT_TOKEN' && work.success) {
       await unchainedAPI.modules.warehousing.updateTokenOwnership({
         tokenId: work.input.token._id,
-        userId: null,
         walletAddress: work.input.recipientWalletAddress,
       });
     }

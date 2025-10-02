@@ -34,7 +34,7 @@ const UserTokens = ({ _id: userId }) => {
             _id,
             walletAddress,
             chainId,
-            chainTokenId,
+            tokenSerialNumber,
             product,
 
             status,
@@ -72,9 +72,10 @@ const UserTokens = ({ _id: userId }) => {
                     {formatMessage(
                       {
                         id: 'token-id',
-                        defaultMessage: 'Token ID {chainTokenId}',
+                        defaultMessage:
+                          'Token Serial Number {tokenSerialNumber}',
                       },
-                      { chainTokenId },
+                      { tokenSerialNumber },
                     )}
                   </p>
                   {walletAddress ? (
@@ -101,9 +102,10 @@ const UserTokens = ({ _id: userId }) => {
                     {formatMessage(
                       {
                         id: 'token-id',
-                        defaultMessage: 'Token ID {chainTokenId}',
+                        defaultMessage:
+                          'Token Serial Number {tokenSerialNumber}',
                       },
-                      { chainTokenId },
+                      { tokenSerialNumber },
                     )}
                   </p>
                   <p className="mt-2 text-base font-medium text-slate-900">

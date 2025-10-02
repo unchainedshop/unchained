@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:core-payment:payrexx:handler');
+const logger = createLogger('unchained:payrexx:handler');
 
 export const payrexxHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context;

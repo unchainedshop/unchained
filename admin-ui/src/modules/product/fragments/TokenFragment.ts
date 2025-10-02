@@ -8,7 +8,7 @@ const TokenFragment = gql`
     quantity
     contractAddress
     chainId
-    chainTokenId
+    tokenSerialNumber
     invalidatedDate
     expiryDate
     ercMetadata

@@ -16,6 +16,8 @@ export const MessageWorker: IWorkerAdapter<
     try {
       const templateResolver = MessagingDirector.getTemplate(template);
 
+      if (!templateResolver) throw new Error(`No template resolver found for template ${template}`);
+
       const workConfigurations = await templateResolver(
         {
           template,
@@ -31,13 +33,13 @@ export const MessageWorker: IWorkerAdapter<
               ...workConfiguration,
               originalWorkId: workId,
             });
-            delete work.input;
+            delete (work as any).input; // Remove input from returned work for privacy
             return work;
           }),
         );
         return { success: true, result: { forked } };
       }
-      return { success: true, result: { info: 'Skipped Message' } };
+      return { success: true, result: { forked: [] } };
     } catch (err) {
       return {
         success: false,

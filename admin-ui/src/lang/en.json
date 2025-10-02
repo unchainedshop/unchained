@@ -349,7 +349,7 @@
     "defaultMessage": "Chain ID {chainId}"
   },
   "chain-token-id": {
-    "defaultMessage": "Chain Token ID"
+    "defaultMessage": "Token Serial Number"
   },
   "change": {
     "defaultMessage": "Change"
@@ -2537,10 +2537,10 @@
     "defaultMessage": "Token"
   },
   "token-id": {
-    "defaultMessage": "Token ID {chainTokenId}"
+    "defaultMessage": "Token Serial Number {tokenSerialNumber}"
   },
   "token-id-label": {
-    "defaultMessage": "Token ID"
+    "defaultMessage": "Token Serial Number"
   },
   "token-supply": {
     "defaultMessage": "Supply"

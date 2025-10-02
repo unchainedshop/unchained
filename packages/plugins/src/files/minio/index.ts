@@ -14,7 +14,7 @@ import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
 import { expiryOffsetInMs } from '@unchainedshop/file-upload/lib/put-expiration.js';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:plugins:minio');
+const logger = createLogger('unchained:minio');
 
 const {
   MINIO_ACCESS_KEY,

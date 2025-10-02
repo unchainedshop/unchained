@@ -34,6 +34,7 @@ export const configureOrderModuleMutations = ({
       countryCode,
       billingAddress,
       contact,
+      context,
     }: {
       userId: string;
       billingAddress?: Address;
@@ -42,6 +43,7 @@ export const configureOrderModuleMutations = ({
       currencyCode: string;
       orderNumber?: string;
       originEnrollmentId?: string;
+      context?: Record<string, any>;
     }) => {
       const { insertedId: orderId } = await Orders.insertOne({
         _id: generateDbObjectId(),
@@ -55,9 +57,10 @@ export const configureOrderModuleMutations = ({
         calculation: [],
         log: [],
         orderNumber,
+        context: context || {},
       });
 
-      const order = await Orders.findOne(generateDbFilterById(orderId), {});
+      const order = (await Orders.findOne(generateDbFilterById(orderId), {})) as Order;
 
       await emit('ORDER_CREATE', { order });
       return order;

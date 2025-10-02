@@ -22,8 +22,8 @@ export interface WarehousingAdapterActions {
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
   tokenize: () => Promise<Omit<TokenSurrogate, 'userId' | 'productId' | 'orderPositionId'>[]>;
-  tokenMetadata: (chainTokenId: string, referenceDate: Date) => Promise<any>;
-  isInvalidateable: (chainTokenId: string, referenceDate: Date) => Promise<boolean>;
+  tokenMetadata: (tokenSerialNumber: string, referenceDate: Date) => Promise<any>;
+  isInvalidateable: (tokenSerialNumber: string, referenceDate: Date) => Promise<boolean>;
 }
 
 export interface WarehousingContext {

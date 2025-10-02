@@ -10,7 +10,7 @@ const {
   DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
 } = process.env;
 
-const logger = createLogger('unchained:core-payment:datatrans:handler');
+const logger = createLogger('unchained:datatrans:handler');
 
 export const datatransHandler: RouteHandlerMethod = async (
   req: FastifyRequest & {

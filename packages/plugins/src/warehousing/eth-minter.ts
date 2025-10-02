@@ -11,8 +11,11 @@ import { ProductContractStandard, ProductTypes } from '@unchainedshop/core-produ
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '@unchainedshop/core-files';
+import { createLogger } from '@unchainedshop/logger';
 
 const { MINTER_TOKEN_OFFSET = '0', ROOT_URL = 'http://localhost:4010' } = process.env;
+
+const logger = createLogger('unchained:eth-minter');
 
 const ETHMinter: IWarehousingAdapter = {
   ...WarehousingAdapter,
@@ -40,7 +43,7 @@ const ETHMinter: IWarehousingAdapter = {
           ? { contractAddress: contractStandard }
           : {
               contractAddress: contractStandard,
-              chainTokenId: tokenId,
+              tokenSerialNumber: tokenId,
             },
       );
       const tokensCreated = existingTokens.reduce((acc, curToken) => {
@@ -57,7 +60,13 @@ const ETHMinter: IWarehousingAdapter = {
       },
 
       configurationError() {
-        return null as any as WarehousingError;
+        if (contractStandard === 'ERC1155' && !tokenId) {
+          logger.error(
+            `Token ID is required for ERC1155 contract standard (productId: ${product!._id})`,
+          );
+          return WarehousingError.INCOMPLETE_CONFIGURATION;
+        }
+        return null;
       },
 
       stock: async () => {
@@ -74,11 +83,17 @@ const ETHMinter: IWarehousingAdapter = {
         const meta = { contractStandard };
         const tokensCreated = await getTokensCreated();
 
+        if (!orderPosition) {
+          throw new Error('Order position not found in context');
+        }
+
         if (contractStandard === 'ERC721') {
-          // ERC721 is non-fungible, thus every chainTokenId unique!
-          const items = new Array(orderPosition?.quantity).fill(null).map((_, i) => ({
+          // ERC721 is non-fungible, thus every tokenSerialNumber unique!
+          const items = new Array(orderPosition.quantity).fill(null).map((_, i) => ({
             _id: generateDbObjectId(),
-            chainTokenId: Number(parseInt(MINTER_TOKEN_OFFSET, 10) + tokensCreated + (i + 1)).toString(),
+            tokenSerialNumber: Number(
+              parseInt(MINTER_TOKEN_OFFSET, 10) + tokensCreated + (i + 1),
+            ).toString(),
             contractAddress,
             quantity: 1,
             chainId,
@@ -90,19 +105,23 @@ const ETHMinter: IWarehousingAdapter = {
         return [
           {
             _id: generateDbObjectId(),
-            chainTokenId: tokenId,
+            tokenSerialNumber: tokenId!,
             contractAddress,
-            quantity: orderPosition?.quantity,
+            quantity: orderPosition.quantity,
             chainId,
             meta,
           },
         ];
       },
 
-      tokenMetadata: async (chainTokenId) => {
+      tokenMetadata: async (tokenSerialNumber) => {
         // Metadata standards supported
         // https://eips.ethereum.org/EIPS/eip-1155 (backward compatible with 721)
         // https://eips.ethereum.org/EIPS/eip-721
+
+        if (!product) {
+          throw new Error('Product not found in context');
+        }
 
         const allLanguages = await modules.languages.findLanguages({
           includeInactive: false,
@@ -114,15 +133,15 @@ const ETHMinter: IWarehousingAdapter = {
         });
         const file = firstMedia && (await modules.files.findFile({ fileId: firstMedia.mediaId }));
 
-        const fileUploadAdapter = getFileAdapter();
-        const signedUrl = await fileUploadAdapter.createDownloadURL(file);
+        const fileAdapter = file && getFileAdapter();
+        const signedUrl = await fileAdapter?.createDownloadURL(file!);
         const url = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
         const text = await modules.products.texts.findLocalizedText({
           productId: product._id,
           locale: locale || systemLocale,
         });
 
-        const name = `${text.title} #${chainTokenId}`;
+        const name = `${text.title} #${tokenSerialNumber}`;
 
         const isDefaultLanguageActive = locale ? locale.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive

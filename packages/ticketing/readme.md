@@ -105,7 +105,7 @@ export default async (token, unchainedAPI: UnchainedCore) => {
   // upsert object
 
   const asURL = async () =>
-    createJwtNewObjects(issuerId, product._id, token.chainTokenId);
+    createJwtNewObjects(issuerId, product._id, token.tokenSerialNumber);
 
   return { asURL };
 };

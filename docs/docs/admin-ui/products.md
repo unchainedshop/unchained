@@ -213,7 +213,7 @@ To provide additional information that defines a Tokenized product, which is a d
 - **Contract Standard**: This refers to the token standard that was used to create the digital asset.
 - **Contract Address**: This is the address of the token on the blockchain where it can be found.
 - **Supply**: This indicates the total number of tokens in circulation.
-- **Token ID**: This is the unique identifier of the token.
+- **Token Serial Number**: This is the unique identifier of the token.
 
 **Note that some fields might be optional depending on the contract standard used for the token implementation.**
 

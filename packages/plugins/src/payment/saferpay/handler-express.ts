@@ -3,7 +3,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { buildSignature } from './buildSignature.js';
 import { SaferpayTransactionsModule } from './module.js';
 
-const logger = createLogger('unchained:core-payment:saferpay:handler');
+const logger = createLogger('unchained:saferpay:handler');
 
 export const saferpayHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context & {

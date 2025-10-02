@@ -5,8 +5,8 @@ const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
 const SmsWorkerPlugin: IWorkerAdapter<
   {
     from?: string;
-    to?: string;
-    text?: string;
+    to: string;
+    text: string;
     [key: string]: any; // Allow additional parameters
   },
   any
@@ -21,6 +21,13 @@ const SmsWorkerPlugin: IWorkerAdapter<
 
   doWork: async ({ from, to, text, ...params }) => {
     try {
+      if (!TWILIO_SMS_FROM && !from)
+        throw new Error(
+          'Missing Twilio "from" number. Set TWILIO_SMS_FROM env var or provide "from" in input',
+        );
+
+      if (!to) throw new Error('Missing "to" in input');
+
       const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
       const response = await fetch(url, {
         method: 'POST',
@@ -30,7 +37,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
         },
         body: new URLSearchParams({
           Body: text || '',
-          From: from || TWILIO_SMS_FROM,
+          From: from || TWILIO_SMS_FROM!,
           To: to,
           ...params, // Include any additional parameters passed
         }),

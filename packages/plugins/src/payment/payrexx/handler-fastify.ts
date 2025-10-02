@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const logger = createLogger('unchained:core-payment:payrexx:handler');
+const logger = createLogger('unchained:payrexx:handler');
 
 export const payrexxHandler: RouteHandlerMethod = async (
   request: FastifyRequest & {

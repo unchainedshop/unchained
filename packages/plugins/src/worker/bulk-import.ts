@@ -1,9 +1,9 @@
 import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:worker:bulk-import');
+const logger = createLogger('unchained:bulk-import');
 
-export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
+export const BulkImportWorker: IWorkerAdapter<any, Record<string, any>> = {
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.bulk-import',
@@ -52,13 +52,13 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
       if (error) {
         return {
           success: false,
-          result,
+          result: result!,
           error,
         };
       }
       return {
         success: true,
-        result,
+        result: result!,
       };
     } catch (err) {
       logger.error(err);

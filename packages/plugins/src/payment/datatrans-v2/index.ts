@@ -22,7 +22,7 @@ import {
 import { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { PaymentConfiguration } from '@unchainedshop/core-payment';
 
-const logger = createLogger('unchained:core-payment:datatrans');
+const logger = createLogger('unchained:datatrans');
 
 // v2
 const {

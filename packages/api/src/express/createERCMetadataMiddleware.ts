@@ -31,14 +31,14 @@ const ercMetadataMiddleware: RequestHandler = async (
     const fileName = pathname.split('/').pop();
 
     if (!fileName) throw new Error('Invalid ERC Metadata URI');
-    const chainTokenId = fileName.slice(0, fileName.lastIndexOf('.'));
+    const tokenSerialNumber = fileName.slice(0, fileName.lastIndexOf('.'));
 
     const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
 
     const product = await loaders.productLoader.load({ productId });
 
     const [token] = await modules.warehousing.findTokens({
-      chainTokenId,
+      tokenSerialNumber,
       contractAddress: product?.tokenization?.contractAddress,
     });
 

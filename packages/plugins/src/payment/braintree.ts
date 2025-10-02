@@ -7,7 +7,7 @@ import {
   OrderPricingSheet,
 } from '@unchainedshop/core';
 
-const logger = createLogger('unchained:core-payment:braintree');
+const logger = createLogger('unchained:braintree');
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 

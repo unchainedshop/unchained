@@ -8,7 +8,7 @@ const { BUDGETSMS_USERNAME, BUDGETSMS_USERID, BUDGETSMS_HANDLE } = process.env;
 const BudgetSMSWorker: IWorkerAdapter<
   {
     from?: string;
-    to?: string;
+    to: string;
     text?: string;
     test?: boolean; // If true, uses test endpoint (no credit deducted)
     customid?: string;

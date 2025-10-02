@@ -179,7 +179,7 @@ export async function processOrderService(
         );
 
         // It's very important to do this in a series and not in Promise.all
-        // TODO: Actually, only createTokens should decide on the unique chainTokenId
+        // TODO: Actually, only createTokens should decide on the unique tokenSerialNumber
         // and the tokens should be created with a distributed Lock to not assign the same id multiple times!
         for (const { orderPosition, product } of tokenizedItems) {
           for (const virtualProvider of virtualProviders) {

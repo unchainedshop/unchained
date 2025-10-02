@@ -8,7 +8,7 @@ import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core-files';
 
-const logger = createLogger('unchained:plugins:gridfs');
+const logger = createLogger('unchained:gridfs');
 
 const gridfsHandler: RouteHandlerMethod = async (
   req: FastifyRequest & {

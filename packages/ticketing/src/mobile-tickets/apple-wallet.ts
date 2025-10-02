@@ -14,7 +14,7 @@ export const pushToApplePushNotificationService = async (deviceTokens) => {
 };
 
 export const buildPassBinary = async (
-  chainTokenId: string,
+  tokenSerialNumber: string,
   pass: {
     serialNumber: string;
     asBuffer: () => Promise<Buffer>;
@@ -23,7 +23,7 @@ export const buildPassBinary = async (
   const passBuffer = await pass.asBuffer();
   const rawFile = {
     _id: pass.serialNumber,
-    filename: `${chainTokenId}-${new Date().getTime()}.pkpass`,
+    filename: `${tokenSerialNumber}-${new Date().getTime()}.pkpass`,
     createReadStream: () => Readable.from(passBuffer),
     mimetype: 'application/vnd.apple.pkpass',
   };

@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const logger = createLogger('unchained:plugins:minio');
+const logger = createLogger('unchained:minio');
 
 const { MINIO_WEBHOOK_AUTH_TOKEN } = process.env;
 

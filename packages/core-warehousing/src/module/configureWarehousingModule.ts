@@ -136,25 +136,38 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return !!providerCount;
     },
 
-    updateTokenOwnership: async ({
-      tokenId,
-      userId,
-      walletAddress,
-    }: {
-      tokenId: string;
-      userId: string;
-      walletAddress: string;
-    }) => {
-      const token = await TokenSurrogates.findOneAndUpdate(
-        { _id: tokenId },
-        {
-          $set: {
-            userId,
-            walletAddress,
+    updateTokenOwnership: async (
+      params:
+        | {
+            tokenId: string;
+            userId: string;
+          }
+        | {
+            tokenId: string;
+            walletAddress: string;
           },
-        },
-        { returnDocument: 'after' },
-      );
+    ) => {
+      const modifier: mongodb.UpdateFilter<TokenSurrogate> =
+        'userId' in params
+          ? {
+              $set: {
+                userId: params.userId,
+              },
+              $unset: {
+                walletAddress: 1,
+              },
+            }
+          : {
+              $set: {
+                walletAddress: params.walletAddress,
+              },
+              $unset: {
+                userId: 1,
+              },
+            };
+      const token = await TokenSurrogates.findOneAndUpdate({ _id: params.tokenId }, modifier, {
+        returnDocument: 'after',
+      });
       if (!token) return null;
       await emit('TOKEN_OWNERSHIP_CHANGED', { token });
       return token;

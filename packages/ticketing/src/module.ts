@@ -37,7 +37,7 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     const pass = await createAppleWalletPass(token, unchainedAPI);
     const rawFile = Promise.resolve(
       // wrap in promise to make stream upload work
-      await buildPassBinary(token.chainTokenId, pass as any),
+      await buildPassBinary(token.tokenSerialNumber, pass as any),
     );
 
     const previousFile = await MediaObjects.findOne({

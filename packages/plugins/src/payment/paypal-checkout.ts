@@ -17,7 +17,7 @@ try {
   /* */
 }
 
-const logger = createLogger('unchained:core-payment:paypal-checkout');
+const logger = createLogger('unchained:paypal-checkout');
 
 const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = process.env;
 

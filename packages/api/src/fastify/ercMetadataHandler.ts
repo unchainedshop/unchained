@@ -27,7 +27,7 @@ const ercMetadataHandler: RouteHandlerMethod = async (
     const product = await loaders.productLoader.load({ productId });
 
     const [token] = await modules.warehousing.findTokens({
-      chainTokenId: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
+      tokenSerialNumber: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
       contractAddress: product?.tokenization?.contractAddress,
     });
 

@@ -21,11 +21,12 @@ const LicensedEnrollments: IEnrollmentAdapter = {
   },
 
   actions: (params) => {
+    const { enrollment } = params;
     return {
       ...EnrollmentAdapter.actions(params),
 
       isValidForActivation: async () => {
-        const periods = params.enrollment?.periods || [];
+        const periods = enrollment?.periods || [];
         return periods.findIndex(rangeMatcher()) !== -1;
       },
 
@@ -36,8 +37,20 @@ const LicensedEnrollments: IEnrollmentAdapter = {
       configurationForOrder: async (context) => {
         const { period } = context;
         const beginningOfPeriod = period.start.getTime() <= new Date().getTime();
+
+        if (!enrollment) throw new Error('Enrollment missing in context');
         if (beginningOfPeriod) {
-          return context;
+          return {
+            period,
+            orderContext: {},
+            orderPositionTemplates: [
+              {
+                quantity: 1,
+                productId: enrollment.productId,
+                originalProductId: enrollment.productId,
+              },
+            ],
+          };
         }
         return null;
       },

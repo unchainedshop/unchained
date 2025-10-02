@@ -10,7 +10,7 @@ import { getFileAdapter } from '@unchainedshop/core-files';
 
 const { ROOT_URL } = process.env;
 
-const logger = createLogger('unchained:plugins:gridfs');
+const logger = createLogger('unchained:gridfs');
 
 const gridfsHandler = async (
   req: express.Request & {

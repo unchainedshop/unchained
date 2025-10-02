@@ -3666,7 +3666,7 @@ export type IToken = {
   /** Get an access key that you can pass along the HTTP Header "x-token-accesskey" to access the token anonymously. */
   accessKey: Scalars['String']['output'];
   chainId?: Maybe<Scalars['String']['output']>;
-  chainTokenId?: Maybe<Scalars['String']['output']>;
+  tokenSerialNumber?: Maybe<Scalars['String']['output']>;
   contractAddress?: Maybe<Scalars['String']['output']>;
   ercMetadata?: Maybe<Scalars['JSON']['output']>;
   expiryDate?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -11888,7 +11888,7 @@ export type ITokenFragment = {
   quantity: number;
   contractAddress?: string | null;
   chainId?: string | null;
-  chainTokenId?: string | null;
+  tokenSerialNumber?: string | null;
   invalidatedDate?: any | null;
   expiryDate?: any | null;
   ercMetadata?: any | null;
@@ -12339,7 +12339,7 @@ export type IExportTokenMutation = {
     quantity: number;
     contractAddress?: string | null;
     chainId?: string | null;
-    chainTokenId?: string | null;
+    tokenSerialNumber?: string | null;
     invalidatedDate?: any | null;
     expiryDate?: any | null;
     ercMetadata?: any | null;
@@ -14995,7 +14995,7 @@ export type IUserTokensQuery = {
       quantity: number;
       contractAddress?: string | null;
       chainId?: string | null;
-      chainTokenId?: string | null;
+      tokenSerialNumber?: string | null;
       invalidatedDate?: any | null;
       expiryDate?: any | null;
       ercMetadata?: any | null;
@@ -15896,7 +15896,7 @@ export type IInvalidateTokenMutation = {
     quantity: number;
     contractAddress?: string | null;
     chainId?: string | null;
-    chainTokenId?: string | null;
+    tokenSerialNumber?: string | null;
     invalidatedDate?: any | null;
     expiryDate?: any | null;
     ercMetadata?: any | null;
@@ -15917,7 +15917,7 @@ export type ITokenQuery = {
     quantity: number;
     contractAddress?: string | null;
     chainId?: string | null;
-    chainTokenId?: string | null;
+    tokenSerialNumber?: string | null;
     invalidatedDate?: any | null;
     expiryDate?: any | null;
     ercMetadata?: any | null;
@@ -15985,7 +15985,7 @@ export type ITokensQuery = {
     quantity: number;
     contractAddress?: string | null;
     chainId?: string | null;
-    chainTokenId?: string | null;
+    tokenSerialNumber?: string | null;
     invalidatedDate?: any | null;
     expiryDate?: any | null;
     ercMetadata?: any | null;

@@ -3,7 +3,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { WebhookData } from './types.js';
 import { getTransaction, getTransactionCompletion } from './api.js';
 
-const logger = createLogger('unchained:core-payment:postfinance-checkout:handler');
+const logger = createLogger('unchained:postfinance-checkout:handler');
 
 export const postfinanceCheckoutHandler = async (req, res) => {
   const context = req.unchainedContext as Context;

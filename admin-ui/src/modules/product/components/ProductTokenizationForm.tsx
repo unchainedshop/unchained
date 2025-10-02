@@ -143,11 +143,11 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
               id="tokenId"
               label={formatMessage({
                 id: 'token-id-label',
-                defaultMessage: 'Token ID',
+                defaultMessage: 'Token Serial Number',
               })}
               placeholder={formatMessage({
                 id: 'token-id-label',
-                defaultMessage: 'Token ID',
+                defaultMessage: 'Token Serial Number',
               })}
               className="block w-full max-w-full rounded-md border-slate-300 dark:border-slate-800 text-sm  focus:ring-slate-800 sm:text-sm"
             />

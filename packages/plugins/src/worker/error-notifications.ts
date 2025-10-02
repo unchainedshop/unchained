@@ -1,4 +1,4 @@
-import { WorkStatus } from '@unchainedshop/core-worker';
+import { Work, WorkStatus } from '@unchainedshop/core-worker';
 import { IWorkerAdapter, WorkerDirector, WorkerAdapter } from '@unchainedshop/core';
 import later from '@breejs/later';
 
@@ -22,7 +22,7 @@ export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
   type: 'ERROR_NOTIFICATIONS',
 
   doWork: async (args, context, workId) => {
-    const work = await context.modules.worker.findWork({ workId });
+    const work = (await context.modules.worker.findWork({ workId })) as Work;
     const secondsPassed = args?.secondsPassed || 60;
     const to = new Date();
     const from = new Date(new Date(work.scheduled).getTime() - secondsPassed * 1000);

@@ -75,12 +75,12 @@ const TokenDetail = ({ token }) => {
           <span className="block font-medium text-slate-700 dark:text-slate-300">
             {formatMessage({
               id: 'chain-token-id',
-              defaultMessage: 'Chain Token ID',
+              defaultMessage: 'Token Serial Number',
             })}
             :
           </span>
           <p className="text-slate-900 dark:text-slate-100">
-            {token?.chainTokenId}
+            {token?.tokenSerialNumber}
           </p>
         </div>
 

@@ -45,6 +45,7 @@ import { simulateProductDispatchingService } from './simulateProductDispatching.
 import { simulateProductInventoryService } from './simulateProductInventory.js';
 import { findOrInitCartService } from './findOrInitCart.js';
 import { addMessageService } from './addMessage.js';
+import { generateOrderFromEnrollmentService } from './generateOrderFromEnrollment.js';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -134,6 +135,9 @@ export default function initServices(modules: Modules, customServices: CustomSer
     enrollments: {
       createEnrollmentFromCheckout: createEnrollmentFromCheckoutService as Bound<
         typeof createEnrollmentFromCheckoutService
+      >,
+      generateOrderFromEnrollment: generateOrderFromEnrollmentService as Bound<
+        typeof generateOrderFromEnrollmentService
       >,
       processEnrollment: processOrderService as Bound<typeof processOrderService>,
       initializeEnrollment: initializeEnrollmentService as Bound<typeof initializeEnrollmentService>,

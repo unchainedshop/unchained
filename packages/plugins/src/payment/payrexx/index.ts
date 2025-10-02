@@ -9,7 +9,7 @@ import {
   PaymentError,
 } from '@unchainedshop/core';
 
-const logger = createLogger('unchained:core-payment:payrexx');
+const logger = createLogger('unchained:payrexx');
 
 const Payrexx: IPaymentAdapter = {
   ...PaymentAdapter,
@@ -26,11 +26,6 @@ const Payrexx: IPaymentAdapter = {
     const { modules } = context;
 
     const instance = config.find((c) => c.key === 'instance')?.value;
-
-    if (!instance) throw new Error('No Payrexx instance configured');
-    if (!process.env.PAYREXX_SECRET) throw new Error('No Payrexx secret configured in env');
-
-    const api = createPayrexxAPI(instance, process.env.PAYREXX_SECRET);
 
     const adapterActions = {
       ...PaymentAdapter.actions(config, context),
@@ -58,6 +53,8 @@ const Payrexx: IPaymentAdapter = {
         const { orderPayment, userId, order } = context;
 
         if (!order) throw new Error('No order in context, can only sign with order context');
+
+        const api = createPayrexxAPI(instance!, process.env.PAYREXX_SECRET!);
 
         if (orderPayment) {
           // Order Checkout signing (One-time payment)
@@ -120,6 +117,8 @@ const Payrexx: IPaymentAdapter = {
         }
         const { transactionId } = orderPayment;
 
+        const api = createPayrexxAPI(instance!, process.env.PAYREXX_SECRET!);
+
         const gatewayObject = await api.getGateway(transactionId);
 
         if (!gatewayObject) {
@@ -151,6 +150,9 @@ const Payrexx: IPaymentAdapter = {
           return false;
         }
         const { transactionId } = orderPayment;
+
+        const api = createPayrexxAPI(instance!, process.env.PAYREXX_SECRET!);
+
         const gatewayObject = await api.getGateway(transactionId);
 
         if (!gatewayObject) {
@@ -180,6 +182,8 @@ const Payrexx: IPaymentAdapter = {
 
         if (!order) throw new Error('No order in context, can only charge with order context');
         if (!orderPayment) throw new Error('Order payment not found');
+
+        const api = createPayrexxAPI(instance!, process.env.PAYREXX_SECRET!);
 
         const gatewayObject = await api.getGateway(gatewayId);
 

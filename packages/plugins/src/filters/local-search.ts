@@ -5,7 +5,7 @@ import { FilterDirector, FilterAdapter, IFilterAdapter } from '@unchainedshop/co
 import { createLogger } from '@unchainedshop/logger';
 import { isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 
-const logger = createLogger('unchained:core-filters:local-search');
+const logger = createLogger('unchained:local-search');
 
 const LocalSearch: IFilterAdapter = {
   ...FilterAdapter,

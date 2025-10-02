@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import stripeClient from './stripe.js';
 
-const logger = createLogger('unchained:core-payment:stripe:handler');
+const logger = createLogger('unchained:stripe:handler');
 
 export const WebhookEventTypes = {
   PAYMENT_INTENT_SUCCEEDED: 'payment_intent.succeeded',

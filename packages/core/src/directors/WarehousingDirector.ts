@@ -28,13 +28,13 @@ export interface WarehousingInterface {
 export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   tokenMetadata: (
     virtualProviders: WarehousingProvider[],
-    warehousingContext: WarehousingContext & { token: { chainTokenId: string } },
+    warehousingContext: WarehousingContext & { token: { tokenSerialNumber: string } },
     unchainedAPI,
   ) => Promise<any>;
 
   isInvalidateable: (
     virtualProviders: WarehousingProvider[],
-    warehousingContext: WarehousingContext & { token: { chainTokenId: string } },
+    warehousingContext: WarehousingContext & { token: { tokenSerialNumber: string } },
     unchainedAPI,
   ) => Promise<any>;
 
@@ -48,8 +48,8 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
     tokenize: () => Promise<TokenSurrogate[]>;
-    tokenMetadata: (chainTokenId: string) => Promise<any>;
-    isInvalidateable: (chainTokenId: string) => Promise<boolean>;
+    tokenMetadata: (tokenSerialNumber: string) => Promise<any>;
+    isInvalidateable: (tokenSerialNumber: string) => Promise<boolean>;
   }>;
 };
 
@@ -155,10 +155,10 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      tokenMetadata: async (chainTokenId) => {
+      tokenMetadata: async (tokenSerialNumber) => {
         try {
           const referenceDate = getReferenceDate(context);
-          const tokenMetadata = await adapter.tokenMetadata(chainTokenId, referenceDate);
+          const tokenMetadata = await adapter.tokenMetadata(tokenSerialNumber, referenceDate);
           return tokenMetadata;
         } catch (error) {
           logger.error(error);
@@ -166,10 +166,10 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      isInvalidateable: async (chainTokenId) => {
+      isInvalidateable: async (tokenSerialNumber) => {
         try {
           const referenceDate = getReferenceDate(context);
-          const isInvalidateable = await adapter.isInvalidateable(chainTokenId, referenceDate);
+          const isInvalidateable = await adapter.isInvalidateable(tokenSerialNumber, referenceDate);
           return isInvalidateable;
         } catch (error) {
           logger.error(error);
@@ -208,7 +208,7 @@ export const WarehousingDirector: IWarehousingDirector = {
       );
       const isActive = await currentDirector.isActive();
       if (isActive) {
-        return currentDirector.tokenMetadata(warehousingContext.token.chainTokenId);
+        return currentDirector.tokenMetadata(warehousingContext.token.tokenSerialNumber);
       }
       return null;
     }, Promise.resolve(null));
@@ -225,7 +225,7 @@ export const WarehousingDirector: IWarehousingDirector = {
       );
       const isActive = await currentDirector.isActive();
       if (isActive) {
-        return currentDirector.isInvalidateable(warehousingContext.token.chainTokenId);
+        return currentDirector.isInvalidateable(warehousingContext.token.tokenSerialNumber);
       }
       return null;
     }, Promise.resolve(null));

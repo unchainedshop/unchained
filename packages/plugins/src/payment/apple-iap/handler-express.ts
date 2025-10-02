@@ -3,7 +3,7 @@ import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import { fixPeriods } from './fix-periods.js';
 
-const logger = createLogger('unchained:core-payment:apple-iap:handler');
+const logger = createLogger('unchained:apple-iap:handler');
 
 const { APPLE_IAP_SHARED_SECRET } = process.env;
 

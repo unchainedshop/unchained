@@ -12,7 +12,7 @@ import deriveBtcAddress from './derive-btc-address.js';
 import deriveEthAddress from './derive-eth-address.js';
 import denoteAmount from './denote-amount.js';
 
-const logger = createLogger('unchained:core-payment:cryptopay');
+const logger = createLogger('unchained:cryptopay');
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_BTC_XPUB, CRYPTOPAY_ETH_XPUB } = process.env;
 

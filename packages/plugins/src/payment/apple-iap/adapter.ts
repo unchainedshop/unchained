@@ -3,7 +3,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { AppleTransactionsModule } from './module.js';
 import { verifyReceipt } from './verify-receipt.js';
 
-const logger = createLogger('unchained:core-payment:apple-iap');
+const logger = createLogger('unchained:apple-iap');
 
 const { APPLE_IAP_SHARED_SECRET } = process.env;
 
@@ -21,8 +21,6 @@ const AppleIAP: IPaymentAdapter = {
 
   actions: (params, context) => {
     const { order, modules } = context as typeof context & { modules: AppleTransactionsModule };
-
-    if (!order) throw new Error('Order not found');
 
     const adapterActions = {
       ...PaymentAdapter.actions(params, context),
@@ -83,6 +81,8 @@ const AppleIAP: IPaymentAdapter = {
         if (!transactionIdentifier) {
           throw new Error('You have to set the transaction id on the order payment');
         }
+
+        if (!order) throw new Error('Order not found');
 
         const receiptResponse =
           receiptData &&

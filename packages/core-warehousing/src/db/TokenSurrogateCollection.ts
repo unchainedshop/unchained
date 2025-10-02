@@ -7,9 +7,9 @@ export interface TokenSurrogate {
   invalidatedDate?: Date;
   expiryDate?: Date;
   quantity: number;
-  contractAddress: string;
-  chainId: string;
-  chainTokenId: string;
+  contractAddress?: string;
+  chainId?: string;
+  tokenSerialNumber: string;
   productId: string;
   orderPositionId: string;
   meta: any;
@@ -28,7 +28,7 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
     await buildDbIndexes<TokenSurrogate>(TokenSurrogates, [
       {
         index: {
-          chainTokenId: 'text',
+          tokenSerialNumber: 'text',
           userId: 'text',
           productId: 'text',
           _id: 'text',
@@ -38,7 +38,7 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
         options: {
           weights: {
             _id: 9,
-            chainTokenId: 8,
+            tokenSerialNumber: 8,
             userId: 3,
             productId: 6,
             contractAddress: 5,
@@ -54,7 +54,7 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
   await buildDbIndexes<TokenSurrogate>(TokenSurrogates, [
     {
       index: {
-        chainTokenId: 1,
+        tokenSerialNumber: 1,
       },
     },
     {

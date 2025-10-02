@@ -21,14 +21,23 @@ export enum EnrollmentStatus {
   TERMINATED = 'TERMINATED',
 }
 
+export interface EnrollmentOrderPositionTemplate {
+  context?: any;
+  configuration?: { key: string; value: string }[];
+  originalProductId: string;
+  productId: string;
+  quantity: number;
+  quotationId?: string;
+}
+
 export type Enrollment = {
   _id: string;
   billingAddress: Address;
   configuration?: { key: string; value: string }[];
   contact: Contact;
   context?: any;
-  countryCode?: string;
-  currencyCode?: string;
+  countryCode: string;
+  currencyCode: string;
   delivery: {
     deliveryProviderId?: string;
     context?: any;

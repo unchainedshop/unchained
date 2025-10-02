@@ -52,15 +52,15 @@ const TokenDetailPage = ({ tokenId }) => {
   if (loading) return <Loading />;
   return (
     <>
-      <BreadCrumbs currentPageTitle={token?.chainTokenId} />
+      <BreadCrumbs currentPageTitle={token?.tokenSerialNumber} />
       <div className="items-center flex min-w-full justify-between gap-3 flex-wrap">
         <PageHeader
           headerText={formatMessage(
             {
               id: 'token-id',
-              defaultMessage: 'Token ID {chainTokenId}',
+              defaultMessage: 'Token Serial Number {tokenSerialNumber}',
             },
-            { chainTokenId: token?.chainTokenId },
+            { tokenSerialNumber: token?.tokenSerialNumber },
           )}
         >
           {token.status !== 'DECENTRALIZED' && hasRole('editToken') && (

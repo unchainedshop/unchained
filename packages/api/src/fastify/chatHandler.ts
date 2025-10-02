@@ -43,7 +43,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       }
 
       const resourceTransport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-        authProvider: null,
         requestInit: {
           headers: {
             Cookie: req.headers.cookie || '',
@@ -60,7 +59,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       await sdkClient.connect(resourceTransport as any);
 
       const transport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-        authProvider: null,
         requestInit: {
           headers: {
             Cookie: req.headers.cookie || '',

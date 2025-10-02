@@ -5,7 +5,7 @@ import { fixPeriods } from './fix-periods.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { AppleTransactionsModule } from './module.js';
 
-const logger = createLogger('unchained:core-payment:apple-iap:handler');
+const logger = createLogger('unchained:apple-iap:handler');
 
 const { APPLE_IAP_SHARED_SECRET } = process.env;
 

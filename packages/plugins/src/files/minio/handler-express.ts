@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:plugins:minio');
+const logger = createLogger('unchained:minio');
 
 const { MINIO_WEBHOOK_AUTH_TOKEN } = process.env;
 

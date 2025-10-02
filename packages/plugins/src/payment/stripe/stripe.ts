@@ -3,7 +3,7 @@ import { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
 import { Stripe as StripeType } from 'stripe';
 
-const logger = createLogger('unchained:plugins:payment:stripe');
+const logger = createLogger('unchained:stripe');
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 

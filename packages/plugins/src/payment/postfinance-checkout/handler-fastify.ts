@@ -4,7 +4,7 @@ import { WebhookData } from './types.js';
 import { getTransaction, getTransactionCompletion } from './api.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const logger = createLogger('unchained:core-payment:postfinance-checkout:handler');
+const logger = createLogger('unchained:postfinance-checkout:handler');
 
 export const postfinanceCheckoutHandler: RouteHandlerMethod = async (
   req: FastifyRequest & {

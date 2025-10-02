@@ -4,7 +4,7 @@ import { buildSignature } from './buildSignature.js';
 import { SaferpayTransactionsModule } from './module.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const logger = createLogger('unchained:core-payment:saferpay:handler');
+const logger = createLogger('unchained:saferpay:handler');
 
 export const saferpayHandler: RouteHandlerMethod = async (
   request: FastifyRequest & {
