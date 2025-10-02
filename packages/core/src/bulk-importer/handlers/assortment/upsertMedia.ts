@@ -2,13 +2,20 @@ import { z } from 'zod';
 import { Services } from '../../../services/index.js';
 import { Modules } from '../../../modules.js';
 import upsertAsset, { AssetSchema } from '../../upsertAsset.js';
-import { LocalizedContentSchema } from '../utils/event-schema.js';
 import { AssortmentMediaType } from '@unchainedshop/core-assortments';
 
 export const MediaSchema = z.object({
   _id: z.string().optional(),
   asset: AssetSchema,
-  content: LocalizedContentSchema.optional(),
+  content: z
+    .record(
+      z.string(), // locale
+      z.object({
+        title: z.string().optional(),
+        subtitle: z.string().optional(),
+      }),
+    )
+    .optional(),
   tags: z.array(z.string()).optional(),
   sortKey: z.number().optional(),
 });
@@ -25,7 +32,7 @@ const upsertMediaObject = async (media, unchainedAPI: { modules: Modules; servic
 };
 
 export default async (
-  { media, assortmentId },
+  { media, assortmentId }: { media: z.infer<typeof MediaSchema>[]; assortmentId: string },
   unchainedAPI: { modules: Modules; services: Services },
 ) => {
   const { modules } = unchainedAPI;

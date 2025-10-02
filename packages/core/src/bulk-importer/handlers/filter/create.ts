@@ -1,4 +1,32 @@
+import { z } from 'zod';
 import { Modules } from '../../../modules.js';
+
+export const LocalizedContentSchema = z.record(
+  z.string(), // locale
+  z.object({
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+  }),
+);
+
+export const FilterCreatePayloadSchema = z.object({
+  _id: z.string(),
+  specification: z.object({
+    type: z.string(),
+    key: z.string(),
+    isActive: z.boolean().optional(),
+    options: z
+      .array(
+        z.object({
+          value: z.string(),
+          content: LocalizedContentSchema.optional(),
+        }),
+      )
+      .optional(),
+    meta: z.record(z.unknown()).optional(),
+    content: LocalizedContentSchema,
+  }),
+});
 
 export default async function createFilter(
   payload: any,

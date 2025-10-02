@@ -1,7 +1,12 @@
+import { z } from 'zod';
 import { Modules } from '../../../modules.js';
 
+export const FilterRemovePayloadSchema = z.object({
+  _id: z.string(),
+});
+
 export default async function removeFilter(
-  payload: any,
+  payload: z.infer<typeof FilterRemovePayloadSchema>,
   { logger },
   unchainedAPI: { modules: Modules },
 ) {

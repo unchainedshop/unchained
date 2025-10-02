@@ -1,8 +1,25 @@
+import { z } from 'zod';
 import { ProductMedia } from '@unchainedshop/core-products';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import upsertAsset from '../../upsertAsset.js';
+import upsertAsset, { AssetSchema } from '../../upsertAsset.js';
+
+export const MediaSchema = z.object({
+  _id: z.string().optional(),
+  asset: AssetSchema,
+  content: z
+    .record(
+      z.string(), // locale
+      z.object({
+        title: z.string().optional(),
+        subtitle: z.string().optional(),
+      }),
+    )
+    .optional(),
+  tags: z.array(z.string()).optional(),
+  sortKey: z.number().optional(),
+});
 
 const upsertProductMedia = async (productMedia: ProductMedia, { modules }: { modules: Modules }) => {
   try {
@@ -16,14 +33,14 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules }: { mod
 };
 
 export default async function upsertMedia(
-  { media, productId },
+  { media, productId }: { media: z.infer<typeof MediaSchema>[]; productId: string },
   unchainedAPI: { modules: Modules; services: Services },
 ) {
   const { modules } = unchainedAPI;
 
   const productMediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
-      const tags = convertTagsToLowerCase(mediaData?.tags);
+      const tags = mediaData?.tags ? convertTagsToLowerCase(mediaData?.tags)! : [];
       const file = await upsertAsset(
         'product-media',
         { meta: { ...(asset.meta || {}), productId }, ...asset },

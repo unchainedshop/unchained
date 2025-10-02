@@ -1,5 +1,35 @@
+import { z } from 'zod';
 import { ProductVariation } from '@unchainedshop/core-products';
 import { Modules } from '../../../modules.js';
+
+const ProductVariationOptionSchema = z.object({
+  value: z.string(),
+  content: z
+    .record(
+      z.string(), // locale
+      z.object({
+        title: z.string().optional(),
+        subtitle: z.string().optional(),
+      }),
+    )
+    .optional(),
+});
+
+export const ProductVariationSchema = z.object({
+  _id: z.string().optional(),
+  key: z.string(),
+  type: z.string(),
+  options: z.array(ProductVariationOptionSchema),
+  content: z
+    .record(
+      z.string(), // locale
+      z.object({
+        title: z.string().optional(),
+        subtitle: z.string().optional(),
+      }),
+    )
+    .optional(),
+});
 
 const upsert = async (
   productVariation: Omit<ProductVariation, '_id' | 'created'> &
@@ -21,7 +51,7 @@ const upsert = async (
 };
 
 export default async function upsertVariations(
-  { variations, productId }: { variations: any[]; productId: string },
+  { variations, productId }: { variations: z.infer<typeof ProductVariationSchema>[]; productId: string },
   unchainedAPI: { modules: Modules },
 ) {
   const { modules } = unchainedAPI;

@@ -45,13 +45,13 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
   }
   const handlers = bulkOperationHandlers[entity];
   if (!handlers) {
-    throw new Error(`Entity ${entity} unknown`);
+    throw new Error(`Entity unknown`);
   }
 
   const entityOperation = handlers[operation] as BulkImportOperation<any>;
 
   if (!entityOperation || typeof entityOperation !== 'function') {
-    throw new Error(`Operation ${operation} for entity ${entity} invalid`);
+    throw new Error(`Operation unknown/invalid`);
   }
 
   return entityOperation;
@@ -93,9 +93,14 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
       validate: async (event) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
-        const fn = getOperation(entity, operation);
-        if (fn.payloadSchema) {
-          fn.payloadSchema.parse(event.payload);
+        logger.debug(`🩺 ${entity}.${operation}.${event.payload?._id || '*'}`);
+        try {
+          const fn = getOperation(entity, operation);
+          if (fn.payloadSchema) {
+            fn.payloadSchema.parse(event.payload);
+          }
+        } catch (e) {
+          throw new Error(`🤧 ${entity}.${operation}.${event.payload?._id || '*'} (${e.message})`);
         }
       },
       prepare: async (event, unchainedAPI: { modules: Modules; services: Services }) => {
@@ -106,16 +111,16 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
 
         const payloadId = event.payload?._id || 'global';
 
-        logger.debug(`${operation} ${entity} ${payloadId} [PREPARE]`);
+        logger.debug(`🏃‍♂️ ${entity}.${operation}.${payloadId}`);
 
         try {
           await handler(event.payload, { bulk, logger, ...options }, unchainedAPI);
           if (!processedOperations[entity]) processedOperations[entity] = {};
           if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
           processedOperations[entity][operation].push(payloadId);
-          logger.debug(`${operation} ${entity} ${payloadId} [SUCCESS]`);
+          logger.debug(`👍 ${entity}.${operation}.${payloadId}`);
         } catch (e) {
-          logger.debug(`${operation} ${entity} ${payloadId} [FAILED]`, e);
+          logger.debug(`💥 ${entity}.${operation}.${payloadId} (${e.message})`);
           preparationIssues.push({
             operation,
             entity,
@@ -124,12 +129,11 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
             errorMessage: e.message,
           });
         } finally {
-          logger.debug(`${operation} ${entity} ${payloadId} [DONE]`);
+          logger.debug(`🏁 ${entity}.${operation}.${payloadId}`);
         }
       },
       execute: async () => {
-        logger.debug(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
-
+        logger.debug(`🍔 ${Object.keys(bulkOperations).join(', ')}`);
         const processedBulkOperations = await Promise.allSettled(
           Object.values(bulkOperations).map(async (o: any) => o.execute()),
         );
@@ -138,13 +142,12 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
           processedBulkOperations,
         };
         if (preparationIssues?.length) {
-          logger.error(
+          logger.warn(
             `${preparationIssues.length} issues occured while preparing events, import finished with errors`,
           );
           const errors = { preparationIssues };
           return [operationResults, errors];
         }
-        logger.debug(`Import finished without errors`);
         return [operationResults, null];
       },
       invalidateCaches: async (unchainedAPI: { modules: Modules; services: Services }) => {
@@ -162,12 +165,8 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
       JSONStream.parse('events.*'),
       async function* (source: AsyncIterable<any>, { signal }) {
         for await (const event of source) {
-          try {
-            if (signal.aborted) break;
-            bulkImporter.validate(event);
-          } catch (e) {
-            throw new Error('Invalid event ' + (event._id || '') + ': ' + e.message);
-          }
+          if (signal.aborted) break;
+          await bulkImporter.validate(event);
         }
         yield true;
       },

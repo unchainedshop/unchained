@@ -360,7 +360,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       type,
       sequence,
       ...productData
-    }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted'> &
+    }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted' | 'slugs'> &
       Pick<Partial<Product>, '_id' | 'created' | 'updated' | 'deleted'>): Promise<Product> => {
       if (productData._id) {
         await deleteProductPermanently(
@@ -377,6 +377,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
         type: ProductTypes[type],
         status: InternalProductStatus.DRAFT,
         sequence: sequence ?? (await Products.countDocuments({})) + 10,
+        slugs: [],
         ...productData,
       });
 

@@ -1,20 +1,27 @@
+import { z } from 'zod';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
-import upsertVariations from './upsertVariations.js';
+import upsertVariations, { ProductVariationSchema } from './upsertVariations.js';
 import upsertMedia from './upsertMedia.js';
-import transformSpecificationToProductStructure from './transformSpecificationToProductStructure.js';
+import transformSpecificationToProductStructure, {
+  ProductSpecificationSchema,
+} from './transformSpecificationToProductStructure.js';
+import { MediaSchema } from '../assortment/upsertMedia.js';
+
+export const ProductCreatePayloadSchema = z.object({
+  _id: z.string(),
+  specification: ProductSpecificationSchema,
+  media: z.array(MediaSchema).optional(),
+  variations: z.array(ProductVariationSchema).optional(),
+});
 
 export default async function createProduct(
-  payload: any,
+  payload: z.infer<typeof ProductCreatePayloadSchema>,
   { logger, createShouldUpsertIfIDExists },
   unchainedAPI: { modules: Modules; services: Services },
 ) {
   const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
-
-  if (!specification) throw new Error(`Specification is required when creating new product ${_id}`);
-
-  if (!specification.content) throw new Error(`Content is required when creating new product ${_id}`);
 
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
@@ -33,7 +40,7 @@ export default async function createProduct(
   }
 
   if (!(await modules.products.productExists({ productId: _id }))) {
-    throw new Error(`Can't create product ${_id}, fields missing?`);
+    throw new Error(`Can't create product ${_id}`);
   }
 
   if (specification.content) {
@@ -68,3 +75,5 @@ export default async function createProduct(
     success: true,
   };
 }
+
+createProduct.payloadSchema = ProductCreatePayloadSchema;

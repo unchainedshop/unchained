@@ -6,7 +6,6 @@ import upsertMedia, { MediaSchema } from './upsertMedia.js';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
 import { z } from 'zod';
-import { LocalizedContentSchema } from '../utils/event-schema.js';
 
 export const AssortmentCreatePayloadSchema = z.object({
   _id: z.string(),
@@ -17,7 +16,16 @@ export const AssortmentCreatePayloadSchema = z.object({
     sequence: z.number(),
     tags: z.array(z.string()).optional(),
     meta: z.record(z.unknown()).optional(),
-    content: LocalizedContentSchema,
+    content: z
+      .record(
+        z.string(), // locale
+        z.object({
+          title: z.string().optional(),
+          subtitle: z.string().optional(),
+          slug: z.string().optional(),
+        }),
+      )
+      .optional(),
   }),
   media: z.array(MediaSchema).optional(),
   products: z.array(AssortmentProductSchema).optional(),

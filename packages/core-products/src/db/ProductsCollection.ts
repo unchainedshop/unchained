@@ -99,16 +99,16 @@ export interface ProductWarehousing {
 
 export type Product = {
   _id: string;
-  bundleItems: ProductBundleItem[];
+  bundleItems?: ProductBundleItem[];
   commerce?: ProductCommerce;
   meta?: any;
-  plan: ProductPlan;
-  proxy: ProductProxy;
+  plan?: ProductPlan;
+  proxy?: ProductProxy;
   published?: Date;
   sequence: number;
   slugs: string[];
   status?: string | null;
-  supply: ProductSupply;
+  supply?: ProductSupply;
   tags: string[];
   type: string;
   warehousing?: ProductWarehousing;

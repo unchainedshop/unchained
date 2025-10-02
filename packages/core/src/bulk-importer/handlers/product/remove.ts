@@ -1,8 +1,12 @@
+import { z } from 'zod';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
 
+export const ProductRemovePayloadSchema = z.object({
+  _id: z.string(),
+});
 export default async function removeProduct(
-  payload: any,
+  payload: z.infer<typeof ProductRemovePayloadSchema>,
   { logger },
   unchainedAPI: { modules: Modules; services: Services },
 ) {
@@ -19,3 +23,5 @@ export default async function removeProduct(
     success: true,
   };
 }
+
+removeProduct.payloadSchema = ProductRemovePayloadSchema;
