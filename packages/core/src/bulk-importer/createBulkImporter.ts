@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import JSONStream from 'minipass-json-stream';
 import { PassThrough, Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -16,7 +17,7 @@ export interface BulkImportOperationResult {
   operation: string;
   success: boolean;
 }
-export type BulkImportOperation<T> = (
+export type BulkImportOperation<T> = { payloadSchema?: z.AnyZodObject } & ((
   payload: any,
   options: {
     bulk: (collection: string) => typeof mongodb.BulkOperationBase;
@@ -25,7 +26,7 @@ export type BulkImportOperation<T> = (
     skipCacheInvalidation?: boolean;
   },
   unchainedAPI: T,
-) => Promise<BulkImportOperationResult>;
+) => Promise<BulkImportOperationResult>);
 
 export type BulkImportHandler<T> = Record<string, BulkImportOperation<T>>;
 
@@ -92,7 +93,10 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
       validate: async (event) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
-        getOperation(entity, operation);
+        const fn = getOperation(entity, operation);
+        if (fn.payloadSchema) {
+          fn.payloadSchema.parse(event.payload);
+        }
       },
       prepare: async (event, unchainedAPI: { modules: Modules; services: Services }) => {
         const entity = event.entity.toUpperCase();

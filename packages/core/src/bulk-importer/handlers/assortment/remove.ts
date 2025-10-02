@@ -22,3 +22,5 @@ export default async function removeAssortment(
     success: Boolean(deletedAssortment),
   };
 }
+
+removeAssortment.payloadSchema = AssortmentRemovePayloadSchema;

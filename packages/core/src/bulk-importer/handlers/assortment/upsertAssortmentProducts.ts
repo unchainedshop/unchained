@@ -8,9 +8,19 @@ export const AssortmentProductSchema = z.object({
   productId: z.string(),
   tags: z.array(z.string()).optional(),
   sortKey: z.number().optional(),
+  meta: z.record(z.any()).optional(),
 });
 
-const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: { modules: Modules }) => {
+const upsert = async (
+  assortmentProduct: {
+    _id?: string;
+    productId: string;
+    tags: string[];
+    assortmentId: string;
+    sortKey: number;
+  },
+  unchainedAPI: { modules: Modules },
+) => {
   const { modules } = unchainedAPI;
   if (
     !(await modules.products.productExists({
@@ -25,23 +35,29 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: { modu
     })) as AssortmentProduct;
     return newAssortmentProduct;
   } catch {
-    return (await modules.assortments.products.update(assortmentProduct._id, assortmentProduct, {
+    return (await modules.assortments.products.update(assortmentProduct._id!, assortmentProduct, {
       skipInvalidation: true,
     })) as AssortmentProduct;
   }
 };
 
-export default async ({ products, assortmentId }, unchainedAPI: { modules: Modules }) => {
+export default async (
+  {
+    products,
+    assortmentId,
+  }: { products: z.infer<typeof AssortmentProductSchema>[]; assortmentId: string },
+  unchainedAPI: { modules: Modules },
+) => {
   const { modules } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
-    products.map(async (product: AssortmentProduct) => {
-      const adjustedProduct = { ...product };
-      if (adjustedProduct.tags) {
-        adjustedProduct.tags = convertTagsToLowerCase(adjustedProduct.tags) as string[];
-      }
+    products.map(async ({ tags: tagsMixedCase, sortKey, ...rest }, forcedSortKey) => {
+      const tags = tagsMixedCase ? convertTagsToLowerCase(tagsMixedCase)! : [];
+
       const assortmentProduct = await upsert(
         {
-          ...adjustedProduct,
+          ...rest,
+          tags,
+          sortKey: sortKey ?? forcedSortKey,
           assortmentId,
         },
         unchainedAPI,

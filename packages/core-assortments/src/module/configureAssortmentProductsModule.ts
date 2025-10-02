@@ -102,7 +102,11 @@ export const configureAssortmentProductsModule = ({
     },
 
     // Mutations
-    create: async (doc: AssortmentProduct, options?: { skipInvalidation?: boolean }) => {
+    create: async (
+      doc: Omit<AssortmentProduct, '_id' | 'created' | 'sortKey'> &
+        Partial<Pick<AssortmentProduct, '_id' | 'created' | 'sortKey'>>,
+      options?: { skipInvalidation?: boolean },
+    ) => {
       const { _id, assortmentId, productId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -198,7 +202,7 @@ export const configureAssortmentProductsModule = ({
     // This action is specifically used for the bulk migration scripts in the platform package
     update: async (
       assortmentProductId: string,
-      doc: AssortmentProduct,
+      doc: Partial<AssortmentProduct>,
       options?: { skipInvalidation?: boolean },
     ) => {
       const selector = generateDbFilterById(assortmentProductId);

@@ -75,7 +75,8 @@ export const configureAssortmentLinksModule = ({
 
     // Mutations
     create: async (
-      doc: Omit<AssortmentLink, '_id' | 'created'> & Pick<Partial<AssortmentLink>, '_id' | 'created'>,
+      doc: Omit<AssortmentLink, '_id' | 'created' | 'sortKey'> &
+        Pick<Partial<AssortmentLink>, '_id' | 'created' | 'sortKey'>,
       options?: { skipInvalidation?: boolean },
     ) => {
       const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;

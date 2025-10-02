@@ -121,3 +121,5 @@ export default async function updateAssortment(
     success: true,
   };
 }
+
+updateAssortment.payloadSchema = AssortmentUpdatePayloadSchema;

@@ -43,7 +43,10 @@ export const configureAssortmentFiltersModule = ({
 
       return filters.toArray();
     },
-    create: async (doc: AssortmentFilter) => {
+    create: async (
+      doc: Omit<AssortmentFilter, '_id' | 'created' | 'sortKey'> &
+        Pick<Partial<AssortmentFilter>, '_id' | 'created' | 'sortKey'>,
+    ) => {
       const { _id, assortmentId, filterId, sortKey, ...rest } = doc;
 
       const selector = {

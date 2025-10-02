@@ -106,3 +106,5 @@ export default async function createAssortment(
     success: true,
   };
 }
+
+createAssortment.payloadSchema = AssortmentCreatePayloadSchema;

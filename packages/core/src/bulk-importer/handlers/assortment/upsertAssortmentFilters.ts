@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { AssortmentFilter } from '@unchainedshop/core-assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import { Modules } from '../../../modules.js';
 
@@ -8,9 +7,19 @@ export const AssortmentFilterSchema = z.object({
   filterId: z.string(),
   tags: z.array(z.string()).optional(),
   sortKey: z.number().optional(),
+  meta: z.record(z.unknown()).optional(),
 });
 
-const upsert = async (assortmentFilter: AssortmentFilter, { modules }: { modules: Modules }) => {
+const upsert = async (
+  assortmentFilter: {
+    _id?: string;
+    filterId: string;
+    tags: string[];
+    assortmentId: string;
+    sortKey: number;
+  },
+  { modules }: { modules: Modules },
+) => {
   if (
     !(await modules.filters.filterExists({
       filterId: assortmentFilter.filterId,
@@ -19,34 +28,38 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules }: { modules
     throw new Error(`Can't link non-existing filter ${assortmentFilter.filterId}`);
   }
   try {
-    const newAssortmentFilter = (await modules.assortments.filters.create(
-      assortmentFilter,
-    )) as AssortmentFilter;
+    const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter);
     return newAssortmentFilter;
   } catch {
-    return (await modules.assortments.filters.update(
-      assortmentFilter._id,
-      assortmentFilter,
-    )) as AssortmentFilter;
+    return await modules.assortments.filters.update(assortmentFilter._id!, assortmentFilter);
   }
 };
 
-export default async ({ filters, assortmentId }, unchainedAPI: { modules: Modules }) => {
+export default async (
+  {
+    filters,
+    assortmentId,
+  }: {
+    filters: z.infer<typeof AssortmentFilterSchema>[];
+    assortmentId: string;
+  },
+  unchainedAPI: { modules: Modules },
+) => {
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
-    filters.map(async (filter: AssortmentFilter) => {
-      const adjustedFilter = { ...filter };
-      if (adjustedFilter.tags) {
-        adjustedFilter.tags = convertTagsToLowerCase(adjustedFilter.tags) as string[];
-      }
+    filters.map(async ({ tags: tagsMixedCase, sortKey, ...rest }, forcedSortKey) => {
+      const tags = tagsMixedCase ? convertTagsToLowerCase(tagsMixedCase)! : [];
+
       const assortmentFilter = await upsert(
         {
-          ...adjustedFilter,
+          ...rest,
           assortmentId,
+          tags,
+          sortKey: sortKey ?? forcedSortKey,
         },
         unchainedAPI,
       );
-      return assortmentFilter._id;
+      return assortmentFilter!._id;
     }),
   );
 
