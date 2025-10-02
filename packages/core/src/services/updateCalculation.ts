@@ -2,6 +2,7 @@ import {
   OrderDelivery,
   OrderDiscountTrigger,
   OrderPayment,
+  Order,
   OrderPosition,
 } from '@unchainedshop/core-orders';
 import { initCartProvidersService } from './initCartProviders.js';
@@ -139,7 +140,7 @@ export async function updateCalculationService(this: Modules, orderId: string) {
   );
 
   if (JSON.stringify(order.calculation) !== JSON.stringify(calculation)) {
-    order = await this.orders.updateCalculationSheet(orderId, calculation);
+    order = (await this.orders.updateCalculationSheet(orderId, calculation)) as Order;
   }
 
   /*

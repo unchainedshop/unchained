@@ -86,6 +86,8 @@ export const stripeHandler = async (request, response) => {
         },
       });
 
+      if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
       logger.info(`checkout successful`, {
         orderPaymentId,
         orderId: order._id,

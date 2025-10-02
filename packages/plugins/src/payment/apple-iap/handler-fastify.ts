@@ -51,6 +51,9 @@ export const appleIAPHandler: RouteHandlerMethod = async (
           receiptData: responseBody?.unified_receipt?.latest_receipt,
         },
       });
+
+      if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
       const orderId = order._id;
       const enrollment = await modules.enrollments.findEnrollment({
         orderId,

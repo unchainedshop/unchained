@@ -1,5 +1,4 @@
 import { User } from '@unchainedshop/core-users';
-import { Order } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import { nextUserCartService } from './nextUserCart.js';
 
@@ -25,5 +24,5 @@ export async function findOrInitCartService(
     user,
     countryCode,
     forceCartCreation: true,
-  }) as Order;
+  });
 }

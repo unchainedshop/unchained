@@ -12,6 +12,8 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
     "noEmitOnError": true,
     "sourceMap": true,
     "target": "esnext",

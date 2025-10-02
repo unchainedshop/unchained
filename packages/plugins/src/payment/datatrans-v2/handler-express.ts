@@ -71,6 +71,9 @@ export const datatransHandler = async (req, res) => {
           const order = await services.orders.checkoutOrder(orderPayment.orderId, {
             paymentContext: { userId, transactionId: transaction.transactionId },
           });
+
+          if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
           logger.info(`confirmed checkout for order ${order.orderNumber}`, {
             orderId: order._id,
           });

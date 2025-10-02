@@ -10,5 +10,5 @@ export async function fullfillQuotationService(this: Modules, quotation: Quotati
     info: JSON.stringify(info),
   });
 
-  return processQuotationService.bind(this)(updatedQuotation, {});
+  return processQuotationService.bind(this)(updatedQuotation!, {});
 }

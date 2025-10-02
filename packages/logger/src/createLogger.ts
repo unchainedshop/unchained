@@ -2,7 +2,7 @@ import { stringify } from 'safe-stable-stringify';
 import { default as log } from 'loglevel';
 import { LogLevel } from './logger.types.js';
 import { default as prefix } from 'loglevel-plugin-prefix';
-import chalk from 'chalk';
+import chalk, { ChalkInstance } from 'chalk';
 
 const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
 
@@ -24,7 +24,7 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
   return loggingMatched || false;
 };
 
-const colors = {
+const colors: Record<string, ChalkInstance> = {
   TRACE: chalk.magenta,
   DEBUG: chalk.cyan,
   INFO: chalk.blue,
@@ -73,11 +73,12 @@ export const createLogger = (moduleName: string) => {
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   const logger = log.getLogger(moduleName);
 
-  const logLevelMap = {
+  const logLevelMap: Record<string, log.LogLevelDesc> = {
     [LogLevel.Debug]: log.levels.DEBUG,
     [LogLevel.Info]: log.levels.INFO,
     [LogLevel.Warning]: log.levels.WARN,
     [LogLevel.Error]: log.levels.ERROR,
+    [LogLevel.Verbose]: log.levels.TRACE,
   };
 
   logger.setDefaultLevel(loggingMatched ? log.levels.DEBUG : logLevelMap[LOG_LEVEL.toLowerCase()]);

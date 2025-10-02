@@ -26,6 +26,9 @@ export const postfinanceCheckoutHandler = async (req, res) => {
           transactionId: transactionCompletion.linkedTransaction,
         },
       });
+
+      if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
       logger.info(
         `Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData?.orderPaymentId} as paid`,
       );

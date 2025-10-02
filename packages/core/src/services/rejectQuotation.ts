@@ -9,10 +9,10 @@ export async function rejectQuotationService(
 ) {
   if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
-  const updatedQuotation = await this.quotations.updateStatus(quotation._id, {
+  const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {
     status: QuotationStatus.REJECTED,
     info: 'rejected manually',
-  });
+  })) as Quotation;
 
   return processQuotationService.bind(this)(updatedQuotation, { quotationContext });
 }

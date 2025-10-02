@@ -9,10 +9,10 @@ export async function proposeQuotationService(
 ) {
   if (quotation.status !== QuotationStatus.PROCESSING) return quotation;
 
-  const updatedQuotation = await this.quotations.updateStatus(quotation._id, {
+  const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {
     status: QuotationStatus.PROPOSED,
     info: 'proposed manually',
-  });
+  })) as Quotation;
 
   return processQuotationService.bind(this)(updatedQuotation, { quotationContext });
 }

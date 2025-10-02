@@ -3,6 +3,7 @@ import { Modules } from '../modules.js';
 import { nextUserCartService } from './nextUserCart.js';
 import { validateOrderService } from './validateOrder.js';
 import { processOrderService } from './processOrder.js';
+import { User } from '@unchainedshop/core-users';
 
 export async function checkoutOrderService(
   this: Modules,
@@ -26,11 +27,14 @@ export async function checkoutOrderService(
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);
 
     // After checkout, store last checkout information on user
-    await this.users.updateLastBillingAddress(processedOrder.userId, processedOrder.billingAddress);
-    await this.users.updateLastContact(processedOrder.userId, processedOrder.contact);
-
+    if (processedOrder.billingAddress) {
+      await this.users.updateLastBillingAddress(processedOrder.userId, processedOrder.billingAddress);
+    }
+    if (processedOrder.contact) {
+      await this.users.updateLastContact(processedOrder.userId, processedOrder.contact);
+    }
     // Then eventually build next cart
-    const user = await this.users.findUserById(processedOrder.userId);
+    const user = (await this.users.findUserById(processedOrder.userId)) as User;
     const locale = this.users.userLocale(user);
     await nextUserCartService.bind(this)({
       user,

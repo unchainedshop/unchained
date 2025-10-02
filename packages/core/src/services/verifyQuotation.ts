@@ -9,10 +9,10 @@ export async function verifyQuotationService(
 ) {
   if (quotation.status !== QuotationStatus.REQUESTED) return quotation;
 
-  const updatedQuotation = await this.quotations.updateStatus(quotation._id, {
+  const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {
     status: QuotationStatus.PROCESSING,
     info: 'verified elligibility manually',
-  });
+  })) as Quotation;
 
   return await processQuotationService.bind(this)(updatedQuotation, { quotationContext });
 }

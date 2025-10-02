@@ -70,6 +70,8 @@ export const payrexxHandler = async (request, response) => {
           gatewayId: invoice.paymentRequestId,
         },
       });
+      if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
       logger.info(`checkout successful`, {
         orderPaymentId,
         orderId: order._id,

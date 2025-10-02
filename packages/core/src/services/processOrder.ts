@@ -159,9 +159,9 @@ export async function processOrderService(
       const orderPositions = await this.orders.positions.findOrderPositions({ orderId });
       const mappedProductOrderPositions = await Promise.all(
         orderPositions.map(async (orderPosition) => {
-          const product = await this.products.findProduct({
+          const product = (await this.products.findProduct({
             productId: orderPosition.productId,
-          });
+          })) as Product;
           return {
             orderPosition,
             product,
@@ -227,6 +227,7 @@ export async function processOrderService(
           const quotation = await this.quotations.findQuotation({
             quotationId: orderPosition.quotationId,
           });
+          if (!quotation) return; // TODO: What happens then?
           await fullfillQuotationService.bind(this)(quotation, {
             orderId,
             orderPositionId: orderPosition._id,
@@ -238,5 +239,5 @@ export async function processOrderService(
     nextStatus = await findNextStatus(nextStatus, order, this);
   }
 
-  return this.orders.updateStatus(order._id, { status: nextStatus, info: comment });
+  return (await this.orders.updateStatus(order._id, { status: nextStatus, info: comment })) as Order;
 }

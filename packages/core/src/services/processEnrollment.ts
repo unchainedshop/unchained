@@ -43,7 +43,7 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
     return this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',
-    });
+    }) as Promise<Enrollment>;
   }
   return enrollment;
 }

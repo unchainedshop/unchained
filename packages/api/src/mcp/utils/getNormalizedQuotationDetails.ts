@@ -19,16 +19,12 @@ export async function getNormalizedQuotationDetails(quotationId: string, context
     quotation.currencyCode ? loaders.currencyLoader.load({ isoCode: quotation.currencyCode }) : null,
   ]);
 
-  const avatar = await loaders.fileLoader.load({
-    fileId: user?.avatarId,
-  });
-
   return {
     ...quotation,
     status: modules.quotations.normalizedStatus(quotation),
     user: {
       ...removeConfidentialServiceHashes(user),
-      avatar: await normalizeMediaUrl([{ mediaId: avatar?._id }], context),
+      avatar: user?.avatarId ? await normalizeMediaUrl([{ mediaId: user?.avatarId }], context) : null,
     },
     product: product
       ? {

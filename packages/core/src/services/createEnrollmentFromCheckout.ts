@@ -50,17 +50,19 @@ export async function createEnrollmentFromCheckoutService(
     ...context,
   };
 
-  return Promise.all(
-    items.map(async (item) => {
-      const enrollmentData = await EnrollmentDirector.transformOrderItemToEnrollment(item, template, {
-        modules: this,
-      });
+  return (
+    await Promise.all(
+      items.map(async (item) => {
+        const enrollmentData = await EnrollmentDirector.transformOrderItemToEnrollment(item, template, {
+          modules: this,
+        });
 
-      const enrollment = await this.enrollments.create(enrollmentData);
-      return await initializeEnrollmentService.bind(this)(enrollment, {
-        orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
-        reason: 'new_enrollment',
-      });
-    }),
-  );
+        const enrollment = await this.enrollments.create(enrollmentData);
+        return await initializeEnrollmentService.bind(this)(enrollment, {
+          orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
+          reason: 'new_enrollment',
+        });
+      }),
+    )
+  ).filter(Boolean) as Enrollment[];
 }

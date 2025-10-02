@@ -46,6 +46,9 @@ export const saferpayHandler = async (request, response) => {
         transactionId,
       },
     });
+
+    if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
     logger.info(`checkout successful`, {
       orderPaymentId,
       orderId: order._id,

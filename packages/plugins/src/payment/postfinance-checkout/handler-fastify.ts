@@ -32,6 +32,9 @@ export const postfinanceCheckoutHandler: RouteHandlerMethod = async (
           transactionId: transaction.id,
         },
       });
+
+      if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
       logger.info(
         `Transaction ${transaction.id} marked order payment ID ${transaction.metaData?.orderPaymentId} as paid`,
       );
