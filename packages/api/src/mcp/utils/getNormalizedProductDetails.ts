@@ -5,28 +5,6 @@ import { createLogger } from '@unchainedshop/logger';
 import normalizeProxyAssignments from './normalizeProxyAssignments.js';
 
 const logger = createLogger('unchained:api:mcp');
-const removeUnnecessaryFields = ({
-  texts,
-  media,
-  assignments,
-  variations,
-  bundleItems,
-  pricing,
-  reviews,
-  ...product
-}) => {
-  return {
-    ...product,
-    texts: { ...(texts || {}), description: null },
-    media,
-    assignments,
-    variations,
-    bundleItems,
-    pricing,
-    reviews,
-  };
-};
-
 export async function getNormalizedProductDetails(productId: string, context: Context) {
   const { modules, locale, loaders } = context;
   const product = await modules.products.findProduct({ productId });
@@ -73,10 +51,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
           product: {
             ...bundleItemProduct,
             media,
-            texts: {
-              ...texts,
-              description: null,
-            },
+            texts,
           },
           ...item,
         };
@@ -97,7 +72,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
 
   const productMedias = await modules.products.media.findProductMedias({ productId });
   const media = await normalizeMediaUrl(productMedias, context);
-  return removeUnnecessaryFields({
+  return {
     ...product,
     texts,
     media,
@@ -106,5 +81,5 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     bundleItems,
     pricing,
     reviews,
-  });
+  };
 }

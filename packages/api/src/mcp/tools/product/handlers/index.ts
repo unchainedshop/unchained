@@ -31,6 +31,7 @@ import getMediaTexts from './getMediaTexts.js';
 import getReviews from './getReviews.js';
 import countReviews from './countReviews.js';
 import getSiblings from './getSiblings.js';
+import updateProductTexts from './updateProductTexts.js';
 
 export const actionHandlers = {
   CREATE: createProduct,
@@ -66,4 +67,5 @@ export const actionHandlers = {
   GET_REVIEWS: getReviews,
   COUNT_REVIEWS: countReviews,
   GET_SIBLINGS: getSiblings,
+  UPDATE_PRODUCT_TEXTS: updateProductTexts,
 };

@@ -28,7 +28,6 @@ interface Props {
 
 export const TextItemCompact = ({ text }: Props) => {
   const { formatMessage } = useIntl();
-
   const infoRow = (label: string, value: string | null | undefined) => {
     if (!value) return null;
     return (

@@ -333,6 +333,11 @@ export const actionValidators = {
     assortmentId: z.string().optional().describe('Assortment ID'),
     includeInactive: z.boolean().optional().describe('Include inactive products'),
   }),
+
+  UPDATE_PRODUCT_TEXTS: z.object({
+    productId: z.string().min(1).describe('Product ID'),
+    texts: z.array(ProductTextInputSchema).describe('Product texts to update'),
+  }),
 } as const;
 
 export const ProductManagementSchema = {
@@ -371,6 +376,7 @@ export const ProductManagementSchema = {
       'GET_REVIEWS',
       'COUNT_REVIEWS',
       'GET_SIBLINGS',
+      'UPDATE_PRODUCT_TEXTS',
     ])
     .describe('Product management action to perform'),
 

@@ -55,13 +55,6 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
       <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
         <span>
           {formatMessage({
-            id: 'variation.productId',
-            defaultMessage: 'Product ID',
-          })}
-          : {variation.productId}
-        </span>
-        <span>
-          {formatMessage({
             id: 'variation.created',
             defaultMessage: 'Created',
           })}

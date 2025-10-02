@@ -1,4 +1,6 @@
-const generateUniqueId = ({ _id, texts }: any) => {
+const generateUniqueId = (params: any = {}) => {
+  const { _id, texts } = params || {};
+  if (!texts && !_id) return null;
   return `${texts?.slug?.split('/').join('') || ''}_id_${_id}`;
 };
 

@@ -20,10 +20,7 @@ const normalizeProxyAssignments = async (assignment, context: Context) => {
       product: {
         ...assignedProduct,
         media,
-        texts: {
-          ...texts,
-          description: null,
-        },
+        texts,
       },
     },
   };

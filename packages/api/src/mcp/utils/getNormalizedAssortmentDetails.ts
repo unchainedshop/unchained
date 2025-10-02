@@ -48,10 +48,7 @@ export async function getNormalizedAssortmentDetails(
 
   return {
     ...assortment,
-    texts: {
-      ...texts,
-      description: null,
-    },
+    texts,
     media,
     childrenCount,
     filters,
