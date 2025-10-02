@@ -6,9 +6,9 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 
 | Category | Total | Tested | Untested | Coverage |
 |----------|-------|--------|----------|----------|
-| **GraphQL Mutations** | 152 | 91 | 61 | 60% |
-| **GraphQL Queries** | 68 | 24 | 44 | 35% |
-| **Total GraphQL** | 220 | 115 | 105 | **52%** |
+| **GraphQL Mutations** | 152 | 132 | 20 | 87% |
+| **GraphQL Queries** | 68 | 46 | 22 | 68% |
+| **Total GraphQL** | 220 | 178 | 42 | **81%** |
 | **REST Endpoints** | 11 | 5 | 6 | **45%** |
 
 ## REST Endpoints Coverage
@@ -31,22 +31,22 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 
 | Status | Mutation | Category |
 |--------|----------|----------|
-| ❌ | `addAssortmentFilter` | Assortments |
-| ❌ | `addAssortmentLink` | Assortments |
-| ❌ | `addAssortmentProduct` | Assortments |
-| ❌ | `createAssortment` | Assortments |
-| ❌ | `removeAssortment` | Assortments |
-| ❌ | `removeAssortmentFilter` | Assortments |
-| ❌ | `removeAssortmentMedia` | Assortments |
-| ❌ | `removeAssortmentProduct` | Assortments |
-| ❌ | `reorderAssortmentFilters` | Assortments |
-| ❌ | `reorderAssortmentLinks` | Assortments |
-| ❌ | `reorderAssortmentMedia` | Assortments |
-| ❌ | `reorderAssortmentProducts` | Assortments |
-| ❌ | `setBaseAssortment` | Assortments |
-| ❌ | `updateAssortment` | Assortments |
-| ❌ | `updateAssortmentMediaTexts` | Assortments |
-| ❌ | `updateAssortmentTexts` | Assortments |
+| ✅ | `addAssortmentFilter` | Assortments |
+| ✅ | `addAssortmentLink` | Assortments |
+| ✅ | `addAssortmentProduct` | Assortments |
+| ✅ | `createAssortment` | Assortments |
+| ✅ | `removeAssortment` | Assortments |
+| ✅ | `removeAssortmentFilter` | Assortments |
+| ✅ | `removeAssortmentMedia` | Assortments |
+| ✅ | `removeAssortmentProduct` | Assortments |
+| ✅ | `reorderAssortmentFilters` | Assortments |
+| ✅ | `reorderAssortmentLinks` | Assortments |
+| ✅ | `reorderAssortmentMedia` | Assortments |
+| ✅ | `reorderAssortmentProducts` | Assortments |
+| ✅ | `setBaseAssortment` | Assortments |
+| ✅ | `updateAssortment` | Assortments |
+| ✅ | `updateAssortmentMediaTexts` | Assortments |
+| ✅ | `updateAssortmentTexts` | Assortments |
 | ✅ | `addEmail` | Authentication & Users |
 | ✅ | `changePassword` | Authentication & Users |
 | ✅ | `createUser` | Authentication & Users |
@@ -74,11 +74,11 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | ✅ | `updateEnrollment` | Enrollments |
 | ❌ | `pageView` | Events & Tracking |
 | ✅ | `createFilter` | Filters |
-| ❌ | `createFilterOption` | Filters |
-| ❌ | `removeFilter` | Filters |
-| ❌ | `removeFilterOption` | Filters |
-| ❌ | `updateFilter` | Filters |
-| ❌ | `updateFilterTexts` | Filters |
+| ✅ | `createFilterOption` | Filters |
+| ✅ | `removeFilter` | Filters |
+| ✅ | `removeFilterOption` | Filters |
+| ✅ | `updateFilter` | Filters |
+| ✅ | `updateFilterTexts` | Filters |
 | ✅ | `confirmOrder` | Order Management |
 | ✅ | `deliverOrder` | Order Management |
 | ✅ | `payOrder` | Order Management |
@@ -136,32 +136,32 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | ✅ | `signPaymentProviderForCheckout` | Payment |
 | ✅ | `signPaymentProviderForCredentialRegistration` | Payment |
 | ✅ | `updatePaymentProvider` | Payment |
-| ❌ | `createProductBundleItem` | Product Bundles |
-| ❌ | `removeBundleItem` | Product Bundles |
+| ✅ | `createProductBundleItem` | Product Bundles |
+| ✅ | `removeBundleItem` | Product Bundles |
 | ✅ | `addProductReviewVote` | Product Reviews |
 | ✅ | `createProductReview` | Product Reviews |
 | ✅ | `removeProductReview` | Product Reviews |
 | ✅ | `removeProductReviewVote` | Product Reviews |
 | ❌ | `removeUserProductReviews` | Product Reviews |
 | ✅ | `updateProductReview` | Product Reviews |
-| ❌ | `createProductVariation` | Product Variations |
-| ❌ | `createProductVariationOption` | Product Variations |
-| ❌ | `removeProductVariation` | Product Variations |
-| ❌ | `removeProductVariationOption` | Product Variations |
-| ❌ | `updateProductVariationTexts` | Product Variations |
+| ✅ | `createProductVariation` | Product Variations |
+| ✅ | `createProductVariationOption` | Product Variations |
+| ✅ | `removeProductVariation` | Product Variations |
+| ✅ | `removeProductVariationOption` | Product Variations |
+| ✅ | `updateProductVariationTexts` | Product Variations |
 | ✅ | `createProduct` | Products |
-| ❌ | `publishProduct` | Products |
-| ❌ | `removeProduct` | Products |
-| ❌ | `removeProductMedia` | Products |
-| ❌ | `reorderProductMedia` | Products |
-| ❌ | `unpublishProduct` | Products |
-| ❌ | `updateProduct` | Products |
-| ❌ | `updateProductCommerce` | Products |
-| ❌ | `updateProductMediaTexts` | Products |
-| ❌ | `updateProductSupply` | Products |
-| ❌ | `updateProductTexts` | Products |
+| ✅ | `publishProduct` | Products |
+| ✅ | `removeProduct` | Products |
+| ✅ | `removeProductMedia` | Products |
+| ✅ | `reorderProductMedia` | Products |
+| ✅ | `unpublishProduct` | Products |
+| ✅ | `updateProduct` | Products |
+| ✅ | `updateProductCommerce` | Products |
+| ✅ | `updateProductMediaTexts` | Products |
+| ✅ | `updateProductSupply` | Products |
+| ✅ | `updateProductTexts` | Products |
 | ❌ | `updateProductTokenization` | Products |
-| ❌ | `updateProductWarehousing` | Products |
+| ✅ | `updateProductWarehousing` | Products |
 | ❌ | `addPushSubscription` | Push Notifications |
 | ❌ | `removePushSubscription` | Push Notifications |
 | ✅ | `makeQuotationProposal` | Quotations |
@@ -170,8 +170,8 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | ✅ | `verifyQuotation` | Quotations |
 | ❌ | `exportToken` | Tokens |
 | ❌ | `invalidateToken` | Tokens |
-| ❌ | `addProductAssignment` | Warehousing Assignments |
-| ❌ | `removeProductAssignment` | Warehousing Assignments |
+| ✅ | `addProductAssignment` | Warehousing Assignments |
+| ✅ | `removeProductAssignment` | Warehousing Assignments |
 | ✅ | `createWarehousingProvider` | Warehousing |
 | ✅ | `removeWarehousingProvider` | Warehousing |
 | ✅ | `updateWarehousingProvider` | Warehousing |
@@ -189,14 +189,14 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | Status | Query | Category |
 |--------|-------|----------|
 | ✅ | `assortment` | Assortments |
-| ❌ | `assortments` | Assortments |
-| ❌ | `assortmentsCount` | Assortments |
+| ✅ | `assortments` | Assortments |
+| ✅ | `assortmentsCount` | Assortments |
 | ❌ | `translatedAssortmentMediaTexts` | Assortments |
-| ❌ | `translatedAssortmentTexts` | Assortments |
-| ❌ | `deliveryInterfaces` | Delivery |
-| ❌ | `deliveryProvider` | Delivery |
-| ❌ | `deliveryProviders` | Delivery |
-| ❌ | `deliveryProvidersCount` | Delivery |
+| ✅ | `translatedAssortmentTexts` | Assortments |
+| ✅ | `deliveryInterfaces` | Delivery |
+| ✅ | `deliveryProvider` | Delivery |
+| ✅ | `deliveryProviders` | Delivery |
+| ✅ | `deliveryProvidersCount` | Delivery |
 | ✅ | `enrollment` | Enrollments |
 | ✅ | `enrollments` | Enrollments |
 | ❌ | `enrollmentsCount` | Enrollments |
@@ -206,15 +206,15 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | ❌ | `eventsCount` | Events & Statistics |
 | ❌ | `workQueueCount` | Events & Statistics |
 | ❌ | `workStatistics` | Events & Statistics |
-| ❌ | `filter` | Filters |
-| ❌ | `filters` | Filters |
-| ❌ | `filtersCount` | Filters |
-| ❌ | `translatedFilterTexts` | Filters |
-| ❌ | `countries` | Localization |
+| ✅ | `filter` | Filters |
+| ✅ | `filters` | Filters |
+| ✅ | `filtersCount` | Filters |
+| ✅ | `translatedFilterTexts` | Filters |
+| ✅ | `countries` | Localization |
 | ❌ | `countriesCount` | Localization |
-| ❌ | `currencies` | Localization |
+| ✅ | `currencies` | Localization |
 | ❌ | `currenciesCount` | Localization |
-| ❌ | `languages` | Localization |
+| ✅ | `languages` | Localization |
 | ❌ | `languagesCount` | Localization |
 | ✅ | `order` | Orders |
 | ❌ | `orderStatistics` | Orders |
@@ -225,22 +225,22 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | ✅ | `language` | Other |
 | ✅ | `work` | Other |
 | ✅ | `workQueue` | Other |
-| ❌ | `paymentInterfaces` | Payment |
-| ❌ | `paymentProvider` | Payment |
-| ❌ | `paymentProviders` | Payment |
-| ❌ | `paymentProvidersCount` | Payment |
+| ✅ | `paymentInterfaces` | Payment |
+| ✅ | `paymentProvider` | Payment |
+| ✅ | `paymentProviders` | Payment |
+| ✅ | `paymentProvidersCount` | Payment |
 | ✅ | `productReview` | Product Reviews |
 | ✅ | `productReviews` | Product Reviews |
 | ❌ | `productReviewsCount` | Product Reviews |
 | ✅ | `product` | Products |
-| ✅ | `productCatalogPrices` | Products |
+| ❌ | `productCatalogPrices` | Products |
 | ✅ | `products` | Products |
 | ✅ | `productsCount` | Products |
-| ✅ | `translatedProductMediaTexts` | Products |
-| ✅ | `translatedProductTexts` | Products |
-| ❌ | `translatedProductVariationTexts` | Products |
-| ❌ | `quotation` | Quotations |
-| ❌ | `quotations` | Quotations |
+| ❌ | `translatedProductMediaTexts` | Products |
+| ❌ | `translatedProductTexts` | Products |
+| ✅ | `translatedProductVariationTexts` | Products |
+| ✅ | `quotation` | Quotations |
+| ✅ | `quotations` | Quotations |
 | ❌ | `quotationsCount` | Quotations |
 | ✅ | `searchAssortments` | Search |
 | ✅ | `searchProducts` | Search |
@@ -252,10 +252,10 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 | ✅ | `user` | Users |
 | ✅ | `users` | Users |
 | ✅ | `usersCount` | Users |
-| ❌ | `warehousingInterfaces` | Warehousing |
-| ❌ | `warehousingProvider` | Warehousing |
-| ❌ | `warehousingProviders` | Warehousing |
-| ❌ | `warehousingProvidersCount` | Warehousing |
+| ✅ | `warehousingInterfaces` | Warehousing |
+| ✅ | `warehousingProvider` | Warehousing |
+| ✅ | `warehousingProviders` | Warehousing |
+| ✅ | `warehousingProvidersCount` | Warehousing |
 
 ## Key Findings
 
@@ -273,11 +273,6 @@ This document provides a comprehensive overview of GraphQL API and REST endpoint
 - ❌ **addWebAuthnCredentials** (Mutation)
 - ❌ **removeWebAuthnCredentials** (Mutation)
 - ❌ **loginWithWebAuthn** (Mutation)
-- ❌ **publishProduct** (Mutation)
-- ❌ **unpublishProduct** (Mutation)
-- ❌ **createAssortment** (Mutation)
-- ❌ **updateAssortment** (Mutation)
-- ❌ **updateFilter** (Mutation)
 - ❌ **impersonate** (Mutation)
 
 ## Recommendations

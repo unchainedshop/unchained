@@ -168,12 +168,24 @@ function extractTestedOperations() {
       tested.graphql.add(match[1]);
     }
     
-    // Also extract operation names from inline queries (without explicit operation name)
-    const inlineOpMatches = content.matchAll(/query:\s*\/\*\s*GraphQL\s*\*\/\s*`[^`]*?\b(\w+)\s*\(/g);
-    for (const match of inlineOpMatches) {
+    // Extract actual GraphQL operations being called (mutations/queries inside the query body)
+    // Method 1: Look for patterns like: mutation OperationName { actualOperation(
+    const queryBodyRegex = /query:\s*\/\*\s*GraphQL\s*\*\/\s*`[^`]*?(?:query|mutation)\s+\w+[^{]*\{[^}]*?\b(\w+)\s*\(/g;
+    let match;
+    while ((match = queryBodyRegex.exec(content)) !== null) {
       const opName = match[1];
       // Skip common keywords
-      if (!['query', 'mutation', 'fragment', 'on', 'Query', 'Mutation'].includes(opName)) {
+      if (!['query', 'mutation', 'fragment', 'on', 'Query', 'Mutation', '__typename'].includes(opName)) {
+        tested.graphql.add(opName);
+      }
+    }
+    
+    // Method 2: Look for anonymous queries/mutations: mutation { actualOperation(
+    const anonymousQueryRegex = /query:\s*\/\*\s*GraphQL\s*\*\/\s*`[^`]*?(?:query|mutation)\s*\{[^}]*?\b(\w+)\s*\(/g;
+    while ((match = anonymousQueryRegex.exec(content)) !== null) {
+      const opName = match[1];
+      // Skip common keywords
+      if (!['query', 'mutation', 'fragment', 'on', 'Query', 'Mutation', '__typename'].includes(opName)) {
         tested.graphql.add(opName);
       }
     }
