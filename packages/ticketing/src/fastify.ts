@@ -18,13 +18,13 @@ export default (app: FastifyInstance) => {
 
   app.route({
     url: `${GOOGLE_WALLET_WEBSERVICE_PATH}/*`,
-    method: 'POST',
+    method: 'GET',
     handler: googleWalletHandler,
   });
 
   app.route({
     url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}/*`,
-    method: 'POST',
+    method: 'GET',
     handler: printTicketsHandler,
   });
 };
