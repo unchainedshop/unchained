@@ -12,6 +12,7 @@ import seedAssortments from './seeds/assortments.js';
 import seedBookmarks from './seeds/bookmark.js';
 import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
+import seedEvents from './seeds/events.js';
 import { GraphQLClient } from 'graphql-request';
 import waitOn from 'wait-on';
 
@@ -57,6 +58,7 @@ export const setupDatabase = async () => {
   await seedBookmarks(db);
   await seedEnrollment(db);
   await seedWorkQueue(db);
+  await seedEvents(db);
 
   return [db, connection];
 };

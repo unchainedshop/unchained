@@ -185,7 +185,7 @@ AWS_REGION=us-east-1
 import { emit } from '@unchainedshop/events';
 
 // Publish an event
-await emit('ORDER_CREATED', {
+await emit('ORDER_CREATE', {
   orderId: '12345',
   userId: 'user123',
   total: 99.99
@@ -198,7 +198,7 @@ await emit('ORDER_CREATED', {
 import { subscribe } from '@unchainedshop/events';
 
 // Subscribe to events
-subscribe('ORDER_CREATED', async (payload) => {
+subscribe('ORDER_CREATE', async (payload) => {
   const { orderId, userId, total } = payload;
   
   // Handle the event
@@ -211,7 +211,7 @@ subscribe('ORDER_CREATED', async (payload) => {
 
 Unchained Engine emits various system events:
 
-- **Order Events**: `ORDER_CREATED`, `ORDER_CONFIRMED`, `ORDER_DELIVERED`
+- **Order Events**: `ORDER_CREATE`, `ORDER_CONFIRMED`, `ORDER_DELIVERED`
 - **Payment Events**: `PAYMENT_SUCCEEDED`, `PAYMENT_FAILED`
 - **User Events**: `USER_CREATED`, `USER_UPDATED`
 - **Product Events**: `PRODUCT_CREATED`, `PRODUCT_UPDATED`
@@ -280,7 +280,7 @@ Event systems integrate seamlessly with worker plugins:
 
 ```javascript
 // Worker can subscribe to events
-subscribe('ORDER_CREATED', async (payload) => {
+subscribe('ORDER_CREATE', async (payload) => {
   // Trigger email worker
   await sendEmail({
     to: payload.customerEmail,
