@@ -29,7 +29,7 @@ export const buildFindSelector = ({
   queryString = '',
   ...rest
 }: CountryQuery) => {
-  const selector: mongodb.Filter<Country> = { ...rest, deleted: null };
+  const selector: mongodb.Filter<Country> = { ...rest, deleted: { $exists: false } };
   if (!includeInactive) selector.isActive = true;
   if (queryString) {
     assertDocumentDBCompatMode();

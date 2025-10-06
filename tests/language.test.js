@@ -233,6 +233,23 @@ test.describe('Language', () => {
   });
 
   test.describe('Query.languages for normal user', () => {
+    test('Return all active languages', async () => {
+      const {
+        data: { languages },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query Languages {
+            languages {
+              _id
+              isoCode
+            }
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(languages.length, 3);
+    });
+
     test('Return language search result', async () => {
       const {
         data: { languages },
@@ -279,6 +296,23 @@ test.describe('Language', () => {
   });
 
   test.describe('Query.languages for anonymous user', () => {
+    test('Return all active languages', async () => {
+      const {
+        data: { languages },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query Languages {
+            languages {
+              _id
+              isoCode
+            }
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(languages.length, 3);
+    });
+
     test('Return language search result', async () => {
       const {
         data: { languages },
