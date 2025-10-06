@@ -18,7 +18,7 @@ export type LanguageQuery = mongodb.Filter<Language> & {
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
 export const buildFindSelector = ({ includeInactive = false, queryString, ...rest }: LanguageQuery) => {
-  const selector: mongodb.Filter<Language> = { deleted: null, ...rest };
+  const selector: mongodb.Filter<Language> = { deleted: { $exists: false }, ...rest };
   if (!includeInactive) selector.isActive = true;
   if (queryString) {
     assertDocumentDBCompatMode();
