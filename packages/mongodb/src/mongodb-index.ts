@@ -56,6 +56,12 @@ export interface Contact {
 }
 
 export interface Migration<Context = unknown> {
+  /**
+   * Migration ID must be between 19700000000000 and 99999999999999
+   * YYYYMMDDHHMMSS format is recommended.
+   * @minimum 19700000000000
+   * @maximum 99999999999999
+   */
   id: number;
   name: string;
   up: (params: { logger: any | Console; unchainedAPI: Context }) => Promise<void>;
