@@ -7,7 +7,7 @@ export const systemLocale = new Intl.Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNT
 export const determineFallbackLocale = (
   countries: { isoCode: string }[],
   languages: { isoCode: string }[],
-): Intl.Locale | null => {
+): Intl.Locale => {
   try {
     const country =
       countries.find((country) => country.isoCode === systemLocale.region)?.isoCode ||
@@ -17,7 +17,7 @@ export const determineFallbackLocale = (
       languages[0]?.isoCode;
     return new Intl.Locale(`${language}-${country}`);
   } catch {
-    return null;
+    return systemLocale;
   }
 };
 
@@ -31,7 +31,7 @@ export const resolveBestSupported = (
     countries: { isoCode: string }[];
     languages: { isoCode: string }[];
   },
-): Intl.Locale | null => {
+): Intl.Locale => {
   const supportedLocales: string[] = languages.reduce<string[]>((accumulator, language) => {
     const added = countries
       .filter((country) => {
@@ -52,7 +52,7 @@ export const resolveBestSupported = (
     const { match } = resolveAcceptLanguage(
       acceptLanguage || '',
       supportedLocales,
-      fallbackLocale!.baseName,
+      fallbackLocale.baseName,
       {
         returnMatchType: true,
       },

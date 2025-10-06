@@ -42,8 +42,8 @@ const uncachedResolveDefaultContext = async (
   logger.debug(`Locale Context: Resolved ${locale?.baseName} ${currencyCode}`);
 
   const newContext: UnchainedLocaleContext = {
-    locale: locale!,
-    countryCode: locale?.region as string,
+    locale,
+    countryCode: locale.region as string,
     currencyCode,
   };
 
