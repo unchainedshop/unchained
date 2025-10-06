@@ -4,7 +4,7 @@ import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortme
 import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.js';
 import upsertMedia, { MediaSchema } from './upsertMedia.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import createAssortment from './create.js';
+import createAssortment, { AssortmentCreatePayloadSchema } from './create.js';
 import { Modules } from '../../../modules.js';
 import { Services } from '../../../services/index.js';
 
@@ -12,10 +12,10 @@ export const AssortmentUpdatePayloadSchema = z.object({
   _id: z.string(),
   specification: z
     .object({
-      isActive: z.boolean(),
+      isActive: z.boolean().optional(),
       isBase: z.boolean().optional(),
       isRoot: z.boolean().optional(),
-      sequence: z.number(),
+      sequence: z.number().optional(),
       tags: z.array(z.string()).optional(),
       meta: z.record(z.unknown()).optional(),
       content: z
@@ -54,7 +54,7 @@ export default async function updateAssortment(
           products,
           children,
           filters,
-        },
+        } as z.infer<typeof AssortmentCreatePayloadSchema>,
         { logger, createShouldUpsertIfIDExists },
         unchainedAPI,
       );

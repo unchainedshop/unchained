@@ -3,7 +3,7 @@ import { Services } from '../services/index.js';
 import { z } from 'zod';
 
 export const AssetSchema = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   url: z.string(),
   meta: z.record(z.unknown()).optional(),
   fileName: z.string(),

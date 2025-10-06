@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/plugins",
-  "version": "4.0.0-rc.16",
+  "version": "4.0.0-rc.17",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
@@ -34,18 +34,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^4.0.0-rc.15",
-    "@unchainedshop/core-delivery": "^4.0.0-rc.15",
-    "@unchainedshop/core-enrollments": "^4.0.0-rc.15",
-    "@unchainedshop/core-orders": "^4.0.0-rc.15",
-    "@unchainedshop/core-payment": "^4.0.0-rc.15",
-    "@unchainedshop/core-products": "^4.0.0-rc.15",
-    "@unchainedshop/core-warehousing": "^4.0.0-rc.15",
-    "@unchainedshop/core-worker": "^4.0.0-rc.15",
-    "@unchainedshop/events": "^4.0.0-rc.15",
-    "@unchainedshop/file-upload": "^4.0.0-rc.15",
-    "@unchainedshop/logger": "^4.0.0-rc.15",
-    "@unchainedshop/utils": "^4.0.0-rc.15"
+    "@unchainedshop/api": "^4.0.0-rc.17",
+    "@unchainedshop/core-delivery": "^4.0.0-rc.17",
+    "@unchainedshop/core-enrollments": "^4.0.0-rc.17",
+    "@unchainedshop/core-orders": "^4.0.0-rc.17",
+    "@unchainedshop/core-payment": "^4.0.0-rc.17",
+    "@unchainedshop/core-products": "^4.0.0-rc.17",
+    "@unchainedshop/core-warehousing": "^4.0.0-rc.17",
+    "@unchainedshop/core-worker": "^4.0.0-rc.17",
+    "@unchainedshop/events": "^4.0.0-rc.17",
+    "@unchainedshop/file-upload": "^4.0.0-rc.17",
+    "@unchainedshop/logger": "^4.0.0-rc.17",
+    "@unchainedshop/utils": "^4.0.0-rc.17"
   },
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": ">= 3.714 < 4",
@@ -62,7 +62,7 @@
     "nodemailer": ">= 6.9 < 8",
     "open": "10.x",
     "p-memoize": "8.x",
-    "stripe": ">= 17 < 19",
+    "stripe": ">= 19 < 20",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
   },
@@ -136,7 +136,7 @@
     "nodemailer": "^7.0.5",
     "open": "^10.1.2",
     "p-memoize": "^8.0.0",
-    "stripe": "^18.3.0",
+    "stripe": "^19.1.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "web-push": "^3.6.7",

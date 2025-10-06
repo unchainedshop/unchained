@@ -36,6 +36,7 @@ test.describe('Bulk Importer', () => {
                 payload: {
                   _id: 'A',
                   specification: {
+                    sequence: 1,
                     tags: ['nice'],
                     type: 'SimpleProduct',
                     published: '2020-01-01T00:00Z',
@@ -204,6 +205,7 @@ test.describe('Bulk Importer', () => {
                 payload: {
                   _id: 'A',
                   specification: {
+                    sequence: 2,
                     tags: ['awesome2'],
                     type: 'SimpleProduct',
                     published: '2020-01-01T00:00Z',
@@ -364,6 +366,7 @@ test.describe('Bulk Importer', () => {
                 payload: {
                   _id: 'Assortment B',
                   specification: {
+                    sequence: 2,
                     isActive: true,
                     isBase: false,
                     isRoot: false,
@@ -384,6 +387,7 @@ test.describe('Bulk Importer', () => {
                 payload: {
                   _id: 'Assortment A',
                   specification: {
+                    sequence: 1,
                     isActive: true,
                     isBase: true,
                     isRoot: true,
@@ -409,6 +413,7 @@ test.describe('Bulk Importer', () => {
                   children: [
                     {
                       _id: 'assortment-link',
+                      sortKey: 0,
                       assortmentId: 'Assortment B',
                       tags: [],
                       meta: {},
@@ -424,9 +429,7 @@ test.describe('Bulk Importer', () => {
                   ],
                   media: [
                     {
-                      _id: null,
                       asset: {
-                        _id: null,
                         fileName: 'logo-light.svg',
                         url: 'https://sandbox-v3.unchained.shop/logo-light.svg',
                       },

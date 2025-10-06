@@ -6,7 +6,7 @@ export const AssortmentLinkSchema = z.object({
   _id: z.string().optional(),
   assortmentId: z.string(),
   tags: z.array(z.string()).optional(),
-  sortKey: z.number(),
+  sortKey: z.number().optional(),
   meta: z.record(z.unknown()).optional(),
 });
 

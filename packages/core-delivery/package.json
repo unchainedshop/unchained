@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-delivery",
-  "version": "4.0.0-rc.16",
+  "version": "4.0.0-rc.17",
   "main": "lib/delivery-index.js",
   "types": "lib/delivery-index.d.ts",
   "type": "module",
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.0.0-rc.15",
-    "@unchainedshop/logger": "^4.0.0-rc.15",
-    "@unchainedshop/mongodb": "^4.0.0-rc.15",
-    "@unchainedshop/utils": "^4.0.0-rc.15",
+    "@unchainedshop/events": "^4.0.0-rc.17",
+    "@unchainedshop/logger": "^4.0.0-rc.17",
+    "@unchainedshop/mongodb": "^4.0.0-rc.17",
+    "@unchainedshop/utils": "^4.0.0-rc.17",
     "expiry-map": "^2.0.0",
     "p-memoize": "^8.0.0"
   },

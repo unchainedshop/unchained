@@ -18,7 +18,7 @@ export const initStripeClient = async (): Promise<StripeType | null> => {
   // @ts-ignore
   const { default: Stripe } = await import('stripe');
   stripe = new Stripe(STRIPE_SECRET, {
-    apiVersion: '2025-08-27.basil',
+    apiVersion: '2025-09-30.clover',
   });
   return stripe;
 };

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "4.0.0-rc.16",
+  "version": "4.0.0-rc.17",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -35,15 +35,15 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "^4.0.0-rc.15",
-    "@unchainedshop/core": "^4.0.0-rc.15",
-    "@unchainedshop/events": "^4.0.0-rc.15",
-    "@unchainedshop/file-upload": "^4.0.0-rc.15",
-    "@unchainedshop/logger": "^4.0.0-rc.15",
-    "@unchainedshop/mongodb": "^4.0.0-rc.15",
-    "@unchainedshop/plugins": "^4.0.0-rc.15",
-    "@unchainedshop/roles": "^4.0.0-rc.15",
-    "@unchainedshop/utils": "^4.0.0-rc.15",
+    "@unchainedshop/api": "^4.0.0-rc.17",
+    "@unchainedshop/core": "^4.0.0-rc.17",
+    "@unchainedshop/events": "^4.0.0-rc.17",
+    "@unchainedshop/file-upload": "^4.0.0-rc.17",
+    "@unchainedshop/logger": "^4.0.0-rc.17",
+    "@unchainedshop/mongodb": "^4.0.0-rc.17",
+    "@unchainedshop/plugins": "^4.0.0-rc.17",
+    "@unchainedshop/roles": "^4.0.0-rc.17",
+    "@unchainedshop/utils": "^4.0.0-rc.17",
     "mustache": "^4.2.0",
     "safe-stable-stringify": "^2.5.0"
   },
