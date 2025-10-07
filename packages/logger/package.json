@@ -32,9 +32,6 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "chalk": "^5.4.1",
-    "loglevel": "^1.9.2",
-    "loglevel-plugin-prefix": "^0.8.4",
     "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {

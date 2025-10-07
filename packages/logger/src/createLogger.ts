@@ -1,8 +1,6 @@
+import { inspect } from 'node:util';
 import { stringify } from 'safe-stable-stringify';
-import { default as log } from 'loglevel';
 import { LogLevel } from './logger.types.js';
-import { default as prefix } from 'loglevel-plugin-prefix';
-import chalk, { ChalkInstance } from 'chalk';
 
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
   if (!debugString) return false;
@@ -22,78 +20,112 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
   return loggingMatched || false;
 };
 
-const colors: Record<string, ChalkInstance> = {
-  TRACE: chalk.magenta,
-  DEBUG: chalk.cyan,
-  INFO: chalk.blue,
-  WARN: chalk.yellow,
-  ERROR: chalk.red,
+// ANSI color codes
+const colors = {
+  gray: '\x1b[90m',
+  green: '\x1b[32m',
+  cyan: '\x1b[36m',
+  blue: '\x1b[34m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  magenta: '\x1b[35m',
+  reset: '\x1b[0m',
 };
 
-const SUPPORTED_LOG_FORMATS = ['json', 'unchained'];
+// Log level configuration
+enum LogLevelValue {
+  TRACE = 0,
+  DEBUG = 1,
+  INFO = 2,
+  WARN = 3,
+  ERROR = 4,
+}
 
-let prefixApplied = false;
-
-// Export for testing purposes only
-export const resetLoggerInitialization = () => {
-  // Reset all loggers
-  const loggers = (log as any).getLoggers();
-  Object.keys(loggers).forEach((name) => {
-    delete loggers[name];
-  });
-  prefixApplied = false;
+const logLevelMap: Record<string, LogLevelValue> = {
+  [LogLevel.Verbose]: LogLevelValue.TRACE,
+  [LogLevel.Debug]: LogLevelValue.DEBUG,
+  [LogLevel.Info]: LogLevelValue.INFO,
+  [LogLevel.Warning]: LogLevelValue.WARN,
+  [LogLevel.Error]: LogLevelValue.ERROR,
 };
 
-export const createLogger = (moduleName: string) => {
-  // Get environment variables inside the function
-  const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
+const levelColors: Record<string, string> = {
+  trace: colors.magenta,
+  debug: colors.cyan,
+  info: colors.blue,
+  warn: colors.yellow,
+  error: colors.red,
+};
 
-  if (!SUPPORTED_LOG_FORMATS.includes(UNCHAINED_LOG_FORMAT.toLowerCase())) {
-    throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of ${SUPPORTED_LOG_FORMATS.join(',')}`);
-  }
+export interface Logger {
+  trace: (message: any, ...args: any[]) => void;
+  debug: (message: any, ...args: any[]) => void;
+  info: (message: any, ...args: any[]) => void;
+  warn: (message: any, ...args: any[]) => void;
+  error: (message: any, ...args: any[]) => void;
+}
 
-  // Apply prefix formatting if needed (for unchained format)
-  if (UNCHAINED_LOG_FORMAT !== 'json' && !prefixApplied) {
-    prefix.reg(log);
-    prefix.apply(log, {
-      format: (level, name, timestamp) =>
-        `${chalk.gray(`${timestamp}`)} [${chalk.green(`${name}] ${colors[level.toUpperCase()](level)}:`)}`,
-    });
-    prefixApplied = true;
-  }
+const formatTimestamp = () => {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+};
 
+export const createLogger = (moduleName: string): Logger => {
+  const { DEBUG = '', LOG_LEVEL = LogLevel.Info } = process.env;
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
-  const logger = log.getLogger(moduleName);
+  const minLevel = loggingMatched
+    ? LogLevelValue.DEBUG
+    : logLevelMap[LOG_LEVEL.toLowerCase()] || LogLevelValue.INFO;
 
-  const logLevelMap: Record<string, log.LogLevelDesc> = {
-    [LogLevel.Debug]: log.levels.DEBUG,
-    [LogLevel.Info]: log.levels.INFO,
-    [LogLevel.Warning]: log.levels.WARN,
-    [LogLevel.Error]: log.levels.ERROR,
-    [LogLevel.Verbose]: log.levels.TRACE,
+  const log = (level: string, levelValue: LogLevelValue, message: any, ...args: any[]) => {
+    if (levelValue < minLevel) return;
+
+    const { UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
+    const format = UNCHAINED_LOG_FORMAT.toLowerCase();
+
+    // Validate format
+    if (format !== 'json' && format !== 'unchained') {
+      throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of json,unchained`);
+    }
+
+    if (format === 'json') {
+      // JSON format
+      const logObject: any = {
+        timestamp: new Date().toISOString(),
+        level: level.toUpperCase(),
+        name: moduleName,
+        message: typeof message === 'string' ? message : message,
+      };
+
+      // Merge additional args if they're objects
+      if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
+        Object.assign(logObject, args[0]);
+      }
+
+      // Use safe-stable-stringify for proper JSON output
+      console.log(stringify(logObject));
+    } else {
+      // Unchained format (pretty)
+      const timestamp = formatTimestamp();
+      const levelColor = levelColors[level] || colors.reset;
+      const prefix = `${colors.gray}${timestamp}${colors.reset} [${colors.green}${moduleName}${colors.reset}] ${levelColor}${level}:${colors.reset}`;
+
+      if (typeof message === 'string') {
+        console.log(prefix, message, ...args);
+      } else {
+        console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
+      }
+    }
   };
 
-  logger.setDefaultLevel(loggingMatched ? log.levels.DEBUG : logLevelMap[LOG_LEVEL.toLowerCase()]);
-
-  // For JSON format, wrap all logger methods
-  if (UNCHAINED_LOG_FORMAT.toLowerCase() === 'json') {
-    ['trace', 'debug', 'info', 'warn', 'error'].forEach((method) => {
-      (logger as any)[method] = function (message: string, meta?: any) {
-        console.log(
-          stringify(
-            {
-              timestamp: new Date(),
-              level: method.toUpperCase(),
-              name: moduleName,
-              message,
-              ...(meta || {}),
-            },
-            (key, value) => (typeof value === 'bigint' ? value.toString() : value),
-          ),
-        );
-      };
-    });
-  }
-
-  return logger;
+  return {
+    trace: (message: any, ...args: any[]) => log('trace', LogLevelValue.TRACE, message, ...args),
+    debug: (message: any, ...args: any[]) => log('debug', LogLevelValue.DEBUG, message, ...args),
+    info: (message: any, ...args: any[]) => log('info', LogLevelValue.INFO, message, ...args),
+    warn: (message: any, ...args: any[]) => log('warn', LogLevelValue.WARN, message, ...args),
+    error: (message: any, ...args: any[]) => log('error', LogLevelValue.ERROR, message, ...args),
+  };
 };
