@@ -1,7 +1,12 @@
 import Fastify from 'fastify';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-import { connect, unchainedLogger, connectChat, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
+import {
+  connect,
+  unchainedLogger,
+  connectChat,
+  fastifyRouter,
+} from '@unchainedshop/api/lib/fastify/index.js';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.js';
@@ -22,17 +27,17 @@ try {
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
 
   const platform = await startPlatform({
-    plugins: [useErrorHandler(({ errors }) => {
-      for (const error of errors) {
-        const { code: errorCode } = (error as any).extensions || {};
-        if (!errorCode) continue;
-        (error as any).path?.map((path) => {
-          fastify.log.error(
-            `${error.message} (${path} -> ${error.name})`
-          );
-        });
-      }
-    })],
+    plugins: [
+      useErrorHandler(({ errors }) => {
+        for (const error of errors) {
+          const { code: errorCode } = (error as any).extensions || {};
+          if (!errorCode) continue;
+          (error as any).path?.map((path) => {
+            fastify.log.error(`${error.message} (${path} -> ${error.name})`);
+          });
+        }
+      }),
+    ],
     modules: defaultModules,
   });
 

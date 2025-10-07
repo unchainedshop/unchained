@@ -1,6 +1,5 @@
 import { performance } from 'node:perf_hooks';
 import { createLogger, resetLoggerInitialization } from '../src/createLogger.js';
-import type { Logger } from 'loglevel';
 
 interface BenchmarkResult {
   name: string;
