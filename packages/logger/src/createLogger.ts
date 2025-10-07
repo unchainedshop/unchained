@@ -178,9 +178,13 @@ export const createLogger = (moduleName: string): Logger => {
         message: typeof message === 'string' ? message : message,
       };
 
-      // Merge additional args if they're objects
+      // Merge additional args if they're objects, guarding against prototype pollution
       if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
-        Object.assign(logObject, args[0]);
+        for (const key in args[0]) {
+          // Skip prototype pollution vectors
+          if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+          logObject[key] = args[0][key];
+        }
       }
 
       // Use safe-stable-stringify for proper JSON output with BigInt support

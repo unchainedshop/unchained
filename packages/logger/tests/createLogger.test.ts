@@ -34,7 +34,7 @@ describe('createLogger', () => {
           } else {
             try {
               return JSON.stringify(arg);
-            } catch (e) {
+            } catch {
               return String(arg);
             }
           }
@@ -572,6 +572,96 @@ describe('createLogger', () => {
       assert(parsed2.name === 'json-module2');
       assert(parsed2.message === 'message2');
       assert(parsed2.level === 'INFO');
+    });
+  });
+
+  describe('Security', () => {
+    it('should guard against prototype pollution via __proto__', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      const logger = createLogger('prototype-pollution-test');
+
+      const maliciousPayload = JSON.parse('{"__proto__": {"polluted": "value"}}');
+
+      consoleOutput = [];
+      logger.info('test', maliciousPayload);
+
+      const lastOutput = consoleOutput[consoleOutput.length - 1];
+      const parsed = JSON.parse(lastOutput);
+
+      // Should not pollute Object prototype
+      assert.strictEqual('polluted' in Object.prototype, false);
+      assert.strictEqual('polluted' in {}, false);
+      // The dangerous __proto__ key should be filtered out
+      // Check that we only have expected keys
+      const keys = Object.keys(parsed);
+      assert.strictEqual(keys.includes('__proto__'), false);
+    });
+
+    it('should guard against prototype pollution via constructor', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      const logger = createLogger('constructor-pollution-test');
+
+      const maliciousPayload = { constructor: { polluted: 'value' } };
+
+      consoleOutput = [];
+      logger.info('test', maliciousPayload);
+
+      const lastOutput = consoleOutput[consoleOutput.length - 1];
+      const parsed = JSON.parse(lastOutput);
+
+      // The dangerous constructor key should be filtered out
+      const keys = Object.keys(parsed);
+      assert.strictEqual(keys.includes('constructor'), false);
+      // Verify the constructor wasn't overridden with the malicious payload
+      assert.notStrictEqual(parsed.constructor, maliciousPayload.constructor);
+    });
+
+    it('should guard against prototype pollution via prototype', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      const logger = createLogger('prototype-key-test');
+
+      const maliciousPayload = { prototype: { polluted: 'value' } };
+
+      consoleOutput = [];
+      logger.info('test', maliciousPayload);
+
+      const lastOutput = consoleOutput[consoleOutput.length - 1];
+      const parsed = JSON.parse(lastOutput);
+
+      // The dangerous prototype key should be filtered out
+      const keys = Object.keys(parsed);
+      assert.strictEqual(keys.includes('prototype'), false);
+    });
+
+    it('should allow safe keys while blocking dangerous ones', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      const logger = createLogger('mixed-keys-test');
+
+      const mixedPayload = {
+        safeKey: 'safe value',
+        __proto__: { dangerous: 'value' },
+        anotherSafe: 123,
+        constructor: { dangerous: 'value' },
+        validKey: true,
+        prototype: { dangerous: 'value' },
+      };
+
+      consoleOutput = [];
+      logger.info('test', mixedPayload);
+
+      const lastOutput = consoleOutput[consoleOutput.length - 1];
+      const parsed = JSON.parse(lastOutput);
+
+      // Safe keys should be present
+      assert.strictEqual(parsed.safeKey, 'safe value');
+      assert.strictEqual(parsed.anotherSafe, 123);
+      assert.strictEqual(parsed.validKey, true);
+
+      // Dangerous keys should be filtered out
+      const keys = Object.keys(parsed);
+      assert.strictEqual(keys.includes('__proto__'), false);
+      assert.strictEqual(keys.includes('constructor'), false);
+      assert.strictEqual(keys.includes('prototype'), false);
     });
   });
 
