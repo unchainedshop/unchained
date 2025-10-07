@@ -31,7 +31,7 @@ export const User = {
   emails: [
     {
       address: 'user@unchained.local',
-      verified: true,
+      verified: false,
     },
   ],
   profile: {
