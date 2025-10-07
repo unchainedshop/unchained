@@ -933,7 +933,7 @@ test.describe('Work Queue', () => {
           status: ['SUCCESS'],
         },
       });
-      assert.strictEqual(workQueueCount >= 0, true);
+      assert.strictEqual(workQueueCount > 0, true);
     });
 
     test('Return count filtered by types', async () => {
@@ -949,7 +949,7 @@ test.describe('Work Queue', () => {
           types: ['EXTERNAL'],
         },
       });
-      assert.strictEqual(workQueueCount >= 0, true);
+      assert.strictEqual(workQueueCount > 0, true);
     });
 
     test('Return count filtered by created date range', async () => {
@@ -971,7 +971,7 @@ test.describe('Work Queue', () => {
           },
         },
       });
-      assert.strictEqual(workQueueCount >= 0, true);
+      assert.strictEqual(workQueueCount > 0, true);
     });
 
     test('Return count filtered by queryString', async () => {
@@ -987,7 +987,7 @@ test.describe('Work Queue', () => {
           queryString: 'external',
         },
       });
-      assert.strictEqual(workQueueCount >= 0, true);
+      assert.strictEqual(workQueueCount > 0, true);
     });
 
     test('Return count with combined filters', async () => {
@@ -1011,7 +1011,7 @@ test.describe('Work Queue', () => {
           },
         },
       });
-      assert.strictEqual(workQueueCount >= 0, true);
+      assert.strictEqual(workQueueCount > 0, true);
     });
   });
 
@@ -1159,7 +1159,7 @@ test.describe('Work Queue', () => {
           },
         },
       });
-      assert.strictEqual(workStatistics.length >= 0, true);
+      assert.strictEqual(workStatistics.length > 0, true);
     });
 
     test('Return empty array when no matching types found', async () => {
