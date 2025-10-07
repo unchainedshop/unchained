@@ -2,12 +2,31 @@ import { inspect } from 'node:util';
 import { stringify } from 'safe-stable-stringify';
 import { LogLevel } from './logger.types.js';
 
+// Cache for compiled regex patterns
+const regexCache = new Map<string, RegExp>();
+
+// Cache for debug pattern results
+const debugPatternCache = new Map<string, boolean>();
+
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
   if (!debugString) return false;
+
+  // Check cache first
+  const cacheKey = `${debugString}::${moduleName}`;
+  const cached = debugPatternCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const loggingMatched = debugString.split(',').reduce((accumulator: any, name: string) => {
     if (accumulator === false) return accumulator;
-    const nameRegex = name.replace(/-/i, '\\-?').replace(/:\*/i, '\\:?*').replace(/\*/i, '.*');
-    const regExp = new RegExp(`^${nameRegex}$`, 'm');
+
+    // Check regex cache
+    let regExp = regexCache.get(name);
+    if (!regExp) {
+      const nameRegex = name.replace(/-/i, '\\-?').replace(/:\*/i, '\\:?*').replace(/\*/i, '.*');
+      regExp = new RegExp(`^${nameRegex}$`, 'm');
+      regexCache.set(name, regExp);
+    }
+
     if (regExp.test(moduleName)) {
       if (name.slice(0, 1) === '-') {
         // explicitly disable
@@ -17,7 +36,10 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
     }
     return accumulator;
   }, undefined);
-  return loggingMatched || false;
+
+  const result = loggingMatched || false;
+  debugPatternCache.set(cacheKey, result);
+  return result;
 };
 
 // ANSI color codes
@@ -51,13 +73,7 @@ const logLevelMap: Record<string, LogLevelValue> = {
   trace: LogLevelValue.TRACE,
 };
 
-const levelColors: Record<string, string> = {
-  trace: colors.magenta,
-  debug: colors.cyan,
-  info: colors.blue,
-  warn: colors.yellow,
-  error: colors.red,
-};
+// Level colors are now used directly in makeLogFn
 
 export interface Logger {
   trace: (message: any, ...args: any[]) => void;
@@ -67,12 +83,13 @@ export interface Logger {
   error: (message: any, ...args: any[]) => void;
 }
 
+// Optimized timestamp formatting - avoid string conversions
 const formatTimestamp = () => {
   const now = new Date();
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  return `${hours}:${minutes}:${seconds}`;
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+  return `${h < 10 ? '0' : ''}${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
 };
 
 // Custom replacer for BigInt values
@@ -83,10 +100,10 @@ const bigintReplacer = (key: string, value: any) => {
   return value;
 };
 
-// Reset function for tests - current implementation doesn't maintain global state
+// Reset function for tests - now clears caches
 export const resetLoggerInitialization = (): void => {
-  // No-op function for compatibility with tests
-  // The current implementation doesn't maintain any global state that needs resetting
+  regexCache.clear();
+  debugPatternCache.clear();
 };
 
 export const createLogger = (moduleName: string): Logger => {
@@ -111,60 +128,67 @@ export const createLogger = (moduleName: string): Logger => {
   const noop = () => {
     // Intentionally empty for performance
   };
+  
+  // Pre-compute static parts for better performance
+  const isJson = format === 'json';
+  const grayCode = colors.gray;
+  const resetCode = colors.reset;
+  const greenCode = colors.green;
+  const moduleColorized = `[${greenCode}${moduleName}${resetCode}]`;
 
-  const log = (level: string, levelValue: LogLevelValue, message: any, ...args: any[]) => {
-    if (levelValue < minLevel) return;
+  // Fast paths for JSON and unchained formats
+  if (isJson) {
+    // JSON format - inline functions for maximum performance
+    return {
+      trace: LogLevelValue.TRACE < minLevel ? noop : (message: any, ...args: any[]) => {
+        const logObject: any = { timestamp: new Date().toISOString(), level: 'TRACE', name: moduleName, message };
+        if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) Object.assign(logObject, args[0]);
+        console.log(stringify(logObject, bigintReplacer));
+      },
+      debug: LogLevelValue.DEBUG < minLevel ? noop : (message: any, ...args: any[]) => {
+        const logObject: any = { timestamp: new Date().toISOString(), level: 'DEBUG', name: moduleName, message };
+        if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) Object.assign(logObject, args[0]);
+        console.log(stringify(logObject, bigintReplacer));
+      },
+      info: LogLevelValue.INFO < minLevel ? noop : (message: any, ...args: any[]) => {
+        const logObject: any = { timestamp: new Date().toISOString(), level: 'INFO', name: moduleName, message };
+        if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) Object.assign(logObject, args[0]);
+        console.log(stringify(logObject, bigintReplacer));
+      },
+      warn: LogLevelValue.WARN < minLevel ? noop : (message: any, ...args: any[]) => {
+        const logObject: any = { timestamp: new Date().toISOString(), level: 'WARN', name: moduleName, message };
+        if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) Object.assign(logObject, args[0]);
+        console.log(stringify(logObject, bigintReplacer));
+      },
+      error: LogLevelValue.ERROR < minLevel ? noop : (message: any, ...args: any[]) => {
+        const logObject: any = { timestamp: new Date().toISOString(), level: 'ERROR', name: moduleName, message };
+        if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) Object.assign(logObject, args[0]);
+        console.log(stringify(logObject, bigintReplacer));
+      },
+    };
+  }
 
-    if (format === 'json') {
-      // JSON format
-      const logObject: any = {
-        timestamp: new Date().toISOString(),
-        level: level.toUpperCase(),
-        name: moduleName,
-        message: typeof message === 'string' ? message : message,
-      };
-
-      // Merge additional args if they're objects
-      if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
-        Object.assign(logObject, args[0]);
-      }
-
-      // Use safe-stable-stringify for proper JSON output with BigInt support
-      console.log(stringify(logObject, bigintReplacer));
-    } else {
-      // Unchained format (pretty)
-      const timestamp = formatTimestamp();
-      const levelColor = levelColors[level] || colors.reset;
-      const prefix = `${colors.gray}${timestamp}${colors.reset} [${colors.green}${moduleName}${colors.reset}] ${levelColor}${level}:${colors.reset}`;
-
-      if (typeof message === 'string') {
-        console.log(prefix, message, ...args);
-      } else {
-        console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
-      }
-    }
-  };
-
+  // Unchained format - inline functions with pre-computed parts
   return {
-    trace:
-      LogLevelValue.TRACE < minLevel
-        ? noop
-        : (message: any, ...args: any[]) => log('trace', LogLevelValue.TRACE, message, ...args),
-    debug:
-      LogLevelValue.DEBUG < minLevel
-        ? noop
-        : (message: any, ...args: any[]) => log('debug', LogLevelValue.DEBUG, message, ...args),
-    info:
-      LogLevelValue.INFO < minLevel
-        ? noop
-        : (message: any, ...args: any[]) => log('info', LogLevelValue.INFO, message, ...args),
-    warn:
-      LogLevelValue.WARN < minLevel
-        ? noop
-        : (message: any, ...args: any[]) => log('warn', LogLevelValue.WARN, message, ...args),
-    error:
-      LogLevelValue.ERROR < minLevel
-        ? noop
-        : (message: any, ...args: any[]) => log('error', LogLevelValue.ERROR, message, ...args),
+    trace: LogLevelValue.TRACE < minLevel ? noop : (message: any, ...args: any[]) => {
+      const prefix = `${grayCode}${formatTimestamp()}${resetCode} ${moduleColorized} ${colors.magenta}trace:${resetCode}`;
+      typeof message === 'string' ? console.log(prefix, message, ...args) : console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
+    },
+    debug: LogLevelValue.DEBUG < minLevel ? noop : (message: any, ...args: any[]) => {
+      const prefix = `${grayCode}${formatTimestamp()}${resetCode} ${moduleColorized} ${colors.cyan}debug:${resetCode}`;
+      typeof message === 'string' ? console.log(prefix, message, ...args) : console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
+    },
+    info: LogLevelValue.INFO < minLevel ? noop : (message: any, ...args: any[]) => {
+      const prefix = `${grayCode}${formatTimestamp()}${resetCode} ${moduleColorized} ${colors.blue}info:${resetCode}`;
+      typeof message === 'string' ? console.log(prefix, message, ...args) : console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
+    },
+    warn: LogLevelValue.WARN < minLevel ? noop : (message: any, ...args: any[]) => {
+      const prefix = `${grayCode}${formatTimestamp()}${resetCode} ${moduleColorized} ${colors.yellow}warn:${resetCode}`;
+      typeof message === 'string' ? console.log(prefix, message, ...args) : console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
+    },
+    error: LogLevelValue.ERROR < minLevel ? noop : (message: any, ...args: any[]) => {
+      const prefix = `${grayCode}${formatTimestamp()}${resetCode} ${moduleColorized} ${colors.red}error:${resetCode}`;
+      typeof message === 'string' ? console.log(prefix, message, ...args) : console.log(prefix, inspect(message, { colors: true, depth: 3 }), ...args);
+    },
   };
 };
