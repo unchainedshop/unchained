@@ -283,4 +283,118 @@ test.describe('Order: Lists', () => {
     assert.strictEqual(order, null);
     assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
   });
+
+  test('Query.orderStatistics for admin user should return statistics', async () => {
+    const {
+      data: { orderStatistics },
+    } = await adminGraphqlFetch({
+      query: /* GraphQL */ `
+        query OrderStatistics {
+          orderStatistics {
+            newCount
+            checkoutCount
+            rejectCount
+            confirmCount
+            fulfillCount
+            confirmRecords {
+              total {
+                amount
+                currencyCode
+              }
+            }
+            checkoutRecords {
+              total {
+                amount
+                currencyCode
+              }
+            }
+            rejectRecords {
+              total {
+                amount
+                currencyCode
+              }
+            }
+            newRecords {
+              total {
+                amount
+                currencyCode
+              }
+            }
+            fulfilledRecords {
+              total {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+      `,
+      variables: {},
+    });
+    assert.strictEqual(orderStatistics.newCount, 2);
+    assert.strictEqual(orderStatistics.checkoutCount, 2);
+    assert.strictEqual(orderStatistics.confirmCount, 2);
+    assert.strictEqual(Array.isArray(orderStatistics.confirmRecords), true);
+    assert.strictEqual(Array.isArray(orderStatistics.checkoutRecords), true);
+  });
+
+  test('Query.orderStatistics for admin user should return statistics filtered by date range', async () => {
+    const now = new Date();
+    const tenYearsAgo = new Date(now.getTime() - 10 * 365 * 24 * 60 * 60 * 1000);
+    const oneYearInFuture = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+
+    const {
+      data: { orderStatistics },
+    } = await adminGraphqlFetch({
+      query: /* GraphQL */ `
+        query OrderStatistics($dateRange: DateFilterInput) {
+          orderStatistics(dateRange: $dateRange) {
+            newCount
+            confirmCount
+            fulfillCount
+          }
+        }
+      `,
+      variables: {
+        dateRange: {
+          start: tenYearsAgo.toISOString(),
+          end: oneYearInFuture.toISOString(),
+        },
+      },
+    });
+    assert.ok(orderStatistics);
+    assert.strictEqual(orderStatistics.confirmCount, 1);
+    assert.strictEqual(orderStatistics.newCount, 2);
+    assert.strictEqual(orderStatistics.fulfillCount, 0);
+  });
+
+  test('Query.orderStatistics for normal user should return NoPermissionError', async () => {
+    const { errors } = await graphqlFetch({
+      query: /* GraphQL */ `
+        query OrderStatistics {
+          orderStatistics {
+            newCount
+            confirmCount
+          }
+        }
+      `,
+      variables: {},
+    });
+    assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+  });
+
+  test('Query.orderStatistics for anonymous user should return NoPermissionError', async () => {
+    const { errors } = await graphqlFetchAsAnonymousUser({
+      query: /* GraphQL */ `
+        query OrderStatistics {
+          orderStatistics {
+            newCount
+            confirmCount
+          }
+        }
+      `,
+      variables: {},
+    });
+    assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+  });
 });
