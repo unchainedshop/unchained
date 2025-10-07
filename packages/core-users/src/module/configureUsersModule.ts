@@ -47,7 +47,7 @@ const USER_EVENTS = [
   'USER_REMOVE',
 ];
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
-  const user = rawUser;
+  const user = { ...rawUser };
   delete user?.services;
   return user;
 };
