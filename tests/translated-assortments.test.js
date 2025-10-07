@@ -7,7 +7,7 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
-import { SimpleAssortment } from './seeds/assortments.js';
+import { SimpleAssortment, PngAssortmentMedia } from './seeds/assortments.js';
 
 let graphqlFetch;
 
@@ -99,6 +99,100 @@ test.describe('Assortment: Translated Texts', async () => {
         },
       });
       assert.equal(errors[0].extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Query.translatedAssortmentMediaTexts for admin user should', async () => {
+    test('return list of assortment media texts when existing id is passed', async () => {
+      const {
+        data: { translatedAssortmentMediaTexts },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TranslatedAssortmentMediaTexts($assortmentMediaId: ID!) {
+            translatedAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId) {
+              _id
+              locale
+              title
+              subtitle
+            }
+          }
+        `,
+        variables: {
+          assortmentMediaId: PngAssortmentMedia._id,
+        },
+      });
+      assert.equal(translatedAssortmentMediaTexts.length, 2);
+      assert.deepStrictEqual(translatedAssortmentMediaTexts, [
+        {
+          _id: 'german-png-assortment',
+          locale: 'de',
+          title: 'assortment-media-title-de',
+          subtitle: 'assortment-media-subtitle-de',
+        },
+        {
+          _id: 'french-png-assortment',
+          locale: 'fr',
+          title: 'assortment-media-title-fr',
+          subtitle: 'assortment-media-subtitle-fr',
+        },
+      ]);
+    });
+
+    test('return empty array when non-existing id is passed', async () => {
+      const {
+        data: { translatedAssortmentMediaTexts },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TranslatedAssortmentMediaTexts($assortmentMediaId: ID!) {
+            translatedAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentMediaId: 'non-existing-media-id',
+        },
+      });
+
+      assert.equal(translatedAssortmentMediaTexts.length, 0);
+    });
+  });
+
+  test.describe('Query.translatedAssortmentMediaTexts for anonymous user should', async () => {
+    test('return list of assortment media texts when existing id is passed', async () => {
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const {
+        data: { translatedAssortmentMediaTexts },
+      } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query TranslatedAssortmentMediaTexts($assortmentMediaId: ID!) {
+            translatedAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId) {
+              _id
+              locale
+              title
+              subtitle
+            }
+          }
+        `,
+        variables: {
+          assortmentMediaId: PngAssortmentMedia._id,
+        },
+      });
+      assert.equal(translatedAssortmentMediaTexts.length, 2);
+      assert.deepStrictEqual(translatedAssortmentMediaTexts, [
+        {
+          _id: 'german-png-assortment',
+          locale: 'de',
+          title: 'assortment-media-title-de',
+          subtitle: 'assortment-media-subtitle-de',
+        },
+        {
+          _id: 'french-png-assortment',
+          locale: 'fr',
+          title: 'assortment-media-title-fr',
+          subtitle: 'assortment-media-subtitle-fr',
+        },
+      ]);
     });
   });
 });
