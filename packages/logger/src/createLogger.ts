@@ -47,6 +47,8 @@ const logLevelMap: Record<string, LogLevelValue> = {
   [LogLevel.Info]: LogLevelValue.INFO,
   [LogLevel.Warning]: LogLevelValue.WARN,
   [LogLevel.Error]: LogLevelValue.ERROR,
+  // Add trace as an alias for verbose
+  trace: LogLevelValue.TRACE,
 };
 
 const levelColors: Record<string, string> = {
@@ -73,6 +75,14 @@ const formatTimestamp = () => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+// Custom replacer for BigInt values
+const bigintReplacer = (key: string, value: any) => {
+  if (typeof value === 'bigint') {
+    return value.toString();
+  }
+  return value;
+};
+
 // Reset function for tests - current implementation doesn't maintain global state
 export const resetLoggerInitialization = (): void => {
   // No-op function for compatibility with tests
@@ -89,9 +99,13 @@ export const createLogger = (moduleName: string): Logger => {
   }
 
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
+  const logLevelLower = LOG_LEVEL.toLowerCase();
+  const mappedLevel = logLevelMap[logLevelLower];
   const minLevel = loggingMatched
     ? LogLevelValue.DEBUG
-    : logLevelMap[LOG_LEVEL.toLowerCase()] || LogLevelValue.INFO;
+    : mappedLevel !== undefined
+      ? mappedLevel
+      : LogLevelValue.INFO;
 
   const log = (level: string, levelValue: LogLevelValue, message: any, ...args: any[]) => {
     if (levelValue < minLevel) return;
@@ -110,8 +124,8 @@ export const createLogger = (moduleName: string): Logger => {
         Object.assign(logObject, args[0]);
       }
 
-      // Use safe-stable-stringify for proper JSON output
-      console.log(stringify(logObject));
+      // Use safe-stable-stringify for proper JSON output with BigInt support
+      console.log(stringify(logObject, bigintReplacer));
     } else {
       // Unchained format (pretty)
       const timestamp = formatTimestamp();
