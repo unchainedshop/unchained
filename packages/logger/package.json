@@ -10,7 +10,8 @@
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "tsx --test",
-    "test:watch": "tsx --test --watch"
+    "test:watch": "tsx --test --watch",
+    "benchmark": "tsx benchmarks/benchmark.ts"
   },
   "repository": {
     "type": "git",
