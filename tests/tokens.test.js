@@ -113,7 +113,7 @@ test.describe('Tokens', () => {
 
     test('Return tokens with limit and offset', async () => {
       const {
-        data: { tokens },        
+        data: { tokens },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Tokens($limit: Int, $offset: Int) {

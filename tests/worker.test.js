@@ -904,4 +904,315 @@ test.describe('Work Queue', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
+
+  test.describe('Query.workQueueCount for admin user should', () => {
+    test('Return count of all work items', async () => {
+      const {
+        data: { workQueueCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            workQueueCount
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(workQueueCount > 0, true);
+    });
+
+    test('Return count filtered by status', async () => {
+      const {
+        data: { workQueueCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkQueueCount($status: [WorkStatus!]) {
+            workQueueCount(status: $status)
+          }
+        `,
+        variables: {
+          status: ['SUCCESS'],
+        },
+      });
+      assert.strictEqual(workQueueCount >= 0, true);
+    });
+
+    test('Return count filtered by types', async () => {
+      const {
+        data: { workQueueCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkQueueCount($types: [WorkType!]) {
+            workQueueCount(types: $types)
+          }
+        `,
+        variables: {
+          types: ['EXTERNAL'],
+        },
+      });
+      assert.strictEqual(workQueueCount >= 0, true);
+    });
+
+    test('Return count filtered by created date range', async () => {
+      const now = new Date();
+      const oneHourAgo = new Date(now.getTime() - 1 * 60 * 60 * 1000);
+
+      const {
+        data: { workQueueCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkQueueCount($created: DateFilterInput) {
+            workQueueCount(created: $created)
+          }
+        `,
+        variables: {
+          created: {
+            start: oneHourAgo.toISOString(),
+            end: now.toISOString(),
+          },
+        },
+      });
+      assert.strictEqual(workQueueCount >= 0, true);
+    });
+
+    test('Return count filtered by queryString', async () => {
+      const {
+        data: { workQueueCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkQueueCount($queryString: String) {
+            workQueueCount(queryString: $queryString)
+          }
+        `,
+        variables: {
+          queryString: 'external',
+        },
+      });
+      assert.strictEqual(workQueueCount >= 0, true);
+    });
+
+    test('Return count with combined filters', async () => {
+      const now = new Date();
+      const oneHourAgo = new Date(now.getTime() - 1 * 60 * 60 * 1000);
+
+      const {
+        data: { workQueueCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkQueueCount($status: [WorkStatus!], $types: [WorkType!], $created: DateFilterInput) {
+            workQueueCount(status: $status, types: $types, created: $created)
+          }
+        `,
+        variables: {
+          status: ['SUCCESS'],
+          types: ['HEARTBEAT'],
+          created: {
+            start: oneHourAgo.toISOString(),
+            end: now.toISOString(),
+          },
+        },
+      });
+      assert.strictEqual(workQueueCount >= 0, true);
+    });
+  });
+
+  test.describe('Query.workQueueCount for normal user should', () => {
+    test('Return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query {
+            workQueueCount
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Query.workQueueCount for anonymous user should', () => {
+    test('Return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query {
+            workQueueCount
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Query.workStatistics for admin user should', () => {
+    test('Return statistics for all work types', async () => {
+      const {
+        data: { workStatistics },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkStatistics {
+            workStatistics {
+              type
+              newCount
+              startCount
+              errorCount
+              successCount
+              deleteCount
+            }
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(workStatistics.length > 0, true);
+
+      const heartbeatStats = workStatistics.find((s) => s.type === 'HEARTBEAT');
+      assert.ok(heartbeatStats);
+      assert.strictEqual(typeof heartbeatStats.newCount, 'number');
+      assert.strictEqual(typeof heartbeatStats.successCount, 'number');
+      assert.strictEqual(heartbeatStats.successCount > 0, true);
+
+      const externalStats = workStatistics.find((s) => s.type === 'EXTERNAL');
+      if (externalStats) {
+        assert.strictEqual(externalStats.newCount, 4);
+        assert.strictEqual(externalStats.startCount, 3);
+        assert.strictEqual(externalStats.errorCount, 0);
+        assert.strictEqual(externalStats.successCount, 2);
+        assert.strictEqual(externalStats.deleteCount, 1);
+      }
+    });
+
+    test('Return statistics filtered by types', async () => {
+      const {
+        data: { workStatistics },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkStatistics($types: [String!]) {
+            workStatistics(types: $types) {
+              type
+              newCount
+              startCount
+              errorCount
+              successCount
+              deleteCount
+            }
+          }
+        `,
+        variables: {
+          types: ['HEARTBEAT'],
+        },
+      });
+      assert.strictEqual(workStatistics.length, 1);
+      assert.strictEqual(workStatistics[0].type, 'HEARTBEAT');
+      assert.strictEqual(workStatistics[0].successCount, 2);
+    });
+
+    test('Return statistics filtered by multiple types', async () => {
+      const {
+        data: { workStatistics },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkStatistics($types: [String!]) {
+            workStatistics(types: $types) {
+              type
+              newCount
+              successCount
+            }
+          }
+        `,
+        variables: {
+          types: ['HEARTBEAT', 'EXTERNAL'],
+        },
+      });
+      assert.strictEqual(workStatistics.length, 2);
+      assert.strictEqual(
+        workStatistics.every((s) => s.type === 'HEARTBEAT' || s.type === 'EXTERNAL'),
+        true,
+      );
+      const heartbeatStats = workStatistics.find((s) => s.type === 'HEARTBEAT');
+      const externalStats = workStatistics.find((s) => s.type === 'EXTERNAL');
+      assert.strictEqual(heartbeatStats.successCount, 2);
+      assert.strictEqual(heartbeatStats.newCount, 4);
+      assert.strictEqual(externalStats.successCount, 2);
+      assert.strictEqual(externalStats.newCount, 4);
+    });
+
+    test('Return statistics filtered by date range', async () => {
+      const now = new Date();
+      const fourHoursAgo = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+      const thirtyMinutesInFuture = new Date(now.getTime() + 30 * 60 * 1000);
+
+      const {
+        data: { workStatistics },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkStatistics($dateRange: DateFilterInput) {
+            workStatistics(dateRange: $dateRange) {
+              type
+              newCount
+              successCount
+            }
+          }
+        `,
+        variables: {
+          dateRange: {
+            start: fourHoursAgo.toISOString(),
+            end: thirtyMinutesInFuture.toISOString(),
+          },
+        },
+      });
+      assert.strictEqual(workStatistics.length >= 0, true);
+    });
+
+    test('Return empty array when no matching types found', async () => {
+      const {
+        data: { workStatistics },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query WorkStatistics($types: [String!]) {
+            workStatistics(types: $types) {
+              type
+              newCount
+            }
+          }
+        `,
+        variables: {
+          types: ['NON_EXISTENT_TYPE'],
+        },
+      });
+      assert.strictEqual(workStatistics.length, 0);
+    });
+  });
+
+  test.describe('Query.workStatistics for normal user should', () => {
+    test('Return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query WorkStatistics {
+            workStatistics {
+              type
+              newCount
+            }
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Query.workStatistics for anonymous user should', () => {
+    test('Return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query WorkStatistics {
+            workStatistics {
+              type
+              newCount
+            }
+          }
+        `,
+        variables: {},
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
 });
