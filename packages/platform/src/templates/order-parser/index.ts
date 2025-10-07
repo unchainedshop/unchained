@@ -3,53 +3,46 @@ import { getOrderSummaryData } from './getOrderSummaryData.js';
 import { Order } from '@unchainedshop/core-orders';
 import { UnchainedCore } from '@unchainedshop/core';
 
-import mustache from 'mustache';
-
-const textTemplate = `Order number: {{orderNumber}}
-Ordered: {{orderDate}}
-Payment method: {{summary.payment}}
-Delivery method: {{summary.delivery}}
-
-Delivery address:
-{{summary.deliveryAddress}}
-
-Billing address:
-{{summary.billingAddress}}
-
-Order Details:
-
-Items:
-{{#positions}}
-* {{quantity}} {{productTexts.title}}: {{total}}
-{{/positions}}
-
-{{#summary.rawPrices.delivery.amount}}
-Delivery Fees: {{summary.prices.delivery}}
-{{/summary.rawPrices.delivery.amount}}
-{{#summary.rawPrices.payment.amount}}
-Payment Fees: {{summary.prices.payment}}
-{{/summary.rawPrices.payment.amount}}
-Total: {{summary.prices.gross}}
-{{#summary.rawPrices.taxes.amount}}
-(VAT included: {{summary.prices.taxes}})
-{{/summary.rawPrices.taxes.amount}}
-`;
-
 export const transformOrderToText = async (
   { order, locale }: { order: Order; locale: Intl.Locale },
   context: UnchainedCore,
 ) => {
-  return mustache.render(
-    textTemplate,
-    {
-      orderDate: new Date(order.ordered!).toLocaleString(),
-      orderNumber: order.orderNumber,
-      summary: await getOrderSummaryData(order, { locale }, context),
-      positions: await getOrderPositionsData(order, { locale }, context),
-    },
-    undefined,
-    { escape: (t) => t },
-  );
+  const orderDate = new Date(order.ordered!).toLocaleString();
+  const orderNumber = order.orderNumber;
+  const summary = await getOrderSummaryData(order, { locale }, context);
+  const positions = await getOrderPositionsData(order, { locale }, context);
+
+  const positionsText = positions
+    .map((pos) => `* ${pos.quantity} ${pos.productTexts.title}: ${pos.total}`)
+    .join('\n');
+
+  const deliveryFeesText = summary.rawPrices.delivery.amount
+    ? `Delivery Fees: ${summary.prices.delivery}\n`
+    : '';
+  const paymentFeesText = summary.rawPrices.payment.amount
+    ? `Payment Fees: ${summary.prices.payment}\n`
+    : '';
+  const taxesText = summary.rawPrices.taxes.amount ? `(VAT included: ${summary.prices.taxes})` : '';
+
+  return `Order number: ${orderNumber}
+Ordered: ${orderDate}
+Payment method: ${summary.payment}
+Delivery method: ${summary.delivery}
+
+Delivery address:
+${summary.deliveryAddress}
+
+Billing address:
+${summary.billingAddress}
+
+Order Details:
+
+Items:
+${positionsText}
+
+${deliveryFeesText}${paymentFeesText}Total: ${summary.prices.gross}
+${taxesText}
+`;
 };
 
 export { getOrderPositionsData, getOrderSummaryData };

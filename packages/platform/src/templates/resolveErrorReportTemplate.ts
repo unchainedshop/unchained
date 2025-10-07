@@ -1,6 +1,5 @@
 import { TemplateResolver } from '@unchainedshop/core';
 import { stringify } from 'safe-stable-stringify';
-import mustache from 'mustache';
 
 const {
   EMAIL_FROM = 'noreply@unchained.local',
@@ -18,26 +17,17 @@ const formatWorkItems = (workItems) => {
     .join('\n');
 };
 
-const textTemplate = `
--------------------------
-Unchained Endpoint: {{endpoint}}
-Shop Name: {{name}}
--------------------------
-
-{{content}}
-`;
-
 const resolveErrorReportTemplate: TemplateResolver = async ({ workItems }) => {
-  const text = mustache.render(
-    textTemplate,
-    {
-      endpoint: ROOT_URL,
-      content: formatWorkItems(workItems),
-      name: EMAIL_WEBSITE_NAME,
-    },
-    undefined,
-    { escape: (t) => t },
-  );
+  const content = formatWorkItems(workItems);
+
+  const text = `
+-------------------------
+Unchained Endpoint: ${ROOT_URL}
+Shop Name: ${EMAIL_WEBSITE_NAME}
+-------------------------
+
+${content}
+`;
 
   return [
     {

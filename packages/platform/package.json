@@ -44,11 +44,9 @@
     "@unchainedshop/plugins": "^4.0.0-rc.18",
     "@unchainedshop/roles": "^4.0.0-rc.18",
     "@unchainedshop/utils": "^4.0.0-rc.18",
-    "mustache": "^4.2.0",
     "safe-stable-stringify": "^2.5.0"
   },
   "devDependencies": {
-    "@types/mustache": "^4.2.6",
     "@types/node": "^24.0.13",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"

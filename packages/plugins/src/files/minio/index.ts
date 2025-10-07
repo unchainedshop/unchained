@@ -8,7 +8,7 @@ import {
   resolveExpirationDate,
   IFileAdapter,
 } from '@unchainedshop/file-upload';
-import mimeType from 'mime-types';
+import mime from 'mime/lite';
 import { Client } from 'minio';
 import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
 import { expiryOffsetInMs } from '@unchainedshop/file-upload/lib/put-expiration.js';
@@ -126,7 +126,7 @@ export const MinioAdapter: IFileAdapter = {
       directoryName,
       expiryDate,
       fileName,
-      type: mimeType.lookup(fileName),
+      type: mime.getType(fileName),
       putURL: url,
       url: generateMinioUrl(directoryName, _id),
     } as UploadFileData & { putURL: string };
@@ -157,7 +157,7 @@ export const MinioAdapter: IFileAdapter = {
     }
 
     const _id = await buildHashedFilename(directoryName, fileName, new Date());
-    const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
+    const type = mime.getType(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const metaData = {
       'Content-Type': type,
@@ -193,7 +193,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const url = new URL(fileLink);
     const response = await fetch(url, { headers });
-    const type = mimeType.lookup(fileName) || response.headers['content-type'];
+    const type = mime.getType(fileName) || response.headers['content-type'];
     const readable = Readable.fromWeb(response.body as ReadableStream<Uint8Array<ArrayBufferLike>>);
     const metaData = {
       'Content-Type': type,

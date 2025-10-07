@@ -1,6 +1,6 @@
 import { Readable, PassThrough } from 'node:stream';
 import { finished, pipeline } from 'node:stream/promises';
-import mimeType from 'mime-types';
+import mime from 'mime/lite';
 import {
   FileAdapter,
   FileDirector,
@@ -63,7 +63,7 @@ export const GridFSAdapter: IFileAdapter<
       directoryName,
       expiryDate,
       fileName,
-      type: mimeType.lookup(fileName),
+      type: mime.getType(fileName),
       putURL,
       url,
     } as UploadFileData & { putURL: string };
@@ -83,7 +83,7 @@ export const GridFSAdapter: IFileAdapter<
 
     const expiryDate = resolveExpirationDate();
     const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);
-    const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
+    const type = mime.getType(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(
       directoryName,
@@ -131,7 +131,7 @@ export const GridFSAdapter: IFileAdapter<
 
     const response = await fetch(href, { headers });
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
-    const type = mimeType.lookup(fileName) || response.headers.get('content-type');
+    const type = mime.getType(fileName) || response.headers.get('content-type');
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(
       directoryName,

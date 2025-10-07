@@ -1,38 +1,24 @@
 import { TemplateResolver } from '@unchainedshop/core';
-import mustache from 'mustache';
+
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
-const textTemplate = `
-  {{subject}}\n
-  \n
-  Status: {{enrollment.status}}
-  \n
-  -----------------\n
-  Show: {{url}}\n
-  -----------------\n
-`;
-
-export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
-  { enrollmentId, locale },
-  context,
-) => {
+export const resolveEnrollmentStatusTemplate: TemplateResolver = async ({ enrollmentId }, context) => {
   const { modules } = context;
   const enrollment = await modules.enrollments.findEnrollment({ enrollmentId });
   const user = await modules.users.findUserById(enrollment.userId);
 
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Enrollment / ${enrollment.enrollmentNumber}`;
+  const url = `${EMAIL_WEBSITE_URL}/enrollment?_id=${enrollment._id}`;
 
-  const text = mustache.render(
-    textTemplate,
-    {
-      enrollment,
-      locale,
-      subject,
-      url: `${EMAIL_WEBSITE_URL}/enrollment?_id=${enrollment._id}`,
-    },
-    undefined,
-    { escape: (t) => t },
-  );
+  const text = `
+  ${subject}\n
+  \n
+  Status: ${enrollment.status}
+  \n
+  -----------------\n
+  Show: ${url}\n
+  -----------------\n
+`;
 
   return [
     {

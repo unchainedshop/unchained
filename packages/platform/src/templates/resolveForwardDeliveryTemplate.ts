@@ -1,17 +1,8 @@
 import { TemplateResolver } from '@unchainedshop/core';
 import { systemLocale } from '@unchainedshop/utils';
 import { transformOrderToText } from './order-parser/index.js';
-import mustache from 'mustache';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
-
-const textTemplate = `
-New Order received:
-
-{{orderDetails}}
-
-{{shopName}}: {{shopUrl}}
-`;
 
 export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config, orderId }, context) => {
   const { modules } = context;
@@ -26,16 +17,15 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
 
   const subject = `${EMAIL_WEBSITE_NAME} Order ${order.orderNumber}`;
 
-  const text = mustache.render(
-    textTemplate,
-    {
-      shopName: EMAIL_WEBSITE_NAME,
-      shopUrl: EMAIL_WEBSITE_URL,
-      orderDetails: await transformOrderToText({ order, locale: systemLocale }, context),
-    },
-    undefined,
-    { escape: (t) => t },
-  );
+  const orderDetails = await transformOrderToText({ order, locale: systemLocale }, context);
+
+  const text = `
+New Order received:
+
+${orderDetails}
+
+${EMAIL_WEBSITE_NAME}: ${EMAIL_WEBSITE_URL}
+`;
 
   return [
     {

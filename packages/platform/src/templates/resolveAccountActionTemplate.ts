@@ -1,5 +1,4 @@
 import { TemplateResolver } from '@unchainedshop/core';
-import mustache from 'mustache';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_URL, EMAIL_WEBSITE_NAME } = process.env;
 
@@ -16,15 +15,26 @@ const passwordChangedEmailEnglishConfig = {
   subject: `${EMAIL_WEBSITE_NAME}: Your password has been changed`,
 };
 
-const textTemplate = `
-  {{message}}
-  {{#url}}
-  \n
-  -----------------\n
-  {{buttonText}}: {{url}}\n
-  -----------------\n
-  {{/url}}
-`;
+const buildTextTemplate = ({
+  message,
+  buttonText,
+  url,
+}: {
+  message: string;
+  buttonText: string;
+  url: string | null;
+}) => {
+  const urlSection = url
+    ? `
+  
+  -----------------
+  ${buttonText}: ${url}
+  -----------------
+`
+    : '';
+
+  return `  ${message}${urlSection}`;
+};
 
 const emailConfig = {
   'enroll-account': {
@@ -97,17 +107,11 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
   const { url } = emailConfig[action];
   const { subject, message, buttonText } = emailConfig[action][locale.language];
 
-  const text = mustache.render(
-    textTemplate,
-    {
-      buttonText,
-      message,
-      subject,
-      url: url(token),
-    },
-    undefined,
-    { escape: (t) => t },
-  );
+  const text = buildTextTemplate({
+    buttonText,
+    message,
+    url: url(token),
+  });
 
   return [
     {
