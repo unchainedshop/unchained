@@ -13,35 +13,52 @@ export const transformOrderToText = async (
   const positions = await getOrderPositionsData(order, { locale }, context);
 
   const positionsText = positions
-    .map((pos) => `* ${pos.quantity} ${pos.productTexts.title}: ${pos.total}`)
+    .map((pos) => `  ${pos.quantity}x ${pos.productTexts.title} ${pos.total}`)
     .join('\n');
 
+  const subtotalText = summary.rawPrices.items.amount ? `  Subtotal ${summary.prices.items}\n` : '';
   const deliveryFeesText = summary.rawPrices.delivery.amount
-    ? `Delivery Fees: ${summary.prices.delivery}\n`
+    ? `  Delivery ${summary.prices.delivery}\n`
     : '';
   const paymentFeesText = summary.rawPrices.payment.amount
-    ? `Payment Fees: ${summary.prices.payment}\n`
+    ? `  Payment ${summary.prices.payment}\n`
     : '';
-  const taxesText = summary.rawPrices.taxes.amount ? `(VAT included: ${summary.prices.taxes})` : '';
+  const totalLine = `  ${'─'.repeat(50)}\n  Order Total ${summary.prices.gross}`;
+  const taxesText = summary.rawPrices.taxes.amount ? `\n  (incl. VAT ${summary.prices.taxes})` : '';
 
-  return `Order number: ${orderNumber}
-Ordered: ${orderDate}
-Payment method: ${summary.payment}
-Delivery method: ${summary.delivery}
+  return `═════════════════════════════════════════════════════
+ORDER CONFIRMATION
+═════════════════════════════════════════════════════
 
-Delivery address:
+Order Number:    ${orderNumber}
+Order Date:      ${orderDate}
+
+─────────────────────────────────────────────────────
+DELIVERY INFORMATION
+─────────────────────────────────────────────────────
+
+Delivery Method: ${summary.delivery}
+
+Delivery Address:
 ${summary.deliveryAddress}
 
-Billing address:
+─────────────────────────────────────────────────────
+PAYMENT INFORMATION
+─────────────────────────────────────────────────────
+
+Payment Method:  ${summary.payment}
+
+Billing Address:
 ${summary.billingAddress}
 
-Order Details:
+─────────────────────────────────────────────────────
+ORDER DETAILS
+─────────────────────────────────────────────────────
 
-Items:
 ${positionsText}
 
-${deliveryFeesText}${paymentFeesText}Total: ${summary.prices.gross}
-${taxesText}
+${subtotalText}${deliveryFeesText}${paymentFeesText}${totalLine}${taxesText}
+═════════════════════════════════════════════════════
 `;
 };
 

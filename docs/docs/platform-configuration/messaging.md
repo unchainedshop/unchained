@@ -33,9 +33,6 @@ automated email to support team when a user encounter error during some action.
 ## Implement TemplateResolver
 
 ```typescript
-const ERROR_EMAIL_TEMPLATE = `
-{userName} encountered {error} in {resolverName}
-`
 
 const errorReported: TemplateResolver = async (
   { userId, emailSubject, error, resolverName },
@@ -43,14 +40,7 @@ const errorReported: TemplateResolver = async (
 ) => {
   const { modules } = context;
   const user = await modules.users.findUserById(userId);
-
-  const text = mustache.render(ERROR_EMAIL_TEMPLATE, {
-    userName: `${user.profile?.address?.firstName} ${user.profile?.address?.lastName}`
-    error,
-    resolverName,
-  }, undefined, { escape: (t) => t }); // No escape, it's a text mail
-
-
+  const text = `${user.profile?.address?.firstName} ${user.profile?.address?.lastName} encountered ${error} in ${resolverName}`
   return [
     {
       type: "EMAIL",
