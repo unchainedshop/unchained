@@ -30,64 +30,37 @@ const colors: Record<string, ChalkInstance> = {
   ERROR: chalk.red,
 };
 
-const invertedLevels = Object.fromEntries(
-  Object.entries(log.levels).map(([key, value]) => [value, key]),
-);
-
 const SUPPORTED_LOG_FORMATS = ['json', 'unchained'];
 
-// Track if we've initialized the logger format already
-let isLoggerInitialized = false;
-
-const initializeLogger = (logFormat: string) => {
-  if (isLoggerInitialized) return;
-
-  if (!SUPPORTED_LOG_FORMATS.includes(logFormat.toLowerCase())) {
-    throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of ${SUPPORTED_LOG_FORMATS.join(',')}`);
-  }
-
-  if (logFormat.toLowerCase() === 'unchained') {
-    prefix.reg(log);
-    prefix.apply(log, {
-      format: (level, name, timestamp) =>
-        `${chalk.gray(`${timestamp}`)} [${chalk.green(`${name}] ${colors[level.toUpperCase()](level)}:`)}`,
-    });
-  } else if (logFormat.toLowerCase() === 'json') {
-    const originalFactory = log.methodFactory;
-    log.methodFactory = function (methodName, logLevel, loggerName) {
-      const rawMethod = originalFactory(methodName, logLevel, loggerName);
-      const level = invertedLevels[logLevel];
-      const name = loggerName || 'unchained';
-
-      return function (message, meta) {
-        rawMethod(
-          stringify({
-            timestamp: new Date(),
-            level,
-            name,
-            message,
-            ...meta,
-          }),
-        );
-      };
-    };
-    log.rebuild();
-  }
-
-  isLoggerInitialized = true;
-};
+let prefixApplied = false;
 
 // Export for testing purposes only
 export const resetLoggerInitialization = () => {
-  isLoggerInitialized = false;
+  // Reset all loggers
+  const loggers = (log as any).getLoggers();
+  Object.keys(loggers).forEach((name) => {
+    delete loggers[name];
+  });
+  prefixApplied = false;
 };
 
 export const createLogger = (moduleName: string) => {
   // Get environment variables inside the function
   const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
 
-  // Initialize logger format on first use
-  initializeLogger(UNCHAINED_LOG_FORMAT);
+  if (!SUPPORTED_LOG_FORMATS.includes(UNCHAINED_LOG_FORMAT.toLowerCase())) {
+    throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of ${SUPPORTED_LOG_FORMATS.join(',')}`);
+  }
+
+  // Apply prefix formatting if needed (for unchained format)
+  if (UNCHAINED_LOG_FORMAT !== 'json' && !prefixApplied) {
+    prefix.reg(log);
+    prefix.apply(log, {
+      format: (level, name, timestamp) =>
+        `${chalk.gray(`${timestamp}`)} [${chalk.green(`${name}] ${colors[level.toUpperCase()](level)}:`)}`,
+    });
+    prefixApplied = true;
+  }
 
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   const logger = log.getLogger(moduleName);
@@ -101,5 +74,26 @@ export const createLogger = (moduleName: string) => {
   };
 
   logger.setDefaultLevel(loggingMatched ? log.levels.DEBUG : logLevelMap[LOG_LEVEL.toLowerCase()]);
+
+  // For JSON format, wrap all logger methods
+  if (UNCHAINED_LOG_FORMAT.toLowerCase() === 'json') {
+    ['trace', 'debug', 'info', 'warn', 'error'].forEach((method) => {
+      (logger as any)[method] = function (message: string, meta?: any) {
+        console.log(
+          stringify(
+            {
+              timestamp: new Date(),
+              level: method.toUpperCase(),
+              name: moduleName,
+              message,
+              ...(meta || {}),
+            },
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value),
+          ),
+        );
+      };
+    });
+  }
+
   return logger;
 };
