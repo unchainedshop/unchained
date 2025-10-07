@@ -6,5 +6,5 @@
     "outDir": "./lib",
     
   },
-  "exclude": ["**/*.test.ts", "**/*.test.js", "tests", "lib", "benchmarks", "test-json-output.js"]
+  "exclude": ["**/*.test.ts", "**/*.test.js", "tests", "lib", "benchmarks"]
 }

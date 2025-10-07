@@ -73,8 +73,21 @@ const formatTimestamp = () => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+// Reset function for tests - current implementation doesn't maintain global state
+export const resetLoggerInitialization = (): void => {
+  // No-op function for compatibility with tests
+  // The current implementation doesn't maintain any global state that needs resetting
+};
+
 export const createLogger = (moduleName: string): Logger => {
-  const { DEBUG = '', LOG_LEVEL = LogLevel.Info } = process.env;
+  const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
+
+  // Validate format at logger creation time
+  const format = UNCHAINED_LOG_FORMAT.toLowerCase();
+  if (format !== 'json' && format !== 'unchained') {
+    throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of json,unchained`);
+  }
+
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   const minLevel = loggingMatched
     ? LogLevelValue.DEBUG
@@ -82,14 +95,6 @@ export const createLogger = (moduleName: string): Logger => {
 
   const log = (level: string, levelValue: LogLevelValue, message: any, ...args: any[]) => {
     if (levelValue < minLevel) return;
-
-    const { UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
-    const format = UNCHAINED_LOG_FORMAT.toLowerCase();
-
-    // Validate format
-    if (format !== 'json' && format !== 'unchained') {
-      throw new Error(`UNCHAINED_LOG_FORMAT is invalid, use one of json,unchained`);
-    }
 
     if (format === 'json') {
       // JSON format
