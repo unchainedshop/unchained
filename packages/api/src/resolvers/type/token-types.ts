@@ -61,7 +61,7 @@ export const Token = {
       context,
     );
 
-    return isInvalidateable;
+    return !!isInvalidateable;
   },
 
   accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
