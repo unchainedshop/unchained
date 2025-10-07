@@ -107,6 +107,11 @@ export const createLogger = (moduleName: string): Logger => {
       ? mappedLevel
       : LogLevelValue.INFO;
 
+  // Create a no-op function for better performance when logging is disabled
+  const noop = () => {
+    // Intentionally empty for performance
+  };
+
   const log = (level: string, levelValue: LogLevelValue, message: any, ...args: any[]) => {
     if (levelValue < minLevel) return;
 
@@ -141,10 +146,25 @@ export const createLogger = (moduleName: string): Logger => {
   };
 
   return {
-    trace: (message: any, ...args: any[]) => log('trace', LogLevelValue.TRACE, message, ...args),
-    debug: (message: any, ...args: any[]) => log('debug', LogLevelValue.DEBUG, message, ...args),
-    info: (message: any, ...args: any[]) => log('info', LogLevelValue.INFO, message, ...args),
-    warn: (message: any, ...args: any[]) => log('warn', LogLevelValue.WARN, message, ...args),
-    error: (message: any, ...args: any[]) => log('error', LogLevelValue.ERROR, message, ...args),
+    trace:
+      LogLevelValue.TRACE < minLevel
+        ? noop
+        : (message: any, ...args: any[]) => log('trace', LogLevelValue.TRACE, message, ...args),
+    debug:
+      LogLevelValue.DEBUG < minLevel
+        ? noop
+        : (message: any, ...args: any[]) => log('debug', LogLevelValue.DEBUG, message, ...args),
+    info:
+      LogLevelValue.INFO < minLevel
+        ? noop
+        : (message: any, ...args: any[]) => log('info', LogLevelValue.INFO, message, ...args),
+    warn:
+      LogLevelValue.WARN < minLevel
+        ? noop
+        : (message: any, ...args: any[]) => log('warn', LogLevelValue.WARN, message, ...args),
+    error:
+      LogLevelValue.ERROR < minLevel
+        ? noop
+        : (message: any, ...args: any[]) => log('error', LogLevelValue.ERROR, message, ...args),
   };
 };
