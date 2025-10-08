@@ -51,14 +51,14 @@
     "@modelcontextprotocol/sdk": {
       "optional": false
     },
-    "ai": {
-      "optional": true
-    },
     "graphql-yoga": {
       "optional": false
     },
     "connect-mongo": {
       "optional": false
+    },
+    "ai": {
+      "optional": true
     },
     "fastify": {
       "optional": true

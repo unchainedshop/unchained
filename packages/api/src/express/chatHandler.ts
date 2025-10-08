@@ -14,6 +14,9 @@ import { ChatConfiguration, errorHandler } from '../chat/utils.js';
 import generateImageHandler from '../chat/generateImageHandler.js';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.js';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api:chat');
 
 export const expressRouter = () => {
   const router = express.Router();
@@ -97,7 +100,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
                   return `${resource.name}:\n${content.contents[0].text}`;
                 }
               } catch (e) {
-                console.error(`Failed to read resource ${resource.uri}:`, e);
+                logger.error(`Failed to read resource ${resource.uri}:`, e);
               }
               return null;
             }),
@@ -106,7 +109,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
             '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
         }
       } catch (e) {
-        console.error('Failed to fetch MCP resources:', e);
+        logger.error('Failed to fetch MCP resources:', e);
       }
 
       const tools: ToolSet = {
