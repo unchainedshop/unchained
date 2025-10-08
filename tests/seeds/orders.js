@@ -1,3 +1,5 @@
+import { SimpleDeliveryProvider } from './deliveries.js';
+import { GenericPaymentProvider, SimplePaymentProvider } from './payments.js';
 import chainedUpsert from './utils/chainedUpsert.js';
 
 export const SimpleOrder = {
@@ -44,7 +46,7 @@ export const SimplePayment = {
   created: new Date('2019-10-11T11:52:25.446+0000'),
   status: null,
   orderId: 'simple-order',
-  paymentProviderId: 'simple-payment-provider',
+  paymentProviderId: SimplePaymentProvider._id,
   context: {},
   updated: new Date('2019-10-11T12:48:01.537+0000'),
   calculation: [],
@@ -55,7 +57,7 @@ export const GenericPayment = {
   created: new Date('2019-10-11T11:52:25.446+0000'),
   status: null,
   orderId: 'simple-order',
-  paymentProviderId: 'generic-payment-provider',
+  paymentProviderId: GenericPaymentProvider._id,
   context: {},
   updated: new Date('2019-10-11T12:48:01.537+0000'),
   calculation: [],
@@ -66,7 +68,7 @@ export const SimpleDelivery = {
   created: new Date('2019-10-11T11:52:25.563+0000'),
   status: null,
   orderId: 'simple-order',
-  deliveryProviderId: 'simple-delivery-provider',
+  deliveryProviderId: SimpleDeliveryProvider._id,
   context: {},
   calculation: [],
   updated: new Date('2019-10-11T12:48:01.523+0000'),
@@ -341,14 +343,14 @@ export const ShippingOrderPayment = {
   ...SimplePayment,
   _id: 'shipping-order-payment',
   orderId: 'shipping-order',
-  paymentProviderId: 'simple-payment-provider',
+  paymentProviderId: SimplePaymentProvider._id,
 };
 
 export const ShippingOrderDelivery = {
   ...SimpleDelivery,
   _id: 'shipping-order-delivery',
   orderId: 'shipping-order',
-  deliveryProviderId: 'simple-delivery-provider',
+  deliveryProviderId: SimpleDeliveryProvider._id,
 };
 
 export const ShippingOrderPosition = {
@@ -369,7 +371,7 @@ export const PickupOrderPayment = {
   ...SimplePayment,
   _id: 'pickup-order-payment',
   orderId: 'pickup-order',
-  paymentProviderId: 'simple-payment-provider',
+  paymentProviderId: SimplePaymentProvider._id,
 };
 
 export const PickupOrderDelivery = {
@@ -424,7 +426,7 @@ export const GenericPaymentOrderPayment = {
   ...SimplePayment,
   _id: 'generic-payment-order-payment',
   orderId: 'generic-payment-order',
-  paymentProviderId: 'generic-payment-provider',
+  paymentProviderId: GenericPaymentProvider._id,
 };
 
 export const GenericPaymentOrderDelivery = {

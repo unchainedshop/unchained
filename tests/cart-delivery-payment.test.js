@@ -7,7 +7,19 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { ShippingOrder, PickupOrder, InvoicePaymentOrder, GenericPaymentOrder } from './seeds/orders.js';
+import {
+  ShippingOrder,
+  PickupOrder,
+  InvoicePaymentOrder,
+  GenericPaymentOrder,
+  ConfirmedOrder,
+} from './seeds/orders.js';
+import {
+  GenericPaymentProvider,
+  PrePaidPaymentProvider,
+  SimplePaymentProvider,
+} from './seeds/payments.js';
+import { PickupDeliveryProvider, SimpleDeliveryProvider } from './seeds/deliveries.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
@@ -57,7 +69,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         `,
         variables: {
           orderId: ShippingOrder._id,
-          deliveryProviderId: 'simple-delivery-provider',
+          deliveryProviderId: SimpleDeliveryProvider._id,
           address: {
             firstName: 'Test',
             lastName: 'User',
@@ -77,7 +89,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.strictEqual(updateCartDeliveryShipping.delivery.provider.type, 'SHIPPING');
     });
 
-    test('should return error for non-existing order', async () => {
+    test('should return OrderNotFoundError for non-existing order', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateCartDeliveryShipping(
@@ -96,7 +108,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         `,
         variables: {
           orderId: 'non-existing-order',
-          deliveryProviderId: 'simple-delivery-provider',
+          deliveryProviderId: SimpleDeliveryProvider._id,
           address: {
             firstName: 'Test',
             lastName: 'User',
@@ -108,7 +120,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       });
 
       assert.ok(errors);
-      assert.ok(errors.length > 0);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderNotFoundError');
     });
 
     test('should allow normal user to update their own cart', async () => {
@@ -128,7 +140,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          deliveryProviderId: 'simple-delivery-provider',
+          deliveryProviderId: SimpleDeliveryProvider._id,
           address: {
             firstName: 'Normal',
             lastName: 'User',
@@ -153,7 +165,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          deliveryProviderId: 'simple-delivery-provider',
+          deliveryProviderId: SimpleDeliveryProvider._id,
           address: {
             firstName: 'Test',
             lastName: 'User',
@@ -166,6 +178,119 @@ test.describe('Cart: Delivery and Payment Updates', () => {
 
       assert.ok(errors);
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+    test('should throw OrderDeliveryTypeError when given unsupported delivery provider ID', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryShipping(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $address: AddressInput
+            $meta: JSON
+          ) {
+            updateCartDeliveryShipping(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              address: $address
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: ShippingOrder._id,
+          deliveryProviderId: PickupDeliveryProvider._id,
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderDeliveryTypeError');
+      assert.strictEqual(errors[0].extensions?.orderId, ShippingOrder._id);
+      assert.strictEqual(errors[0].extensions?.received, 'PICKUP');
+      assert.strictEqual(errors[0].extensions?.required, 'SHIPPING');
+    });
+
+    test('should throw OrderDeliveryTypeError when given non-existing delivery provider ID', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryShipping(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $address: AddressInput
+            $meta: JSON
+          ) {
+            updateCartDeliveryShipping(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              address: $address
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: ShippingOrder._id,
+          deliveryProviderId: 'non-existing-provider',
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderDeliveryTypeError');
+    });
+
+    test('should throw OrderWrongStatusError if order is not on cart status', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryShipping(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $address: AddressInput
+            $meta: JSON
+          ) {
+            updateCartDeliveryShipping(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              address: $address
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id,
+          deliveryProviderId: SimpleDeliveryProvider._id,
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderWrongStatusError');
     });
   });
 
@@ -207,7 +332,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         `,
         variables: {
           orderId: PickupOrder._id,
-          deliveryProviderId: 'pickup-delivery-provider',
+          deliveryProviderId: PickupDeliveryProvider._id,
           orderPickUpLocationId: 'zurich',
           meta: {
             test: 'pickup',
@@ -220,6 +345,39 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.ok(updateCartDeliveryPickUp.delivery);
       assert.strictEqual(updateCartDeliveryPickUp.delivery.provider.type, 'PICKUP');
       assert.strictEqual(updateCartDeliveryPickUp.delivery.activePickUpLocation._id, 'zurich');
+    });
+
+    test('should throw OrderNotFoundError when non-existing order ID is provided', async () => {
+      const { errors } = await graphqlFetchAsUser({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryPickUp(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $orderPickUpLocationId: ID!
+          ) {
+            updateCartDeliveryPickUp(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              orderPickUpLocationId: $orderPickUpLocationId
+            ) {
+              _id
+              delivery {
+                provider {
+                  type
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-order',
+          deliveryProviderId: PickupDeliveryProvider._id,
+          orderPickUpLocationId: 'zurich',
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0]?.extensions?.code, 'OrderNotFoundError');
     });
 
     test('should allow normal user to update their own cart pickup', async () => {
@@ -242,7 +400,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          deliveryProviderId: 'pickup-delivery-provider',
+          deliveryProviderId: PickupDeliveryProvider._id,
           orderPickUpLocationId: 'zurich',
         },
       });
@@ -264,13 +422,203 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          deliveryProviderId: 'pickup-delivery-provider',
+          deliveryProviderId: PickupDeliveryProvider._id,
           orderPickUpLocationId: 'zurich',
         },
       });
 
       assert.ok(errors);
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+    test('should throw OrderDeliveryTypeError when incompatible delivery provider ID is passed', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryPickUp(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateCartDeliveryPickUp(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+                ... on OrderDeliveryPickUp {
+                  activePickUpLocation {
+                    _id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: PickupOrder._id,
+          deliveryProviderId: SimpleDeliveryProvider._id,
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            test: 'pickup',
+          },
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderDeliveryTypeError');
+      assert.strictEqual(errors[0].extensions?.orderId, PickupOrder._id);
+      assert.strictEqual(errors[0].extensions?.received, 'SHIPPING');
+      assert.strictEqual(errors[0].extensions?.required, 'PICKUP');
+    });
+
+    test('should throw OrderDeliveryTypeError when non-existing delivery provider ID is passed', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryPickUp(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateCartDeliveryPickUp(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+                ... on OrderDeliveryPickUp {
+                  activePickUpLocation {
+                    _id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: PickupOrder._id,
+          deliveryProviderId: 'non-existing-provider',
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            test: 'pickup',
+          },
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderDeliveryTypeError');
+    });
+
+    test('should throw OrderWrongStatusError if order is not on cart status', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryPickUp(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateCartDeliveryPickUp(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+                ... on OrderDeliveryPickUp {
+                  activePickUpLocation {
+                    _id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id,
+          deliveryProviderId: PickupDeliveryProvider._id,
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            test: 'pickup',
+          },
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderWrongStatusError');
+    });
+
+    test('should throw OrderNotFoundError when non-existing order ID is given', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartDeliveryPickUp(
+            $orderId: ID
+            $deliveryProviderId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateCartDeliveryPickUp(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
+            ) {
+              _id
+              delivery {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+                ... on OrderDeliveryPickUp {
+                  activePickUpLocation {
+                    _id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-order',
+          deliveryProviderId: PickupDeliveryProvider._id,
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            test: 'pickup',
+          },
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderNotFoundError');
     });
   });
 
@@ -300,7 +648,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         `,
         variables: {
           orderId: InvoicePaymentOrder._id,
-          paymentProviderId: 'simple-payment-provider',
+          paymentProviderId: SimplePaymentProvider._id,
           meta: {
             invoiceData: 'test',
           },
@@ -330,7 +678,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          paymentProviderId: 'simple-payment-provider',
+          paymentProviderId: SimplePaymentProvider._id,
           meta: {
             invoiceData: 'user-test',
           },
@@ -351,7 +699,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          paymentProviderId: 'simple-payment-provider',
+          paymentProviderId: SimplePaymentProvider._id,
           meta: {},
         },
       });
@@ -359,11 +707,112 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.ok(errors);
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
+    test('should throw OrderPaymentTypeError when unsupported payment provider is given', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartPaymentInvoice($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
+            updateCartPaymentInvoice(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
+              _id
+              payment {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: InvoicePaymentOrder._id,
+          paymentProviderId: GenericPaymentProvider._id,
+          meta: {
+            invoiceData: 'test',
+          },
+        },
+      });
+
+      assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
+      assert.strictEqual(errors[0].extensions?.orderId, InvoicePaymentOrder._id);
+      assert.strictEqual(errors[0].extensions?.received, 'GENERIC');
+      assert.strictEqual(errors[0].extensions?.required, 'INVOICE');
+    });
+
+    test('should throw OrderNotFoundError non-existing order ID is given', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartPaymentInvoice($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
+            updateCartPaymentInvoice(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
+              _id
+              payment {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-order',
+          paymentProviderId: SimplePaymentProvider._id,
+          meta: {
+            invoiceData: 'test',
+          },
+        },
+      });
+
+      assert.strictEqual(errors[0].extensions?.code, 'OrderNotFoundError');
+    });
+
+    test('should throw OrderPaymentTypeError non-existing payment provider ID is given', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartPaymentInvoice($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
+            updateCartPaymentInvoice(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
+              _id
+              payment {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: InvoicePaymentOrder._id,
+          paymentProviderId: 'non-existing-provider',
+          meta: {
+            invoiceData: 'test',
+          },
+        },
+      });
+
+      assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
+    });
   });
 
   test.describe('Mutation.updateCartPaymentGeneric', () => {
     test('should update cart payment generic for admin user', async () => {
-      const {        
+      const {
         data: { updateCartPaymentGeneric },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
@@ -387,7 +836,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         `,
         variables: {
           orderId: GenericPaymentOrder._id,
-          paymentProviderId: 'generic-payment-provider',
+          paymentProviderId: GenericPaymentProvider._id,
           meta: {
             genericData: 'test',
           },
@@ -416,7 +865,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          paymentProviderId: 'generic-payment-provider',
+          paymentProviderId: GenericPaymentProvider._id,
           meta: {
             genericData: 'user-test',
           },
@@ -437,13 +886,81 @@ test.describe('Cart: Delivery and Payment Updates', () => {
           }
         `,
         variables: {
-          paymentProviderId: 'generic-payment-provider',
+          paymentProviderId: GenericPaymentProvider._id,
           meta: {},
         },
       });
 
       assert.ok(errors);
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+    test('should throw OrderPaymentTypeError when incompatible payment provider is provided', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartPaymentGeneric($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
+            updateCartPaymentGeneric(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
+              _id
+              payment {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: GenericPaymentOrder._id,
+          paymentProviderId: PrePaidPaymentProvider._id,
+          meta: {
+            genericData: 'test',
+          },
+        },
+      });
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
+      assert.strictEqual(errors[0].extensions?.orderId, GenericPaymentOrder._id);
+      assert.strictEqual(errors[0].extensions?.received, 'INVOICE');
+      assert.strictEqual(errors[0].extensions?.required, 'GENERIC');
+    });
+
+    test('should throw OrderPaymentTypeError non-existing payment provider ID is given', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCartPaymentGeneric($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
+            updateCartPaymentGeneric(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
+              _id
+              payment {
+                _id
+                provider {
+                  _id
+                  type
+                }
+                status
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: GenericPaymentOrder._id,
+          paymentProviderId: 'non-existing-provider',
+          meta: {
+            genericData: 'test',
+          },
+        },
+      });
+      assert.ok(errors);
+      assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
     });
   });
 });
