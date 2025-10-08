@@ -517,7 +517,7 @@ export const configureAssortmentsModule = async (
     existingTags: async (): Promise<string[]> => {
       const tags = await Assortments.distinct('tags', {
         tags: { $exists: true },
-        deleted: { $exists: false },
+        deleted: null,
       });
       return tags.filter(Boolean).toSorted();
     },

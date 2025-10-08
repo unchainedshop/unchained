@@ -10,15 +10,20 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Country', () => {
+  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
+  let Countries;
+  let Currencies;
 
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    Countries = db.collection('countries');
+    Currencies = db.collection('currencies');
   });
 
   test.after(async () => {
@@ -593,6 +598,228 @@ test.describe('Country', () => {
         },
       });
       assert.strictEqual(countriesCount, 1);
+    });
+  });
+
+  test.describe('countries', () => {
+    test('add a country', async () => {
+      const {
+        data: { createCountry },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            createCountry(country: { isoCode: "nl" }) {
+              _id
+              isoCode
+              isActive
+              isBase
+              defaultCurrency {
+                _id
+              }
+              flagEmoji
+              name(forceLocale: "en")
+            }
+          }
+        `,
+      });
+      assert.partialDeepStrictEqual(createCountry, {
+        isoCode: 'NL',
+        isActive: true,
+        flagEmoji: '🇳🇱',
+        name: 'Netherlands',
+      });
+      await Countries.deleteOne({ isoCode: 'NL' });
+    });
+
+    test('update a country', async () => {
+      const country = await Countries.findOne();
+      const currency = await Currencies.findOne();
+
+      const { data: { updateCountry } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCountry($countryId: ID!, $country: UpdateCountryInput!) {
+            updateCountry(countryId: $countryId, country: $country) {
+              _id
+              isoCode
+              isActive
+              defaultCurrency {
+                _id
+                isoCode
+              }
+            }
+          }
+        `,
+        variables: {
+          countryId: country._id,
+          country: {
+            isoCode: 'et',
+            isActive: true,
+            defaultCurrencyCode: currency.isoCode,
+          },
+        },
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(updateCountry, {
+        isoCode: 'et',
+        isActive: true,
+        defaultCurrency: { _id: currency._id, isoCode: currency.isoCode },
+      });
+    });
+
+    test('return error when passed invalid countryId', async () => {
+      const currency = await Currencies.findOne();
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCountry($countryId: ID!, $country: UpdateCountryInput!) {
+            updateCountry(countryId: $countryId, country: $country) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          countryId: '',
+          country: {
+            isoCode: 'CH',
+            isActive: true,
+            defaultCurrencyCode: currency.isoCode,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+
+    test('return not found error when passed non existing countryId', async () => {
+      const currency = await Currencies.findOne();
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCountry($countryId: ID!, $country: UpdateCountryInput!) {
+            updateCountry(countryId: $countryId, country: $country) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          countryId: 'non-existing',
+          country: {
+            isoCode: 'CH',
+            isActive: true,
+            defaultCurrencyCode: currency.isoCode,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'CountryNotFoundError');
+    });
+
+    test('remove a country', async () => {
+      await Countries.insertOne({ _id: 'et', isoCode: 'ET' });
+      const { data: { removeCountry } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCountry(countryId: "et") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(removeCountry, {
+        isoCode: 'ET',
+      });
+      assert.strictEqual(await Countries.countDocuments({ _id: 'et', deleted: null }), 0);
+      assert.strictEqual(await Countries.countDocuments({ _id: 'et' }), 1);
+      await Countries.deleteOne({ _id: 'et' });
+    });
+
+    test('return not found error when passed non existing country ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCountry(countryId: "ethiopia") {
+              _id
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'CountryNotFoundError');
+    });
+
+    test('return error when passed invalid country ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCountry(countryId: "") {
+              _id
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+
+    test('query active countries', async () => {
+      await Countries.insertOne({
+        _id: 'uk',
+        isoCode: 'UK',
+        isActive: true,
+      });
+      await Countries.insertOne({
+        _id: 'it',
+        isoCode: 'IT',
+        isActive: false,
+      });
+
+      const { data: { countries } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            countries {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.ok(countries?.length >= 2);
+      await Countries.deleteOne({ _id: 'it' });
+      await Countries.deleteOne({ _id: 'uk' });
+    });
+
+    test('query.country inactive single country', async () => {
+      await Countries.insertOne({
+        _id: 'et',
+        isoCode: 'ET',
+        isActive: false,
+      });
+
+      const { data: { country } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            country(countryId: "et") {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(country, {
+        isoCode: 'ET',
+      });
+      await Countries.deleteOne({ _id: 'et' });
+    });
+
+    test('query.country return error when passed invalid ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            country(countryId: "") {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

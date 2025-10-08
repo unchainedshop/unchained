@@ -10,15 +10,18 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Currency', () => {
+  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
+  let Currencies;
 
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    Currencies = db.collection('currencies');
   });
 
   test.after(async () => {
@@ -579,6 +582,212 @@ test.describe('Currency', () => {
         },
       });
       assert.strictEqual(currenciesCount, 1);
+    });
+  });
+
+  test.describe('Mutation.currencies', () => {
+    test('add a currency', async () => {
+      const {
+        data: { createCurrency },
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            createCurrency(currency: { isoCode: "btc" }) {
+              _id
+              isoCode
+              isActive
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(createCurrency, {
+        isoCode: 'BTC',
+        isActive: true,
+      });
+      await Currencies.deleteOne({ isoCode: 'BTC' });
+    });
+
+    test('update a currency', async () => {
+      const currency = await Currencies.findOne();
+
+      const { data: { updateCurrency } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
+            updateCurrency(currencyId: $currencyId, currency: $currency) {
+              _id
+              isoCode
+              isActive
+            }
+          }
+        `,
+        variables: {
+          currencyId: currency._id,
+          currency: {
+            isoCode: 'chf',
+            isActive: true,
+          },
+        },
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(updateCurrency, {
+        isoCode: 'CHF',
+        isActive: true,
+      });
+    });
+
+    test('return not found error when passed non existing currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
+            updateCurrency(currencyId: $currencyId, currency: $currency) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          currencyId: 'non-existing-id',
+          currency: {
+            isoCode: 'chf',
+            isActive: true,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'CurrencyNotFoundError');
+    });
+
+    test('return error when passed invalid currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
+            updateCurrency(currencyId: $currencyId, currency: $currency) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          currencyId: '',
+          currency: {
+            isoCode: 'chf',
+            isActive: true,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+
+    test('remove a currency', async () => {
+      await Currencies.insertOne({ _id: 'etb', isoCode: 'ETB' });
+      const { data: { removeCurrency } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCurrency(currencyId: "etb") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(removeCurrency, {
+        isoCode: 'ETB',
+      });
+      assert.strictEqual(await Currencies.countDocuments({ _id: 'etb', deleted: null }), 0);
+      assert.strictEqual(await Currencies.countDocuments({ _id: 'etb' }), 1);
+      await Currencies.deleteOne({ _id: 'etb' });
+    });
+
+    test('return not found error when passed non existing currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCurrency(currencyId: "ETB") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'CurrencyNotFoundError');
+    });
+
+    test('return error when passed invalid currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCurrency(currencyId: "") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+
+    test('query active currencies', async () => {
+      await Currencies.insertOne({
+        _id: 'etb',
+        isoCode: 'ETB',
+        isActive: true,
+      });
+      await Currencies.insertOne({
+        _id: 'btc',
+        isoCode: 'BTC',
+        isActive: false,
+      });
+
+      const { data: { currencies } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            currencies {
+              isoCode
+              isActive
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.ok(currencies.length >= 2);
+      await Currencies.deleteOne({ _id: 'etb' });
+      await Currencies.deleteOne({ _id: 'btc' });
+    });
+
+    test('query inactive single currency', async () => {
+      await Currencies.insertOne({
+        _id: 'sigt',
+        isoCode: 'SIGT',
+        isActive: false,
+      });
+
+      const { data: { currency } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            currency(currencyId: "sigt") {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(currency, {
+        isoCode: 'SIGT',
+      });
+      await Currencies.deleteOne({ _id: 'sigt' });
+    });
+
+    test('query.currency return error when passed invalid ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            currency(currencyId: "") {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });

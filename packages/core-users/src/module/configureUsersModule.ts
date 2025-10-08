@@ -62,7 +62,7 @@ export const buildFindSelector = ({
   ...rest
 }: UserQuery) => {
   const selector: mongodb.Filter<User> = { ...rest };
-  if (!includeDeleted) selector.deleted = { $exists: false };
+  if (!includeDeleted) selector.deleted = null as any;
   if (!includeGuests) selector.guest = { $ne: true };
   if (emailVerified === true) {
     selector['emails.verified'] = true;

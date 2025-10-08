@@ -7,7 +7,6 @@ import { User } from '../db/UsersCollection.js';
 describe('removeConfidentialServiceHashes', () => {
   it('Should remove sensitive user credentials ', () => {
     assert.notStrictEqual(user.services, undefined);
-    removeConfidentialServiceHashes(user as unknown as User);
-    assert.strictEqual(user.services, undefined);
+    assert.strictEqual(removeConfidentialServiceHashes(user as unknown as User)?.services, undefined);
   });
 });

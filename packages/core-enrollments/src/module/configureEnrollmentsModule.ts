@@ -34,7 +34,7 @@ const ENROLLMENT_EVENTS: string[] = [
 
 export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
   const selector: mongodb.Filter<Enrollment> = {
-    deleted: { $exists: false },
+    deleted: null,
   };
   if (status) selector.status = { $in: status };
   if (userId) selector.userId = userId;

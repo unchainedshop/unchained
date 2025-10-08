@@ -10,14 +10,17 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Language', () => {
+  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
+  let Languages;
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    Languages = db.collection('languages');
   });
 
   test.after(async () => {
@@ -644,6 +647,212 @@ test.describe('Language', () => {
         },
       });
       assert.strictEqual(languagesCount, 1);
+    });
+  });
+
+  test.describe('Mutation.language', () => {
+    test('add a language', async () => {
+      const { data: { createLanguage } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            createLanguage(language: { isoCode: "am" }) {
+              _id
+              isoCode
+              isActive
+              isBase
+              name
+            }
+          }
+        `,
+      });
+      assert.partialDeepStrictEqual(createLanguage, {
+        isoCode: 'am',
+        isActive: true,
+        isBase: false,
+        name: 'am',
+      });
+      await Languages.deleteOne({ isoCode: 'am' });
+    });
+
+    test('update a language', async () => {
+      const language = await Languages.findOne();
+
+      const { data: { updateLanguage } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateLanguage($languageId: ID!, $language: UpdateLanguageInput!) {
+            updateLanguage(languageId: $languageId, language: $language) {
+              _id
+              isoCode
+              isActive
+            }
+          }
+        `,
+        variables: {
+          languageId: language._id,
+          language: {
+            isoCode: 'ar',
+            isActive: true,
+          },
+        },
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(updateLanguage, {
+        isoCode: 'ar',
+        isActive: true,
+      });
+    });
+
+    test('return not found error when passed non existing languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateLanguage($languageId: ID!, $language: UpdateLanguageInput!) {
+            updateLanguage(languageId: $languageId, language: $language) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          languageId: 'non-existing-id',
+          language: {
+            isoCode: 'de',
+            isActive: true,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'LanguageNotFoundError');
+    });
+
+    test('return error when passed invalid languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateLanguage($languageId: ID!, $language: UpdateLanguageInput!) {
+            updateLanguage(languageId: $languageId, language: $language) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          languageId: '',
+          language: {
+            isoCode: 'de',
+            isActive: true,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+
+    test('remove a language', async () => {
+      await Languages.insertOne({ _id: 'am', isoCode: 'AM' });
+      const { data: { removeLanguage } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeLanguage(languageId: "am") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.partialDeepStrictEqual(removeLanguage, {
+        isoCode: 'AM',
+      });
+      assert.strictEqual(await Languages.countDocuments({ _id: 'am', deleted: null }), 0);
+      assert.strictEqual(await Languages.countDocuments({ _id: 'am' }), 1);
+      await Languages.deleteOne({ _id: 'am' });
+    });
+
+    test('return not found error when passed non existing languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeLanguage(languageId: "AMH") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'LanguageNotFoundError');
+    });
+
+    test('return error when passed invalid languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeLanguage(languageId: "") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+
+    test('query active languages', async () => {
+      await Languages.insertOne({
+        _id: 'es',
+        isoCode: 'es',
+        isActive: true,
+      });
+      await Languages.insertOne({
+        _id: 'ru',
+        isoCode: 'ru',
+        isActive: false,
+      });
+
+      const { data: { languages } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            languages {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.ok(languages.length >= 2);
+      await Languages.deleteOne({ _id: 'es' });
+      await Languages.deleteOne({ _id: 'ru' });
+    });
+
+    test('query inactive single language', async () => {
+      await Languages.insertOne({
+        _id: 'pl',
+        isoCode: 'pl',
+        isActive: false,
+      });
+
+      const { data: { language } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            language(languageId: "pl") {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(language, {
+        isoCode: 'pl',
+      });
+      await Languages.deleteOne({ _id: 'pl' });
+    });
+
+    test('query.language return error when passed invalid languageId', async () => {
+      const { data: { language } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            language(languageId: "") {
+              isoCode
+            }
+          }
+        `,
+      });
+      assert.strictEqual(language, null);
+      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
   });
 });
