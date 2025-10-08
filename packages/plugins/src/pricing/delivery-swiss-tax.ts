@@ -5,21 +5,8 @@ import {
   DeliveryPricingDirector,
 } from '@unchainedshop/core';
 
-import { Order } from '@unchainedshop/core-orders';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { isDeliveryAddressInSwitzerland, SwissTaxCategories } from './tax/ch.js';
-
-const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryProvider }) => {
-  const taxCategoryFromProvider = provider?.configuration?.find(({ key }) => {
-    if (key === 'swiss-tax-category') return true;
-    return null;
-  })?.value;
-
-  const taxCategory = taxCategoryFromProvider
-    ? SwissTaxCategories[taxCategoryFromProvider] || SwissTaxCategories.DEFAULT
-    : SwissTaxCategories.DEFAULT;
-  return taxCategory.rate(order?.ordered);
-};
+import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from './tax/ch.js';
+import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.js';
 
 export const DeliverySwissTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
@@ -32,11 +19,14 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   isActivatedFor: (context) => {
     if (!context.order) return false;
     if (!context.orderDelivery) return false;
-    return isDeliveryAddressInSwitzerland({
-      order: context.order,
-      orderDelivery: context.orderDelivery,
-      countryCode: context.countryCode,
-    });
+    return isDeliveryAddressInCountry(
+      {
+        order: context.order,
+        orderDelivery: context.orderDelivery,
+        countryCode: context.countryCode,
+      },
+      ['CH', 'LI'],
+    );
   },
 
   actions: (params) => {
@@ -47,7 +37,10 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const taxRate = getTaxRate(context);
+        const taxCategory =
+          resolveTaxCategoryFromDeliveryProvider(context.provider) || SwissTaxCategories.DEFAULT;
+        const taxRate = taxCategory.rate(context.order?.ordered);
+
         DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
         params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {
           if (!isNetPrice) {

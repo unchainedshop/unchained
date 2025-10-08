@@ -1,16 +1,16 @@
-import { Order, OrderDelivery } from '@unchainedshop/core-orders';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { Product } from '@unchainedshop/core-products';
 
 const startOf2024 = new Date('2024-01-01T00:00:00.000+0100');
 
 // https://www.estv.admin.ch/estv/en/home/value-added-tax/vat-rates-switzerland.html
 
-export const SwissTaxCategories: Record<
-  string,
-  {
-    value: string;
-    rate: (referenceDate?: Date) => number;
-  }
-> = {
+export interface SwissTaxCategoryResolver {
+  value: string;
+  rate: (referenceDate?: Date) => number;
+}
+
+export const SwissTaxCategories: Record<string, SwissTaxCategoryResolver> = {
   DEFAULT: {
     value: 'default',
     rate: (referenceDate = new Date()) => {
@@ -40,23 +40,26 @@ export const SwissTaxCategories: Record<
   },
 };
 
-export const isDeliveryAddressInSwitzerland = ({
-  orderDelivery,
-  order,
-  countryCode: forceCountryCode = null,
-}: {
-  orderDelivery?: OrderDelivery | null;
-  order?: Order | null;
-  countryCode?: string | null;
-}) => {
-  let countryCode = forceCountryCode?.toUpperCase().trim() || order?.countryCode;
+export const resolveTaxCategoryFromDeliveryProvider = (
+  provider: DeliveryProvider,
+): SwissTaxCategoryResolver | null => {
+  const taxCategoryFromProvider = provider?.configuration
+    ?.find(({ key }) => {
+      if (key === 'swiss-tax-category') return true;
+      return null;
+    })
+    ?.value?.toUpperCase();
 
-  if (orderDelivery || order) {
-    const address = orderDelivery?.context?.address || order?.billingAddress;
-    if (address?.countryCode > '') {
-      countryCode = address.countryCode?.toUpperCase().trim();
-    }
-  }
+  const taxCategory = taxCategoryFromProvider ? SwissTaxCategories[taxCategoryFromProvider] : null;
+  return taxCategory;
+};
 
-  return countryCode === 'CH' || countryCode === 'LI';
+export const resolveTaxCategoryFromProduct = (product: Product): SwissTaxCategoryResolver | null => {
+  const productSpecialTaxTag = product.tags?.find((tag) =>
+    tag?.trim().toLowerCase().startsWith('swiss-tax-category:'),
+  );
+  const taxCategory = Object.values(SwissTaxCategories).find(
+    (t) => `swiss-tax-category:${t.value}` === productSpecialTaxTag?.trim().toLowerCase(),
+  );
+  return taxCategory || null;
 };

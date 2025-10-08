@@ -1,25 +1,16 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductPricingAdapterContext,
   IProductPricingAdapter,
   ProductPricingRowCategory,
 } from '@unchainedshop/core';
-import { isDeliveryAddressInSwitzerland, SwissTaxCategories } from './tax/ch.js';
-
-export const getTaxRate = (context: ProductPricingAdapterContext) => {
-  const { product, order } = context;
-
-  const productSpecialTaxTag = product.tags?.find((tag) =>
-    tag?.trim().toLowerCase().startsWith('swiss-tax-category:'),
-  );
-  const taxCategory =
-    Object.values(SwissTaxCategories).find(
-      (t) => `swiss-tax-category:${t.value}` === productSpecialTaxTag?.trim().toLowerCase(),
-    ) || SwissTaxCategories.DEFAULT;
-
-  return taxCategory.rate(order?.ordered);
-};
+import {
+  resolveTaxCategoryFromDeliveryProvider,
+  resolveTaxCategoryFromProduct,
+  SwissTaxCategories,
+  SwissTaxCategoryResolver,
+} from './tax/ch.js';
+import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.js';
 
 export const ProductSwissTax: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -41,19 +32,40 @@ export const ProductSwissTax: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
+        const orderDelivery = context.order?.deliveryId
+          ? await context.modules.orders.deliveries.findDelivery({
+              orderDeliveryId: context.order?.deliveryId,
+            })
+          : null;
         if (
-          !isDeliveryAddressInSwitzerland({
-            ...context,
-            orderDelivery: context.order?.deliveryId
-              ? await context.modules.orders.deliveries.findDelivery({
-                  orderDeliveryId: context.order?.deliveryId,
-                })
-              : null,
-          })
+          !isDeliveryAddressInCountry(
+            {
+              ...context,
+              orderDelivery,
+            },
+            ['CH', 'LI'],
+          )
         ) {
           return pricingAdapter.calculate();
         }
-        const taxRate = getTaxRate(context);
+
+        let taxCategory: SwissTaxCategoryResolver | null = resolveTaxCategoryFromProduct(
+          context.product,
+        );
+        if (!taxCategory) {
+          // No special tax category found, use default from delivery provider
+          const provider = orderDelivery?.deliveryProviderId
+            ? await context.modules.delivery.findProvider({
+                deliveryProviderId: orderDelivery?.deliveryProviderId,
+              })
+            : null;
+          if (provider) taxCategory = resolveTaxCategoryFromDeliveryProvider(provider);
+        }
+        // If still no tax category found, use default
+        if (!taxCategory) taxCategory = SwissTaxCategories.DEFAULT;
+
+        const taxRate = taxCategory.rate(context.order?.ordered);
+
         ProductPricingAdapter.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
         params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {
           if (!isNetPrice) {
