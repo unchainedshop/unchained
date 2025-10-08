@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError } from '../../../errors.js';
+import { InvalidIdError, ProductReviewNotFoundError } from '../../../errors.js';
 import { Context } from '../../../context.js';
 
 export default async function productReview(
@@ -10,6 +10,7 @@ export default async function productReview(
   log(`query productReview ${productReviewId}`, { userId });
 
   if (!productReviewId) throw new InvalidIdError({ productReviewId });
-
-  return modules.products.reviews.findProductReview({ productReviewId });
+  const review = await modules.products.reviews.findProductReview({ productReviewId });
+  if (!review) throw new ProductReviewNotFoundError({ productReviewId });
+  return review;
 }
