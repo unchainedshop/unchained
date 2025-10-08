@@ -555,6 +555,23 @@ export const ProxyProduct = {
   },
 };
 
+export const TokenizedProduct1 = {
+  _id: 'tokenized-product',
+  created: new Date('2019-10-04T13:52:57.938+0000'),
+  type: 'TOKENIZED_PRODUCT',
+  status: null,
+  sequence: 22,
+  slugs: ['tokenized-product'],
+  tags: [],
+  updated: new Date('2019-10-04T13:52:57.938+0000'),
+  tokenization: {
+    contractAddress: '0x1234567890abcdey',
+    contractStandard: 'ERC721',
+    tokenId: 'TT55',
+    supply: 100,
+  },
+};
+
 export default async function seedProducts(db) {
   await db
     .collection('products')
@@ -571,6 +588,7 @@ export default async function seedProducts(db) {
       ProxyPlanProduct3,
       ProxyProduct,
       PlanProduct,
+      TokenizedProduct1,
     ]);
 
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);

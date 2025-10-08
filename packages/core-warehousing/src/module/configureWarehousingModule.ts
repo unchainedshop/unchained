@@ -175,7 +175,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
     invalidateToken: async (tokenId: string) => {
       const token = await TokenSurrogates.findOneAndUpdate(
-        { _id: tokenId, invalidatedDate: { $exists: false } },
+        { _id: tokenId, invalidatedDate: null },
         {
           $set: {
             invalidatedDate: new Date(),

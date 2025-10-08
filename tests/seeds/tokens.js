@@ -1,7 +1,9 @@
+import { TokenizedProduct1 } from './products.js';
+
 export const TestToken1 = {
   _id: 'test-token-1',
   userId: 'admin',
-  productId: 'simpleproduct',
+  productId: TokenizedProduct1._id,
   orderPositionId: 'order-position-1',
   tokenSerialNumber: 'TOKEN001',
   quantity: 1,
@@ -16,7 +18,7 @@ export const TestToken1 = {
 export const TestToken2 = {
   _id: 'test-token-2',
   userId: 'admin',
-  productId: 'simpleproduct',
+  productId: TokenizedProduct1._id,
   orderPositionId: 'order-position-2',
   tokenSerialNumber: 'TOKEN002',
   quantity: 2,
@@ -31,7 +33,7 @@ export const TestToken2 = {
 export const TestToken3 = {
   _id: 'test-token-3',
   userId: 'user',
-  productId: 'simpleproduct',
+  productId: TokenizedProduct1._id,
   orderPositionId: 'order-position-3',
   tokenSerialNumber: 'TOKEN003',
   quantity: 1,
@@ -46,7 +48,7 @@ export const TestToken3 = {
 export const InvalidatedToken = {
   _id: 'test-token-invalidated',
   userId: 'admin',
-  productId: 'simpleproduct',
+  productId: TokenizedProduct1._id,
   orderPositionId: 'order-position-4',
   tokenSerialNumber: 'TOKEN004',
   quantity: 1,

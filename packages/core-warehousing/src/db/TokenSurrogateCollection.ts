@@ -4,7 +4,7 @@ export interface TokenSurrogate {
   _id: string;
   userId?: string;
   walletAddress?: string;
-  invalidatedDate?: Date;
+  invalidatedDate?: Date | null;
   expiryDate?: Date;
   quantity: number;
   contractAddress?: string;
