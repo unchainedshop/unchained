@@ -18,7 +18,7 @@ export const PrePaidPaymentProvider = {
 
 export const GenericPaymentProvider = {
   _id: 'generic-payment-provider',
-  adapterKey: 'shop.unchained.datatrans',
+  adapterKey: 'shop.unchained.payment.cryptopay',
   created: new Date('2019-10-04T13:52:57.938+0000'),
   configuration: [],
   type: 'GENERIC',

@@ -563,7 +563,6 @@ test.describe('Language', () => {
           queryString: 'fr',
         },
       });
-      console.log(languagesCount);
       assert.strictEqual(languagesCount, 1);
     });
 

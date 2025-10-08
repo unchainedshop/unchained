@@ -328,6 +328,117 @@ export const DiscountedPosition = {
   ],
 };
 
+// Cart test orders - one for each delivery/payment type combination
+export const ShippingOrder = {
+  ...SimpleOrder,
+  _id: 'shipping-order',
+  userId: 'user',
+  paymentId: 'shipping-order-payment',
+  deliveryId: 'shipping-order-delivery',
+};
+
+export const ShippingOrderPayment = {
+  ...SimplePayment,
+  _id: 'shipping-order-payment',
+  orderId: 'shipping-order',
+  paymentProviderId: 'simple-payment-provider',
+};
+
+export const ShippingOrderDelivery = {
+  ...SimpleDelivery,
+  _id: 'shipping-order-delivery',
+  orderId: 'shipping-order',
+  deliveryProviderId: 'simple-delivery-provider',
+};
+
+export const ShippingOrderPosition = {
+  ...SimplePosition,
+  _id: 'shipping-order-position',
+  orderId: 'shipping-order',
+};
+
+export const PickupOrder = {
+  ...SimpleOrder,
+  _id: 'pickup-order',
+  userId: 'user',
+  paymentId: 'pickup-order-payment',
+  deliveryId: 'pickup-order-delivery',
+};
+
+export const PickupOrderPayment = {
+  ...SimplePayment,
+  _id: 'pickup-order-payment',
+  orderId: 'pickup-order',
+  paymentProviderId: 'simple-payment-provider',
+};
+
+export const PickupOrderDelivery = {
+  ...PickupDelivery,
+  _id: 'pickup-order-delivery',
+  orderId: 'pickup-order',
+  deliveryProviderId: 'pickup-delivery-provider',
+};
+
+export const PickupOrderPosition = {
+  ...SimplePosition,
+  _id: 'pickup-order-position',
+  orderId: 'pickup-order',
+};
+
+export const InvoicePaymentOrder = {
+  ...SimpleOrder,
+  _id: 'invoice-payment-order',
+  userId: 'user',
+  paymentId: 'invoice-payment-order-payment',
+  deliveryId: 'invoice-payment-order-delivery',
+};
+
+export const InvoicePaymentOrderPayment = {
+  ...SimplePayment,
+  _id: 'invoice-payment-order-payment',
+  orderId: 'invoice-payment-order',
+  paymentProviderId: 'invoice-payment-provider',
+};
+
+export const InvoicePaymentOrderDelivery = {
+  ...SimpleDelivery,
+  _id: 'invoice-payment-order-delivery',
+  orderId: 'invoice-payment-order',
+};
+
+export const InvoicePaymentOrderPosition = {
+  ...SimplePosition,
+  _id: 'invoice-payment-order-position',
+  orderId: 'invoice-payment-order',
+};
+
+export const GenericPaymentOrder = {
+  ...SimpleOrder,
+  _id: 'generic-payment-order',
+  userId: 'user',
+  paymentId: 'generic-payment-order-payment',
+  deliveryId: 'generic-payment-order-delivery',
+};
+
+export const GenericPaymentOrderPayment = {
+  ...SimplePayment,
+  _id: 'generic-payment-order-payment',
+  orderId: 'generic-payment-order',
+  paymentProviderId: 'generic-payment-provider',
+};
+
+export const GenericPaymentOrderDelivery = {
+  ...SimpleDelivery,
+  _id: 'generic-payment-order-delivery',
+  orderId: 'generic-payment-order',
+};
+
+export const GenericPaymentOrderPosition = {
+  ...SimplePosition,
+  _id: 'generic-payment-order-position',
+  orderId: 'generic-payment-order',
+};
+
 export default async function seedOrders(db) {
   return chainedUpsert(db)
     .upsert('orders', SimpleOrder)
@@ -353,6 +464,26 @@ export default async function seedOrders(db) {
     .upsert('order_discounts', DiscountedDiscount)
     .upsert('order_discounts', DiscountedProductDiscount)
     .upsert('order_positions', DiscountedPosition)
+
+    .upsert('orders', ShippingOrder)
+    .upsert('order_payments', ShippingOrderPayment)
+    .upsert('order_deliveries', ShippingOrderDelivery)
+    .upsert('order_positions', ShippingOrderPosition)
+
+    .upsert('orders', PickupOrder)
+    .upsert('order_payments', PickupOrderPayment)
+    .upsert('order_deliveries', PickupOrderDelivery)
+    .upsert('order_positions', PickupOrderPosition)
+
+    .upsert('orders', InvoicePaymentOrder)
+    .upsert('order_payments', InvoicePaymentOrderPayment)
+    .upsert('order_deliveries', InvoicePaymentOrderDelivery)
+    .upsert('order_positions', InvoicePaymentOrderPosition)
+
+    .upsert('orders', GenericPaymentOrder)
+    .upsert('order_payments', GenericPaymentOrderPayment)
+    .upsert('order_deliveries', GenericPaymentOrderDelivery)
+    .upsert('order_positions', GenericPaymentOrderPosition)
 
     .resolve();
 }
