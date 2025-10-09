@@ -1,5 +1,9 @@
 import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
 import nodemailer from 'nodemailer';
+import { spawn } from 'node:child_process';
+import { writeFile, mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
@@ -18,10 +22,16 @@ const buildLink = async ({ filename, content, href, contentType, encoding, path 
   return '';
 };
 
-const openInBrowser = async (options) => {
-  // eslint-disable-next-line
-  // @ts-ignore
-  const { default: open, apps } = await import('open');
+const openInBrowser = async (options): Promise<boolean> => {
+  const command = {
+    darwin: 'open',
+    win32: 'explorer.exe',
+    linux: 'xdg-open',
+  }[process.platform];
+
+  if (!command) {
+    return false;
+  }
 
   const messageBody = options.html || options.text.replace(/(\r\n|\n|\r)/gm, '<br/>');
   const attachmentLinks = await Promise.all((options.attachments || []).map(buildLink));
@@ -46,11 +56,23 @@ const openInBrowser = async (options) => {
   </body>
 </html>`;
 
-  const base64 = Buffer.from(content).toString('base64');
-  const dataUri = `data:text/html;base64,${base64}`;
+  // Create a temporary directory and file
+  const tempDir = await mkdtemp(join(tmpdir(), 'unchained-email-'));
+  const tempFile = join(tempDir, 'email-preview.html');
 
-  await open(dataUri, { app: [{ name: apps.chrome }, { name: apps.firefox }, { name: apps.browser }] });
-  return true;
+  await writeFile(tempFile, content, 'utf8');
+
+  return new Promise((resolve) => {
+    const child = spawn(command, [tempFile], {
+      detached: true,
+      stdio: 'ignore',
+    });
+
+    child.unref();
+
+    // Resolve immediately after spawning since process is detached
+    resolve(true);
+  });
 };
 
 const EmailWorkerPlugin: IWorkerAdapter<

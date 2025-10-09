@@ -52,7 +52,6 @@
     "graphql": "^16.11.0",
     "graphql-yoga": "^5.15.1",
     "nodemailer": "^7.0.5",
-    "open": "^10.1.2",
     "stripe": "^19.1.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

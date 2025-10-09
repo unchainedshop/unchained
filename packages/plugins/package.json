@@ -60,7 +60,6 @@
     "fastify": ">= 5.2 < 6",
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 8",
-    "open": "10.x",
     "p-memoize": "8.x",
     "stripe": ">= 19 < 20",
     "web-push": ">= 3.6 <4",
@@ -100,9 +99,6 @@
     "nodemailer": {
       "optional": true
     },
-    "open": {
-      "optional": true
-    },
     "p-memoize": {
       "optional": true
     },
@@ -130,7 +126,6 @@
     "fastify": "^5.4.0",
     "minio": "^8.0.5",
     "nodemailer": "^7.0.5",
-    "open": "^10.1.2",
     "p-memoize": "^8.0.0",
     "stripe": "^19.1.0",
     "tsx": "^4.20.3",
