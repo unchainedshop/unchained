@@ -1215,4 +1215,132 @@ test.describe('Work Queue', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
+
+  test.describe('Mutation.processNextWork for admin user should', () => {
+    test('Process next work without worker filter', async () => {
+      await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON) {
+            addWork(type: $type, input: $input) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+        },
+      });
+
+      const {
+        data: { processNextWork },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation ProcessNextWork {
+            processNextWork {
+              _id
+              type
+              status
+            }
+          }
+        `,
+      });
+
+      assert.ok(processNextWork);
+      assert.strictEqual(processNextWork.type, 'HEARTBEAT');
+      assert.ok(['NEW', 'ALLOCATED', 'SUCCESS'].includes(processNextWork.status));
+    });
+
+    test('Process next work with specific worker ID', async () => {
+      await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON) {
+            addWork(type: $type, input: $input) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+        },
+      });
+
+      const {
+        data: { processNextWork },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation ProcessNextWork($worker: String) {
+            processNextWork(worker: $worker) {
+              _id
+              type
+              status
+              worker
+            }
+          }
+        `,
+        variables: {
+          worker: 'TEST-WORKER-ID',
+        },
+      });
+
+      assert.ok(processNextWork);
+      assert.strictEqual(processNextWork.type, 'HEARTBEAT');
+      assert.strictEqual(processNextWork.worker, 'TEST-WORKER-ID');
+    });
+
+    test('Return null when no work available', async () => {
+      const {
+        data: { processNextWork },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation ProcessNextWork($worker: String) {
+            processNextWork(worker: $worker) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          worker: 'NON_EXISTENT_WORKER',
+        },
+      });
+
+      assert.strictEqual(processNextWork, null);
+    });
+  });
+
+  test.describe('Mutation.processNextWork for normal user should', () => {
+    test('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation ProcessNextWork {
+            processNextWork {
+              _id
+              type
+            }
+          }
+        `,
+      });
+
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Mutation.processNextWork for anonymous user should', () => {
+    test('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation ProcessNextWork {
+            processNextWork {
+              _id
+              type
+            }
+          }
+        `,
+      });
+
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
 });
