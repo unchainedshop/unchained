@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-files",
-  "version": "4.0.0-rc.18",
+  "version": "4.0.0-rc.19",
   "main": "lib/files-index.js",
   "types": "lib/files-index.d.ts",
   "type": "module",
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.0.0-rc.18",
-    "@unchainedshop/file-upload": "^4.0.0-rc.18",
-    "@unchainedshop/logger": "^4.0.0-rc.18",
-    "@unchainedshop/utils": "^4.0.0-rc.18"
+    "@unchainedshop/events": "^4.0.0-rc.19",
+    "@unchainedshop/file-upload": "^4.0.0-rc.19",
+    "@unchainedshop/logger": "^4.0.0-rc.19",
+    "@unchainedshop/utils": "^4.0.0-rc.19"
   },
   "devDependencies": {
     "@types/node": "^24.0.13",
