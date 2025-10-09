@@ -2,7 +2,7 @@
 
 This release brings you FerretDB and cloud-hosted MongoDB support (AWS / Azure) via the DocumentDB SDK. You can now run Unchained against a PostgreSQL database: https://ferretdb.com. Be warned, the performance penalty is quite significant currently. Additionally, you can't use `queryString` arguments in queries like `searchProducts` or `countries` at this time.
 
-We also added experimental MCP support 🤖, so any AI app can now manage products in Unchained. We've also added an AI chat feature to the Admin UI.
+We also added experimental MCP support 🤖, so any AI app can now read and manage data in Unchained. We've also added an AI chat feature to the Admin UI.
 Known limitations:
 - Only users with admin role can access the MCP server.
 - If you want to use the MCP server in clients like Claude Code, Visual Studio, etc., you need to either set an Access Token or enable OAuth 2.1. Check out our OIDC example to see how this can be achieved.
