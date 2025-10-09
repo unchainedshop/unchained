@@ -117,4 +117,100 @@ test.describe('Impersonation', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
+
+  test.describe('Mutation.stopImpersonation', () => {
+    test('should return to original user after stopping impersonation', async () => {
+      const result = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation Impersonate($userId: ID!) {
+            impersonate(userId: $userId) {
+              _id
+              user {
+                _id
+                username
+              }
+            }
+          }
+        `,
+        variables: {
+          userId: 'user',
+        },
+      });
+
+      const { impersonate } = result.data;
+      assert.ok(impersonate);
+      assert.strictEqual(impersonate.user._id, 'user');
+
+      const setCookieHeader = result.headers.get('set-cookie');
+      assert.ok(setCookieHeader, 'Set-Cookie header should be present');
+
+      const cookieMatch = setCookieHeader.match(/unchained_token=([^;]+)/);
+      assert.ok(cookieMatch, 'Cookie should contain unchained_token');
+      const sessionCookie = cookieMatch[1];
+
+      const graphqlFetchAsImpersonated = createLoggedInGraphqlFetch(null);
+
+      const {
+        data: { stopImpersonation },
+      } = await graphqlFetchAsImpersonated({
+        query: /* GraphQL */ `
+          mutation StopImpersonation {
+            stopImpersonation {
+              _id
+              user {
+                _id
+                username
+              }
+            }
+          }
+        `,
+        headers: {
+          cookie: `unchained_token=${sessionCookie}`,
+        },
+      });
+
+      assert.ok(stopImpersonation);
+      assert.strictEqual(stopImpersonation.user._id, 'admin');
+      assert.strictEqual(stopImpersonation.user.username, 'admin');
+    });
+
+    test('should return null when not impersonating', async () => {
+      const {
+        data: { stopImpersonation },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation StopImpersonation {
+            stopImpersonation {
+              _id
+              user {
+                _id
+                username
+              }
+            }
+          }
+        `,
+      });
+
+      assert.strictEqual(stopImpersonation, null);
+    });
+
+    test('should return null for normal user not impersonating', async () => {
+      const {
+        data: { stopImpersonation },
+      } = await graphqlFetchAsUser({
+        query: /* GraphQL */ `
+          mutation StopImpersonation {
+            stopImpersonation {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+      });
+
+      assert.strictEqual(stopImpersonation, null);
+    });
+  });
 });
