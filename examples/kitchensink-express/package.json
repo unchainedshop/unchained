@@ -37,7 +37,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^2.0.18",
     "@ai-sdk/openai-compatible": "^1.0.10",
-    "@scure/bip32": "2.0.0",
+    "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
     "@unchainedshop/admin-ui": "=4.0.0-rc.18",
     "@unchainedshop/api": "^4.0.0-rc.18",
