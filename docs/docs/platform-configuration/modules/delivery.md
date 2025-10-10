@@ -1,22 +1,35 @@
 ---
 sidebar_position: 3
-title: Delivery
+title: Delivery Options
 sidebar_label: Delivery
 ---
-# Delivery
 
-:::info
-Configure the Delivery Module
-:::
+```typescript
+export type FilterProvider = (
+  params: {
+    providers: DeliveryProvider[];
+    order: Order;
+  },
+  unchainedAPI: UnchainedAPI,
+) => Promise<DeliveryProvider[]>;
 
+export type DetermineDefaultProvider = (
+  params: {
+    providers: DeliveryProvider[];
+    order: Order;
+  },
+  unchainedAPI: UnchainedAPI,
+) => Promise<DeliveryProvider | null>;
 
-
-- filterSupportedProviders: with default filter based on creation date or the developer can provide custom function to filter the providers
-- determineDefaultProvider: with default the first provider selected from the list of providers
-
-Adjust detection of available delivery providers:
-
+export interface DeliverySettingsOptions {
+  filterSupportedProviders?: FilterProviders;
+  determineDefaultProvider?: DetermineDefaultProvider;
+}
 ```
+
+### Custom Filtering
+
+```typescript
 const options = {
   modules: {
     delivery: {
@@ -26,26 +39,30 @@ const options = {
             (left, right) => {
               return new Date(left.created).getTime() - new Date(right.created).getTime();
             }
-            );
+           ).filter(provider => {
+            return process.env.NODE_ENV === 'production' ? provider._id_ !== 'free' : true;
+           });
       },
-    }
+    },
   }
 };
 ```
 
-Select default provider:
+By default we return all providers based on the creation date and don't filter any. You can't return inactive delivery providers in general.
 
-```
+
+### Default Provider selection for new orders
+
+```typescript
 const options = {
   modules: {
     delivery: {
       determineDefaultProvider: ({ order, providers }) => {
         return providers?.find(({ _id }) => _id === "this-id-always-default");
-        return null; // Force unselected like this
       },
     }
   }
 };
 ```
 
-By default the default provider is defined as first in list of providers (transformed by filterSupportedProviders)
+By default the default provider is defined as first in list of providers (transformed by `filterSupportedProviders` first).

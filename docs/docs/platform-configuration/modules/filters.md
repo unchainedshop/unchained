@@ -1,33 +1,20 @@
---- 
-sidebar_position: 6
-sidebar_label: Filters
-title: Filters
 ---
-# Filters
-:::info
-Configure the Filters Module
-:::
+sidebar_position: 5
+title: Filters Options
+sidebar_label: Filters
+---
 
-
-The module accepts the following keys
-
-- setCachedProductIds
-- getCachedProductIds
-
-To support sorting other than the default order index, extend available sort codes:
-
-```
-extend enum SearchOrderBy {
-   meta_priceRanges_minSimulatedPrice_DESC
-   meta_priceRanges_minSimulatedPrice_ASC
+```typescript
+export interface FilterSettingsOptions {
+  setCachedProductIds?: (
+    filterId: string,
+    productIds: string[],
+    productIdsMap: Record<string, string[]>,
+  ) => Promise<number>;
+  getCachedProductIds?: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
 }
 ```
 
-Explanation:
+### Default Caching Implementation
 
-DESC at the end means it should sort descending whereas ASC or neither direction means it will sort ascending. Underscores will be replaced by dots before firing to the MongoDB, so "meta_priceRanges_minSimulatedPrice_DESC" this effectively translates to:
-
-```
-{ $sort: { "meta.priceRanges.minSimulatedPrice": -1, "_id": 1 } }
-```
-
+- [mongodb](https://github.com/unchainedshop/unchained/blob/master/packages/core-filters/src/product-cache/mongodb.ts)

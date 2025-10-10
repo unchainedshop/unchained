@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
-    "@docusaurus/preset-classic": "^3.8.1",
+    "@docusaurus/preset-classic": "^3.9.1",
     "@easyops-cn/docusaurus-search-local": "^0.52.1",
     "@graphql-markdown/diff": "^1.1.13",
     "@graphql-markdown/docusaurus": "^1.30.3",
-    "@graphql-tools/graphql-file-loader": "^8.1.0",
+    "@graphql-tools/graphql-file-loader": "^8.1.2",
     "@graphql-tools/url-loader": "^8.0.33",
     "@mdx-js/react": "^3.1.1",
     "docusaurus-graphql-plugin": "^0.9.0",
@@ -31,8 +31,8 @@
     "@docusaurus/types": "^3.7.0",
     "@graphql-markdown/types": "^1.8.0",
     "docusaurus-plugin-typedoc": "^1.4.2",
-    "typedoc": "^0.28.12",
-    "typedoc-plugin-markdown": "^4.8.1"
+    "typedoc": "^0.28.13",
+    "typedoc-plugin-markdown": "^4.9.0"
   },
   "browserslist": {
     "production": [

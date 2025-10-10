@@ -6,7 +6,7 @@ import {
   OrderWrongStatusError,
   OrderNotFoundError,
 } from '../../../errors.js';
-import { OrderPosition, ordersSettings } from '@unchainedshop/core-orders';
+import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addMultipleCartProducts(
   root: never,
@@ -49,42 +49,35 @@ export default async function addMultipleCartProducts(
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  // Reduce is used to wait for each product to be added before processing the next (sequential processing)
-  await itemsWithProducts.reduce(
-    async (positionsPromise, { originalProduct, quantity, configuration }) => {
-      const positions: OrderPosition[] = await positionsPromise;
-      if (quantity < 1)
-        throw new OrderQuantityTooLowError({
-          quantity,
-          productId: originalProduct._id,
-        });
-
-      const product = await modules.products.resolveOrderableProduct(originalProduct, {
-        configuration,
-      });
-
-      await ordersSettings.validateOrderPosition(
-        {
-          order,
-          product,
-          configuration,
-          quantityDiff: quantity,
-        },
-        context,
-      );
-
-      const position = await modules.orders.positions.addProductItem({
+  for (const { originalProduct, quantity, configuration } of itemsWithProducts) {
+    if (quantity < 1)
+      throw new OrderQuantityTooLowError({
         quantity,
-        configuration,
-        originalProductId: originalProduct._id,
-        productId: product._id,
-        orderId: order._id,
+        productId: originalProduct._id,
       });
-      positions.push(position);
-      return positions;
-    },
-    Promise.resolve([]),
-  );
+
+    const product = await modules.products.resolveOrderableProduct(originalProduct, {
+      configuration,
+    });
+
+    await ordersSettings.validateOrderPosition(
+      {
+        order,
+        product,
+        configuration,
+        quantityDiff: quantity,
+      },
+      context,
+    );
+
+    await modules.orders.positions.addProductItem({
+      quantity,
+      configuration,
+      originalProductId: originalProduct._id,
+      productId: product._id,
+      orderId: order._id,
+    });
+  }
 
   return services.orders.updateCalculation(order._id);
 }

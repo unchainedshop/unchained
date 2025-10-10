@@ -1,18 +1,24 @@
 ---
-sidebar_position: 11
+sidebar_position: 10
 sidebar_label: Worker
-title: Worker
+title: Worker Options
 ---
-:::info
-Configure the Worker Module
-:::
 
+```typescript
+export interface WorkerSettingsOptions {
+  blacklistedVariables?: string[];
+}
+```
 
-- blacklistedVariables: `Array<string>` provide a custom list of blacklisted variables, keys which are part of the blacklist will be obfuscated with `*****` in Work Queue API's and when publishing Events.
+### Blacklisting Variables
+
+Security Feature.
+
+You can provide a custom list of blacklisted variables, keys which are part of the blacklist will be obfuscated with `*****` in Work Queue API's and when publishing Events.
 
 Example custom configuration:
 
-```
+```typescript
 const options = {
   modules: {
     worker: {
@@ -22,12 +28,4 @@ const options = {
 };
 ```
 
-By default those variables are filtered:
-- `password`,
-- `newPassword`,
-- `oldPassword`,
-- `authorization`,
-- `secret`,
-- `accesskey`,
-- `accesstoken`,
-- `token`
+By default, those variables are filtered: [buildObfuscatedFieldsFilter](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/build-obfuscated-fields-filter.ts)

@@ -69,17 +69,17 @@ export interface ModuleOptions {
   assortments?: AssortmentsSettingsOptions;
   products?: ProductsSettingsOptions;
   delivery?: DeliverySettingsOptions;
+  payment?: PaymentSettingsOptions;
   filters?: FiltersSettingsOptions;
   enrollments?: EnrollmentsSettingsOptions;
   orders?: OrdersSettingsOptions;
   quotations?: QuotationsSettingsOptions;
   files?: FilesSettingsOptions;
-  payment?: PaymentSettingsOptions;
   worker?: WorkerSettingsOptions;
   users?: UserSettingsOptions;
 }
 
-const initModules = async (
+export default async function initModules(
   {
     db,
     migrationRepository,
@@ -95,7 +95,7 @@ const initModules = async (
       configure: (params: ModuleInput<any>) => any;
     }
   >,
-): Promise<Modules> => {
+): Promise<Modules> {
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
@@ -204,6 +204,4 @@ const initModules = async (
   }
 
   return modules;
-};
-
-export default initModules;
+}

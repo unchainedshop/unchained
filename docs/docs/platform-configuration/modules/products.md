@@ -1,25 +1,28 @@
 ---
-sidebar_position: 9
-title: Products
+sidebar_position: 2
+title: Products Options
 sidebar_label: Products
 ---
 
-:::info
-Configure the Products Module
-:::
-
-
-**Monkey patching the slugification**
-
-You can override the default slugify function like that:
-
+```typescript
+export interface ProductsSettingsOptions {
+  slugify: (title: string) => string;
+}
 ```
-import { ProductTexts } from '@unchainedshop/core-products';
-const oldMakeSlug = ProductTexts.makeSlug;
-ProductTexts.makeSlug = rest =>
-  oldMakeSlug(rest, {
-    slugify: (title) => {
-      return 'fu';
-    }
-  });
+
+### Default Slugifier
+
+- [slugify](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/slugify.ts)
+
+### Custom Slugify
+
+```typescript
+import slugify from 'slugify';
+const options = {
+  modules: {
+    products: {
+      slugify
+    },
+  }
+};
 ```

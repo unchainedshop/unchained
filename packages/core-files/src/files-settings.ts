@@ -7,7 +7,7 @@ export interface FilesSettings {
 export type FilesSettingsOptions = Omit<Partial<FilesSettings>, 'configureSettings'>;
 
 export const defaultTransformUrl = (url) => url;
-export const PRIVATE_FILE_SHARING_MAX_AGE = 86400000;
+export const PRIVATE_FILE_SHARING_MAX_AGE = 86400000; // 24 hours in milliseconds
 
 export const filesSettings: FilesSettings = {
   transformUrl: defaultTransformUrl,

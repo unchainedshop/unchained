@@ -1,21 +1,36 @@
 ---
-sidebar_position: 8
+sidebar_position: 4
+title: Payment Options
 sidebar_label: Payment
-titel: Payment
 ---
-:::info
-Configure the Payment Module
-:::
 
+```typescript
+export type FilterProvider = (
+  params: {
+    providers: PaymentProvider[];
+    order: Order;
+  },
+  unchainedAPI: UnchainedAPI,
+) => Promise<PaymentProvider[]>;
 
+export type DetermineDefaultProvider = (
+  params: {
+    providers: PaymentProvider[];
+    paymentCredentials: PaymentCredentials[];
+    order: Order;
+  },
+  unchainedAPI: UnchainedAPI,
+) => Promise<PaymentProvider | null>;
 
-- filterSupportedProviders: filter payment providers by given custom function or the default which is by creation date
-- determineDefaultProvider: set first payment provider from the list of payment providers by default or by given custom function,
-Custom sorting of payment providers:
-
-Example of custom function
-
+export interface PaymentSettingsOptions {
+  filterSupportedProviders?: FilterProviders;
+  determineDefaultProvider?: DetermineDefaultProvider;
+}
 ```
+
+### Custom Filtering
+
+```typescript
 const options = {
   modules: {
     payment: {
@@ -25,29 +40,32 @@ const options = {
             (left, right) => {
               return new Date(left.created).getTime() - new Date(right.created).getTime();
             }
-           );
+           ).filter(provider => {
+            return process.env.NODE_ENV === 'production' ? provider._id_ !== 'free' : true;
+           });
       },
     },
   }
 };
 ```
 
+By default we return all providers based on the creation date and don't filter any. You can't return inactive payment providers in general.
 
-Select default provider:
 
-```
+### Default Provider selection for new orders
+
+```typescript
 const options = {
   modules: {
     payment: {
-      determineDefaultProvider: ({ order, providers, paymentCredentials }) => {
+      determineDefaultProvider: ({ order, providers }) => {
         return providers?.find(({ _id }) => _id === "this-id-always-default");
-        return null; // Force it to be unselected by returning null
       },
     }
   }
 };
 ```
 
-By default the default provider is defined as first in list of providers matching credentials, if no credentials: first in list of providers (transformed by filterSupportedProviders).
+By default the default provider is defined as first in list of providers matching credentials, if no credentials: first in list of providers (transformed by `filterSupportedProviders` first).
 
 
