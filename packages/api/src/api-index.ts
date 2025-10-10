@@ -53,6 +53,7 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
   const additionalResolvers = 'resolvers' in serverOptions ? serverOptions.resolvers : [];
 
   return createGraphQLServer({
+    ...serverOptions,
     typeDefs: [
       ...buildDefaultTypeDefs({
         actions: Object.keys(actions),
@@ -60,6 +61,5 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
       ...(additionalTypeDefs || []),
     ],
     resolvers: [resolvers, ...(additionalResolvers || [])],
-    ...serverOptions,
   });
 };
