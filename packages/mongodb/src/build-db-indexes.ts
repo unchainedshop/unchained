@@ -33,18 +33,20 @@ const buildIndexes = async <T extends Document>(
 export const buildDbIndexes = async <T extends Document>(
   collection: Collection<T>,
   indexes: Indexes,
+  { rebuild }: { rebuild?: boolean } = {},
 ) => {
   let success = true;
   const buildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
 
   if (buildErrors.length) {
-    // try {
-    //   const dropError = await collection.dropIndexes();
-    // } catch (e) {
-    //   /* */
-    // }
+    if (rebuild) {
+      try {
+        await collection.dropIndexes();
+      } catch {
+        /* */
+      }
+    }
 
-    // if (!dropError) {
     const rebuildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
 
     if (rebuildErrors.length) {
@@ -52,7 +54,6 @@ export const buildDbIndexes = async <T extends Document>(
       logger.debug(rebuildErrors);
       success = false;
     }
-    // }
   }
 
   return success;

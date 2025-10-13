@@ -3,12 +3,11 @@ import { createYoga, createSchema, YogaServerOptions, YogaSchemaDefinition } fro
 
 const logger = createLogger('unchained:api');
 
-export type UnchainedSchemaExtension =
-  | {
-      typeDefs: string[];
-      resolvers: Record<string, any>[];
-    }
-  | { schema: YogaSchemaDefinition<any, any> };
+export interface UnchainedSchemaExtension {
+  typeDefs: string[];
+  resolvers: Record<string, any>[];
+  schema?: YogaSchemaDefinition<any, any>;
+}
 
 export type GraphQLServerOptions = YogaServerOptions<any, any> & UnchainedSchemaExtension;
 
