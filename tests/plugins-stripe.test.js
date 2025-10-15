@@ -17,7 +17,6 @@ test.describe('Plugins: Stripe Payments', async () => {
       [db] = await setupDatabase();
       graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-      // Add a stripe provider
       await db.collection('payment-providers').findOrInsertOne({
         ...SimplePaymentProvider,
         _id: 'stripe-payment-provider',
@@ -26,7 +25,6 @@ test.describe('Plugins: Stripe Payments', async () => {
         configuration: [{ key: 'descriptorPrefix', value: 'Book Shop' }],
       });
 
-      // Add a demo order ready to checkout
       await db.collection('order_payments').findOrInsertOne({
         ...SimplePayment,
         _id: 'stripe-payment',
@@ -47,7 +45,6 @@ test.describe('Plugins: Stripe Payments', async () => {
         paymentId: 'stripe-payment',
       });
 
-      // Add a second demo order ready to checkout
       await db.collection('order_payments').findOrInsertOne({
         ...SimplePayment,
         _id: 'stripe-payment2',
@@ -66,6 +63,25 @@ test.describe('Plugins: Stripe Payments', async () => {
         _id: 'stripe-order2',
         orderNumber: 'stripe2',
         paymentId: 'stripe-payment2',
+        calculation: [
+          {
+            category: 'ITEMS',
+            amount: 32145,
+          },
+          { category: 'TAXES', amount: 0 },
+          {
+            category: 'PAYMENT',
+            amount: 0,
+          },
+          {
+            category: 'DELIVERY',
+            amount: 0,
+          },
+          {
+            category: 'DISCOUNTS',
+            amount: 0,
+          },
+        ],
       });
     });
 
@@ -247,7 +263,7 @@ test.describe('Plugins: Stripe Payments', async () => {
         assert.notStrictEqual(signPaymentProviderForCheckout, '');
         assert.notStrictEqual(signPaymentProviderForCheckout, null);
         assert.notStrictEqual(signPaymentProviderForCheckout, undefined);
-        idAndSecret = signPaymentProviderForCheckout.split('_secret_');
+        idAndSecret = signPaymentProviderForCheckout?.split('_secret_');
       });
 
       test('Confirm the payment and checkout the order', async () => {
@@ -281,6 +297,261 @@ test.describe('Plugins: Stripe Payments', async () => {
           _id: 'stripe-order',
           status: 'CONFIRMED',
         });
+      });
+    });
+
+    test.describe('POST /payment/stripe (Webhook)', async () => {
+      let stripe;
+      test.before(() => {
+        stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
+      });
+
+      test('Handle payment_intent.succeeded webhook event successfully', async () => {
+        const { data: { signPaymentProviderForCheckout } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                orderPaymentId: $orderPaymentId
+                transactionContext: $transactionContext
+              )
+            }
+          `,
+          variables: {
+            orderPaymentId: 'stripe-payment2',
+            transactionContext: {},
+          },
+        });
+
+        const idAndSecret = signPaymentProviderForCheckout.split('_secret_');
+
+        const paymentIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
+          return_url: 'http://localhost:4010',
+          payment_method: 'pm_card_visa',
+        });
+
+        const webhookEvent = {
+          id: `evt_test_${Date.now()}`,
+          object: 'event',
+          type: 'payment_intent.succeeded',
+          data: {
+            object: paymentIntent,
+          },
+        };
+
+        const webhookSecret = process.env.STRIPE_ENDPOINT_SECRET;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const payload = JSON.stringify(webhookEvent);
+        const signature = stripe.webhooks.generateTestHeaderString({
+          payload,
+          secret: webhookSecret,
+          timestamp,
+        });
+
+        const response = await fetch('http://localhost:4010/payment/stripe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'stripe-signature': signature,
+          },
+          body: payload,
+        });
+
+        const result = await response.json();
+        assert.strictEqual(response.status, 200);
+        assert.ok(result.message || result.orderId);
+        assert.strictEqual(result.orderId, 'stripe-order2');
+
+        const { data: { order } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query getOrder($orderId: ID!) {
+              order(orderId: $orderId) {
+                _id
+                status
+              }
+            }
+          `,
+          variables: {
+            orderId: 'stripe-order2',
+          },
+        });
+
+        assert.strictEqual(order.status, 'CONFIRMED');
+      });
+
+      test('Return 400 when stripe-signature header is missing', async () => {
+        const webhookEvent = {
+          id: 'evt_test',
+          type: 'payment_intent.succeeded',
+          data: {
+            object: {},
+          },
+        };
+
+        const response = await fetch('http://localhost:4010/payment/stripe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(webhookEvent),
+        });
+
+        const result = await response.json();
+
+        assert.strictEqual(response.status, 400);
+        assert.ok(result.message.includes('stripe-signature'));
+      });
+
+      test('Return 400 when webhook signature is invalid', async () => {
+        const webhookEvent = {
+          id: 'evt_test',
+          type: 'payment_intent.succeeded',
+          data: {
+            object: {},
+          },
+        };
+
+        const response = await fetch('http://localhost:4010/payment/stripe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'stripe-signature': 'invalid_signature',
+          },
+          body: JSON.stringify(webhookEvent),
+        });
+
+        const result = await response.json();
+
+        assert.strictEqual(response.status, 400);
+        assert.ok(result.message);
+      });
+
+      test('Return 200 with ignored flag for unsupported event type', async () => {
+        const webhookEvent = {
+          id: `evt_test_${Date.now()}`,
+          object: 'event',
+          type: 'customer.created',
+          data: {
+            object: {
+              id: 'cus_test',
+              metadata: {
+                environment: process.env.STRIPE_WEBHOOK_ENVIRONMENT || '',
+              },
+            },
+          },
+        };
+
+        const webhookSecret = process.env.STRIPE_ENDPOINT_SECRET;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const payload = JSON.stringify(webhookEvent);
+        const signature = stripe.webhooks.generateTestHeaderString({
+          payload,
+          secret: webhookSecret,
+          timestamp,
+        });
+
+        const response = await fetch('http://localhost:4010/payment/stripe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'stripe-signature': signature,
+          },
+          body: payload,
+        });
+
+        const result = await response.json();
+
+        assert.strictEqual(response.status, 200);
+        assert.strictEqual(result.ignored, true);
+        assert.ok(result.message.includes('Unhandled event type'));
+      });
+
+      test('Return 200 with ignored flag for mismatched environment', async () => {
+        const webhookEvent = {
+          id: `evt_test_${Date.now()}`,
+          object: 'event',
+          type: 'payment_intent.succeeded',
+          data: {
+            object: {
+              id: 'pi_test',
+              metadata: {
+                environment: 'different_environment',
+              },
+            },
+          },
+        };
+
+        const webhookSecret = process.env.STRIPE_ENDPOINT_SECRET;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const payload = JSON.stringify(webhookEvent);
+        const signature = stripe.webhooks.generateTestHeaderString({
+          payload,
+          secret: webhookSecret,
+          timestamp,
+        });
+
+        const response = await fetch('http://localhost:4010/payment/stripe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'stripe-signature': signature,
+          },
+          body: payload,
+        });
+
+        const result = await response.json();
+
+        assert.strictEqual(response.status, 200);
+        assert.strictEqual(result.ignored, true);
+        assert.ok(result.message.includes('Unhandled event environment'));
+      });
+
+      test('Return 500 when orderPayment not found for payment_intent.succeeded', async () => {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: 10000,
+          currency: 'chf',
+          payment_method: 'pm_card_visa',
+          confirm: true,
+          metadata: {
+            orderPaymentId: 'non-existent-payment',
+            orderId: 'non-existent-order',
+            userId: 'user',
+            environment: process.env.STRIPE_WEBHOOK_ENVIRONMENT || '',
+          },
+          return_url: 'http://localhost:4010',
+          use_stripe_sdk: true,          
+        });
+
+        const webhookEvent = {
+          id: `evt_test_${Date.now()}`,
+          object: 'event',
+          type: 'payment_intent.succeeded',
+          data: {
+            object: paymentIntent,
+          },
+        };
+
+        const webhookSecret = process.env.STRIPE_ENDPOINT_SECRET;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const payload = JSON.stringify(webhookEvent);
+        const signature = stripe.webhooks.generateTestHeaderString({
+          payload,
+          secret: webhookSecret,
+          timestamp,
+        });
+
+        const response = await fetch('http://localhost:4010/payment/stripe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'stripe-signature': signature,
+          },
+          body: payload,
+        });
+
+        const result = await response.json();
+
+        assert.strictEqual(response.status, 500);
+        assert.ok(result.message.includes('order payment not found'));
       });
     });
   } else {

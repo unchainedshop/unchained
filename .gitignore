@@ -14,3 +14,4 @@ tsconfig.tsbuildinfo
 /data
 fly.toml
 /typedocs
+.env.local.tests
