@@ -139,8 +139,7 @@ export const User: UserHelperTypes = {
     const { profile } = user;
     if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
 
-    const primaryEmail = getPrimaryEmail(user);
-    return primaryEmail?.address || user._id;
+    return user._id;
   },
 
   primaryEmail: async (user, params, context) => {
