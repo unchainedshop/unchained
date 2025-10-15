@@ -119,7 +119,7 @@ test.describe('Plugins: Stripe Payments', async () => {
         idAndSecret = signPaymentProviderForCredentialRegistration.split('_secret_');
       });
 
-      test('Confirm the payment intent', async () => {
+      test('Confirm the setup intent', async () => {
         const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
 
         const confirmedIntent = await stripe.setupIntents.confirm(idAndSecret[0], {
