@@ -45,6 +45,7 @@ export default async function resetPassword(
               'emails.$.verified': true,
             },
           },
+          {}
         );
         if (updatedUser) {
           await modules.accounts.emit('VerifyEmailSuccess', updatedUser);
