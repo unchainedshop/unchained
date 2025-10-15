@@ -42,11 +42,8 @@ export default async function resetPassword(
           },
           {
             $set: {
-              'emails.$[email].verified': true,
+              'emails.$.verified': true,
             },
-          },
-          {
-            arrayFilters: [{ 'email.address': resetTicket.address }],
           },
         );
         if (updatedUser) {
