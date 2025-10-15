@@ -20,10 +20,5 @@ export default async function setPassword(
 
   await modules.accounts.setPassword(normalizedUserId, params);
 
-  // Verify!
-  await modules.users.updateUser({ _id: normalizedUserId }, {
-    
-  });
-
   return modules.users.findUserById(normalizedUserId);
 }
