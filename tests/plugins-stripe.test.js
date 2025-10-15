@@ -31,7 +31,6 @@ test.describe('Plugins: Stripe Payments', async () => {
         paymentProviderId: 'stripe-payment-provider',
         orderId: 'stripe-order',
       });
-
       await db.collection('order_positions').findOrInsertOne({
         ...SimplePosition,
         _id: 'stripe-order-position',
@@ -120,7 +119,7 @@ test.describe('Plugins: Stripe Payments', async () => {
         idAndSecret = signPaymentProviderForCredentialRegistration.split('_secret_');
       });
 
-      test('Confirm the setup intent', async () => {
+      test('Confirm the payment intent', async () => {
         const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
 
         const confirmedIntent = await stripe.setupIntents.confirm(idAndSecret[0], {
@@ -135,8 +134,8 @@ test.describe('Plugins: Stripe Payments', async () => {
           query: /* GraphQL */ `
             mutation register($paymentProviderId: ID!, $transactionContext: JSON!) {
               registerPaymentCredentials(
-                paymentProviderId: $paymentProviderId
                 transactionContext: $transactionContext
+                paymentProviderId: $paymentProviderId
               ) {
                 _id
                 token
@@ -263,12 +262,11 @@ test.describe('Plugins: Stripe Payments', async () => {
         assert.notStrictEqual(signPaymentProviderForCheckout, '');
         assert.notStrictEqual(signPaymentProviderForCheckout, null);
         assert.notStrictEqual(signPaymentProviderForCheckout, undefined);
-        idAndSecret = signPaymentProviderForCheckout?.split('_secret_');
+        idAndSecret = signPaymentProviderForCheckout.split('_secret_');
       });
 
       test('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
-
         const confirmedIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
           return_url: 'http://localhost:4010',
           use_stripe_sdk: true,
@@ -518,7 +516,7 @@ test.describe('Plugins: Stripe Payments', async () => {
             environment: process.env.STRIPE_WEBHOOK_ENVIRONMENT || '',
           },
           return_url: 'http://localhost:4010',
-          use_stripe_sdk: true,          
+          use_stripe_sdk: true,
         });
 
         const webhookEvent = {
@@ -555,7 +553,7 @@ test.describe('Plugins: Stripe Payments', async () => {
       });
     });
   } else {
-    test.skip('Secret not set', () => {
+    test('Secret not set', () => {
       /* */
     });
   }
