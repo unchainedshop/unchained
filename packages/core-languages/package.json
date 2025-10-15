@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-languages",
-  "version": "2.18.0",
+  "version": "2.18.1",
   "main": "lib/languages-index.js",
   "exports": {
     ".": "./lib/languages-index.js",

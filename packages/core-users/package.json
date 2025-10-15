@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-users",
-  "version": "2.18.0",
+  "version": "2.18.1",
   "main": "lib/users-index.js",
   "exports": {
     ".": "./lib/users-index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
-  "version": "2.18.1",
+  "version": "2.18.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
