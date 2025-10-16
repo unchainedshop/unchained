@@ -12,9 +12,10 @@ export const googleWalletHandler = async (
   const { modules } = resolvedContext;
   logger.info(`${req.path} (${JSON.stringify(req.query)})`);
 
-  if (req.path.startsWith('/download/')) {
+  if (req.path.includes('/download/')) {
     try {
-      const [, , tokenId] = req.path.split('/');
+      const { tokenId } = req.params as { tokenId: string };
+      const { hash } = req.query as { hash?: string };
 
       if (!tokenId) {
         res.status(404).end();
@@ -30,7 +31,6 @@ export const googleWalletHandler = async (
         return;
       }
 
-      const { hash } = req.query;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
       if (!hash || hash !== correctHash) {
         res.status(403).send('Token hash invalid for current owner');

@@ -17,7 +17,7 @@ export default (app: FastifyInstance) => {
   });
 
   app.route({
-    url: `${GOOGLE_WALLET_WEBSERVICE_PATH}/*`,
+    url: `${GOOGLE_WALLET_WEBSERVICE_PATH}/download/:tokenId`,
     method: 'GET',
     handler: googleWalletHandler,
   });

@@ -16,11 +16,10 @@ const googleWalletHandler: RouteHandlerMethod = async (
   const path = req.url;
 
   logger.info(`${path} (${JSON.stringify(req.query)})`);
-
-  if (path.startsWith('/download/')) {
+  if (path.includes('/download/')) {
     try {
-      const [, , tokenId] = path.split('/');
-
+      const { tokenId } = req.params as { tokenId: string };
+      const { hash } = req.query as { hash?: string };
       if (!tokenId) {
         reply.status(404);
         return reply.send();
@@ -33,10 +32,8 @@ const googleWalletHandler: RouteHandlerMethod = async (
       if (!token) {
         logger.error('Token not found', { tokenId });
         reply.status(404);
-        return reply.send();
+        return reply.send('Token not found');
       }
-
-      const { hash } = req.query as Record<string, string>;
       const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
       if (!hash || hash !== correctHash) {
         logger.error('Token hash invalid for current owner', { tokenId });
