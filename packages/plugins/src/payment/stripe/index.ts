@@ -89,13 +89,11 @@ const Stripe: IPaymentAdapter = {
       sign: async (transactionContext = {}) => {
         const { orderPayment, order, paymentProviderId } = context;
         const { userId, name, email } = await assertUserData(order?.userId);
-
-        if (!order) throw new Error('order not found in context');
-
         if (orderPayment) {
+          if (!order) throw new Error('order not found in context');
           const pricing = OrderPricingSheet({
-            calculation: order.calculation,
-            currencyCode: order.currencyCode,
+            calculation: order?.calculation,
+            currencyCode: order?.currencyCode,
           });
           const paymentIntent = await createOrderPaymentIntent(
             { userId, name, email, order, orderPayment, pricing, descriptorPrefix },
