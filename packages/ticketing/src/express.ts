@@ -26,7 +26,7 @@ export default (app: express.Express) => {
   );
 
   app.use(
-    GOOGLE_WALLET_WEBSERVICE_PATH,
+    `${GOOGLE_WALLET_WEBSERVICE_PATH}/download/:tokenId`,
     express.json({
       type: 'application/json',
     }),
