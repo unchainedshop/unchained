@@ -116,7 +116,7 @@ export default async function verifyWeb3Address(
   // eslint-disable-next-line
   // @ts-ignore
   const messageHash = hashPersonalMessage(
-    hexToBytes(`0x${Buffer.from(foundCredentials.nonce, 'utf8').toString('hex')}`),
+    hexToBytes(Buffer.from(foundCredentials.nonce, 'utf8').toString('hex')),
   );
 
   const sigParams = fromRPCSig(hash);

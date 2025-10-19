@@ -302,9 +302,7 @@ test.describe('Web3 Authentication', () => {
         },
       );
 
-      const {
-        data: { verifyWeb3Address },
-      } = await graphqlFetchAsUser({
+      const { data, ...rest } = await graphqlFetchAsUser({
         query: /* GraphQL */ `
           mutation VerifyWeb3Address($address: String!, $hash: String!) {
             verifyWeb3Address(address: $address, hash: $hash) {
@@ -323,8 +321,8 @@ test.describe('Web3 Authentication', () => {
         },
       });
 
-      assert.ok(verifyWeb3Address);
-      const verifiedAddress = verifyWeb3Address.web3Addresses.find(
+      assert.ok(data?.verifyWeb3Address);
+      const verifiedAddress = data?.verifyWeb3Address.web3Addresses.find(
         (a) => a.address.toLowerCase() === address.toLowerCase(),
       );
       assert.ok(verifiedAddress);

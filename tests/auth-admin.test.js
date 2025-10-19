@@ -56,8 +56,8 @@ test.describe('Auth for admin users', () => {
         `,
       });
       assert.deepStrictEqual(users, [
-        { _id: 'admin', name: 'admin@unchained.local' },
-        { _id: 'user', name: 'user@unchained.local' },
+        { _id: 'admin', name: 'admin' },
+        { _id: 'user', name: 'user' },
       ]);
     });
     test('returns 2 additional guest when using includeGuests', async () => {
@@ -72,10 +72,10 @@ test.describe('Auth for admin users', () => {
         `,
       });
       assert.deepStrictEqual(users, [
-        { _id: 'admin', name: 'admin@unchained.local' },
-        { _id: 'user', name: 'user@unchained.local' },
-        { _id: 'guest', name: 'guest@unchained.local' },
-        { _id: 'guest2', name: 'guest2@unchained.local' },
+        { _id: 'admin', name: 'admin' },
+        { _id: 'user', name: 'user' },
+        { _id: 'guest', name: 'guest' },
+        { _id: 'guest2', name: 'guest2' },
       ]);
     });
 
@@ -96,7 +96,7 @@ test.describe('Auth for admin users', () => {
       assert.strictEqual(users.length, 1);
       assert.deepStrictEqual(users[0], {
         _id: 'guest',
-        name: 'guest@unchained.local',
+        name: 'guest',
       });
     });
   });
