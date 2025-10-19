@@ -302,7 +302,7 @@ test.describe('Web3 Authentication', () => {
         },
       );
 
-      const { data, ...rest } = await graphqlFetchAsUser({
+      const { data } = await graphqlFetchAsUser({
         query: /* GraphQL */ `
           mutation VerifyWeb3Address($address: String!, $hash: String!) {
             verifyWeb3Address(address: $address, hash: $hash) {
