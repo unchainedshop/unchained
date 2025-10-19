@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/events",
-  "version": "4.0.0-rc.21",
+  "version": "4.0.0",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.0.0-rc.21"
+    "@unchainedshop/logger": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.13",

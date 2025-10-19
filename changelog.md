@@ -15,7 +15,6 @@ import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
 registerProductDiscoverabilityFilter({ hiddenTagValue: 'hidden' });
 ```
 
-
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 
 ## Major
