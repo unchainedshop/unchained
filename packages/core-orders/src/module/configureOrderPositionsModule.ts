@@ -180,7 +180,7 @@ export const configureOrderPositionsModule = ({
         orderId,
         productId,
         originalProductId,
-        configuration: configuration || { $exists: false },
+        configuration: configuration ?? null,
         ...scope,
       };
 
