@@ -5,6 +5,7 @@ import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { setTimeout } from 'node:timers/promises';
+import { buildSignature } from '../packages/plugins/src/payment/saferpay/buildSignature.ts';
 
 const { SAFERPAY_CUSTOMER_ID, SAFERPAY_PW } = process.env;
 
@@ -210,6 +211,50 @@ test.describe('Plugins: Worldline/Saferpay', () => {
       });
 
       const orderPayment = await db.collection('order_payments').findOne({ _id: 'saferpay-payment2' });
+      assert.strictEqual(orderPayment.status, 'PAID');
+    });
+
+    test('starts a new transaction with payment (webhook)', { timeout: 20000 }, async () => {
+      const {
+        data: { signPaymentProviderForCheckout },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+            signPaymentProviderForCheckout(
+              transactionContext: $transactionContext
+              orderPaymentId: $orderPaymentId
+            )
+          }
+        `,
+        variables: {
+          orderPaymentId: 'saferpay-payment',
+          transactionContext: {},
+        },
+      });
+
+      const { location, transactionId } = JSON.parse(signPaymentProviderForCheckout);
+
+      assert.ok(
+        location.startsWith(
+          `https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`,
+        ),
+      );
+
+      await simulatePayment(location);
+
+      const url = new URL(`http://localhost:4010/payment/saferpay/webhook`);
+      url.searchParams.set('orderPaymentId', 'saferpay-payment');
+      url.searchParams.set('signature', await buildSignature(transactionId, 'saferpay-payment'));
+      url.searchParams.set('transactionId', transactionId);
+
+      await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const orderPayment = await db.collection('order_payments').findOne({ _id: 'saferpay-payment' });
       assert.strictEqual(orderPayment.status, 'PAID');
     });
   } else {
