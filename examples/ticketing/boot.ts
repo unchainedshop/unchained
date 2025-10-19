@@ -22,9 +22,9 @@ try {
 
   // Unchained Ticketing Extension
   setupTicketing(platform.unchainedAPI as TicketingAPI, {
-    renderOrderPDF: fastify.log.info,
-    createAppleWalletPass: fastify.log.info,
-    createGoogleWalletPass: fastify.log.info,
+    renderOrderPDF: () => fastify.log.info('TODO: Rendering Order PDF'),
+    createAppleWalletPass: () => fastify.log.info('TODO: Creating Apple Wallet Pass'),
+    createGoogleWalletPass: () => fastify.log.info('TODO: Creating Google Wallet Pass'),
   });
 
   connect(fastify, platform, {
