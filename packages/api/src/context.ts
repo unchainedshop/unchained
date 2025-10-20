@@ -67,7 +67,9 @@ export type UnchainedContextResolver<Request = any, Response = any> = (
 const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
   with: { type: 'json' },
 });
-const { UNCHAINED_API_VERSION = packageJson?.version || '3.x' } = process.env;
+
+const { UNCHAINED_API_VERSION = packageJson?.version || process.env.npm_package_version || 'n/a' } =
+  process.env;
 
 export const createContextResolver =
   (

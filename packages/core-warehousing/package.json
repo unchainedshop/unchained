@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-warehousing",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "main": "lib/warehousing-index.js",
   "types": "lib/warehousing-index.d.ts",
   "type": "module",

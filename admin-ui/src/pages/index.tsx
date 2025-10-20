@@ -6,6 +6,7 @@ import DashboardShortcutCard from '../modules/common/components/DashboardShortcu
 import useShopConfiguration from '../modules/common/hooks/useShopConfiguration';
 import DashboardMetrics from '../modules/common/components/DashboardMetrics';
 import AnalyticsDashboard from '../modules/common/components/AnalyticsDashboard';
+import { default as packageJson } from '../../package.json' with { type: 'json' };
 
 const HomePage = () => {
   const { configuration } = useShopConfiguration();
@@ -18,7 +19,7 @@ const HomePage = () => {
         <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">
           Unchained
           <span className="font-light ml-1">
-            AdminUI<span className="text-xs ml-1"> 2.0</span>
+            AdminUI<span className="text-xs ml-1"> {packageJson.version}</span>
           </span>
         </div>
       </div>
