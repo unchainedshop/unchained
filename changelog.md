@@ -15,6 +15,27 @@ import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
 registerProductDiscoverabilityFilter({ hiddenTagValue: 'hidden' });
 ```
 
+The current admin-ui Copilot feature only supports local development only but if you want to configure it to work with any OpenAI compatible SDK, you can do so by importing connectChat from admin-ui, suitable for your environment (express/fastify)
+
+```
+import { expressRouter, connectChat } from '@unchainedshop/api/lib/express/index.js';
+
+connectChat(expressApp, {
+      model: provider.model('...'),
+      imageGenerationTool { model: openai.image('...') },
+      ...
+    });
+```
+You can also extend this by adding additional custom tools 
+
+
+```
+connectChat(expressApp, {
+      ...
+      tools: { ..additionalTools }
+    });
+```
+
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 
 ## Major
