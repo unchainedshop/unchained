@@ -4,7 +4,7 @@ import { Price } from '@unchainedshop/utils';
 export type OrderPosition = {
   _id: string;
   calculation: any[];
-  configuration: { key: string; value: string }[];
+  configuration: { key: string; value: string }[] | null;
   context?: any;
   orderId: string;
   originalProductId: string;

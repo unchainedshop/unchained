@@ -9,7 +9,7 @@ export interface EnrollmentPeriod {
 }
 
 export interface EnrollmentPlan {
-  configuration: { key: string; value: string }[];
+  configuration: { key: string; value: string }[] | null;
   productId: string;
   quantity: number;
 }
@@ -33,7 +33,7 @@ export interface EnrollmentOrderPositionTemplate {
 export type Enrollment = {
   _id: string;
   billingAddress: Address;
-  configuration?: { key: string; value: string }[];
+  configuration: { key: string; value: string }[] | null;
   contact: Contact;
   context?: any;
   countryCode: string;

@@ -166,7 +166,7 @@ export const configureOrderPositionsModule = ({
 
     addProductItem: async (orderPosition: {
       context?: any;
-      configuration?: { key: string; value: string }[];
+      configuration?: { key: string; value: string }[] | null;
       orderId: string;
       originalProductId: string;
       productId: string;
@@ -180,7 +180,7 @@ export const configureOrderPositionsModule = ({
         orderId,
         productId,
         originalProductId,
-        configuration: configuration || { $exists: false },
+        configuration: configuration ?? null,
         ...scope,
       };
 
