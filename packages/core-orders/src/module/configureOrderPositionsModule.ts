@@ -166,7 +166,7 @@ export const configureOrderPositionsModule = ({
 
     addProductItem: async (orderPosition: {
       context?: any;
-      configuration?: { key: string; value: string }[];
+      configuration?: { key: string; value: string }[] | null;
       orderId: string;
       originalProductId: string;
       productId: string;

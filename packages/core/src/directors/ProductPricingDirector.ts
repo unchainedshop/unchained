@@ -72,7 +72,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
         order: order!,
         product: product!,
         quantity,
-        configuration: item.configuration,
+        configuration: item.configuration ?? null,
         user: user!,
       };
     }
@@ -85,7 +85,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
       order: context.order,
       product: context.product,
       quantity,
-      configuration: context.configuration,
+      configuration: context.configuration ?? null,
       user: context.user,
     };
   },
