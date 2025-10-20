@@ -32,6 +32,12 @@ export const SimpleProduct = {
   },
 };
 
+export const SimpleProduct2 = {
+  ...SimpleProduct,
+  slugs: ['old-slug-de-2', 'slug-de-2', 'slug-fr-2', 'search-purpose-2'],
+  _id: 'simpleproduct-2',
+};
+
 export const SimpleProductDraft = {
   _id: 'simpleproduct_draft',
   created: new Date('2019-07-30T09:23:26.253+0000'),
@@ -577,6 +583,7 @@ export default async function seedProducts(db) {
     .collection('products')
     .insertMany([
       SimpleProduct,
+      SimpleProduct2,
       SimpleProductDraft,
       UnpublishedProduct,
       SimpleProductBundle,

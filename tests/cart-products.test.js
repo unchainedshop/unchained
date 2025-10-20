@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
-import { SimpleProduct } from './seeds/products.js';
+import { SimpleProduct, SimpleProduct2 } from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -100,6 +100,47 @@ test.describe('Cart: Product Items', () => {
       });
       assert.partialDeepStrictEqual(addCartProduct, {
         quantity: 1,
+      });
+
+      test('add product multiple times should increase the quantity and not add another entry', async () => {
+        const { data: { addCartProduct } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addCartProduct($productId: ID!) {
+              addCartProduct(productId: $productId) {
+                _id
+                quantity
+                order {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            productId: SimpleProduct2._id,
+          },
+        });
+        assert.partialDeepStrictEqual(addCartProduct, {
+          quantity: 1,
+        });
+        const { data: { addCartProduct: secondCall } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addCartProduct($productId: ID!) {
+              addCartProduct(productId: $productId) {
+                _id
+                quantity
+                order {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            productId: SimpleProduct2._id,
+          },
+        });
+        assert.partialDeepStrictEqual(secondCall, {
+          quantity: 2,
+        });
       });
     });
 
