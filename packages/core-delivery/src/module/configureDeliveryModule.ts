@@ -17,8 +17,8 @@ export interface DeliveryInterface {
   version: string;
 }
 
-export const buildFindSelector = ({ type }: mongodb.Filter<DeliveryProvider> = {}) => {
-  return { ...(type ? { type } : {}), deleted: null };
+export const buildFindSelector = (query: mongodb.Filter<DeliveryProvider> = {}) => {
+  return { deleted: null, ...query };
 };
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);

@@ -9,15 +9,10 @@ import {
 import {
   WarehousingProvider,
   WarehousingProvidersCollection,
-  WarehousingProviderType,
 } from '../db/WarehousingProvidersCollection.js';
 import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
-
-interface WarehousingProviderQuery {
-  type?: WarehousingProviderType;
-}
 
 interface TokenQuery {
   queryString?: string;
@@ -34,9 +29,8 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
-export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
-  const query = type ? { type, deleted: null } : { deleted: null };
-  return query;
+export const buildFindSelector = (query: mongodb.Filter<WarehousingProvider> = {}) => {
+  return { deleted: null, ...query };
 };
 export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
@@ -56,7 +50,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
   return {
     // Queries
-    count: async (query: WarehousingProviderQuery): Promise<number> => {
+    count: async (query: mongodb.Filter<WarehousingProvider>): Promise<number> => {
       const providerCount = await WarehousingProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
@@ -108,7 +102,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     findProviders: async (
-      query: WarehousingProviderQuery,
+      query: mongodb.Filter<WarehousingProvider>,
       options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<WarehousingProvider[]> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
