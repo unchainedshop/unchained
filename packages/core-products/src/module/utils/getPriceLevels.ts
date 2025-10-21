@@ -8,8 +8,8 @@ export const getPriceLevels = (params: {
   return (params.product?.commerce?.pricing || [])
     .toSorted(({ maxQuantity: leftMaxQuantity = 0 }, { maxQuantity: rightMaxQuantity = 0 }) => {
       if (leftMaxQuantity === rightMaxQuantity || (!leftMaxQuantity && !rightMaxQuantity)) return 0;
-      if (leftMaxQuantity === 0) return 1;
-      if (rightMaxQuantity === 0) return -1;
+      if (!leftMaxQuantity) return 1;
+      if (!rightMaxQuantity) return -1;
       return leftMaxQuantity - rightMaxQuantity;
     })
     .filter((priceLevel) => {

@@ -23,14 +23,6 @@ describe('Price level', () => {
     assert.strictEqual(getPriceLevels({ product, countryCode: 'CH' } as any).length, 3);
     assert.deepStrictEqual(getPriceLevels({ product, countryCode: 'CH' } as any), [
       {
-        amount: 1000,
-        maxQuantity: null,
-        isTaxable: false,
-        isNetPrice: false,
-        currencyCode: 'CHF',
-        countryCode: 'CH',
-      },
-      {
         amount: 1,
         maxQuantity: 1,
         isTaxable: false,
@@ -41,6 +33,14 @@ describe('Price level', () => {
       {
         amount: 750,
         maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 1000,
+        maxQuantity: null,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -52,14 +52,6 @@ describe('Price level', () => {
   it('Should return all prices for a given country sorted by max quantity ASC', () => {
     assert.deepStrictEqual(getPriceLevels({ product, countryCode: 'CH' } as any), [
       {
-        amount: 1000,
-        maxQuantity: null,
-        isTaxable: false,
-        isNetPrice: false,
-        currencyCode: 'CHF',
-        countryCode: 'CH',
-      },
-      {
         amount: 1,
         maxQuantity: 1,
         isTaxable: false,
@@ -70,6 +62,14 @@ describe('Price level', () => {
       {
         amount: 750,
         maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 1000,
+        maxQuantity: null,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'CHF',
