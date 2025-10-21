@@ -68,7 +68,10 @@ export const configureProductPricesModule = ({
       countryCode,
     });
 
-    const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
+    const foundPrice = pricing.reduce(
+      (current, tier) => (tier.maxQuantity != null && quantity >= tier.maxQuantity ? tier : current),
+      pricing?.[0],
+    );
     if (!foundPrice) return null;
 
     const normalizedPrice = {
