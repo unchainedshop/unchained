@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-files",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "lib/files-index.js",
   "types": "lib/files-index.d.ts",
   "type": "module",

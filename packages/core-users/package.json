@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-users",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
