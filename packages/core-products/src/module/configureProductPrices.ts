@@ -69,7 +69,7 @@ export const configureProductPricesModule = ({
     });
 
     const foundPrice = pricing.reduce(
-      (current, tier) => (tier.maxQuantity != null && quantity >= tier.maxQuantity ? tier : current),
+      (current, tier) => (tier.maxQuantity && quantity >= tier.maxQuantity ? tier : current),
       pricing?.[0],
     );
     if (!foundPrice) return null;
