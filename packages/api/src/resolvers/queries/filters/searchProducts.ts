@@ -14,15 +14,16 @@ export default async function searchProducts(
   },
   context: Context,
 ) {
-  const { modules, services, userId, locale } = context;
+  const { modules, loaders, services, userId, locale } = context;
   const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
     query;
 
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
 
   if (assortmentId) {
+    const assortment = await loaders.assortmentLoader.load({ assortmentId });
     const productIds = await modules.assortments.findProductIds({
-      assortmentId,
+      assortment,
       ignoreChildAssortments,
     });
     const filterIds = await modules.assortments.filters.findFilterIds({

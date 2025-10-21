@@ -110,7 +110,7 @@ export const AssortmentTypes = {
   },
 
   searchProducts: async (
-    obj: Assortment,
+    assortment: Assortment,
     query: {
       queryString?: string;
       filterQuery?: SearchFilterQuery;
@@ -122,12 +122,12 @@ export const AssortmentTypes = {
   ) => {
     const { modules, services } = requestContext;
     const productIds = await modules.assortments.findProductIds({
-      assortmentId: obj._id,
+      assortment,
       ignoreChildAssortments: query.ignoreChildAssortments,
     });
 
     const filterIds = await modules.assortments.filters.findFilterIds({
-      assortmentId: obj._id,
+      assortmentId: assortment._id,
     });
     return services.filters.searchProducts(
       { ...query, productIds, filterIds },

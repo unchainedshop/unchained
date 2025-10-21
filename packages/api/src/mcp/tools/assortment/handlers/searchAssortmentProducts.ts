@@ -15,7 +15,7 @@ export default async function searchAssortmentProducts(
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
   const productIds = await modules.assortments.findProductIds({
-    assortmentId,
+    assortment,
   });
 
   const filterIds = await modules.assortments.filters.findFilterIds({

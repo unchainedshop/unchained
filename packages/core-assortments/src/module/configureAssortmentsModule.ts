@@ -281,15 +281,14 @@ export const configureAssortmentsModule = async (
     },
 
     findProductIds: async ({
-      assortmentId,
+      assortment,
       forceLiveCollection,
       ignoreChildAssortments,
     }: {
-      assortmentId: string;
+      assortment: Assortment;
       forceLiveCollection?: boolean;
       ignoreChildAssortments?: boolean;
     }): Promise<string[]> => {
-      const assortment = await Assortments.findOne(generateDbFilterById(assortmentId), {});
       if (!assortment) return [];
 
       if (ignoreChildAssortments) {
