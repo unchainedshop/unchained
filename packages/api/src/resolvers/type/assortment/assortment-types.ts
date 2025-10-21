@@ -51,7 +51,6 @@ export const AssortmentTypes = {
   },
 
   async filterAssignments(obj: Assortment, _, { modules }: Context) {
-    // TODO: move default sort to module
     return modules.assortments.filters.findFilters(
       {
         assortmentId: obj._id,
@@ -90,7 +89,6 @@ export const AssortmentTypes = {
   },
 
   async productAssignments(obj: Assortment, _, { modules }: Context) {
-    // TODO: move default sort to core module
     return modules.assortments.products.findAssortmentProducts(
       {
         assortmentId: obj._id,

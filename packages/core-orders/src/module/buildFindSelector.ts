@@ -36,7 +36,7 @@ export const buildFindSelector = ({
   if (Array.isArray(status) && status?.length) {
     selector.status = { $in: status };
   } else if (!includeCarts) {
-    selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
+    selector.status = { $ne: null };
   }
   if (queryString) {
     assertDocumentDBCompatMode();

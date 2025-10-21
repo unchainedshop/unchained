@@ -87,18 +87,18 @@ export const configureAssortmentProductsModule = ({
       productId: string;
       assortmentIds: string[];
     }): Promise<string[]> => {
-      const selector = {
-        assortmentId: { $in: assortmentIds },
-      };
+      const assortmentProducts = await AssortmentProducts.find(
+        {
+          assortmentId: { $in: assortmentIds },
+          productId: { $ne: productId },
+        },
+        {
+          sort: { sortKey: 1 },
+          projection: { productId: 1 },
+        },
+      ).toArray();
 
-      const assortmentProducts = await AssortmentProducts.find(selector, {
-        sort: { sortKey: 1 },
-        projection: { productId: 1 },
-      }).toArray();
-
-      return assortmentProducts
-        .filter((product) => product.productId !== productId)
-        .map((product) => product.productId);
+      return assortmentProducts.map((product) => product.productId);
     },
 
     // Mutations

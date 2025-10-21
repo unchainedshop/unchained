@@ -99,7 +99,6 @@ export const Product = {
     return modules.products.reviews.count({ ...params, productId: product._id });
   },
 
-  // TODO: slow!
   async siblings(
     product: ProductType,
     params: {

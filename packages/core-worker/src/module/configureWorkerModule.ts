@@ -545,10 +545,12 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         }
         return result.value;
       } catch {
-        /* TODO: Conflicting deleted work problem
+        /* Conflicting deleted work problem:
         If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
-        we should permanently remove the conflicting deleted work 
+        we should NOT permanently remove the conflicting deleted work 
         and retry the findOneAndUpdate call.
+        If we did remove the deleted work, deleted jobs would "re-appear" as NEW with same schedule and _id.
+        So we just return null here and let the scheduler try again in the next cycle.
         */
         return null;
       }
