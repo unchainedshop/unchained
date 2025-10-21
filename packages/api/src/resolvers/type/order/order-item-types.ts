@@ -72,8 +72,7 @@ export const OrderItem = {
 
     return Promise.all(
       scheduling.map(async (schedule) => {
-        // TODO: use warehousing provider loader
-        const warehousingProvider = await modules.warehousing.findProvider({
+        const warehousingProvider = await loaders.warehousingProviderLoader.load({
           warehousingProviderId: schedule.warehousingProviderId,
         });
 
