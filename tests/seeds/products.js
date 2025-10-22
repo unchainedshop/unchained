@@ -38,6 +38,39 @@ export const SimpleProduct2 = {
   _id: 'simpleproduct-2',
 };
 
+export const LeveledPricingProduct = {
+  ...SimpleProduct,
+  slugs: ['levled-pricing-product'],
+  _id: 'leveled-pricing-product',
+  commerce: {
+    pricing: [
+      {
+        amount: 2000,
+        maxQuantity: 3,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 5000,
+        maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 10000,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
 export const SimpleProductDraft = {
   _id: 'simpleproduct_draft',
   created: new Date('2019-07-30T09:23:26.253+0000'),
@@ -596,6 +629,7 @@ export default async function seedProducts(db) {
       ProxyProduct,
       PlanProduct,
       TokenizedProduct1,
+      LeveledPricingProduct,
     ]);
 
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);

@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
-import { SimpleProduct, SimpleProduct2 } from './seeds/products.js';
+import { LeveledPricingProduct, SimpleProduct } from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -101,47 +101,6 @@ test.describe('Cart: Product Items', () => {
       assert.partialDeepStrictEqual(addCartProduct, {
         quantity: 1,
       });
-
-      test('add product multiple times should increase the quantity and not add another entry', async () => {
-        const { data: { addCartProduct } = {} } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation addCartProduct($productId: ID!) {
-              addCartProduct(productId: $productId) {
-                _id
-                quantity
-                order {
-                  _id
-                }
-              }
-            }
-          `,
-          variables: {
-            productId: SimpleProduct2._id,
-          },
-        });
-        assert.partialDeepStrictEqual(addCartProduct, {
-          quantity: 1,
-        });
-        const { data: { addCartProduct: secondCall } = {} } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation addCartProduct($productId: ID!) {
-              addCartProduct(productId: $productId) {
-                _id
-                quantity
-                order {
-                  _id
-                }
-              }
-            }
-          `,
-          variables: {
-            productId: SimpleProduct2._id,
-          },
-        });
-        assert.partialDeepStrictEqual(secondCall, {
-          quantity: 2,
-        });
-      });
     });
 
     test('return not found error when passed non existing productId', async () => {
@@ -223,6 +182,192 @@ test.describe('Cart: Product Items', () => {
       });
 
       assert.strictEqual(errors[0]?.extensions?.code, 'OrderWrongStatusError');
+    });
+  });
+
+  test.describe('Mutation.addCartProduct catalog price calculation', () => {
+    test('Should calculate order items total based on quantity using the product catalog price', async () => {
+      const { data: { addCartProduct: firstTierPrice } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!, $quantity: Int) {
+            addCartProduct(productId: $productId, quantity: $quantity) {
+              _id
+              quantity
+              order {
+                _id
+                items {
+                  quantity
+                  _id
+                  product {
+                    _id
+                    ... on SimpleProduct {
+                      simulatedPrice(quantity: $quantity) {
+                        isTaxable
+                        isNetPrice
+                        amount
+                        currencyCode
+                      }
+                    }
+                  }
+                  total {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              product {
+                ... on SimpleProduct {
+                  simulatedPrice {
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: LeveledPricingProduct._id,
+          quantity: 2,
+        },
+      });
+
+      assert.partialDeepStrictEqual(firstTierPrice?.order.items[0], {
+        quantity: 2,
+        total: { amount: 10000, currencyCode: 'CHF' },
+        product: {
+          _id: 'leveled-pricing-product',
+          simulatedPrice: {
+            isTaxable: false,
+            isNetPrice: false,
+            amount: 5000,
+            currencyCode: 'CHF',
+          },
+        },
+      });
+
+      const { data: { addCartProduct: secondTierPrice } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!, $quantity: Int) {
+            addCartProduct(productId: $productId, quantity: $quantity) {
+              _id
+              quantity
+              order {
+                _id
+                items {
+                  quantity
+                  _id
+                  product {
+                    _id
+                    ... on SimpleProduct {
+                      simulatedPrice(quantity: 3) {
+                        isTaxable
+                        isNetPrice
+                        amount
+                        currencyCode
+                      }
+                    }
+                  }
+                  total {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              product {
+                ... on SimpleProduct {
+                  simulatedPrice {
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: LeveledPricingProduct._id,
+          quantity: 1,
+        },
+      });
+
+      assert.partialDeepStrictEqual(secondTierPrice?.order.items[0], {
+        quantity: 3,
+        total: { amount: 6000, currencyCode: 'CHF' },
+        product: {
+          _id: 'leveled-pricing-product',
+          simulatedPrice: {
+            isTaxable: false,
+            isNetPrice: false,
+            amount: 2000,
+            currencyCode: 'CHF',
+          },
+        },
+      });
+
+      const { data: { addCartProduct: defaultTierPrice } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!, $quantity: Int) {
+            addCartProduct(productId: $productId, quantity: $quantity) {
+              _id
+              quantity
+              order {
+                _id
+                items {
+                  quantity
+                  _id
+                  product {
+                    _id
+                    ... on SimpleProduct {
+                      simulatedPrice(quantity: 4) {
+                        isTaxable
+                        isNetPrice
+                        amount
+                        currencyCode
+                      }
+                    }
+                  }
+                  total {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              product {
+                ... on SimpleProduct {
+                  simulatedPrice {
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: LeveledPricingProduct._id,
+          quantity: 1,
+        },
+      });
+      assert.partialDeepStrictEqual(defaultTierPrice?.order.items[0], {
+        quantity: 4,
+        total: { amount: 40000, currencyCode: 'CHF' },
+        product: {
+          _id: 'leveled-pricing-product',
+          simulatedPrice: {
+            isTaxable: false,
+            isNetPrice: false,
+            amount: 10000,
+            currencyCode: 'CHF',
+          },
+        },
+      });
     });
   });
 
