@@ -19,6 +19,7 @@ const EnrollmentListItem = ({ enrollment, showUser }) => {
   const { formatMessage } = useIntl();
 
   const { formatDateTime } = useFormatDateTime();
+  console.log('EnrollmentListItem enrollment:', enrollment);
 
   return (
     <Table.Row>
@@ -84,7 +85,9 @@ const EnrollmentListItem = ({ enrollment, showUser }) => {
             file={enrollment?.plan?.product?.media?.file}
             className="mr-3"
           />
-          <span className="ml-2">{enrollment?.plan.product.texts.title}</span>
+          <span className="ml-2">
+            {enrollment?.plan?.product?.texts?.title}
+          </span>
         </Link>
       </Table.Cell>
 

@@ -34,11 +34,17 @@ const useEnrollments = ({
   queryString = '',
   sort = [],
   status = null,
-}: IEnrollmentsQueryVariables = {}) => {
+  forceLocale = '',
+}: IEnrollmentsQueryVariables & { forceLocale?: string } = {}) => {
   const { data, loading, error, fetchMore } = useQuery<
     IEnrollmentsQuery,
     IEnrollmentsQueryVariables
   >(EnrollmentsQuery, {
+    context: {
+      headers: {
+        forceLocale,
+      },
+    },
     variables: { limit, offset, queryString, sort, status },
   });
   const enrollments = data?.enrollments || [];

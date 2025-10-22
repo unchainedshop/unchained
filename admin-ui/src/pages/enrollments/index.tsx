@@ -19,6 +19,8 @@ import StatusFilter from '../../modules/common/components/StatusFilter';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import EnrollmentDetailPage from './EnrollmentDetailPage';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
+import useApp from '../../modules/common/hooks/useApp';
 
 const EnrollmentListView = () => {
   const { formatMessage } = useIntl();
@@ -26,6 +28,7 @@ const EnrollmentListView = () => {
   const limit = parseInt(query?.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query?.skip as string, 10) || 0;
   const sort = query?.sort || '';
+  const { selectedLocale } = useApp();
 
   const { queryString, enrollmentId, ...restQuery } = query;
 
@@ -51,6 +54,7 @@ const EnrollmentListView = () => {
       offset,
       sort: sortKeys,
       status: (query?.status as string)?.split(','),
+      forceLocale: selectedLocale,
     });
 
   const { enrollmentStatusTypes } = useEnrollmentStatusTypes();
@@ -118,17 +122,19 @@ const EnrollmentListView = () => {
           onSearchChange={setQueryString}
           defaultSearchValue={queryString}
         >
-          <InfiniteScroll
-            loading={loading}
-            hasMore={hasMore}
-            onLoadMore={loadMore}
-          >
-            {loading && enrollments?.length === 0 ? (
-              <Loading />
-            ) : (
-              <EnrollmentList enrollments={enrollments} showUser sortable />
-            )}
-          </InfiniteScroll>
+          <LocaleWrapper onlyFull>
+            <InfiniteScroll
+              loading={loading}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+            >
+              {loading && enrollments?.length === 0 ? (
+                <Loading />
+              ) : (
+                <EnrollmentList enrollments={enrollments} showUser sortable />
+              )}
+            </InfiniteScroll>
+          </LocaleWrapper>
         </SearchWithTags>
       </div>
     </>

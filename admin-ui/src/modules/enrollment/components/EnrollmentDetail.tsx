@@ -229,7 +229,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                     })}
                   </dt>
                   <dd className="my-2 text-sm text-slate-500">
-                    {enrollment?.plan.product.texts.title}
+                    {enrollment?.plan.product?.texts?.title}
                   </dd>
                   <dt className="font-medium text-slate-900">
                     {formatMessage({
