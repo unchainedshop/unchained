@@ -13,6 +13,9 @@ export const Enrollment = {
       configuration,
     };
   },
+  expires: ({ expires, periods }) => {
+    return expires ?? [...(periods || [])].filter(Boolean)?.pop()?.end;
+  },
 
   country: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
     obj.countryCode ? loaders.currencyLoader.load({ isoCode: obj.countryCode }) : null,
