@@ -1,3 +1,14 @@
+# Unchained Engine v4.1
+
+## Minor
+- Add warehousing provider loader and slightly improve performance when warehousing is involved (for ex. delivery estimations on many products)
+- ai and @ai-sdk/mcp are now optional so you don't need to add those heavy dependencies if you don't want to add a chat to your admin ui
+
+## Patch
+- Fix a case where the expiry of the enrollment was calculated wrongly
+- Fix catalog price calculation bug with leveled prices #670
+- Fix unchained supporting ai@5.0.80+ (breaking change with experimental feature)
+
 # Unchained Engine v4.0.0 ("Tell")
 
 This release brings you FerretDB and cloud-hosted MongoDB support (AWS / Azure) via the DocumentDB SDK. You can now run Unchained against a PostgreSQL database: https://ferretdb.com. Be warned, the performance penalty is quite significant currently. Additionally, you can't use `queryString` arguments in queries like `searchProducts` or `countries` at this time.
