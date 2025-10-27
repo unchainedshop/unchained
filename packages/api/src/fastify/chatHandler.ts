@@ -1,14 +1,8 @@
 import { FastifyInstance, RouteHandlerMethod, FastifyRequest } from 'fastify';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import {
-  convertToModelMessages,
-  experimental_createMCPClient as createMCPClient,
-  MCPTransport,
-  stepCountIs,
-  streamText,
-  ToolSet,
-} from 'ai';
+import type * as aiTypes from 'ai';
+import type * as mcpTypes from '@ai-sdk/mcp';
 import generateImageHandler from '../chat/generateImageHandler.js';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.js';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
@@ -16,6 +10,22 @@ import { ChatConfiguration, errorHandler } from '../chat/utils.js';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
+
+let convertToModelMessages: typeof aiTypes.convertToModelMessages;
+let stepCountIs: typeof aiTypes.stepCountIs;
+let streamText: typeof aiTypes.streamText;
+let createMCPClient: typeof mcpTypes.experimental_createMCPClient;
+
+try {
+  const aiTools = await import('ai');
+  const mcpTools = await import('@ai-sdk/mcp');
+  convertToModelMessages = aiTools.convertToModelMessages;
+  stepCountIs = aiTools.stepCountIs;
+  streamText = aiTools.streamText;
+  createMCPClient = mcpTools.experimental_createMCPClient;
+} catch {
+  /* */
+}
 
 const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
   if (!chatConfiguration?.model) {
@@ -67,7 +77,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       });
 
       client = await createMCPClient({
-        transport: transport as MCPTransport,
+        transport,
       });
 
       const defaultUnchainedTools = await client.tools();
@@ -96,7 +106,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         logger.error('Failed to fetch MCP resources:', e);
       }
 
-      const tools: ToolSet = {
+      const tools: aiTypes.ToolSet = {
         ...defaultUnchainedTools,
         ...additionalTools,
       };
@@ -182,6 +192,13 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
 };
 
 export const connectChat = (app: FastifyInstance, chatConfiguration: ChatConfiguration) => {
+  if (!createMCPClient) {
+    logger.warn(
+      'Optional dependencies for AI SDK Chat Handler are not installed. Please install @ai-sdk/mcp and ai packages to use this feature.',
+    );
+    return;
+  }
+
   const handler = setupMCPChatHandler(chatConfiguration);
 
   app.route({

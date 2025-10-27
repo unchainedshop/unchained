@@ -1,10 +1,21 @@
-import { ImageModel, NoSuchToolError, InvalidArgumentError, streamText } from 'ai';
+import type * as aiTypes from 'ai';
 
-type StreamTextParams = Parameters<typeof streamText>[0];
+let NoSuchToolError: typeof aiTypes.NoSuchToolError;
+let InvalidArgumentError: typeof aiTypes.InvalidArgumentError;
+
+try {
+  const aiTools = await import('ai');
+  InvalidArgumentError = aiTools.InvalidArgumentError;
+  NoSuchToolError = aiTools.NoSuchToolError;
+} catch {
+  /* */
+}
+
+export type StreamTextParams = Parameters<typeof aiTypes.streamText>[0];
 
 export type ChatConfiguration = Omit<StreamTextParams, 'messages'> & {
   unchainedMCPUrl?: string;
-  imageGenerationTool?: { model: ImageModel; uploadUrl?: string };
+  imageGenerationTool?: { model: aiTypes.ImageModel; uploadUrl?: string };
 };
 
 export const errorHandler = (error: any): string => {

@@ -60,7 +60,7 @@
     "@types/react": "^19.2.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
-    "ai": "^5.0.5",
+    "ai": "^5.0.80",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "cypress": "^15.2.0",

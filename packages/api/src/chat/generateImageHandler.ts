@@ -1,6 +1,17 @@
-import { experimental_generateImage, ImageModel, tool } from 'ai';
 import { fileTypeFromBuffer } from 'file-type';
 import { z } from 'zod';
+import type * as aiTypes from 'ai';
+
+let experimental_generateImage: typeof aiTypes.experimental_generateImage;
+let tool: typeof aiTypes.tool;
+
+try {
+  const aiTools = await import('ai');
+  tool = aiTools.tool;
+  experimental_generateImage = aiTools.experimental_generateImage;
+} catch {
+  /* */
+}
 
 const inputSchema = z.object({
   prompt: z.string().describe('The prompt to generate the image from'),
@@ -28,7 +39,7 @@ const generateImageHandler =
     model,
     uploadUrl = `${process.env.ROOT_URL}/temp-upload`,
   }: {
-    model: ImageModel;
+    model: aiTypes.ImageModel;
     uploadUrl?: string;
   }) => {
     return tool<any>({

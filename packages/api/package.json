@@ -31,21 +31,22 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "fastify": ">= 5.2 < 6",
     "@fastify/cookie": ">= 11 < 12",
-    "@fastify/session": ">= 11 < 12",
     "@fastify/multipart": ">= 9 < 10",
+    "@fastify/session": ">= 11 < 12",
     "@fastify/static": ">= 8 < 9",
-    "connect-mongo": ">= 5.1 < 6",
     "@modelcontextprotocol/sdk": ">= 1 < 2",
+    "@noble/curves": "^2.0.0",
+    "@noble/hashes": "^2.0.0",
     "ai": ">= 5 < 6",
+    "@ai-sdk/mcp": "^0.0.1",
+    "connect-mongo": ">= 5.1 < 6",
     "express": ">= 5 < 6",
     "express-session": ">= 1.18 < 2",
-    "multer": ">= 2 < 3",
+    "fastify": ">= 5.2 < 6",
     "graphql-yoga": ">= 5.9 < 6",
-    "passport": ">= 0.7 < 1",
-    "@noble/curves": "^2.0.0",
-    "@noble/hashes": "^2.0.0"
+    "multer": ">= 2 < 3",
+    "passport": ">= 0.7 < 1"
   },
   "peerDependenciesMeta": {
     "@modelcontextprotocol/sdk": {
@@ -58,6 +59,9 @@
       "optional": false
     },
     "ai": {
+      "optional": true
+    },
+    "@ai-sdk/mcp": {
       "optional": true
     },
     "fastify": {
@@ -100,25 +104,26 @@
     "@unchainedshop/logger": "^4.0.0",
     "@unchainedshop/roles": "^4.0.0",
     "@unchainedshop/utils": "^4.0.0",
-    "file-type": "^21.0.0",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
+    "file-type": "^21.0.0",
     "graphql-scalars": "^1.24.2",
     "moniker": "0.1.2",
     "p-memoize": "^8.0.0",
     "zod": "^3.25.76 || ^4"
   },
   "devDependencies": {
-    "ai": "^5.0.5",
-    "@noble/curves": "^2.0.0",
-    "@noble/hashes": "^2.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
     "@fastify/session": "^11.1.0",
     "@fastify/static": "^8.2.0",
     "@modelcontextprotocol/sdk": "^1.15.1",
+    "@noble/curves": "^2.0.0",
+    "@noble/hashes": "^2.0.0",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.13",
+    "@ai-sdk/mcp": "^0.0.1",
+    "ai": "^5.0.80",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "fastify": "^5.4.0",
