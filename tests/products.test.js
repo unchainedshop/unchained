@@ -46,7 +46,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 10);
+      assert.strictEqual(productsCount, 12);
     });
 
     test('return only total number of products that include a slug', async () => {
@@ -80,7 +80,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.strictEqual(productsCount, 3);
+      assert.strictEqual(productsCount, 5);
     });
 
     test('include draft products if includeDrafts argument is passed as true', async () => {
@@ -114,7 +114,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 10);
+      assert.strictEqual(productsCount, 12);
     });
   });
 
@@ -131,7 +131,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 10);
+      assert.strictEqual(productsCount, 12);
     });
   });
 
@@ -1208,7 +1208,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.strictEqual(products.length, 2);
+      assert.strictEqual(products.length, 3);
     });
 
     test('Search an product using product sku', async () => {
@@ -1241,7 +1241,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.strictEqual(products.length, 4);
+      assert.strictEqual(products.length, 6);
     });
 
     test('return only list of products that include the tags specified', async () => {
@@ -1272,7 +1272,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.strictEqual(products.length, 3);
+      assert.strictEqual(products.length, 5);
     });
 
     test('return number of product if limit is specified as argument', async () => {
@@ -1429,7 +1429,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.strictEqual(products.length, 3);
+      assert.strictEqual(products.length, 5);
     });
 
     test('return number of product if limit is specified as argument', async () => {
@@ -1611,7 +1611,7 @@ test.describe('Products', () => {
         },
       });
 
-      assert.strictEqual(products.length, 3);
+      assert.strictEqual(products.length, 5);
     });
 
     test('return number of product if limit is specified as argument', async () => {

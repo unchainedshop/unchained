@@ -1,5 +1,5 @@
 import { setupDatabase, createAnonymousGraphqlFetch, disconnect } from './helpers.js';
-import { SimpleProduct } from './seeds/products.js';
+import { SimpleProduct2, SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -31,7 +31,7 @@ test.describe('Public Queries', () => {
 
     const [product] = data.products;
     assert.deepStrictEqual(product, {
-      _id: SimpleProduct._id,
+      _id: SimpleProduct2._id,
     });
   });
 
