@@ -59,6 +59,12 @@ export const TokenizedProduct = {
     });
     return tokens;
   },
+  async tokensCount(product: Product, params: never, requestContext: Context) {
+    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    return requestContext.modules.warehousing.tokensCount({
+      productId: product._id,
+    });
+  },
 };
 
 delete (TokenizedProduct as any).salesUnit;
