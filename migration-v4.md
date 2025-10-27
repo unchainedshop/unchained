@@ -16,3 +16,12 @@ We have removed the ambigouity about the currency iso codes. Before it was not c
 Developer tasks:
 - Migrations actually missing
 - Check new loaders if it's okay to return null values because they could when a country/currency/user has been removed
+
+# Bulk Import
+
+```diff
+- import { BulkImportOperation } from '@unchainedshop/platform';
+- const handler: BulkImportOperation = async (
++ import { BulkImportOperation } from '@unchainedshop/core';
++ const handler: BulkImportOperation<unknown> = async (
+```
