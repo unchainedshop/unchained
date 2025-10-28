@@ -134,31 +134,6 @@ query {
 }
 ```
 
-## Pick-Mup Plugin
-
-Integration with Pick-Mup delivery service for Switzerland.
-
-### Configuration
-
-```graphql
-createDeliveryProvider(
-  deliveryProvider: {
-    type: PICKUP
-    adapterKey: "shop.unchained.pick-mup" 
-    configuration: []
-  }
-) {
-  _id
-}
-```
-
-### Features
-
-- **Swiss Market**: Designed for Swiss delivery network
-- **Pickup Network**: Access to Pick-Mup pickup point network
-- **Automated Integration**: Direct integration with Pick-Mup API
-- **Location Discovery**: Find nearby pickup points
-
 ## Send Message Plugin
 
 Message-based delivery notifications and communications.
