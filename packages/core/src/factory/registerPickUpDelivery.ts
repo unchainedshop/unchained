@@ -30,7 +30,7 @@ export default function registerPickUpDelivery({
     ...DeliveryAdapter,
 
     key: `shop.unchained.delivery.pickup-${adapterId}`,
-    label: 'PickUp Delivery',
+    label: 'PickUp Delivery: ' + adapterId,
     version: '1.0.0',
 
     initialConfiguration: [],

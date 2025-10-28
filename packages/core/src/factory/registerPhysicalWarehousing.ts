@@ -1,7 +1,7 @@
 import { WarehousingConfiguration, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingAdapter, WarehousingContext, WarehousingDirector } from '../core-index.js';
 
-export default function registerPhysicalWarehouse({
+export default function registerPhysicalWarehousing({
   adapterId,
   orderIndex = 0,
   stock,
@@ -38,7 +38,7 @@ export default function registerPhysicalWarehouse({
     ...WarehousingAdapter,
 
     key: 'shop.unchained.warehousing.physical.' + adapterId,
-    label: 'Store',
+    label: 'Physical Warehousing: ' + adapterId,
     version: '1.0.0',
     orderIndex,
 

@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/core-warehousing';
 import { WarehousingAdapter, WarehousingContext, WarehousingDirector } from '../core-index.js';
 
-export default function registerVirtualWarehouse<Metadata = Record<string, any>>({
+export default function registerVirtualWarehousing<Metadata = Record<string, any>>({
   adapterId,
   orderIndex = 0,
   stock,
@@ -46,7 +46,7 @@ export default function registerVirtualWarehouse<Metadata = Record<string, any>>
     ...WarehousingAdapter,
 
     key: 'shop.unchained.warehousing.virtual.' + adapterId,
-    label: 'Store',
+    label: 'Virtual Wareshousing: ' + adapterId,
     version: '1.0.0',
     orderIndex,
 

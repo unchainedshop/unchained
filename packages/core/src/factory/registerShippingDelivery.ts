@@ -24,7 +24,7 @@ export default function registerShippingDelivery({
     ...DeliveryAdapter,
 
     key: `shop.unchained.delivery.shipping-${adapterId}`,
-    label: 'Shipping Delivery',
+    label: 'Shipping Delivery: ' + adapterId,
     version: '1.0.0',
 
     initialConfiguration: [],

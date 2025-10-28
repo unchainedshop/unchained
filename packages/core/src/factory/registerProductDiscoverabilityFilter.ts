@@ -11,7 +11,7 @@ export default function registerProductDiscoverabilityFilter({
     ...FilterAdapter,
 
     key: `shop.unchained.filters.product-discoverability-${crypto.randomUUID()}`,
-    label: 'Product Discoverability Filter',
+    label: 'Product Discoverability Filter (auto-generated)',
     version: '1.0.0',
     orderIndex,
 
