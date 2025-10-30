@@ -9,22 +9,6 @@ RUN NODE_ENV=development npm ci
 
 ADD . /source/
 
-# Build
-RUN npm run build || :
-RUN rm -Rf node_modules
-
-FROM node:24-alpine AS runtime
-
-RUN apk add --no-cache --update curl
-
-# Copy the app
-WORKDIR /webapp
-COPY --from=bundler /source /webapp
-RUN NODE_ENV=production npm ci --omit=dev
-
-ARG GIT_COMMIT="n/a"
-RUN echo "${GIT_COMMIT}" > /webapp/version.txt
-
 ENV PORT=3000
 ENV NODE_ENV=production
 

@@ -4,6 +4,20 @@
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./lib/api-index.js",
+      "types": "./lib/api-index.d.ts"
+    },
+    "./fastify": {
+      "import": "./lib/fastify/index.js",
+      "types": "./lib/fastify/index.d.ts"
+    },
+    "./express": {
+      "import": "./lib/express/index.js",
+      "types": "./lib/express/index.d.ts"
+    }
+  },
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

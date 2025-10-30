@@ -15,8 +15,28 @@ import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createTempUploadMiddleware from './createTempUploadMiddleware.js';
 import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
+import { ChatConfiguration } from '../chat/utils.js';
+import { connectChat } from './chatHandler.js';
+export interface AdminUIRouterOptions {
+  prefix: string;
+  enabled?: boolean;
+}
 
-export * from './chatHandler.js';
+export const adminUIRouter = (enabled = true) => {
+  const router = e.Router();
+
+  const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+  const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+
+  if (enabled) {
+    router.use(e.static(staticPath));
+    router.get(/(.*)/, (_, res) => {
+      res.sendFile(`${staticPath}/index.html`);
+    });
+  }
+
+  return router;
+};
 
 const resolveUserRemoteAddress = (req: e.Request) => {
   const remoteAddress =
@@ -137,6 +157,7 @@ export const connect = (
   {
     graphqlHandler,
     db,
+    unchainedAPI,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
     db: mongodb.Db;
@@ -144,8 +165,14 @@ export const connect = (
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
+    adminUI = false,
+    chat,
+    initPluginMiddlewares,
   }: {
     allowRemoteToLocalhostSecureCookies?: boolean;
+    adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
+    chat?: ChatConfiguration;
+    initPluginMiddlewares?: (app: e.Express, { unchainedAPI }: { unchainedAPI: UnchainedCore }) => void;
   } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
@@ -220,4 +247,21 @@ export const connect = (
 
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
+
+  if (chat) {
+    connectChat(expressApp, chat);
+  }
+
+  if (initPluginMiddlewares) {
+    initPluginMiddlewares(expressApp, { unchainedAPI });
+  }
+
+  if (adminUI) {
+    expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true));
+  }
 };
+
+// @deprecated use adminUIRouter instead
+export const expressRouter = adminUIRouter;
+
+export { connectChat };

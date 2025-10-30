@@ -16,7 +16,13 @@ import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.js';
 import tempUploadHandler from './tempUploadHandler.js';
 import fastifyStatic from '@fastify/static';
-export * from './chatHandler.js';
+import { connectChat } from './chatHandler.js';
+import { ChatConfiguration } from '../chat/utils.js';
+
+export interface AdminUIRouterOptions {
+  prefix: string;
+  enabled?: boolean;
+}
 
 const resolveUserRemoteAddress = (req: FastifyRequest) => {
   const remoteAddress =
@@ -119,6 +125,7 @@ export const connect = (
   {
     graphqlHandler,
     db,
+    unchainedAPI,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
     db: mongodb.Db;
@@ -126,7 +133,18 @@ export const connect = (
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
-  }: { allowRemoteToLocalhostSecureCookies?: boolean } = {},
+    adminUI = false,
+    chat,
+    initPluginMiddlewares,
+  }: {
+    allowRemoteToLocalhostSecureCookies?: boolean;
+    adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
+    chat?: ChatConfiguration;
+    initPluginMiddlewares?: (
+      app: FastifyInstance,
+      { unchainedAPI }: { unchainedAPI: UnchainedCore },
+    ) => void;
+  } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
     // Workaround: Allow to use sandbox with localhost
@@ -235,13 +253,24 @@ export const connect = (
     });
     registered();
   });
+
+  if (chat) {
+    connectChat(fastify, chat);
+  }
+
+  if (initPluginMiddlewares) {
+    initPluginMiddlewares(fastify, { unchainedAPI });
+  }
+
+  if (adminUI) {
+    fastify.register(adminUIRouter, {
+      enabled: true,
+      prefix: typeof adminUI === 'object' ? adminUI.prefix : '/',
+    });
+  }
 };
 
-interface FastifyRouterOptions {
-  prefix?: string;
-}
-
-export const fastifyRouter: FastifyPluginAsync<FastifyRouterOptions> = async (
+export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   fastify: FastifyInstance,
   opts,
 ) => {
@@ -270,3 +299,8 @@ export const fastifyRouter: FastifyPluginAsync<FastifyRouterOptions> = async (
     }
   }
 };
+
+// @deprecated use adminUIRouter instead
+export const fastifyRouter = adminUIRouter;
+
+export { connectChat };
