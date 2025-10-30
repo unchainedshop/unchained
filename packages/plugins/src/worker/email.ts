@@ -1,5 +1,4 @@
 import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
-import nodemailer from 'nodemailer';
 import { spawn } from 'node:child_process';
 import { writeFile, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -98,6 +97,24 @@ const EmailWorkerPlugin: IWorkerAdapter<
         error: {
           name: 'RECIPIENT_REQUIRED',
           message: 'EMAIL requires a to',
+        },
+      };
+    }
+
+    let nodemailer;
+    try {
+      const nodemailerModule = await import('nodemailer');
+      nodemailer = nodemailerModule.default;
+    } catch {
+      /* */
+    }
+
+    if (!nodemailer) {
+      return {
+        success: false,
+        error: {
+          name: 'NODEMAILER_NOT_INSTALLED',
+          message: 'npm dependency nodemailer is not installed, please install it to use email features',
         },
       };
     }

@@ -2,7 +2,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { Context } from '../context.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
-const logger = createLogger('unchained:erc-metadata');
+const logger = createLogger('unchained:api:erc-metadata');
 
 const { ROOT_URL = 'http://localhost:4010' } = process.env;
 

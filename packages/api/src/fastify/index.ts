@@ -15,10 +15,9 @@ import { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest 
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.js';
 import tempUploadHandler from './tempUploadHandler.js';
-import fastifyStatic from '@fastify/static';
 import { connectChat } from './chatHandler.js';
 import { ChatConfiguration } from '../chat/utils.js';
-
+import { readFileSync } from 'node:fs';
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
@@ -270,29 +269,53 @@ export const connect = (
   }
 };
 
+const fallbackLandingPageHandler = (request, reply) => {
+  if (request.raw.method === 'GET') {
+    const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
+    const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+    return reply.type('text/html').send(readFileSync(staticPath + '/index.html'));
+  } else {
+    return reply.status(404).send();
+  }
+};
+
+const resolveAdminUIPath = () => {
+  try {
+    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+    return new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+  } catch {
+    return null;
+  }
+};
+
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   fastify: FastifyInstance,
   opts,
 ) => {
   try {
-    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
-    const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+    let fastifyStatic;
+    try {
+      const fastifyStaticModule = await import('@fastify/static');
+      fastifyStatic = fastifyStaticModule.default;
+    } catch {
+      /* */
+    }
 
-    await fastify.register(fastifyStatic, {
-      root: staticPath,
-      prefix: opts.prefix || '/',
-    });
-
-    fastify.setNotFoundHandler((request, reply) => {
-      if (request.raw.method === 'GET') {
-        const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
-        const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
-        return reply.type('text/html').sendFile('index.html', staticPath);
-      } else {
-        return reply.status(404).send();
+    if (!fastifyStatic) {
+      fastify.log.warn("npm dependency @fastify/static is not installed, can't serve admin-ui");
+    } else {
+      const adminUIPath = resolveAdminUIPath();
+      if (adminUIPath) {
+        await fastify.register(fastifyStatic, {
+          root: adminUIPath,
+          prefix: opts.prefix || '/',
+        });
+        return;
       }
-    });
-  } catch {
+    }
+    await fastify.get(opts.prefix || '/', fallbackLandingPageHandler);
+  } catch (e) {
+    fastify.log.error(e);
     if (process.env.NODE_ENV !== 'production') {
       // Trying the default admin ui dev port
       fastify.get('/', async (request, reply) => {
