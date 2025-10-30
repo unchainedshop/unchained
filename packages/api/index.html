@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unchained Engine - Running</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #232323;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .logo {
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        .logo svg {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background-color: #232323;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            animation: fadeIn 0.8s ease-in 0.2s both;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-in 0.4s both;
+        }
+        
+        .info-box {
+            background-color: #f8f8f8;
+            border: 2px solid #232323;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            animation: fadeIn 0.8s ease-in 0.6s both;
+        }
+        
+        .info-box h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #232323;
+        }
+        
+        .code {
+            background-color: #232323;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 8px;
+            user-select: all;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 14px;
+            animation: fadeIn 0.8s ease-in 0.8s both;
+        }
+        
+        a:hover {
+            opacity: 0.8;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .logo svg {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg width="368" height="223" viewBox="0 0 368 223" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M165.822 123.499C166.877 125.076 167.995 126.646 169.178 128.209L205.659 176.43C204.643 178.251 203.548 180.057 202.374 181.848C196.716 190.225 189.514 197.721 180.768 204.338C172.022 210.954 162.756 215.916 152.969 219.224C143.228 222.204 133.573 223.364 124.004 222.704C114.293 221.858 104.948 218.98 95.9675 214.071C87.0323 208.835 78.9046 201.378 71.5843 191.702L0 97.079L34.0531 71.3171L103.737 163.428C110.776 172.732 118.944 178.695 128.242 181.316C137.725 183.797 147.491 181.236 157.54 173.634C167.588 166.032 172.709 157.331 172.901 147.53C173.062 139.347 170.702 131.337 165.822 123.499ZM165.822 123.499C165.409 122.837 164.978 122.175 164.529 121.515C164.949 122.177 165.38 122.839 165.822 123.499ZM162.105 47.4016C158.186 54.426 155.445 61.6662 153.882 69.1223C152.056 78.6966 152.283 88.4725 154.564 98.4497C156.431 106.283 159.753 113.971 164.529 121.515C163.929 120.632 163.297 119.751 162.632 118.873L92.9483 26.7617L127.001 0.999821L162.105 47.4016ZM201.943 100.333C200.888 98.7564 199.769 97.1864 198.586 95.6229L162.105 47.4016C163.121 45.5813 164.216 43.7755 165.39 41.9842C171.048 33.6072 178.25 26.1106 186.996 19.4941C195.742 12.8777 205.008 7.91575 214.795 4.60834C224.536 1.6278 234.191 0.467621 243.76 1.12782C253.471 1.9741 262.816 4.85191 271.796 9.76127C280.732 14.9975 288.859 22.4537 296.18 32.13L367.764 126.753L333.711 152.515L264.027 60.404C256.988 51.0999 248.82 45.1372 239.522 42.5158C230.039 40.0352 220.273 42.5959 210.224 50.1978C200.176 57.7996 195.055 66.501 194.863 76.3019C194.702 84.4853 197.062 92.4956 201.943 100.333ZM201.943 100.333C202.385 100.993 202.815 101.655 203.235 102.317C202.786 101.657 202.355 100.996 201.943 100.333ZM203.235 102.317C203.835 103.2 204.467 104.081 205.132 104.959L274.816 197.07L240.763 222.832L205.659 176.43C209.578 169.406 212.319 162.166 213.882 154.71C215.708 145.135 215.481 135.36 213.2 125.382C211.333 117.549 208.011 109.861 203.235 102.317Z" fill="#232323"/>
+            </svg>
+        </div>
+        
+        <div class="status-badge">✓ RUNNING</div>
+        
+        <h1>Unchained Engine</h1>
+        <p class="subtitle">High-performant Headless E-Commerce Framework</p>
+        
+        <div class="info-box">
+            <h2>🚀 Ready to Install Admin UI?</h2>
+            <p style="margin-bottom: 10px;">Get started with the Unchained admin interface by running:</p>
+            <div class="code">npm install @unchainedshop/admin-ui</div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 20px;">
+            <h2>🔧 GraphQL Playground</h2>
+            <p style="margin-bottom: 10px;">Explore your API using the GraphiQL interface:</p>
+            <a href="/graphql" style="display: inline-block; margin-top: 8px; padding: 10px 20px; background-color: #232323; color: white; text-decoration: none; border-radius: 4px; font-weight: 600; transition: opacity 0.2s;">
+                Open GraphiQL →
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>Your Unchained Engine is up and running successfully!</p>
+            <p style="margin-top: 10px;">
+                📚 Visit <a href="https://docs.unchained.shop" target="_blank" style="color: #232323; text-decoration: underline;">docs.unchained.shop</a> for documentation and guides
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -285,7 +285,9 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
 
     fastify.setNotFoundHandler((request, reply) => {
       if (request.raw.method === 'GET') {
-        return reply.type('text/html').sendFile('index.html');
+        const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
+        const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+        return reply.type('text/html').sendFile('index.html', staticPath);
       } else {
         return reply.status(404).send();
       }

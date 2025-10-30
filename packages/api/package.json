@@ -20,6 +20,9 @@
     "./lib/*": {
       "import": "./lib/*.js",
       "types": "./lib/*.d.ts"
+    },
+    "./index.html": {
+      "import": "./index.html"
     }
   },
   "scripts": {

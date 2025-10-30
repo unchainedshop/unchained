@@ -31,7 +31,6 @@
     { "path": "packages/platform", },
     { "path": "examples/kitchensink", },
     { "path": "examples/kitchensink-express", },
-    { "path": "examples/minimal", },
     { "path": "examples/oidc", },
     { "path": "examples/ticketing" }
   ]
