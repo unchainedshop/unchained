@@ -16,6 +16,10 @@
     "./express": {
       "import": "./lib/express/index.js",
       "types": "./lib/express/index.d.ts"
+    },
+    "./lib/*": {
+      "import": "./lib/*.js",
+      "types": "./lib/*.d.ts"
     }
   },
   "scripts": {

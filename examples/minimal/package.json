@@ -34,7 +34,7 @@
     "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^4.1.0",
     "@unchainedshop/plugins": "^4.1.0",
-    "@unchainedshop/adminui": "^4.1.0",
+    "@unchainedshop/admin-ui": "^4.1.0",
     "fastify": "^5.4.0"
   },
   "devDependencies": {
