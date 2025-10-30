@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/shared",
   "private": true,
-  "version": "4.1.2",
+  "version": "4.1.3",
   "scripts": {
     "clean": "",
     "build": "",
