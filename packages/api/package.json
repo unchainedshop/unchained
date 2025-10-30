@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
@@ -18,6 +18,10 @@
       "types": "./lib/express/index.d.ts"
     },
     "./lib/*": {
+      "import": "./lib/*.js",
+      "types": "./lib/*.d.ts"
+    },
+    "./lib/*.js": {
       "import": "./lib/*.js",
       "types": "./lib/*.d.ts"
     },
