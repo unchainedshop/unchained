@@ -28,6 +28,9 @@ export async function removeProductService(
         await this.products.delete(productId);
       }
       break;
+    case ProductStatus.DELETED:
+      // Already deleted
+      return false;
     default:
       throw new Error(`Invalid status: ${product?.status}`);
   }

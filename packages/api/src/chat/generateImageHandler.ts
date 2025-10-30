@@ -1,6 +1,9 @@
-import { fileTypeFromBuffer } from 'file-type';
 import { z } from 'zod';
+import mime from 'mime/lite';
 import type * as aiTypes from 'ai';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api:mcp');
 
 let experimental_generateImage: typeof aiTypes.experimental_generateImage;
 let tool: typeof aiTypes.tool;
@@ -54,13 +57,11 @@ const generateImageHandler =
             size: size as any,
           });
 
-          const buffer = Buffer.from(image.base64, 'base64');
-          const fileType = await fileTypeFromBuffer(buffer);
-          const extension = fileType?.ext || 'png';
-          const mime = fileType?.mime || 'image/png';
+          const buffer = Buffer.from(image.uint8Array);
+          const extension = mime.getExtension(image.mediaType) || 'png';
 
           const filename = `image-${Date.now()}.${extension}`;
-          const file = new File([buffer], filename, { type: mime });
+          const file = new File([buffer], filename, { type: image.mediaType });
           const formData = new FormData();
           formData.append('image', file);
 
@@ -80,6 +81,7 @@ const generateImageHandler =
           const { url } = await uploadRes.json();
           return { imageUrl: url, prompt };
         } catch (error) {
+          logger.error('Error generating image:', (error as Error).message);
           return `Error Generating image: ${(error as Error).message}`;
         }
       },

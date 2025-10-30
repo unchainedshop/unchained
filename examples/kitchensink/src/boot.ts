@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import {
   connect,
@@ -11,7 +12,6 @@ import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import connectDefaultPluginsToFastify from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.js';
 import { useErrorHandler } from '@envelop/core';
-import { openai } from '@ai-sdk/openai';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
@@ -53,9 +53,16 @@ try {
       name: 'local',
       baseURL: process.env.OPENAI_BASE_URL,
     });
+    const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
+        baseURL: 'https://api.openai.com/v1',
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+
+    console.log('Image Provider:', imageProvider);
+
     connectChat(fastify, {
       model: provider.chatModel(process.env.OPENAI_MODEL),
-      imageGenerationTool: process.env.OPENAI_API_KEY ? { model: openai.image('dall-e-3') } : undefined,
+      imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     });
   }
 
