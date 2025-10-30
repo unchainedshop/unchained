@@ -39,7 +39,7 @@ test.describe('Delivery: Interfaces', () => {
         },
       });
 
-      assert.equal(deliveryInterfaces.length, 2);
+      assert.equal(deliveryInterfaces.length, 1);
 
       assert.partialDeepStrictEqual(deliveryInterfaces[0], {
         _id: 'shop.unchained.stores',

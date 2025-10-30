@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "MongoDB provider for unchained platform",
   "main": "lib/mongodb-index.js",
   "types": "lib/mongodb-index.d.ts",

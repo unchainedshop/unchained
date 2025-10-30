@@ -7,7 +7,7 @@ import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-e
 import { createLogger } from '@unchainedshop/logger';
 import seed from './seed.js';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
@@ -32,9 +32,13 @@ try {
       name: 'local',
       baseURL: process.env.OPENAI_BASE_URL,
     });
+    const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
+      baseURL: 'https://api.openai.com/v1',
+      apiKey: process.env.OPENAI_API_KEY,
+    });
     connectChat(app, {
       model: provider.chatModel(process.env.OPENAI_MODEL),
-      imageGenerationTool: process.env.OPENAI_API_KEY ? { model: openai.image('dall-e-3') } : undefined,
+      imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     });
   }
 

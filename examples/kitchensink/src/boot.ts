@@ -54,9 +54,9 @@ try {
       baseURL: process.env.OPENAI_BASE_URL,
     });
     const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
-        baseURL: 'https://api.openai.com/v1',
-        apiKey: process.env.OPENAI_API_KEY,
-      });
+      baseURL: 'https://api.openai.com/v1',
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
     connectChat(fastify, {
       model: provider.chatModel(process.env.OPENAI_MODEL),
