@@ -58,8 +58,6 @@ try {
         apiKey: process.env.OPENAI_API_KEY,
       });
 
-    console.log('Image Provider:', imageProvider);
-
     connectChat(fastify, {
       model: provider.chatModel(process.env.OPENAI_MODEL),
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
