@@ -10,7 +10,8 @@ import {
 } from '@unchainedshop/core';
 import { runMigrations } from '../migrations/runMigrations.js';
 import { MigrationRepository } from '@unchainedshop/mongodb';
-import { setImmediate } from 'node:timers/promises';
+import { createLogger } from '@unchainedshop/logger';
+const logger = createLogger('unchained:worker');
 
 export type WorkQueueQueueManager = IWorker<any> | IScheduler<any>;
 export interface SetupWorkqueueOptions extends IntervalWorkerParams, FailedReschedulerParams {
@@ -86,7 +87,7 @@ export async function setupWorkqueue({
 
   // Setup filter cache
   if (!workQueueOptions?.skipInvalidationOnStartup) {
-    await setImmediate(async () => unchainedAPI.services.filters.invalidateFilterCache());
+    await unchainedAPI.services.filters.invalidateFilterCache().catch(logger.warn);
   }
 }
 

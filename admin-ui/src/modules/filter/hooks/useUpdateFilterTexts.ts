@@ -36,7 +36,7 @@ const useUpdateFilterTexts = () => {
   }: IUpdateFilterTextsMutationVariables) => {
     return updateFilterTextsMutation({
       variables: { filterOptionValue, filterId, texts },
-      refetchQueries: ['TranslatedFilterTexts'],
+      refetchQueries: ['TranslatedFilterTexts', 'FilterOptions'],
     });
   };
 
