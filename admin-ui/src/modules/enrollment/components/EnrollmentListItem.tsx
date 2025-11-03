@@ -18,8 +18,7 @@ const ENROLLMENT_STATUS = {
 const EnrollmentListItem = ({ enrollment, showUser }) => {
   const { formatMessage } = useIntl();
 
-  const { formatDateTime } = useFormatDateTime();
-  console.log('EnrollmentListItem enrollment:', enrollment);
+  const { formatDateTime } = useFormatDateTime();  
 
   return (
     <Table.Row>

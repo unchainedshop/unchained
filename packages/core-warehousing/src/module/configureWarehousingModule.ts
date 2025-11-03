@@ -29,8 +29,8 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
-export const buildFindSelector = (query: mongodb.Filter<WarehousingProvider> = {}) => {
-  return { deleted: null, ...query };
+export const buildFindSelector = ({ type, ...rest }: mongodb.Filter<WarehousingProvider> = {}) => {
+  return { ...(type ? { type, ...rest } : { ...rest }), deleted: null };
 };
 export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };

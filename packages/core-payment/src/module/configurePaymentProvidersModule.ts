@@ -18,8 +18,8 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
-export const buildFindSelector = (query: mongodb.Filter<PaymentProvider> = {}) => {
-  return { deleted: null, ...query };
+export const buildFindSelector = ({ type, ...rest }: mongodb.Filter<PaymentProvider> = {}) => {
+  return { ...(type ? { type, ...rest } : { ...rest }), deleted: null };
 };
 
 export const configurePaymentProvidersModule = (
