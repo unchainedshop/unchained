@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 
-interface JSONViewProps {
+interface CopilotJSONViewProps {
   data: any;
 }
 
-const JSONView: React.FC<JSONViewProps> = ({ data }) => {
+const CopilotJSONView: React.FC<CopilotJSONViewProps> = ({ data }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { formatMessage } = useIntl();
 
@@ -48,4 +48,4 @@ const JSONView: React.FC<JSONViewProps> = ({ data }) => {
   );
 };
 
-export default JSONView;
+export default CopilotJSONView;

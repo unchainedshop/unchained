@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import Link from 'next/link';
-import JSONView from './JSONView';
+import CopilotJSONView from './CopilotJSONView';
 import CopyableId from './shared/CopyableId';
 
 export const CopilotEventListItem = ({ event: evt }) => {
@@ -65,7 +65,7 @@ export const CopilotEventListItem = ({ event: evt }) => {
         </div>
       </div>
 
-      {showPayload && <JSONView data={evt?.payload} />}
+      {showPayload && <CopilotJSONView data={evt?.payload} />}
     </div>
   );
 };

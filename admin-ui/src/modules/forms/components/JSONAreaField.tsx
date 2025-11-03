@@ -77,8 +77,7 @@ const JSONAreaField = ({
         onBlur={handleOnBlur}
         placeholder={field.placeholder}
         autoComplete={field.autoComplete}
-        value={field.value}
-        rows={Math.max((field.value?.split(' ') || []).length / 2, rows)}
+        value={field.value}        
       />
     </FieldWrapper>
   );

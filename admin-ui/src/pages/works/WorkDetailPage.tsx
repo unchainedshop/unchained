@@ -21,7 +21,7 @@ const WorkDetailPage = ({ workerId }) => {
   const { formatMessage } = useIntl();
   const { push } = useRouter();
 
-  const { work, loading } = useWork({
+  const { work } = useWork({
     workId: workerId as string,
     pollInterval: 2000,
   });
@@ -114,7 +114,7 @@ const WorkDetailPage = ({ workerId }) => {
           <HeaderDeleteButton onClick={handleOnClick} />
         ) : null}
       </div>
-      {loading ? <Loading /> : <WorkDetail work={work} />}
+      {!work ? <Loading /> : <WorkDetail work={work} />}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import JSONView from './JSONView';
+import CopilotJSONView from './CopilotJSONView';
 import ToolRenderer from './ToolRenderer';
 import { useIntl } from 'react-intl';
 
@@ -44,7 +44,7 @@ const ToolInvocationRenderer: React.FC<ToolInvocationRendererProps> = ({
         {renderer ? (
           renderer({ ...parsed, toolCallId })
         ) : (
-          <JSONView data={parsed} />
+          <CopilotJSONView data={parsed} />
         )}
       </div>
     );

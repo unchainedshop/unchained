@@ -5,17 +5,21 @@ const JSONView = ({
   value,
   className,
   onChange = () => {},
+  rows: defaultRows = 7,
   ...props
-}: CommonFieldProps) => {
+}: CommonFieldProps & { rows?: number }) => {
+  const lineCount = value ? value.split('\n').length : 1;
+  const rows = Math.max(lineCount, defaultRows);
+
   return (
     <textarea
       className={classNames(
-        'text-black dark:bg-slate-900 dark:text-slate-200 border-transparent border-t border-t-slate-200 dark:border-t-slate-800',
+        'text-black dark:bg-slate-900 dark:text-slate-200 border-transparent border-t border-t-slate-200 dark:border-t-slate-800 resize-y',
         className,
       )}
       value={value}
       onChange={onChange}
-      rows={Math.max(((value || ' ')?.split(' ') || []).length / 2, 7)}
+      rows={rows}
       {...props}
     />
   );

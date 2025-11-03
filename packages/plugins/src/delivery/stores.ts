@@ -14,10 +14,14 @@ const PickMup: IDeliveryAdapter = {
 
   actions: (config, context) => {
     const getStores = () => {
-      return config.reduce((current, item) => {
-        if (item.key === 'stores') return JSON.parse(item.value);
-        return current;
-      }, []);
+      const storesItem = config.find((item) => item.key === 'stores');
+      if (!storesItem) return [];
+
+      try {
+        return typeof storesItem.value === 'string' ? JSON.parse(storesItem.value) : storesItem.value;
+      } catch {
+        return storesItem?.value ?? [];
+      }
     };
 
     return {

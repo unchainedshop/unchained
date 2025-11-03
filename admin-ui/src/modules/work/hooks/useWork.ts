@@ -29,7 +29,7 @@ const useWork = ({
   ...options
 }: IWorkQueryVariables & { pollInterval?: number }) => {
   const { customProperties } = useUnchainedContext();
-  const { data, loading, error } = useQuery<IWorkQuery, IWorkQueryVariables>(
+  const { data, loading, error, previousData } = useQuery<IWorkQuery, IWorkQueryVariables>(
     GetWorkQuery(customProperties?.Work),
     {
       skip: !workId,
@@ -39,7 +39,7 @@ const useWork = ({
   );
 
   return {
-    work: data?.work,
+    work: data?.work || previousData?.work,
     loading,
     error,
   };

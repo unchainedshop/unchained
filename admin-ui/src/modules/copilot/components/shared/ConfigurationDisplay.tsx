@@ -5,7 +5,7 @@ const ConfigurationDisplay = ({ configuration }) => {
   return (
     <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg shadow-inner border border-slate-200 dark:border-slate-700">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300">
-        {configuration.map(({ key, value }) => (
+        {JSON.parse(configuration)?.map(({ key, value }) => (
           <div
             key={key}
             className="flex justify-between items-center gap-2 truncate"
