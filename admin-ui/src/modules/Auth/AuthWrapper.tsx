@@ -28,7 +28,10 @@ const AuthWrapper = ({ children }) => {
         if (!isUserAdmin) return false;
         return isUserAdmin(currentUser);
       },
-      hasRole: (action) => {
+      hasRole: (action: string | ((user) => boolean)) => {
+        if (typeof action === 'function') {
+          return action(currentUser);
+        }
         if (!checkRole) return false;
         return checkRole(currentUser, action);
       },

@@ -64,6 +64,12 @@ const Layout = ({
   const apolloClient = useApolloClient();
   const router = useRouter();
 
+  const handleClickOutside = () => {
+    setHideNav(true);
+  };
+
+  const ref = useOutsideClick(handleClickOutside);
+
   const onLogout = async () => {
     const userName =
       currentUser?.username ||
@@ -81,6 +87,7 @@ const Layout = ({
       ),
     );
   };
+
   const conditionalDashboardTitle = configuration.isFullyConfigured
     ? formatMessage({ id: 'dashboard', defaultMessage: 'Dashboard' })
     : formatMessage({
@@ -94,8 +101,9 @@ const Layout = ({
       icon: HomeModernIcon,
       href: '/',
     },
-    {
+    isSystemReady && {
       name: formatMessage({ id: 'copilot', defaultMessage: 'Copilot' }),
+      requiredRole: (user) => user?.roles?.includes('admin'),
       icon: CommandLineIcon,
       href: '/copilot',
     },
@@ -243,12 +251,6 @@ const Layout = ({
       }),
     },
   ].filter(Boolean);
-
-  const handleClickOutside = () => {
-    setHideNav(true);
-  };
-
-  const ref = useOutsideClick(handleClickOutside);
 
   return (
     <AuthWrapper>

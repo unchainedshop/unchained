@@ -4,7 +4,9 @@ import { IUser } from '../../gql/types';
 type Auth = (currentUser?: IUser) => boolean;
 const AuthContext = React.createContext<{
   isAdmin: Auth;
-  hasRole: (actionName: string, componentName?: string) => boolean;
+  hasRole:
+    | ((actionName: (user) => boolean) => boolean)
+    | ((actionName: string, componentName?: string) => boolean);
 }>({
   isAdmin: () => false,
   hasRole: () => false,
