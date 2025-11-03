@@ -29,8 +29,11 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
-export const buildFindSelector = ({ type, ...rest }: mongodb.Filter<WarehousingProvider> = {}) => {
-  return { ...(type ? { type, ...rest } : { ...rest }), deleted: null };
+export const buildFindSelector = ({
+  includeDeleted = false,
+  ...rest
+}: mongodb.Filter<WarehousingProvider> & { includeDeleted?: boolean } = {}) => {
+  return { ...(includeDeleted ? {} : { deleted: null }), ...rest };
 };
 export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
@@ -102,7 +105,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     findProviders: async (
-      query: mongodb.Filter<WarehousingProvider>,
+      query: mongodb.Filter<WarehousingProvider> & { includeDeleted?: boolean },
       options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<WarehousingProvider[]> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);

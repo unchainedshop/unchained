@@ -5,11 +5,17 @@ import { log } from '@unchainedshop/logger';
 export default async function warehousingProviders(
   root: never,
   params: {
-    type?: WarehousingProviderType;
+    type?: WarehousingProviderType | null;
   },
   { modules, userId }: Context,
 ) {
   log(`query warehousingProviders ${params.type}`, { userId });
 
-  return modules.warehousing.findProviders(params);
+  return modules.warehousing.findProviders(
+    params.type
+      ? {
+          type: params.type,
+        }
+      : {},
+  );
 }

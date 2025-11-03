@@ -10,6 +10,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const warehousingProviders = await unchainedAPI.modules.warehousing.findProviders({
       _id: { $in: warehousingProviderIds },
+      includeDeleted: true,
     });
 
     const warehousingProviderMap = {};

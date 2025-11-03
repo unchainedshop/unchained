@@ -8,6 +8,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const deliveryProviders = await unchainedAPI.modules.delivery.findProviders({
       _id: { $in: deliveryProviderIds },
+      includeDeleted: true,
     });
 
     const deliveryProviderMap = {};

@@ -18,8 +18,11 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
-export const buildFindSelector = ({ type, ...rest }: mongodb.Filter<PaymentProvider> = {}) => {
-  return { ...(type ? { type, ...rest } : { ...rest }), deleted: null };
+export const buildFindSelector = ({
+  includeDeleted = false,
+  ...rest
+}: mongodb.Filter<PaymentProvider> & { includeDeleted?: boolean } = {}) => {
+  return { ...(includeDeleted ? {} : { deleted: null }), ...rest };
 };
 
 export const configurePaymentProvidersModule = (
@@ -50,7 +53,7 @@ export const configurePaymentProvidersModule = (
     },
 
     findProviders: async (
-      query: mongodb.Filter<PaymentProvider>,
+      query: mongodb.Filter<PaymentProvider> & { includeDeleted?: boolean },
       options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<PaymentProvider[]> => {
       const providers = PaymentProviders.find(buildFindSelector(query), options);

@@ -8,6 +8,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const paymentProviders = await unchainedAPI.modules.payment.paymentProviders.findProviders({
       _id: { $in: paymentProviderIds },
+      includeDeleted: true,
     });
 
     const paymentProviderMap = {};

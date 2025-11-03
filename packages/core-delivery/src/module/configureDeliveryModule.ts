@@ -17,8 +17,11 @@ export interface DeliveryInterface {
   version: string;
 }
 
-export const buildFindSelector = ({ type, ...rest }: mongodb.Filter<DeliveryProvider> = {}) => {
-  return { ...(type ? { type, ...rest } : { ...rest }), deleted: null };
+export const buildFindSelector = ({
+  includeDeleted = false,
+  ...rest
+}: mongodb.Filter<DeliveryProvider> & { includeDeleted?: boolean } = {}) => {
+  return { ...(includeDeleted ? {} : { deleted: null }), ...rest };
 };
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
@@ -56,7 +59,7 @@ export const configureDeliveryModule = async ({
     },
 
     findProviders: async (
-      query: mongodb.Filter<DeliveryProvider>,
+      query: mongodb.Filter<DeliveryProvider> & { includeDeleted?: boolean },
       options: mongodb.FindOptions<DeliveryProvider> = { sort: { created: 1 } },
     ): Promise<DeliveryProvider[]> => {
       const providers = DeliveryProviders.find(buildFindSelector(query), options);

@@ -111,7 +111,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
           ({ locale }) =>
             locale &&
             languageDialectList?.find(({ isoCode }) => isoCode === locale),
-        );        
+        );
         setSelectedLocale(firstAvailableText?.locale);
       }
     }

@@ -5,11 +5,17 @@ import { log } from '@unchainedshop/logger';
 export default async function warehousingProvidersCount(
   root: never,
   params: {
-    type?: WarehousingProviderType;
+    type?: WarehousingProviderType | null;
   },
   { modules, userId }: Context,
 ) {
   log(`query warehousingProvidersCount ${params.type}`, { userId });
 
-  return modules.warehousing.count(params);
+  return modules.warehousing.count(
+    params.type
+      ? {
+          type: params.type,
+        }
+      : {},
+  );
 }

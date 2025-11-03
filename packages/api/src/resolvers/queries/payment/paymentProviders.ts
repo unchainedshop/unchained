@@ -1,14 +1,21 @@
 import { log } from '@unchainedshop/logger';
-import { mongodb } from '@unchainedshop/mongodb';
 import { Context } from '../../../context.js';
-import { PaymentProvider } from '@unchainedshop/core-payment';
+import { PaymentProviderType } from '@unchainedshop/core-payment';
 
 export default async function paymentProviders(
   root: never,
-  params: mongodb.Filter<PaymentProvider>,
+  params: {
+    type?: PaymentProviderType | null;
+  },
   { modules, userId }: Context,
 ) {
-  log(`query paymentProvider ${params.type}`, { userId });
+  log(`query paymentProviders ${params.type}`, { userId });
 
-  return modules.payment.paymentProviders.findProviders(params);
+  return modules.payment.paymentProviders.findProviders(
+    params.type
+      ? {
+          type: params.type,
+        }
+      : {},
+  );
 }
