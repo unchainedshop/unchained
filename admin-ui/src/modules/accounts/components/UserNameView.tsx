@@ -66,7 +66,7 @@ const UserNameView = ({ _id: userId, username }) => {
           </div>
           <div className="flex flex-wrap items-baseline gap-4 text-sm sm:col-span-2 sm:mt-0 sm:gap-0">
             <FormErrors />
-            {hasRole('editUsername') && (
+            {hasRole('manageUsers') && (
               <span className="flex shrink-0 items-center space-x-4">
                 <button
                   data-id="cancel_update"

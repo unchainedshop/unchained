@@ -77,7 +77,7 @@ const UserWebAuthCredentials = ({ userId }) => {
               key={credential?._id}
               onRemoveCredential={handleRemoveWebAuthCredential}
               removeDisabled={
-                userId !== currentUser?._id && !hasRole('editUserProfile')
+                userId !== currentUser?._id && !hasRole('updateUser')
               }
             />
           ))}

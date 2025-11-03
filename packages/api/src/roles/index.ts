@@ -96,6 +96,8 @@ const actions: Record<string, string> = [
   'manageBookmarks',
   'search',
   'manageWorker',
+  'viewWorkQueue',
+  'viewWork',
   'viewEnrollments',
   'viewEnrollment',
   'registerPaymentCredentials',

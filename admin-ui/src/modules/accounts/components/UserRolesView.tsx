@@ -55,9 +55,9 @@ const UserRolesView = ({ roles, userId }) => {
         multiple
       />
       <FormErrors />
-      {hasRole('editUserRoles') && (
+      {hasRole('manageUsers') && (
         <SubmitButton
-          disabled={!hasRole('editUserRoles')}
+          disabled={!hasRole('manageUsers')}
           label={formatMessage({
             id: 'update_role',
             defaultMessage: 'Update role',

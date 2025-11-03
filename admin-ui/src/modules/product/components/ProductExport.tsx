@@ -67,7 +67,7 @@ const ProductExport = () => {
     },
   );
 
-  if (!hasRole('showProduct')) return null;
+  if (!hasRole('viewProduct')) return null;
 
   return (
     <Button

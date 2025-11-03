@@ -52,7 +52,7 @@ const CreateUser = () => {
   };
 
   const onSubmitSuccess = (_, { enrollUser: user }) => {
-    if (hasRole('showUser')) router.replace(`/users?userId=${user?._id}`);
+    if (hasRole('viewUser')) router.replace(`/users?userId=${user?._id}`);
   };
   return (
     <>

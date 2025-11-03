@@ -98,6 +98,8 @@ export const all = (role, actions) => {
   role.allow(actions.bookmarkProduct, () => false);
   role.allow(actions.voteProductReview, () => false);
   role.allow(actions.manageWorker, () => false);
+  role.allow(actions.viewWorkQueue, () => false);
+  role.allow(actions.viewWork, () => false);
   role.allow(actions.viewEnrollment, () => false);
   role.allow(actions.viewEnrollments, () => false);
   role.allow(actions.updateEnrollment, () => false);

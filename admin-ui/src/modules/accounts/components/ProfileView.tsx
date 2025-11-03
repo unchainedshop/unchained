@@ -142,7 +142,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   })}
                 </p>
               </div>
-              {(hasRole('editUserProfile') || currentUser?._id === _id) && (
+              {(hasRole('updateUser') || currentUser?._id === _id) && (
                 <SaveAndCancelButtons
                   showSubmit={isEdit}
                   onCancel={() => setIsEdit(!isEdit)}
@@ -197,7 +197,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                         </span>
                       )}
                     </span>
-                    {hasRole('editUserAvatar') && (
+                    {hasRole('updateUser') && (
                       <span className="mt-1 ml-4 flex shrink-0 items-start space-x-4">
                         <button
                           onClick={() => {
@@ -356,7 +356,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                 </p>
               </div>
 
-              {(hasRole('editUserProfile') || currentUser?._id === _id) && (
+              {(hasRole('updateUser') || currentUser?._id === _id) && (
                 <SaveAndCancelButtons
                   showSubmit={isEdit}
                   onCancel={() => setIsEdit(!isEdit)}

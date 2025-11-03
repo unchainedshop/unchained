@@ -114,7 +114,7 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
             id: 'change_password',
             defaultMessage: 'Change password',
           })}
-          disabled={!hasRole('editUserPassword') && !hasRole('editUser')}
+          disabled={!hasRole('manageUsers') && !hasRole('manageUsers')}
         />
       </div>
     </Form>

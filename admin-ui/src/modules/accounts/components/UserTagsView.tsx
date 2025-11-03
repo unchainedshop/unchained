@@ -14,7 +14,7 @@ const UserTagsView = ({ tags: defaultTags = [], userId }) => {
     <TagList
       defaultValue={defaultTags}
       onSubmit={updateUserTags}
-      enableEdit={hasRole('editUserTags')}
+      enableEdit={hasRole('manageUsers')}
       availableTagOptions={
         shopInfo?.adminUiConfig?.userTags?.map((tag) => ({
           label: tag,

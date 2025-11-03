@@ -6,7 +6,6 @@ import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
 import Loading from '../../modules/common/components/Loading';
 import PageHeader from '../../modules/common/components/PageHeader';
-import SearchField from '../../modules/common/components/SearchField';
 import Toggle from '../../modules/common/components/Toggle';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import ListHeader from '../../modules/common/components/ListHeader';

@@ -98,7 +98,7 @@ const AccountView = ({
         </div>
       </SelfDocumentingView>
 
-      {hasRole('showUserRoles') ? (
+      {hasRole('manageUsers') ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'roles',
@@ -111,7 +111,7 @@ const AccountView = ({
         </SelfDocumentingView>
       ) : null}
 
-      {hasRole('showUserPassword') && currentUser?._id !== _id ? (
+      {hasRole('manageUsers') && currentUser?._id !== _id ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'set_password',
@@ -141,7 +141,7 @@ const AccountView = ({
         </SelfDocumentingView>
       )}
 
-      {hasRole('showWebAuthn') && (
+      {hasRole('manageUsers') && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'web_authentication',
