@@ -77,7 +77,7 @@ const JSONAreaField = ({
         onBlur={handleOnBlur}
         placeholder={field.placeholder}
         autoComplete={field.autoComplete}
-        value={field.value}        
+        value={field.value}
       />
     </FieldWrapper>
   );

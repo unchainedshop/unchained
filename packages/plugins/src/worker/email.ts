@@ -101,24 +101,6 @@ const EmailWorkerPlugin: IWorkerAdapter<
       };
     }
 
-    let nodemailer;
-    try {
-      const nodemailerModule = await import('nodemailer');
-      nodemailer = nodemailerModule.default;
-    } catch {
-      /* */
-    }
-
-    if (!nodemailer) {
-      return {
-        success: false,
-        error: {
-          name: 'NODEMAILER_NOT_INSTALLED',
-          message: 'npm dependency nodemailer is not installed, please install it to use email features',
-        },
-      };
-    }
-
     try {
       const sendMailOptions = {
         from,
@@ -134,12 +116,33 @@ const EmailWorkerPlugin: IWorkerAdapter<
           error: !opened ? { message: "Interception failed due to missing package 'open'" } : undefined,
         };
       }
+
       if (!process.env.MAIL_URL) {
         return {
           success: false,
           error: { name: 'NO_MAIL_URL_SET', message: 'MAIL_URL is not set' },
         };
       }
+
+      let nodemailer;
+      try {
+        const nodemailerModule = await import('nodemailer');
+        nodemailer = nodemailerModule.default;
+      } catch {
+        /* */
+      }
+
+      if (!nodemailer) {
+        return {
+          success: false,
+          error: {
+            name: 'NODEMAILER_NOT_INSTALLED',
+            message:
+              'npm dependency nodemailer is not installed, please install it to use email features',
+          },
+        };
+      }
+
       const transporter = nodemailer.createTransport(process.env.MAIL_URL);
       const result = await transporter.sendMail(sendMailOptions);
       return { success: true, result };

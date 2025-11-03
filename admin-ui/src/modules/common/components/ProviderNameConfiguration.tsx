@@ -19,7 +19,8 @@ const ProviderNameConfiguration = ({ configuration, color }) => {
       {normalizedJSON &&
         normalizedJSON.map((config) => {
           const text = `${config.key} | ${formatValue(config.value)}`;
-          const displayText = text.length > 20 ? `${text.slice(0, 20)}...` : text;
+          const displayText =
+            text.length > 20 ? `${text.slice(0, 20)}...` : text;
 
           return (
             <Badge

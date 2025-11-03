@@ -1,3 +1,26 @@
+# Unchained Engine v4.2
+
+## Minor
+- Removed obsolete PickMUp delivery provider because it's not compatible anymore with the API of Migros
+- Stores Plugin now allows to set the stores without JSON.stringifying the value
+- Added various factory methods to simplify plugin development
+- Added two new actions viewWorkQueue and viewWork do better control custom ACL cases
+- Started to harmonize actions with admin ui permission checker
+- Improved DX in examples by handing over the default case of start platform + chat + plugin middlewares for frontify and express
+- Added new static landing page when Admin UI package is not installed (used in minimal)
+- Various improvements for the Admin UI
+
+## Patch
+- Fix tokensCount crashing
+- Fix a case where delivery/payment/warehousing providers returned as empty array when using explicit null in queries
+- Fix a problem where adding a product to the cart twice led to two order positions when it should just increase the quantity
+- Fixed AI image generator to use mime/lite (already used in the project) instead of the "file-type" dependency
+- Filter caches are invalidated on startup without blocking server boot
+- Nodemailer is now optional, only needed when interception is turned off and MAIL_URL is set.
+- Improved findSiblings performance
+- Improved searchProducts in assortments performance by using the assortment loader
+
+
 # Unchained Engine v4.1
 
 ## Minor
@@ -9,7 +32,7 @@
 - Fix catalog price calculation bug with leveled prices #670
 - Fix unchained supporting ai@5.0.80+ (breaking change with experimental feature)
 
-# Unchained Engine v4.0.0 ("Tell")
+# Unchained Engine v4.0 ("Tell")
 
 This release brings you FerretDB and cloud-hosted MongoDB support (AWS / Azure) via the DocumentDB SDK. You can now run Unchained against a PostgreSQL database: https://ferretdb.com. Be warned, the performance penalty is quite significant currently. Additionally, you can't use `queryString` arguments in queries like `searchProducts` or `countries` at this time.
 
