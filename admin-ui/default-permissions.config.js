@@ -265,7 +265,7 @@ module.exports = () => {
     UnrestrictedPages,
     checkAccess: (user, pathname) => {
       if (!user?._id && !UnrestrictedPages?.includes(pathname)) return false;
-
+      if (user?.isGuest) return false;
       if (
         ROUTE_ROLES[pathname] === 'UNRESTRICTED' ||
         isAdmin(user) ||
@@ -288,7 +288,8 @@ module.exports = () => {
       return OnlyPublicPages.includes(pathname);
     },
     isUserAuthenticated: (user) => {
-      return !!user?._id;
+      console.log('Checking user authentication for user:', user);
+      return !!user?._id && !user?.isGuest;
     },
   };
 };
