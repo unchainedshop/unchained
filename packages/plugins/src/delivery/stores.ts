@@ -15,7 +15,7 @@ const PickMup: IDeliveryAdapter = {
   actions: (config, context) => {
     const getStores = () => {
       return config.reduce((current, item) => {
-        if (item.key === 'stores') return JSON.parse(item.value);
+        if (item.key === 'stores') return JSON.parse(JSON.stringify(item.value));
         return current;
       }, []);
     };
