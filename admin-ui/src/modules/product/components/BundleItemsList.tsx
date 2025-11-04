@@ -8,7 +8,7 @@ import useProductBundleItems from '../hooks/useProductBundleItems';
 import useRemoveBundleItem from '../hooks/useRemoveBundleItem';
 import BundleProductsListItem from './BundleProductsListItem';
 
-const BundleProductList = ({ productId }) => {
+const BundleItemsList = ({ productId }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
 
@@ -65,4 +65,4 @@ const BundleProductList = ({ productId }) => {
   );
 };
 
-export default BundleProductList;
+export default BundleItemsList;

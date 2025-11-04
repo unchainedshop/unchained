@@ -1,5 +1,5 @@
 import BundleProductsForm from './BundleProductsForm';
-import BundleProductList from './BundleProductsList';
+import BundleItemsList from './BundleItemsList';
 
 const BundleProducts = ({ productId, disabled = false }) => {
   return (
@@ -10,7 +10,7 @@ const BundleProducts = ({ productId, disabled = false }) => {
         </div>
         <div className="col-span-5 ml-auto rounded-md bg-white dark:bg-slate-800 px-8 shadow-md dark:shadow-none lg:w-full">
           <div className="py-4">
-            <BundleProductList productId={productId} />
+            <BundleItemsList productId={productId} />
           </div>
         </div>
       </div>

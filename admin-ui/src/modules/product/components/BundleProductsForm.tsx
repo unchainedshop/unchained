@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { ISortDirection } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
@@ -9,6 +9,11 @@ import TextField from '../../forms/components/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useCreateProductBundleItem from '../hooks/useCreateProductBundleItem';
 import useProducts from '../hooks/useProducts';
+import Button from '../../common/components/Button';
+import { SparklesIcon } from 'lucide-react';
+import useModal from '../../modal/hooks/useModal';
+import BundleItemScaffoldForm from './BundleItemScaffoldForm';
+import useProduct from '../hooks/useProduct';
 
 const normalizeProduct = (products = []) => {
   return products.map(({ _id, status, texts, media }) => ({
@@ -22,6 +27,8 @@ const BundleProductsForm = ({
   productId: currentProductId,
   disabled = false,
 }) => {
+  const { product } = useProduct({ productId: currentProductId });
+  const { setModal } = useModal();
   const [queryString, setQueryString] = useState('');
   const { createProductBundleItem } = useCreateProductBundleItem();
   const { hasRole } = useAuth();
@@ -58,18 +65,48 @@ const BundleProductsForm = ({
     },
   });
 
+  const scaffoldVariationProduct = useCallback(async () => {
+    await setModal(
+      <BundleItemScaffoldForm
+        bundleProduct={product}
+        onSuccess={async (newProduct, quantity = 1) => {
+          await createProductBundleItem({
+            item: { productId: newProduct._id, quantity },
+            productId: currentProductId,
+          });
+
+          setModal('');
+        }}
+      />,
+    );
+  }, [product]);
   return (
     <Form form={form}>
-      <FilterableDropdown
-        name="productId"
-        onFilter={setQueryString}
-        queryString={queryString}
-        label={formatMessage({ id: 'product', defaultMessage: 'Product' })}
-        data={normalizeProduct(products)}
-        isLoading={loading}
-        className="mt-1 w-full py-2 text-sm font-medium text-slate-500"
-        required
-      />
+      <div className="flex items-end gap-2 w-full">
+        <div className="flex-1">
+          <FilterableDropdown
+            name="productId"
+            onFilter={setQueryString}
+            queryString={queryString}
+            label={formatMessage({ id: 'product', defaultMessage: 'Product' })}
+            data={normalizeProduct(products)}
+            isLoading={loading}
+            className="w-full text-sm font-medium text-slate-500"
+            required
+          />
+        </div>
+        {hasRole('addProduct') && (
+          <div className="pb-3">
+            <Button
+              className="flex items-center justify-center p-2 rounded-md"
+              onClick={scaffoldVariationProduct}
+            >
+              <SparklesIcon className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
+      </div>
+
       <TextField
         name="quantity"
         type="number"
