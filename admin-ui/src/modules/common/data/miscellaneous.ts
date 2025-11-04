@@ -230,6 +230,44 @@ const ColorLookupTable = {
       900: 'border-sky-900',
     },
   },
+  indigo: {
+    bg: {
+      50: 'bg-indigo-50',
+      100: 'bg-indigo-100',
+      200: 'bg-indigo-200',
+      300: 'bg-indigo-300',
+      400: 'bg-indigo-400',
+      500: 'bg-indigo-500',
+      600: 'bg-indigo-600',
+      700: 'bg-indigo-700',
+      800: 'bg-indigo-800',
+      900: 'bg-indigo-900',
+    },
+    text: {
+      50: 'text-indigo-50',
+      100: 'text-indigo-100',
+      200: 'text-indigo-200',
+      300: 'text-indigo-300',
+      400: 'text-indigo-400',
+      500: 'text-indigo-500',
+      600: 'text-indigo-600',
+      700: 'text-indigo-700',
+      800: 'text-indigo-800',
+      900: 'text-indigo-900',
+    },
+    border: {
+      50: 'border-indigo-50',
+      100: 'border-indigo-100',
+      200: 'border-indigo-200',
+      300: 'border-indigo-300',
+      400: 'border-indigo-400',
+      500: 'border-indigo-500',
+      600: 'border-indigo-600',
+      700: 'border-indigo-700',
+      800: 'border-indigo-800',
+      900: 'border-indigo-900',
+    },
+  },
   cyan: {
     bg: {
       50: 'bg-cyan-50 dark:bg-cyan-900/20',
@@ -795,7 +833,8 @@ export const textColor = (color, hue) => {
 };
 
 export const bgColor = (color, hue) => {
-  return `${ColorLookupTable[color].bg[hue]}`;
+  console.log({ color, hue });
+  return `${ColorLookupTable?.[color].bg[hue]}`;
 };
 
 export const borderColor = (color, hue) => {
