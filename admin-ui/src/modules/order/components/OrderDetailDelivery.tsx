@@ -11,6 +11,7 @@ import AlertMessage from '../../modal/components/AlertMessage';
 import useModal from '../../modal/hooks/useModal';
 import useDeliverOrder from '../hooks/useDeliverOrder';
 import StatusInformation from '../../common/components/StatusInformation';
+import useAuth from '../../Auth/useAuth';
 
 const OrderDetailDelivery = ({ order }) => {
   const { deliveryProviderType } = useDeliveryProviderTypes();
@@ -20,6 +21,7 @@ const OrderDetailDelivery = ({ order }) => {
   const { formatPrice } = useFormatPrice();
   const { formatMessage } = useIntl();
   const { formatDateTime } = useFormatDateTime();
+  const { hasRole } = useAuth();
 
   const markAsDelivered = async () => {
     await setModal(
@@ -130,7 +132,8 @@ const OrderDetailDelivery = ({ order }) => {
                 label={type.label}
                 component={
                   order?.delivery?.status === 'OPEN' &&
-                  type.value === 'DELIVERED' && (
+                  type.value === 'DELIVERED' &&
+                  hasRole('markOrderDelivered') && (
                     <button
                       id="deliver"
                       type="button"

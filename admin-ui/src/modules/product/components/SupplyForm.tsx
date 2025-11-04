@@ -79,7 +79,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
   return (
     <div className="mt-5 md:col-span-2 md:mt-0">
       <FormWrapper>
-        <Form form={form}>
+        <Form form={form} disabled={!hasRole('manageProducts')}>
           <div className="relative px-4 py-5 sm:p-6">
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
@@ -87,6 +87,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                   validators={[validateInteger()]}
                   type="number"
                   name="weight"
+                  disabled={!hasRole('manageProducts')}
                   id="weight"
                   label={formatMessage({
                     id: 'weight_gram',
@@ -99,6 +100,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                 <TextField
                   validators={[validateInteger()]}
                   name="length"
+                  disabled={!hasRole('manageProducts')}
                   id="length"
                   type="number"
                   label={formatMessage({
@@ -113,6 +115,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                   validators={[validateInteger()]}
                   type="number"
                   name="width"
+                  disabled={!hasRole('manageProducts')}
                   id="width "
                   label={formatMessage({
                     id: 'width',
@@ -125,6 +128,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                 <TextField
                   validators={[validateInteger()]}
                   name="height"
+                  disabled={!hasRole('manageProducts')}
                   type="number"
                   id="height"
                   label={formatMessage({
@@ -136,16 +140,17 @@ const SupplyForm = ({ productId, disabled = false }) => {
               </div>
             </div>
           </div>
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
-            <SubmitButton
-              hidden={!hasRole('editProductSupply')}
-              label={formatMessage({
-                id: 'save',
-                defaultMessage: 'Save',
-              })}
-              full
-            />
-          </div>
+          {hasRole('manageProducts') && (
+            <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'save',
+                  defaultMessage: 'Save',
+                })}
+                full
+              />
+            </div>
+          )}
         </Form>
       </FormWrapper>
     </div>

@@ -23,6 +23,7 @@ import UserEnrollments from './UserEnrollments';
 import UserOrders from './UserOrders';
 import UserQuotations from './UserQuotations';
 import UserTokens from './UserTokens';
+import useAuth from '../../Auth/useAuth';
 
 const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
   if (!user) return <Loading />;
@@ -46,6 +47,8 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
 };
 const UserSettings = ({ user, extendedData }) => {
   const { formatMessage } = useIntl();
+  const { hasRole } = useAuth();
+
   const userProfileSettingOptions = [
     {
       id: 'profile',
@@ -62,7 +65,7 @@ const UserSettings = ({ user, extendedData }) => {
       title: formatMessage({ id: 'orders', defaultMessage: 'Orders' }),
       Icon: <ShoppingCartIcon className="h-5 w-5" />,
     },
-    {
+    hasRole('viewUserQuotations') && {
       id: 'quotations',
       title: formatMessage({
         id: 'quotations',
@@ -70,7 +73,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <BanknotesIcon className="h-5 w-5" />,
     },
-    {
+    hasRole('viewUserEnrollments') && {
       id: 'enrollments',
       title: formatMessage({
         id: 'enrollments',
@@ -94,7 +97,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <CurrencyDollarIcon className="h-5 w-5" />,
     },
-    {
+    hasRole('viewUserProductReviews') && {
       id: 'reviews',
       title: formatMessage({
         id: 'reviews',
@@ -118,7 +121,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <PuzzlePieceIcon className="h-5 w-5" />,
     },
-  ];
+  ].filter(Boolean);
   return (
     <Tab tabItems={userProfileSettingOptions} defaultTab="profile">
       <GetCurrentTab user={user} {...extendedData} />

@@ -51,11 +51,16 @@ const WarehousingForm = ({ productId, disabled = false }) => {
   return (
     <div className="mt-5 md:mt-0">
       <FormWrapper>
-        <Form className="rounded" form={form}>
+        <Form
+          className="rounded"
+          form={form}
+          disabled={!hasRole('manageProducts')}
+        >
           <div className="relative px-4 pb-5 sm:p-6">
             <div className="w-full justify-between align-baseline lg:flex gap-6">
               <TextField
                 name="sku"
+                disabled={!hasRole('manageProducts')}
                 id="sku"
                 label={formatMessage({
                   id: 'sku',
@@ -67,6 +72,7 @@ const WarehousingForm = ({ productId, disabled = false }) => {
               <TextField
                 name="baseUnit"
                 id="baseUnit"
+                disabled={!hasRole('manageProducts')}
                 label={formatMessage({
                   id: 'baseUnit',
                   defaultMessage: 'Base Unit',
@@ -75,15 +81,16 @@ const WarehousingForm = ({ productId, disabled = false }) => {
               />
             </div>
           </div>
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
-            <SubmitButton
-              hidden={!hasRole('editProductWarehousing')}
-              label={formatMessage({
-                id: 'save',
-                defaultMessage: 'Save',
-              })}
-            />
-          </div>
+          {hasRole('manageProducts') && (
+            <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'save',
+                  defaultMessage: 'Save',
+                })}
+              />
+            </div>
+          )}
         </Form>
       </FormWrapper>
     </div>

@@ -100,22 +100,23 @@ const CountryForm = ({
           </div>
         )}
       </div>
-      <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('editCountry')}
-          label={
-            isEdit
-              ? formatMessage({
-                  id: 'update_country',
-                  defaultMessage: 'Update Country',
-                })
-              : formatMessage({
-                  id: 'add_country',
-                  defaultMessage: 'Add Country',
-                })
-          }
-        />
-      </div>
+      {hasRole('manageCountries') && (
+        <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <SubmitButton
+            label={
+              isEdit
+                ? formatMessage({
+                    id: 'update_country',
+                    defaultMessage: 'Update Country',
+                  })
+                : formatMessage({
+                    id: 'add_country',
+                    defaultMessage: 'Add Country',
+                  })
+            }
+          />
+        </div>
+      )}
     </Form>
   );
 };

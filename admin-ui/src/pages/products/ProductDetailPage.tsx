@@ -79,6 +79,7 @@ const ProductDetailPage = ({ slug }) => {
           }
         },
         bgColor: 'green',
+        disable: !hasRole('publishProduct'),
       },
       {
         id: 'draft',
@@ -308,6 +309,7 @@ const ProductDetailPage = ({ slug }) => {
               <input
                 type="number"
                 id="sequence-input"
+                disabled={!hasRole('manageProducts')}
                 className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1 transition-all"
                 defaultValue={product?.sequence}
                 onBlur={updateProductSequence}

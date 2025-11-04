@@ -152,12 +152,13 @@ const ProductTextsForm = ({
       }
     >
       <FormWrapper>
-        <Form form={form}>
+        <Form form={form} disabled={!hasRole('manageProducts')}>
           <div className="relative text-slate-500 dark:text-slate-200 px-4 py-5 sm:p-6">
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="slug"
+                  disabled={!hasRole('manageProducts')}
                   required
                   id="slug"
                   label={formatMessage({
@@ -171,6 +172,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="title"
+                  disabled={!hasRole('manageProducts')}
                   required
                   id="title"
                   label={formatMessage({
@@ -184,6 +186,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="subtitle"
+                  disabled={!hasRole('manageProducts')}
                   id="subtitle"
                   label={formatMessage({
                     id: 'subtitle',
@@ -196,6 +199,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="vendor"
+                  disabled={!hasRole('manageProducts')}
                   id="vendor"
                   label={formatMessage({
                     id: 'vendor',
@@ -208,6 +212,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="brand"
+                  disabled={!hasRole('manageProducts')}
                   id="brand"
                   label={formatMessage({
                     id: 'brand',
@@ -221,6 +226,7 @@ const ProductTextsForm = ({
                 <TagInputField
                   name="labels"
                   id="labels"
+                  disabled={!hasRole('manageProducts')}
                   label={formatMessage({
                     id: 'labels',
                     defaultMessage: 'Labels',
@@ -247,6 +253,7 @@ const ProductTextsForm = ({
               <MarkdownTextAreaField
                 name="description"
                 id="description"
+                disabled={!hasRole('manageProducts')}
                 label={formatMessage({
                   id: 'description',
                   defaultMessage: 'Description',
@@ -254,15 +261,16 @@ const ProductTextsForm = ({
               />
             </div>
           </div>
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
-            <SubmitButton
-              hidden={!hasRole('editProductTexts')}
-              label={formatMessage({
-                id: 'save',
-                defaultMessage: 'Save',
-              })}
-            />
-          </div>
+          {hasRole('manageProducts') && (
+            <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'save',
+                  defaultMessage: 'Save',
+                })}
+              />
+            </div>
+          )}
         </Form>
       </FormWrapper>
     </SelfDocumentingView>

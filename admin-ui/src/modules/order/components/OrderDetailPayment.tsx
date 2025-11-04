@@ -11,6 +11,7 @@ import usePaymentProviderTypes from '../../payment-providers/hooks/usePaymentPro
 import usePaymentStatusTypes from '../../payment-providers/hooks/usePaymentStatusTypes';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import StatusInformation from '../../common/components/StatusInformation';
+import useAuth from '../../Auth/useAuth';
 
 const OrderDetailPayment = ({ order }) => {
   const { paymentProviderType } = usePaymentProviderTypes();
@@ -21,6 +22,7 @@ const OrderDetailPayment = ({ order }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
   const { payOrder } = usePayOrder();
+  const { hasRole } = useAuth();
 
   const markAsPaid = async () => {
     await setModal(
@@ -129,7 +131,8 @@ const OrderDetailPayment = ({ order }) => {
                 label={type.label}
                 component={
                   order.payment.status === 'OPEN' &&
-                  type.value === 'PAID' && (
+                  type.value === 'PAID' &&
+                  hasRole('markOrderPaid') && (
                     <button
                       id="pay"
                       type="button"

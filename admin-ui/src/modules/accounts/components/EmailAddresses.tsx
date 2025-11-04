@@ -12,6 +12,7 @@ import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
 import ActiveInActive from '../../common/components/ActiveInActive';
 import DeleteButton from '../../common/components/DeleteButton';
+import useAuth from '../../Auth/useAuth';
 
 const EmailAddresses = ({
   emails,
@@ -24,6 +25,8 @@ const EmailAddresses = ({
   const { addEmail } = useAddEmail();
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
+  const { hasRole } = useAuth();
+
   const onAddEmail: OnSubmitType = async ({ email }) => {
     await addEmail({ email, userId });
     return { success: true };
@@ -110,7 +113,7 @@ const EmailAddresses = ({
                 <ActiveInActive isActive={verified} />
               </div>
               <div className="my-1 flex items-center cursor-pointer">
-                {enableVerification && !verified && (
+                {enableVerification && !verified && hasRole('sendEmail') && (
                   <a
                     id="send_verification_mail"
                     onClick={async () => {
@@ -125,43 +128,48 @@ const EmailAddresses = ({
                   </a>
                 )}
 
-                <DeleteButton
-                  className="ml-2 inline-flex items-center rounded-full hover:bg-rose-50"
-                  onClick={() =>
-                    onRemoveEmail({
-                      email: address,
-                    })
-                  }
-                />
+                {hasRole('updateUser') && (
+                  <DeleteButton
+                    className="ml-2 inline-flex items-center rounded-full hover:bg-rose-50"
+                    onClick={() =>
+                      onRemoveEmail({
+                        email: address,
+                      })
+                    }
+                  />
+                )}
               </div>
             </div>
           </li>
         ))}
       </ul>
-      <Form form={form}>
-        <div className="mt-4 border-t dark:border-t-slate-700">
-          <div className="items-between mt-4 flex space-x-4">
-            <TextField
-              className="mt-0"
-              name="email"
-              required
-              label={formatMessage({
-                id: 'email',
-                defaultMessage: 'Email',
-              })}
-            />
-            <span className="shrink-0 flex items-end">
-              <SubmitButton
-                className="py-2 leading-5"
+
+      {hasRole('updateUser') && (
+        <Form form={form}>
+          <div className="mt-4 border-t dark:border-t-slate-700">
+            <div className="items-between mt-4 flex space-x-4">
+              <TextField
+                className="mt-0"
+                name="email"
+                required
                 label={formatMessage({
-                  id: 'add_email',
-                  defaultMessage: 'Add email',
+                  id: 'email',
+                  defaultMessage: 'Email',
                 })}
               />
-            </span>
+              <span className="shrink-0 flex items-end">
+                <SubmitButton
+                  className="py-2 leading-5"
+                  label={formatMessage({
+                    id: 'add_email',
+                    defaultMessage: 'Add email',
+                  })}
+                />
+              </span>
+            </div>
           </div>
-        </div>
-      </Form>
+        </Form>
+      )}
     </div>
   );
 };

@@ -128,6 +128,7 @@ const AssortmentListItem = ({ assortment, showAvatar }) => {
           className="text-center w-16 shadow-xs focus:ring-slate-900 dark:bg-slate-800 dark:border-slate-700 focus:border-slate-900 block text-sm border-slate-300 rounded-md mr-2 font-semibold text-slate-900 dark:text-slate-300"
           defaultValue={assortment?.sequence}
           onBlur={updateAssortmentSequence}
+          disabled={!hasRole('manageAssortments')}
         />
       </Table.Cell>
       <Table.Cell className="text-right">

@@ -22,6 +22,7 @@ import {
 import useProductCatalogPrices from '../hooks/useProductCatalogPrices';
 import useUpdateProductCommerce from '../hooks/useUpdateProductCommerce';
 import { fromMinorUnit } from '../utils/price.utils';
+import { has } from 'cypress/types/lodash';
 
 const normalizeCatalogPrices = (prices = [], currencies = []) => {
   if (!currencies.length) return [];
@@ -95,7 +96,11 @@ const CommerceForm = ({ productId, disabled = false }) => {
     <div>
       <div className="mt-5 md:col-span-3 lg:mt-0">
         <FormWrapper>
-          <Form className="mt-3 rounded-md" form={form}>
+          <Form
+            className="mt-3 rounded-md"
+            form={form}
+            disabled={!hasRole('manageProducts')}
+          >
             <div className="relative max-w-full p-3 sm:px-5">
               <div className="max-w-full justify-between align-baseline" />
 
@@ -156,6 +161,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                           <div className="flex w-full gap-x-2">
                             <TextField
                               className="w-full"
+                              disabled={!hasRole('manageProducts')}
                               validators={[
                                 validateProductCommerce(index, pricing),
                                 validateProductCommerceOneNull(pricing),
@@ -173,6 +179,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                             <TextField
                               type="number"
                               className="w-full"
+                              disabled={!hasRole('manageProducts')}
                               name={`pricing[${index}].amount`}
                               id={`pricing[${index}].amount`}
                               required
@@ -189,6 +196,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               <CheckboxField
                                 name={`pricing[${index}].isTaxable`}
                                 labelClassName="lg:sr-only items-center "
+                                disabled={!hasRole('manageProducts')}
                                 label={formatMessage({
                                   id: 'vat_suspect',
                                   defaultMessage: 'Vat Suspect',
@@ -202,6 +210,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               <CheckboxField
                                 name={`pricing[${index}].isNetPrice`}
                                 labelClassName="lg:sr-only items-center"
+                                disabled={!hasRole('manageProducts')}
                                 label={formatMessage({
                                   id: 'net_price',
                                   defaultMessage: 'Net Price',
@@ -223,6 +232,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               })}
                               name={`pricing[${index}].countryCode`}
                               id={`pricing[${index}].countryCode`}
+                              disabled={!hasRole('manageProducts')}
                               required
                               options={convertArrayOfObjectToObject(
                                 countries,
@@ -239,6 +249,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                                 id: 'currency',
                                 defaultMessage: 'Currency',
                               })}
+                              disabled={!hasRole('manageProducts')}
                               name={`pricing[${index}].currencyCode`}
                               id={`pricing[${index}].currencyCode`}
                               required
@@ -255,66 +266,72 @@ const CommerceForm = ({ productId, disabled = false }) => {
                             />
                           </div>
 
-                          <div className="absolute -top-2 right-0 mt-0 mr-0 shrink-0  pb-1 md:mr-0 lg:mt-6 lg:py-0 lg:px-0 ">
-                            <button
-                              className="items-center rounded-full bg-white dark:bg-slate-900 px-1 py-1 text-sm text-rose-500 dark:text-rose-400 hover:bg-rose-50 focus:outline-hidden focus:ring-0 focus:ring-rose-500 focus:ring-offset-2"
-                              type="button"
-                              onClick={() => removeConfig(index)}
-                            >
-                              <svg
-                                className="h-4 w-4"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                          {hasRole('manageProducts') && (
+                            <div className="absolute -top-2 right-0 mt-0 mr-0 shrink-0  pb-1 md:mr-0 lg:mt-6 lg:py-0 lg:px-0 ">
+                              <button
+                                className="items-center rounded-full bg-white dark:bg-slate-900 px-1 py-1 text-sm text-rose-500 dark:text-rose-400 hover:bg-rose-50 focus:outline-hidden focus:ring-0 focus:ring-rose-500 focus:ring-offset-2"
+                                type="button"
+                                onClick={() => removeConfig(index)}
                               >
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                <line x1="10" y1="11" x2="10" y2="17" />
-                                <line x1="14" y1="11" x2="14" y2="17" />
-                              </svg>
-                            </button>
-                          </div>
+                                <svg
+                                  className="h-4 w-4"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                  <line x1="10" y1="11" x2="10" y2="17" />
+                                  <line x1="14" y1="11" x2="14" y2="17" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
-                    <div className="mt-6">
-                      <Button
-                        variant="tertiary"
-                        text={formatMessage({
-                          id: 'add_price_row',
-                          defaultMessage: 'Add Price Row',
-                        })}
-                        className="w-full items-center justify-center"
-                        onClick={() =>
-                          push({
-                            maxQuantity: '',
-                            amount: null,
-                            isTaxable: false,
-                            isNetPrice: false,
-                            currencyCode: defaultCurrencyValue,
-                            countryCode: defaultCountryValue,
-                          })
-                        }
-                      />
-                    </div>
+                    {hasRole('manageProducts') && (
+                      <div className="mt-6">
+                        <Button
+                          variant="tertiary"
+                          text={formatMessage({
+                            id: 'add_price_row',
+                            defaultMessage: 'Add Price Row',
+                          })}
+                          className="w-full items-center justify-center"
+                          onClick={() =>
+                            push({
+                              maxQuantity: '',
+                              amount: null,
+                              isTaxable: false,
+                              isNetPrice: false,
+                              currencyCode: defaultCurrencyValue,
+                              countryCode: defaultCountryValue,
+                            })
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </FieldArray>
             </div>
             <FormErrors displayFieldErrors />
-            <div className="-mx-6 p-6 bg-slate-50 dark:bg-slate-900 text-right">
-              <SubmitButton
-                className="mx-6"
-                hidden={!hasRole('editProductCommerce')}
-                label={formatMessage({
-                  id: 'save',
-                  defaultMessage: 'Save',
-                })}
-              />
-            </div>
+
+            {hasRole('manageProducts') && (
+              <div className="-mx-6 p-6 bg-slate-50 dark:bg-slate-900 text-right">
+                <SubmitButton
+                  className="mx-6"
+                  label={formatMessage({
+                    id: 'save',
+                    defaultMessage: 'Save',
+                  })}
+                />
+              </div>
+            )}
           </Form>
         </FormWrapper>
         <p className="mt-6 mb-10 text-sm text-slate-500 dark:text-slate-400">

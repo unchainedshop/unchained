@@ -46,10 +46,9 @@ const fastify = Fastify({
 });
 
 try {
-  // Init Unchained Platform with the 'all' plugins preset and a healthCheckEndpoint we can use for health checks in containerized environments
+  // Init Unchained Platform with the 'all' plugins preset
   const platform = await startPlatform({
     modules: defaultModules,
-    healthCheckEndpoint: "/.well-known/yoga/server-health",
   });
 
   // Use the connect from @unchainedshop/api to connect Unchained to Fastify, setting up the basic endpoints like /graphql

@@ -25,9 +25,7 @@ const CurrencyList = ({ currencies, onRemoveCurrency, sortable }) => {
           <Table.Cell sortKey="isActive">
             {formatMessage({ id: 'status', defaultMessage: 'Status' })}
           </Table.Cell>
-          {(hasRole('showCurrency') || hasRole('removeCurrency')) && (
-            <Table.Cell>&nbsp;</Table.Cell>
-          )}
+          <Table.Cell>&nbsp;</Table.Cell>
         </Table.Row>
       ))}
 
@@ -37,7 +35,7 @@ const CurrencyList = ({ currencies, onRemoveCurrency, sortable }) => {
           currency={currency}
           onRemove={onRemoveCurrency}
           enableDelete={hasRole('removeCurrency')}
-          enableEdit={hasRole('showCurrency')}
+          enableEdit={true}
         />
       ))}
     </Table>

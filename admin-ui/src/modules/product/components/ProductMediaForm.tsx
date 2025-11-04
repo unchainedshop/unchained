@@ -18,12 +18,13 @@ import useRemoveProductMedia from '../hooks/useRemoveProductMedia';
 
 import ProductMediaList from './ProductMediaList';
 import useReOrderProductMedia from '../hooks/useReOrderProductMedia';
+import useAuth from '../../Auth/useAuth';
 
 const ProductMediaForm = ({ productId }) => {
   const { productMedia } = useProductMedia({ productId });
   const { setModal } = useModal();
   const { formatMessage } = useIntl();
-
+  const { hasRole } = useAuth();
   const { removeProductMedia } = useRemoveProductMedia();
   const { addProductMedia } = useAddProductMedia();
   const { reOrderProductMedia } = useReOrderProductMedia();
@@ -127,9 +128,11 @@ const ProductMediaForm = ({ productId }) => {
 
   return (
     <div className="mx-auto mt-5 space-y-5 lg:space-y-0 max-w-full py-6 lg:grid lg:grid-cols-12 lg:gap-4">
-      <div className="mx-auto w-full px-6 lg:col-span-6 lg:col-start-1">
-        <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
-      </div>
+      {hasRole('manageProducts') && (
+        <div className="mx-auto w-full px-6 lg:col-span-6 lg:col-start-1">
+          <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
+        </div>
+      )}
 
       <DndContext
         sensors={sensors}

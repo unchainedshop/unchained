@@ -32,14 +32,12 @@ const CountryList = ({ countries, onRemoveCountry, sortable }) => {
           <Table.Cell sortKey="isActive">
             {formatMessage({ id: 'status', defaultMessage: 'Status' })}
           </Table.Cell>
-          {(hasRole('showCountry') || hasRole('removeCountry')) && (
-            <Table.Cell>
-              <span className="sr-only">
-                {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
-                {formatMessage({ id: 'delete', defaultMessage: 'Delete' })}
-              </span>
-            </Table.Cell>
-          )}
+          <Table.Cell>
+            <span className="sr-only">
+              {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
+              {formatMessage({ id: 'delete', defaultMessage: 'Delete' })}
+            </span>
+          </Table.Cell>
         </Table.Row>
       ))}
 
@@ -48,7 +46,7 @@ const CountryList = ({ countries, onRemoveCountry, sortable }) => {
           key={`${country?._id}-body`}
           country={country}
           onRemove={onRemoveCountry}
-          enableEdit={hasRole('showCountry')}
+          enableEdit={true}
           enableDelete={hasRole('removeCountry')}
         />
       ))}
