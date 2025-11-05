@@ -80,22 +80,23 @@ const LanguageForm = ({
           </div>
         )}
       </div>
-      <div className="border-t-slate-100 border-t dark:border-t-slate-700 mt-5 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('editLanguage')}
-          label={
-            isEdit
-              ? formatMessage({
-                  id: 'update_language',
-                  defaultMessage: 'Update Language',
-                })
-              : formatMessage({
-                  id: 'add_language',
-                  defaultMessage: 'Add Language',
-                })
-          }
-        />
-      </div>
+      {hasRole('manageLanguages') && (
+        <div className="border-t-slate-100 border-t dark:border-t-slate-700 mt-5 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <SubmitButton
+            label={
+              isEdit
+                ? formatMessage({
+                    id: 'update_language',
+                    defaultMessage: 'Update Language',
+                  })
+                : formatMessage({
+                    id: 'add_language',
+                    defaultMessage: 'Add Language',
+                  })
+            }
+          />
+        </div>
+      )}
     </Form>
   );
 };

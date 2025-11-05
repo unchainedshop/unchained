@@ -75,7 +75,7 @@ const PaymentProviders = () => {
               },
           { count: paymentProvidersCount ?? 0 },
         )}
-        addPath={hasRole('addPaymentProvider') && '/payment-provider/new'}
+        addPath={hasRole('managePaymentProviders') && '/payment-provider/new'}
         addButtonText={formatMessage({
           id: 'add_payment_provider',
           defaultMessage: 'Add Payment Provider',
@@ -93,8 +93,8 @@ const PaymentProviders = () => {
           providerPath="/payment-provider?paymentProviderId"
           providers={paymentProviders}
           onRemove={onRemovePaymentProvider}
-          canDelete={hasRole('removePaymentProvider')}
-          canEdit={hasRole('editPaymentProvider')}
+          canDelete={hasRole('managePaymentProviders')}
+          canEdit={hasRole('managePaymentProviders')}
         />
       )}
     </>

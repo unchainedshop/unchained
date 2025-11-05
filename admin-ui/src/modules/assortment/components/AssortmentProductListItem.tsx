@@ -6,8 +6,10 @@ import Badge from '../../common/components/Badge';
 import DraggableIcon from '../../common/components/DraggableIcon';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 import generateUniqueId from '../../common/utils/getUniqueId';
+import useAuth from '../../Auth/useAuth';
 
 const AssortmentProductListItem = ({ link, onDelete, id }) => {
+  const { hasRole } = useAuth();
   const { _id, product, tags } = link;
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -31,9 +33,6 @@ const AssortmentProductListItem = ({ link, onDelete, id }) => {
       ref={setNodeRef}
       style={style}
       className="group flex items-center justify-between rounded-sm border-b border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200 ease-in-out hover:shadow-sm px-2 text-slate-900 dark:text-slate-200 last:border-none hover:cursor-pointer"
-      onClick={() => {
-        router.push(`/products?slug=${generateUniqueId(link?.product)}`);
-      }}
     >
       <div className="flex items-center py-4">
         <div>
@@ -56,19 +55,21 @@ const AssortmentProductListItem = ({ link, onDelete, id }) => {
         }}
       >
         <div className="flex items-center justify-between gap-5">
-          <button
-            type="button"
-            {...attributes}
-            {...listeners}
-            className="hover:cursor-move"
-          >
-            <DraggableIcon />
-          </button>
+          {hasRole('manageAssortments') && (
+            <button
+              type="button"
+              {...attributes}
+              {...listeners}
+              className="hover:cursor-move"
+            >
+              <DraggableIcon />
+            </button>
+          )}
           <TableActionsMenu
             onEdit={handleEdit}
             onDelete={handleDelete}
-            showEdit={true}
-            showDelete={true}
+            showEdit={hasRole('viewProducts')}
+            showDelete={hasRole('manageAssortments')}
           />
         </div>
       </div>

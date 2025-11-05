@@ -93,15 +93,16 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
         />
       </div>
 
-      <div className="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('addProduct')}
-          label={formatMessage({
-            id: 'scaffold_and_add',
-            defaultMessage: 'Scaffold & Add',
-          })}
-        />
-      </div>
+      {hasRole('manageProducts') && (
+        <div className="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <SubmitButton
+            label={formatMessage({
+              id: 'scaffold_and_add',
+              defaultMessage: 'Scaffold & Add',
+            })}
+          />
+        </div>
+      )}
     </Form>
   );
 };

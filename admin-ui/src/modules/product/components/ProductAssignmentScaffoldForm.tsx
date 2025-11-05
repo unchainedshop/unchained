@@ -81,15 +81,16 @@ const ProductAssignmentScaffoldForm = ({
         />
       </div>
 
-      <div className="border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('addProduct')}
-          label={formatMessage({
-            id: 'scaffold_product',
-            defaultMessage: 'Scaffold',
-          })}
-        />
-      </div>
+      {hasRole('manageProducts') && (
+        <div className="border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <SubmitButton
+            label={formatMessage({
+              id: 'scaffold_product',
+              defaultMessage: 'Scaffold',
+            })}
+          />
+        </div>
+      )}
     </Form>
   );
 };

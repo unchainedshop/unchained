@@ -110,7 +110,7 @@ const FiltersListView = () => {
             { count: filtersCount },
           )}
           headerText={headerText}
-          addPath={hasRole('addFilter') && '/filters/new'}
+          addPath={hasRole('manageFilters') && '/filters/new'}
           addButtonText={formatMessage({
             id: 'add_filter',
             defaultMessage: 'Add Filter',

@@ -79,7 +79,9 @@ const LanguageDetailPage = ({ languageId }) => {
       />
       <div className="items-center flex min-w-full justify-between gap-3 flex-wrap">
         <PageHeader headerText={normalizeLanguageName(language?.isoCode)} />
-        {hasRole('removeLanguage') && <HeaderDeleteButton onClick={onDelete} />}
+        {hasRole('manageLanguages') && (
+          <HeaderDeleteButton onClick={onDelete} />
+        )}
       </div>
       {loading ? (
         <Loading />

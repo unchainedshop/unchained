@@ -146,15 +146,16 @@ const AllocateWorkForm = () => {
           </FieldArray>
         </div>
         <FormErrors />
-        <div className="border-t-slate-100 border-t dark:border-slate-700 space-y-6 bg-slate-50 dark:bg-slate-800 px-5 py-6 text-right">
-          <SubmitButton
-            hidden={!hasRole('allocateWork')}
-            label={formatMessage({
-              id: 'allocate_work',
-              defaultMessage: 'Allocate Work',
-            })}
-          />
-        </div>
+        {hasRole('manageWorker') && (
+          <div className="border-t-slate-100 border-t dark:border-slate-700 space-y-6 bg-slate-50 dark:bg-slate-800 px-5 py-6 text-right">
+            <SubmitButton
+              label={formatMessage({
+                id: 'allocate_work',
+                defaultMessage: 'Allocate Work',
+              })}
+            />
+          </div>
+        )}
       </Form>
     </FormWrapper>
   );

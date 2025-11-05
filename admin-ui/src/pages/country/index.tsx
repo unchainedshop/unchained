@@ -132,7 +132,7 @@ const Country = () => {
           { count: countriesCount },
         )}
         headerText={headerText}
-        addPath={hasRole('addCountry') && '/country/new'}
+        addPath={hasRole('manageCountries') && '/country/new'}
         addButtonText={formatMessage({
           id: 'add_country',
           defaultMessage: 'Add Country',

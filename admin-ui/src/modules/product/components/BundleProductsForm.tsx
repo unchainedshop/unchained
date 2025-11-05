@@ -95,7 +95,7 @@ const BundleProductsForm = ({
             required
           />
         </div>
-        {hasRole('addProduct') && (
+        {hasRole('manageProducts') && (
           <div className="pb-3">
             <Button
               className="flex items-center justify-center p-2 rounded-md"
@@ -113,11 +113,12 @@ const BundleProductsForm = ({
         required
         label={formatMessage({ id: 'quantity', defaultMessage: 'Quantity' })}
       />
-      <SubmitButton
-        hidden={!hasRole('addProductBundleItem')}
-        label={formatMessage({ id: 'submit', defaultMessage: 'Submit' })}
-        className="mt-2"
-      />
+      {hasRole('manageProducts') && (
+        <SubmitButton
+          label={formatMessage({ id: 'submit', defaultMessage: 'Submit' })}
+          className="mt-2"
+        />
+      )}
     </Form>
   );
 };

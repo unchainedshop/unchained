@@ -73,15 +73,14 @@ const AssortmentTextForm = ({ assortmentId }) => {
     const value = translatedAssortmentTexts?.find(
       (text) => text.locale === selectedLocale,
     );
-    if (value || !loading) {
-      form.formik.setValues({
-        slug: value?.slug || '',
-        title: value?.title || '',
-        subtitle: value?.subtitle || '',
-        description: value?.description || '',
-      });
-    }
-  }, [translatedAssortmentTexts, selectedLocale, loading]);
+    form.formik.setValues({
+      slug: value?.slug || '',
+      title: value?.title || '',
+      subtitle: value?.subtitle || '',
+      description: value?.description || '',
+      ...(value || {}),
+    });
+  }, [translatedAssortmentTexts, selectedLocale]);
 
   useEffect(() => {
     if (shopInfo && translatedAssortmentTexts?.length) {
@@ -150,12 +149,13 @@ const AssortmentTextForm = ({ assortmentId }) => {
       }
     >
       <FormWrapper>
-        <Form form={form}>
+        <Form form={form} disable={!hasRole('manageAssortments')}>
           <div className="shadow sm:rounded-md">
             <div className="grid gap-6 px-4 py-5 sm:p-6">
               <div className="col-span-12">
                 <TextField
                   name="slug"
+                  disable={!hasRole('manageAssortments')}
                   required
                   id="slug"
                   label={formatMessage({
@@ -169,6 +169,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <TextField
                   name="title"
+                  disable={!hasRole('manageAssortments')}
                   id="title"
                   label={formatMessage({
                     id: 'title',
@@ -182,6 +183,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <TextField
                   name="subtitle"
+                  disable={!hasRole('manageAssortments')}
                   id="subtitle"
                   label={formatMessage({
                     id: 'subtitle',
@@ -194,6 +196,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <MarkdownTextAreaField
                   name="description"
+                  disable={!hasRole('manageAssortments')}
                   id="description"
                   label={formatMessage({
                     id: 'description',
@@ -204,7 +207,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
             </div>
 
             <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
-              {hasRole('editAssortmentText') && (
+              {hasRole('manageAssortments') && (
                 <SubmitButton
                   label={formatMessage({
                     id: 'save',

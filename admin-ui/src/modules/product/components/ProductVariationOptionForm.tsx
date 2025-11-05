@@ -73,16 +73,18 @@ const ProductVariationOptionForm = ({
           />
         </div>
       </div>
-      <div className="text-right mt-2 px-6 pb-6">
-        <SubmitButton
-          className="py-2.5"
-          hidden={!hasRole('addProductVariationOption')}
-          label={formatMessage({
-            id: 'add_variation_option',
-            defaultMessage: 'Add option',
-          })}
-        />
-      </div>
+
+      {hasRole('manageProducts') && (
+        <div className="text-right mt-2 px-6 pb-6">
+          <SubmitButton
+            className="py-2.5"
+            label={formatMessage({
+              id: 'add_variation_option',
+              defaultMessage: 'Add option',
+            })}
+          />
+        </div>
+      )}
     </Form>
   );
 };

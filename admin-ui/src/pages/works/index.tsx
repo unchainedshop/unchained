@@ -30,9 +30,7 @@ const WorkQueueView = () => {
           id: 'work_queue_header',
           defaultMessage: 'Work queue',
         })}
-        addPath={
-          (hasRole('allocateWork') || hasRole('addWork')) && '/works/management'
-        }
+        addPath={hasRole('manageWorker') && '/works/management'}
         addButtonText={formatMessage({
           id: 'manage',
           defaultMessage: 'Manage',

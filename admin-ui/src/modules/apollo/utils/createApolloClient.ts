@@ -86,9 +86,6 @@ const createApolloClient = ({
         fetchPolicy: 'cache-and-network',
         errorPolicy: 'all',
       },
-      mutate: {
-        errorPolicy: 'all',
-      },
     },
 
     ssrMode: typeof window === 'undefined',

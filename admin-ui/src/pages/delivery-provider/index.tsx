@@ -80,7 +80,7 @@ const DeliveryProviders = () => {
               },
           { count: deliveryProvidersCount ?? 0 },
         )}
-        addPath={hasRole('addDeliveryProvider') && '/delivery-provider/new'}
+        addPath={hasRole('manageDeliveryProviders') && '/delivery-provider/new'}
         addButtonText={formatMessage({
           id: 'add_delivery_provider',
           defaultMessage: 'Add Delivery Provider',
@@ -95,8 +95,8 @@ const DeliveryProviders = () => {
         <Loading />
       ) : (
         <ProvidersList
-          canEdit="editDeliveryProvider"
-          canDelete="removeDeliveryProvider"
+          canEdit={hasRole('manageDeliveryProviders')}
+          canDelete={hasRole('manageDeliveryProviders')}
           providerPath="/delivery-provider?deliveryProviderId"
           providers={deliveryProviders}
           onRemove={onRemoveDeliveryProvider}

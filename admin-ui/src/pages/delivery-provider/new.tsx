@@ -50,7 +50,7 @@ const NewDeliveryProvider = () => {
         />
         <div className="mt-6">
           <NewProviderForm
-            readOnly={!hasRole('addDeliveryProvider')}
+            readOnly={!hasRole('manageDeliveryProviders')}
             providerInterfaces={convertArrayOfObjectToObject(
               deliveryInterfaces,
               'label',

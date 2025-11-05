@@ -47,7 +47,7 @@ const CountryList = ({ countries, onRemoveCountry, sortable }) => {
           country={country}
           onRemove={onRemoveCountry}
           enableEdit={true}
-          enableDelete={hasRole('removeCountry')}
+          enableDelete={hasRole('manageCountries')}
         />
       ))}
     </Table>

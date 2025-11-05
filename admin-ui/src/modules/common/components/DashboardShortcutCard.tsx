@@ -8,9 +8,6 @@ import useAuth from '../../Auth/useAuth';
 const DashboardShortcutCard = () => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const canCreateProduct = hasRole('createProduct');
-  const canCreateUser = hasRole('createUser');
-  const canCreateAssortment = hasRole('createAssortment');
   const router = useRouter();
 
   return (
@@ -19,7 +16,7 @@ const DashboardShortcutCard = () => {
         {formatMessage({ id: 'shortcuts', defaultMessage: 'Shortcuts' })}
       </h3>
       <div className="grid xl:grid-cols-3 gap-3">
-        {canCreateProduct && (
+        {hasRole('manageProducts') && (
           <Button
             onClick={() => router.push('/products/new')}
             icon={<PlusIcon className="w-5 h-5" />}
@@ -28,7 +25,7 @@ const DashboardShortcutCard = () => {
             text={formatMessage({ id: 'product', defaultMessage: 'Product' })}
           />
         )}
-        {canCreateUser && (
+        {hasRole('createUser') && (
           <Button
             onClick={() => router.push('/users/new')}
             icon={<PlusIcon className="w-5 h-5" />}
@@ -37,7 +34,7 @@ const DashboardShortcutCard = () => {
             text={formatMessage({ id: 'user', defaultMessage: 'User' })}
           />
         )}
-        {canCreateAssortment && (
+        {hasRole('manageAssortments') && (
           <Button
             onClick={() => router.push('/assortments/new')}
             icon={<PlusIcon className="w-5 h-5" />}

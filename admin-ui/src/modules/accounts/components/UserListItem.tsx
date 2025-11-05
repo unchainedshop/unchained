@@ -167,7 +167,7 @@ const UserListItem = ({ user }) => {
       <Table.Cell className="text-right">
         <TableActionsMenu
           onEdit={handleEdit}
-          onDelete={hasRole('removeUser') ? handleDelete : undefined}
+          onDelete={handleDelete}
           showEdit={true}
           showDelete={hasRole('removeUser')}
         />

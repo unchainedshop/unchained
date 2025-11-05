@@ -147,7 +147,7 @@ const ProductAssignmentRow = ({
                   className="mt-1 w-full py-2 text-sm font-medium text-slate-500"
                 />
               </div>
-              {hasRole('addProduct') && (
+              {hasRole('manageProducts') && (
                 <Button onClick={scaffoldVariationProduct}>
                   <SparklesIcon className="h-5 w-5" />
                 </Button>

@@ -19,12 +19,14 @@ import useAssortmentMedia from '../hooks/useAssortmentMedia';
 import useRemoveAssortmentMedia from '../hooks/useRemoveAssortmentMedia';
 import useReorderAssortmentMedia from '../hooks/useReorderAssortmentMedia';
 import AssortmentMediaList from './AssortmentMediaList';
+import useAuth from '../../Auth/useAuth';
 const AssortmentMediaForm = ({ assortmentId }) => {
   const { assortmentMedia, loading, error } = useAssortmentMedia({
     assortmentId,
   });
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
+  const { hasRole } = useAuth();
   const { removeAssortmentMedia } = useRemoveAssortmentMedia();
   const { reorderAssortmentMedia } = useReorderAssortmentMedia();
   const { addAssortmentMedia } = useAddAssortmentMedia();
@@ -180,9 +182,11 @@ const AssortmentMediaForm = ({ assortmentId }) => {
 
   return (
     <div className="mx-auto mt-5 max-w-fullpy-6 grid lg:grid-cols-12 gap-5">
-      <div className="lg:col-span-6">
-        <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
-      </div>
+      {hasRole('manageAssortments') && (
+        <div className="lg:col-span-6">
+          <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
+        </div>
+      )}
 
       <div className="lg:col-span-6">
         <DndContext

@@ -153,15 +153,16 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
             />
           </div>
 
-          <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-            <SubmitButton
-              hidden={!hasRole('editProduct')}
-              label={formatMessage({
-                id: 'update_token',
-                defaultMessage: 'Update token',
-              })}
-            />
-          </div>
+          {hasRole('manageProducts') && (
+            <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'update_token',
+                  defaultMessage: 'Update token',
+                })}
+              />
+            </div>
+          )}
         </Form>
       </FormWrapper>
     </SelfDocumentingView>

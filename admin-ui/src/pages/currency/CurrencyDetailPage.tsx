@@ -72,7 +72,9 @@ const CurrencyDetailPage = ({ currencyId }) => {
         <PageHeader
           headerText={normalizeCurrencyISOCode(locale, currency?.isoCode)}
         />
-        {hasRole('removeCurrency') && <HeaderDeleteButton onClick={onDelete} />}
+        {hasRole('manageCurrencies') && (
+          <HeaderDeleteButton onClick={onDelete} />
+        )}
       </div>
       {loading ? (
         <Loading />

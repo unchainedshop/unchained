@@ -63,7 +63,7 @@ const TokenDetailPage = ({ tokenId }) => {
             { tokenSerialNumber: token?.tokenSerialNumber },
           )}
         >
-          {token.status !== 'DECENTRALIZED' && hasRole('editToken') && (
+          {token.status !== 'DECENTRALIZED' && hasRole('updateToken') && (
             <div className="mr-2">
               <ExportToken tokenId={token._id} tokenStatus={token.status} />
             </div>
@@ -71,7 +71,7 @@ const TokenDetailPage = ({ tokenId }) => {
         </PageHeader>
         {!token.invalidatedDate &&
         token.isInvalidateable &&
-        hasRole('editToken') ? (
+        hasRole('updateToken') ? (
           <HeaderDeleteButton
             onClick={onInvalidateToken}
             text={formatMessage({

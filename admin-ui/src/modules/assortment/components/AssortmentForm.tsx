@@ -83,15 +83,16 @@ const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
         </span>
       </div>
       <FormErrors />
-      <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('addAssortment')}
-          label={formatMessage({
-            id: 'add_assortment',
-            defaultMessage: 'Add Assortment',
-          })}
-        />
-      </div>
+      {hasRole('manageAssortments') && (
+        <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <SubmitButton
+            label={formatMessage({
+              id: 'add_assortment',
+              defaultMessage: 'Add Assortment',
+            })}
+          />
+        </div>
+      )}
     </Form>
   );
 };

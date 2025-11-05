@@ -6,8 +6,10 @@ import { useRouter } from 'next/router';
 import Badge from '../../common/components/Badge';
 import DraggableIcon from '../../common/components/DraggableIcon';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
+import useAuth from '../../Auth/useAuth';
 
 const AssortmentFiltersListItem = ({ link, onDelete, id }) => {
+  const { hasRole } = useAuth();
   const { formatMessage } = useIntl();
 
   const { _id, filter, tags } = link;
@@ -29,9 +31,6 @@ const AssortmentFiltersListItem = ({ link, onDelete, id }) => {
 
   return (
     <div
-      onClick={() => {
-        router.push(`/filters?filterId=${filter._id}`);
-      }}
       ref={setNodeRef}
       style={style}
       className="group flex items-center justify-between rounded-sm border-b border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200 ease-in-out hover:shadow-sm px-2 gap-4 last:border-none hover:cursor-pointer"
@@ -69,19 +68,22 @@ const AssortmentFiltersListItem = ({ link, onDelete, id }) => {
         }}
       >
         <div className="flex items-center justify-between gap-5">
-          <button
-            type="button"
-            {...attributes}
-            {...listeners}
-            className="hover:cursor-move"
-          >
-            <DraggableIcon />
-          </button>
+          {hasRole('manageAssortments') && (
+            <button
+              type="button"
+              {...attributes}
+              {...listeners}
+              className="hover:cursor-move"
+            >
+              <DraggableIcon />
+            </button>
+          )}
+
           <TableActionsMenu
             onEdit={handleEdit}
             onDelete={handleDelete}
-            showEdit={true}
-            showDelete={true}
+            showEdit={hasRole('viewFilters')}
+            showDelete={hasRole('manageAssortments')}
           />
         </div>
       </div>

@@ -84,7 +84,7 @@ const WarehousingProviders = () => {
           { count: warehousingProvidersCount ?? 0 },
         )}
         addPath={
-          hasRole('addWarehousingProvider') && '/warehousing-provider/new'
+          hasRole('manageWarehousingProviders') && '/warehousing-provider/new'
         }
         addButtonText={formatMessage({
           id: 'add_warehousing_provider',
@@ -103,8 +103,8 @@ const WarehousingProviders = () => {
           providerPath="/warehousing-provider?warehousingProviderId"
           providers={warehousingProviders}
           onRemove={onRemoveWarehousingProvider}
-          canDelete={hasRole('removeWarehousingProvider')}
-          canEdit={hasRole('editWarehousingProvider')}
+          canDelete={hasRole('manageWarehousingProviders')}
+          canEdit={hasRole('manageWarehousingProviders')}
         />
       )}
     </>

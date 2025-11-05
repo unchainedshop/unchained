@@ -74,7 +74,7 @@ const FilterDetailPage = ({ filterId }) => {
             { id: filter?._id },
           )}
         />
-        {hasRole('removeFilter') && (
+        {hasRole('manageFilters') && (
           <HeaderDeleteButton onClick={onRemoveFilter} />
         )}
       </div>

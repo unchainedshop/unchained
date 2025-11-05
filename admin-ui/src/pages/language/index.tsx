@@ -128,7 +128,7 @@ const Languages = () => {
           { count: languagesCount },
         )}
         headerText={headerText}
-        addPath={hasRole('addLanguage') && '/language/new'}
+        addPath={hasRole('manageLanguages') && '/language/new'}
         addButtonText={formatMessage({
           id: 'add_language',
           defaultMessage: 'Add Language',

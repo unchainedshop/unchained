@@ -60,7 +60,7 @@ const OrderDetailPage = ({ orderId }) => {
         currentPageTitle={order?.orderNumber ? `#${order?.orderNumber}` : ''}
       />
       <div className="items-center flex min-w-full justify-end gap-3 flex-wrap">
-        {order && isDeletable(order.status) && hasRole('removeOrder') ? (
+        {order && isDeletable(order.status) && hasRole('updateOrder') ? (
           <HeaderDeleteButton onClick={handleOnClick} />
         ) : null}
       </div>

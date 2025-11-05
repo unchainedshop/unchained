@@ -34,7 +34,7 @@ const CurrencyList = ({ currencies, onRemoveCurrency, sortable }) => {
           key={`${currency?._id}-body`}
           currency={currency}
           onRemove={onRemoveCurrency}
-          enableDelete={hasRole('removeCurrency')}
+          enableDelete={hasRole('manageCurrencies')}
           enableEdit={true}
         />
       ))}

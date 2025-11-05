@@ -121,15 +121,16 @@ const ProductVariationModalForm = ({ onSubmit, disabled, formatMessage }) => {
           </div>
         </div>
 
-        <div className="flex justify-end mt-6 py-6 -mb-6 bg-slate-100 -mx-6 pe-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-          <SubmitButton
-            hidden={!hasRole('addProductVariation')}
-            label={formatMessage({
-              id: 'add_variation',
-              defaultMessage: 'Add variation',
-            })}
-          />
-        </div>
+        {hasRole('manageProducts') && (
+          <div className="flex justify-end mt-6 py-6 -mb-6 bg-slate-100 -mx-6 pe-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+            <SubmitButton
+              label={formatMessage({
+                id: 'add_variation',
+                defaultMessage: 'Add variation',
+              })}
+            />
+          </div>
+        )}
       </Form>
     </div>
   );

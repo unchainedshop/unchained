@@ -80,7 +80,9 @@ const CountryDetailPage = ({ countryId }) => {
         <PageHeader
           headerText={normalizeCountryISOCode(locale, country?.isoCode)}
         />
-        {hasRole('removeCountry') && <HeaderDeleteButton onClick={onDelete} />}
+        {hasRole('manageCountries') && (
+          <HeaderDeleteButton onClick={onDelete} />
+        )}
       </div>
       {loading ? (
         <Loading />

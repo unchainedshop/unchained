@@ -79,7 +79,7 @@ const ProductDetailPage = ({ slug }) => {
           }
         },
         bgColor: 'green',
-        disable: !hasRole('publishProduct'),
+        disable: !hasRole('manageProducts'),
       },
       {
         id: 'draft',
@@ -98,9 +98,9 @@ const ProductDetailPage = ({ slug }) => {
           defaultMessage: 'Not published',
         }),
         bgColor: 'amber',
-        disable: status === 'ACTIVE' && !hasRole('unpublishProduct'),
+        disable: status === 'ACTIVE' && !hasRole('manageProducts'),
         onClick: async () => {
-          if (hasRole('unpublishProduct') || hasRole('publishProduct')) {
+          if (hasRole('manageProducts')) {
             try {
               await unPublishProduct({ productId: product?._id });
               toast.success(
@@ -315,7 +315,7 @@ const ProductDetailPage = ({ slug }) => {
                 onBlur={updateProductSequence}
               />
             </div>
-            {status === 'DRAFT' && hasRole('removeProduct') && (
+            {status === 'DRAFT' && hasRole('manageProducts') && (
               <HeaderDeleteButton onClick={handleDeleteProduct} />
             )}
           </div>
@@ -396,7 +396,7 @@ const ProductDetailPage = ({ slug }) => {
             },
           );
         }}
-        canEdit={hasRole('editProduct')}
+        canEdit={hasRole('manageProducts')}
       />
 
       <ProductDetail

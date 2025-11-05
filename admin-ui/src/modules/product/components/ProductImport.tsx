@@ -58,7 +58,7 @@ const ProductImport = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  if (!hasRole('addProduct')) return null;
+  if (!hasRole('manageProducts')) return null;
 
   return (
     <>

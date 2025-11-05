@@ -108,22 +108,23 @@ const CurrencyForm = ({
           </div>
         )}
       </div>
-      <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 rounded-b-md bg-slate-50 dark:bg-slate-900 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('editCurrency')}
-          label={
-            isEdit
-              ? formatMessage({
-                  id: 'update_currency',
-                  defaultMessage: 'Update Currency',
-                })
-              : formatMessage({
-                  id: 'add_currency',
-                  defaultMessage: 'Add Currency',
-                })
-          }
-        />
-      </div>
+      {hasRole('manageCurrencies') && (
+        <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 rounded-b-md bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <SubmitButton
+            label={
+              isEdit
+                ? formatMessage({
+                    id: 'update_currency',
+                    defaultMessage: 'Update Currency',
+                  })
+                : formatMessage({
+                    id: 'add_currency',
+                    defaultMessage: 'Add Currency',
+                  })
+            }
+          />
+        </div>
+      )}
     </Form>
   );
 };

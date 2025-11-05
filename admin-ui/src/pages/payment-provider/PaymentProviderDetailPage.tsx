@@ -89,7 +89,7 @@ const PaymentProviderDetailPage = ({ paymentProviderId }) => {
             { id: paymentProvider?._id },
           )}
         />
-        {hasRole('removePaymentProvider') && (
+        {hasRole('managePaymentProviders') && (
           <HeaderDeleteButton onClick={handleOnClick} />
         )}
       </div>
@@ -97,7 +97,7 @@ const PaymentProviderDetailPage = ({ paymentProviderId }) => {
         <Loading />
       ) : (
         <ProviderDetail
-          readOnly={!hasRole('editPaymentProvider')}
+          readOnly={!hasRole('managePaymentProviders')}
           provider={paymentProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}

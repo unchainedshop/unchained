@@ -81,15 +81,16 @@ const AssortmentProductForm = ({ assortmentId }) => {
               />
             </div>
           </div>
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
-            <SubmitButton
-              hidden={!hasRole('addAssortmentProduct')}
-              label={formatMessage({
-                id: 'save',
-                defaultMessage: 'Save',
-              })}
-            />
-          </div>
+          {hasRole('manageAssortments') && (
+            <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'save',
+                  defaultMessage: 'Save',
+                })}
+              />
+            </div>
+          )}
         </div>
       </Form>
     </FormWrapper>

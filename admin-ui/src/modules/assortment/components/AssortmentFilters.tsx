@@ -19,11 +19,13 @@ import AssortmentFiltersForm from './AssortmentFiltersForm';
 import Loading from '../../common/components/Loading';
 import useReorderAssortmentFilters from '../hooks/useReorderAssortmentFilters';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
+import useAuth from '../../Auth/useAuth';
 
 const AssortmentFilters = ({ assortmentId }) => {
   const { formatMessage } = useIntl();
   const { assortmentFilters, loading } = useAssortmentFilters({ assortmentId });
   const { setModal } = useModal();
+  const { hasRole } = useAuth();
   const { removeAssortmentFilter } = useRemoveAssortmentFilter();
   const { reorderAssortmentFilters } = useReorderAssortmentFilters();
 
@@ -108,35 +110,37 @@ const AssortmentFilters = ({ assortmentId }) => {
 
   return (
     <>
-      <SelfDocumentingView
-        documentationLabel={formatMessage({
-          id: 'assortment_filters_form_header',
-          defaultMessage: 'Filters',
-        })}
-        className="mt-2 lg:mt-5"
-        documentation={
-          <FormattedMessage
-            id="assortment_filter_form_description"
-            defaultMessage="<ul> <li>Assign filters that will be applied for the assortment </li>
+      {hasRole('manageAssortments') && (
+        <SelfDocumentingView
+          documentationLabel={formatMessage({
+            id: 'assortment_filters_form_header',
+            defaultMessage: 'Filters',
+          })}
+          className="mt-2 lg:mt-5"
+          documentation={
+            <FormattedMessage
+              id="assortment_filter_form_description"
+              defaultMessage="<ul> <li>Assign filters that will be applied for the assortment </li>
       </ul>"
-            values={{
-              ul: (chunk) => <ul className="space-y-2">{chunk} </ul>,
-              li: (chunk) => (
-                <li key={Math.random()} className="text-sm">
-                  {chunk}{' '}
-                </li>
-              ),
-              strong: (chunk) => (
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  {chunk}
-                </strong>
-              ),
-            }}
-          />
-        }
-      >
-        <AssortmentFiltersForm assortmentId={assortmentId} />
-      </SelfDocumentingView>
+              values={{
+                ul: (chunk) => <ul className="space-y-2">{chunk} </ul>,
+                li: (chunk) => (
+                  <li key={Math.random()} className="text-sm">
+                    {chunk}{' '}
+                  </li>
+                ),
+                strong: (chunk) => (
+                  <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                    {chunk}
+                  </strong>
+                ),
+              }}
+            />
+          }
+        >
+          <AssortmentFiltersForm assortmentId={assortmentId} />
+        </SelfDocumentingView>
+      )}
       <SelfDocumentingView
         documentationLabel={formatMessage({
           id: 'assortment_filters_header',

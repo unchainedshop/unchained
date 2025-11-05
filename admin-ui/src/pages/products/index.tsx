@@ -86,7 +86,7 @@ const Products = () => {
             { count: productsCount },
           )}
           headerText={headerText}
-          addPath={hasRole('addProduct') && '/products/new'}
+          addPath={hasRole('manageProducts') && '/products/new'}
           addButtonText={formatMessage({
             id: 'add_product',
             defaultMessage: 'Add Product',

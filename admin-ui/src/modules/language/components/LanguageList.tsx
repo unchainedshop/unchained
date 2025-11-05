@@ -40,7 +40,7 @@ const LanguageList = ({ languages, onRemoveLanguage, sortable }) => {
           language={language}
           onRemove={onRemoveLanguage}
           enableEdit={true}
-          enableDelete={hasRole('removeCountry')}
+          enableDelete={hasRole('manageCountries')}
         />
       ))}
     </Table>

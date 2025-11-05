@@ -107,6 +107,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         defaultMessage: 'Will be visible on search',
       }),
       current: isActive,
+      disable: !hasRole('manageAssortments'),
       bgColor: 'emerald',
       onClick: async () => {
         await setActive(true);
@@ -133,6 +134,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         defaultMessage: 'Will not be visible on search',
       }),
       current: !isActive,
+      disable: !hasRole('manageAssortments'),
       bgColor: 'amber',
       onClick: async () => {
         await setActive(false);
@@ -161,6 +163,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         id: 'root_assortment_description',
         defaultMessage: 'Can not be assigned as a child of another assortment ',
       }),
+      disable: !hasRole('manageAssortments'),
       current: isRoot,
       bgColor: 'stone',
       onClick: async () => {
@@ -183,6 +186,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         id: 'make_leaf',
         defaultMessage: 'Make leaf',
       }),
+      disable: !hasRole('manageAssortments'),
       description: formatMessage({
         id: 'leaf_assortment_description',
         defaultMessage: 'Can be assigned as a child of another assortment ',
@@ -277,33 +281,35 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
                 onBlur={updateAssortmentSequence}
               />
             </div>
-            <div>
-              {isBase ? (
-                <span
-                  id="is_base"
-                  className="py-2.5 px-8 text-sm font-medium text-white bg-sky-500 white inline-flex items-center shadow-md rounded-md h-[38px]"
-                >
-                  {formatMessage({
-                    id: 'base',
-                    defaultMessage: 'Base',
-                  })}
-                </span>
-              ) : (
-                <button
-                  id="not_base"
-                  type="button"
-                  onClick={setAsBase}
-                  className="inline-flex items-center gap-2 justify-center rounded-md border border-slate-600 dark:border-slate-600 px-4 py-2 text-sm font-medium leading-5 text-slate-700 dark:text-slate-200 shadow-md hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 h-[38px]"
-                >
-                  {formatMessage({
-                    id: 'not_base',
-                    defaultMessage: 'Mark as Base',
-                  })}
-                </button>
-              )}
-            </div>
-            {hasRole('removeAssortment') && (
-              <HeaderDeleteButton onClick={handleDeleteAssortment} />
+            {hasRole('manageAssortments') && (
+              <>
+                <div>
+                  {isBase ? (
+                    <span
+                      id="is_base"
+                      className="py-2.5 px-8 text-sm font-medium text-white bg-sky-500 white inline-flex items-center shadow-md rounded-md h-[38px]"
+                    >
+                      {formatMessage({
+                        id: 'base',
+                        defaultMessage: 'Base',
+                      })}
+                    </span>
+                  ) : (
+                    <button
+                      id="not_base"
+                      type="button"
+                      onClick={setAsBase}
+                      className="inline-flex items-center gap-2 justify-center rounded-md border border-slate-600 dark:border-slate-600 px-4 py-2 text-sm font-medium leading-5 text-slate-700 dark:text-slate-200 shadow-md hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 h-[38px]"
+                    >
+                      {formatMessage({
+                        id: 'not_base',
+                        defaultMessage: 'Mark as Base',
+                      })}
+                    </button>
+                  )}
+                </div>
+                <HeaderDeleteButton onClick={handleDeleteAssortment} />
+              </>
             )}
           </div>
         </div>
@@ -361,7 +367,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
             },
           );
         }}
-        canEdit={hasRole('editAssortment')}
+        canEdit={hasRole('manageAssortments')}
       />
 
       <AssortmentDetail

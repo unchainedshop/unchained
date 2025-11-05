@@ -157,15 +157,16 @@ const WorkForm = () => {
           </div>
         </div>
 
-        <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-          <SubmitButton
-            hidden={!hasRole('addWork')}
-            label={formatMessage({
-              id: 'add_work',
-              defaultMessage: 'Add Work',
-            })}
-          />
-        </div>
+        {hasRole('manageWorker') && (
+          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+            <SubmitButton
+              label={formatMessage({
+                id: 'add_work',
+                defaultMessage: 'Add Work',
+              })}
+            />
+          </div>
+        )}
       </Form>
     </FormWrapper>
   );

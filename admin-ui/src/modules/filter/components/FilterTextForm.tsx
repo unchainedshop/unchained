@@ -110,16 +110,18 @@ const FilterTextForm = ({ filterId }) => {
               className="mt-5 px-4 text-sm"
             />
           </div>
-          <div className="flex bg-slate-100 dark:bg-slate-900 mt-5">
-            <SubmitButton
-              hidden={!hasRole('editFilterTexts')}
-              label={formatMessage({
-                id: 'update_filter',
-                defaultMessage: 'Update filter',
-              })}
-              className="my-4 ml-auto mr-4"
-            />
-          </div>
+
+          {hasRole('manageFilters') && (
+            <div className="flex bg-slate-100 dark:bg-slate-900 mt-5">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'update_filter',
+                  defaultMessage: 'Update filter',
+                })}
+                className="my-4 ml-auto mr-4"
+              />
+            </div>
+          )}
         </Form>
       </FormWrapper>
     </SelfDocumentingView>

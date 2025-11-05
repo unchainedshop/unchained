@@ -91,7 +91,7 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
             { id: deliveryProvider?._id },
           )}
         />
-        {hasRole('removeDeliveryProvider') && (
+        {hasRole('manageDeliveryProviders') && (
           <HeaderDeleteButton onClick={handleOnClick} />
         )}
       </div>
@@ -99,7 +99,7 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
         <Loading />
       ) : (
         <ProviderDetail
-          readOnly={!hasRole('editDeliveryProvider')}
+          readOnly={!hasRole('manageDeliveryProviders')}
           provider={deliveryProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}

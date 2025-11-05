@@ -124,15 +124,17 @@ const ProductVariationForm = ({
             </div>
           </div>
         </div>
-        <div className="space-y-6 bg-slate-50 dark:bg-slate-700 px-5 py-6 text-right">
-          <SubmitButton
-            hidden={!hasRole('addProductVariation')}
-            label={formatMessage({
-              id: 'add_variation',
-              defaultMessage: 'Add variation',
-            })}
-          />
-        </div>
+
+        {hasRole('manageProducts') && (
+          <div className="space-y-6 bg-slate-50 dark:bg-slate-700 px-5 py-6 text-right">
+            <SubmitButton
+              label={formatMessage({
+                id: 'add_variation',
+                defaultMessage: 'Add variation',
+              })}
+            />
+          </div>
+        )}
       </Form>
     </FormWrapper>
   );

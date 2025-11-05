@@ -90,7 +90,7 @@ const WarehousingProviderDetailPage = ({ warehousingProviderId }) => {
             { id: warehousingProvider?._id },
           )}
         />
-        {hasRole('removeWarehousingProvider') && (
+        {hasRole('manageWarehousingProviders') && (
           <HeaderDeleteButton onClick={handleOnClick} />
         )}
       </div>
@@ -99,7 +99,7 @@ const WarehousingProviderDetailPage = ({ warehousingProviderId }) => {
         <Loading />
       ) : (
         <ProviderDetail
-          readOnly={!hasRole('editWarehousingProvider')}
+          readOnly={!hasRole('manageWarehousingProviders')}
           provider={warehousingProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}

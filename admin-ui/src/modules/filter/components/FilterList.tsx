@@ -64,7 +64,7 @@ const FilterList = ({
                 defaultMessage: 'Options',
               })}
             </Table.Cell>
-            {hasRole('removeFilter') && (
+            {hasRole('manageFilters') && (
               <Table.Cell>
                 <span className="sr-only">
                   {formatMessage({ id: 'delete', defaultMessage: 'Delete' })}

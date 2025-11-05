@@ -128,7 +128,7 @@ const Currencies = () => {
           { count: currenciesCount },
         )}
         headerText={headerText}
-        addPath={hasRole('addCurrency') && '/currency/new'}
+        addPath={hasRole('manageCurrencies') && '/currency/new'}
         addButtonText={formatMessage({
           id: 'add_currency',
           defaultMessage: 'Add Currency',

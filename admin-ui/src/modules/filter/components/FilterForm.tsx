@@ -164,15 +164,16 @@ const FilterForm = ({
         </FieldArray>
       </div>
       <FormErrors />
-      <div className="space-y-6 bg-slate-50 dark:bg-slate-900 border-t-slate-100 dark:border-t-slate-700 p-5 text-right">
-        <SubmitButton
-          hidden={!hasRole('addFilter')}
-          label={formatMessage({
-            id: 'create_filter',
-            defaultMessage: 'Create Filter',
-          })}
-        />
-      </div>
+      {hasRole('manageFilters') && (
+        <div className="space-y-6 bg-slate-50 dark:bg-slate-900 border-t-slate-100 dark:border-t-slate-700 p-5 text-right">
+          <SubmitButton
+            label={formatMessage({
+              id: 'create_filter',
+              defaultMessage: 'Create Filter',
+            })}
+          />
+        </div>
+      )}
     </Form>
   );
 };

@@ -19,10 +19,12 @@ import AssortmentLinkForm from './AssortmentLinkForm';
 import AssortmentLinksList from './AssortmentLinksList';
 import useReorderAssortmentLink from '../hooks/useReorderAssortmentLinks';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
+import useAuth from '../../Auth/useAuth';
 
 const AssortmentLinks = ({ assortmentId }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
+  const { hasRole } = useAuth();
   const { linkedAssortments, loading } = useAssortmentLinks({ assortmentId });
 
   const { removeAssortmentLink } = useRemoveAssortmentLink();
@@ -108,35 +110,37 @@ const AssortmentLinks = ({ assortmentId }) => {
 
   return (
     <>
-      <SelfDocumentingView
-        documentationLabel={formatMessage({
-          id: 'assortment_link_form_header',
-          defaultMessage: 'Child assortments',
-        })}
-        className="mt-2 lg:mt-5"
-        documentation={
-          <FormattedMessage
-            id="assortment_link_form_description"
-            defaultMessage="<ul> <li>Assign assortment that are direct child of this assortment </li>
+      {hasRole('manageAssortments') && (
+        <SelfDocumentingView
+          documentationLabel={formatMessage({
+            id: 'assortment_link_form_header',
+            defaultMessage: 'Child assortments',
+          })}
+          className="mt-2 lg:mt-5"
+          documentation={
+            <FormattedMessage
+              id="assortment_link_form_description"
+              defaultMessage="<ul> <li>Assign assortment that are direct child of this assortment </li>
           </ul>"
-            values={{
-              ul: (chunk) => <ul className="space-y-2">{chunk} </ul>,
-              li: (chunk) => (
-                <li key={Math.random()} className="text-sm">
-                  {chunk}{' '}
-                </li>
-              ),
-              strong: (chunk) => (
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  {chunk}
-                </strong>
-              ),
-            }}
-          />
-        }
-      >
-        <AssortmentLinkForm assortmentId={assortmentId} />
-      </SelfDocumentingView>
+              values={{
+                ul: (chunk) => <ul className="space-y-2">{chunk} </ul>,
+                li: (chunk) => (
+                  <li key={Math.random()} className="text-sm">
+                    {chunk}{' '}
+                  </li>
+                ),
+                strong: (chunk) => (
+                  <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                    {chunk}
+                  </strong>
+                ),
+              }}
+            />
+          }
+        >
+          <AssortmentLinkForm assortmentId={assortmentId} />
+        </SelfDocumentingView>
+      )}
       <SelfDocumentingView
         documentationLabel={formatMessage({
           id: 'assortment_links_header',

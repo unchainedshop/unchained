@@ -833,7 +833,6 @@ export const textColor = (color, hue) => {
 };
 
 export const bgColor = (color, hue) => {
-  console.log({ color, hue });
   return `${ColorLookupTable?.[color].bg[hue]}`;
 };
 

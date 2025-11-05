@@ -50,7 +50,7 @@ const NewPaymentProvider = () => {
         />
         <div className="mt-6">
           <NewProviderForm
-            readOnly={!hasRole('addPaymentProvider')}
+            readOnly={!hasRole('managePaymentProviders')}
             providerInterfaces={convertArrayOfObjectToObject(
               paymentInterfaces,
               'label',

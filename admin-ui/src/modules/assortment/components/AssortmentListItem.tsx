@@ -134,9 +134,9 @@ const AssortmentListItem = ({ assortment, showAvatar }) => {
       <Table.Cell className="text-right">
         <TableActionsMenu
           onEdit={handleEdit}
-          onDelete={hasRole('removeAssortment') ? handleDelete : undefined}
+          onDelete={handleDelete}
           showEdit={true}
-          showDelete={hasRole('removeAssortment')}
+          showDelete={hasRole('manageAssortments')}
         />
       </Table.Cell>
     </Table.Row>

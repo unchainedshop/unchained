@@ -39,7 +39,7 @@ const FilterOptions = ({ filterId }) => {
         defaultMessage: 'Filter options',
       })}
       sideComponents={
-        hasRole('addFilterOption') ? (
+        hasRole('manageFilters') ? (
           <button
             type="button"
             onClick={() =>

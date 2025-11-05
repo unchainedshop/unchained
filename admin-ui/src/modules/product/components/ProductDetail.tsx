@@ -212,7 +212,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
         <TagList
           defaultValue={product?.tags}
           onSubmit={onUpdateTags}
-          enableEdit={hasRole('editProduct')}
+          enableEdit={hasRole('manageProducts')}
         />
       </div>
       <Tab tabItems={productOptions} defaultTab="texts">

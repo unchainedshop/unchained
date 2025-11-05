@@ -123,7 +123,7 @@ const AssortmentsView = () => {
           { count: assortmentsCount },
         )}
         headerText={headerText}
-        addPath={hasRole('addAssortment') && '/assortments/new'}
+        addPath={hasRole('manageAssortments') && '/assortments/new'}
         addButtonText={formatMessage({
           id: 'add_assortment',
           defaultMessage: 'Add Assortment',

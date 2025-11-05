@@ -331,7 +331,7 @@ const AssortmentDetail = ({
         <TagList
           defaultValue={assortment?.tags}
           onSubmit={updateAssortmentTags}
-          enableEdit={hasRole('editAssortment')}
+          enableEdit={hasRole('manageAssortments')}
           availableTagOptions={
             shopInfo?.adminUiConfig?.assortmentTags?.map((tag) => ({
               value: tag,
@@ -398,7 +398,7 @@ const AssortmentDetail = ({
                 defaultMessage: 'Assortment',
               })}
             />
-            {hasRole('removeAssortment') && (
+            {hasRole('manageAssortments') && (
               <HeaderDeleteButton onClick={handleDeleteAssortment} />
             )}
           </div>

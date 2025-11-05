@@ -78,9 +78,9 @@ const FilterListItem = ({ filter, onRemove }) => {
       <Table.Cell className="text-right">
         <TableActionsMenu
           onEdit={handleEdit}
-          onDelete={hasRole('removeFilter') ? handleDelete : undefined}
+          onDelete={handleDelete}
           showEdit={true}
-          showDelete={hasRole('removeFilter')}
+          showDelete={hasRole('manageFilters')}
         />
       </Table.Cell>
     </Table.Row>
