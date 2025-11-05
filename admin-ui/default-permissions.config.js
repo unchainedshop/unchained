@@ -123,7 +123,6 @@ module.exports = () => {
       return OnlyPublicPages.includes(pathname);
     },
     isUserAuthenticated: (user) => {
-      console.log('Checking user authentication for user:', user);
       return !!user?._id && !user?.isGuest;
     },
   };
