@@ -15,12 +15,15 @@ import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import UserDetailPage from './UserDetailPage';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
 import useApp from '../../modules/common/hooks/useApp';
+import useAuth from '../../modules/Auth/useAuth';
+import { IRoleAction } from '../../gql/types';
 
 const Users = () => {
   const { formatMessage } = useIntl();
   const { query, push, isReady } = useRouter();
   const { shopInfo } = useApp();
   const { queryString, tags, userId, ...rest } = query;
+  const { hasRole } = useAuth();
 
   const setQueryString = (searchString) => {
     const { skip, ...withoutSkip } = rest || { skip: null };
@@ -95,7 +98,9 @@ const Users = () => {
           { count: usersCount },
         )}
         headerText={headerText}
-        addPath="/users/new"
+        // TODO: Actually, this should only show up if i'm allowed to also at least
+        // update some user data, but for now, we'll just check for ManageUsers.
+        addPath={hasRole(IRoleAction.ManageUsers) ? '/users/new' : undefined}
         addButtonText={formatMessage({
           id: 'add_user',
           defaultMessage: 'Add User',
