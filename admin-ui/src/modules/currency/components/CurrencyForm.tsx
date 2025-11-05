@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Toggle from '../../common/components/Toggle';
 import Form from '../../forms/components/Form';
@@ -56,7 +58,7 @@ const CurrencyForm = ({
       <div className="p-5 pb-7">
         <TextField
           name="isoCode"
-          disabled={!hasRole('manageCurrencies')}
+          disabled={!hasRole(IRoleAction.ManageCurrencies)}
           id="isoCode"
           label={formatMessage({
             id: 'iso_code',
@@ -68,7 +70,7 @@ const CurrencyForm = ({
 
         <TextField
           name="contractAddress"
-          disabled={!hasRole('manageCurrencies')}
+          disabled={!hasRole(IRoleAction.ManageCurrencies)}
           id="contractAddress"
           validators={[isContractAddress()]}
           label={formatMessage({
@@ -87,7 +89,7 @@ const CurrencyForm = ({
           })}
           required
           name="decimals"
-          disabled={!hasRole('manageCurrencies')}
+          disabled={!hasRole(IRoleAction.ManageCurrencies)}
           options={Object.fromEntries(
             new Array(32).fill(null).map((_, i) => [i, `${i}`]),
           )}
@@ -100,7 +102,7 @@ const CurrencyForm = ({
                 id: 'active',
                 defaultMessage: 'Active',
               })}
-              disabled={!hasRole('manageCurrencies')}
+              disabled={!hasRole(IRoleAction.ManageCurrencies)}
               active={form.formik.values.isActive}
               onToggle={() =>
                 form.formik.setFieldValue(
@@ -112,7 +114,7 @@ const CurrencyForm = ({
           </div>
         )}
       </div>
-      {hasRole('manageCurrencies') && (
+      {hasRole(IRoleAction.ManageCurrencies) && (
         <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 rounded-b-md bg-slate-50 dark:bg-slate-900 p-5 text-right">
           <SubmitButton
             label={

@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -68,7 +70,7 @@ const AssortmentFiltersListItem = ({ link, onDelete, id }) => {
         }}
       >
         <div className="flex items-center justify-between gap-5">
-          {hasRole('manageAssortments') && (
+          {hasRole(IRoleAction.ManageAssortments) && (
             <button
               type="button"
               {...attributes}
@@ -82,8 +84,8 @@ const AssortmentFiltersListItem = ({ link, onDelete, id }) => {
           <TableActionsMenu
             onEdit={handleEdit}
             onDelete={handleDelete}
-            showEdit={hasRole('viewFilters')}
-            showDelete={hasRole('manageAssortments')}
+            showEdit={hasRole(IRoleAction.ViewFilters)}
+            showDelete={hasRole(IRoleAction.ManageAssortments)}
           />
         </div>
       </div>

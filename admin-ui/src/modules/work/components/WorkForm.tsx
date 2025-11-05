@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
@@ -157,7 +159,7 @@ const WorkForm = () => {
           </div>
         </div>
 
-        {hasRole('manageWorker') && (
+        {hasRole(IRoleAction.ManageWorker) && (
           <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
             <SubmitButton
               label={formatMessage({

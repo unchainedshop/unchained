@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -72,7 +74,7 @@ const CurrencyDetailPage = ({ currencyId }) => {
         <PageHeader
           headerText={normalizeCurrencyISOCode(locale, currency?.isoCode)}
         />
-        {hasRole('manageCurrencies') && (
+        {hasRole(IRoleAction.ManageCurrencies) && (
           <HeaderDeleteButton onClick={onDelete} />
         )}
       </div>

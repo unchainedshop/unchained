@@ -1,4 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
+import { IRoleAction } from '../../../gql/types';
+
 import { CSS } from '@dnd-kit/utilities';
 import { useRouter } from 'next/router';
 import Badge from '../../common/components/Badge';
@@ -66,7 +68,7 @@ const AssortmentLinksListItem = ({ link, onDelete, linkId, isParent, id }) => {
         }}
       >
         <div className="flex items-center gap-5">
-          {hasRole('manageAssortments') && (
+          {hasRole(IRoleAction.ManageAssortments) && (
             <button
               type="button"
               {...attributes}
@@ -80,7 +82,7 @@ const AssortmentLinksListItem = ({ link, onDelete, linkId, isParent, id }) => {
             onEdit={handleEdit}
             onDelete={handleDelete}
             showEdit={true}
-            showDelete={hasRole('manageAssortments')}
+            showDelete={hasRole(IRoleAction.ManageAssortments)}
           />
         </div>
       </div>

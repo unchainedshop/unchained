@@ -1,4 +1,6 @@
 import { FieldArray } from 'formik';
+import { IRoleAction } from '../../../gql/types';
+
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
@@ -146,7 +148,7 @@ const AllocateWorkForm = () => {
           </FieldArray>
         </div>
         <FormErrors />
-        {hasRole('manageWorker') && (
+        {hasRole(IRoleAction.ManageWorker) && (
           <div className="border-t-slate-100 border-t dark:border-slate-700 space-y-6 bg-slate-50 dark:bg-slate-800 px-5 py-6 text-right">
             <SubmitButton
               label={formatMessage({

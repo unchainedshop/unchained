@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
 
@@ -48,7 +50,7 @@ const ProductReviewForm = ({
         <div className="space-y-4">
           <TextField
             name="title"
-            disabled={!hasRole('reviewProduct')}
+            disabled={!hasRole(IRoleAction.ReviewProduct)}
             id="title"
             label={formatMessage({
               id: 'title',
@@ -61,7 +63,7 @@ const ProductReviewForm = ({
           <TextAreaField
             rows={4}
             name="review"
-            disabled={!hasRole('reviewProduct')}
+            disabled={!hasRole(IRoleAction.ReviewProduct)}
             id="review"
             label={formatMessage({
               id: 'review',
@@ -73,7 +75,7 @@ const ProductReviewForm = ({
             })}
           />
         </div>
-        {hasRole('reviewProduct') && (
+        {hasRole(IRoleAction.ReviewProduct) && (
           <div className="mt-6 flex justify-end">
             <SubmitButton
               label={

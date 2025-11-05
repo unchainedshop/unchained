@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { ISortDirection } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
@@ -95,7 +97,7 @@ const BundleProductsForm = ({
             required
           />
         </div>
-        {hasRole('manageProducts') && (
+        {hasRole(IRoleAction.ManageProducts) && (
           <div className="pb-3">
             <Button
               className="flex items-center justify-center p-2 rounded-md"
@@ -113,7 +115,7 @@ const BundleProductsForm = ({
         required
         label={formatMessage({ id: 'quantity', defaultMessage: 'Quantity' })}
       />
-      {hasRole('manageProducts') && (
+      {hasRole(IRoleAction.ManageProducts) && (
         <SubmitButton
           label={formatMessage({ id: 'submit', defaultMessage: 'Submit' })}
           className="mt-2"

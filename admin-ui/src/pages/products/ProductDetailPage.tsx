@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { toast } from 'react-toastify';
 
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
@@ -79,7 +81,7 @@ const ProductDetailPage = ({ slug }) => {
           }
         },
         bgColor: 'green',
-        disable: !hasRole('manageProducts'),
+        disable: !hasRole(IRoleAction.ManageProducts),
       },
       {
         id: 'draft',
@@ -98,9 +100,9 @@ const ProductDetailPage = ({ slug }) => {
           defaultMessage: 'Not published',
         }),
         bgColor: 'amber',
-        disable: status === 'ACTIVE' && !hasRole('manageProducts'),
+        disable: status === 'ACTIVE' && !hasRole(IRoleAction.ManageProducts),
         onClick: async () => {
-          if (hasRole('manageProducts')) {
+          if (hasRole(IRoleAction.ManageProducts)) {
             try {
               await unPublishProduct({ productId: product?._id });
               toast.success(
@@ -309,13 +311,13 @@ const ProductDetailPage = ({ slug }) => {
               <input
                 type="number"
                 id="sequence-input"
-                disabled={!hasRole('manageProducts')}
+                disabled={!hasRole(IRoleAction.ManageProducts)}
                 className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1 transition-all"
                 defaultValue={product?.sequence}
                 onBlur={updateProductSequence}
               />
             </div>
-            {status === 'DRAFT' && hasRole('manageProducts') && (
+            {status === 'DRAFT' && hasRole(IRoleAction.ManageProducts) && (
               <HeaderDeleteButton onClick={handleDeleteProduct} />
             )}
           </div>
@@ -396,7 +398,7 @@ const ProductDetailPage = ({ slug }) => {
             },
           );
         }}
-        canEdit={hasRole('manageProducts')}
+        canEdit={hasRole(IRoleAction.ManageProducts)}
       />
 
       <ProductDetail

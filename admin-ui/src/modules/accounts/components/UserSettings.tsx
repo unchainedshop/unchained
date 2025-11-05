@@ -11,6 +11,8 @@ import {
   ClipboardDocumentIcon,
 } from '@heroicons/react/20/solid';
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import DisplayUserLastLogs from '../../common/components/DisplayUserLastLogs';
 import Loading from '../../common/components/Loading';
@@ -65,7 +67,7 @@ const UserSettings = ({ user, extendedData }) => {
       title: formatMessage({ id: 'orders', defaultMessage: 'Orders' }),
       Icon: <ShoppingCartIcon className="h-5 w-5" />,
     },
-    hasRole('viewUserQuotations') && {
+    hasRole(IRoleAction.ViewUserQuotations) && {
       id: 'quotations',
       title: formatMessage({
         id: 'quotations',
@@ -73,7 +75,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <BanknotesIcon className="h-5 w-5" />,
     },
-    hasRole('viewUserEnrollments') && {
+    hasRole(IRoleAction.ViewUserEnrollments) && {
       id: 'enrollments',
       title: formatMessage({
         id: 'enrollments',
@@ -97,7 +99,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <CurrencyDollarIcon className="h-5 w-5" />,
     },
-    hasRole('viewUserProductReviews') && {
+    hasRole(IRoleAction.ViewUserProductReviews) && {
       id: 'reviews',
       title: formatMessage({
         id: 'reviews',

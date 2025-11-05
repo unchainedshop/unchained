@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
 import useCurrencies from '../../currency/hooks/useCurrencies';
@@ -60,7 +62,7 @@ const CountryForm = ({
           name="isoCode"
           id="isoCode"
           validators={[validateCountry()]}
-          disabled={!hasRole('manageCountries')}
+          disabled={!hasRole(IRoleAction.ManageCountries)}
           label={formatMessage({
             id: 'iso_code',
             defaultMessage: 'ISO code',
@@ -73,7 +75,7 @@ const CountryForm = ({
           <div className="my-3 min-w-0 flex-1">
             <SelectField
               name="defaultCurrencyCode"
-              disabled={!hasRole('manageCountries')}
+              disabled={!hasRole(IRoleAction.ManageCountries)}
               id="defaultCurrencyCode"
               label={formatMessage({
                 id: 'default_currency',
@@ -91,7 +93,7 @@ const CountryForm = ({
                 id: 'active',
                 defaultMessage: 'Active',
               })}
-              disabled={!hasRole('manageCountries')}
+              disabled={!hasRole(IRoleAction.ManageCountries)}
               active={form.formik.values.isActive}
               onToggle={() =>
                 form.formik.setFieldValue(
@@ -103,7 +105,7 @@ const CountryForm = ({
           </div>
         )}
       </div>
-      {hasRole('manageCountries') && (
+      {hasRole(IRoleAction.ManageCountries) && (
         <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
           <SubmitButton
             label={

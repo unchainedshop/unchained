@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import Button from '../../common/components/Button';
 import useAuth from '../../Auth/useAuth';
@@ -58,7 +60,7 @@ const ProductImport = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  if (!hasRole('manageProducts')) return null;
+  if (!hasRole(IRoleAction.ManageProducts)) return null;
 
   return (
     <>

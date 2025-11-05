@@ -1,4 +1,6 @@
 import { FormattedMessage, useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 
 import {
@@ -110,7 +112,7 @@ const AssortmentLinks = ({ assortmentId }) => {
 
   return (
     <>
-      {hasRole('manageAssortments') && (
+      {hasRole(IRoleAction.ManageAssortments) && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'assortment_link_form_header',

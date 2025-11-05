@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import useLanguages from '../../modules/language/hooks/useLanguages';
@@ -128,7 +130,7 @@ const Languages = () => {
           { count: languagesCount },
         )}
         headerText={headerText}
-        addPath={hasRole('manageLanguages') && '/language/new'}
+        addPath={hasRole(IRoleAction.ManageLanguages) && '/language/new'}
         addButtonText={formatMessage({
           id: 'add_language',
           defaultMessage: 'Add Language',

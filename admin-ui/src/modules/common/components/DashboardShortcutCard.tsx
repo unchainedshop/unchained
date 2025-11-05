@@ -1,4 +1,6 @@
 import React from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useRouter } from 'next/router';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
@@ -16,7 +18,7 @@ const DashboardShortcutCard = () => {
         {formatMessage({ id: 'shortcuts', defaultMessage: 'Shortcuts' })}
       </h3>
       <div className="grid xl:grid-cols-3 gap-3">
-        {hasRole('manageProducts') && (
+        {hasRole(IRoleAction.ManageProducts) && (
           <Button
             onClick={() => router.push('/products/new')}
             icon={<PlusIcon className="w-5 h-5" />}
@@ -25,7 +27,7 @@ const DashboardShortcutCard = () => {
             text={formatMessage({ id: 'product', defaultMessage: 'Product' })}
           />
         )}
-        {hasRole('createUser') && (
+        {hasRole(IRoleAction.CreateUser) && (
           <Button
             onClick={() => router.push('/users/new')}
             icon={<PlusIcon className="w-5 h-5" />}
@@ -34,7 +36,7 @@ const DashboardShortcutCard = () => {
             text={formatMessage({ id: 'user', defaultMessage: 'User' })}
           />
         )}
-        {hasRole('manageAssortments') && (
+        {hasRole(IRoleAction.ManageAssortments) && (
           <Button
             onClick={() => router.push('/assortments/new')}
             icon={<PlusIcon className="w-5 h-5" />}

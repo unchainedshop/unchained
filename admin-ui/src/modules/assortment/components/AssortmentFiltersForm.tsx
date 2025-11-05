@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
@@ -84,7 +86,7 @@ const AssortmentFiltersForm = ({ assortmentId }) => {
             </div>
           </div>
           <FormErrors />
-          {hasRole('manageAssortments') && (
+          {hasRole(IRoleAction.ManageAssortments) && (
             <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
               <SubmitButton
                 label={formatMessage({

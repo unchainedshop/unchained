@@ -4,6 +4,8 @@ import {
   HandThumbUpIcon,
 } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 import classNames from 'classnames';
 import DeleteButton from '../../common/components/DeleteButton';
@@ -80,12 +82,13 @@ const ProductReviewsItem = ({
   const { removeProductReview } = useRemoveProductReview();
   const canDeleteReview =
     (!review.deleted &&
-      hasRole('voteProductReview') &&
+      hasRole(IRoleAction.VoteProductReview) &&
       enableDelete &&
       review?.author?._id === currentUser?._id) ||
     (isAdmin() && !review.deleted);
 
-  const canManageVotes = !review.deleted && hasRole('voteProductReview');
+  const canManageVotes =
+    !review.deleted && hasRole(IRoleAction.VoteProductReview);
   const product = review?.product;
 
   const onRemove = async (productReviewId) => {
@@ -230,7 +233,7 @@ const ProductReviewsItem = ({
         </div>
 
         <div className="flex items-center gap-2 ml-4">
-          {hasRole('voteProductReview') && (
+          {hasRole(IRoleAction.VoteProductReview) && (
             <button
               type="button"
               disabled={!canManageVotes}

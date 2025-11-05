@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 
@@ -110,7 +112,7 @@ const FiltersListView = () => {
             { count: filtersCount },
           )}
           headerText={headerText}
-          addPath={hasRole('manageFilters') && '/filters/new'}
+          addPath={hasRole(IRoleAction.ManageFilters) && '/filters/new'}
           addButtonText={formatMessage({
             id: 'add_filter',
             defaultMessage: 'Add Filter',

@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -89,7 +91,7 @@ const PaymentProviderDetailPage = ({ paymentProviderId }) => {
             { id: paymentProvider?._id },
           )}
         />
-        {hasRole('managePaymentProviders') && (
+        {hasRole(IRoleAction.ManagePaymentProviders) && (
           <HeaderDeleteButton onClick={handleOnClick} />
         )}
       </div>
@@ -97,7 +99,7 @@ const PaymentProviderDetailPage = ({ paymentProviderId }) => {
         <Loading />
       ) : (
         <ProviderDetail
-          readOnly={!hasRole('managePaymentProviders')}
+          readOnly={!hasRole(IRoleAction.ManagePaymentProviders)}
           provider={paymentProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { IRoleAction } from '../../gql/types';
+
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import useAuth from '../../modules/Auth/useAuth';
@@ -53,7 +55,7 @@ const NewPaymentProvider = () => {
         />
         <div className="mt-6">
           <NewProviderForm
-            readOnly={!hasRole('manageWarehousingProviders')}
+            readOnly={!hasRole(IRoleAction.ManageWarehousingProviders)}
             providerInterfaces={convertArrayOfObjectToObject(
               warehousingInterfaces,
               'label',

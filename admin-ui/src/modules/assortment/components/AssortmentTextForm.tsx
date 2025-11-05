@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
@@ -149,13 +151,13 @@ const AssortmentTextForm = ({ assortmentId }) => {
       }
     >
       <FormWrapper>
-        <Form form={form} disabled={!hasRole('manageAssortments')}>
+        <Form form={form} disabled={!hasRole(IRoleAction.ManageAssortments)}>
           <div className="shadow sm:rounded-md">
             <div className="grid gap-6 px-4 py-5 sm:p-6">
               <div className="col-span-12">
                 <TextField
                   name="slug"
-                  disabled={!hasRole('manageAssortments')}
+                  disabled={!hasRole(IRoleAction.ManageAssortments)}
                   required
                   id="slug"
                   label={formatMessage({
@@ -169,7 +171,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <TextField
                   name="title"
-                  disabled={!hasRole('manageAssortments')}
+                  disabled={!hasRole(IRoleAction.ManageAssortments)}
                   id="title"
                   label={formatMessage({
                     id: 'title',
@@ -183,7 +185,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <TextField
                   name="subtitle"
-                  disabled={!hasRole('manageAssortments')}
+                  disabled={!hasRole(IRoleAction.ManageAssortments)}
                   id="subtitle"
                   label={formatMessage({
                     id: 'subtitle',
@@ -196,7 +198,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <MarkdownTextAreaField
                   name="description"
-                  disabled={!hasRole('manageAssortments')}
+                  disabled={!hasRole(IRoleAction.ManageAssortments)}
                   id="description"
                   label={formatMessage({
                     id: 'description',
@@ -207,7 +209,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
             </div>
 
             <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
-              {hasRole('manageAssortments') && (
+              {hasRole(IRoleAction.ManageAssortments) && (
                 <SubmitButton
                   label={formatMessage({
                     id: 'save',

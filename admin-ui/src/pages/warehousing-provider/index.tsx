@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router';
 
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { IWarehousingProviderType } from '../../gql/types';
@@ -84,7 +86,8 @@ const WarehousingProviders = () => {
           { count: warehousingProvidersCount ?? 0 },
         )}
         addPath={
-          hasRole('manageWarehousingProviders') && '/warehousing-provider/new'
+          hasRole(IRoleAction.ManageWarehousingProviders) &&
+          '/warehousing-provider/new'
         }
         addButtonText={formatMessage({
           id: 'add_warehousing_provider',
@@ -103,8 +106,8 @@ const WarehousingProviders = () => {
           providerPath="/warehousing-provider?warehousingProviderId"
           providers={warehousingProviders}
           onRemove={onRemoveWarehousingProvider}
-          canDelete={hasRole('manageWarehousingProviders')}
-          canEdit={hasRole('viewWarehousingProvider')}
+          canDelete={hasRole(IRoleAction.ManageWarehousingProviders)}
+          canEdit={hasRole(IRoleAction.ViewWarehousingProvider)}
         />
       )}
     </>

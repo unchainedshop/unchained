@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { useRouter } from 'next/router';
 
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
@@ -30,7 +32,7 @@ const WorkQueueView = () => {
           id: 'work_queue_header',
           defaultMessage: 'Work queue',
         })}
-        addPath={hasRole('manageWorker') && '/works/management'}
+        addPath={hasRole(IRoleAction.ManageWorker) && '/works/management'}
         addButtonText={formatMessage({
           id: 'manage',
           defaultMessage: 'Manage',

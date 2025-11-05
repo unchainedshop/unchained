@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
@@ -153,13 +155,13 @@ const ProductTextsForm = ({
       }
     >
       <FormWrapper>
-        <Form form={form} disabled={!hasRole('manageProducts')}>
+        <Form form={form} disabled={!hasRole(IRoleAction.ManageProducts)}>
           <div className="relative text-slate-500 dark:text-slate-200 px-4 py-5 sm:p-6">
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="slug"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   required
                   id="slug"
                   label={formatMessage({
@@ -173,7 +175,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="title"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   required
                   id="title"
                   label={formatMessage({
@@ -187,7 +189,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="subtitle"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   id="subtitle"
                   label={formatMessage({
                     id: 'subtitle',
@@ -200,7 +202,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="vendor"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   id="vendor"
                   label={formatMessage({
                     id: 'vendor',
@@ -213,7 +215,7 @@ const ProductTextsForm = ({
               <div className="col-span-6 sm:col-span-3">
                 <TextField
                   name="brand"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   id="brand"
                   label={formatMessage({
                     id: 'brand',
@@ -227,7 +229,7 @@ const ProductTextsForm = ({
                 <TagInputField
                   name="labels"
                   id="labels"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   label={formatMessage({
                     id: 'labels',
                     defaultMessage: 'Labels',
@@ -254,7 +256,7 @@ const ProductTextsForm = ({
               <MarkdownTextAreaField
                 name="description"
                 id="description"
-                disabled={!hasRole('manageProducts')}
+                disabled={!hasRole(IRoleAction.ManageProducts)}
                 label={formatMessage({
                   id: 'description',
                   defaultMessage: 'Description',
@@ -262,7 +264,7 @@ const ProductTextsForm = ({
               />
             </div>
           </div>
-          {hasRole('manageProducts') && (
+          {hasRole(IRoleAction.ManageProducts) && (
             <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
               <SubmitButton
                 label={formatMessage({

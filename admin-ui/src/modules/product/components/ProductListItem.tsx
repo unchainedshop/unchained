@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import Badge from '../../common/components/Badge';
@@ -169,7 +171,7 @@ const ProductListItem = ({
             id={`${product?._id}-sequence`}
             className="text-center w-16 shadow-xs focus:ring-slate-900 dark:bg-slate-800 dark:border-slate-700 focus:border-slate-900 block text-sm border-slate-300 rounded-md mr-2 font-semibold text-slate-900 dark:text-slate-300"
             defaultValue={product?.sequence}
-            disabled={!hasRole('manageProducts')}
+            disabled={!hasRole(IRoleAction.ManageProducts)}
             onBlur={updateProductSequence}
             onClick={(e) => e.stopPropagation()}
             onFocus={(e) => e.stopPropagation()}
@@ -180,13 +182,13 @@ const ProductListItem = ({
         <TableActionsMenu
           onEdit={product?.status !== 'DELETED' ? handleEdit : undefined}
           onDelete={
-            hasRole('manageProducts') && product?.status === 'DRAFT'
+            hasRole(IRoleAction.ManageProducts) && product?.status === 'DRAFT'
               ? handleDelete
               : undefined
           }
           showEdit={product?.status !== 'DELETED'}
           showDelete={
-            hasRole('manageProducts') &&
+            hasRole(IRoleAction.ManageProducts) &&
             product?.status === 'DRAFT' &&
             !product?.proxies?.length
           }

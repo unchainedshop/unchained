@@ -1,5 +1,7 @@
 import { useIntl } from 'react-intl';
 
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
@@ -125,7 +127,7 @@ const ProductVariationForm = ({
           </div>
         </div>
 
-        {hasRole('manageProducts') && (
+        {hasRole(IRoleAction.ManageProducts) && (
           <div className="space-y-6 bg-slate-50 dark:bg-slate-700 px-5 py-6 text-right">
             <SubmitButton
               label={formatMessage({

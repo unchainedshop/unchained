@@ -1,4 +1,6 @@
 import React from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import {
@@ -182,7 +184,7 @@ const AssortmentMediaForm = ({ assortmentId }) => {
 
   return (
     <div className="mx-auto mt-5 max-w-fullpy-6 grid lg:grid-cols-12 gap-5">
-      {hasRole('manageAssortments') && (
+      {hasRole(IRoleAction.ManageAssortments) && (
         <div className="lg:col-span-6">
           <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
         </div>

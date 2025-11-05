@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import {
   DocumentTextIcon,
   FilmIcon,
@@ -212,7 +214,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
         <TagList
           defaultValue={product?.tags}
           onSubmit={onUpdateTags}
-          enableEdit={hasRole('manageProducts')}
+          enableEdit={hasRole(IRoleAction.ManageProducts)}
         />
       </div>
       <Tab tabItems={productOptions} defaultTab="texts">

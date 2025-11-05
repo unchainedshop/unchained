@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import useSystemRoles from '../../common/hooks/useSystemRoles';
 import ChoicesField from '../../forms/components/ChoicesField';
@@ -55,9 +57,9 @@ const UserRolesView = ({ roles, userId }) => {
         multiple
       />
       <FormErrors />
-      {hasRole('manageUsers') && (
+      {hasRole(IRoleAction.ManageUsers) && (
         <SubmitButton
-          disabled={!hasRole('manageUsers')}
+          disabled={!hasRole(IRoleAction.ManageUsers)}
           label={formatMessage({
             id: 'update_role',
             defaultMessage: 'Update role',

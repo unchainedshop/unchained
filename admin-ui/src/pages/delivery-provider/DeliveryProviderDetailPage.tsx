@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -91,7 +93,7 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
             { id: deliveryProvider?._id },
           )}
         />
-        {hasRole('manageDeliveryProviders') && (
+        {hasRole(IRoleAction.ManageDeliveryProviders) && (
           <HeaderDeleteButton onClick={handleOnClick} />
         )}
       </div>
@@ -99,7 +101,7 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
         <Loading />
       ) : (
         <ProviderDetail
-          readOnly={!hasRole('manageDeliveryProviders')}
+          readOnly={!hasRole(IRoleAction.ManageDeliveryProviders)}
           provider={deliveryProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}

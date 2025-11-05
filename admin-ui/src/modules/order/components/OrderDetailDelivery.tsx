@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import Link from 'next/link';
 
 import { PlusIcon } from '@heroicons/react/24/outline';
@@ -133,7 +135,7 @@ const OrderDetailDelivery = ({ order }) => {
                 component={
                   order?.delivery?.status === 'OPEN' &&
                   type.value === 'DELIVERED' &&
-                  hasRole('markOrderDelivered') && (
+                  hasRole(IRoleAction.MarkOrderDelivered) && (
                     <button
                       id="deliver"
                       type="button"

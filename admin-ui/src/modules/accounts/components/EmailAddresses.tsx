@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 import classNames from 'classnames';
 import Form from '../../forms/components/Form';
@@ -113,22 +115,24 @@ const EmailAddresses = ({
                 <ActiveInActive isActive={verified} />
               </div>
               <div className="my-1 flex items-center cursor-pointer">
-                {enableVerification && !verified && hasRole('sendEmail') && (
-                  <a
-                    id="send_verification_mail"
-                    onClick={async () => {
-                      await onSendVerification({ email: address });
-                    }}
-                    className="inline-flex items-center rounded-md dark:text-slate-500 dark:hover:text-slate-200 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
-                  >
-                    {formatMessage({
-                      id: 'send_verification_mail',
-                      defaultMessage: 'Send verification mail',
-                    })}
-                  </a>
-                )}
+                {enableVerification &&
+                  !verified &&
+                  hasRole(IRoleAction.SendEmail) && (
+                    <a
+                      id="send_verification_mail"
+                      onClick={async () => {
+                        await onSendVerification({ email: address });
+                      }}
+                      className="inline-flex items-center rounded-md dark:text-slate-500 dark:hover:text-slate-200 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                    >
+                      {formatMessage({
+                        id: 'send_verification_mail',
+                        defaultMessage: 'Send verification mail',
+                      })}
+                    </a>
+                  )}
 
-                {hasRole('updateUser') && (
+                {hasRole(IRoleAction.UpdateUser) && (
                   <DeleteButton
                     className="ml-2 inline-flex items-center rounded-full hover:bg-rose-50"
                     onClick={() =>
@@ -144,7 +148,7 @@ const EmailAddresses = ({
         ))}
       </ul>
 
-      {hasRole('updateUser') && (
+      {hasRole(IRoleAction.UpdateUser) && (
         <Form form={form}>
           <div className="mt-4 border-t dark:border-t-slate-700">
             <div className="items-between mt-4 flex space-x-4">

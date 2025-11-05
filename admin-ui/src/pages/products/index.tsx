@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { useRouter } from 'next/router';
 
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
@@ -86,7 +88,7 @@ const Products = () => {
             { count: productsCount },
           )}
           headerText={headerText}
-          addPath={hasRole('manageProducts') && '/products/new'}
+          addPath={hasRole(IRoleAction.ManageProducts) && '/products/new'}
           addButtonText={formatMessage({
             id: 'add_product',
             defaultMessage: 'Add Product',

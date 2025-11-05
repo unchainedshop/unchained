@@ -1,4 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { ISortDirection } from '../../../gql/types';
 import DeleteButton from '../../common/components/DeleteButton';
@@ -147,7 +149,7 @@ const ProductAssignmentRow = ({
                   className="mt-1 w-full py-2 text-sm font-medium text-slate-500"
                 />
               </div>
-              {hasRole('manageProducts') && (
+              {hasRole(IRoleAction.ManageProducts) && (
                 <Button onClick={scaffoldVariationProduct}>
                   <SparklesIcon className="h-5 w-5" />
                 </Button>

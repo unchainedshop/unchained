@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -60,7 +62,9 @@ const OrderDetailPage = ({ orderId }) => {
         currentPageTitle={order?.orderNumber ? `#${order?.orderNumber}` : ''}
       />
       <div className="items-center flex min-w-full justify-end gap-3 flex-wrap">
-        {order && isDeletable(order.status) && hasRole('updateOrder') ? (
+        {order &&
+        isDeletable(order.status) &&
+        hasRole(IRoleAction.UpdateOrder) ? (
           <HeaderDeleteButton onClick={handleOnClick} />
         ) : null}
       </div>

@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 import {
   closestCenter,
@@ -96,7 +98,7 @@ const ProductMediaForm = ({ productId }) => {
 
   return (
     <div className="mx-auto mt-5 space-y-5 lg:space-y-0 max-w-full py-6 lg:grid lg:grid-cols-12 lg:gap-4">
-      {hasRole('manageProducts') && (
+      {hasRole(IRoleAction.ManageProducts) && (
         <div className="mx-auto w-full px-6 lg:col-span-6 lg:col-start-1">
           <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
         </div>

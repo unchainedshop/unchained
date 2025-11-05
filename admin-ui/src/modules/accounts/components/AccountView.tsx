@@ -1,4 +1,5 @@
 import { FormattedMessage, useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 import useCurrentUser from '../hooks/useCurrentUser';
@@ -98,7 +99,7 @@ const AccountView = ({
         </div>
       </SelfDocumentingView>
 
-      {hasRole('manageUsers') ? (
+      {hasRole(IRoleAction.ManageUsers) ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'roles',
@@ -111,7 +112,7 @@ const AccountView = ({
         </SelfDocumentingView>
       ) : null}
 
-      {hasRole('manageUsers') && currentUser?._id !== _id ? (
+      {hasRole(IRoleAction.ManageUsers) && currentUser?._id !== _id ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'set_password',
@@ -141,7 +142,7 @@ const AccountView = ({
         </SelfDocumentingView>
       )}
 
-      {hasRole('manageUsers') && (
+      {hasRole(IRoleAction.ManageUsers) && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'web_authentication',

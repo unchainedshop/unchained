@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router';
 
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { IDeliveryProviderType } from '../../gql/types';
@@ -80,7 +82,10 @@ const DeliveryProviders = () => {
               },
           { count: deliveryProvidersCount ?? 0 },
         )}
-        addPath={hasRole('manageDeliveryProviders') && '/delivery-provider/new'}
+        addPath={
+          hasRole(IRoleAction.ManageDeliveryProviders) &&
+          '/delivery-provider/new'
+        }
         addButtonText={formatMessage({
           id: 'add_delivery_provider',
           defaultMessage: 'Add Delivery Provider',
@@ -95,8 +100,8 @@ const DeliveryProviders = () => {
         <Loading />
       ) : (
         <ProvidersList
-          canEdit={hasRole('viewDeliveryProvider')}
-          canDelete={hasRole('manageDeliveryProviders')}
+          canEdit={hasRole(IRoleAction.ViewDeliveryProvider)}
+          canDelete={hasRole(IRoleAction.ManageDeliveryProviders)}
           providerPath="/delivery-provider?deliveryProviderId"
           providers={deliveryProviders}
           onRemove={onRemoveDeliveryProvider}

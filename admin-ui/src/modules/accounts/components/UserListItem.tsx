@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import Badge from '../../common/components/Badge';
@@ -169,7 +171,7 @@ const UserListItem = ({ user }) => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           showEdit={true}
-          showDelete={hasRole('removeUser')}
+          showDelete={hasRole(IRoleAction.RemoveUser)}
         />
       </Table.Cell>
     </Table.Row>

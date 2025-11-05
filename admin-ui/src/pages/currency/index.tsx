@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 
@@ -128,7 +130,7 @@ const Currencies = () => {
           { count: currenciesCount },
         )}
         headerText={headerText}
-        addPath={hasRole('manageCurrencies') && '/currency/new'}
+        addPath={hasRole(IRoleAction.ManageCurrencies) && '/currency/new'}
         addButtonText={formatMessage({
           id: 'add_currency',
           defaultMessage: 'Add Currency',

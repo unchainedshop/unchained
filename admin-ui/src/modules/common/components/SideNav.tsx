@@ -1,4 +1,6 @@
 import { Disclosure } from '@headlessui/react';
+import { IRoleAction } from '../../../gql/types';
+
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';

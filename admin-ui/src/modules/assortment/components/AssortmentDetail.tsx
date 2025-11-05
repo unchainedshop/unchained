@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import {
   DocumentTextIcon,
   LinkIcon,
@@ -331,7 +333,7 @@ const AssortmentDetail = ({
         <TagList
           defaultValue={assortment?.tags}
           onSubmit={updateAssortmentTags}
-          enableEdit={hasRole('manageAssortments')}
+          enableEdit={hasRole(IRoleAction.ManageAssortments)}
           availableTagOptions={
             shopInfo?.adminUiConfig?.assortmentTags?.map((tag) => ({
               value: tag,
@@ -398,7 +400,7 @@ const AssortmentDetail = ({
                 defaultMessage: 'Assortment',
               })}
             />
-            {hasRole('manageAssortments') && (
+            {hasRole(IRoleAction.ManageAssortments) && (
               <HeaderDeleteButton onClick={handleDeleteAssortment} />
             )}
           </div>

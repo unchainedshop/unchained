@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Loading from '../../common/components/Loading';
 import InfiniteScroll from '../../common/components/InfiniteScroll';
@@ -64,7 +66,7 @@ const FilterList = ({
                 defaultMessage: 'Options',
               })}
             </Table.Cell>
-            {hasRole('manageFilters') && (
+            {hasRole(IRoleAction.ManageFilters) && (
               <Table.Cell>
                 <span className="sr-only">
                   {formatMessage({ id: 'delete', defaultMessage: 'Delete' })}

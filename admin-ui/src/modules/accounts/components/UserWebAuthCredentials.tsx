@@ -1,4 +1,6 @@
 import classNames from 'classnames';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import useAuth from '../../Auth/useAuth';
@@ -77,7 +79,7 @@ const UserWebAuthCredentials = ({ userId }) => {
               key={credential?._id}
               onRemoveCredential={handleRemoveWebAuthCredential}
               removeDisabled={
-                userId !== currentUser?._id && !hasRole('updateUser')
+                userId !== currentUser?._id && !hasRole(IRoleAction.UpdateUser)
               }
             />
           ))}

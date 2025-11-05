@@ -1,5 +1,7 @@
 import { useIntl } from 'react-intl';
 
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Table from '../../common/components/Table';
 import CurrencyListItem from './CurrencyListItem';
@@ -34,8 +36,8 @@ const CurrencyList = ({ currencies, onRemoveCurrency, sortable }) => {
           key={`${currency?._id}-body`}
           currency={currency}
           onRemove={onRemoveCurrency}
-          enableDelete={hasRole('manageCurrencies')}
-          enableEdit={hasRole('viewCurrency')}
+          enableDelete={hasRole(IRoleAction.ManageCurrencies)}
+          enableEdit={hasRole(IRoleAction.ViewCurrency)}
         />
       ))}
     </Table>

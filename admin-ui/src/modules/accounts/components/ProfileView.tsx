@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import DatePickerField from '../../forms/components/DatePickerField';
 import Form from '../../forms/components/Form';
@@ -142,7 +144,8 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   })}
                 </p>
               </div>
-              {(hasRole('updateUser') || currentUser?._id === _id) && (
+              {(hasRole(IRoleAction.UpdateUser) ||
+                currentUser?._id === _id) && (
                 <SaveAndCancelButtons
                   showSubmit={isEdit}
                   onCancel={() => setIsEdit(!isEdit)}
@@ -197,7 +200,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                         </span>
                       )}
                     </span>
-                    {hasRole('updateUser') && (
+                    {hasRole(IRoleAction.UpdateUser) && (
                       <span className="mt-1 ml-4 flex shrink-0 items-start space-x-4">
                         <button
                           onClick={() => {
@@ -356,7 +359,8 @@ const ProfileView = ({ profile, avatar, _id }) => {
                 </p>
               </div>
 
-              {(hasRole('updateUser') || currentUser?._id === _id) && (
+              {(hasRole(IRoleAction.UpdateUser) ||
+                currentUser?._id === _id) && (
                 <SaveAndCancelButtons
                   showSubmit={isEdit}
                   onCancel={() => setIsEdit(!isEdit)}

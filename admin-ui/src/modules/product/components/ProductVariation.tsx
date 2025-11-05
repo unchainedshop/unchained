@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { PlusIcon } from '@heroicons/react/24/outline';
 import Loading from '../../common/components/Loading';
 import NoData from '../../common/components/NoData';
@@ -121,7 +123,7 @@ const ProductVariationModalForm = ({ onSubmit, disabled, formatMessage }) => {
           </div>
         </div>
 
-        {hasRole('manageProducts') && (
+        {hasRole(IRoleAction.ManageProducts) && (
           <div className="flex justify-end mt-6 py-6 -mb-6 bg-slate-100 -mx-6 pe-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
             <SubmitButton
               label={formatMessage({

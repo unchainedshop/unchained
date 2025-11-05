@@ -1,4 +1,6 @@
 import { FormattedMessage, useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
@@ -110,7 +112,7 @@ const AssortmentFilters = ({ assortmentId }) => {
 
   return (
     <>
-      {hasRole('manageAssortments') && (
+      {hasRole(IRoleAction.ManageAssortments) && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'assortment_filters_form_header',

@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
 import TextField from '../../forms/components/TextField';
@@ -81,7 +83,7 @@ const ProductAssignmentScaffoldForm = ({
         />
       </div>
 
-      {hasRole('manageProducts') && (
+      {hasRole(IRoleAction.ManageProducts) && (
         <div className="border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
           <SubmitButton
             label={formatMessage({

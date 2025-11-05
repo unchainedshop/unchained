@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import FormWrapper from '../../modules/common/components/FormWrapper';
@@ -80,7 +82,7 @@ const CountryDetailPage = ({ countryId }) => {
         <PageHeader
           headerText={normalizeCountryISOCode(locale, country?.isoCode)}
         />
-        {hasRole('manageCountries') && (
+        {hasRole(IRoleAction.ManageCountries) && (
           <HeaderDeleteButton onClick={onDelete} />
         )}
       </div>

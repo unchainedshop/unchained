@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -79,7 +81,7 @@ const LanguageDetailPage = ({ languageId }) => {
       />
       <div className="items-center flex min-w-full justify-between gap-3 flex-wrap">
         <PageHeader headerText={normalizeLanguageName(language?.isoCode)} />
-        {hasRole('manageLanguages') && (
+        {hasRole(IRoleAction.ManageLanguages) && (
           <HeaderDeleteButton onClick={onDelete} />
         )}
       </div>

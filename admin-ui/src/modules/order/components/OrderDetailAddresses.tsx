@@ -9,7 +9,7 @@ const OrderDetailAddresses = ({ order }) => {
   const { formatMessage } = useIntl();
 
   const delivery = order?.delivery;
-  const isPickup = delivery?.provider?.type === 'PICKUP';  
+  const isPickup = delivery?.provider?.type === 'PICKUP';
   const deliveryAddress =
     delivery?.address || delivery?.activePickUpLocation?.address || {};
 

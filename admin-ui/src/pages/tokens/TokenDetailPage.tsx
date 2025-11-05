@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import useToken from '../../modules/token/hooks/useToken';
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
 import PageHeader from '../../modules/common/components/PageHeader';
@@ -63,15 +65,16 @@ const TokenDetailPage = ({ tokenId }) => {
             { tokenSerialNumber: token?.tokenSerialNumber },
           )}
         >
-          {token.status !== 'DECENTRALIZED' && hasRole('updateToken') && (
-            <div className="mr-2">
-              <ExportToken tokenId={token._id} tokenStatus={token.status} />
-            </div>
-          )}
+          {token.status !== 'DECENTRALIZED' &&
+            hasRole(IRoleAction.UpdateToken) && (
+              <div className="mr-2">
+                <ExportToken tokenId={token._id} tokenStatus={token.status} />
+              </div>
+            )}
         </PageHeader>
         {!token.invalidatedDate &&
         token.isInvalidateable &&
-        hasRole('updateToken') ? (
+        hasRole(IRoleAction.UpdateToken) ? (
           <HeaderDeleteButton
             onClick={onInvalidateToken}
             text={formatMessage({

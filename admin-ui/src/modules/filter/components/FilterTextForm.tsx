@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
@@ -111,7 +113,7 @@ const FilterTextForm = ({ filterId }) => {
             />
           </div>
 
-          {hasRole('manageFilters') && (
+          {hasRole(IRoleAction.ManageFilters) && (
             <div className="flex bg-slate-100 dark:bg-slate-900 mt-5">
               <SubmitButton
                 label={formatMessage({

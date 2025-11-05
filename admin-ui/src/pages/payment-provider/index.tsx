@@ -1,4 +1,6 @@
 import { toast } from 'react-toastify';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import usePaymentProviders from '../../modules/payment-providers/hooks/usePaymentProviders';
@@ -75,7 +77,9 @@ const PaymentProviders = () => {
               },
           { count: paymentProvidersCount ?? 0 },
         )}
-        addPath={hasRole('managePaymentProviders') && '/payment-provider/new'}
+        addPath={
+          hasRole(IRoleAction.ManagePaymentProviders) && '/payment-provider/new'
+        }
         addButtonText={formatMessage({
           id: 'add_payment_provider',
           defaultMessage: 'Add Payment Provider',
@@ -93,8 +97,8 @@ const PaymentProviders = () => {
           providerPath="/payment-provider?paymentProviderId"
           providers={paymentProviders}
           onRemove={onRemovePaymentProvider}
-          canDelete={hasRole('managePaymentProviders')}
-          canEdit={hasRole('viewPaymentProvider')}
+          canDelete={hasRole(IRoleAction.ManagePaymentProviders)}
+          canEdit={hasRole(IRoleAction.ViewPaymentProvider)}
         />
       )}
     </>

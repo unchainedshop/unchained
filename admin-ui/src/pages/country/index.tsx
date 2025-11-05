@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
@@ -132,7 +134,7 @@ const Country = () => {
           { count: countriesCount },
         )}
         headerText={headerText}
-        addPath={hasRole('manageCountries') && '/country/new'}
+        addPath={hasRole(IRoleAction.ManageCountries) && '/country/new'}
         addButtonText={formatMessage({
           id: 'add_country',
           defaultMessage: 'Add Country',

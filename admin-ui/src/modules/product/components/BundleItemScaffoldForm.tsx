@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
@@ -93,7 +95,7 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
         />
       </div>
 
-      {hasRole('manageProducts') && (
+      {hasRole(IRoleAction.ManageProducts) && (
         <div className="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
           <SubmitButton
             label={formatMessage({

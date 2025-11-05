@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import Link from 'next/link';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
@@ -132,7 +134,7 @@ const OrderDetailPayment = ({ order }) => {
                 component={
                   order.payment.status === 'OPEN' &&
                   type.value === 'PAID' &&
-                  hasRole('markOrderPaid') && (
+                  hasRole(IRoleAction.MarkOrderPaid) && (
                     <button
                       id="pay"
                       type="button"

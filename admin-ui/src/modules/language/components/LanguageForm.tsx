@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Toggle from '../../common/components/Toggle';
 import Form from '../../forms/components/Form';
@@ -52,7 +54,7 @@ const LanguageForm = ({
       <div className="p-5">
         <TextField
           name="isoCode"
-          disabled={!hasRole('manageLanguages')}
+          disabled={!hasRole(IRoleAction.ManageLanguages)}
           id="isoCode"
           validators={[validateLanguage()]}
           label={formatMessage({
@@ -70,7 +72,7 @@ const LanguageForm = ({
                 id: 'active',
                 defaultMessage: 'Active',
               })}
-              disabled={!hasRole('manageLanguages')}
+              disabled={!hasRole(IRoleAction.ManageLanguages)}
               active={form.formik.values.isActive}
               onToggle={() =>
                 form.formik.setFieldValue(
@@ -82,7 +84,7 @@ const LanguageForm = ({
           </div>
         )}
       </div>
-      {hasRole('manageLanguages') && (
+      {hasRole(IRoleAction.ManageLanguages) && (
         <div className="border-t-slate-100 border-t dark:border-t-slate-700 mt-5 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
           <SubmitButton
             label={

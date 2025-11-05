@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Table from '../../common/components/Table';
 import CountryListItem from './CountryListItem';
@@ -46,8 +48,8 @@ const CountryList = ({ countries, onRemoveCountry, sortable }) => {
           key={`${country?._id}-body`}
           country={country}
           onRemove={onRemoveCountry}
-          enableEdit={hasRole('viewCountry')}
-          enableDelete={hasRole('manageCountries')}
+          enableEdit={hasRole(IRoleAction.ViewCountry)}
+          enableDelete={hasRole(IRoleAction.ManageCountries)}
         />
       ))}
     </Table>

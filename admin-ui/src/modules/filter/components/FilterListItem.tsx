@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import useAuth from '../../Auth/useAuth';
@@ -80,7 +82,7 @@ const FilterListItem = ({ filter, onRemove }) => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           showEdit={true}
-          showDelete={hasRole('manageFilters')}
+          showDelete={hasRole(IRoleAction.ManageFilters)}
         />
       </Table.Cell>
     </Table.Row>

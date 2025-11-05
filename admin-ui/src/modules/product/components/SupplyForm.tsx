@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
@@ -79,7 +81,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
   return (
     <div className="mt-5 md:col-span-2 md:mt-0">
       <FormWrapper>
-        <Form form={form} disabled={!hasRole('manageProducts')}>
+        <Form form={form} disabled={!hasRole(IRoleAction.ManageProducts)}>
           <div className="relative px-4 py-5 sm:p-6">
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
@@ -87,7 +89,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                   validators={[validateInteger()]}
                   type="number"
                   name="weight"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   id="weight"
                   label={formatMessage({
                     id: 'weight_gram',
@@ -100,7 +102,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                 <TextField
                   validators={[validateInteger()]}
                   name="length"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   id="length"
                   type="number"
                   label={formatMessage({
@@ -115,7 +117,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                   validators={[validateInteger()]}
                   type="number"
                   name="width"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   id="width "
                   label={formatMessage({
                     id: 'width',
@@ -128,7 +130,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
                 <TextField
                   validators={[validateInteger()]}
                   name="height"
-                  disabled={!hasRole('manageProducts')}
+                  disabled={!hasRole(IRoleAction.ManageProducts)}
                   type="number"
                   id="height"
                   label={formatMessage({
@@ -140,7 +142,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
               </div>
             </div>
           </div>
-          {hasRole('manageProducts') && (
+          {hasRole(IRoleAction.ManageProducts) && (
             <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
               <SubmitButton
                 label={formatMessage({

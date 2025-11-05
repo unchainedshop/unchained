@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { useRouter } from 'next/router';
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
 import ListHeader from '../../modules/common/components/ListHeader';
@@ -123,7 +125,7 @@ const AssortmentsView = () => {
           { count: assortmentsCount },
         )}
         headerText={headerText}
-        addPath={hasRole('manageAssortments') && '/assortments/new'}
+        addPath={hasRole(IRoleAction.ManageAssortments) && '/assortments/new'}
         addButtonText={formatMessage({
           id: 'add_assortment',
           defaultMessage: 'Add Assortment',

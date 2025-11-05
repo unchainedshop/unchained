@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Table from '../../common/components/Table';
 import LanguageListItem from './LanguageListItem';
@@ -39,8 +41,8 @@ const LanguageList = ({ languages, onRemoveLanguage, sortable }) => {
           key={`${language?._id}`}
           language={language}
           onRemove={onRemoveLanguage}
-          enableEdit={hasRole('viewLanguage')}
-          enableDelete={hasRole('manageCountries')}
+          enableEdit={hasRole(IRoleAction.ViewLanguage)}
+          enableDelete={hasRole(IRoleAction.ManageCountries)}
         />
       ))}
     </Table>

@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import useAuth from '../../Auth/useAuth';
@@ -189,7 +191,7 @@ const SubscriptionForm = ({ productId, disabled = false }) => {
               />
             </div>
 
-            {hasRole('createEnrollment') && (
+            {hasRole(IRoleAction.CreateEnrollment) && (
               <div className="-mx-6 -mb-6 mt-6 border-t-slate-100 border-t space-y-6 bg-slate-50 dark:bg-slate-500 text-right sm:p-6">
                 <SubmitButton
                   label={formatMessage({

@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
@@ -114,7 +116,10 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
             id: 'change_password',
             defaultMessage: 'Change password',
           })}
-          disabled={!hasRole('manageUsers') && !hasRole('manageUsers')}
+          disabled={
+            !hasRole(IRoleAction.ManageUsers) &&
+            !hasRole(IRoleAction.ManageUsers)
+          }
         />
       </div>
     </Form>

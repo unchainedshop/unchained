@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 import { IUpdateProductWarehousingInput } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
@@ -54,13 +56,13 @@ const WarehousingForm = ({ productId, disabled = false }) => {
         <Form
           className="rounded"
           form={form}
-          disabled={!hasRole('manageProducts')}
+          disabled={!hasRole(IRoleAction.ManageProducts)}
         >
           <div className="relative px-4 pb-5 sm:p-6">
             <div className="w-full justify-between align-baseline lg:flex gap-6">
               <TextField
                 name="sku"
-                disabled={!hasRole('manageProducts')}
+                disabled={!hasRole(IRoleAction.ManageProducts)}
                 id="sku"
                 label={formatMessage({
                   id: 'sku',
@@ -72,7 +74,7 @@ const WarehousingForm = ({ productId, disabled = false }) => {
               <TextField
                 name="baseUnit"
                 id="baseUnit"
-                disabled={!hasRole('manageProducts')}
+                disabled={!hasRole(IRoleAction.ManageProducts)}
                 label={formatMessage({
                   id: 'baseUnit',
                   defaultMessage: 'Base Unit',
@@ -81,7 +83,7 @@ const WarehousingForm = ({ productId, disabled = false }) => {
               />
             </div>
           </div>
-          {hasRole('manageProducts') && (
+          {hasRole(IRoleAction.ManageProducts) && (
             <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
               <SubmitButton
                 label={formatMessage({

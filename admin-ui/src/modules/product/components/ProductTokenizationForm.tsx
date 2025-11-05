@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FormattedMessage, useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
@@ -153,7 +155,7 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
             />
           </div>
 
-          {hasRole('manageProducts') && (
+          {hasRole(IRoleAction.ManageProducts) && (
             <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
               <SubmitButton
                 label={formatMessage({

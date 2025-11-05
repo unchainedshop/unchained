@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 import { OnSubmitType } from '../../forms/hooks/useForm';
 
@@ -39,7 +41,7 @@ const FilterOptions = ({ filterId }) => {
         defaultMessage: 'Filter options',
       })}
       sideComponents={
-        hasRole('manageFilters') ? (
+        hasRole(IRoleAction.ManageFilters) ? (
           <button
             type="button"
             onClick={() =>

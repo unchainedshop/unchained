@@ -1,4 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
+import { IRoleAction } from '../../../gql/types';
+
 import { CSS } from '@dnd-kit/utilities';
 import { useRouter } from 'next/router';
 
@@ -55,7 +57,7 @@ const AssortmentProductListItem = ({ link, onDelete, id }) => {
         }}
       >
         <div className="flex items-center justify-between gap-5">
-          {hasRole('manageAssortments') && (
+          {hasRole(IRoleAction.ManageAssortments) && (
             <button
               type="button"
               {...attributes}
@@ -68,8 +70,8 @@ const AssortmentProductListItem = ({ link, onDelete, id }) => {
           <TableActionsMenu
             onEdit={handleEdit}
             onDelete={handleDelete}
-            showEdit={hasRole('viewProducts')}
-            showDelete={hasRole('manageAssortments')}
+            showEdit={hasRole(IRoleAction.ViewProducts)}
+            showDelete={hasRole(IRoleAction.ManageAssortments)}
           />
         </div>
       </div>

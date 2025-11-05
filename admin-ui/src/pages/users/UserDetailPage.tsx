@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import useUser from '../../modules/accounts/hooks/useUser';
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
@@ -60,7 +62,11 @@ const UserDetailPage = ({ userId }) => {
             defaultMessage: 'User settings',
           })
         }
-        onDelete={!user?.deleted && hasRole('removeUser') ? onDeleteUser : null}
+        onDelete={
+          !user?.deleted && hasRole(IRoleAction.RemoveUser)
+            ? onDeleteUser
+            : null
+        }
         title={formatMessage(
           {
             id: 'user_detail_title',

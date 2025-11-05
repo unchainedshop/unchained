@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
+
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
@@ -107,7 +109,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         defaultMessage: 'Will be visible on search',
       }),
       current: isActive,
-      disable: !hasRole('manageAssortments'),
+      disable: !hasRole(IRoleAction.ManageAssortments),
       bgColor: 'emerald',
       onClick: async () => {
         await setActive(true);
@@ -134,7 +136,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         defaultMessage: 'Will not be visible on search',
       }),
       current: !isActive,
-      disable: !hasRole('manageAssortments'),
+      disable: !hasRole(IRoleAction.ManageAssortments),
       bgColor: 'amber',
       onClick: async () => {
         await setActive(false);
@@ -163,7 +165,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         id: 'root_assortment_description',
         defaultMessage: 'Can not be assigned as a child of another assortment ',
       }),
-      disable: !hasRole('manageAssortments'),
+      disable: !hasRole(IRoleAction.ManageAssortments),
       current: isRoot,
       bgColor: 'stone',
       onClick: async () => {
@@ -186,7 +188,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         id: 'make_leaf',
         defaultMessage: 'Make leaf',
       }),
-      disable: !hasRole('manageAssortments'),
+      disable: !hasRole(IRoleAction.ManageAssortments),
       description: formatMessage({
         id: 'leaf_assortment_description',
         defaultMessage: 'Can be assigned as a child of another assortment ',
@@ -275,13 +277,13 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
               <input
                 id="sequence"
                 type="number"
-                disabled={!hasRole('manageAssortments')}
+                disabled={!hasRole(IRoleAction.ManageAssortments)}
                 className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-0 focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1"
                 defaultValue={assortment?.sequence}
                 onBlur={updateAssortmentSequence}
               />
             </div>
-            {hasRole('manageAssortments') && (
+            {hasRole(IRoleAction.ManageAssortments) && (
               <>
                 <div>
                   {isBase ? (
@@ -367,7 +369,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
             },
           );
         }}
-        canEdit={hasRole('manageAssortments')}
+        canEdit={hasRole(IRoleAction.ManageAssortments)}
       />
 
       <AssortmentDetail

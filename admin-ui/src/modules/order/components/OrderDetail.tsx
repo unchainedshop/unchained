@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import { toast } from 'react-toastify';
 
 import OrderDetailItem from './OrderDetailItem';
@@ -102,7 +104,7 @@ const OrderDetail = ({ order }) => {
       content: 'ordered',
       Component: isWaitingForConfirmation(order) && (
         <>
-          {hasRole('markOrderConfirmed') && (
+          {hasRole(IRoleAction.MarkOrderConfirmed) && (
             <button
               id="confirm_order"
               onClick={onConfirmOrder}
@@ -115,7 +117,7 @@ const OrderDetail = ({ order }) => {
               })}
             </button>
           )}
-          {hasRole('markOrderRejected') && (
+          {hasRole(IRoleAction.MarkOrderRejected) && (
             <button
               id="reject_order"
               onClick={onRejectOrder}

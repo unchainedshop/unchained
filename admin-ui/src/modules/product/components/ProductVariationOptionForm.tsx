@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
 import FieldWithHelp from '../../forms/components/FieldWithHelp';
@@ -74,7 +76,7 @@ const ProductVariationOptionForm = ({
         </div>
       </div>
 
-      {hasRole('manageProducts') && (
+      {hasRole(IRoleAction.ManageProducts) && (
         <div className="text-right mt-2 px-6 pb-6">
           <SubmitButton
             className="py-2.5"

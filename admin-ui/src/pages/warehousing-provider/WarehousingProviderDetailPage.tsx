@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -90,7 +92,7 @@ const WarehousingProviderDetailPage = ({ warehousingProviderId }) => {
             { id: warehousingProvider?._id },
           )}
         />
-        {hasRole('manageWarehousingProviders') && (
+        {hasRole(IRoleAction.ManageWarehousingProviders) && (
           <HeaderDeleteButton onClick={handleOnClick} />
         )}
       </div>
@@ -99,7 +101,7 @@ const WarehousingProviderDetailPage = ({ warehousingProviderId }) => {
         <Loading />
       ) : (
         <ProviderDetail
-          readOnly={!hasRole('manageWarehousingProviders')}
+          readOnly={!hasRole(IRoleAction.ManageWarehousingProviders)}
           provider={warehousingProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}

@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { IRoleAction } from '../../gql/types';
+
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
@@ -74,7 +76,7 @@ const FilterDetailPage = ({ filterId }) => {
             { id: filter?._id },
           )}
         />
-        {hasRole('manageFilters') && (
+        {hasRole(IRoleAction.ManageFilters) && (
           <HeaderDeleteButton onClick={onRemoveFilter} />
         )}
       </div>

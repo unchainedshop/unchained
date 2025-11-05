@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
+
 import useAuth from '../../Auth/useAuth';
 import Toggle from '../../common/components/Toggle';
 import Form from '../../forms/components/Form';
@@ -83,7 +85,7 @@ const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
         </span>
       </div>
       <FormErrors />
-      {hasRole('manageAssortments') && (
+      {hasRole(IRoleAction.ManageAssortments) && (
         <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
           <SubmitButton
             label={formatMessage({

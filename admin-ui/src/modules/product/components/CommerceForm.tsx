@@ -1,4 +1,6 @@
 import React from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { FieldArray } from 'formik';
 import { useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
@@ -99,7 +101,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
           <Form
             className="mt-3 rounded-md"
             form={form}
-            disabled={!hasRole('manageProducts')}
+            disabled={!hasRole(IRoleAction.ManageProducts)}
           >
             <div className="relative max-w-full p-3 sm:px-5">
               <div className="max-w-full justify-between align-baseline" />
@@ -161,7 +163,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                           <div className="flex w-full gap-x-2">
                             <TextField
                               className="w-full"
-                              disabled={!hasRole('manageProducts')}
+                              disabled={!hasRole(IRoleAction.ManageProducts)}
                               validators={[
                                 validateProductCommerce(index, pricing),
                                 validateProductCommerceOneNull(pricing),
@@ -179,7 +181,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                             <TextField
                               type="number"
                               className="w-full"
-                              disabled={!hasRole('manageProducts')}
+                              disabled={!hasRole(IRoleAction.ManageProducts)}
                               name={`pricing[${index}].amount`}
                               id={`pricing[${index}].amount`}
                               required
@@ -196,7 +198,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               <CheckboxField
                                 name={`pricing[${index}].isTaxable`}
                                 labelClassName="lg:sr-only items-center "
-                                disabled={!hasRole('manageProducts')}
+                                disabled={!hasRole(IRoleAction.ManageProducts)}
                                 label={formatMessage({
                                   id: 'vat_suspect',
                                   defaultMessage: 'Vat Suspect',
@@ -210,7 +212,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               <CheckboxField
                                 name={`pricing[${index}].isNetPrice`}
                                 labelClassName="lg:sr-only items-center"
-                                disabled={!hasRole('manageProducts')}
+                                disabled={!hasRole(IRoleAction.ManageProducts)}
                                 label={formatMessage({
                                   id: 'net_price',
                                   defaultMessage: 'Net Price',
@@ -232,7 +234,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               })}
                               name={`pricing[${index}].countryCode`}
                               id={`pricing[${index}].countryCode`}
-                              disabled={!hasRole('manageProducts')}
+                              disabled={!hasRole(IRoleAction.ManageProducts)}
                               required
                               options={convertArrayOfObjectToObject(
                                 countries,
@@ -249,7 +251,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                                 id: 'currency',
                                 defaultMessage: 'Currency',
                               })}
-                              disabled={!hasRole('manageProducts')}
+                              disabled={!hasRole(IRoleAction.ManageProducts)}
                               name={`pricing[${index}].currencyCode`}
                               id={`pricing[${index}].currencyCode`}
                               required
@@ -266,7 +268,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                             />
                           </div>
 
-                          {hasRole('manageProducts') && (
+                          {hasRole(IRoleAction.ManageProducts) && (
                             <div className="absolute -top-2 right-0 mt-0 mr-0 shrink-0  pb-1 md:mr-0 lg:mt-6 lg:py-0 lg:px-0 ">
                               <button
                                 className="items-center rounded-full bg-white dark:bg-slate-900 px-1 py-1 text-sm text-rose-500 dark:text-rose-400 hover:bg-rose-50 focus:outline-hidden focus:ring-0 focus:ring-rose-500 focus:ring-offset-2"
@@ -293,7 +295,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                         </div>
                       );
                     })}
-                    {hasRole('manageProducts') && (
+                    {hasRole(IRoleAction.ManageProducts) && (
                       <div className="mt-6">
                         <Button
                           variant="tertiary"
@@ -321,7 +323,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
             </div>
             <FormErrors displayFieldErrors />
 
-            {hasRole('manageProducts') && (
+            {hasRole(IRoleAction.ManageProducts) && (
               <div className="-mx-6 p-6 bg-slate-50 dark:bg-slate-900 text-right">
                 <SubmitButton
                   className="mx-6"

@@ -1,4 +1,6 @@
 import React from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import { useIntl } from 'react-intl';
 import Button from '../../common/components/Button';
 import useProducts from '../hooks/useProducts';
@@ -67,7 +69,7 @@ const ProductExport = () => {
     },
   );
 
-  if (!hasRole('viewProduct')) return null;
+  if (!hasRole(IRoleAction.ViewProduct)) return null;
 
   return (
     <Button

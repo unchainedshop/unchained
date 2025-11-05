@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { IRoleAction } from '../../../gql/types';
+
 import MediaListItem from '../../common/components/MediaListItem';
 import useTranslatedProductMediaTexts from '../hooks/useTranslatedProductMediaTexts';
 import useUpdateProductMediaTexts from '../hooks/useUpdateProductMediaTexts';
@@ -72,9 +74,11 @@ const ProductMediaListItem = ({ media, id }) => {
       media={media}
       mediaText={mediaText}
       isEdit={isEditing}
-      onDelete={hasRole('manageProducts') ? onDelete : undefined}
-      onEdit={hasRole('manageProducts') ? setIsEditing : undefined}
-      onUpdate={hasRole('manageProducts') ? onUpdateMediaText : undefined}
+      onDelete={hasRole(IRoleAction.ManageProducts) ? onDelete : undefined}
+      onEdit={hasRole(IRoleAction.ManageProducts) ? setIsEditing : undefined}
+      onUpdate={
+        hasRole(IRoleAction.ManageProducts) ? onUpdateMediaText : undefined
+      }
     />
   );
 };
