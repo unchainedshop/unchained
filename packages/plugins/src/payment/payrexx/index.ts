@@ -80,7 +80,7 @@ const Payrexx: IPaymentAdapter = {
           mapUserToGatewayObject({
             userId,
             emailAddress,
-            currencyCode: 'CHF',
+            currencyCode: order?.currencyCode,
           }),
         );
         return JSON.stringify(gateway);
