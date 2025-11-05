@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import AddressFragment from '../../common/fragments/AddressFragment';
 
 const OrderDetailFragment = gql`
   fragment OrderDetailFragment on Order {
@@ -93,21 +94,6 @@ const OrderDetailFragment = gql`
       }
       paid
     }
-    delivery {
-      _id
-      status
-      provider {
-        _id
-        type
-        interface {
-          _id
-          label
-          version
-        }
-      }
-
-      delivered
-    }
 
     orderNumber
     status
@@ -133,29 +119,22 @@ const OrderDetailFragment = gql`
       isActive
     }
     billingAddress {
-      firstName
-      lastName
-      company
-      addressLine
-      addressLine2
-      postalCode
-      countryCode
-      regionCode
-      city
+      ...AddressFragment
     }
     delivery {
       _id
+      ... on OrderDeliveryPickUp {
+        activePickUpLocation {
+          _id
+          name
+          address {
+            ...AddressFragment
+          }
+        }
+      }
       ... on OrderDeliveryShipping {
         address {
-          firstName
-          lastName
-          company
-          addressLine
-          addressLine2
-          postalCode
-          countryCode
-          regionCode
-          city
+          ...AddressFragment
         }
       }
       provider {
@@ -270,6 +249,7 @@ const OrderDetailFragment = gql`
       }
     }
   }
+  ${AddressFragment}
 `;
 
 export default OrderDetailFragment;
