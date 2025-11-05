@@ -177,25 +177,25 @@ const Layout = ({
             id: 'currencies',
             defaultMessage: 'Currencies',
           }),
-          requiredRole: 'manageCurrencies',
+          requiredRole: 'viewCurrencies',
           href: '/currency',
         },
         {
           name: formatMessage({ id: 'countries', defaultMessage: 'Countries' }),
           href: '/country',
-          requiredRole: 'manageCountries',
+          requiredRole: 'viewCountries',
         },
         {
           name: formatMessage({ id: 'languages', defaultMessage: 'Languages' }),
           href: '/language',
-          requiredRole: 'manageLanguages',
+          requiredRole: 'viewLanguages',
         },
         isSystemReady && {
           name: formatMessage({
             id: 'delivery_providers',
             defaultMessage: 'Delivery providers',
           }),
-          requiredRole: 'manageDeliveryProviders',
+          requiredRole: 'viewDeliveryProviders',
           href: '/delivery-provider',
         },
         isSystemReady && {
@@ -203,7 +203,7 @@ const Layout = ({
             id: 'payment_providers',
             defaultMessage: 'Payment providers',
           }),
-          requiredRole: 'managePaymentProviders',
+          requiredRole: 'viewPaymentProviders',
           href: '/payment-provider',
         },
         isSystemReady && {
@@ -211,7 +211,7 @@ const Layout = ({
             id: 'warehousing_provider',
             defaultMessage: 'Warehousing provider',
           }),
-          requiredRole: 'manageWarehousingProviders',
+          requiredRole: 'viewWarehousingProviders',
           href: '/warehousing-provider',
         },
       ].filter(Boolean),

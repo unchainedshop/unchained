@@ -10,7 +10,7 @@ const ProviderConfigurationForm = ({
   onSubmit,
   onSubmitSuccess,
   provider,
-  readOnly,
+  disabled,
 }) => {
   const { formatMessage } = useIntl();
   const form = useForm({
@@ -29,6 +29,7 @@ const ProviderConfigurationForm = ({
         <JSONAreaField
           id="configuration"
           name="configuration"
+          disabled={disabled}
           value={form.formik.values.configuration}
           label={formatMessage({
             id: 'configuration',
@@ -36,14 +37,15 @@ const ProviderConfigurationForm = ({
           })}
         />
         <FormErrors />
-        <SubmitButton
-          hidden={readOnly}
-          label={formatMessage({
-            id: 'update_configuration',
-            defaultMessage: 'Update configuration',
-          })}
-          className="mt-3"
-        />
+        {!disabled && (
+          <SubmitButton
+            label={formatMessage({
+              id: 'update_configuration',
+              defaultMessage: 'Update configuration',
+            })}
+            className="mt-3"
+          />
+        )}
       </div>
     </Form>
   );

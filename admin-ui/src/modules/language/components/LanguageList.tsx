@@ -39,7 +39,7 @@ const LanguageList = ({ languages, onRemoveLanguage, sortable }) => {
           key={`${language?._id}`}
           language={language}
           onRemove={onRemoveLanguage}
-          enableEdit={true}
+          enableEdit={hasRole('viewLanguage')}
           enableDelete={hasRole('manageCountries')}
         />
       ))}

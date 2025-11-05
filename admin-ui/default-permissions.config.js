@@ -8,7 +8,7 @@ module.exports = () => {
     '/country/new': 'manageCountries',
     '/language/new': 'manageLanguages',
     '/works/management': 'manageWorker',
-    '/works': 'manageWorker',
+    '/works': 'viewWorkQueue',
     '/works/[workId]': 'manageWorker',
     '/country/[countryId]': 'manageCountries',
     '/currency/[currencyId]': 'manageCurrencies',
@@ -16,12 +16,12 @@ module.exports = () => {
     '/products/[...slug]': 'manageProducts',
     '/assortments/[...slug]': 'manageAssortments',
     '/filters/[filterId]': 'manageFilters',
-    '/country': 'manageCountries',
-    '/currency': 'manageCurrencies',
-    '/language': 'manageLanguages',
+    '/country': 'viewCountries',
+    '/currency': 'viewCurrencies',
+    '/language': 'viewLanguages',
     '/products': 'viewProducts',
     '/assortments': 'viewAssortments',
-    '/filters': 'manageFilters',
+    '/filters': 'viewFilters',
     '/delivery-provider/[deliveryProviderId]':
       'manageDeliveryProviders',
     '/delivery-provider':
@@ -30,18 +30,18 @@ module.exports = () => {
       'manageDeliveryProviders',
     '/payment-provider/[paymentProviderId]':
       'managePaymentProviders',
-    '/payment-provider': 'managePaymentProviders',
+    '/payment-provider': 'viewPaymentProviders',
     '/payment-provider/new':
       'managePaymentProviders',
     '/warehousing-provider/[warehousingProviderId]':
       'manageWarehousingProviders',
     '/warehousing-provider':
-      'manageWarehousingProviders',
+      'viewWarehousingProviders',
     '/warehousing-provider/new':
       'manageWarehousingProviders',
     '/users': 'viewUsers',
     '/users/[userId]': 'manageUsers',
-    '/users/new': 'UNRESTRICTED',
+    '/users/new': 'manageUsers',
     '/events/[eventId]': 'viewEvent',
     '/events': 'viewEvents',
     '/': 'UNRESTRICTED',

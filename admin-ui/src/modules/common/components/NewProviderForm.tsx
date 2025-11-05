@@ -39,6 +39,7 @@ const NewProviderForm = ({
             <SelectField
               onChange={(e) => onProviderChange(e.target.value)}
               name="type"
+              disabled={readOnly}
               required
               label={formatMessage({ id: 'type', defaultMessage: 'Type' })}
               options={providerTypes}
@@ -47,6 +48,7 @@ const NewProviderForm = ({
             <SelectField
               name="adapterKey"
               required
+              disabled={readOnly}
               options={providerInterfaces}
               label={formatMessage({
                 id: 'adapter',
@@ -55,15 +57,16 @@ const NewProviderForm = ({
               className="mt-2"
             />
           </div>
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-6 px-5 text-right">
-            <SubmitButton
-              hidden={readOnly}
-              label={formatMessage({
-                id: 'create_provider',
-                defaultMessage: 'Create provider',
-              })}
-            />
-          </div>
+          {!readOnly && (
+            <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-6 px-5 text-right">
+              <SubmitButton
+                label={formatMessage({
+                  id: 'create_provider',
+                  defaultMessage: 'Create provider',
+                })}
+              />
+            </div>
+          )}
         </div>
       </Form>
     </FormWrapper>

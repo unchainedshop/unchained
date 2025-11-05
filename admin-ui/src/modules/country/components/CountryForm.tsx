@@ -60,6 +60,7 @@ const CountryForm = ({
           name="isoCode"
           id="isoCode"
           validators={[validateCountry()]}
+          disabled={!hasRole('manageCountries')}
           label={formatMessage({
             id: 'iso_code',
             defaultMessage: 'ISO code',
@@ -72,6 +73,7 @@ const CountryForm = ({
           <div className="my-3 min-w-0 flex-1">
             <SelectField
               name="defaultCurrencyCode"
+              disabled={!hasRole('manageCountries')}
               id="defaultCurrencyCode"
               label={formatMessage({
                 id: 'default_currency',
@@ -89,6 +91,7 @@ const CountryForm = ({
                 id: 'active',
                 defaultMessage: 'Active',
               })}
+              disabled={!hasRole('manageCountries')}
               active={form.formik.values.isActive}
               onToggle={() =>
                 form.formik.setFieldValue(

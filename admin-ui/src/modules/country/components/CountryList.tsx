@@ -46,7 +46,7 @@ const CountryList = ({ countries, onRemoveCountry, sortable }) => {
           key={`${country?._id}-body`}
           country={country}
           onRemove={onRemoveCountry}
-          enableEdit={true}
+          enableEdit={hasRole('viewCountry')}
           enableDelete={hasRole('manageCountries')}
         />
       ))}

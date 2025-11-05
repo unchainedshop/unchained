@@ -56,6 +56,7 @@ const CurrencyForm = ({
       <div className="p-5 pb-7">
         <TextField
           name="isoCode"
+          disabled={!hasRole('manageCurrencies')}
           id="isoCode"
           label={formatMessage({
             id: 'iso_code',
@@ -67,6 +68,7 @@ const CurrencyForm = ({
 
         <TextField
           name="contractAddress"
+          disabled={!hasRole('manageCurrencies')}
           id="contractAddress"
           validators={[isContractAddress()]}
           label={formatMessage({
@@ -85,6 +87,7 @@ const CurrencyForm = ({
           })}
           required
           name="decimals"
+          disabled={!hasRole('manageCurrencies')}
           options={Object.fromEntries(
             new Array(32).fill(null).map((_, i) => [i, `${i}`]),
           )}
@@ -97,6 +100,7 @@ const CurrencyForm = ({
                 id: 'active',
                 defaultMessage: 'Active',
               })}
+              disabled={!hasRole('manageCurrencies')}
               active={form.formik.values.isActive}
               onToggle={() =>
                 form.formik.setFieldValue(

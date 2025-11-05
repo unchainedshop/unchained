@@ -10,11 +10,8 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import MediaUploader from '../../common/components/MediaUploader';
-import DangerMessage from '../../modal/components/DangerMessage';
-import useModal from '../../modal/hooks/useModal';
 import useAddProductMedia from '../hooks/useAddProductMedia';
 import useProductMedia from '../hooks/useProductMedia';
-import useRemoveProductMedia from '../hooks/useRemoveProductMedia';
 
 import ProductMediaList from './ProductMediaList';
 import useReOrderProductMedia from '../hooks/useReOrderProductMedia';
@@ -22,10 +19,8 @@ import useAuth from '../../Auth/useAuth';
 
 const ProductMediaForm = ({ productId }) => {
   const { productMedia } = useProductMedia({ productId });
-  const { setModal } = useModal();
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const { removeProductMedia } = useRemoveProductMedia();
   const { addProductMedia } = useAddProductMedia();
   const { reOrderProductMedia } = useReOrderProductMedia();
   const items = productMedia?.map((media) => media._id);
@@ -47,33 +42,6 @@ const ProductMediaForm = ({ productId }) => {
         }),
       );
     }
-  };
-
-  const onRemoveMedia = async (productMediaId) => {
-    await setModal(
-      <DangerMessage
-        onCancelClick={async () => setModal('')}
-        message={formatMessage({
-          id: 'delete_product_media_confirmation',
-          defaultMessage:
-            'This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this media? ',
-        })}
-        onOkClick={async () => {
-          setModal('');
-          await removeProductMedia({ productMediaId });
-          toast.success(
-            formatMessage({
-              id: 'product_media_deleted',
-              defaultMessage: 'Media deleted successfully',
-            }),
-          );
-        }}
-        okText={formatMessage({
-          id: 'delete_product_media',
-          defaultMessage: 'Delete media',
-        })}
-      />,
-    );
   };
 
   const handleDragEnd = async (event) => {
@@ -139,11 +107,7 @@ const ProductMediaForm = ({ productId }) => {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <ProductMediaList
-          medias={productMedia}
-          onDeleteMedia={onRemoveMedia}
-          items={items}
-        />
+        <ProductMediaList medias={productMedia} items={items} />
       </DndContext>
     </div>
   );

@@ -48,6 +48,7 @@ const ProductReviewForm = ({
         <div className="space-y-4">
           <TextField
             name="title"
+            disabled={!hasRole('reviewProduct')}
             id="title"
             label={formatMessage({
               id: 'title',
@@ -60,6 +61,7 @@ const ProductReviewForm = ({
           <TextAreaField
             rows={4}
             name="review"
+            disabled={!hasRole('reviewProduct')}
             id="review"
             label={formatMessage({
               id: 'review',
@@ -71,23 +73,24 @@ const ProductReviewForm = ({
             })}
           />
         </div>
-        <div className="mt-6 flex justify-end">
-          <SubmitButton
-            hidden={!hasRole('reviewProduct')}
-            label={
-              isEdit
-                ? formatMessage({
-                    id: 'update_review',
-                    defaultMessage: 'Update Review',
-                  })
-                : formatMessage({
-                    id: 'add_review',
-                    defaultMessage: 'Add Review',
-                  })
-            }
-            className="px-6 py-2"
-          />
-        </div>
+        {hasRole('reviewProduct') && (
+          <div className="mt-6 flex justify-end">
+            <SubmitButton
+              label={
+                isEdit
+                  ? formatMessage({
+                      id: 'update_review',
+                      defaultMessage: 'Update Review',
+                    })
+                  : formatMessage({
+                      id: 'add_review',
+                      defaultMessage: 'Add Review',
+                    })
+              }
+              className="px-6 py-2"
+            />
+          </div>
+        )}
       </Form>
     </div>
   );

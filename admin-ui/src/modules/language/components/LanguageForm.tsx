@@ -52,6 +52,7 @@ const LanguageForm = ({
       <div className="p-5">
         <TextField
           name="isoCode"
+          disabled={!hasRole('manageLanguages')}
           id="isoCode"
           validators={[validateLanguage()]}
           label={formatMessage({
@@ -69,6 +70,7 @@ const LanguageForm = ({
                 id: 'active',
                 defaultMessage: 'Active',
               })}
+              disabled={!hasRole('manageLanguages')}
               active={form.formik.values.isActive}
               onToggle={() =>
                 form.formik.setFieldValue(

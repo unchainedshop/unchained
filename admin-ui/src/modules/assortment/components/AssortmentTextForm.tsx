@@ -149,13 +149,13 @@ const AssortmentTextForm = ({ assortmentId }) => {
       }
     >
       <FormWrapper>
-        <Form form={form} disable={!hasRole('manageAssortments')}>
+        <Form form={form} disabled={!hasRole('manageAssortments')}>
           <div className="shadow sm:rounded-md">
             <div className="grid gap-6 px-4 py-5 sm:p-6">
               <div className="col-span-12">
                 <TextField
                   name="slug"
-                  disable={!hasRole('manageAssortments')}
+                  disabled={!hasRole('manageAssortments')}
                   required
                   id="slug"
                   label={formatMessage({
@@ -169,7 +169,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <TextField
                   name="title"
-                  disable={!hasRole('manageAssortments')}
+                  disabled={!hasRole('manageAssortments')}
                   id="title"
                   label={formatMessage({
                     id: 'title',
@@ -183,7 +183,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <TextField
                   name="subtitle"
-                  disable={!hasRole('manageAssortments')}
+                  disabled={!hasRole('manageAssortments')}
                   id="subtitle"
                   label={formatMessage({
                     id: 'subtitle',
@@ -196,7 +196,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               <div className="col-span-12">
                 <MarkdownTextAreaField
                   name="description"
-                  disable={!hasRole('manageAssortments')}
+                  disabled={!hasRole('manageAssortments')}
                   id="description"
                   label={formatMessage({
                     id: 'description',

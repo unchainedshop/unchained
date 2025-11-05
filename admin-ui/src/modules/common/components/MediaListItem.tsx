@@ -139,7 +139,7 @@ const MediaListItem = ({
             </div>
             <FormErrors />
 
-            {isEdit && (
+            {isEdit && onEdit && (
               <SaveAndCancelButtons
                 className="justify-end"
                 onCancel={() => onEdit(!isEdit)}
@@ -154,7 +154,7 @@ const MediaListItem = ({
           e.stopPropagation();
         }}
       >
-        {!isEdit && (
+        {!isEdit && onEdit && (
           <button
             id="edit"
             type="button"
@@ -174,12 +174,14 @@ const MediaListItem = ({
         >
           <DraggableIcon />
         </button>
-        <DeleteButton
-          onClick={async (e) => {
-            e.stopPropagation();
-            onDelete(media._id);
-          }}
-        />
+        {onDelete && (
+          <DeleteButton
+            onClick={async (e) => {
+              e.stopPropagation();
+              onDelete(media._id);
+            }}
+          />
+        )}
       </span>
     </li>
   );

@@ -95,7 +95,7 @@ const DeliveryProviders = () => {
         <Loading />
       ) : (
         <ProvidersList
-          canEdit={hasRole('manageDeliveryProviders')}
+          canEdit={hasRole('viewDeliveryProvider')}
           canDelete={hasRole('manageDeliveryProviders')}
           providerPath="/delivery-provider?deliveryProviderId"
           providers={deliveryProviders}

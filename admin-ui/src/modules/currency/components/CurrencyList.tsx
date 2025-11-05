@@ -35,7 +35,7 @@ const CurrencyList = ({ currencies, onRemoveCurrency, sortable }) => {
           currency={currency}
           onRemove={onRemoveCurrency}
           enableDelete={hasRole('manageCurrencies')}
-          enableEdit={true}
+          enableEdit={hasRole('viewCurrency')}
         />
       ))}
     </Table>

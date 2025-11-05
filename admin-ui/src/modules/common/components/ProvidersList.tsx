@@ -44,8 +44,8 @@ const ProvidersList = ({
           provider={provider}
           providerPath={providerPath}
           onRemove={onRemove}
-          canEdit
-          canDelete
+          canEdit={canEdit}
+          canDelete={canDelete}
         />
       ))}
     </Table>

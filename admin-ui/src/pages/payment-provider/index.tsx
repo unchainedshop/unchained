@@ -94,7 +94,7 @@ const PaymentProviders = () => {
           providers={paymentProviders}
           onRemove={onRemovePaymentProvider}
           canDelete={hasRole('managePaymentProviders')}
-          canEdit={hasRole('managePaymentProviders')}
+          canEdit={hasRole('viewPaymentProvider')}
         />
       )}
     </>

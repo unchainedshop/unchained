@@ -104,7 +104,7 @@ const WarehousingProviders = () => {
           providers={warehousingProviders}
           onRemove={onRemoveWarehousingProvider}
           canDelete={hasRole('manageWarehousingProviders')}
-          canEdit={hasRole('manageWarehousingProviders')}
+          canEdit={hasRole('viewWarehousingProvider')}
         />
       )}
     </>

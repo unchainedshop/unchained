@@ -78,7 +78,7 @@ const ProviderDetail = ({ provider, onSubmit, onSubmitSuccess, readOnly }) => {
               onSubmit={onSubmit}
               onSubmitSuccess={onSubmitSuccess}
               provider={provider}
-              readOnly={readOnly}
+              disabled={readOnly}
             />
 
             <div className="mt-6 mb-3">
