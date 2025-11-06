@@ -98,9 +98,7 @@ const Users = () => {
           { count: usersCount },
         )}
         headerText={headerText}
-        // TODO: Actually, this should only show up if i'm allowed to also at least
-        // update some user data, but for now, we'll just check for ManageUsers.
-        addPath={hasRole(IRoleAction.ManageUsers) ? '/users/new' : undefined}
+        addPath={hasRole(IRoleAction.EnrollUser) ? '/users/new' : undefined}
         addButtonText={formatMessage({
           id: 'add_user',
           defaultMessage: 'Add User',

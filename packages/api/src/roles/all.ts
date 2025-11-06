@@ -74,6 +74,7 @@ export const all = (role, actions) => {
   role.allow(actions.manageAssortments, () => false);
   role.allow(actions.manageFilters, () => false);
   role.allow(actions.manageUsers, () => false);
+  role.allow(actions.enrollUser, () => false);
   role.allow(actions.updateCart, () => false);
   role.allow(actions.createCart, () => false);
   role.allow(actions.checkoutCart, () => false);

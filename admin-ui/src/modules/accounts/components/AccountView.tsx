@@ -112,7 +112,7 @@ const AccountView = ({
         </SelfDocumentingView>
       ) : null}
 
-      {hasRole(IRoleAction.ManageUsers) && currentUser?._id !== _id ? (
+      {hasRole(IRoleAction.UpdateUser) && currentUser?._id !== _id ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'set_password',

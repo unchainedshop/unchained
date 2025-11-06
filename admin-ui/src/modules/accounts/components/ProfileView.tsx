@@ -200,7 +200,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                         </span>
                       )}
                     </span>
-                    {hasRole(IRoleAction.UpdateUser) && (
+                    {hasRole(IRoleAction.UploadUserAvatar) && (
                       <span className="mt-1 ml-4 flex shrink-0 items-start space-x-4">
                         <button
                           onClick={() => {

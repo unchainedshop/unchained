@@ -3415,6 +3415,7 @@ export enum IRoleAction {
   CreateEnrollment = 'createEnrollment',
   CreateUser = 'createUser',
   DownloadFile = 'downloadFile',
+  EnrollUser = 'enrollUser',
   ForgotPassword = 'forgotPassword',
   Heartbeat = 'heartbeat',
   Impersonate = 'impersonate',

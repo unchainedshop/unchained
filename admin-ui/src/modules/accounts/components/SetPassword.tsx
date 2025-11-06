@@ -12,6 +12,7 @@ import useSendEnrollmentEmail from '../../enrollment/hooks/useSendEnrollmentEmai
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useSetPassword from '../hooks/useSetPassword';
 import Button from '../../common/components/Button';
+import { CombinedGraphQLErrors } from '@apollo/client';
 
 const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
   const { hasRole } = useAuth();
@@ -29,21 +30,28 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
   };
 
   const onSendEnrollmentEmail = async () => {
-    const { data } = await sendEnrollmentEmail({ email: primaryEmail.address });
-    if (data?.sendEnrollmentEmail?.success)
-      toast.success(
-        formatMessage({
-          id: 'enrollment_success',
-          defaultMessage: 'Email sent to the user successfully',
-        }),
-      );
-    else
-      toast.error(
-        formatMessage({
-          id: 'enrollment_error',
-          defaultMessage: 'Failed sending email, please try again',
-        }),
-      );
+    try {
+      const { data } = await sendEnrollmentEmail({
+        email: primaryEmail.address,
+      });
+      if (data?.sendEnrollmentEmail?.success)
+        toast.success(
+          formatMessage({
+            id: 'enrollment_success',
+            defaultMessage: 'Email sent to the user successfully',
+          }),
+        );
+      else
+        toast.error(
+          formatMessage({
+            id: 'enrollment_error',
+            defaultMessage: 'Failed sending email, please try again',
+          }),
+        );
+    } catch (combinedError) {
+      const error = (combinedError as CombinedGraphQLErrors)?.errors?.[0];
+      toast.error(error?.message || combinedError.message);
+    }
   };
 
   const form = useForm({
@@ -58,24 +66,6 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
       );
       return null;
     },
-    getSubmitErrorMessage: (error) => {
-      toast.error(
-        formatMessage(
-          {
-            id: 'password_change_failed',
-            defaultMessage: 'Password change failed, try again later',
-          },
-          { error: error.message },
-        ),
-      );
-      return formatMessage(
-        {
-          id: 'password_change_failed',
-          defaultMessage: 'Password change failed, try again later',
-        },
-        { error: error.message },
-      );
-    },
     initialValues: {
       newPassword: '',
     },
@@ -83,7 +73,7 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
 
   return (
     <Form form={form}>
-      <div className="relative max-w-full mb-4 p-3 space-y-6 sm:p-6">
+      <div className="relative max-w-full space-y-6 sm:p-6">
         <PasswordField
           label={formatMessage({
             id: 'new_password',
@@ -98,10 +88,10 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
           required
           className="text-sm"
         />
+        <FormErrors />
       </div>
-      <FormErrors />
       <div className="border-t-slate-100 border-t align-baseline flex items-center justify-between dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-800 text-right sm:p-6">
-        {isInitialPassword && (
+        {isInitialPassword && hasRole(IRoleAction.SendEmail) && (
           <Button
             text={formatMessage({
               id: 'send__enrollment_email_button',
@@ -111,16 +101,14 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
             onClick={onSendEnrollmentEmail}
           />
         )}
-        <SubmitButton
-          label={formatMessage({
-            id: 'change_password',
-            defaultMessage: 'Change password',
-          })}
-          disabled={
-            !hasRole(IRoleAction.ManageUsers) &&
-            !hasRole(IRoleAction.ManageUsers)
-          }
-        />
+        {hasRole(IRoleAction.UpdateUser) && (
+          <SubmitButton
+            label={formatMessage({
+              id: 'change_password',
+              defaultMessage: 'Change password',
+            })}
+          />
+        )}
       </div>
     </Form>
   );

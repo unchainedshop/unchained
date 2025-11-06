@@ -15,6 +15,8 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import ActiveInActive from '../../common/components/ActiveInActive';
 import DeleteButton from '../../common/components/DeleteButton';
 import useAuth from '../../Auth/useAuth';
+import { CombinedGraphQLErrors } from '@apollo/client';
+import FormErrors from '../../forms/components/FormErrors';
 
 const EmailAddresses = ({
   emails,
@@ -45,18 +47,23 @@ const EmailAddresses = ({
         })}
         onOkClick={async () => {
           setModal('');
-          await removeEmail({ email, userId });
-          toast.success(
-            formatMessage(
-              {
-                id: 'email_deleted',
-                defaultMessage: 'email {id} deleted successfully',
-              },
-              {
-                id: userId,
-              },
-            ),
-          );
+          try {
+            await removeEmail({ email, userId });
+            toast.success(
+              formatMessage(
+                {
+                  id: 'email_deleted',
+                  defaultMessage: 'email {id} deleted successfully',
+                },
+                {
+                  id: userId,
+                },
+              ),
+            );
+          } catch (combinedError) {
+            const error = (combinedError as CombinedGraphQLErrors)?.errors?.[0];
+            toast.error(error?.message || combinedError.message);
+          }
         }}
         okText={formatMessage({
           id: 'delete_email',
@@ -67,22 +74,28 @@ const EmailAddresses = ({
   };
 
   const onSendVerification = async ({ email }) => {
-    const { data } = await sendVerificationEmail({ email });
-    if (data.sendVerificationEmail.success)
-      toast.success(
-        formatMessage({
-          id: 'verification_sent_success',
-          defaultMessage: 'Verification email sent successfully ',
-        }),
-      );
-    else
-      toast.error(
-        formatMessage({
-          id: 'verification_sent_error',
-          defaultMessage:
-            'Error occurred while sending verification email, please try again',
-        }),
-      );
+    try {
+      const { data } = await sendVerificationEmail({ email });
+      if (data.sendVerificationEmail.success) {
+        toast.success(
+          formatMessage({
+            id: 'verification_sent_success',
+            defaultMessage: 'Verification email sent successfully ',
+          }),
+        );
+      } else {
+        toast.error(
+          formatMessage({
+            id: 'verification_sent_error',
+            defaultMessage:
+              'Error occurred while sending verification email, please try again',
+          }),
+        );
+      }
+    } catch (combinedError) {
+      const error = (combinedError as CombinedGraphQLErrors)?.errors?.[0];
+      toast.error(error?.message || combinedError.message);
+    }
   };
 
   const successMessage = formatMessage({
@@ -112,7 +125,17 @@ const EmailAddresses = ({
                 <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-200">
                   {address}
                 </div>
-                <ActiveInActive isActive={verified} />
+                <ActiveInActive
+                  isActive={verified}
+                  activeText={formatMessage({
+                    id: 'verified',
+                    defaultMessage: 'Verified',
+                  })}
+                  inActiveText={formatMessage({
+                    id: 'unverified',
+                    defaultMessage: 'Unverified',
+                  })}
+                />
               </div>
               <div className="my-1 flex items-center cursor-pointer">
                 {enableVerification &&
@@ -172,6 +195,7 @@ const EmailAddresses = ({
               </span>
             </div>
           </div>
+          <FormErrors />
         </Form>
       )}
     </div>

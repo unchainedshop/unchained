@@ -41,7 +41,7 @@ module.exports = () => {
       'manageWarehousingProviders',
     '/users': 'viewUsers',
     '/users/[userId]': 'manageUsers',
-    '/users/new': 'manageUsers',
+    '/users/new': 'enrollUser',
     '/events/[eventId]': 'viewEvent',
     '/events': 'viewEvents',
     '/': 'UNRESTRICTED',

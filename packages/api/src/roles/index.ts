@@ -52,7 +52,7 @@ const actions: Record<string, string> = [
   'updateUsername',
   'sendEmail',
   'manageUsers',
-  'manageUsers',
+  'enrollUser',
   'manageLanguages',
   'manageCountries',
   'manageProducts',

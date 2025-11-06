@@ -3,6 +3,7 @@ import { useFormik, FormikValues, FormikErrors, FormikTouched } from 'formik';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import clean from '../lib/clean';
+import { CombinedGraphQLErrors } from '@apollo/client';
 
 export type OnSubmitSuccessType = (
   result: boolean,
@@ -47,49 +48,8 @@ const useForm = ({
   const intl = useIntl();
   const [submitError, setSubmitError] = useState('');
 
-  const parseError = (error) => {
-    if (error) {
-      if (
-        error &&
-        typeof error === 'string' &&
-        error?.toLowerCase().includes('email already exists')
-      )
-        return intl.formatMessage({
-          id: 'email_exists_error',
-          defaultMessage: 'Email already exists',
-        });
-
-      if (
-        error &&
-        typeof error === 'string' &&
-        error?.toLowerCase().includes('permission')
-      ) {
-        return intl.formatMessage({
-          id: 'permission_missing',
-          defaultMessage: "You don't have the required permission",
-        });
-      }
-
-      if (
-        error?.message &&
-        error?.message?.toLowerCase().includes('email already exists')
-      )
-        return intl.formatMessage({
-          id: 'email_exists_error',
-          defaultMessage: 'Email already exists',
-        });
-
-      if (
-        error?.message &&
-        error?.message?.toLowerCase().includes('permission')
-      ) {
-        return intl.formatMessage({
-          id: 'permission_missing',
-          defaultMessage: "You don't have the required permission",
-        });
-      }
-    }
-
+  const parseError = (combinedError) => {
+    const error = (combinedError as CombinedGraphQLErrors)?.errors?.[0];
     return intl.formatMessage(
       {
         id: 'error_server',
