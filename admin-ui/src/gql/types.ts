@@ -2350,6 +2350,7 @@ export type IOrderStatistics = {
 };
 
 export type IOrderStatisticsRecord = {
+  count: Scalars['Int']['output'];
   date: Scalars['String']['output'];
   total: IPrice;
 };
@@ -7137,6 +7138,21 @@ export type IConfirmMediaUploadMutation = {
   };
 };
 
+export type IOrderAnalyticsQueryVariables = Exact<{
+  dateRange?: InputMaybe<IDateFilterInput>;
+}>;
+
+export type IOrderAnalyticsQuery = {
+  orderStatistics: {
+    confirmCount: number;
+    confirmRecords: Array<{
+      date: string;
+      count: number;
+      total: { amount: number; currencyCode: string };
+    }>;
+  };
+};
+
 export type IOrdersWithItemsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
@@ -7703,25 +7719,6 @@ export type IOrdersWithItemsQuery = {
         currencyCode: string;
       } | null;
     }> | null;
-  }>;
-};
-
-export type ISalesAnalyticsQueryVariables = Exact<{
-  includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
-  queryString?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Array<IOrderStatus>>;
-  sort?: InputMaybe<Array<ISortOptionInput>>;
-  paymentProviderIds?: InputMaybe<Array<Scalars['String']['input']>>;
-  deliveryProviderIds?: InputMaybe<Array<Scalars['String']['input']>>;
-  dateRange?: InputMaybe<IDateFilterInput>;
-}>;
-
-export type ISalesAnalyticsQuery = {
-  orders: Array<{
-    _id: string;
-    ordered?: any | null;
-    status?: IOrderStatus | null;
-    total?: { amount: number; currencyCode: string } | null;
   }>;
 };
 

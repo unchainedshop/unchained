@@ -3,38 +3,22 @@ import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { format, parseISO, subDays, startOfDay, endOfDay } from 'date-fns';
 import {
-  IOrderStatus,
-  ISalesAnalyticsQuery,
-  ISalesAnalyticsQueryVariables,
+  IOrderAnalyticsQuery,
+  IOrderAnalyticsQueryVariables,
 } from '../../../gql/types';
 
-const SALES_ANALYTICS_QUERY = gql`
-  query SalesAnalytics(
-    $includeCarts: Boolean = false
-    $queryString: String
-    $status: [OrderStatus!]
-    $sort: [SortOptionInput!]
-    $paymentProviderIds: [String!]
-    $deliveryProviderIds: [String!]
-    $dateRange: DateFilterInput
-  ) {
-    orders(
-      limit: 0
-      includeCarts: $includeCarts
-      status: $status
-      queryString: $queryString
-      sort: $sort
-      paymentProviderIds: $paymentProviderIds
-      deliveryProviderIds: $deliveryProviderIds
-      dateRange: $dateRange
-    ) {
-      _id
-      ordered
-      status
-      total {
-        amount
-        currencyCode
+const ORDER_ANALYTICS_QUERY = gql`
+  query OrderAnalytics($dateRange: DateFilterInput) {
+    orderStatistics(dateRange: $dateRange) {
+      confirmRecords {
+        date
+        total {
+          amount
+          currencyCode
+        }
+        count
       }
+      confirmCount
     }
   }
 `;
@@ -55,13 +39,6 @@ export interface SalesAnalyticsResult {
   dateRange?: { start: string; end: string };
   currencyCode?: string;
   error: any;
-}
-
-interface Order {
-  _id: string;
-  ordered: string;
-  status: string;
-  total: { amount: number; currencyCode: string };
 }
 
 const initializeDailySales = (days: number, endDate: Date) => {
@@ -85,16 +62,10 @@ const buildSalesData = (
     }))
     .reverse();
 
-const useSalesAnalytics = ({
+const useOrderAnalytics = ({
   days = 30,
-  paymentProviderIds = [],
-  deliveryProviderIds = [],
-  queryString = '',
 }: {
   days?: number;
-  paymentProviderIds?: string[];
-  deliveryProviderIds?: string[];
-  queryString?: string;
 }): SalesAnalyticsResult => {
   const endDate = useMemo(() => new Date(), []);
   const startDate = subDays(endDate, days);
@@ -108,22 +79,16 @@ const useSalesAnalytics = ({
   );
 
   const { data, loading, error } = useQuery<
-    ISalesAnalyticsQuery,
-    ISalesAnalyticsQueryVariables
-  >(SALES_ANALYTICS_QUERY, {
-    variables: {
-      status: [IOrderStatus.Confirmed, IOrderStatus.Fullfilled],
-      queryString,
-      paymentProviderIds,
-      deliveryProviderIds,
-      dateRange,
-    },
+    IOrderAnalyticsQuery,
+    IOrderAnalyticsQueryVariables
+  >(ORDER_ANALYTICS_QUERY, {
+    variables: { dateRange },
     errorPolicy: 'all',
   });
 
   return useMemo(() => {
-    const orders = data?.orders || [];
-    if (!orders.length) {
+    const stats = data?.orderStatistics;
+    if (!stats) {
       return {
         totalSales: 0,
         totalOrders: 0,
@@ -135,30 +100,31 @@ const useSalesAnalytics = ({
       };
     }
 
-    let totalSales = 0;
     const dailySales = initializeDailySales(days, endDate);
-    orders.forEach((order) => {
-      if (!order.ordered || order.total?.amount == null) return;
+    let totalSales = 0;
+    const currencyCode = stats.confirmRecords[0]?.total?.currencyCode ?? 'CHF';
 
-      const date = format(parseISO(order.ordered), 'MMM d');
+    stats.confirmRecords.forEach((record) => {
+      if (!record.date || !record.total?.amount || !record.count) return;
+      const date = format(parseISO(record.date), 'MMM d');
       const daily = dailySales.get(date);
+      const amount = Number(record.total.amount ?? 0);
+      const count = record.count ?? 0;
 
-      const orderAmount = Number(order.total?.amount ?? 0);
       if (daily) {
-        daily.sales += orderAmount;
-        daily.orders += 1;
+        daily.sales += amount;
+        daily.orders += count;
       }
-
-      totalSales += orderAmount;
+      totalSales += amount;
     });
 
-    const totalOrders = orders.length;
+    const totalOrders = stats.confirmCount;
     const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
 
     return {
       totalSales: Math.round(totalSales),
-      currencyCode: orders[0]?.total?.currencyCode ?? 'USD',
       totalOrders,
+      currencyCode,
       averageOrderValue: Math.round(averageOrderValue),
       salesData: buildSalesData(dailySales),
       loading,
@@ -168,4 +134,4 @@ const useSalesAnalytics = ({
   }, [data, loading, error, dateRange, days, endDate]);
 };
 
-export default useSalesAnalytics;
+export default useOrderAnalytics;

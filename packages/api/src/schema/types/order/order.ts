@@ -84,6 +84,7 @@ export default [
     type OrderStatisticsRecord {
       date: String!
       total: Price!
+      count: Int!
     }
     type OrderStatistics {
       newCount: Int!

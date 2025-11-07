@@ -9,12 +9,7 @@ import {
   YAxis,
   CartesianGrid,
 } from 'recharts';
-import {
-  TrendingUp,
-  ShoppingCart,
-  Calculator,
-  CurrencyIcon,
-} from 'lucide-react';
+import { ShoppingCart, Calculator, CurrencyIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../../../components/ui/card';
 import {
   ChartContainer,
@@ -22,9 +17,9 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '../../../components/ui/chart';
-import useSalesAnalytics from '../hooks/useSalesAnalytics';
 import { useFormatPrice } from '../utils/utils';
 import MetricGraphCard from './MetricGraphCard';
+import useOrderAnalytics from '../hooks/useOrderAnalytics';
 
 const chartConfig = {
   sales: {
@@ -51,7 +46,8 @@ const AnalyticsDashboard: React.FC = () => {
     salesData,
     loading,
     currencyCode,
-  } = useSalesAnalytics({ days: 30 });
+  } = useOrderAnalytics({ days: 30 });
+  console.log('currencyCode in AnalyticsDashboard:', totalOrders);
   const { formatPrice } = useFormatPrice();
   if (loading) {
     return (
@@ -148,12 +144,10 @@ const AnalyticsDashboard: React.FC = () => {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 6)}
               />
               <YAxis hide />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <Bar dataKey="orders" fill="var(--color-orders)" radius={4} />
             </BarChart>
           </ChartContainer>
@@ -193,7 +187,6 @@ const AnalyticsDashboard: React.FC = () => {
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    hideLabel
                     formatter={(value) =>
                       formatPrice({ currencyCode, amount: value })
                     }
