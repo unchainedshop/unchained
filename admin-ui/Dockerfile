@@ -1,4 +1,4 @@
-FROM node:24-alpine AS bundler
+FROM node:25-alpine AS bundler
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -21,7 +21,7 @@ RUN npm run build
 RUN rm -Rf node_modules
 
 
-FROM node:24-alpine AS runtime
+FROM node:25-alpine AS runtime
 
 COPY --from=bundler /usr/src/app /usr/src
 
