@@ -31,7 +31,6 @@ const ProviderDetail = ({
             />
           </div>
 
-          {/* Main provider info */}
           <div className="space-y-4 max-w-xs">
             <div className="flex justify-between w-full gap-3">
               <dt className="my-auto inline-block text-sm text-slate-400 ">
@@ -77,10 +76,8 @@ const ProviderDetail = ({
             </div>
           </div>
 
-          {/* Children displayed full width */}
           {children && <div className="w-full">{children}</div>}
 
-          {/* Provider configuration form */}
           <ProviderConfigurationForm
             onSubmit={onSubmit}
             onSubmitSuccess={onSubmitSuccess}
@@ -88,7 +85,6 @@ const ProviderDetail = ({
             disabled={readOnly}
           />
 
-          {/* Configuration status */}
           <div className="mt-6 mb-3">
             <dt className="inline-block text-sm font-normal text-slate-400">
               {formatMessage({

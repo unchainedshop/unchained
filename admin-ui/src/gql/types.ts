@@ -559,7 +559,7 @@ export type IDeliveryProviderPickUp = IDeliveryProvider & {
   deleted?: Maybe<Scalars['DateTimeISO']['output']>;
   interface?: Maybe<IDeliveryInterface>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
-  pickUpLocations: Array<IOrderPickUpLocation>;
+  pickUpLocations: Array<IPickUpLocation>;
   simulatedPrice?: Maybe<IPrice>;
   type?: Maybe<IDeliveryProviderType>;
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -574,7 +574,6 @@ export type IDeliveryProviderPickUpSimulatedPriceArgs = {
 
 export type IDeliveryProviderShipping = IDeliveryProvider & {
   _id: Scalars['ID']['output'];
-  address?: Maybe<IAddress>;
   configuration?: Maybe<Scalars['JSON']['output']>;
   configurationError?: Maybe<IDeliveryProviderError>;
   created?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -2459,6 +2458,13 @@ export enum IPaymentProviderType {
   /** Invoice */
   Invoice = 'INVOICE',
 }
+
+export type IPickUpLocation = {
+  _id: Scalars['ID']['output'];
+  address?: Maybe<IAddress>;
+  geoPoint?: Maybe<IGeoPosition>;
+  name: Scalars['String']['output'];
+};
 
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProduct = IProduct & {
@@ -8018,46 +8024,6 @@ export type IUpdateCurrencyMutation = {
   };
 };
 
-type IDeliveryProviderFragment_DeliveryProviderPickUp = {
-  _id: string;
-  created?: any | null;
-  updated?: any | null;
-  deleted?: any | null;
-  type?: IDeliveryProviderType | null;
-  isActive?: boolean | null;
-  configuration?: any | null;
-  configurationError?: IDeliveryProviderError | null;
-  interface?: {
-    _id: string;
-    label?: string | null;
-    version?: string | null;
-  } | null;
-};
-
-type IDeliveryProviderFragment_DeliveryProviderShipping = {
-  _id: string;
-  created?: any | null;
-  updated?: any | null;
-  deleted?: any | null;
-  type?: IDeliveryProviderType | null;
-  isActive?: boolean | null;
-  configuration?: any | null;
-  configurationError?: IDeliveryProviderError | null;
-  interface?: {
-    _id: string;
-    label?: string | null;
-    version?: string | null;
-  } | null;
-};
-
-export type IDeliveryProviderFragment =
-  | IDeliveryProviderFragment_DeliveryProviderPickUp
-  | IDeliveryProviderFragment_DeliveryProviderShipping;
-
-export type IDeliveryProviderFragmentVariables = Exact<{
-  [key: string]: never;
-}>;
-
 export type ICreateDeliveryProviderMutationVariables = Exact<{
   deliveryProvider: ICreateDeliveryProviderInput;
 }>;
@@ -8073,6 +8039,20 @@ export type ICreateDeliveryProviderMutation = {
         isActive?: boolean | null;
         configuration?: any | null;
         configurationError?: IDeliveryProviderError | null;
+        pickUpLocations: Array<{
+          _id: string;
+          name: string;
+          address?: {
+            firstName?: string | null;
+            lastName?: string | null;
+            company?: string | null;
+            addressLine?: string | null;
+            postalCode?: string | null;
+            city?: string | null;
+            countryCode?: string | null;
+            regionCode?: string | null;
+          } | null;
+        }>;
         interface?: {
           _id: string;
           label?: string | null;
@@ -8123,6 +8103,20 @@ export type IDeliveryProviderQuery = {
         isActive?: boolean | null;
         configuration?: any | null;
         configurationError?: IDeliveryProviderError | null;
+        pickUpLocations: Array<{
+          _id: string;
+          name: string;
+          address?: {
+            firstName?: string | null;
+            lastName?: string | null;
+            company?: string | null;
+            addressLine?: string | null;
+            postalCode?: string | null;
+            city?: string | null;
+            countryCode?: string | null;
+            regionCode?: string | null;
+          } | null;
+        }>;
         interface?: {
           _id: string;
           label?: string | null;
@@ -8173,6 +8167,20 @@ export type IDeliveryProvidersQuery = {
         isActive?: boolean | null;
         configuration?: any | null;
         configurationError?: IDeliveryProviderError | null;
+        pickUpLocations: Array<{
+          _id: string;
+          name: string;
+          address?: {
+            firstName?: string | null;
+            lastName?: string | null;
+            company?: string | null;
+            addressLine?: string | null;
+            postalCode?: string | null;
+            city?: string | null;
+            countryCode?: string | null;
+            regionCode?: string | null;
+          } | null;
+        }>;
         interface?: {
           _id: string;
           label?: string | null;
@@ -8231,6 +8239,20 @@ export type IUpdateDeliveryProviderMutation = {
         isActive?: boolean | null;
         configuration?: any | null;
         configurationError?: IDeliveryProviderError | null;
+        pickUpLocations: Array<{
+          _id: string;
+          name: string;
+          address?: {
+            firstName?: string | null;
+            lastName?: string | null;
+            company?: string | null;
+            addressLine?: string | null;
+            postalCode?: string | null;
+            city?: string | null;
+            countryCode?: string | null;
+            regionCode?: string | null;
+          } | null;
+        }>;
         interface?: {
           _id: string;
           label?: string | null;

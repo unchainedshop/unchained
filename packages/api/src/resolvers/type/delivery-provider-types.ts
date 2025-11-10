@@ -4,6 +4,7 @@ import {
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
 import { objectInvert } from '@unchainedshop/utils';
+import { DeliveryProviderInterface } from './delivery-provider-interface.js';
 
 const DeliveryProviderMap = {
   DeliveryProviderShipping: DeliveryProviderType.SHIPPING,
@@ -22,4 +23,5 @@ export const DeliveryProvider = {
     }
     return invertedProductTypes[DeliveryProviderType.SHIPPING];
   },
+  ...DeliveryProviderInterface,
 };
