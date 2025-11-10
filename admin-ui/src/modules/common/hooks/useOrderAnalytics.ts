@@ -88,7 +88,7 @@ const useOrderAnalytics = ({
 
   return useMemo(() => {
     const stats = data?.orderStatistics;
-    if (!stats) {
+    if (!data?.orderStatistics?.confirmCount) {
       return {
         totalSales: 0,
         totalOrders: 0,
@@ -102,8 +102,7 @@ const useOrderAnalytics = ({
 
     const dailySales = initializeDailySales(days, endDate);
     let totalSales = 0;
-    const currencyCode = stats.confirmRecords[0]?.total?.currencyCode ?? 'CHF';
-
+    const currencyCode = stats.confirmRecords[0]?.total?.currencyCode;
     stats.confirmRecords.forEach((record) => {
       if (!record.date || !record.total?.amount || !record.count) return;
       const date = format(parseISO(record.date), 'MMM d');

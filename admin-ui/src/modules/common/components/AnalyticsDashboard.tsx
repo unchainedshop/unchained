@@ -47,7 +47,6 @@ const AnalyticsDashboard: React.FC = () => {
     loading,
     currencyCode,
   } = useOrderAnalytics({ days: 30 });
-  console.log('currencyCode in AnalyticsDashboard:', totalOrders);
   const { formatPrice } = useFormatPrice();
   if (loading) {
     return (
