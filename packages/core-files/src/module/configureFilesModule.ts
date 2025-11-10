@@ -32,8 +32,14 @@ export const configureFilesModule = async ({
       return transformedURLString;
     },
 
-    findFile: async ({ fileId }: { fileId?: string }, options?: mongodb.FindOptions<File>) => {
-      return Files.findOne(generateDbFilterById(fileId), options);
+    findFile: async (
+      { fileId, url }: { fileId?: string; url?: string },
+      options?: mongodb.FindOptions<File>,
+    ) => {
+      if (url) {
+        return Files.findOne({ url }, options);
+      }
+      return Files.findOne(generateDbFilterById(fileId, { url }), options);
     },
 
     findFiles: async (

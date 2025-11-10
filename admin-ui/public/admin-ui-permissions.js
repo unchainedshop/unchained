@@ -40,8 +40,8 @@ window.AdminUiPermissions = () => {
     '/warehousing-provider/new':
       'manageWarehousingProviders',
     '/users': 'viewUsers',
-    '/users/[userId]': 'updateUser',
-    '/users/new': 'updateUser',
+    '/users/[userId]': 'manageUsers',
+    '/users/new': 'enrollUser',
     '/events/[eventId]': 'viewEvent',
     '/events': 'viewEvents',
     '/': 'UNRESTRICTED',

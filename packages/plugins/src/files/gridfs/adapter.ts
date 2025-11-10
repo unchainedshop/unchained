@@ -14,6 +14,8 @@ import { filesSettings } from '@unchainedshop/core-files';
 import { UnchainedCore } from '@unchainedshop/core';
 import { GridFSFileUploadsModule } from './index.js';
 
+const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
+
 const { ROOT_URL } = process.env;
 
 const bufferToStream = (buffer: any) => {
@@ -51,12 +53,12 @@ export const GridFSAdapter: IFileAdapter<
     const signature = await sign(directoryName, hashedFilename, expiryDate.getTime());
 
     const putURL = new URL(
-      `/gridfs/${directoryName}/${encodeURIComponent(
+      `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(
         fileName,
       )}?e=${expiryDate.getTime()}&s=${signature}`,
       ROOT_URL,
     ).href;
-    const url = `/gridfs/${directoryName}/${hashedFilename}`;
+    const url = `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${hashedFilename}`;
 
     return {
       _id: hashedFilename,
@@ -72,13 +74,16 @@ export const GridFSAdapter: IFileAdapter<
   async uploadFileFromStream(directoryName: string, rawFile: any, { modules }, options = {}) {
     let stream: Readable;
     let fileName;
+    let fileId;
     if (rawFile instanceof Promise) {
-      const { filename: f, createReadStream } = await rawFile;
+      const { filename: f, createReadStream, fileId: forcedFileId } = await rawFile;
       fileName = decodeURIComponent(f);
       stream = createReadStream();
+      fileId = forcedFileId;
     } else {
       fileName = decodeURIComponent(rawFile.filename);
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
+      fileId = rawFile.fileId;
     }
 
     const expiryDate = resolveExpirationDate();
@@ -87,7 +92,7 @@ export const GridFSAdapter: IFileAdapter<
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(
       directoryName,
-      hashedFilename,
+      fileId || hashedFilename,
       fileName,
       {
         metadata: { 'content-type': type },
@@ -105,10 +110,10 @@ export const GridFSAdapter: IFileAdapter<
     await finished(writeStream, { readable: false });
 
     const { length } = writeStream;
-    const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
+    const url = `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 
     return {
-      _id: hashedFilename,
+      _id: fileId || hashedFilename,
       directoryName,
       expiryDate: null,
       fileName,
@@ -135,7 +140,7 @@ export const GridFSAdapter: IFileAdapter<
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(
       directoryName,
-      hashedFilename,
+      fileId || hashedFilename,
       fileName,
       {
         metadata: { 'content-type': type },
@@ -143,7 +148,7 @@ export const GridFSAdapter: IFileAdapter<
     );
     await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;
-    const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
+    const url = `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 
     return {
       _id: fileId || hashedFilename,

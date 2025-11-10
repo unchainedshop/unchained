@@ -10,6 +10,8 @@ import { getFileAdapter } from '@unchainedshop/core-files';
 
 const logger = createLogger('unchained:gridfs');
 
+const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
+
 const gridfsHandler: RouteHandlerMethod = async (
   req: FastifyRequest & {
     unchainedContext: Context & {
@@ -105,14 +107,14 @@ const gridfsHandler: RouteHandlerMethod = async (
     }
 
     if (req.method === 'GET') {
-      const fileId = fileName;
       const { s: signature, e: expiryTimestamp } = req.query as Record<string, string>;
-      const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
-      const fileDocument = await modules.files.findFile({ fileId });
+      const fileDocument = await modules.files.findFile({
+        url: `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${fileName}`,
+      });
       if (fileDocument?.meta?.isPrivate) {
         const expiry = parseInt(expiryTimestamp as string, 10);
         if (expiry <= Date.now()) {
-          logger.error('URL Expired', { fileId, expiry });
+          logger.error('URL Expired', { fileName, expiry });
           reply.status(403);
           return reply.send({
             success: false,
@@ -126,7 +128,7 @@ const gridfsHandler: RouteHandlerMethod = async (
 
         if (!signedUrl || new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
           reply.status(403);
-          logger.error('Invalid signature', { fileId, expiry });
+          logger.error('Invalid signature', { fileName, expiry });
           return reply.send({
             success: false,
             message: 'Access restricted: Invalid signature.',
@@ -134,10 +136,12 @@ const gridfsHandler: RouteHandlerMethod = async (
           });
         }
       } else if (!fileDocument) {
-        logger.error('File not found', { fileId });
+        logger.error('File not found', { fileName });
         reply.status(404);
         return reply.send();
       }
+
+      const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileDocument._id);
 
       if (file?.metadata?.['content-type']) {
         reply.header('content-type', file.metadata['content-type']);
@@ -146,7 +150,10 @@ const gridfsHandler: RouteHandlerMethod = async (
         reply.header('content-length', file?.length.toString());
       }
 
-      const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
+      const readStream = await modules.gridfsFileUploads.createReadStream(
+        directoryName,
+        fileDocument._id,
+      );
 
       reply.status(200);
       return reply.send(readStream);

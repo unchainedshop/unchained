@@ -8,7 +8,7 @@ import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core-files';
 
-const { ROOT_URL } = process.env;
+const { ROOT_URL, GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
 const logger = createLogger('unchained:gridfs');
 
@@ -89,10 +89,10 @@ const gridfsHandler = async (
     }
 
     if (req.method === 'GET') {
-      const fileId = fileName;
       const { s: signature, e: expiryTimestamp } = req.query;
-      const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
-      const fileDocument = await modules.files.findFile({ fileId });
+      const fileDocument = await modules.files.findFile({
+        url: `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${fileName}`,
+      });
       if (fileDocument?.meta?.isPrivate) {
         const expiry = parseInt(expiryTimestamp as string, 10);
         if (expiry <= Date.now()) {
@@ -111,6 +111,9 @@ const gridfsHandler = async (
         res.status(404).end();
         return;
       }
+
+      const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileDocument._id);
+
       if (file?.metadata?.['content-type']) {
         res.setHeader('Content-Type', file.metadata['content-type']);
       }
@@ -118,7 +121,10 @@ const gridfsHandler = async (
         res.setHeader('Content-Length', file?.length.toString());
       }
 
-      const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
+      const readStream = await modules.gridfsFileUploads.createReadStream(
+        directoryName,
+        fileDocument._id,
+      );
       readStream.pipe(res, { end: false });
       await finished(readStream);
       res.status(200).end();
