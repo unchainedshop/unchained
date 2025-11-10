@@ -11,6 +11,12 @@ import ticketingServices, { TicketingServices } from './services.js';
 export type { TicketingAPI, RendererTypes };
 
 export { ticketingServices, ticketingModules, TicketingModule, TicketingServices };
+const defaultOrderPDFRenderer = async ({ orderId }, context: TicketingAPI) => {
+  const order = await context.modules.orders.findOrder({ orderId });
+  console.log(order);
+
+  return
+}
 
 export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
@@ -30,11 +36,11 @@ export function setupMobileTickets({
 export default function setupTicketing(
   unchainedAPI: TicketingAPI,
   {
-    renderOrderPDF,
+    renderOrderPDF = defaultOrderPDFRenderer,
     createAppleWalletPass,
     createGoogleWalletPass,
   }: {
-    renderOrderPDF: any;
+    renderOrderPDF?: any;
     createAppleWalletPass: any;
     createGoogleWalletPass: any;
   },

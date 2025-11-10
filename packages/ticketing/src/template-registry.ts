@@ -1,5 +1,6 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import console from 'console';
 
 export type PDFRenderer = (
   {
@@ -37,6 +38,7 @@ export const registerRenderer: RegisterRendererFn = function registerRenderer(
   type: RendererTypes,
   renderer: PDFRenderer | PassRenderer,
 ) {
+  console.log('registered renderer  for ', type, renderer)
   renderers.set(type, renderer);
 };
 
@@ -44,5 +46,6 @@ export type GetRendererFn = ((type: RendererTypes.ORDER_PDF) => PDFRenderer) &
   ((type: RendererTypes.GOOGLE_WALLET | RendererTypes.APPLE_WALLET) => PassRenderer);
 
 export const getRenderer: GetRendererFn = function getRenderer(type: RendererTypes) {
+  console.log('get renderer for ', type, renderers.get(type))
   return renderers.get(type) as any;
 };
