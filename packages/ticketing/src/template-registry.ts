@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
+=======
+import { UnchainedCore } from '@unchainedshop/core';
+import { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import console from 'console';
+>>>>>>> f47f16002 (test)
 
 export type PDFRenderer = (
   {
@@ -45,6 +51,7 @@ export const registerRenderer: RegisterRendererFn = function registerRenderer(
   type: RendererTypes,
   renderer: PDFRenderer | PassRenderer,
 ) {
+  console.log('registered renderer  for ', type, renderer)
   renderers.set(type, renderer);
 };
 
@@ -52,5 +59,6 @@ export type GetRendererFn = ((type: typeof RendererTypes.ORDER_PDF) => PDFRender
   ((type: typeof RendererTypes.GOOGLE_WALLET | typeof RendererTypes.APPLE_WALLET) => PassRenderer);
 
 export const getRenderer: GetRendererFn = function getRenderer(type: RendererTypes) {
+  console.log('get renderer for ', type, renderers.get(type))
   return renderers.get(type) as any;
 };
