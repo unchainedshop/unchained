@@ -5,16 +5,37 @@ import {
   IDeliveryProviderQueryVariables,
 } from '../../../gql/types';
 import useUnchainedContext from '../../UnchainedContext/useUnchainedContext';
-import DeliveryProviderFragment from '../fragments/DeliveryProviderFragment';
+import AddressFragment from '../../common/fragments/AddressFragment';
 
 const GetDeliveryProviderQuery = (inlineFragment = '') => gql`
   query DeliveryProvider($deliveryProviderId: ID!) {
     deliveryProvider(deliveryProviderId: $deliveryProviderId) {
-      ...DeliveryProviderFragment
+       _id
+      created
+    updated
+    deleted
+    type
+    isActive
+    configuration
+    interface {
+      _id
+      label
+      version
+    }
+    configurationError      
+    ...on DeliveryProviderPickUp {          
+      pickUpLocations {
+        _id
+        name
+        address {
+          ...AddressFragment
+        }        
+      }   
+    }
       ${inlineFragment}
     }
   }
-  ${DeliveryProviderFragment}
+  ${AddressFragment}
 `;
 
 const useDeliveryProvider = ({

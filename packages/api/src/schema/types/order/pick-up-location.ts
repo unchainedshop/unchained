@@ -7,5 +7,11 @@ export default [
       address: Address
       geoPoint: GeoPosition
     }
+    type PickUpLocation {
+      _id: ID!
+      name: String!
+      address: Address
+      geoPoint: GeoPosition
+    }
   `,
 ];

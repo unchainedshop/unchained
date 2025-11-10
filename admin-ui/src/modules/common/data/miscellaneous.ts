@@ -857,7 +857,7 @@ export const PROVIDER_TYPE_CLASSES = {
   CARD: 'sky',
   INVOICE: 'lime',
   GENERIC: 'purple',
-  PICKUP: 'amber',
+  PICKUP: 'red',
   SHIPPING: 'sky',
 };
 

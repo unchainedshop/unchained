@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { IRoleAction } from '../../gql/types';
+import { IDeliveryProviderPickUp, IRoleAction } from '../../gql/types';
 
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
@@ -105,7 +105,40 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
           provider={deliveryProvider}
           onSubmit={onSubmit}
           onSubmitSuccess={onSubmitSuccess}
-        />
+        >
+          {deliveryProvider?.type === 'PICKUP' &&
+            (deliveryProvider as IDeliveryProviderPickUp).pickUpLocations
+              ?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-2">
+                  {formatMessage({
+                    id: 'pickup_locations',
+                    defaultMessage: 'Pick-up Locations',
+                  })}
+                </h3>
+                <ul className="space-y-2">
+                  {(
+                    deliveryProvider as IDeliveryProviderPickUp
+                  ).pickUpLocations.map((loc) => (
+                    <li
+                      key={loc._id}
+                      className="border rounded-md p-3 bg-slate-50 dark:bg-slate-800"
+                    >
+                      <div className="font-medium">{loc.name}</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-300">
+                        {loc.address.addressLine}
+                        {loc.address.addressLine2
+                          ? `, ${loc.address.addressLine2}`
+                          : ''}
+                        , {loc.address.city}, {loc.address.regionCode},{' '}
+                        {loc.address.postalCode}, {loc.address.countryCode}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+        </ProviderDetail>
       )}
     </>
   );

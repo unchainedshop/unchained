@@ -551,6 +551,48 @@ export enum IDeliveryProviderError {
   WrongCredentials = 'WRONG_CREDENTIALS',
 }
 
+export type IDeliveryProviderPickUp = IDeliveryProvider & {
+  _id: Scalars['ID']['output'];
+  configuration?: Maybe<Scalars['JSON']['output']>;
+  configurationError?: Maybe<IDeliveryProviderError>;
+  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  interface?: Maybe<IDeliveryInterface>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  pickUpLocations: Array<IOrderPickUpLocation>;
+  simulatedPrice?: Maybe<IPrice>;
+  type?: Maybe<IDeliveryProviderType>;
+  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+export type IDeliveryProviderPickUpSimulatedPriceArgs = {
+  context?: InputMaybe<Scalars['JSON']['input']>;
+  currencyCode?: InputMaybe<Scalars['String']['input']>;
+  orderId?: InputMaybe<Scalars['ID']['input']>;
+  useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type IDeliveryProviderShipping = IDeliveryProvider & {
+  _id: Scalars['ID']['output'];
+  address?: Maybe<IAddress>;
+  configuration?: Maybe<Scalars['JSON']['output']>;
+  configurationError?: Maybe<IDeliveryProviderError>;
+  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  interface?: Maybe<IDeliveryInterface>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  simulatedPrice?: Maybe<IPrice>;
+  type?: Maybe<IDeliveryProviderType>;
+  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+export type IDeliveryProviderShippingSimulatedPriceArgs = {
+  context?: InputMaybe<Scalars['JSON']['input']>;
+  currencyCode?: InputMaybe<Scalars['String']['input']>;
+  orderId?: InputMaybe<Scalars['ID']['input']>;
+  useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export enum IDeliveryProviderType {
   /** Pick-Up */
   Pickup = 'PICKUP',
@@ -7367,19 +7409,34 @@ export type IOrdersWithItemsQuery = {
               regionCode?: string | null;
             } | null;
           } | null;
-          provider?: {
-            _id: string;
-            created?: any | null;
-            updated?: any | null;
-            deleted?: any | null;
-            type?: IDeliveryProviderType | null;
-            configuration?: any | null;
-            interface?: {
-              _id: string;
-              label?: string | null;
-              version?: string | null;
-            } | null;
-          } | null;
+          provider?:
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | null;
           fee?: {
             isTaxable: boolean;
             isNetPrice: boolean;
@@ -7503,19 +7560,34 @@ export type IOrdersWithItemsQuery = {
             countryCode?: string | null;
             regionCode?: string | null;
           } | null;
-          provider?: {
-            _id: string;
-            created?: any | null;
-            updated?: any | null;
-            deleted?: any | null;
-            type?: IDeliveryProviderType | null;
-            configuration?: any | null;
-            interface?: {
-              _id: string;
-              label?: string | null;
-              version?: string | null;
-            } | null;
-          } | null;
+          provider?:
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | null;
           fee?: {
             isTaxable: boolean;
             isNetPrice: boolean;
@@ -7946,7 +8018,7 @@ export type IUpdateCurrencyMutation = {
   };
 };
 
-export type IDeliveryProviderFragment = {
+type IDeliveryProviderFragment_DeliveryProviderPickUp = {
   _id: string;
   created?: any | null;
   updated?: any | null;
@@ -7962,6 +8034,26 @@ export type IDeliveryProviderFragment = {
   } | null;
 };
 
+type IDeliveryProviderFragment_DeliveryProviderShipping = {
+  _id: string;
+  created?: any | null;
+  updated?: any | null;
+  deleted?: any | null;
+  type?: IDeliveryProviderType | null;
+  isActive?: boolean | null;
+  configuration?: any | null;
+  configurationError?: IDeliveryProviderError | null;
+  interface?: {
+    _id: string;
+    label?: string | null;
+    version?: string | null;
+  } | null;
+};
+
+export type IDeliveryProviderFragment =
+  | IDeliveryProviderFragment_DeliveryProviderPickUp
+  | IDeliveryProviderFragment_DeliveryProviderShipping;
+
 export type IDeliveryProviderFragmentVariables = Exact<{
   [key: string]: never;
 }>;
@@ -7971,21 +8063,37 @@ export type ICreateDeliveryProviderMutationVariables = Exact<{
 }>;
 
 export type ICreateDeliveryProviderMutation = {
-  createDeliveryProvider: {
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    type?: IDeliveryProviderType | null;
-    isActive?: boolean | null;
-    configuration?: any | null;
-    configurationError?: IDeliveryProviderError | null;
-    interface?: {
-      _id: string;
-      label?: string | null;
-      version?: string | null;
-    } | null;
-  };
+  createDeliveryProvider:
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      };
 };
 
 export type IDeliveryInterfacesQueryVariables = Exact<{
@@ -8005,21 +8113,38 @@ export type IDeliveryProviderQueryVariables = Exact<{
 }>;
 
 export type IDeliveryProviderQuery = {
-  deliveryProvider?: {
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    type?: IDeliveryProviderType | null;
-    isActive?: boolean | null;
-    configuration?: any | null;
-    configurationError?: IDeliveryProviderError | null;
-    interface?: {
-      _id: string;
-      label?: string | null;
-      version?: string | null;
-    } | null;
-  } | null;
+  deliveryProvider?:
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+    | null;
 };
 
 export type IDeliveryProvidersTypeQueryVariables = Exact<{
@@ -8038,21 +8163,38 @@ export type IDeliveryProvidersQueryVariables = Exact<{
 
 export type IDeliveryProvidersQuery = {
   deliveryProvidersCount: number;
-  deliveryProviders: Array<{
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    type?: IDeliveryProviderType | null;
-    isActive?: boolean | null;
-    configuration?: any | null;
-    configurationError?: IDeliveryProviderError | null;
-    interface?: {
-      _id: string;
-      label?: string | null;
-      version?: string | null;
-    } | null;
-  }>;
+  deliveryProviders: Array<
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+  >;
 };
 
 export type IOrderDeliveryStatusQueryVariables = Exact<{
@@ -8070,7 +8212,7 @@ export type IRemoveDeliveryProviderMutationVariables = Exact<{
 }>;
 
 export type IRemoveDeliveryProviderMutation = {
-  removeDeliveryProvider: { _id: string };
+  removeDeliveryProvider: { _id: string } | { _id: string };
 };
 
 export type IUpdateDeliveryProviderMutationVariables = Exact<{
@@ -8079,21 +8221,37 @@ export type IUpdateDeliveryProviderMutationVariables = Exact<{
 }>;
 
 export type IUpdateDeliveryProviderMutation = {
-  updateDeliveryProvider: {
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    type?: IDeliveryProviderType | null;
-    isActive?: boolean | null;
-    configuration?: any | null;
-    configurationError?: IDeliveryProviderError | null;
-    interface?: {
-      _id: string;
-      label?: string | null;
-      version?: string | null;
-    } | null;
-  };
+  updateDeliveryProvider:
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+    | {
+        _id: string;
+        created?: any | null;
+        updated?: any | null;
+        deleted?: any | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        configuration?: any | null;
+        configurationError?: IDeliveryProviderError | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      };
 };
 
 export type IEnrollmentDetailFragment = {
@@ -8125,24 +8283,44 @@ export type IEnrollmentDetailFragment = {
     isoCode: string;
   } | null;
   delivery?: {
-    provider?: {
-      _id: string;
-      configuration?: any | null;
-      configurationError?: IDeliveryProviderError | null;
-      isActive?: boolean | null;
-      type?: IDeliveryProviderType | null;
-      interface?: {
-        _id: string;
-        label?: string | null;
-        version?: string | null;
-      } | null;
-      simulatedPrice?: {
-        amount: number;
-        currencyCode: string;
-        isNetPrice: boolean;
-        isTaxable: boolean;
-      } | null;
-    } | null;
+    provider?:
+      | {
+          _id: string;
+          configuration?: any | null;
+          configurationError?: IDeliveryProviderError | null;
+          isActive?: boolean | null;
+          type?: IDeliveryProviderType | null;
+          interface?: {
+            _id: string;
+            label?: string | null;
+            version?: string | null;
+          } | null;
+          simulatedPrice?: {
+            amount: number;
+            currencyCode: string;
+            isNetPrice: boolean;
+            isTaxable: boolean;
+          } | null;
+        }
+      | {
+          _id: string;
+          configuration?: any | null;
+          configurationError?: IDeliveryProviderError | null;
+          isActive?: boolean | null;
+          type?: IDeliveryProviderType | null;
+          interface?: {
+            _id: string;
+            label?: string | null;
+            version?: string | null;
+          } | null;
+          simulatedPrice?: {
+            amount: number;
+            currencyCode: string;
+            isNetPrice: boolean;
+            isTaxable: boolean;
+          } | null;
+        }
+      | null;
   } | null;
   payment?: {
     provider?: {
@@ -8196,7 +8374,7 @@ export type IEnrollmentFragment = {
   currency?: { _id: string; isoCode: string } | null;
   periods: Array<{ start: any; end: any; isTrial: boolean }>;
   payment?: { provider?: { _id: string } | null } | null;
-  delivery?: { provider?: { _id: string } | null } | null;
+  delivery?: { provider?: { _id: string } | { _id: string } | null } | null;
   plan: {
     quantity: number;
     product: {
@@ -8263,24 +8441,44 @@ export type IEnrollmentQuery = {
       isoCode: string;
     } | null;
     delivery?: {
-      provider?: {
-        _id: string;
-        configuration?: any | null;
-        configurationError?: IDeliveryProviderError | null;
-        isActive?: boolean | null;
-        type?: IDeliveryProviderType | null;
-        interface?: {
-          _id: string;
-          label?: string | null;
-          version?: string | null;
-        } | null;
-        simulatedPrice?: {
-          amount: number;
-          currencyCode: string;
-          isNetPrice: boolean;
-          isTaxable: boolean;
-        } | null;
-      } | null;
+      provider?:
+        | {
+            _id: string;
+            configuration?: any | null;
+            configurationError?: IDeliveryProviderError | null;
+            isActive?: boolean | null;
+            type?: IDeliveryProviderType | null;
+            interface?: {
+              _id: string;
+              label?: string | null;
+              version?: string | null;
+            } | null;
+            simulatedPrice?: {
+              amount: number;
+              currencyCode: string;
+              isNetPrice: boolean;
+              isTaxable: boolean;
+            } | null;
+          }
+        | {
+            _id: string;
+            configuration?: any | null;
+            configurationError?: IDeliveryProviderError | null;
+            isActive?: boolean | null;
+            type?: IDeliveryProviderType | null;
+            interface?: {
+              _id: string;
+              label?: string | null;
+              version?: string | null;
+            } | null;
+            simulatedPrice?: {
+              amount: number;
+              currencyCode: string;
+              isNetPrice: boolean;
+              isTaxable: boolean;
+            } | null;
+          }
+        | null;
     } | null;
     payment?: {
       provider?: {
@@ -8349,7 +8547,7 @@ export type IEnrollmentsQuery = {
     currency?: { _id: string; isoCode: string } | null;
     periods: Array<{ start: any; end: any; isTrial: boolean }>;
     payment?: { provider?: { _id: string } | null } | null;
-    delivery?: { provider?: { _id: string } | null } | null;
+    delivery?: { provider?: { _id: string } | { _id: string } | null } | null;
     plan: {
       quantity: number;
       product: {
@@ -8406,7 +8604,7 @@ export type IUserEnrollmentsQuery = {
       currency?: { _id: string; isoCode: string } | null;
       periods: Array<{ start: any; end: any; isTrial: boolean }>;
       payment?: { provider?: { _id: string } | null } | null;
-      delivery?: { provider?: { _id: string } | null } | null;
+      delivery?: { provider?: { _id: string } | { _id: string } | null } | null;
       plan: {
         quantity: number;
         product: {
@@ -9013,19 +9211,34 @@ export type IOrderDetailFragment = {
             regionCode?: string | null;
           } | null;
         } | null;
-        provider?: {
-          _id: string;
-          created?: any | null;
-          updated?: any | null;
-          deleted?: any | null;
-          type?: IDeliveryProviderType | null;
-          configuration?: any | null;
-          interface?: {
-            _id: string;
-            label?: string | null;
-            version?: string | null;
-          } | null;
-        } | null;
+        provider?:
+          | {
+              _id: string;
+              created?: any | null;
+              updated?: any | null;
+              deleted?: any | null;
+              type?: IDeliveryProviderType | null;
+              configuration?: any | null;
+              interface?: {
+                _id: string;
+                label?: string | null;
+                version?: string | null;
+              } | null;
+            }
+          | {
+              _id: string;
+              created?: any | null;
+              updated?: any | null;
+              deleted?: any | null;
+              type?: IDeliveryProviderType | null;
+              configuration?: any | null;
+              interface?: {
+                _id: string;
+                label?: string | null;
+                version?: string | null;
+              } | null;
+            }
+          | null;
         fee?: {
           isTaxable: boolean;
           isNetPrice: boolean;
@@ -9149,19 +9362,34 @@ export type IOrderDetailFragment = {
           countryCode?: string | null;
           regionCode?: string | null;
         } | null;
-        provider?: {
-          _id: string;
-          created?: any | null;
-          updated?: any | null;
-          deleted?: any | null;
-          type?: IDeliveryProviderType | null;
-          configuration?: any | null;
-          interface?: {
-            _id: string;
-            label?: string | null;
-            version?: string | null;
-          } | null;
-        } | null;
+        provider?:
+          | {
+              _id: string;
+              created?: any | null;
+              updated?: any | null;
+              deleted?: any | null;
+              type?: IDeliveryProviderType | null;
+              configuration?: any | null;
+              interface?: {
+                _id: string;
+                label?: string | null;
+                version?: string | null;
+              } | null;
+            }
+          | {
+              _id: string;
+              created?: any | null;
+              updated?: any | null;
+              deleted?: any | null;
+              type?: IDeliveryProviderType | null;
+              configuration?: any | null;
+              interface?: {
+                _id: string;
+                label?: string | null;
+                version?: string | null;
+              } | null;
+            }
+          | null;
         fee?: {
           isTaxable: boolean;
           isNetPrice: boolean;
@@ -9624,19 +9852,34 @@ export type IOrderQuery = {
               regionCode?: string | null;
             } | null;
           } | null;
-          provider?: {
-            _id: string;
-            created?: any | null;
-            updated?: any | null;
-            deleted?: any | null;
-            type?: IDeliveryProviderType | null;
-            configuration?: any | null;
-            interface?: {
-              _id: string;
-              label?: string | null;
-              version?: string | null;
-            } | null;
-          } | null;
+          provider?:
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | null;
           fee?: {
             isTaxable: boolean;
             isNetPrice: boolean;
@@ -9760,19 +10003,34 @@ export type IOrderQuery = {
             countryCode?: string | null;
             regionCode?: string | null;
           } | null;
-          provider?: {
-            _id: string;
-            created?: any | null;
-            updated?: any | null;
-            deleted?: any | null;
-            type?: IDeliveryProviderType | null;
-            configuration?: any | null;
-            interface?: {
-              _id: string;
-              label?: string | null;
-              version?: string | null;
-            } | null;
-          } | null;
+          provider?:
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | {
+                _id: string;
+                created?: any | null;
+                updated?: any | null;
+                deleted?: any | null;
+                type?: IDeliveryProviderType | null;
+                configuration?: any | null;
+                interface?: {
+                  _id: string;
+                  label?: string | null;
+                  version?: string | null;
+                } | null;
+              }
+            | null;
           fee?: {
             isTaxable: boolean;
             isNetPrice: boolean;

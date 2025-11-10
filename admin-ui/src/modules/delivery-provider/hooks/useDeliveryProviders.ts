@@ -4,16 +4,37 @@ import {
   IDeliveryProvidersQuery,
   IDeliveryProvidersQueryVariables,
 } from '../../../gql/types';
-import DeliveryProviderFragment from '../fragments/DeliveryProviderFragment';
+import AddressFragment from '../../common/fragments/AddressFragment';
 
 const DeliveryProvidersQuery = gql`
   query DeliveryProviders($type: DeliveryProviderType) {
     deliveryProviders(type: $type) {
-      ...DeliveryProviderFragment
+      _id
+      created
+      updated
+      deleted
+      type
+      isActive
+      configuration
+      interface {
+        _id
+        label
+        version
+      }
+      configurationError
+      ... on DeliveryProviderPickUp {
+        pickUpLocations {
+          _id
+          name
+          address {
+            ...AddressFragment
+          }
+        }
+      }
     }
     deliveryProvidersCount(type: $type)
   }
-  ${DeliveryProviderFragment}
+  ${AddressFragment}
 `;
 
 const useDeliveryProviders = ({
@@ -27,7 +48,6 @@ const useDeliveryProviders = ({
   });
 
   const deliveryProviders = data?.deliveryProviders || [];
-
   return {
     deliveryProviders,
     loading,

@@ -4,7 +4,7 @@ import {
   IUpdateDeliveryProviderMutation,
   IUpdateDeliveryProviderMutationVariables,
 } from '../../../gql/types';
-import DeliveryProviderFragment from '../fragments/DeliveryProviderFragment';
+import AddressFragment from '../../common/fragments/AddressFragment';
 
 const UpdateDeliveryProviderMutation = gql`
   mutation UpdateDeliveryProvider(
@@ -15,10 +15,31 @@ const UpdateDeliveryProviderMutation = gql`
       deliveryProvider: $deliveryProvider
       deliveryProviderId: $deliveryProviderId
     ) {
-      ...DeliveryProviderFragment
+      _id
+      created
+      updated
+      deleted
+      type
+      isActive
+      configuration
+      interface {
+        _id
+        label
+        version
+      }
+      configurationError
+      ... on DeliveryProviderPickUp {
+        pickUpLocations {
+          _id
+          name
+          address {
+            ...AddressFragment
+          }
+        }
+      }
     }
   }
-  ${DeliveryProviderFragment}
+  ${AddressFragment}
 `;
 
 const useUpdateDeliveryProvider = () => {
