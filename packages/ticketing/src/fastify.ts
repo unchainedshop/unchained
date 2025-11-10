@@ -9,7 +9,6 @@ export default (app: FastifyInstance) => {
     GOOGLE_WALLET_WEBSERVICE_PATH = '/rest/google-wallet',
     UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets',
   } = process.env;
-
   app.route({
     url: `${APPLE_WALLET_WEBSERVICE_PATH}*`,
     method: ['GET', 'POST', 'DELETE'],
@@ -23,7 +22,7 @@ export default (app: FastifyInstance) => {
   });
 
   app.route({
-    url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}/*`,
+    url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}`,
     method: 'GET',
     handler: printTicketsHandler,
   });
