@@ -4,6 +4,23 @@ import { ticketingRoutes } from './routes.ts';
 
 export default (fastify: FastifyInstance) => {
   if (ticketingRoutes.length === 0) return;
+  const {
+    APPLE_WALLET_WEBSERVICE_PATH = '/rest/apple-wallet',
+    GOOGLE_WALLET_WEBSERVICE_PATH = '/rest/google-wallet',
+    UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets',
+  } = process.env;
+
+  fastify.route({
+    url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}`,
+    method: 'GET',
+    handler: printTicketsHandler,
+  });
+
+  fastify.route({
+    url: `${APPLE_WALLET_WEBSERVICE_PATH}*`,
+    method: ['GET', 'POST', 'DELETE'],
+    handler: appleWalletHandler,
+  });
 
   // Register all ticketing routes in a scoped context with catch-all parser
   fastify.register((scope, opts, registered) => {
@@ -56,5 +73,8 @@ export default (fastify: FastifyInstance) => {
     }
 
     registered();
-  });
-};
+
+
+
+  })
+}

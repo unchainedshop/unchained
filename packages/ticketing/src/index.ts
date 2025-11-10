@@ -1,3 +1,4 @@
+
 import { subscribe } from '@unchainedshop/events';
 import type { RawPayloadType } from '@unchainedshop/events';
 import { WorkerEventTypes, type Work } from '@unchainedshop/core-worker';
@@ -13,9 +14,12 @@ export type TicketingAPI = UnchainedCore & {
   services: TicketingServices;
 };
 
+import { defaultTicketReceiptRenderer } from './pdf-tickets/defaultTicketReceiptRenderer.js';
+
 export type { RendererTypes, TicketingModule, TicketingServices };
 
 export { ticketingServices, ticketingModules };
+
 
 export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
@@ -35,11 +39,11 @@ export function setupMobileTickets({
 export default function setupTicketing(
   unchainedAPI: TicketingAPI,
   {
-    renderOrderPDF,
+    renderOrderPDF = defaultTicketReceiptRenderer,
     createAppleWalletPass,
     createGoogleWalletPass,
   }: {
-    renderOrderPDF: any;
+    renderOrderPDF?: any;
     createAppleWalletPass: any;
     createGoogleWalletPass: any;
   },
