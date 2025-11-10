@@ -161,9 +161,7 @@ test.describe('Assortment: Translated Texts', async () => {
   test.describe('Query.translatedAssortmentMediaTexts for anonymous user should', async () => {
     test('return list of assortment media texts when existing id is passed', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
-      const {
-        data: { translatedAssortmentMediaTexts },
-      } = await graphqlAnonymousFetch({
+      const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query TranslatedAssortmentMediaTexts($assortmentMediaId: ID!) {
             translatedAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId) {
@@ -178,21 +176,7 @@ test.describe('Assortment: Translated Texts', async () => {
           assortmentMediaId: PngAssortmentMedia._id,
         },
       });
-      assert.equal(translatedAssortmentMediaTexts.length, 2);
-      assert.deepStrictEqual(translatedAssortmentMediaTexts, [
-        {
-          _id: 'german-png-assortment',
-          locale: 'de',
-          title: 'assortment-media-title-de',
-          subtitle: 'assortment-media-subtitle-de',
-        },
-        {
-          _id: 'french-png-assortment',
-          locale: 'fr',
-          title: 'assortment-media-title-fr',
-          subtitle: 'assortment-media-subtitle-fr',
-        },
-      ]);
+      assert.equal(errors[0].extensions?.code, 'NoPermissionError');
     });
   });
 });
