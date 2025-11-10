@@ -15,7 +15,8 @@ import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButt
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useCallback } from 'react';
 
-import { IWorkStatus } from '../../gql/types';
+import { IWork, IWorkStatus } from '../../gql/types';
+import RetryForm from '../../modules/work/components/RetryForm';
 
 const WorkDetailPage = ({ workerId }) => {
   const { formatMessage } = useIntl();
@@ -42,12 +43,30 @@ const WorkDetailPage = ({ workerId }) => {
   };
 
   const retryWork = useCallback(async () => {
-    const { data } = await addWork({
-      ...work,
-      scheduled: null,
-      originalWorkId: work?._id,
-    });
-    push(`/works?workerId=${data.addWork._id}`);
+    setModal(
+      <RetryForm
+        work={work as IWork}
+        onSubmit={async (newData) => {
+          try {
+            const { data } = await addWork({
+              type: work?.type,
+              priority: newData.priority || work?.priority,
+              retries: newData.retries,
+              scheduled: newData.scheduled,
+              input: JSON.parse(newData.input || '{}'),
+              originalWorkId: work?._id,
+            });
+            push(`/works?workerId=${data.addWork._id}`);
+            setModal(null);
+
+            return { success: true };
+          } catch (error) {
+            return { success: false, error };
+          }
+        }}
+      />,
+      { closeOnOutsideClick: true },
+    );
   }, [work]);
 
   const handleOnClick = async () => {
