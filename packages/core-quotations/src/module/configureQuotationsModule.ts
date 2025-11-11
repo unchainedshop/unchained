@@ -14,7 +14,7 @@ import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-set
 
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
 
-export interface QuotationQuery {
+export interface QuotationQuery extends mongodb.Filter<Quotation> {
   userId?: string;
   queryString?: string;
 }
@@ -27,14 +27,15 @@ export interface QuotationData {
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
-export const buildFindSelector = (query: QuotationQuery = {}) => {
-  const selector: { userId?: string; $text?: any } = {};
-  if (query.userId) {
-    selector.userId = query.userId;
+export const buildFindSelector = ({ userId, queryString, ...rest }: QuotationQuery = {}) => {
+  const selector: mongodb.Filter<Quotation> = { ...rest };
+
+  if (userId) {
+    selector.userId = userId;
   }
-  if (query.queryString) {
+  if (queryString) {
     assertDocumentDBCompatMode();
-    selector.$text = { $search: query.queryString };
+    (selector as any).$text = { $search: queryString };
   }
 
   return selector;

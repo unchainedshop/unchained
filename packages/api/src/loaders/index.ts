@@ -24,6 +24,7 @@ import deliveryProviderLoader from './deliveryProviderLoader.js';
 import paymentProviderLoader from './paymentProviderLoader.js';
 import warehousingProviderLoader from './warehousingProviderLoader.js';
 import orderLoader from './orderLoader.js';
+import quotationLoader from './quotationLoader.js';
 
 const loaders = (unchainedAPI: UnchainedCore) => {
   return {
@@ -63,6 +64,8 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     warehousingProviderLoader: warehousingProviderLoader(unchainedAPI),
 
     orderLoader: orderLoader(unchainedAPI),
+
+    quotationLoader: quotationLoader(unchainedAPI),
   };
 };
 

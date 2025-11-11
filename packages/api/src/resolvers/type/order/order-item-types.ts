@@ -113,10 +113,9 @@ export const OrderItem = {
     return product;
   },
 
-  async quotation(orderPosition: OrderPosition, _, { modules }: Context): Promise<Quotation | null> {
+  async quotation(orderPosition: OrderPosition, _, { loaders }: Context): Promise<Quotation | null> {
     if (!orderPosition.quotationId) return null;
-    // TODO: use quotation loader
-    return modules.quotations.findQuotation({ quotationId: orderPosition.quotationId });
+    return loaders.quotationLoader.load({ quotationId: orderPosition.quotationId });
   },
 
   async total(
