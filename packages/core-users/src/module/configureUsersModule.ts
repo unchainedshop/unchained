@@ -96,7 +96,6 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
-
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
 
   return {

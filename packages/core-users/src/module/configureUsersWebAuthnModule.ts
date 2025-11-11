@@ -2,7 +2,11 @@ import { ModuleInput } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
 
-import type { PublicKeyCredentialCreationOptions, PublicKeyCredentialRequestOptions } from 'fido2-lib';
+import type {
+  Fido2Lib as Fido2LibType,
+  PublicKeyCredentialCreationOptions,
+  PublicKeyCredentialRequestOptions,
+} from 'fido2-lib';
 
 const logger = createLogger('unchained:core-users');
 
@@ -13,15 +17,22 @@ type SerializedOptions<T> = Omit<T, 'challenge' | 'requestId'> & {
   requestId: number;
 };
 
+let Fido2Lib: typeof Fido2LibType;
+try {
+  const fido2LibPackage = await import('fido2-lib');
+  Fido2Lib = fido2LibPackage.Fido2Lib;
+} catch {
+  logger.warn(`optional peer npm package 'fido2-lib' not installed, WebAuthn will not work`);
+}
+
 let setupMDSPromise;
 const setupMDSCollection = async () => {
   try {
     const tocResult = await fetch('https://mds.fidoalliance.org');
     const tocBase64 = await tocResult.text();
+    const mc = Fido2Lib.createMdsCollection('FIDO MDS v3');
     // eslint-disable-next-line
     // @ts-ignore
-    const { Fido2Lib } = await import('fido2-lib');
-    const mc = (Fido2Lib as any).createMdsCollection('FIDO MDS v3'); // createMdsCollection exists but not typed in official package!
     const tocObj = await mc.addToc(tocBase64);
     return tocObj.entries;
   } catch (e) {
@@ -47,28 +58,19 @@ export function buf2hex(buffer) {
     .join('');
 }
 
-const initF2L = async () => {
-  try {
-    const thisDomain = new URL(ROOT_URL).hostname;
-    const { Fido2Lib } = await import('fido2-lib');
-    const f2l = new Fido2Lib({
-      rpId: thisDomain,
-      rpName: EMAIL_WEBSITE_NAME,
-      rpIcon:
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAARCSURBVHgB7Ve9UxNbFL8fm7yA4ktegHnlMk98dMbOMnR2D6pnGTqtCH+BWFoBpZXQaaelFbGzEztHHF26DKizzijDx+Zef+fu3vXuJgsxztjonQnZOZw993d+5zOM/epHslFO1a/KS/UbuvTnETsKQ/YDh3+XNi72yuVlzVgbL1YhCaOTk2ssDAI24hHDKsrpfxZkufwCj6t0OUAEBMkrlR6wHzjDMVCd872yemeete7gczeKoh2wQTICsyi0DrTWVc55eHqwu8OGPEMCMNSby5hS89H7Nx0Se9NXVvF1J69O7MDwJsKzgfCcmSP9SQhvxcV6S5cnummCHYVH4kJ9DE9NfHx1+HGLxKo0sSOkvIXHSnyz7mjOySufdLmUN3Vp4slZiSoyXk7NrhHVQui1fGzhzTq+QsZ5U07NtowQ3oH2FavDhXjS2389w7W+lrDgI2+2yfaZAEpT/y5LopjztnEkf1F6GXsc38TvWKO9g91NfO3EBGgjpxzooTosCISvXQjAm7zc1Fyvm7IChRHQM+uVcxGBAbstI84bVcqyUE3lAMyVWkrky0UsuGUYRqeni4zQk1cAk15ELxMYy07OqElKqo5ieVWWymsDAbhKGa9Qatag8P5omcQiUEot9nmb1c9cFkm5FJPJWqWp2UYegKkCMf7XHjRaeGwgs+9T1iPTA8ibkM/h5ev4XwVJthEd7D7kF+ozANRI9B9RlpO+lUO/IcZqz0jGPr8PUUFU7k185mwFZUIwBAuGUqWUob8nxCqLQ0H6qbeOnNmQGftOBVHO9QEw+ozZRKLE8y0wxDxFLISIE6n7KsDfjUS8kBoludZbCYBvl8XNaCMPLAOASsde5vYAlFPbeqWV+q/Pq5xR6HRS6zkWzPzIlXdmGKWXFaM/V06zwAGQaVppSJ3yzk7DAqpcb7UQD/q8cuRoxb75dtlxm5Zb3mzALEj7O7I/zWRUBRurHcO7G9Sw5MXJT+rLh+dmRlSqe6iOm1aOC/5nBELr2yTDOw3YO4Z+x3icq7iB01BMXm4j4dbIO+rtVi6nr7xLBg0tIjN20mGGbBPdVs+8J07mvcjzkbnbGf14tNNeYcb4wJVMH358jpo2zSf1lgCM1V4m6CsFXiUG9Iref9txe4kQXgVT9jqXejNZaEKAvFu4D5ikStBjus3bJcPxdjALNE8OduetHep+yIsXGQcZf9wTxyusGwSFS2mCvmaMcn6Lj9d9OV77BGN7iOuCYQFeqcMPT43+peln2IraFH/EdsvuALDTTTthvE0tIRnvsc/x/8/diIq2HnsSFoKEhXUAWM6zYA5VwoDtaLiV7O85XypFy+hVnbRlhCXoo9zZHWkpGWY3/L613D25PZFzeVVxvZqs6ywSYKZ7/ro+2g8TOu6eSBXAGfWIio2z2n871GY8OgN06BcSfitQuZr1CxuQ3Zh/6qkk0/P3GeV8BeBCYUHc/WHIAAAAAElFTkSuQmCC',
-      challengeSize: 128,
-      attestation: 'none',
-    });
-    return f2l;
-  } catch {
-    logger.warn(`optional peer npm package 'fido2-lib' not installed, WebAuthn will not work`);
-    return null;
-  }
-};
-
 export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => {
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
-  const f2l = await initF2L();
+
+  const thisDomain = new URL(ROOT_URL).hostname;
+  const f2l = new Fido2Lib({
+    rpId: thisDomain,
+    rpName: EMAIL_WEBSITE_NAME,
+    rpIcon:
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAARCSURBVHgB7Ve9UxNbFL8fm7yA4ktegHnlMk98dMbOMnR2D6pnGTqtCH+BWFoBpZXQaaelFbGzEztHHF26DKizzijDx+Zef+fu3vXuJgsxztjonQnZOZw993d+5zOM/epHslFO1a/KS/UbuvTnETsKQ/YDh3+XNi72yuVlzVgbL1YhCaOTk2ssDAI24hHDKsrpfxZkufwCj6t0OUAEBMkrlR6wHzjDMVCd872yemeete7gczeKoh2wQTICsyi0DrTWVc55eHqwu8OGPEMCMNSby5hS89H7Nx0Se9NXVvF1J69O7MDwJsKzgfCcmSP9SQhvxcV6S5cnummCHYVH4kJ9DE9NfHx1+HGLxKo0sSOkvIXHSnyz7mjOySufdLmUN3Vp4slZiSoyXk7NrhHVQui1fGzhzTq+QsZ5U07NtowQ3oH2FavDhXjS2389w7W+lrDgI2+2yfaZAEpT/y5LopjztnEkf1F6GXsc38TvWKO9g91NfO3EBGgjpxzooTosCISvXQjAm7zc1Fyvm7IChRHQM+uVcxGBAbstI84bVcqyUE3lAMyVWkrky0UsuGUYRqeni4zQk1cAk15ELxMYy07OqElKqo5ieVWWymsDAbhKGa9Qatag8P5omcQiUEot9nmb1c9cFkm5FJPJWqWp2UYegKkCMf7XHjRaeGwgs+9T1iPTA8ibkM/h5ev4XwVJthEd7D7kF+ozANRI9B9RlpO+lUO/IcZqz0jGPr8PUUFU7k185mwFZUIwBAuGUqWUob8nxCqLQ0H6qbeOnNmQGftOBVHO9QEw+ozZRKLE8y0wxDxFLISIE6n7KsDfjUS8kBoludZbCYBvl8XNaCMPLAOASsde5vYAlFPbeqWV+q/Pq5xR6HRS6zkWzPzIlXdmGKWXFaM/V06zwAGQaVppSJ3yzk7DAqpcb7UQD/q8cuRoxb75dtlxm5Zb3mzALEj7O7I/zWRUBRurHcO7G9Sw5MXJT+rLh+dmRlSqe6iOm1aOC/5nBELr2yTDOw3YO4Z+x3icq7iB01BMXm4j4dbIO+rtVi6nr7xLBg0tIjN20mGGbBPdVs+8J07mvcjzkbnbGf14tNNeYcb4wJVMH358jpo2zSf1lgCM1V4m6CsFXiUG9Iref9txe4kQXgVT9jqXejNZaEKAvFu4D5ikStBjus3bJcPxdjALNE8OduetHep+yIsXGQcZf9wTxyusGwSFS2mCvmaMcn6Lj9d9OV77BGN7iOuCYQFeqcMPT43+peln2IraFH/EdsvuALDTTTthvE0tIRnvsc/x/8/diIq2HnsSFoKEhXUAWM6zYA5VwoDtaLiV7O85XypFy+hVnbRlhCXoo9zZHWkpGWY3/L613D25PZFzeVVxvZqs6ywSYKZ7/ro+2g8TOu6eSBXAGfWIio2z2n871GY8OgN06BcSfitQuZr1CxuQ3Zh/6qkk0/P3GeV8BeBCYUHc/WHIAAAAAElFTkSuQmCC',
+    challengeSize: 128,
+    attestation: 'none',
+  });
+
   return {
     findMDSMetadataForAAGUID: async (aaguid: string) => {
       const mdsCollection = await fetchMDS();

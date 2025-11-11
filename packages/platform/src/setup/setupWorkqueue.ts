@@ -87,7 +87,12 @@ export async function setupWorkqueue({
 
   // Setup filter cache
   if (!workQueueOptions?.skipInvalidationOnStartup) {
-    await unchainedAPI.services.filters.invalidateFilterCache().catch(logger.warn);
+    unchainedAPI.services.filters
+      .invalidateFilterCache()
+      .then(() => {
+        logger.info('Filter cache rebuilt');
+      })
+      .catch(logger.warn);
   }
 }
 
