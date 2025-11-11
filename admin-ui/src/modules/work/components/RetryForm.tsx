@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
-import { IRoleAction, IWork } from '../../../gql/types';
+import { IWork } from '../../../gql/types';
 import { useIntl } from 'react-intl';
-import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import DatePickerField from '../../forms/components/DatePickerField';
 import Form from '../../forms/components/Form';
@@ -21,7 +20,6 @@ const RetryForm = ({
   onSubmit: OnSubmitType;
 }) => {
   const { formatMessage, locale } = useIntl();
-  const { hasRole } = useAuth();
   const router = useRouter();
 
   const successMessage = formatMessage({
@@ -59,12 +57,6 @@ const RetryForm = ({
                   {formatMessage({ id: 'type', defaultMessage: 'Type' })}
                 </strong>{' '}
                 {work.type}
-              </span>
-              <span>
-                <strong>
-                  {formatMessage({ id: 'id', defaultMessage: 'ID' })}:
-                </strong>{' '}
-                {work._id}
               </span>
             </div>
           </div>
@@ -118,17 +110,14 @@ const RetryForm = ({
               className="w-full h-48 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-800 rounded-md"
             />
           </div>
-
-          {hasRole(IRoleAction.ManageWorker) && (
-            <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
-              <SubmitButton
-                label={formatMessage({
-                  id: 'retry_work',
-                  defaultMessage: 'Retry Work',
-                })}
-              />
-            </div>
-          )}
+          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+            <SubmitButton
+              label={formatMessage({
+                id: 'retry_submit',
+                defaultMessage: 'Retry',
+              })}
+            />
+          </div>
         </div>
       </Form>
     </FormWrapper>
