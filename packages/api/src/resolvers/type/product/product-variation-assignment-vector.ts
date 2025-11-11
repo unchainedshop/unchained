@@ -17,9 +17,8 @@ export interface ProductVariationAssignmentVectorHelperTypes {
 export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorHelperTypes = {
   _id: ({ product, key, value }) => `${product._id}:${key}=${value}`,
 
-  option: async (obj, _, { modules }) => {
-    // TODO: use product variation loader
-    const productVariation = await modules.products.variations.findProductVariationByKey({
+  option: async (obj, _, { loaders }) => {
+    const productVariation = await loaders.productVariationByKeyLoader.load({
       productId: obj.product._id,
       key: obj.key,
     });
@@ -32,9 +31,8 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
     };
   },
 
-  variation: (obj, _, { modules }) => {
-    // TODO: use product variation loader
-    return modules.products.variations.findProductVariationByKey({
+  variation: (obj, _, { loaders }) => {
+    return loaders.productVariationByKeyLoader.load({
       productId: obj?.product?._id,
       key: obj?.key,
     });

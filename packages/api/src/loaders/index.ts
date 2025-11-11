@@ -10,11 +10,14 @@ import assortmentProductsLoader from './assortmentProductsLoader.js';
 import filterLoader from './filterLoader.js';
 import filterTextLoader from './filterTextLoader.js';
 import productLoader from './productLoader.js';
-import productLoaderBySKU from './productLoaderBySKU.js';
+import productBySKULoader from './productBySKULoader.js';
 import productTextLoader from './productTextLoader.js';
 import productMediaTextLoader from './productMediaTextLoader.js';
 import productMediasLoader from './productMediasLoader.js';
 import productProxiesLoader from './productProxiesLoader.js';
+import productVariationLoader from './productVariationLoader.js';
+import productVariationByKeyLoader from './productVariationByKeyLoader.js';
+import productVariationTextLoader from './productVariationTextLoader.js';
 import fileLoader from './fileLoader.js';
 import userLoader from './userLoader.js';
 import countryLoader from './countryLoader.js';
@@ -41,11 +44,14 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     filterTextLoader: filterTextLoader(unchainedAPI),
 
     productLoader: productLoader(unchainedAPI),
-    productLoaderBySKU: productLoaderBySKU(unchainedAPI),
+    productBySKULoader: productBySKULoader(unchainedAPI),
     productTextLoader: productTextLoader(unchainedAPI),
     productMediaTextLoader: productMediaTextLoader(unchainedAPI),
     productMediasLoader: productMediasLoader(unchainedAPI),
     productProxiesLoader: productProxiesLoader(unchainedAPI),
+    productVariationLoader: productVariationLoader(unchainedAPI),
+    productVariationByKeyLoader: productVariationByKeyLoader(unchainedAPI),
+    productVariationTextLoader: productVariationTextLoader(unchainedAPI),
 
     fileLoader: fileLoader(unchainedAPI),
 

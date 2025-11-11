@@ -95,18 +95,21 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
     },
 
-    findProductVariations: async ({
-      productId,
-      tags,
-      offset,
-      limit,
-    }: {
-      productId: string;
-      limit?: number;
-      offset?: number;
-      tags?: string[];
-    }): Promise<ProductVariation[]> => {
-      const selector: mongodb.Filter<ProductVariation> = { productId };
+    findProductVariations: async (
+      query: mongodb.Filter<ProductVariation> & {
+        productId?: string | mongodb.Filter<string>;
+        tags?: string[];
+        limit?: number;
+        offset?: number;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<ProductVariation[]> => {
+      const { productId, tags, offset, limit, ...rest } = query;
+      const selector: mongodb.Filter<ProductVariation> = { ...rest };
+
+      if (productId) {
+        selector.productId = productId as any;
+      }
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -114,6 +117,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       const variations = ProductVariations.find(selector, {
         skip: offset,
         limit,
+        ...options,
       });
 
       return variations.toArray();
@@ -233,17 +237,11 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
 
     texts: {
       // Queries
-      findVariationTexts: async ({
-        productVariationId,
-        productVariationOptionValue,
-      }: {
-        productVariationId: string;
-        productVariationOptionValue?: string;
-      }): Promise<ProductVariationText[]> => {
-        return ProductVariationTexts.find({
-          productVariationId,
-          productVariationOptionValue,
-        }).toArray();
+      findVariationTexts: async (
+        query: mongodb.Filter<ProductVariationText>,
+        options?: mongodb.FindOptions,
+      ): Promise<ProductVariationText[]> => {
+        return ProductVariationTexts.find(query, options).toArray();
       },
 
       findLocalizedVariationText: async ({

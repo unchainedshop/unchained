@@ -77,6 +77,13 @@ Each core-* module follows a consistent pattern:
 
 Example modules: core-orders, core-products, core-users, core-payment, core-delivery, core-assortments, core-filters, core-quotations, core-bookmarks, core-enrollments, core-warehousing, core-worker, core-files, core-events, core-countries, core-currencies, core-languages
 
+### Architectural Constraints
+**IMPORTANT**: Respect layer boundaries when working with packages:
+- **DO NOT import `@unchainedshop/mongodb` outside of core-* and infrastructure packages**
+- The API layer (`@unchainedshop/api`) should only use types from core packages, never direct MongoDB imports
+- Database queries and MongoDB-specific logic belong exclusively in core-* modules
+- Higher-level packages (api, platform) should use the module APIs exposed by core packages
+
 ### TypeScript Configuration
 - Uses TypeScript project references (tsconfig.json) for incremental builds
 - All packages build to `lib/` directory with declaration files
