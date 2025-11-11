@@ -1,6 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '../context.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { ProductContractStandard } from '@unchainedshop/core-products';
 
 const logger = createLogger('unchained:api:erc-metadata');
 
@@ -26,10 +27,14 @@ const ercMetadataHandler: RouteHandlerMethod = async (
 
     const product = await loaders.productLoader.load({ productId });
 
-    const [token] = await modules.warehousing.findTokens({
-      tokenSerialNumber: (tokenFileName || localeOrTokenFilename).toLowerCase().replace('.json', ''),
-      contractAddress: product?.tokenization?.contractAddress,
-    });
+    const tokenSelector = { contractAddress: product?.tokenization?.contractAddress };
+
+    if (product.tokenization?.contractStandard !== ProductContractStandard.ERC721)
+      tokenSelector['tokenSerialNumber'] = (tokenFileName || localeOrTokenFilename)
+        .toLowerCase()
+        .replace('.json', '');
+
+    const [token] = await modules.warehousing.findTokens(tokenSelector);
 
     const ercMetadata = await services.warehousing.ercMetadata({
       product,
