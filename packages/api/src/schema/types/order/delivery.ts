@@ -33,8 +33,9 @@ export default [
       delivered: DateTime
       fee: Price
       discounts: [OrderDeliveryDiscount!]
-      pickUpLocations: [OrderPickUpLocation!]!
-      activePickUpLocation: OrderPickUpLocation
+      pickUpLocations: [PickUpLocation!]!
+        @deprecated(reason: "Use DeliveryProvider.pickupLocations instead")
+      activePickUpLocation: PickUpLocation
     }
 
     type OrderDeliveryShipping implements OrderDelivery {

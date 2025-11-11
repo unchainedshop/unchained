@@ -5,10 +5,7 @@ import { DeliveryProviderInterface } from './delivery-provider-interface.js';
 
 export const DeliveryProviderPickUp = {
   ...DeliveryProviderInterface,
-  async pickUpLocations(obj: DeliveryProvider, _: never, context: Context) {
-    const provider = await context.loaders.deliveryProviderLoader.load({
-      deliveryProviderId: obj._id,
-    });
+  async pickUpLocations(provider: DeliveryProvider, _: never, context: Context) {
     const director = await DeliveryDirector.actions(provider, {}, context);
     return director.pickUpLocations() || [];
   },

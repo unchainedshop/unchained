@@ -2196,11 +2196,12 @@ export type IOrderDeliveryDiscount = IOrderDiscountable & {
 
 export type IOrderDeliveryPickUp = IOrderDelivery & {
   _id: Scalars['ID']['output'];
-  activePickUpLocation?: Maybe<IOrderPickUpLocation>;
+  activePickUpLocation?: Maybe<IPickUpLocation>;
   delivered?: Maybe<Scalars['DateTimeISO']['output']>;
   discounts?: Maybe<Array<IOrderDeliveryDiscount>>;
   fee?: Maybe<IPrice>;
-  pickUpLocations: Array<IOrderPickUpLocation>;
+  /** @deprecated Use DeliveryProvider.pickupLocations instead */
+  pickUpLocations: Array<IPickUpLocation>;
   provider?: Maybe<IDeliveryProvider>;
   status?: Maybe<IOrderDeliveryStatus>;
 };
@@ -2355,14 +2356,6 @@ export enum IOrderPaymentStatus {
   /** Order has been refunded */
   Refunded = 'REFUNDED',
 }
-
-export type IOrderPickUpLocation = {
-  _id: Scalars['ID']['output'];
-  address?: Maybe<IAddress>;
-  geoPoint?: Maybe<IGeoPosition>;
-  name: Scalars['String']['output'];
-  order: IOrder;
-};
 
 export enum IOrderPriceCategory {
   /** Delivery Fees */
