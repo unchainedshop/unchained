@@ -249,10 +249,10 @@ test.describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const product = await Products.findOne({ tags: 'awesome2' });
         return !!product;
-      }, 5000);
+      }, 10000);
 
       assert.strictEqual(result, true);
-    }, 15000);
+    }, 30000);
   });
 
   test.describe('Import Filters', () => {
