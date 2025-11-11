@@ -2,6 +2,11 @@ import { OrderPricingSheet } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import { Transaction, TransactionState } from './api-types.js';
 
+const roundToDecimals = (number, decimals) => {
+  const num = Math.pow(10, decimals);
+  return Math.round(number * num) / num;
+};
+
 export const transactionIsPaid = async (
   transaction: Transaction,
   expectedCurrency: string,
@@ -10,14 +15,14 @@ export const transactionIsPaid = async (
   if (transaction.state === TransactionState.FULFILL) {
     return (
       transaction.completedAmount !== undefined &&
-      transaction.completedAmount.toFixed(2) === expectedAmount.toFixed(2) &&
+      roundToDecimals(transaction.completedAmount, 2) === roundToDecimals(expectedAmount, 2) &&
       transaction.currency === expectedCurrency
     );
   }
   if (transaction.state === TransactionState.AUTHORIZED) {
     return (
       transaction.authorizationAmount !== undefined &&
-      transaction.authorizationAmount.toFixed(2) === expectedAmount.toFixed(2) &&
+      roundToDecimals(transaction.authorizationAmount, 2) === roundToDecimals(expectedAmount, 2) &&
       transaction.currency === expectedCurrency
     );
   }

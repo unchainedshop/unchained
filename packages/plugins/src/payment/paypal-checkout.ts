@@ -36,6 +36,11 @@ const environment = () => {
     : new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret);
 };
 
+const roundToDecimals = (number, decimals) => {
+  const num = Math.pow(10, decimals);
+  return Math.round(number * num) / num;
+};
+
 const PaypalCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
@@ -93,8 +98,8 @@ const PaypalCheckout: IPaymentAdapter = {
             calculation: order.calculation,
             currencyCode: order.currencyCode,
           });
-          const ourTotal = (pricing.total({ useNetPrice: false }).amount / 100).toFixed(2);
-          const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;
+          const ourTotal = roundToDecimals(pricing.total({ useNetPrice: false }).amount / 100, 2);
+          const paypalTotal = roundToDecimals(paypalOrder.result.purchase_units[0].amount.value, 2);
 
           if (ourTotal === paypalTotal) {
             return order;
