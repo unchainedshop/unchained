@@ -1,8 +1,7 @@
 export default [
   /* GraphQL */ `
-    type OrderPickUpLocation {
+    type PickUpLocation {
       _id: ID!
-      order: Order!
       name: String!
       address: Address
       geoPoint: GeoPosition

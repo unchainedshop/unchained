@@ -4,18 +4,38 @@ import {
   ICreateDeliveryProviderMutation,
   ICreateDeliveryProviderMutationVariables,
 } from '../../../gql/types';
-
-import DeliveryProviderFragment from '../fragments/DeliveryProviderFragment';
+import AddressFragment from '../../common/fragments/AddressFragment';
 
 const CreateDeliveryProviderMutation = gql`
   mutation CreateDeliveryProvider(
     $deliveryProvider: CreateDeliveryProviderInput!
   ) {
     createDeliveryProvider(deliveryProvider: $deliveryProvider) {
-      ...DeliveryProviderFragment
+      _id
+      created
+      updated
+      deleted
+      type
+      isActive
+      configuration
+      interface {
+        _id
+        label
+        version
+      }
+      configurationError
+      ... on DeliveryProviderPickUp {
+        pickUpLocations {
+          _id
+          name
+          address {
+            ...AddressFragment
+          }
+        }
+      }
     }
   }
-  ${DeliveryProviderFragment}
+  ${AddressFragment}
 `;
 
 const useCreateDeliveryProvider = () => {

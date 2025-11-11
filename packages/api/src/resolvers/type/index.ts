@@ -67,6 +67,8 @@ import { Web3Address } from './web3-address.js';
 import { LoginMethodResponse } from './login-method-response-types.js';
 import { ProductSearchResult } from './product-search-result-types.js';
 import { OrderStatistics } from './order/order-statistics-types.js';
+import { DeliveryProviderPickUp } from './delivery-provider-pickup-types.js';
+import { DeliveryProviderShipping } from './delivery-provider-shipping-types.js';
 
 const types = {
   Assortment,
@@ -81,6 +83,8 @@ const types = {
   Country,
   Currency,
   DeliveryProvider,
+  DeliveryProviderPickUp,
+  DeliveryProviderShipping,
   Dimensions,
   Enrollment,
   EnrollmentDelivery,

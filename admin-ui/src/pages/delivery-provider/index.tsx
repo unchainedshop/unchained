@@ -34,7 +34,6 @@ const DeliveryProviders = () => {
   const { setModal } = useModal();
   const { removeDeliveryProvider } = useRemoveDeliveryProvider();
   const { deliveryProviderType } = useDeliveryProviderTypes();
-
   const onRemoveDeliveryProvider = async (deliveryProviderId) => {
     await setModal(
       <DangerMessage
