@@ -42,8 +42,7 @@ export const BasePricingDirector = <
   Calculation,
   AdapterContext,
   IPricingSheet<Calculation>,
-  PricingAdapter,
-  any
+  PricingAdapter
 > => {
   const baseDirector = BaseDirector<PricingAdapter>(directorName, {
     adapterSortKey: 'orderIndex',
@@ -54,8 +53,7 @@ export const BasePricingDirector = <
     Calculation,
     AdapterContext,
     IPricingSheet<Calculation>,
-    PricingAdapter,
-    any
+    PricingAdapter
   > = {
     ...baseDirector,
 
@@ -85,6 +83,10 @@ export const BasePricingDirector = <
 
           const discounts: (Discount<any> | null)[] = await Promise.all(
             context.discounts.map(async (orderDiscount) => {
+              // TODO: We shouldn't need to fetch this here, most probably we already have an order in context
+              // 1. it should propably be required to pass an order
+              // 2. we should pass the order in the pricing context or pricing adapter context
+              // 3. it can't be different orders for different discounts in the same calculation rebuild
               const order = await unchainedAPI.modules.orders.findOrder({
                 orderId: orderDiscount.orderId,
               });
@@ -92,7 +94,7 @@ export const BasePricingDirector = <
               if (!DiscountAdapter) return null;
 
               const adapter = await DiscountAdapter.actions({
-                context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
+                context: { order: order!, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
               });
 
               const configuration = adapter.discountForPricingAdapterKey({
