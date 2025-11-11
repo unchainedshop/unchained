@@ -11,8 +11,6 @@ import { useErrorHandler } from '@envelop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
-import setupTicketing, { TicketingAPI } from "@unchainedshop/ticketing";
-import rest from "@unchainedshop/ticketing/src/fastify.js";
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -49,12 +47,6 @@ try {
     modules: defaultModules,
   });
 
-
-  setupTicketing(platform.unchainedAPI as TicketingAPI, {
-    createAppleWalletPass: null,
-    createGoogleWalletPass: null
-
-  });
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: true,
@@ -67,7 +59,6 @@ try {
 
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
-  rest(fastify)
   await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 
 
