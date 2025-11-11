@@ -1,3 +1,18 @@
+# Unchained Engine v4.3
+
+## Minor
+- Delivery Providers now expose the pick-up locations too #656
+- Permissions have been updated with a new enrollUser permission
+- Admin UI: Now shows menu items and actions dynamically according to permissions of a user
+- Admin UI: Improved retry option
+- Node.js 25 by default in Dockerfiles
+
+## Patch
+- Fix OrderStatisticsRecord (add missing field count)
+- Improved performance of cold boots and price fields
+- Fixed issue with bulk importing media and files not beeing found after
+- Fixed postfinance checkout to round correctly
+
 # Unchained Engine v4.2
 
 ## Minor
