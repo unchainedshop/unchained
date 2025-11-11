@@ -52,12 +52,6 @@ try {
     ],
   });
 
-
-  setupTicketing(platform.unchainedAPI as TicketingAPI, {
-    createAppleWalletPass: null,
-    createGoogleWalletPass: null
-
-  });
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: true,
