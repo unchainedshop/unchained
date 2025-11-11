@@ -56,6 +56,8 @@ export const startPlatform = async ({
   graphqlHandler: any;
   db: mongodb.Db;
 }> => {
+  const start = performance.now();
+
   exitOnMissingEnvironmentVariables();
   existOnInvalidEnvironmentVariables();
 
@@ -118,6 +120,9 @@ export const startPlatform = async ({
 
   process.on('SIGTERM', cleanup('SIGTERM'));
   process.on('SIGINT', cleanup('SIGINT'));
+
+  const end = performance.now();
+  defaultLogger.debug(`Unchained Engine started in ${(end - start).toFixed(0)} ms`);
 
   return { unchainedAPI, graphqlHandler, db };
 };
