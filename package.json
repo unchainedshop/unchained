@@ -102,5 +102,8 @@
   },
   "trustedDependencies": [
     "@mongodb-js/zstd"
-  ]
+  ],
+  "dependencies": {
+    "googleapis": "^166.0.0"
+  }
 }
