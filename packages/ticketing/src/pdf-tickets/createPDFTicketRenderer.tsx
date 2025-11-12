@@ -36,7 +36,9 @@ const TicketDocument = ({
   if (!PDFRenderer) {
     throw new Error('@react-pdf/renderer is not installed');
   }
-  const { Document, Page, Text, View, Svg } = PDFRenderer;
+  const { Document, Page, Text, View, Svg, Image } = PDFRenderer;
+
+  
 
   return (
     <Document>
@@ -72,11 +74,12 @@ const TicketDocument = ({
             <Text>Product ID: {t.productId}</Text>
             <Text>Quantity: {t.quantity}</Text>
 
-            {qrSvgs[idx] && (
-              <View style={styles.qrContainer}>
-                <Svg xml={qrSvgs[idx]} width={60} height={60} />
-              </View>
-            )}
+            
+{qrSvgs[idx] && (
+  <View style={styles.qrContainer}>
+    <Image src={qrSvgs[idx]} style={{ width: 60, height: 60 }} />
+  </View>
+)}
 
             {idx < tokens?.length - 1 && <View style={styles.separator} />}
           </View>
@@ -108,11 +111,18 @@ export const createPDFTicketRenderer = async (
 
   if (QRCode && tokens?.length) {
     qrSvgs = await Promise.all(
-      tokens?.map((t) =>
-        QRCode.toString(JSON.stringify(t), { type: 'svg', width: 60, margin: 0 }).catch(() => null),
+      tokens?.map(async (token) => {
+        const hash = await modules.warehousing.buildAccessKeyForToken(
+    token._id as string,
+  );
+      return QRCode.toDataURL(`${process.env.ROOT_URL}/download/${token._id}?hash=${hash}`, {
+    errorCorrectionLevel: "H",
+  }) 
+      }
+        
       ),
     );
-  }
+  }  
   const { StyleSheet } = PDFRenderer;
 
   const styles = StyleSheet.create({
