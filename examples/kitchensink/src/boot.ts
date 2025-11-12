@@ -11,9 +11,23 @@ import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-of
 import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-import setupTicketing, { type TicketingAPI } from "@unchainedshop/ticketing";
+import setupTicketing, {
+  type TicketingAPI, ticketingModules,
+  ticketingServices,
+} from "@unchainedshop/ticketing";
 import rest from "@unchainedshop/ticketing/lib/fastify.js"
 import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-tickets/createPDFTicketRenderer.js"
+import googleWalletPass from "@unchainedshop/ticketing/lib/pdf-tickets/googleWalletPass.js"
+
+
+export const services = {
+  ...ticketingServices,
+};
+
+export const modules = {
+  ...defaultModules,
+  ...ticketingModules,
+};
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -51,6 +65,8 @@ try {
         }
       }),
     ],
+    modules,
+    services
   });
 
   connect(fastify, platform, {
@@ -61,7 +77,7 @@ try {
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     } : undefined,
   });
-  setupTicketing(platform.unchainedAPI as TicketingAPI, { renderOrderPDF: createPDFTicketRenderer, createAppleWalletPass: null, createGoogleWalletPass: null })
+  setupTicketing(platform.unchainedAPI as TicketingAPI, { renderOrderPDF: createPDFTicketRenderer, createAppleWalletPass: null, createGoogleWalletPass: googleWalletPass })
   rest(fastify);
   await seed(platform.unchainedAPI);
 
