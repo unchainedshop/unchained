@@ -1,6 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import console from 'console';
 
 export type PDFRenderer = (
   {
@@ -11,7 +10,7 @@ export type PDFRenderer = (
     variant?: string;
   },
   context: UnchainedCore,
-) => Promise<NodeJS.ReadableStream>;
+) => Promise<{ contentType: string; renderer: NodeJS.ReadableStream }>;
 
 export type PassRenderer = (
   token: TokenSurrogate,
