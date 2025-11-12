@@ -1,6 +1,7 @@
 {
   "extends": ["../shared/base.tsconfig.json", "../shared/node-native.tsconfig.json"],
   "compilerOptions": {
+    "jsx": "react",
     "declarationDir": "./lib",
     "rootDir": "./src",
     "outDir": "./lib"
