@@ -12,7 +12,8 @@ import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchained
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 import setupTicketing, { type TicketingAPI } from "@unchainedshop/ticketing";
-import rest from "@unchainedshop/ticketing/src/fastify.js";
+import rest from "@unchainedshop/ticketing/lib/fastify.js"
+import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-tickets/createPDFTicketRenderer.js"
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -60,7 +61,8 @@ try {
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     } : undefined,
   });
-
+  setupTicketing(platform.unchainedAPI as TicketingAPI, { renderOrderPDF: createPDFTicketRenderer, createAppleWalletPass: null, createGoogleWalletPass: null })
+  rest(fastify);
   await seed(platform.unchainedAPI);
 
   // Warning: Do not use this in production - creates access token for bulk import API
