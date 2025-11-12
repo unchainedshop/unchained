@@ -5,13 +5,11 @@ import { RendererTypes, getRenderer } from '../template-registry.ts';
 import type { Request, Response } from 'express';
 
 import { createLogger } from '@unchainedshop/logger';
-import console from 'console';
 
 const logger = createLogger('unchained:ticketing');
 
 export async function printTicketsHandler(req: Request & { unchainedContext: Context }, res: Response) {
   const { variant, orderId, otp } = req.query || {};
-  console.log('printTicketsHandler called with query:', req.query);
   try {
     if (
       typeof orderId !== 'string' ||
@@ -23,9 +21,12 @@ export async function printTicketsHandler(req: Request & { unchainedContext: Con
     await checkAction(req.unchainedContext, actions.viewOrder, [undefined, { orderId, otp }]);
 
     const render = getRenderer(RendererTypes.ORDER_PDF);
-    const pdfStream = await render({ orderId, variant: variant as string }, req.unchainedContext);
-    res.setHeader('Content-Type', 'application/pdf');
-    pdfStream.pipe(res);
+    const { contentType, renderer } = await render(
+      { orderId, variant: variant as string },
+      req.unchainedContext,
+    );
+    res.setHeader('Content-Type', contentType ?? 'application/pdf');
+    renderer.pipe(res);
   } catch (error) {
     logger.error(error);
     res.status(403).end();
