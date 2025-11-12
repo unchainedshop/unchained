@@ -12,7 +12,6 @@ const googleWalletHandler: RouteHandlerMethod = async (
 ) => {
   const resolvedContext = req.unchainedContext;
   const { modules } = resolvedContext;
-
   const path = req.url;
 
   logger.info(`${path} (${JSON.stringify(req.query)})`);
@@ -44,7 +43,6 @@ const googleWalletHandler: RouteHandlerMethod = async (
           name: 'HASH_MISMATCH',
         });
       }
-
       const pass = await modules.passes.upsertGoogleWalletPass(token, resolvedContext);
 
       if (!pass) {
