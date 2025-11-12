@@ -50,7 +50,8 @@
   },
   "optionalDependencies": {
     "@react-pdf/renderer": "^4.3.1",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "googleapis": "^144.0.0"
   },
   "peerDependenciesMeta": {
     "@parse/node-apn": {
