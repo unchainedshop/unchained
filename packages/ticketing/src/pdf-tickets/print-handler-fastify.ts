@@ -26,9 +26,12 @@ const printTicketsHandler: RouteHandlerMethod = async (
     await checkAction(req.unchainedContext, actions.viewOrder, [undefined, { orderId, otp }]);
 
     const render = getRenderer(RendererTypes.ORDER_PDF);
-    const pdfStream = await render({ orderId, variant: variant as string }, req.unchainedContext);
-    reply.header('content-type', 'image/svg+xml');
-    return reply.send(pdfStream);
+    const { contentType, renderer } = await render(
+      { orderId, variant: variant as string },
+      req.unchainedContext,
+    );
+    reply.header('content-type', contentType ?? 'application/pdf');
+    return reply.send(renderer);
   } catch (error) {
     logger.error(error);
     reply.status(403);

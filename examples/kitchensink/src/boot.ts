@@ -10,6 +10,9 @@ import { useErrorHandler } from '@envelop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
+import setupTicketing, { TicketingAPI } from "@unchainedshop/ticketing";
+import rest from "@unchainedshop/ticketing/lib/fastify.js"
+import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-tickets/createPDFTicketRenderer.js"
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -53,7 +56,8 @@ try {
     } : undefined,
     initPluginMiddlewares,
   });
-
+  setupTicketing(platform.unchainedAPI as TicketingAPI, { renderOrderPDF: createPDFTicketRenderer, createAppleWalletPass: null, createGoogleWalletPass: null })
+  rest(fastify);
   await seed(platform.unchainedAPI);
 
   // Warning: Do not use this in production - creates access token for bulk import API

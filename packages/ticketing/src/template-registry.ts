@@ -10,7 +10,7 @@ export type PDFRenderer = (
     variant?: string;
   },
   context: UnchainedCore,
-) => Promise<NodeJS.ReadableStream>;
+) => Promise<{ contentType: string; renderer: NodeJS.ReadableStream }>;
 
 export type PassRenderer = (
   token: TokenSurrogate,
