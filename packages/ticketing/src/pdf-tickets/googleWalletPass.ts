@@ -1,5 +1,3 @@
-import { google } from 'googleapis';
-import jwt from 'jsonwebtoken';
 import path from 'node:path';
 import { TicketingAPI } from '../types.js';
 
@@ -9,6 +7,8 @@ export class GoogleEventTicketWallet {
   credentials;
   client;
   issuerId;
+  google;
+  jwt;
 
   constructor(issuerId: string) {
     this.keyFilePath = path.resolve(
@@ -18,8 +18,32 @@ export class GoogleEventTicketWallet {
     this.issuerId = issuerId;
   }
 
+  async ensureDependencies() {
+    if (!this.google) {
+      try {
+        const { google } = await import('googleapis');
+        this.google = google;
+      } catch {
+        console.warn('⚠️ googleapis not installed — Google Wallet features disabled.');
+        this.google = null;
+      }
+    }
+
+    if (!this.jwt) {
+      try {
+        const jwt = await import('jsonwebtoken');
+        this.jwt = jwt.default || jwt;
+      } catch {
+        console.warn('⚠️ jsonwebtoken not installed — JWT creation disabled.');
+        this.jwt = null;
+      }
+    }
+  }
+
   async auth() {
-    const auth = new google.auth.GoogleAuth({
+    await this.ensureDependencies();
+    if (!this.google) return;
+    const auth = new this.google.auth.GoogleAuth({
       keyFile: this.keyFilePath,
       scopes: ['https://www.googleapis.com/auth/wallet_object.issuer'],
     });
@@ -29,7 +53,7 @@ export class GoogleEventTicketWallet {
     });
     this.credentials = keyFile;
 
-    this.client = google.walletobjects({
+    this.client = this.google.walletobjects({
       version: 'v1',
       auth: auth,
     });
@@ -103,7 +127,7 @@ export class GoogleEventTicketWallet {
         sourceUri: {
           uri:
             process.env.NODE_ENV !== 'production'
-              ? 'https://unchained.shop/_next/static/media/logo-light.2b704587.svg'
+              ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7vN9d0jQlCl-sISjxq9IhDaYknKyxx1a8vw&s'
               : options.image,
         },
         contentDescription: {
@@ -154,7 +178,10 @@ export class GoogleEventTicketWallet {
     if (options.image) {
       newClass.heroImage = {
         sourceUri: {
-          uri: options.image,
+          uri:
+            process.env.NODE_ENV !== 'production'
+              ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7vN9d0jQlCl-sISjxq9IhDaYknKyxx1a8vw&s'
+              : options.image,
         },
         contentDescription: {
           defaultValue: {
@@ -195,8 +222,6 @@ export class GoogleEventTicketWallet {
       requestBody: updatedClass,
     });
 
-    console.log('Class update response');
-
     return `${this.issuerId}.${classSuffix}`;
   }
   async createObject(classSuffix, objectSuffix) {
@@ -226,7 +251,6 @@ export class GoogleEventTicketWallet {
       requestBody: newObject,
     });
 
-    console.log('Object insert response');
     return `${this.issuerId}.${objectSuffix}`;
   }
 
@@ -272,7 +296,6 @@ export class GoogleEventTicketWallet {
       requestBody: updatedObject,
     });
 
-    console.log('Object update response');
     return `${this.issuerId}.${objectSuffix}`;
   }
 
@@ -300,8 +323,6 @@ export class GoogleEventTicketWallet {
       requestBody: patchBody,
     });
 
-    console.log('Object expiration response');
-
     return `${this.issuerId}.${objectSuffix}`;
   }
 
@@ -326,11 +347,9 @@ export class GoogleEventTicketWallet {
       },
     };
 
-    const token = jwt.sign(claims, this.credentials.private_key, {
+    const token = this.jwt.sign(claims, this.credentials.private_key, {
       algorithm: 'RS256',
     });
-
-    console.log(`https://pay.google.com/gp/v/save/${token}`);
 
     return `https://pay.google.com/gp/v/save/${token}`;
   }
@@ -357,7 +376,6 @@ export default async (token, unchainedAPI: TicketingAPI) => {
       fileId: firstMedia.mediaId,
     }));
   const url = file && (await unchainedAPI.modules.files.normalizeUrl(file?.url as string, {}));
-
   const productTexts = await unchainedAPI.modules.products.texts.findLocalizedText({
     productId: token.productId,
     locale: 'de' as any,
