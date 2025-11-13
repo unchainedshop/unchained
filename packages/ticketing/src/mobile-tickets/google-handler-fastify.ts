@@ -43,6 +43,7 @@ const googleWalletHandler: RouteHandlerMethod = async (
           name: 'HASH_MISMATCH',
         });
       }
+
       const pass = await modules.passes.upsertGoogleWalletPass(token, resolvedContext);
 
       if (!pass) {

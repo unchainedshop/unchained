@@ -155,17 +155,17 @@ export class GoogleEventTicketWallet {
       reviewStatus: 'UNDER_REVIEW',
       issuerName: 'Unchained Commerce',
       countryCode: 'ch',
-      textModulesData: [
+      textModulesData: options?.subtitle ? [
         {
           header: options.subtitle,
           body: options?.description,
           id: 'TEXT_MODULE_ID',
         },
-      ],
+      ] : [],
 
       eventName: {
         defaultValue: {
-          language: 'de-ch',
+          language: 'de-CH',
           value: options.title,
         },
       },
@@ -185,7 +185,7 @@ export class GoogleEventTicketWallet {
         },
         contentDescription: {
           defaultValue: {
-            language: 'de-ch',
+            language: 'de-CH',
             value: options.title,
           },
         },
@@ -335,7 +335,6 @@ export class GoogleEventTicketWallet {
       classId: `${this.issuerId}.${classSuffix}`,
       state: 'ACTIVE',
     };
-
     const claims = {
       iss: this.credentials.client_email,
       aud: 'google',
@@ -381,19 +380,17 @@ export default async (token, unchainedAPI: TicketingAPI) => {
     locale: 'de' as any,
   });
 
-  const description = productTexts.description;
-
   await GoogleWallet.upsertClass(product._id, {
     title: productTexts.title,
     barcodeWithUrl,
     subtitle: product.meta?.location || productTexts?.subtitle,
-    description,
+    description: productTexts?.description,
     image: url,
   });
 
-  await GoogleWallet.upsertObject(product._id, token.chainTokenId, barcodeWithUrl);
+  await GoogleWallet.upsertObject(product._id, token.chainId, barcodeWithUrl);
 
-  const asURL = async () => GoogleWallet.createJwtNewObjects(product._id, token.chainTokenId);
+  const asURL = async () => GoogleWallet.createJwtNewObjects(product._id, token.chainId);
 
   return { asURL };
 };
