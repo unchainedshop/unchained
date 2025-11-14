@@ -120,7 +120,7 @@ export const configureAssortmentTextsModule = ({
     // Queries
     findTexts: async (
       query: mongodb.Filter<AssortmentText>,
-      options?: mongodb.FindOptions<AssortmentText>,
+      options?: mongodb.FindOptions,
     ): Promise<AssortmentText[]> => {
       const texts = AssortmentTexts.find(query, options);
 

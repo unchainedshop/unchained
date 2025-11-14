@@ -50,7 +50,7 @@ export const configureDeliveryModule = async ({
       }: {
         deliveryProviderId: string;
       } & mongodb.Filter<DeliveryProvider>,
-      options?: mongodb.FindOptions<DeliveryProvider>,
+      options?: mongodb.FindOptions,
     ) => {
       return DeliveryProviders.findOne(
         deliveryProviderId ? generateDbFilterById(deliveryProviderId) : query,
@@ -60,7 +60,7 @@ export const configureDeliveryModule = async ({
 
     findProviders: async (
       query: mongodb.Filter<DeliveryProvider> & { includeDeleted?: boolean },
-      options: mongodb.FindOptions<DeliveryProvider> = { sort: { created: 1 } },
+      options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<DeliveryProvider[]> => {
       const providers = DeliveryProviders.find(buildFindSelector(query), options);
       return providers.toArray();
