@@ -7,6 +7,7 @@ import ticketingModules, { TicketingModule } from './module.js';
 import { TicketingAPI } from './types.js';
 import setupMagicKey from './magic-key.js';
 import ticketingServices, { TicketingServices } from './services.js';
+import { defaultOrderPDFRenderer } from './pdf-tickets/defaultOrderPDFRenderer.js';
 
 export type { TicketingAPI, RendererTypes };
 
@@ -30,11 +31,11 @@ export function setupMobileTickets({
 export default function setupTicketing(
   unchainedAPI: TicketingAPI,
   {
-    renderOrderPDF,
+    renderOrderPDF = defaultOrderPDFRenderer,
     createAppleWalletPass,
     createGoogleWalletPass,
   }: {
-    renderOrderPDF: any;
+    renderOrderPDF?: any;
     createAppleWalletPass: any;
     createGoogleWalletPass: any;
   },

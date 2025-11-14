@@ -11,6 +11,23 @@ import { useErrorHandler } from '@envelop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
+import setupTicketing, {
+  TicketingAPI, ticketingModules,
+  ticketingServices,
+} from "@unchainedshop/ticketing";
+import rest from "@unchainedshop/ticketing/lib/fastify.js"
+import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-tickets/createPDFTicketRenderer.js"
+import googleWalletPass from "@unchainedshop/ticketing/lib/pdf-tickets/googleWalletPass.js"
+
+
+export const services = {
+  ...ticketingServices,
+};
+
+export const modules = {
+  ...defaultModules,
+  ...ticketingModules,
+};
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -44,7 +61,8 @@ try {
         }
       }),
     ],
-    modules: defaultModules,
+    modules,
+    services
   });
 
   connect(fastify, platform, {
@@ -56,11 +74,15 @@ try {
     } : undefined,
     initPluginMiddlewares,
   });
-
+  setupTicketing(platform.unchainedAPI as TicketingAPI, { renderOrderPDF: createPDFTicketRenderer, createAppleWalletPass: null, createGoogleWalletPass: googleWalletPass })
+  rest(fastify);
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
-
   await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+
+
+
+
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);
