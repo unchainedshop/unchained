@@ -38,5 +38,10 @@
   },
   "devDependencies": {
     "mongodb-memory-server": "^10.1.4"
+  },
+  "overrides": {
+    "mongodb-memory-server": {
+      "mongodb": "^7.0.0"
+    }
   }
 }

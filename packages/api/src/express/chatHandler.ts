@@ -62,12 +62,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       },
     });
 
-    const sdkClient = new Client(
-      { name: 'unchained-chat-client', version: '1.0.0' },
-      {
-        capabilities: { resources: {} },
-      },
-    );
+    const sdkClient = new Client({ name: 'unchained-chat-client', version: '1.0.0' });
     await sdkClient.connect(resourceTransport as any);
     const transport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
       requestInit: {
@@ -91,8 +86,8 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
             resources.resources.map(async (resource) => {
               try {
                 const content = await sdkClient.readResource({ uri: resource.uri });
-                if (content?.contents?.[0]?.text) {
-                  return `${resource.name}:\n${content.contents[0].text}`;
+                if ((content?.contents?.[0] as any)?.text) {
+                  return `${resource.name}:\n${(content.contents[0] as any).text}`;
                 }
               } catch (e) {
                 logger.error(`Failed to read resource ${resource.uri}:`, e);

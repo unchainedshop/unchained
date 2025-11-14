@@ -144,10 +144,7 @@ export const configureQuotationsModule = async ({
       return Quotations.findOne(selector);
     },
 
-    findQuotation: async (
-      { quotationId }: { quotationId: string },
-      options?: mongodb.FindOptions<Quotation>,
-    ) => {
+    findQuotation: async ({ quotationId }: { quotationId: string }, options?: mongodb.FindOptions) => {
       const selector = generateDbFilterById(quotationId);
       return Quotations.findOne(selector, options);
     },
@@ -163,7 +160,7 @@ export const configureQuotationsModule = async ({
         offset?: number;
         sort?: SortOption[];
       },
-      options?: mongodb.FindOptions<Quotation>,
+      options?: mongodb.FindOptions,
     ): Promise<Quotation[]> => {
       const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.ASC }];
       const quotations = Quotations.find(buildFindSelector(query), {

@@ -116,7 +116,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       transformSortStage: async (defaultStage, options) => {
-        return reduceAdapters<mongodb.FindOptions<Product>['sort']>(async (lastSortStage, adapter) => {
+        return reduceAdapters<mongodb.FindOptions['sort']>(async (lastSortStage, adapter) => {
           return adapter.transformSortStage(await lastSortStage, options);
         }, defaultStage);
       },

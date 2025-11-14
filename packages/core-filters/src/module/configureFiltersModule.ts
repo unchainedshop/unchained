@@ -77,7 +77,7 @@ export const configureFiltersModule = async ({
         offset?: number;
         sort?: SortOption[];
       } & mongodb.Filter<Filter>,
-      options?: mongodb.FindOptions<Filter>,
+      options?: mongodb.FindOptions,
     ): Promise<Filter[]> => {
       const defaultSortOption = [{ key: 'created', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {

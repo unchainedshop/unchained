@@ -73,7 +73,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
         offset?: number;
         tags?: string[];
       },
-      options?: mongodb.FindOptions<ProductMedia>,
+      options?: mongodb.FindOptions,
     ): Promise<ProductMedia[]> => {
       const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
       if (tags?.length && tags?.length > 0) {

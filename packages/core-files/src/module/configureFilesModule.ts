@@ -32,10 +32,7 @@ export const configureFilesModule = async ({
       return transformedURLString;
     },
 
-    findFile: async (
-      params: { fileId: string } | { url: string },
-      options?: mongodb.FindOptions<File>,
-    ) => {
+    findFile: async (params: { fileId: string } | { url: string }, options?: mongodb.FindOptions) => {
       if ('url' in params) {
         return Files.findOne({ url: params.url }, options);
       }
@@ -44,7 +41,7 @@ export const configureFilesModule = async ({
 
     findFiles: async (
       selector: mongodb.Filter<File>,
-      options?: mongodb.FindOptions<File>,
+      options?: mongodb.FindOptions,
     ): Promise<File[]> => {
       return Files.find(selector, options).toArray();
     },

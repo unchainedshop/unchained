@@ -26,7 +26,7 @@ export const configureAssortmentFiltersModule = ({
       }: {
         assortmentId: string;
       },
-      options?: mongodb.FindOptions<AssortmentFilter>,
+      options?: mongodb.FindOptions,
     ): Promise<AssortmentFilter[]> => {
       const filters = AssortmentFilters.find({ assortmentId }, options);
       return filters.toArray();
