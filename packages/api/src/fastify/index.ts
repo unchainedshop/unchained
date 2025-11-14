@@ -1,7 +1,7 @@
 import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
 import bulkImportHandler from './bulkImportHandler.js';
 import ercMetadataHandler from './ercMetadataHandler.js';
-import MongoStore from 'connect-mongo';
+import MongoStore from '../mongo-store.js';
 import { YogaServerInstance } from 'graphql-yoga';
 import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/core';

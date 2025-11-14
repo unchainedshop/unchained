@@ -56,6 +56,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
+    "@ai-sdk/mcp": "^0.0.8",
     "@fastify/cookie": ">= 11 < 12",
     "@fastify/multipart": ">= 9 < 10",
     "@fastify/session": ">= 11 < 12",
@@ -64,8 +65,6 @@
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
     "ai": ">= 5 < 6",
-    "@ai-sdk/mcp": "^0.0.8",
-    "connect-mongo": ">= 5.1 < 6",
     "express": ">= 5 < 6",
     "express-session": ">= 1.18 < 2",
     "fastify": ">= 5.2 < 6",
@@ -78,9 +77,6 @@
       "optional": false
     },
     "graphql-yoga": {
-      "optional": false
-    },
-    "connect-mongo": {
       "optional": false
     },
     "ai": {
@@ -131,13 +127,14 @@
     "@unchainedshop/utils": "^4.3.0",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
-    "mime": ">= 4 < 5",
     "graphql-scalars": "^1.24.2",
+    "mime": ">= 4 < 5",
     "moniker": "0.1.2",
     "p-memoize": "^8.0.0",
     "zod": "^3.25.76 || ^4"
   },
   "devDependencies": {
+    "@ai-sdk/mcp": "^0.0.8",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
     "@fastify/session": "^11.1.0",
@@ -146,8 +143,8 @@
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
     "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
     "@types/node": "^24.0.13",
-    "@ai-sdk/mcp": "^0.0.8",
     "ai": "^5.0.80",
     "express": "^5.1.0",
     "express-session": "^1.18.1",

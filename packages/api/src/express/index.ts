@@ -1,7 +1,7 @@
 import e from 'express';
 import session from 'express-session';
 import multer from 'multer';
-import MongoStore from 'connect-mongo';
+import MongoStore from '../mongo-store.js';
 import { Passport } from 'passport';
 import { YogaServerInstance } from 'graphql-yoga';
 import { mongodb } from '@unchainedshop/mongodb';
@@ -17,6 +17,7 @@ import createMCPMiddleware from './createMCPMiddleware.js';
 import { API_EVENTS } from '../events.js';
 import { ChatConfiguration } from '../chat/utils.js';
 import { connectChat } from './chatHandler.js';
+import { CipherKey } from 'node:crypto';
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
@@ -217,7 +218,7 @@ export const connect = (
 
   expressApp.use(
     session({
-      secret: process.env.UNCHAINED_TOKEN_SECRET,
+      secret: process.env.UNCHAINED_TOKEN_SECRET as CipherKey,
       store: MongoStore.create({
         client: (db as any).client,
         dbName: db.databaseName,
