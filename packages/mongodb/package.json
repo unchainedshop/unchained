@@ -52,5 +52,10 @@
   "devDependencies": {
     "@types/node": "^24.0.13",
     "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "mongodb-memory-server": {
+      "mongodb": "^7.0.0"
+    }
   }
 }

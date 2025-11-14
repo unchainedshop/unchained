@@ -80,6 +80,11 @@
     "build:packages": "npm run clean && tsc --build",
     "build:admin-ui": "cd admin-ui && npm run build"
   },
+  "overrides": {
+    "mongodb-memory-server": {
+      "mongodb": "^7.0.0"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
     "@modelcontextprotocol/sdk": "^1.15.1",
