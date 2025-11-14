@@ -79,6 +79,9 @@
     "graphql-yoga": {
       "optional": false
     },
+    "express-session": {
+      "optional": false
+    },
     "ai": {
       "optional": true
     },
@@ -101,9 +104,6 @@
       "optional": true
     },
     "express": {
-      "optional": true
-    },
-    "express-session": {
       "optional": true
     },
     "multer": {
