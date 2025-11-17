@@ -20,13 +20,8 @@ import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-ticket
 import googleWalletPass from "@unchainedshop/ticketing/lib/pdf-tickets/googleWalletPass.js"
 
 
-export const services = {
-  ...ticketingServices,
-};
-
 export const modules = {
   ...defaultModules,
-  ...ticketingModules,
 };
 
 const fastify = Fastify({
@@ -66,7 +61,6 @@ try {
       }),
     ],
     modules,
-    services
   });
 
   connect(fastify, platform, {
@@ -77,8 +71,6 @@ try {
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     } : undefined,
   });
-  setupTicketing(platform.unchainedAPI as TicketingAPI, { renderOrderPDF: createPDFTicketRenderer, createAppleWalletPass: null, createGoogleWalletPass: googleWalletPass })
-  rest(fastify);
   await seed(platform.unchainedAPI);
 
   // Warning: Do not use this in production - creates access token for bulk import API
