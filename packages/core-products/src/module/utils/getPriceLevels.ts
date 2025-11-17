@@ -6,16 +6,16 @@ export const getPriceLevels = (params: {
   countryCode: string;
 }) => {
   return (params.product?.commerce?.pricing || [])
-    .toSorted(({ maxQuantity: leftMaxQuantity = 0 }, { maxQuantity: rightMaxQuantity = 0 }) => {
-      if (leftMaxQuantity === rightMaxQuantity || (!leftMaxQuantity && !rightMaxQuantity)) return 0;
-      if (!leftMaxQuantity) return 1;
-      if (!rightMaxQuantity) return -1;
-      return leftMaxQuantity - rightMaxQuantity;
+    .toSorted((a, b) => {
+      const left = a.minQuantity ?? 0;
+      const right = b.minQuantity ?? 0;
+      return left - right;
     })
     .filter((priceLevel) => {
       if (!params.currencyCode) return priceLevel.countryCode === params.countryCode;
       return (
-        priceLevel.currencyCode === params.currencyCode && priceLevel.countryCode === params.countryCode
+        priceLevel.currencyCode === params.currencyCode &&
+        priceLevel.countryCode === params.countryCode
       );
     });
 };

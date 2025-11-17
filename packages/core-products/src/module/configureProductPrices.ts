@@ -68,7 +68,7 @@ export const configureProductPricesModule = ({
       countryCode,
     });
 
-    const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
+    const foundPrice = pricing.find((level) => !level.minQuantity || level.minQuantity >= quantity);
     if (!foundPrice) return null;
 
     const normalizedPrice = {
@@ -139,42 +139,41 @@ export const configureProductPricesModule = ({
 
     catalogPricesLeveled: async (
       product: Product,
-      { currencyCode, countryCode }: { currencyCode: string; countryCode: string },
-    ): Promise<
-      {
-        minQuantity: number;
-        maxQuantity: number;
-        price: ProductPrice;
-      }[]
-    > => {
-      let previousMax: number | undefined;
-
-      const filteredAndSortedPriceLevels = getPriceLevels({
+      { currencyCode, countryCode }: { currencyCode: string; countryCode: string }
+    ) => {
+      const sorted = getPriceLevels({
         product,
         currencyCode,
         countryCode,
       });
 
-      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-        const max = priceLevel.maxQuantity || 0;
-        const min = previousMax ? previousMax + 1 : 0;
-        previousMax = priceLevel.maxQuantity;
+      const result: any = [];
 
-        return {
+      for (let i = 0; i < sorted.length; i++) {
+        const current = sorted[i];
+        const next = sorted[i + 1];
+
+        const min = current.minQuantity ?? 0;
+
+        // next.minQuantity - 1 OR keep same if no next level
+        const max = next
+          ? (next.minQuantity ?? 0) - 1
+          : min; // or keep as `Infinity` if needed
+
+        result.push({
           minQuantity: min,
-          maxQuantity:
-            i === 0 && priceLevel.maxQuantity && priceLevel.maxQuantity > 0
-              ? priceLevel.maxQuantity
-              : max,
+          maxQuantity: max,
           price: {
-            isTaxable: !!priceLevel.isTaxable,
-            isNetPrice: !!priceLevel.isNetPrice,
-            amount: priceLevel.amount,
+            isTaxable: !!current.isTaxable,
+            isNetPrice: !!current.isNetPrice,
+            amount: current.amount,
             currencyCode,
             countryCode,
           },
-        };
-      });
+        });
+      }
+
+      return result;
     },
 
     rates: {
@@ -300,3 +299,7 @@ export const configureProductPricesModule = ({
     },
   };
 };
+
+
+
+
