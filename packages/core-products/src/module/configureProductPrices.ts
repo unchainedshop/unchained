@@ -139,15 +139,25 @@ export const configureProductPricesModule = ({
 
     catalogPricesLeveled: async (
       product: Product,
-      { currencyCode, countryCode }: { currencyCode: string; countryCode: string }
-    ) => {
+      { currencyCode, countryCode }: { currencyCode: string; countryCode: string },
+    ): Promise<
+      {
+        minQuantity: number;
+        maxQuantity: number;
+        price: ProductPrice;
+      }[]
+    > => {
       const sorted = getPriceLevels({
         product,
         currencyCode,
         countryCode,
       });
 
-      const result: any = [];
+      const result: {
+        minQuantity: number;
+        maxQuantity: number;
+        price: ProductPrice;
+      }[] = [];
 
       for (let i = 0; i < sorted.length; i++) {
         const current = sorted[i];
@@ -156,9 +166,7 @@ export const configureProductPricesModule = ({
         const min = current.minQuantity ?? 0;
 
         // next.minQuantity - 1 OR keep same if no next level
-        const max = next
-          ? (next.minQuantity ?? 0) - 1
-          : min; // or keep as `Infinity` if needed
+        const max = next ? (next.minQuantity ?? 0) - 1 : min; // or keep as `Infinity` if needed
 
         result.push({
           minQuantity: min,
@@ -299,7 +307,3 @@ export const configureProductPricesModule = ({
     },
   };
 };
-
-
-
-
