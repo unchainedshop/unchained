@@ -16,7 +16,7 @@ export const SimpleProduct = {
     pricing: [
       {
         amount: 10000,
-        maxQuantity: 0,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -46,7 +46,7 @@ export const LeveledPricingProduct = {
     pricing: [
       {
         amount: 2000,
-        maxQuantity: 3,
+        minQuantity: 3,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -54,7 +54,7 @@ export const LeveledPricingProduct = {
       },
       {
         amount: 5000,
-        maxQuantity: 2,
+        minQuantity: 2,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -66,6 +66,7 @@ export const LeveledPricingProduct = {
         isNetPrice: false,
         currencyCode: 'CHF',
         countryCode: 'CH',
+        minQuantity: 0,
       },
     ],
   },
@@ -89,7 +90,7 @@ export const SimpleProductDraft = {
     pricing: [
       {
         amount: 10000,
-        maxQuantity: 0,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -123,7 +124,7 @@ export const ConfigurableProduct = {
     pricing: [
       {
         amount: 10000,
-        maxQuantity: 0,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -157,7 +158,7 @@ export const SimpleProductBundle = {
     pricing: [
       {
         amount: 10000,
-        maxQuantity: 0,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -194,7 +195,7 @@ export const PlanProduct = {
     pricing: [
       {
         amount: 10000,
-        maxQuantity: 0,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -383,7 +384,7 @@ export const ProxySimpleProduct1 = {
     pricing: [
       {
         amount: 2000000,
-        maxQuantity: 0,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -391,14 +392,14 @@ export const ProxySimpleProduct1 = {
       },
       {
         amount: 1500000,
-        maxQuantity: 7,
+        minQuantity: 7,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
       },
       {
         amount: 1000000,
-        maxQuantity: 10,
+        minQuantity: 10,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
@@ -419,7 +420,7 @@ export const ProxySimpleProduct2 = {
     pricing: [
       {
         amount: 500000,
-        maxQuantity: 1,
+        minQuantity: 1,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -427,7 +428,7 @@ export const ProxySimpleProduct2 = {
       },
       {
         amount: 400000,
-        maxQuantity: 5,
+        minQuantity: 5,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -435,7 +436,7 @@ export const ProxySimpleProduct2 = {
       },
       {
         amount: 300000,
-        maxQuantity: 10,
+        minQuantity: 10,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -459,7 +460,7 @@ export const ProxyPlanProduct1 = {
     pricing: [
       {
         amount: 30000000,
-        maxQuantity: 1,
+        minQuantity: 1,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -467,7 +468,7 @@ export const ProxyPlanProduct1 = {
       },
       {
         amount: 20000000,
-        maxQuantity: 2,
+        minQuantity: 2,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -475,7 +476,7 @@ export const ProxyPlanProduct1 = {
       },
       {
         amount: 10000000,
-        maxQuantity: 3,
+        minQuantity: 3,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
@@ -497,7 +498,7 @@ export const ProxyPlanProduct2 = {
     pricing: [
       {
         amount: 10000000,
-        maxQuantity: 1,
+        minQuantity: 1,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -505,14 +506,14 @@ export const ProxyPlanProduct2 = {
       },
       {
         amount: 75000000,
-        maxQuantity: 5,
+        minQuantity: 5,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
       },
       {
         amount: 5000000,
-        maxQuantity: 10,
+        minQuantity: 10,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
@@ -534,7 +535,7 @@ export const ProxyPlanProduct3 = {
     pricing: [
       {
         amount: 1000000,
-        maxQuantity: 1,
+        minQuantity: 1,
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -542,14 +543,14 @@ export const ProxyPlanProduct3 = {
       },
       {
         amount: 750000,
-        maxQuantity: 5,
+        minQuantity: 5,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
       },
       {
         amount: 5000000,
-        maxQuantity: 10,
+        minQuantity: 10,
         isTaxable: true,
         currencyCode: 'CHF',
         countryCode: 'CH',
