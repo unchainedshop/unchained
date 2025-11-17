@@ -14,8 +14,7 @@ export const getPriceLevels = (params: {
     .filter((priceLevel) => {
       if (!params.currencyCode) return priceLevel.countryCode === params.countryCode;
       return (
-        priceLevel.currencyCode === params.currencyCode &&
-        priceLevel.countryCode === params.countryCode
+        priceLevel.currencyCode === params.currencyCode && priceLevel.countryCode === params.countryCode
       );
     });
 };
