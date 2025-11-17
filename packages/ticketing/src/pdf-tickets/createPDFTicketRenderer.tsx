@@ -7,17 +7,13 @@ let PDFRenderer: any = null;
 let QRCode: any = null;
 
 try {
-  import('@react-pdf/renderer').then((mod) => {
-    PDFRenderer = mod;
-  });
+  PDFRenderer = await import('@react-pdf/renderer');
 } catch {
   PDFRenderer = null;
 }
 
 try {
-  import('qrcode').then((mod) => {
-    QRCode = mod;
-  });
+  QRCode = await import('qrcode');
 } catch {
   QRCode = null;
 }
@@ -33,15 +29,12 @@ const TicketDocument = ({
   styles: any;
   qrSvgs: any;
 }) => {
-  if (!PDFRenderer) {
-    throw new Error('@react-pdf/renderer is not installed');
-  }
   const { Document, Page, Text, View, Image } = PDFRenderer;
 
   return (
     <Document>
       <Page style={styles.page}>
-        <Text style={styles.header}>Order Confirmation / NFT Certificate</Text>
+        <Text style={styles.header}>Ticket Receipt</Text>
         <View style={styles.section}>
           <Text>Order Number: {order.orderNumber}</Text>
           <Text>Status: {order.status}</Text>
@@ -92,9 +85,11 @@ export const createPDFTicketRenderer = async (
 ) => {
   let qrSvgs: (string | null)[] = [];
 
-  if (!PDFRenderer) {
-    throw new Error('@react-pdf/renderer is not installed');
-  }
+  if (!PDFRenderer)
+    throw new Error(
+      'npm dependency @react-pdf/renderer must be installed when using the pdf ticket renderer',
+    );
+
   const { modules } = context;
 
   const order = await modules.orders.findOrder({ orderId });

@@ -10,7 +10,7 @@ export const generateOrderSVG = async (order, tokens, { modules }: TicketingAPI)
 
   const lines: { text: string; qrData?: string }[] = [];
 
-  lines.push({ text: `Order Confirmation / NFT Certificate` });
+  lines.push({ text: `Ticket Receipt` });
   lines.push({ text: `Order Number: ${order.orderNumber}` });
   lines.push({ text: `Status: ${order.status}` });
   lines.push({ text: `Date: ${order.confirmed.toLocaleString()}` });
