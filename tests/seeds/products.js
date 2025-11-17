@@ -66,7 +66,6 @@ export const LeveledPricingProduct = {
         isNetPrice: false,
         currencyCode: 'CHF',
         countryCode: 'CH',
-        minQuantity: 0,
       },
     ],
   },

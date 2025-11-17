@@ -323,7 +323,7 @@ test.describe('Cart: Product Items', () => {
                   product {
                     _id
                     ... on SimpleProduct {
-                      simulatedPrice(quantity: 4) {
+                      simulatedPrice {
                         isTaxable
                         isNetPrice
                         amount
@@ -352,12 +352,11 @@ test.describe('Cart: Product Items', () => {
         `,
         variables: {
           productId: LeveledPricingProduct._id,
-          quantity: 1,
         },
       });
       assert.partialDeepStrictEqual(defaultTierPrice?.order.items[0], {
         quantity: 4,
-        total: { amount: 40000, currencyCode: 'CHF' },
+        total: { amount: 8000, currencyCode: 'CHF' },
         product: {
           _id: 'leveled-pricing-product',
           simulatedPrice: {
