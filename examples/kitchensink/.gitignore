@@ -2,4 +2,3 @@ node_modules
 .env
 lib
 .db
-gastro-zurich*.json
