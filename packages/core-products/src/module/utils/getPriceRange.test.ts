@@ -15,7 +15,7 @@ describe('Price Range', () => {
         minPrice: {
           isTaxable: false,
           isNetPrice: false,
-          amount: 750,
+          amount: 800,
           currencyCode: 'CHF',
           countryCode: 'CH',
         },
