@@ -2,7 +2,6 @@ import Fastify from 'fastify';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.ts';
 import { useErrorHandler } from '@envelop/core';
@@ -10,11 +9,6 @@ import { useErrorHandler } from '@envelop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
-
-
-export const modules = {
-  ...defaultModules,
-};
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -46,7 +40,6 @@ try {
         }
       }),
     ],
-    modules,
   });
 
   connect(fastify, platform, {

@@ -10,8 +10,6 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenAI } from '@ai-sdk/openai';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-import setupTicketing, { TicketingAPI } from "@unchainedshop/ticketing";
-import rest from "@unchainedshop/ticketing/src/express.js";
 
 const logger = createLogger('express');
 const app = express();
@@ -44,14 +42,12 @@ try {
     initPluginMiddlewares,
   });
 
-  // Seed Database
+  // Seed Database and Set a super insecure Access Token for admin
   await seed(engine.unchainedAPI);
 
-  // Warning: Do not use this in production - creates access token for bulk import API
-  const result = await engine.unchainedAPI.modules.users.createAccessToken('admin');
-  if (result) {
-    logger.info(`Access token for admin: ${result.token}`);
-  }
+  // Warning: Do not use this in production
+<<<<<<< HEAD
+  await engine.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
 
   setupTicketing(engine.unchainedAPI as TicketingAPI, {
     renderOrderPDF: async ({ orderId }, context: TicketingAPI) => {
@@ -64,6 +60,9 @@ try {
     createGoogleWalletPass: null
 
   });
+=======
+  await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
+>>>>>>> c59364d2d (Cleanup)
   await httpServer.listen({ port: process.env.PORT || 3000 });
   logger.info(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
 } catch (error) {
