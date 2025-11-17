@@ -105,7 +105,7 @@ export default [
 
     input UpdateProductCommercePricingInput {
       amount: Int!
-      maxQuantity: Int
+      minQuantity: Int
       isTaxable: Boolean
       isNetPrice: Boolean
       currencyCode: String!

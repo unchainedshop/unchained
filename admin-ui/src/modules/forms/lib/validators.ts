@@ -120,11 +120,10 @@ export const validateProductCommerce = (currentIndex, values): Validator => {
       if (!values?.length || values?.length === 1) return true;
       const current = values[currentIndex];
       const others = values.filter((_, index) => index !== currentIndex);
-
       const isSame = others.every(
-        ({ maxQuantity, countryCode, currencyCode }) => {
+        ({ minQuantity, countryCode, currencyCode }) => {
           return (
-            maxQuantity !== current?.maxQuantity ||
+            minQuantity !== current?.minQuantity ||
             countryCode !== current?.countryCode ||
             currencyCode !== current?.currencyCode
           );
@@ -150,11 +149,11 @@ export const validateProductCommerceOneNull = (values): Validator => {
       if (
         values?.length &&
         values?.length === 1 &&
-        !isEmpty(values[0].maxQuantity)
+        !isEmpty(values[0].minQuantity)
       )
         return false;
       if (
-        values.filter(({ maxQuantity }) => isEmpty(maxQuantity))?.length !== 1
+        values.filter(({ minQuantity }) => isEmpty(minQuantity))?.length !== 1
       )
         return false;
       return true;

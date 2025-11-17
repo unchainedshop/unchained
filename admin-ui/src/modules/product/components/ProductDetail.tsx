@@ -114,7 +114,6 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
   const { updateProduct } = useUpdateProduct();
   const { shopInfo } = useApp();
   const { __typename } = product || {};
-
   const productOptions = [
     {
       id: 'texts',
