@@ -139,7 +139,7 @@ export default [
       country: Country!
       currency: Currency!
       amount: Int!
-      maxQuantity: Int
+      minQuantity: Int
     }
 
     union ConfigurableOrBundleProduct = BundleProduct | ConfigurableProduct
