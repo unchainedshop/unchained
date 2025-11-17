@@ -62,25 +62,21 @@ export const configureProductPricesModule = ({
       quantity = 1,
     }: { countryCode: string; currencyCode?: string; quantity?: number },
   ): Promise<ProductPrice | null> => {
-    const pricing = getPriceLevels({
-      product,
-      currencyCode,
-      countryCode,
-    });
+    const pricing = getPriceLevels({ product, currencyCode, countryCode });
+    if (!pricing.length) return null;
 
-    const foundPrice = pricing.find((level) => !level.minQuantity || level.minQuantity >= quantity);
-    if (!foundPrice) return null;
+    // Filter tiers that match the quantity, take the last because pricing is sorted
+    const matched = pricing.filter((level) => (level.minQuantity ?? 0) <= quantity).pop();
 
-    const normalizedPrice = {
-      isTaxable: false,
-      isNetPrice: false,
-      ...foundPrice,
+    if (!matched) return null;
+
+    return {
+      isTaxable: !!matched.isTaxable,
+      isNetPrice: !!matched.isNetPrice,
+      amount: matched.amount,
+      currencyCode: matched.currencyCode,
+      countryCode: matched.countryCode,
     };
-
-    if (normalizedPrice.amount !== null) {
-      return normalizedPrice;
-    }
-    return null;
   };
 
   return {
