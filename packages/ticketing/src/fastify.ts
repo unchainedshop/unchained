@@ -27,6 +27,7 @@ export default (fastify: FastifyInstance) => {
     // Remove all default parsers for this scope
     scope.removeAllContentTypeParsers();
 
+<<<<<<< HEAD
     // Add catch-all parser that doesn't consume the stream
     scope.addContentTypeParser('*', function (request, payload, done) {
       // Don't parse - leave stream untouched for WHATWG adapter
@@ -78,3 +79,11 @@ export default (fastify: FastifyInstance) => {
 
   })
 }
+=======
+  app.route({
+    url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}/*`,
+    method: 'GET',
+    handler: printTicketsHandler,
+  });
+};
+>>>>>>> b0fe78b76 (Cleanup)

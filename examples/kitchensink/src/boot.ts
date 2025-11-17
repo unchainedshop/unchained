@@ -3,6 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
+import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.ts';
 import { useErrorHandler } from '@envelop/core';
 
@@ -18,11 +19,6 @@ import setupTicketing, {
 import rest from "@unchainedshop/ticketing/lib/fastify.js"
 import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-tickets/createPDFTicketRenderer.js"
 import googleWalletPass from "@unchainedshop/ticketing/lib/pdf-tickets/googleWalletPass.js"
-
-
-export const modules = {
-  ...defaultModules,
-};
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -60,7 +56,6 @@ try {
         }
       }),
     ],
-    modules,
   });
 
   connect(fastify, platform, {
