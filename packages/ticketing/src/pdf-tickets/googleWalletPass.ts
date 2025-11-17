@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { TicketingAPI } from '../types.js';
+import { Context } from '@unchainedshop/api';
 
 export class GoogleEventTicketWallet {
   authPromise;
@@ -155,13 +155,15 @@ export class GoogleEventTicketWallet {
       reviewStatus: 'UNDER_REVIEW',
       issuerName: 'Unchained Commerce',
       countryCode: 'ch',
-      textModulesData: options?.subtitle ? [
-        {
-          header: options.subtitle,
-          body: options?.description,
-          id: 'TEXT_MODULE_ID',
-        },
-      ] : [],
+      textModulesData: options?.subtitle
+        ? [
+            {
+              header: options.subtitle,
+              body: options?.description,
+              id: 'TEXT_MODULE_ID',
+            },
+          ]
+        : [],
 
       eventName: {
         defaultValue: {
@@ -354,10 +356,11 @@ export class GoogleEventTicketWallet {
   }
 }
 
-export default async (token, unchainedAPI: TicketingAPI) => {
+export default async (token, unchainedAPI: Context) => {
   const GoogleWallet = new GoogleEventTicketWallet(process.env.GOOGLE_WALLET_ISSUER_ID as string);
   await GoogleWallet.auth();
-
+  const { user, locale } = unchainedAPI;
+  const normalizedUserLocale = user?.lastLogin?.locale || locale?.language;
   const product = await unchainedAPI.modules.products.findProduct({
     productId: token.productId,
   });
@@ -377,7 +380,7 @@ export default async (token, unchainedAPI: TicketingAPI) => {
   const url = file && (await unchainedAPI.modules.files.normalizeUrl(file?.url as string, {}));
   const productTexts = await unchainedAPI.modules.products.texts.findLocalizedText({
     productId: token.productId,
-    locale: 'de' as any,
+    locale: normalizedUserLocale as any,
   });
 
   await GoogleWallet.upsertClass(product._id, {
@@ -388,9 +391,9 @@ export default async (token, unchainedAPI: TicketingAPI) => {
     image: url,
   });
 
-  await GoogleWallet.upsertObject(product._id, token.chainId, barcodeWithUrl);
+  await GoogleWallet.upsertObject(product._id, token.tokenSerialNumber, barcodeWithUrl);
 
-  const asURL = async () => GoogleWallet.createJwtNewObjects(product._id, token.chainId);
+  const asURL = async () => GoogleWallet.createJwtNewObjects(product._id, token.tokenSerialNumber);
 
   return { asURL };
 };
