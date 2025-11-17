@@ -71,7 +71,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
@@ -108,7 +108,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
@@ -137,7 +137,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
@@ -169,7 +169,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
