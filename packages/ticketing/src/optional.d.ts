@@ -14,7 +14,6 @@ declare module 'googleapis' {
   export = content;
 }
 
-
 declare module 'jsonwebtoken' {
   const content: any;
   export = content;
