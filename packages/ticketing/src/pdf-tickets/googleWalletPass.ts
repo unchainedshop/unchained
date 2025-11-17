@@ -1,16 +1,37 @@
 import path from 'node:path';
 import { Context } from '@unchainedshop/api';
 
+let google: any = null;
+let jwt: any = null;
+
+try {
+  google = await import('googleapis');
+} catch {
+  console.warn(
+    'npm dependency googleapis not installed — Googleapi should be installed in order to use the default google wallet.',
+  );
+}
+
+try {
+  jwt = await import('jsonwebtoken');
+} catch {
+  console.warn(
+    'npm dependency jsonwebtoken not installed — jsonwebtoken should be installed in order to use the default google wallet.',
+  );
+}
+
 export class GoogleEventTicketWallet {
   authPromise;
   keyFilePath;
   credentials;
   client;
   issuerId;
-  google;
-  jwt;
 
   constructor(issuerId: string) {
+    if (!google)
+      throw new Error('googlewallet can not be used, npm dependency googleapis is not installed');
+    if (!google)
+      throw new Error('googlewallet can not be used, npm jsonwebtoken googleapis is not installed');
     this.keyFilePath = path.resolve(
       path.dirname(process.env.GOOGLE_APPLICATION_CREDENTIALS as string),
       process.env.GOOGLE_APPLICATION_CREDENTIALS as string,
@@ -18,32 +39,9 @@ export class GoogleEventTicketWallet {
     this.issuerId = issuerId;
   }
 
-  async ensureDependencies() {
-    if (!this.google) {
-      try {
-        const { google } = await import('googleapis');
-        this.google = google;
-      } catch {
-        console.warn('⚠️ googleapis not installed — Google Wallet features disabled.');
-        this.google = null;
-      }
-    }
-
-    if (!this.jwt) {
-      try {
-        const jwt = await import('jsonwebtoken');
-        this.jwt = jwt.default || jwt;
-      } catch {
-        console.warn('⚠️ jsonwebtoken not installed — JWT creation disabled.');
-        this.jwt = null;
-      }
-    }
-  }
-
   async auth() {
-    await this.ensureDependencies();
-    if (!this.google) return;
-    const auth = new this.google.auth.GoogleAuth({
+    if (!google) return;
+    const auth = new google.Auth.GoogleAuth({
       keyFile: this.keyFilePath,
       scopes: ['https://www.googleapis.com/auth/wallet_object.issuer'],
     });
@@ -53,7 +51,7 @@ export class GoogleEventTicketWallet {
     });
     this.credentials = keyFile;
 
-    this.client = this.google.walletobjects({
+    this.client = new google.walletobjects_v1.Walletobjects({
       version: 'v1',
       auth: auth,
     });
@@ -347,8 +345,7 @@ export class GoogleEventTicketWallet {
         eventTicketObjects: [newObject],
       },
     };
-
-    const token = this.jwt.sign(claims, this.credentials.private_key, {
+    const token = jwt.default.sign(claims, this.credentials.private_key, {
       algorithm: 'RS256',
     });
 
