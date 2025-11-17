@@ -1863,7 +1863,7 @@ test.describe('Products', () => {
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 2000000,
           currencyCode: 'CHF',
         },
       });
@@ -1905,13 +1905,13 @@ test.describe('Products', () => {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 2000000,
           currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 2000000,
           currencyCode: 'CHF',
         },
       });
@@ -2010,7 +2010,7 @@ test.describe('Products', () => {
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 2000000,
           currencyCode: 'CHF',
         },
       });
@@ -2052,13 +2052,13 @@ test.describe('Products', () => {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 2000000,
           currencyCode: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 2000000,
           currencyCode: 'CHF',
         },
       });

@@ -18,7 +18,7 @@ export const ProductCreateSpecificationSchema = z.object({
       pricing: z.array(
         z.object({
           amount: z.number(),
-          maxQuantity: z.optional(z.number()),
+          minQuantity: z.optional(z.number()),
           isTaxable: z.optional(z.boolean()),
           isNetPrice: z.optional(z.boolean()),
           currencyCode: z.string().check(z.minLength(1, 'currencyCode is required')),
