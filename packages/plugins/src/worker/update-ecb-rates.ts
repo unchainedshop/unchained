@@ -1,7 +1,9 @@
 import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
-import later from '@breejs/later';
-import { xml2json } from 'xml-js';
 import { ProductPriceRate } from '@unchainedshop/core-products';
+import later from '@breejs/later';
+
+// TODO: Lazy load because optional!
+import { xml2json } from 'xml-js';
 
 const getExchangeRates = async (): Promise<{ currency: string; rate: string }[]> => {
   return fetch(`https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`, {

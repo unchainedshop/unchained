@@ -11,7 +11,7 @@ mutations for frontend projects.
 
 Boot.ts files need to be migrated in order to work with the new Yoga GraphQL Server.
 
-First: Dependencies `npm install @graphql-yoga/plugin-response-cache graphql-yoga cookie`
+First: Dependencies `npm install --save @graphql-yoga/plugin-response-cache graphql-yoga cookie`
 `npm uninstall @apollo/server-plugin-response-cache @apollo/server apollo-graphiql-playground`
 
 Remove
@@ -91,6 +91,12 @@ platform.
 
 ## Removed Module Functions
 
+`modules.files.getUrl` => 
+```ts
+const url = await fileUploadAdapter.createDownloadURL(file);
+return context.modules.files.normalizeUrl(url, params);
+```
+
 `modules.products.prices.userPrice` => `services.products.simulateProductPricing`
 
 `modules.orders.pricingSheet` =>
@@ -107,7 +113,6 @@ ProductPricingSheet({
   currency: order.currency,
 });`
 ```
-
 
 `modules.orders.delivery.pricingSheet` =>
 ```ts
@@ -131,8 +136,6 @@ anymore, provide plain password here it will hash it on it's own)
 `modules.accounts.sendEnrollmentEmail(...)` => `modules.users.sendResetPasswordEmail(..., true);`
 
 `modules.users.delete` => `services.users.deleteUser`
-
-`modules.files.getUrl(file...)` => `modules.files.normalizeUrl(file.url...`
 
 `modules.filters.search.searchProducts` => `services.filters.searchProducts`
 

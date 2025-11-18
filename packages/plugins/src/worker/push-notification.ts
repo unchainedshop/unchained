@@ -1,4 +1,6 @@
 import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+
+// TODO: Lazy load because optional!
 import webPush from 'web-push';
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;
