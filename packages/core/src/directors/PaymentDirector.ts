@@ -7,10 +7,9 @@ import { Order, OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-ord
 const buildPaymentProviderActionsContext = (
   orderPayment: OrderPayment,
   { transactionContext, ...rest }: { transactionContext: any; userId: string },
-) => ({
+): PaymentContext => ({
   ...rest,
   orderPayment,
-  paymentProviderId: orderPayment.paymentProviderId,
   transactionContext: {
     ...(transactionContext || {}),
     ...(orderPayment.context || {}),
@@ -80,12 +79,8 @@ export const PaymentDirector: IPaymentDirector = {
       newPaymentContext.order = order;
     }
 
-    const adapter = Adapter.actions(paymentProvider.configuration, {
-      paymentProvider,
-      paymentProviderId: paymentProvider._id,
-      ...newPaymentContext,
-      ...unchainedAPI,
-    });
+    const context = { ...newPaymentContext, ...unchainedAPI, paymentProvider };
+    const adapter = Adapter.actions(paymentProvider.configuration, context);
 
     return {
       configurationError: () => {
@@ -257,18 +252,21 @@ export const PaymentDirector: IPaymentDirector = {
         isPreferred: true,
       }));
 
-    const paymentContext = buildPaymentProviderActionsContext(orderPayment, {
-      ...context,
-      transactionContext: {
-        ...context.transactionContext,
-        paymentCredentials,
-      },
-    });
-
     const paymentProvider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: orderPayment.paymentProviderId,
     });
-    const actions = await PaymentDirector.actions(paymentProvider, paymentContext, unchainedAPI);
+
+    const actions = await PaymentDirector.actions(
+      paymentProvider,
+      buildPaymentProviderActionsContext(orderPayment, {
+        ...context,
+        transactionContext: {
+          ...context.transactionContext,
+          paymentCredentials,
+        },
+      }),
+      unchainedAPI,
+    );
     const result = await actions.charge();
 
     if (!result) return orderPayment;
@@ -278,7 +276,7 @@ export const PaymentDirector: IPaymentDirector = {
     if (credentials) {
       const { token, ...meta } = credentials;
       await modules.payment.paymentCredentials.upsertCredentials({
-        userId: paymentContext.userId,
+        userId: context.userId,
         paymentProviderId: orderPayment.paymentProviderId,
         token,
         ...meta,

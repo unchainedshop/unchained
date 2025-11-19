@@ -87,7 +87,7 @@ const Stripe: IPaymentAdapter = {
       },
 
       sign: async (transactionContext = {}) => {
-        const { orderPayment, order, paymentProviderId } = context;
+        const { orderPayment, order, paymentProvider } = context;
         const { userId, name, email } = await assertUserData(order?.userId);
         if (orderPayment) {
           if (!order) throw new Error('order not found in context');
@@ -103,7 +103,7 @@ const Stripe: IPaymentAdapter = {
         }
 
         const paymentIntent = await createRegistrationIntent(
-          { userId, name, email, paymentProviderId, descriptorPrefix },
+          { userId, name, email, paymentProviderId: paymentProvider._id, descriptorPrefix },
           transactionContext,
         );
         return paymentIntent.client_secret;

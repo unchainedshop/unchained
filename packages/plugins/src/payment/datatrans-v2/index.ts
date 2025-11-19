@@ -283,8 +283,8 @@ const Datatrans: IPaymentAdapter = {
 
       async sign(transactionContext: any = {}) {
         const { useSecureFields = false, ...arbitraryFields } = transactionContext || {};
-        const { orderPayment, paymentProviderId, order } = context;
-        const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
+        const { orderPayment, paymentProvider, order } = context;
+        const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProvider._id, 'hex').toString(
           'base64',
         );
         const userId = order?.userId || context?.userId;

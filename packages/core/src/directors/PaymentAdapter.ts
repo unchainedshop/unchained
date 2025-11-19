@@ -1,7 +1,12 @@
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
-import { Order, OrderPayment } from '@unchainedshop/core-orders';
-import { PaymentConfiguration, PaymentProvider, PaymentProviderType } from '@unchainedshop/core-payment';
-import { Modules } from '../modules.js';
+import { BaseAdapter } from '@unchainedshop/utils';
+import type { IBaseAdapter } from '@unchainedshop/utils';
+import type { Order, OrderPayment } from '@unchainedshop/core-orders';
+import type {
+  PaymentConfiguration,
+  PaymentProvider,
+  PaymentProviderType,
+} from '@unchainedshop/core-payment';
+import type { Modules } from '../modules.js';
 
 export enum PaymentError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
@@ -49,7 +54,6 @@ export type IPaymentAdapter = IBaseAdapter & {
   actions: (
     config: PaymentConfiguration,
     context: PaymentContext & {
-      paymentProviderId: string;
       paymentProvider: PaymentProvider;
       modules: Modules;
     },
