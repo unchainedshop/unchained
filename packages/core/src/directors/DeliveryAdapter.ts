@@ -1,15 +1,17 @@
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter } from '@unchainedshop/utils';
+import type { IBaseAdapter } from '@unchainedshop/utils';
 import type { Order, OrderPosition, OrderDelivery } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
 import type { Work } from '@unchainedshop/core-worker';
 import type { User } from '@unchainedshop/core-users';
-import {
+import type {
   DeliveryConfiguration,
   DeliveryLocation,
+  DeliveryProvider,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
-import { Modules } from '../modules.js';
+import type { Modules } from '../modules.js';
 
 export enum DeliveryError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
@@ -49,7 +51,7 @@ export type IDeliveryAdapter = IBaseAdapter & {
 
   actions: (
     config: DeliveryConfiguration,
-    context: DeliveryContext & { modules: Modules },
+    context: DeliveryContext & { modules: Modules; deliveryProvider: DeliveryProvider },
   ) => DeliveryAdapterActions;
 };
 

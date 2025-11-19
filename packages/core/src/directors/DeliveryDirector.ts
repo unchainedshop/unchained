@@ -37,7 +37,7 @@ export const DeliveryDirector: IDeliveryDirector = {
       throw new Error(`Delivery Plugin ${deliveryProvider.adapterKey} not available`);
     }
 
-    const context = { ...deliveryContext, ...unchainedAPI };
+    const context = { ...deliveryContext, ...unchainedAPI, deliveryProvider };
     const adapter = Adapter.actions(deliveryProvider.configuration, context);
 
     return {
