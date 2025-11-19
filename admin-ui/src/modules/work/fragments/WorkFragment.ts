@@ -16,6 +16,8 @@ const WorkFragment = gql`
       _id
       retries
     }
+    input
+    result
   }
 `;
 

@@ -8,16 +8,10 @@ const GetWorkQuery = (inlineFragment = '') => gql`
   query Work($workId: ID!) {
     work(workId: $workId) {
       ...WorkFragment
-      ${inlineFragment}
-      input
-      result
+      ${inlineFragment}            
       error
       priority
-      worker
-      retries
-      original {
-        _id
-      }
+      worker      
       timeout
     }
   }

@@ -7,6 +7,12 @@ import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 const getMessageStatus = (messageWork, childWorks, formatMessage) => {
+  if (
+    (Array.isArray(messageWork?.result?.forked) &&
+      messageWork.result.forked.length === 0) ||
+    messageWork?.result?.forked === '[]'
+  )
+    return 'FORKED';
   if (!childWorks || childWorks.length === 0) {
     return messageWork.status === 'SUCCESS'
       ? formatMessage({ id: 'message_status_sent', defaultMessage: 'Sent' })
@@ -42,6 +48,12 @@ const getMessageStatus = (messageWork, childWorks, formatMessage) => {
 };
 
 const getMessageStatusColor = (messageWork, childWorks) => {
+  if (
+    (Array.isArray(messageWork?.result?.forked) &&
+      messageWork.result.forked.length === 0) ||
+    messageWork?.result?.forked === '[]'
+  )
+    return 'red';
   if (!childWorks || childWorks.length === 0) {
     return messageWork.status === 'SUCCESS' ? 'green' : 'yellow';
   }
@@ -94,7 +106,6 @@ const MessageItem = ({
       .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
       .join(', ') ||
     formatMessage({ id: 'no_retries', defaultMessage: 'No retries' });
-
   return (
     <>
       <Table.Row className="bg-slate-50 dark:bg-slate-800/50">
@@ -114,7 +125,7 @@ const MessageItem = ({
               href={`/works?workerId=${messageWork._id}`}
               className="text-slate-900 dark:text-slate-300 font-medium"
             >
-              {messageWork?.type}
+              {messageWork?.input?.template}
             </Link>
             <span className="ml-2 text-slate-500 text-xs">
               ({childWorksDescription})
@@ -297,15 +308,17 @@ const MessagesList = ({
         </Table.Cell>
       </Table.Row>
 
-      {messageGroups?.map((group) => (
-        <MessageItem
-          key={group.message._id}
-          messageWork={group.message}
-          childWorks={group.children}
-          expanded={expandedMessages.has(group.message._id)}
-          onToggleExpanded={() => onToggleExpanded(group.message._id)}
-        />
-      ))}
+      {messageGroups
+        .filter((g) => g?.message?.input?.template)
+        ?.map((group) => (
+          <MessageItem
+            key={group.message._id}
+            messageWork={group.message}
+            childWorks={group.children}
+            expanded={expandedMessages.has(group.message._id)}
+            onToggleExpanded={() => onToggleExpanded(group.message._id)}
+          />
+        ))}
     </Table>
   );
 };
