@@ -66,8 +66,8 @@ export const configureOrderPositionsModule = ({
       configuration,
     }: {
       orderPositionId: string;
-      configuration?: { key: string; value: string }[];
-      quantity?: number;
+      configuration: { key: string; value: string }[] | null;
+      quantity: number | null;
     }) => {
       const modifier: any = {
         $set: {

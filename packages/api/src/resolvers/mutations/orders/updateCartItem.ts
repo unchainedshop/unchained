@@ -56,8 +56,8 @@ export default async function updateCartItem(
 
   await modules.orders.positions.updateProductItem({
     orderPositionId: item._id,
-    quantity,
-    configuration,
+    quantity: quantity || null,
+    configuration: configuration || null,
   });
 
   await services.orders.updateCalculation(order._id);

@@ -10,13 +10,22 @@ interface PriceRoundSettings {
   roundTo: (value: number, precision: number, currencyCode: string) => number;
 }
 
+const calculateDifference = (amount: number, currencyCode: string) => {
+  const roundedAmount = OrderPriceRound.settings.roundTo(
+    amount,
+    OrderPriceRound.settings.defaultPrecision,
+    currencyCode,
+  );
+  return roundedAmount - amount;
+};
+
 export const OrderPriceRound: IOrderPricingAdapter & {
   configure: (params: PriceRoundSettings) => void;
   settings: PriceRoundSettings;
 } = {
   ...OrderPricingAdapter,
 
-  key: 'shop.unchained.pricing.order-round',
+  key: 'shop.unchained.pricing.order-round-fixed',
   version: '1.0.0',
   label: 'Round order price to the next precision number',
   orderIndex: 90,
@@ -39,15 +48,6 @@ export const OrderPriceRound: IOrderPricingAdapter & {
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
 
-    const calculateDifference = (amount: number, currencyCode: string) => {
-      const roundedAmount = OrderPriceRound.settings.roundTo(
-        amount,
-        OrderPriceRound.settings.defaultPrecision,
-        currencyCode,
-      );
-      return roundedAmount - amount;
-    };
-
     return {
       ...pricingAdapter,
 
@@ -61,9 +61,14 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           useNetPrice: true,
         });
         if (deliveryAmount) {
+          const taxes = params.calculationSheet.taxSum({
+            baseCategory: OrderPricingRowCategory.Delivery,
+          });
+          const deliveryTaxRate = taxes / deliveryAmount;
+          const deliveryDifference = calculateDifference(deliveryAmount, currencyCode);
           pricingAdapter.resultSheet().addDelivery({
-            amount: calculateDifference(deliveryAmount, currencyCode),
-            taxAmount: 0,
+            amount: deliveryDifference,
+            taxAmount: deliveryTaxRate * deliveryDifference,
             meta: {
               adapter: OrderPriceRound.key,
             },
@@ -75,12 +80,20 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           useNetPrice: true,
         });
         if (discountAmount) {
-          pricingAdapter.resultSheet().calculation.push({
-            category: OrderPricingRowCategory.Discounts,
-            amount: calculateDifference(discountAmount, currencyCode),
+          const taxes = params.calculationSheet.taxSum({
+            baseCategory: OrderPricingRowCategory.Discounts,
+          });
+          const discountTaxRate = taxes / discountAmount;
+          const discountsDifference = calculateDifference(discountAmount, currencyCode);
+
+          pricingAdapter.resultSheet().addDiscount({
+            amount: discountsDifference,
+            taxAmount: discountsDifference * discountTaxRate,
             meta: {
               adapter: OrderPriceRound.key,
             },
+            // @ts-expect-error discountId has to miss
+            discountId: null,
           });
         }
 
@@ -89,9 +102,14 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           useNetPrice: true,
         });
         if (itemsAmount) {
+          const taxes = params.calculationSheet.taxSum({
+            baseCategory: OrderPricingRowCategory.Items,
+          });
+          const itemTaxRate = taxes / itemsAmount;
+          const itemsDifference = calculateDifference(itemsAmount, currencyCode);
           pricingAdapter.resultSheet().addItems({
-            amount: calculateDifference(itemsAmount, currencyCode),
-            taxAmount: 0,
+            amount: itemsDifference,
+            taxAmount: itemsDifference * itemTaxRate,
             meta: {
               adapter: OrderPriceRound.key,
             },
@@ -103,18 +121,30 @@ export const OrderPriceRound: IOrderPricingAdapter & {
           useNetPrice: true,
         });
         if (paymentAmount) {
+          const taxes = params.calculationSheet.taxSum({
+            baseCategory: OrderPricingRowCategory.Payment,
+          });
+          const paymentTaxRate = taxes / paymentAmount;
+          const paymentsDifference = calculateDifference(paymentAmount, currencyCode);
+
           pricingAdapter.resultSheet().addPayment({
-            amount: calculateDifference(paymentAmount, currencyCode),
-            taxAmount: 0,
+            amount: paymentsDifference,
+            taxAmount: paymentsDifference * paymentTaxRate,
             meta: {
               adapter: OrderPriceRound.key,
             },
           });
         }
 
-        const taxesAmount = params.calculationSheet.taxSum({
+        // We need to consider added taxes from above calculations
+        // plus the prior taxes that are already on record
+        const priorTaxesAmount = params.calculationSheet.taxSum({
           category: OrderPricingRowCategory.Taxes,
         });
+        const additionalRoundedTaxes = pricingAdapter.resultSheet().taxSum({
+          category: OrderPricingRowCategory.Taxes,
+        });
+        const taxesAmount = priorTaxesAmount + additionalRoundedTaxes;
         if (taxesAmount) {
           const taxDifference = calculateDifference(taxesAmount, currencyCode);
           pricingAdapter.resultSheet().calculation.push({
