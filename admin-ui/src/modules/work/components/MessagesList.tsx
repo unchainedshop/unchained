@@ -12,7 +12,10 @@ const getMessageStatus = (messageWork, childWorks, formatMessage) => {
       messageWork.result.forked.length === 0) ||
     messageWork?.result?.forked === '[]'
   )
-    return 'FORKED';
+    return formatMessage({
+      id: 'message_status_skipped',
+      defaultMessage: 'Skipped',
+    });
   if (!childWorks || childWorks.length === 0) {
     return messageWork.status === 'SUCCESS'
       ? formatMessage({ id: 'message_status_sent', defaultMessage: 'Sent' })
@@ -53,7 +56,7 @@ const getMessageStatusColor = (messageWork, childWorks) => {
       messageWork.result.forked.length === 0) ||
     messageWork?.result?.forked === '[]'
   )
-    return 'red';
+    return 'slate';
   if (!childWorks || childWorks.length === 0) {
     return messageWork.status === 'SUCCESS' ? 'green' : 'yellow';
   }
@@ -312,7 +315,7 @@ const MessagesList = ({
         .filter((g) => g?.message?.input?.template)
         ?.map((group) => (
           <MessageItem
-            key={group.message._id}
+            key={`${group.message._id}-${group?.message?.created}-${group?.message?.status}-${group?.message?.scheduled}-${group?.message?.finished}`}
             messageWork={group.message}
             childWorks={group.children}
             expanded={expandedMessages.has(group.message._id)}
