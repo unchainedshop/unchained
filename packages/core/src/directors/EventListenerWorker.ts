@@ -4,7 +4,7 @@ import { WorkerEventTypes } from '@unchainedshop/core-worker';
 import { setTimeout } from 'node:timers/promises';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:worker');
+const logger = createLogger('unchained:worker:event-listener');
 
 function debounce<T extends (...args: any[]) => Promise<any>>(
   func: T,

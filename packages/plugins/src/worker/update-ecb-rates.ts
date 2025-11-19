@@ -1,9 +1,17 @@
 import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import { ProductPriceRate } from '@unchainedshop/core-products';
 import later from '@breejs/later';
+import { createLogger } from '@unchainedshop/logger';
 
-// TODO: Lazy load because optional!
-import { xml2json } from 'xml-js';
+const logger = createLogger('unchained:worker:update-ecb-rates');
+
+let xml2json;
+try {
+  const module = await import('xml-js');
+  xml2json = module.xml2json;
+} catch {
+  logger.warn(`optional peer npm package 'xml-js' not installed, skipped ECB rate updates`);
+}
 
 const getExchangeRates = async (): Promise<{ currency: string; rate: string }[]> => {
   return fetch(`https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`, {
@@ -34,6 +42,16 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
 
   doWork: async (input, unchainedAPI) => {
     const { modules } = unchainedAPI;
+
+    if (!xml2json) {
+      return {
+        success: false,
+        error: {
+          name: 'XML2JSON_NOT_INSTALLED',
+          message: 'npm dependency xml2json is not installed, please install it to use this worker',
+        },
+      };
+    }
 
     try {
       const data = await getExchangeRates();
@@ -88,8 +106,10 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
 
 WorkerDirector.registerAdapter(UpdateECBRates);
 
-WorkerDirector.configureAutoscheduling({
-  type: UpdateECBRates.type,
-  schedule: everyDayAtFour,
-  retries: 5,
-});
+if (xml2json) {
+  WorkerDirector.configureAutoscheduling({
+    type: UpdateECBRates.type,
+    schedule: everyDayAtFour,
+    retries: 5,
+  });
+}

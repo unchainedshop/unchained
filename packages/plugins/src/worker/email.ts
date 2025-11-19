@@ -3,6 +3,9 @@ import { spawn } from 'node:child_process';
 import { writeFile, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:worker:email');
 
 export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
@@ -20,6 +23,14 @@ const buildLink = async ({ filename, content, href, contentType, encoding, path 
   }
   return '';
 };
+
+let nodemailer;
+try {
+  const nodemailerModule = await import('nodemailer');
+  nodemailer = nodemailerModule.default;
+} catch {
+  logger.warn(`optional peer npm package 'nodemailer' not installed, emails can't be sent`);
+}
 
 const openInBrowser = async (options): Promise<boolean> => {
   const command = {
@@ -122,14 +133,6 @@ const EmailWorkerPlugin: IWorkerAdapter<
           success: false,
           error: { name: 'NO_MAIL_URL_SET', message: 'MAIL_URL is not set' },
         };
-      }
-
-      let nodemailer;
-      try {
-        const nodemailerModule = await import('nodemailer');
-        nodemailer = nodemailerModule.default;
-      } catch {
-        /* */
       }
 
       if (!nodemailer) {

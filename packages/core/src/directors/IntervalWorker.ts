@@ -4,7 +4,7 @@ import { createLogger } from '@unchainedshop/logger';
 
 const { NODE_ENV } = process.env;
 
-const logger = createLogger('unchained:worker');
+const logger = createLogger('unchained:worker:interval');
 
 export interface IntervalWorkerParams {
   workerId?: string;

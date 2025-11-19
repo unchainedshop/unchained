@@ -1,7 +1,15 @@
 import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { createLogger } from '@unchainedshop/logger';
 
-// TODO: Lazy load because optional!
-import webPush from 'web-push';
+const logger = createLogger('unchained:worker:push-notification');
+
+let webPush;
+try {
+  const module = await import('web-push');
+  webPush = module.default;
+} catch {
+  logger.warn(`optional peer npm package 'web-push' not installed, push notifications will not work`);
+}
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;
 
@@ -36,6 +44,16 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
   type: 'PUSH',
 
   doWork: async ({ subscription, subject, payload, urgency = null, topic = null }) => {
+    if (!webPush) {
+      return {
+        success: false,
+        error: {
+          name: 'WEB_PUSH_NOT_INSTALLED',
+          message: 'npm dependency web-push is not installed, please install it to use this worker',
+        },
+      };
+    }
+
     if (!PUSH_NOTIFICATION_PUBLIC_KEY)
       return {
         success: false,
