@@ -121,9 +121,9 @@ export const FilterDirector: IFilterDirector = {
         }, defaultStage);
       },
 
-      transformFilterSelector: async (defaultSelector) => {
+      transformFilterSelector: async (defaultSelector, options) => {
         return reduceAdapters<mongodb.Filter<Filter>>(async (lastSelector, adapter) => {
-          return adapter.transformFilterSelector(await lastSelector);
+          return adapter.transformFilterSelector(await lastSelector, options);
         }, defaultSelector);
       },
     };

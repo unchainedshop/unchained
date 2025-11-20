@@ -31,12 +31,12 @@ export default async function searchProducts(
     });
     return services.filters.searchProducts(
       { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
-      { locale: locale },
+      { locale: locale, userId },
     );
   }
 
   return services.filters.searchProducts(
     { queryString, includeInactive, filterQuery, ...rest },
-    { locale: locale },
+    { locale: locale, userId },
   );
 }

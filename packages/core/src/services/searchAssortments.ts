@@ -1,36 +1,33 @@
-import { Assortment } from '@unchainedshop/core-assortments';
 import {
   defaultAssortmentSelector,
   defaultFilterSelector,
   defaultSortStage,
-  SearchConfiguration,
   SearchQuery,
 } from '@unchainedshop/core-filters';
-import { mongodb } from '@unchainedshop/mongodb';
 import { Modules } from '../modules.js';
-import { FilterDirector } from '../directors/index.js';
-export interface SearchAssortmentConfiguration extends SearchConfiguration {
-  assortmentSelector: mongodb.Filter<Assortment>;
-}
+import { FilterDirector, SearchAssortmentsOptions } from '../directors/index.js';
 
 export async function searchAssortmentsService(
   this: Modules,
   searchQuery: SearchQuery,
-  { forceLiveCollection, locale }: { forceLiveCollection?: boolean; locale: Intl.Locale },
+  options: { forceLiveCollection?: boolean; locale: Intl.Locale; userId?: string },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 
-  const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
+  const filterSelector = await filterActions.transformFilterSelector(
+    defaultFilterSelector(searchQuery),
+    options,
+  );
   const assortmentSelector = defaultAssortmentSelector(searchQuery);
-  const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery));
+  const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery), options);
 
-  const searchConfiguration: SearchAssortmentConfiguration = {
+  const searchConfiguration: SearchAssortmentsOptions = {
     searchQuery,
     filterSelector,
     assortmentSelector,
     sortStage,
-    forceLiveCollection: !!forceLiveCollection,
-    locale,
+    ...options,
+    forceLiveCollection: !!options.forceLiveCollection,
   };
 
   const assortmentIds = await searchQuery.assortmentIds;

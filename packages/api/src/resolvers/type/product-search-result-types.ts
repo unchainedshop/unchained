@@ -62,6 +62,8 @@ export const ProductSearchResult = {
       includeDrafts: searchConfiguration.searchQuery?.includeInactive,
     });
     return services.filters.loadFilters(searchConfiguration.searchQuery || {}, {
+      locale: context.locale,
+      userId: context.userId,
       productIds: relevantProductIds,
       forceLiveCollection: searchConfiguration.forceLiveCollection,
     });

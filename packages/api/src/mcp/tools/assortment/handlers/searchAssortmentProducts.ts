@@ -31,6 +31,7 @@ export default async function searchAssortmentProducts(
     } as any,
     {
       locale: context.locale,
+      userId: context.userId,
     },
   );
 

@@ -2,38 +2,35 @@ import {
   defaultFilterSelector,
   defaultProductSelector,
   defaultSortStage,
-  SearchConfiguration,
   SearchQuery,
 } from '@unchainedshop/core-filters';
-import { Product } from '@unchainedshop/core-products';
-import { mongodb } from '@unchainedshop/mongodb';
 import { Modules } from '../modules.js';
-import { FilterDirector } from '../directors/index.js';
-export interface SearchProductConfiguration extends SearchConfiguration {
-  productSelector: mongodb.Filter<Product>;
-}
+import { FilterDirector, SearchProductsOptions } from '../directors/index.js';
 
 export async function searchProductsService(
   this: Modules,
   searchQuery: SearchQuery,
-  { forceLiveCollection, locale }: { forceLiveCollection?: boolean; locale: Intl.Locale },
+  options: { forceLiveCollection?: boolean; locale: Intl.Locale; userId?: string },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 
-  const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
+  const filterSelector = await filterActions.transformFilterSelector(
+    defaultFilterSelector(searchQuery),
+    options,
+  );
   const productSelector = await filterActions.transformProductSelector(
     defaultProductSelector(searchQuery, { modules: this }),
-    {},
+    options,
   );
-  const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery));
+  const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery), options);
 
-  const searchConfiguration: SearchProductConfiguration = {
+  const searchConfiguration: SearchProductsOptions = {
     searchQuery,
     filterSelector,
     productSelector,
     sortStage,
-    forceLiveCollection: !!forceLiveCollection,
-    locale,
+    ...options,
+    forceLiveCollection: !!options.forceLiveCollection,
   };
 
   if (searchQuery.productIds?.length === 0) {

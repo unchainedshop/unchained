@@ -5,10 +5,18 @@ import { FilterDirector } from '../directors/FilterDirector.js';
 export async function loadFiltersService(
   this: Modules,
   searchQuery: SearchQuery,
-  { productIds, forceLiveCollection }: { productIds: string[]; forceLiveCollection: boolean },
+  options: {
+    productIds: string[];
+    forceLiveCollection?: boolean;
+    locale?: Intl.Locale;
+    userId?: string;
+  },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
-  const filterSelector = await filterActions.transformFilterSelector(defaultFilterSelector(searchQuery));
+  const filterSelector = await filterActions.transformFilterSelector(
+    defaultFilterSelector(searchQuery),
+    options,
+  );
 
   if (!filterSelector) return [];
 
@@ -32,15 +40,15 @@ export async function loadFiltersService(
           filter,
           {
             searchQuery,
-            forceLiveCollection,
-            allProductIds: productIds,
+            forceLiveCollection: !!options.forceLiveCollection,
+            allProductIds: options.productIds,
             otherFilters: sortedFilters,
           },
           { modules: this },
         );
 
       return {
-        forceLiveCollection,
+        forceLiveCollection: !!options.forceLiveCollection,
         searchQuery,
         filter,
         examinedProductIdSet,

@@ -2,7 +2,7 @@ import { Assortment } from '@unchainedshop/core-assortments';
 import { mongodb } from '@unchainedshop/mongodb';
 import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
 import { Product } from '@unchainedshop/core-products';
-import { Filter, SearchQuery } from '@unchainedshop/core-filters';
+import { Filter, SearchConfiguration, SearchQuery } from '@unchainedshop/core-filters';
 import { Modules } from '../modules.js';
 
 export interface FilterInputText {
@@ -16,6 +16,21 @@ export interface FilterContext {
   searchQuery: SearchQuery;
 }
 
+export interface SearchAssortmentsOptions extends SearchConfiguration {
+  assortmentSelector: mongodb.Filter<Assortment>;
+}
+
+export interface SearchProductsOptions extends SearchConfiguration {
+  productSelector: mongodb.Filter<Product>;
+}
+
+export interface TransformOptions {
+  key?: string;
+  value?: any;
+  userId?: string;
+  locale?: Intl.Locale;
+}
+
 export interface FilterAdapterActions {
   aggregateProductIds: (params: { productIds: string[] }) => string[];
 
@@ -23,37 +38,27 @@ export interface FilterAdapterActions {
     params: {
       assortmentIds?: string[];
     },
-    options: {
-      filterSelector: mongodb.Filter<Filter>;
-      assortmentSelector: mongodb.Filter<Assortment>;
-      sortStage: mongodb.FindOptions['sort'];
-      locale: Intl.Locale;
-    },
+    options: SearchAssortmentsOptions,
   ) => Promise<string[] | undefined>;
 
   searchProducts: (
     params: {
       productIds?: string[];
     },
-    options: {
-      filterSelector: mongodb.Filter<Filter>;
-      productSelector: mongodb.Filter<Product>;
-      sortStage: mongodb.FindOptions['sort'];
-      locale: Intl.Locale;
-    },
+    options: SearchProductsOptions,
   ) => Promise<string[] | undefined>;
 
   transformFilterSelector: (
     query: mongodb.Filter<Filter>,
-    options?: any,
+    options?: TransformOptions,
   ) => Promise<mongodb.Filter<Filter>>;
   transformProductSelector: (
     query: mongodb.Filter<Product>,
-    options?: { key?: string; value?: any },
+    options?: TransformOptions,
   ) => Promise<mongodb.Filter<Product>>;
   transformSortStage: (
     sort: mongodb.FindOptions['sort'],
-    options?: { key: string; value?: any },
+    options?: TransformOptions,
   ) => Promise<mongodb.FindOptions['sort']>;
 }
 

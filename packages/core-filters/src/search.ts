@@ -22,6 +22,7 @@ export interface SearchConfiguration {
   sortStage: mongodb.FindOptions['sort'];
   forceLiveCollection: boolean;
   locale: Intl.Locale;
+  userId?: string;
 }
 
 export interface FilterQuery {

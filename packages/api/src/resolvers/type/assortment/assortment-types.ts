@@ -131,6 +131,7 @@ export const AssortmentTypes = {
       { ...query, productIds, filterIds },
       {
         locale: requestContext.locale,
+        userId: requestContext.userId,
       },
     );
   },
