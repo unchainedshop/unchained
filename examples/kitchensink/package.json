@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-kitchensink",
   "description": "Kitchensink for Unchained Engine (Fastify)",
   "private": true,
-  "version": "4.3.2",
+  "version": "4.3.3",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -62,10 +62,5 @@
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-  },
-  "overrides": {
-    "mongodb-memory-server": {
-      "mongodb": "^7.0.0"
-    }
   }
 }

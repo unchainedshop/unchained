@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-assortments",
-  "version": "4.3.2",
+  "version": "4.3.3",
   "main": "lib/assortments-index.js",
   "types": "lib/assortments-index.d.ts",
   "type": "module",
