@@ -1,6 +1,7 @@
 {
   "extends": "../shared/base.tsconfig.json",
   "compilerOptions": {
+    "jsx": "react",
     "declarationDir": "./lib",
     "rootDir": "./src",
     "outDir": "./lib",
