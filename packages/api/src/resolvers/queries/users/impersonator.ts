@@ -10,5 +10,5 @@ export default async function impersonator(
 
   if (!impersonatorId) return null;
 
-  return modules.users.findUser({ userId: impersonatorId });
+  return modules.users.findUserById(impersonatorId);
 }
