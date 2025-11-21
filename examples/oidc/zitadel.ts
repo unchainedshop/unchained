@@ -1,7 +1,7 @@
 import fastifyCookie from '@fastify/cookie';
-import { API_EVENTS, Context, UnchainedContextResolver } from '@unchainedshop/api';
+import { API_EVENTS, type Context, type UnchainedContextResolver } from '@unchainedshop/api';
 import { emit } from '@unchainedshop/events';
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import jwt from 'jsonwebtoken';
 import { createLogger } from '@unchainedshop/logger';

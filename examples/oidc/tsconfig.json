@@ -6,21 +6,19 @@
     "esm": true
   },
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
     "lib": ["esnext"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "./lib",
-    "preserveWatchOutput": true,
+    "module": "nodenext",
+    "outDir": "lib",
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "baseUrl": ".",
-    "composite": true
+    "types": ["node"],
+    "baseUrl": "." // This must be specified if "paths" is.
   },
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules"]
 }

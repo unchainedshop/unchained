@@ -25,7 +25,7 @@ export const OrderPriceRound: IOrderPricingAdapter & {
 } = {
   ...OrderPricingAdapter,
 
-  key: 'shop.unchained.pricing.order-round-fixed',
+  key: 'shop.unchained.pricing.order-round',
   version: '1.0.0',
   label: 'Round order price to the next precision number',
   orderIndex: 90,

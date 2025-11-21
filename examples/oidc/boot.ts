@@ -2,10 +2,10 @@ import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import baseModules from '@unchainedshop/plugins/presets/base.js';
 import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
 import { connect, unchainedLogger, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
-import seed from './seed.js';
+import seed from './seed.ts';
 import Fastify from 'fastify';
-import setupZitadel from './zitadel.js';
-import setupKeycloak from './keycloak.js';
+import setupZitadel from './zitadel.ts';
+import setupKeycloak from './keycloak.ts';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -26,20 +26,21 @@ try {
   const platform = await startPlatform({
     modules: baseModules,
     context,
+    options: {
+      users: {
+        validateEmail: async () => true,
+      }
+    },
     adminUiConfig: {
       singleSignOnURL: `${process.env.ROOT_URL}/login`,
     },
   });
 
-  fastify.register(fastifyRouter, {
-    prefix: '/',
-  });
-
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+    adminUI: true,
+    initPluginMiddlewares: connectBasePluginsToFastify,
   });
-
-  connectBasePluginsToFastify(fastify);
 
   await seed(platform.unchainedAPI);
 

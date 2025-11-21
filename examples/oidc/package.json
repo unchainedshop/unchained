@@ -29,8 +29,9 @@
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "node --env-file .env.defaults --env-file-if-exists=.env lib/boot.js",
-    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --loader ts-node/esm --watch boot.ts"
+    "start": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env boot.js",
+    "dev": "node --env-file .env.defaults --env-file-if-exists=.env --watch boot.ts",
+    "test-mcp-oauth": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env ./test-mcp-oauth.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -43,10 +44,10 @@
     "fastify": "^5.4.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.13",
     "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.6.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

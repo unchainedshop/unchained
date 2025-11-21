@@ -1,7 +1,7 @@
 import fastifyCookie from '@fastify/cookie';
-import { API_EVENTS, Context, UnchainedContextResolver } from '@unchainedshop/api';
+import { API_EVENTS, type Context, type UnchainedContextResolver, } from '@unchainedshop/api';
 import { emit } from '@unchainedshop/events';
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import jwt from 'jsonwebtoken';
 import { createLogger } from '@unchainedshop/logger';
@@ -165,18 +165,10 @@ export default async function setupKeycloak(app: FastifyInstance) {
       return reply.send(
         {
           resource: ROOT_URL,
-          authorization_servers: [ROOT_URL],
+          authorization_servers: [process.env.UNCHAINED_KEYCLOAK_REALM_URL],
           resource_documentation: 'https://docs.unchained.shop',
         },
       );
-    },
-  });
-
-  app.route({
-    url: '/.well-known/oauth-authorization-server',
-    method: ['GET'],
-    handler: async (req, reply) => {
-      return reply.send(discoveryData);
     },
   });
 
@@ -186,7 +178,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
       try {
         const encodedToken = req.headers.authorization?.replace('Bearer ', '');
         const token = encodedToken
-          ? jwt.verify(encodedToken, { key: jwksData?.keys[1], format: 'jwk' }, { complete: true })
+          ? jwt.verify(encodedToken, { key: jwksData?.keys[0], format: 'jwk' }, { complete: true })
           : null;
         (req as any).mcp = token;
       } catch {}
