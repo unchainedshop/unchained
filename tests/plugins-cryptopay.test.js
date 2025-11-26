@@ -45,7 +45,7 @@ test.describe('Plugins: Cryptopay', () => {
         pricing: [
           {
             amount: 10 ** 7, // 0.1 BTC
-            maxQuantity: 0,
+            minQuantity: 0,
             isTaxable: false,
             isNetPrice: false,
             currencyCode: 'BTC',

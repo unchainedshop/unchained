@@ -109,7 +109,6 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
   const { hasRole } = useAuth();
   const { updateProduct } = useUpdateProduct();
   const { __typename } = product || {};
-
   const productOptions = [
     {
       id: 'texts',
