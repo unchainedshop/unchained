@@ -3,7 +3,6 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.js';
 import { useErrorHandler } from '@envelop/core';
@@ -44,7 +43,6 @@ try {
         }
       }),
     ],
-    modules: defaultModules,
   });
 
   connect(fastify, platform, {
@@ -56,11 +54,13 @@ try {
     } : undefined,
     initPluginMiddlewares,
   });
-
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
-
   await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+
+
+
+
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);
