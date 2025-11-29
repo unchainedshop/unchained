@@ -38,9 +38,7 @@ const TokenListItem = ({ token }) => {
       </Table.Cell>
       <Table.Cell>
         <Badge
-          text={
-            token?.status === 'CENTRALIZED' ? 'Off-Chain 🏛' : 'On-Chain ⛓'
-          }
+          text={token?.status === 'CENTRALIZED' ? 'Off-Chain 🏛' : 'On-Chain ⛓'}
           color={TOKEN_STATUSES[token.status]}
           square
         />
