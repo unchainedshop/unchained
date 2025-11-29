@@ -7,6 +7,8 @@ import {
 } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 
+const logger = createLogger('unchained:paypal-checkout');
+
 let checkoutNodeJssdk;
 try {
   // eslint-disable-next-line
@@ -15,9 +17,10 @@ try {
   // TODO: npm warn deprecated @paypal/checkout-server-sdk@1.0.3: Package no longer supported. The author suggests using the @paypal/paypal-server-sdk package instead: https://www.npmjs.com/package/@paypal/paypal-server-sdk.
 } catch {
   /* */
+  logger.warn(
+    "npm dependency '@paypal/checkout-server-sdk' is not installed, paypal adapter will not work",
+  );
 }
-
-const logger = createLogger('unchained:paypal-checkout');
 
 const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = process.env;
 

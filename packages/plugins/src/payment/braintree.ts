@@ -6,10 +6,20 @@ import {
   PaymentError,
   OrderPricingSheet,
 } from '@unchainedshop/core';
-
 const logger = createLogger('unchained:braintree');
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
+
+let braintree: any;
+try {
+  // eslint-disable-next-line
+  // @ts-ignore
+  const braintreePackage = await import('braintree');
+  braintree = braintreePackage.default;
+} catch {
+  /* */
+  logger.warn("npm dependency 'braintree' is not installed, paypal adapter will not work");
+}
 
 const BraintreeDirect: IPaymentAdapter = {
   ...PaymentAdapter,
@@ -95,9 +105,6 @@ const BraintreeDirect: IPaymentAdapter = {
       },
 
       sign: async () => {
-        // eslint-disable-next-line
-        // @ts-ignore
-        const braintree = (await import('braintree')).default;
         const gateway = getGateway(braintree);
         const result = await gateway.clientToken.generate({});
         if (result.success) {
@@ -114,9 +121,6 @@ const BraintreeDirect: IPaymentAdapter = {
         if (!paypalPaymentMethodNonce)
           throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        const braintree = (await import('braintree')).default;
         const gateway = getGateway(braintree);
         const address = order.billingAddress;
         const pricing = OrderPricingSheet({

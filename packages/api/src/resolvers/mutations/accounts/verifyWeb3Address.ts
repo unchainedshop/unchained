@@ -15,15 +15,15 @@ let hexToBytes: typeof HexToBytes;
 async function loadNoblePackages() {
   try {
     // eslint-disable-next-line
-  // @ts-ignore
+    // @ts-ignore
     const curves = await import('@noble/curves/secp256k1.js');
 
     // eslint-disable-next-line
-  // @ts-ignore
+    // @ts-ignore
     const hashes = await import('@noble/hashes/sha3.js');
 
     // eslint-disable-next-line
-  // @ts-ignore
+    // @ts-ignore
     const utils = await import('@noble/hashes/utils.js');
 
     if (!curves || !hashes || !utils) {

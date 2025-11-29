@@ -1,18 +1,38 @@
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
-import createMcpServer from '../mcp/index.js';
-import { Request, RequestHandler } from 'express';
-import { Context } from '../context.js';
+import type * as mcpSDKServerLibraryTypes from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/types.js';
+import type * as mcpSDKServerTypes from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { Context } from '../context.js';
+import type { Request, RequestHandler } from 'express';
+import initMCPServer from '../mcp/index.js';
+import { createLogger } from '@unchainedshop/logger';
+
+const logger = createLogger('unchained:api:mcp');
+
+let StreamableHTTPServerTransport: typeof mcpSDKServerLibraryTypes.StreamableHTTPServerTransport;
+let isInitializeRequest: typeof mcpSDKClientTypes.isInitializeRequest;
+let McpServer: typeof mcpSDKServerTypes.McpServer;
+
+try {
+  const mcpSDKServerLibrary = await import('@modelcontextprotocol/sdk/server/streamableHttp.js');
+  const mcpSDKClient = await import('@modelcontextprotocol/sdk/types.js');
+  const mcpSDKServer = await import('@modelcontextprotocol/sdk/server/mcp.js');
+
+  McpServer = mcpSDKServer.McpServer;
+  StreamableHTTPServerTransport = mcpSDKServerLibrary.StreamableHTTPServerTransport;
+  isInitializeRequest = mcpSDKClient.isInitializeRequest;
+} catch {
+  logger.warn(`optional peer npm package '@modelcontextprotocol/sdk' not installed, mcp will not work`);
+}
 
 // Map to store transports by session ID
-const transports: Record<string, StreamableHTTPServerTransport> = {};
+const transports: Record<string, mcpSDKServerLibraryTypes.StreamableHTTPServerTransport> = {};
 
 const handlePostRequest: RequestHandler = async (req: Request & { unchainedContext: Context }, res) => {
   // Check for existing session ID
 
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
-  let transport: StreamableHTTPServerTransport;
+  let transport: mcpSDKServerLibraryTypes.StreamableHTTPServerTransport;
 
   if (sessionId && transports[sessionId]) {
     // Reuse existing transport
@@ -35,7 +55,15 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
     };
 
     const roles = req.unchainedContext.user?.roles || [];
-    const server = createMcpServer(req.unchainedContext, roles);
+
+    const server = initMCPServer(
+      new McpServer({
+        name: 'Unchained MCP Server',
+        version: '1.0.0',
+      }),
+      req.unchainedContext,
+      roles,
+    );
     await server.connect(transport);
   } else {
     // Invalid request

@@ -58,7 +58,7 @@ export const actionValidators = {
         .min(1, 'quotationId is required')
         .describe('Quotation ID to verify. Must be in REQUESTED status.'),
       quotationContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe('Optional context for verification (e.g., verification notes, approval details)'),
     })
@@ -73,7 +73,7 @@ export const actionValidators = {
         .min(1, 'quotationId is required')
         .describe('Quotation ID to create proposal for. Must be in PROCESSING status.'),
       quotationContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe(
           'Optional context for the proposal (e.g., pricing details, terms, delivery estimates)',
@@ -90,7 +90,7 @@ export const actionValidators = {
         .min(1, 'quotationId is required')
         .describe('Quotation ID to reject. Cannot be FULLFILLED.'),
       quotationContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe(
           'Optional context for rejection (e.g., reason for rejection, alternative suggestions)',
@@ -123,7 +123,7 @@ export const QuotationManagementSchema = {
       'Use this to add any additional information for the quotation, it can be how many for when or price or anything a user might want to add',
     ),
   quotationContext: z
-    .record(z.any())
+    .record(z.any(), z.any())
     .optional()
     .describe('Context object (VERIFY, MAKE_PROPOSAL, REJECT only)'),
 };

@@ -56,7 +56,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@ai-sdk/mcp": "^0.0.8",
+    "@ai-sdk/mcp": "^0.0.11",
     "@fastify/cookie": ">= 11 < 12",
     "@fastify/multipart": ">= 9 < 10",
     "@fastify/session": ">= 11 < 12",
@@ -73,14 +73,14 @@
     "passport": ">= 0.7 < 1"
   },
   "peerDependenciesMeta": {
-    "@modelcontextprotocol/sdk": {
-      "optional": false
-    },
     "graphql-yoga": {
       "optional": false
     },
     "express-session": {
       "optional": false
+    },
+    "@modelcontextprotocol/sdk": {
+      "optional": true
     },
     "ai": {
       "optional": true
@@ -134,7 +134,7 @@
     "zod": "^3.25.76 || ^4"
   },
   "devDependencies": {
-    "@ai-sdk/mcp": "^0.0.8",
+    "@ai-sdk/mcp": "^0.0.11",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
     "@fastify/session": "^11.1.0",

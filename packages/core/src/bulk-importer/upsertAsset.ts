@@ -5,9 +5,9 @@ import { z } from 'zod';
 export const AssetSchema = z.object({
   _id: z.string().optional(),
   url: z.string(),
-  meta: z.record(z.unknown()).optional(),
+  meta: z.record(z.any(), z.any()).optional(),
   fileName: z.string(),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.any()).optional(),
 });
 
 const upsertAsset = async (

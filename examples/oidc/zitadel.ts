@@ -145,7 +145,7 @@ export default async function setupZitadel(app: FastifyInstance) {
       }: {
         sub: string;
         [`urn:zitadel:iam:org:project:roles`]: Record<string, Record<string, string>>;
-      } = jwt.decode(req.session.zitadel.id_token);
+      } = jwt.decode(req.session.zitadel.id_token) as any;
 
       const userId = `${UNCHAINED_ZITADEL_CLIENT_ID}:${sub}`;
       const user = await injectRolesInUser(userId, projectRoles, context);

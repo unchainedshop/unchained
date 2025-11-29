@@ -58,7 +58,7 @@ export const ProductSchema = z.object({
   type: z.enum(productTypeKeys).optional().describe('Product type (required for CREATE)'),
   tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Tags (lowercased strings)'),
   sequence: z.number().int().optional().describe('Sorting sequence'),
-  meta: z.record(z.unknown()).optional().describe('Custom metadata as key-value pairs'),
+  meta: z.record(z.any(), z.any()).optional().describe('Custom metadata as key-value pairs'),
   plan: UpdateProductPlanInputSchema.optional().describe('Plan configuration - ONLY for PLAN_PRODUCT'),
   warehousing: z
     .object({
@@ -82,7 +82,10 @@ export const ProductSchema = z.object({
       contractStandard: z.string().describe('Smart contract standard (e.g., ERC-721)'),
       tokenId: z.string().min(1).describe('Unique token identifier'),
       supply: z.number().int().positive().describe('Total supply of the token'),
-      ercMetadataProperties: z.record(z.any()).optional().describe('Optional ERC metadata properties'),
+      ercMetadataProperties: z
+        .record(z.any(), z.any())
+        .optional()
+        .describe('Optional ERC metadata properties'),
     })
     .optional()
     .describe('Tokenization details - ONLY for TOKENIZED_PRODUCT'),

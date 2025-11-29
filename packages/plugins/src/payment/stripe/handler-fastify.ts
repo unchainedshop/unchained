@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import stripeClient from './stripe.js';
 import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { stripe } from './stripe.js';
 
 const logger = createLogger('unchained:stripe:handler');
 
@@ -22,7 +22,6 @@ export const stripeHandler: RouteHandlerMethod = async (
   let event;
 
   try {
-    const stripe = stripeClient();
     const sig = req.headers['stripe-signature'];
     if (!process.env.STRIPE_ENDPOINT_SECRET) {
       throw new Error('env STRIPE_ENDPOINT_SECRET is required for webhook handling');

@@ -1,42 +1,30 @@
-import { IOrderPricingSheet } from '@unchainedshop/core';
+import type { Stripe } from 'stripe';
+import type { IOrderPricingSheet } from '@unchainedshop/core';
 import { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
-import { Stripe as StripeType } from 'stripe';
 
 const logger = createLogger('unchained:stripe');
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
-let stripe: Awaited<ReturnType<typeof initStripeClient>> | null;
+export let stripe: Stripe;
+const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
-export const initStripeClient = async (): Promise<StripeType | null> => {
+try {
   if (!STRIPE_SECRET) {
     logger.warn('STRIPE_SECRET is not set, skipping initialization');
-    return Promise.resolve(null);
   }
-  // eslint-disable-next-line
-  // @ts-ignore
   const { default: Stripe } = await import('stripe');
-  stripe = new Stripe(STRIPE_SECRET, {
-    apiVersion: '2025-10-29.clover',
+  stripe = new Stripe(STRIPE_SECRET as string, {
+    apiVersion: '2025-11-17.clover',
   });
-  return stripe;
-};
-
-initStripeClient().catch(logger.warn);
-
-export default function getStripe() {
-  if (!stripe) {
-    throw new Error('Stripe client not initialized');
-  }
-  return stripe;
+} catch {
+  logger.warn(`optional peer npm package 'stripe' not installed, stripe adapter will not work`);
 }
-
-const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
 export const upsertCustomer = async ({ userId, name, email }): Promise<string> => {
   try {
-    const { data } = await getStripe().customers.search({ query: `metadata["userId"]:"${userId}"` });
+    const { data } = await stripe.customers.search({ query: `metadata["userId"]:"${userId}"` });
     const existingCustomer = data[0];
 
     if (
@@ -44,7 +32,7 @@ export const upsertCustomer = async ({ userId, name, email }): Promise<string> =
       existingCustomer.email !== email ||
       existingCustomer.metadata.environment !== environment
     ) {
-      const updatedCustomer = await getStripe().customers.update(existingCustomer.id, {
+      const updatedCustomer = await stripe.customers.update(existingCustomer.id, {
         metadata: {
           userId,
           environment,
@@ -57,7 +45,7 @@ export const upsertCustomer = async ({ userId, name, email }): Promise<string> =
 
     return existingCustomer.id;
   } catch {
-    const customer = await getStripe().customers.create({
+    const customer = await stripe.customers.create({
       metadata: {
         userId,
         environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
@@ -89,7 +77,7 @@ export const createRegistrationIntent = async (
   const description =
     `${options?.description || descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
 
-  const setupIntent = await getStripe().setupIntents.create({
+  const setupIntent = await stripe.setupIntents.create({
     description,
     customer,
     metadata: {
@@ -129,7 +117,7 @@ export const createOrderPaymentIntent = async (
 
   const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
-  const paymentIntent = await getStripe().paymentIntents.create({
+  const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
     currency: currencyCode.toLowerCase(),
     description,

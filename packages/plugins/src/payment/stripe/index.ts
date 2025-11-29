@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import stripeClient, { createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
+import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
 import {
   OrderPricingSheet,
   IPaymentAdapter,
@@ -42,11 +42,7 @@ const Stripe: IPaymentAdapter = {
       ...PaymentAdapter.actions(config, context),
 
       configurationError() {
-        try {
-          stripeClient();
-        } catch {
-          return PaymentError.INCOMPLETE_CONFIGURATION;
-        }
+        if (!stripe) return PaymentError.INCOMPLETE_CONFIGURATION;
         return null;
       },
 
@@ -60,13 +56,11 @@ const Stripe: IPaymentAdapter = {
       },
 
       validate: async ({ token }) => {
-        const stripe = stripeClient();
         const paymentMethod = await stripe.paymentMethods.retrieve(token);
         return !!paymentMethod;
       },
 
       register: async ({ setupIntentId }) => {
-        const stripe = stripeClient();
         if (!setupIntentId) {
           throw new Error('You have to provide a setupIntentId');
         }
@@ -110,7 +104,6 @@ const Stripe: IPaymentAdapter = {
       },
 
       charge: async ({ paymentIntentId, paymentCredentials }) => {
-        const stripe = stripeClient();
         if (!paymentIntentId && !paymentCredentials) {
           throw new Error('You have to provide paymentIntentId or paymentCredentials');
         }

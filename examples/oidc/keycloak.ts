@@ -221,7 +221,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
       }: {
         sub: string;
         resource_access: Record<string, { roles: string[] }>;
-      } = decodedPayload;
+      } = decodedPayload as any;
 
       const userId = `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
       let user = await context.modules.users.findUserById(userId);

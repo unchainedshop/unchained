@@ -17,7 +17,7 @@ export interface BulkImportOperationResult {
   operation: string;
   success: boolean;
 }
-export type BulkImportOperation<T> = { payloadSchema?: z.AnyZodObject } & ((
+export type BulkImportOperation<T> = { payloadSchema?: z.ZodObject } & ((
   payload: any,
   options: {
     bulk: (collection: string) => typeof mongodb.BulkOperationBase;

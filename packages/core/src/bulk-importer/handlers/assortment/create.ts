@@ -15,7 +15,7 @@ export const AssortmentCreatePayloadSchema = z.object({
     isRoot: z.boolean().optional(),
     sequence: z.number(),
     tags: z.array(z.string()).optional(),
-    meta: z.record(z.unknown()).optional(),
+    meta: z.record(z.any(), z.any()).optional(),
     content: z
       .record(
         z.string(), // locale

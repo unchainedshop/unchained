@@ -54,7 +54,7 @@ export const ProductCreateSpecificationSchema = z.object({
       }),
     )
     .optional(),
-  meta: z.record(z.unknown()).optional(),
+  meta: z.record(z.any(), z.any()).optional(),
   content: z.record(
     z.string(), // locale
     z.object({
@@ -70,7 +70,7 @@ export const ProductCreateSpecificationSchema = z.object({
   variationResolvers: z
     .array(
       z.object({
-        vector: z.record(z.string()),
+        vector: z.record(z.string(), z.any()),
         productId: z.string(),
       }),
     )

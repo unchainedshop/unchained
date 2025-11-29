@@ -7,10 +7,11 @@ export const sortDirectionKeys = Object.keys(SortDirection) as [
   ...(keyof typeof SortDirection)[],
 ];
 
-export const LocalizationTypeEnum = z.enum(['COUNTRY', 'CURRENCY', 'LANGUAGE'], {
-  description:
+export const LocalizationTypeEnum = z
+  .enum(['COUNTRY', 'CURRENCY', 'LANGUAGE'])
+  .describe(
     'Type of localization entity - COUNTRY for geographic regions (US, DE, CH), CURRENCY for monetary units (USD, EUR, CHF), LANGUAGE for locale support (en, de, fr)',
-});
+  );
 
 export const LocalizationEntitySchema = z.object({
   isoCode: z

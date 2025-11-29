@@ -8,7 +8,7 @@ export const AssortmentProductSchema = z.object({
   productId: z.string(),
   tags: z.array(z.string()).optional(),
   sortKey: z.number().optional(),
-  meta: z.record(z.any()).optional(),
+  meta: z.record(z.any(), z.any()).optional(),
 });
 
 const upsert = async (

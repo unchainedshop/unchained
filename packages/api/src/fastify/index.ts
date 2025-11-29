@@ -298,12 +298,10 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
       const fastifyStaticModule = await import('@fastify/static');
       fastifyStatic = fastifyStaticModule.default;
     } catch {
-      /* */
+      fastify.log.warn("npm dependency @fastify/static is not installed, can't serve admin-ui");
     }
 
-    if (!fastifyStatic) {
-      fastify.log.warn("npm dependency @fastify/static is not installed, can't serve admin-ui");
-    } else {
+    if (fastifyStatic) {
       const adminUIPath = resolveAdminUIPath();
       if (adminUIPath) {
         await fastify.register(fastifyStatic, {

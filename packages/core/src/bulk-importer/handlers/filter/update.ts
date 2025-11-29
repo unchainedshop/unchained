@@ -23,7 +23,7 @@ export const FilterUpdatePayloadSchema = z.object({
         }),
       )
       .optional(),
-    meta: z.record(z.unknown()).optional(),
+    meta: z.record(z.any(), z.any()).optional(),
     content: LocalizedContentSchema,
   }),
 });

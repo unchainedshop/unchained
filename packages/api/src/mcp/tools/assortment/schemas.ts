@@ -23,7 +23,7 @@ export const AssortmentSchema = z.object({
   isActive: z.boolean().optional().describe('Whether this assortment is active'),
   tags: z.array(z.string().min(1).toLowerCase()).optional().describe('Tags (lowercased strings)'),
   sequence: z.number().int().optional().describe('Sorting sequence'),
-  meta: z.record(z.unknown()).optional().describe('Custom metadata as key-value pairs'),
+  meta: z.record(z.any(), z.any()).optional().describe('Custom metadata as key-value pairs'),
 });
 
 export const actionValidators = {

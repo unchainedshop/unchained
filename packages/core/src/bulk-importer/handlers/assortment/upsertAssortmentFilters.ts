@@ -7,7 +7,7 @@ export const AssortmentFilterSchema = z.object({
   filterId: z.string(),
   tags: z.array(z.string()).optional(),
   sortKey: z.number().optional(),
-  meta: z.record(z.unknown()).optional(),
+  meta: z.record(z.any(), z.any()).optional(),
 });
 
 const upsert = async (

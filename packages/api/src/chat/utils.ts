@@ -8,7 +8,7 @@ try {
   InvalidArgumentError = aiTools.InvalidArgumentError;
   NoSuchToolError = aiTools.NoSuchToolError;
 } catch {
-  /* */
+  // Already handled
 }
 
 export type StreamTextParams = Parameters<typeof aiTypes.streamText>[0];

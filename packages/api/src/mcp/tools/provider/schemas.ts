@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import { SearchSchema } from '../../utils/sharedSchemas.js';
 
-export const ProviderTypeEnum = z.enum(['PAYMENT', 'DELIVERY', 'WAREHOUSING'], {
-  description:
+export const ProviderTypeEnum = z
+  .enum(['PAYMENT', 'DELIVERY', 'WAREHOUSING'])
+  .describe(
     'Type of provider - PAYMENT for payment processing (cards, invoices), DELIVERY for shipping/pickup methods, WAREHOUSING for inventory management',
-});
+  );
 
 export const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
 export const DeliveryProviderTypeEnum = z.enum(['PICKUP', 'SHIPPING', 'LOCAL']);
@@ -17,7 +18,7 @@ export const ConfigurationEntry = z
       .min(1)
       .describe('Configuration parameter name (e.g., "apiKey", "webhookUrl", "sandbox")'),
     value: z
-      .union([z.string(), z.number(), z.boolean(), z.record(z.any())])
+      .union([z.string(), z.number(), z.boolean(), z.record(z.any(), z.any())])
       .describe(
         'Configuration parameter value (string, number, boolean, or object depending on the setting)',
       ),

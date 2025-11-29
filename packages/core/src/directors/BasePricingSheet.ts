@@ -5,8 +5,9 @@ export interface PricingDiscount {
   currencyCode: string;
 }
 
-export interface IPricingSheet<Calculation extends PricingCalculation>
-  extends IBasePricingSheet<Calculation> {
+export interface IPricingSheet<
+  Calculation extends PricingCalculation,
+> extends IBasePricingSheet<Calculation> {
   discountPrices: (discountId?: string) => PricingDiscount[];
   addDiscount: (params: { amount: number; discountId: string; meta?: any }) => void;
 }

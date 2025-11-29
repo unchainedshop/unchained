@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import stripeClient from './stripe.js';
+import { stripe } from './stripe.js';
 
 const logger = createLogger('unchained:stripe:handler');
 
@@ -16,7 +16,6 @@ export const stripeHandler = async (request, response) => {
   let event;
 
   try {
-    const stripe = stripeClient();
     const sig = request.headers['stripe-signature'];
     if (!sig) {
       throw new Error('stripe-signature header was not provided for webhook');

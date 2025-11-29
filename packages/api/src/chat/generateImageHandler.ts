@@ -13,7 +13,7 @@ try {
   tool = aiTools.tool;
   experimental_generateImage = aiTools.experimental_generateImage;
 } catch {
-  /* */
+  // Already handled
 }
 
 const inputSchema = z.object({

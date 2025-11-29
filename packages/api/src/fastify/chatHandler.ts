@@ -1,6 +1,6 @@
 import { FastifyInstance, RouteHandlerMethod, FastifyRequest } from 'fastify';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import type * as mcpSDKClientLibraryTypes from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/client/index.js';
 import type * as aiTypes from 'ai';
 import type * as mcpTypes from '@ai-sdk/mcp';
 import generateImageHandler from '../chat/generateImageHandler.js';
@@ -15,16 +15,23 @@ let convertToModelMessages: typeof aiTypes.convertToModelMessages;
 let stepCountIs: typeof aiTypes.stepCountIs;
 let streamText: typeof aiTypes.streamText;
 let createMCPClient: typeof mcpTypes.experimental_createMCPClient;
+let StreamableHTTPClientTransport: typeof mcpSDKClientLibraryTypes.StreamableHTTPClientTransport;
+let Client: typeof mcpSDKClientTypes.Client;
 
 try {
   const aiTools = await import('ai');
   const mcpTools = await import('@ai-sdk/mcp');
+  const mcpSDKClientLibrary = await import('@modelcontextprotocol/sdk/client/streamableHttp.js');
+  const mcpSDKClient = await import('@modelcontextprotocol/sdk/client/index.js');
+
+  StreamableHTTPClientTransport = mcpSDKClientLibrary.StreamableHTTPClientTransport;
+  Client = mcpSDKClient.Client;
   convertToModelMessages = aiTools.convertToModelMessages;
   stepCountIs = aiTools.stepCountIs;
   streamText = aiTools.streamText;
   createMCPClient = mcpTools.experimental_createMCPClient;
 } catch {
-  /* */
+  logger.warn(`optional peer npm packages 'ai' and '@ai-sdk/mcp' not installed, chat will not work`);
 }
 
 const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {

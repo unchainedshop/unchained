@@ -61,7 +61,7 @@
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 8",
     "p-memoize": "8.x",
-    "stripe": ">= 19 < 20",
+    "stripe": ">= 19 < 21",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
   },
@@ -127,7 +127,7 @@
     "minio": "^8.0.5",
     "nodemailer": "^7.0.5",
     "p-memoize": "^8.0.0",
-    "stripe": "^19.1.0",
+    "stripe": "^20.0.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "web-push": "^3.6.7",

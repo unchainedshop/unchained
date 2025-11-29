@@ -88,8 +88,8 @@ export const actionValidators = {
     .object({
       orderId: z
         .string({
-          required_error: 'orderId is required to pay an order',
-          invalid_type_error: 'orderId must be a string',
+          error: (issue) =>
+            issue.input ? 'orderId is required to pay an order' : 'orderId must be a string',
         })
         .min(1, 'orderId cannot be empty')
         .describe('The unique identifier of the order to mark as PAID'),
@@ -106,8 +106,10 @@ export const actionValidators = {
     .object({
       orderId: z
         .string({
-          required_error: 'orderId is required to mark an order as delivered',
-          invalid_type_error: 'orderId must be a string',
+          error: (issue) =>
+            issue.input
+              ? 'orderId is required to mark an order as delivered'
+              : 'orderId must be a string',
         })
         .min(1, 'orderId cannot be empty')
         .describe('The unique identifier of the order to mark as DELIVERED'),
@@ -122,13 +124,17 @@ export const actionValidators = {
     ),
   CONFIRM_ORDER: z
     .object({
-      orderId: z.string({ required_error: 'orderId is required' }).min(1, 'orderId cannot be empty'),
+      orderId: z
+        .string({
+          error: (issue) => (issue.input ? 'orderId is required' : 'orderId must be a string'),
+        })
+        .min(1, 'orderId cannot be empty'),
       paymentContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe('Optional JSON context related to payment (e.g., transaction details).'),
       deliveryContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe('Optional JSON context related to delivery (e.g., shipping info).'),
       comment: z
@@ -145,15 +151,17 @@ export const actionValidators = {
   REJECT_ORDER: z
     .object({
       orderId: z
-        .string({ required_error: 'orderId is required' })
+        .string({
+          error: (issue) => (issue.input ? 'orderId is required' : 'orderId must be a string'),
+        })
         .min(1, 'orderId cannot be empty')
         .describe('The unique identifier of the order to reject.'),
       paymentContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe('Optional JSON context related to payment, e.g., transaction adjustments.'),
       deliveryContext: z
-        .record(z.any())
+        .record(z.any(), z.any())
         .optional()
         .describe('Optional JSON context related to delivery, e.g., shipment adjustments.'),
       comment: z
