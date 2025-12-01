@@ -1,28 +1,14 @@
 import { format } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
-import { useIntl } from 'react-intl';
 
 const useFormatDateTime = () => {
-  const { locale: intlLocale } = useIntl();
 
   const formatDateTime = (date, options: Intl.DateTimeFormatOptions = {}) => {
     if (!date || !Date.parse(date)) return 'n/a';
-    try {
-      // Use the admin UI locale from IntlProvider
-      const locale =
-        intlLocale ||
-        (typeof navigator !== 'undefined' && navigator.language) ||
-        'de-ch';
-      return Intl.DateTimeFormat(locale, options).format(
-        new Date(date).getTime(),
-      );
-    } catch {
-      return Intl.DateTimeFormat('default', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }).format(new Date(date).getTime());
-    }
+
+    return Intl.DateTimeFormat(undefined, options).format(
+      new Date(date).getTime(),
+    );
   };
 
   const getDateFormatPattern = () => {
@@ -41,12 +27,7 @@ const useFormatDateTime = () => {
       }
     };
 
-    // Use the admin UI locale from IntlProvider
-    const locale =
-      intlLocale ||
-      (typeof navigator !== 'undefined' && navigator.language) ||
-      'de-ch';
-    return new Intl.DateTimeFormat(locale)
+    return new Intl.DateTimeFormat(undefined)
       .formatToParts(new Date())
       .map(getPatternForPart)
       .join('');
