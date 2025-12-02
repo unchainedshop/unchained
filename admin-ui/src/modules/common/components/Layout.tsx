@@ -14,7 +14,11 @@ import {
   QrCodeIcon,
   CubeIcon,
   DocumentTextIcon,
+<<<<<<< HEAD
   FolderArrowDownIcon,
+=======
+  TagIcon,
+>>>>>>> 0c8e6d952 (Add tags list view)
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -148,6 +152,12 @@ const Layout = ({
       icon: AdjustmentsHorizontalIcon,
       requiredRole: 'viewFilters',
       href: '/filters',
+    },
+        {
+      name: formatMessage({ id: 'tags', defaultMessage: 'Tags' }),
+      icon: TagIcon,
+      requiredRole: 'manageTags',
+      href: '/tags',
     },
     isSystemReady && {
       name: formatMessage({ id: 'users', defaultMessage: 'Users' }),
