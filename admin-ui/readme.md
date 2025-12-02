@@ -14,9 +14,9 @@
 
 ## 📸 Screenshots
 
-![Products](https://raw.githubusercontent.com/unchainedshop/unchained/master/docs/screenshots/admin-ui-1.png)
-![Dashboard](https://raw.githubusercontent.com/unchainedshop/unchained/master/docs/screenshots/admin-ui-2.png)
-![Product](https://raw.githubusercontent.com/unchainedshop/unchained/master/docs/screenshots/admin-ui-3.png)
+| | | |
+|:---:|:---:|:---:|
+| ![Products](https://raw.githubusercontent.com/unchainedshop/unchained/master/docs/screenshots/admin-ui-1.png) | ![Dashboard](https://raw.githubusercontent.com/unchainedshop/unchained/master/docs/screenshots/admin-ui-2.png) | ![Product](https://raw.githubusercontent.com/unchainedshop/unchained/master/docs/screenshots/admin-ui-3.png) |
 
 ---
 
