@@ -153,7 +153,7 @@ const Layout = ({
       requiredRole: 'viewFilters',
       href: '/filters',
     },
-        {
+    {
       name: formatMessage({ id: 'tags', defaultMessage: 'Tags' }),
       icon: TagIcon,
       requiredRole: 'manageTags',
