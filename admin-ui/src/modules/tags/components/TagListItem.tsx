@@ -11,25 +11,22 @@ interface TagListItemProps {
 const TagListItem = ({ tag }: TagListItemProps) => {
   const { formatMessage } = useIntl();
 
-  const { productsCount, assortmentsCount } = useTagsCount({ tag });
+  const { productsCount, assortmentsCount, usersCount } = useTagsCount({ tag });
 
   return (
     <Table.Row className="group">
-      {/* Tag Name */}
       <Table.Cell>
         <div className="flex items-center">
           <Badge text={tag} color="slate" className="text-sm font-medium" />
         </div>
       </Table.Cell>
 
-      {/* Total Usage */}
       <Table.Cell className="whitespace-nowrap px-6">
         <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
-          {assortmentsCount + productsCount}
+          {assortmentsCount + productsCount + usersCount}
         </div>
       </Table.Cell>
 
-      {/* Products Usage */}
       <Table.Cell className="whitespace-nowrap px-6">
         <div className="text-sm text-slate-900 dark:text-slate-300">
           {productsCount}
@@ -47,7 +44,6 @@ const TagListItem = ({ tag }: TagListItemProps) => {
         </div>
       </Table.Cell>
 
-      {/* Assortments Usage */}
       <Table.Cell className="whitespace-nowrap px-6">
         <div className="text-sm text-slate-900 dark:text-slate-300">
           {assortmentsCount}
@@ -64,34 +60,22 @@ const TagListItem = ({ tag }: TagListItemProps) => {
           )}
         </div>
       </Table.Cell>
-
-      {/* Actions */}
-      {/*    <Table.Cell className="whitespace-nowrap px-6">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={handleEdit}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-            title={formatMessage({
-              id: 'edit_tag',
-              defaultMessage: 'Edit tag',
-            })}
-          >
-            <PencilIcon className="w-4 h-4" />
-          </button>
-          {tag.usage.total === 0 && (
-            <button
-              onClick={handleDelete}
-              className="text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-              title={formatMessage({
-                id: 'delete_tag',
-                defaultMessage: 'Delete tag',
-              })}
+      <Table.Cell className="whitespace-nowrap px-6">
+        <div className="text-sm text-slate-900 dark:text-slate-300">
+          {usersCount}
+          {usersCount > 0 && (
+            <Link
+              href={`/users?tags=${encodeURIComponent(tag)}`}
+              className="ml-2 text-blue-600 dark:text-blue-400 hover:underline"
             >
-              <TrashIcon className="w-4 h-4" />
-            </button>
+              {formatMessage({
+                id: 'view_users',
+                defaultMessage: 'view',
+              })}
+            </Link>
           )}
         </div>
-      </Table.Cell> */}
+      </Table.Cell>
     </Table.Row>
   );
 };

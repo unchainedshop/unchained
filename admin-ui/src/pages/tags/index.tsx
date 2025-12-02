@@ -5,10 +5,7 @@ import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
 import ListHeader from '../../modules/common/components/ListHeader';
 import TagList from '../../modules/tags/components/TagList';
 
-import {
-  convertSortFieldsToQueryFormat,
-  normalizeQuery,
-} from '../../modules/common/utils/utils';
+import { normalizeQuery } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import Loading from '../../modules/common/components/Loading';
 import useApp from '../../modules/common/hooks/useApp';
@@ -19,7 +16,6 @@ const Tags = () => {
   const { formatMessage } = useIntl();
   const { query, push } = useRouter();
   const { shopInfo } = useApp();
-  const sort = query?.sort || '';
 
   const { queryString, tagId, ...restQuery } = query;
 
@@ -35,13 +31,13 @@ const Tags = () => {
       });
     }
   };
-  const sortKeys = convertSortFieldsToQueryFormat(sort);
 
   const tags = shopInfo
     ? Array.from(
         new Set([
           ...(shopInfo.adminUiConfig?.productTags || []),
           ...(shopInfo?.adminUiConfig?.assortmentTags || []),
+          ...(shopInfo?.adminUiConfig?.userTags || []),
         ]),
       ).filter(Boolean)
     : [];
