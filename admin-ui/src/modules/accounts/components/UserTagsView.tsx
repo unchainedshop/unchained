@@ -18,10 +18,12 @@ const UserTagsView = ({ tags: defaultTags = [], userId }) => {
       onSubmit={updateUserTags}
       enableEdit={hasRole(IRoleAction.ManageUsers)}
       availableTagOptions={
-        shopInfo?.adminUiConfig?.userTags?.map((tag) => ({
-          label: tag,
-          value: tag,
-        })) || []
+        shopInfo?.adminUiConfig?.userTags
+          ?.filter((t) => !(defaultTags || [])?.includes(t))
+          ?.map((tag) => ({
+            label: tag,
+            value: tag,
+          })) || []
       }
     />
   );

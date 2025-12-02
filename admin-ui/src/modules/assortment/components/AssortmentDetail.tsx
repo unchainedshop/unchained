@@ -335,10 +335,12 @@ const AssortmentDetail = ({
           onSubmit={updateAssortmentTags}
           enableEdit={hasRole(IRoleAction.ManageAssortments)}
           availableTagOptions={
-            shopInfo?.adminUiConfig?.assortmentTags?.map((tag) => ({
-              value: tag,
-              label: tag,
-            })) || []
+            shopInfo?.adminUiConfig?.assortmentTags
+              ?.filter((t) => !(assortment?.tags || [])?.includes(t))
+              ?.map((tag) => ({
+                value: tag,
+                label: tag,
+              })) || []
           }
         />
         {!hideControls && (

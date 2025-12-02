@@ -2,7 +2,6 @@ import { format } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 
 const useFormatDateTime = () => {
-
   const formatDateTime = (date, options: Intl.DateTimeFormatOptions = {}) => {
     if (!date || !Date.parse(date)) return 'n/a';
 
