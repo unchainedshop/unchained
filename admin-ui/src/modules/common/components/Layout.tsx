@@ -16,6 +16,7 @@ import {
   DocumentTextIcon,
   FolderArrowDownIcon,
   MagnifyingGlassIcon,
+  TagIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -248,6 +249,12 @@ const LayoutContent = ({
       icon: AdjustmentsHorizontalIcon,
       requiredRole: 'viewFilters',
       href: '/filters',
+    },
+        {
+      name: formatMessage({ id: 'tags', defaultMessage: 'Tags' }),
+      icon: TagIcon,
+      requiredRole: 'manageTags',
+      href: '/tags',
     },
     isSystemReady && {
       _sortOrder: 70,
