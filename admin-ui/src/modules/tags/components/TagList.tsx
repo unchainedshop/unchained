@@ -50,6 +50,12 @@ const TagList = ({ tags, sortable = false }: TagListProps) => {
               defaultMessage: 'Assortments',
             })}
           </Table.Cell>
+          <Table.Cell>
+            {formatMessage({
+              id: 'users_usage',
+              defaultMessage: 'Users',
+            })}
+          </Table.Cell>
         </Table.Row>
 
         {tags.map((tag, index) => (

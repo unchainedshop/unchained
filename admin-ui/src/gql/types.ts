@@ -2979,7 +2979,7 @@ export enum IProductType {
   ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
   PlanProduct = 'PLAN_PRODUCT',
   SimpleProduct = 'SIMPLE_PRODUCT',
-  TokenizedProduct = 'TOKENIZED_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT'
 }
 
 export type IProductVariation = {
@@ -6602,152 +6602,30 @@ export type IProductsQueryVariables = Exact<{
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
+
 export type IProductsQuery = {
-  productsCount: number;
-  products: Array<
+  productsCount: number, products: Array<
     | {
-      _id: string;
-      sequence: number;
-      status: IProductStatus;
-      tags?: Array<any> | null;
-      updated?: any | null;
-      published?: any | null;
-      proxies: Array<
+      _id: string, sequence: number, status: IProductStatus, tags?: Array<any> | null, updated?: any | null, published?: any | null, proxies: Array<
         | { __typename: 'BundleProduct' }
         | { __typename: 'ConfigurableProduct' }
-      >;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-        vendor?: string | null;
-        brand?: string | null;
-        labels?: Array<string> | null;
-        locale: any;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
+      >, texts?: { _id: string, slug?: string | null, title?: string | null, subtitle?: string | null, description?: string | null, vendor?: string | null, brand?: string | null, labels?: Array<string> | null, locale: any } | null, media: Array<{ _id: string, tags?: Array<any> | null, file?: { _id: string, url?: string | null } | null }>
     }
+    | { _id: string, sequence: number, status: IProductStatus, tags?: Array<any> | null, updated?: any | null, published?: any | null, texts?: { _id: string, slug?: string | null, title?: string | null, subtitle?: string | null, description?: string | null, vendor?: string | null, brand?: string | null, labels?: Array<string> | null, locale: any } | null, media: Array<{ _id: string, tags?: Array<any> | null, file?: { _id: string, url?: string | null } | null }> }
     | {
-      _id: string;
-      sequence: number;
-      status: IProductStatus;
-      tags?: Array<any> | null;
-      updated?: any | null;
-      published?: any | null;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-        vendor?: string | null;
-        brand?: string | null;
-        labels?: Array<string> | null;
-        locale: any;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
-    }
-    | {
-      _id: string;
-      sequence: number;
-      status: IProductStatus;
-      tags?: Array<any> | null;
-      updated?: any | null;
-      published?: any | null;
-      catalogPrice?: { amount: number; currencyCode: string } | null;
-      proxies: Array<
+      _id: string, sequence: number, status: IProductStatus, tags?: Array<any> | null, updated?: any | null, published?: any | null, catalogPrice?: { amount: number, currencyCode: string } | null, proxies: Array<
         | { __typename: 'BundleProduct' }
         | { __typename: 'ConfigurableProduct' }
-      >;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-        vendor?: string | null;
-        brand?: string | null;
-        labels?: Array<string> | null;
-        locale: any;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
+      >, texts?: { _id: string, slug?: string | null, title?: string | null, subtitle?: string | null, description?: string | null, vendor?: string | null, brand?: string | null, labels?: Array<string> | null, locale: any } | null, media: Array<{ _id: string, tags?: Array<any> | null, file?: { _id: string, url?: string | null } | null }>
     }
     | {
-      sku?: string | null;
-      baseUnit?: string | null;
-      _id: string;
-      sequence: number;
-      status: IProductStatus;
-      tags?: Array<any> | null;
-      updated?: any | null;
-      published?: any | null;
-      dimensions?: {
-        weight?: number | null;
-        length?: number | null;
-        width?: number | null;
-        height?: number | null;
-      } | null;
-      catalogPrice?: { amount: number; currencyCode: string } | null;
-      proxies: Array<
+      sku?: string | null, baseUnit?: string | null, _id: string, sequence: number, status: IProductStatus, tags?: Array<any> | null, updated?: any | null, published?: any | null, dimensions?: { weight?: number | null, length?: number | null, width?: number | null, height?: number | null } | null, catalogPrice?: { amount: number, currencyCode: string } | null, proxies: Array<
         | { __typename: 'BundleProduct' }
         | { __typename: 'ConfigurableProduct' }
-      >;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-        vendor?: string | null;
-        brand?: string | null;
-        labels?: Array<string> | null;
-        locale: any;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
+      >, texts?: { _id: string, slug?: string | null, title?: string | null, subtitle?: string | null, description?: string | null, vendor?: string | null, brand?: string | null, labels?: Array<string> | null, locale: any } | null, media: Array<{ _id: string, tags?: Array<any> | null, file?: { _id: string, url?: string | null } | null }>
     }
-    | {
-      _id: string;
-      sequence: number;
-      status: IProductStatus;
-      tags?: Array<any> | null;
-      updated?: any | null;
-      published?: any | null;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-        vendor?: string | null;
-        brand?: string | null;
-        labels?: Array<string> | null;
-        locale: any;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
-    }
-  >;
+    | { _id: string, sequence: number, status: IProductStatus, tags?: Array<any> | null, updated?: any | null, published?: any | null, texts?: { _id: string, slug?: string | null, title?: string | null, subtitle?: string | null, description?: string | null, vendor?: string | null, brand?: string | null, labels?: Array<string> | null, locale: any } | null, media: Array<{ _id: string, tags?: Array<any> | null, file?: { _id: string, url?: string | null } | null }> }
+  >
 };
 
 export type IProductsCountQueryVariables = Exact<{
@@ -7303,7 +7181,7 @@ export type ITagsCountQueryVariables = Exact<{
 }>;
 
 
-export type ITagsCountQuery = { productsCount: number, assortmentsCount: number };
+export type ITagsCountQuery = { productsCount: number, assortmentsCount: number, usersCount: number };
 
 export type IInvalidateTokenMutationVariables = Exact<{
   tokenId: Scalars['ID']['input'];
