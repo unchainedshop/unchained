@@ -62,8 +62,8 @@ Plus: Formik • React Intl • Headless UI • Recharts • Cypress • AI SDK
 
 ```bash
 # Clone the repository
-git clone https://github.com/unchainedshop/unchained-adminui.git
-cd unchained-adminui
+git clone git@github.com:unchainedshop/unchained.git
+cd admin-ui
 
 # Install dependencies
 npm install
