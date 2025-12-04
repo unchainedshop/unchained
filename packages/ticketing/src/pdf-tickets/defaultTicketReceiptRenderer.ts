@@ -83,7 +83,7 @@ ${textAndQrElements.join('\n')}
   return svg;
 };
 
-export const defaultOrderPDFRenderer = async (
+export const defaultTicketReceiptRenderer = async (
   { orderId }: { orderId: string },
   context: TicketingAPI,
 ) => {

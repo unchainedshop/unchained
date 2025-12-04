@@ -46,13 +46,11 @@
   "peerDependencies": {
     "@parse/node-apn": "^7.0.1",
     "express": "5.x",
-    "fastify": ">= 5.2 < 6"
-  },
-  "optionalDependencies": {
+    "fastify": ">= 5.2 < 6",
     "@react-pdf/renderer": "^4.3.1",
     "qrcode": "^1.5.4",
     "googleapis": "^144.0.0"
-  },
+  },  
   "peerDependenciesMeta": {
     "@parse/node-apn": {
       "optional": false
@@ -61,6 +59,15 @@
       "optional": true
     },
     "fastify": {
+      "optional": true
+    },
+    "@react-pdf/renderer": {
+      "optional": true
+    },
+    "qrcode": {
+      "optional": true
+    },
+    "googleapis": {
       "optional": true
     }
   },
