@@ -189,7 +189,7 @@ export class GoogleEventTicketWallet {
     const claims = {
       iss: this.credentials.client_email,
       aud: 'google',
-      origins: ['www.example.com'],
+      origins: [process.env.ROOT_URL || 'http://localhost:3000'],
       typ: 'savetowallet',
       payload: { eventTicketClasses: [newClass], eventTicketObjects: [newObject] },
     };
