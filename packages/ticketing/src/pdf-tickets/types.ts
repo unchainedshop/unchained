@@ -127,3 +127,16 @@ export interface GoogleWalletPassConfigOptions {
   valueAddedModuleData?: any[];
   merchantLocations?: any[];
 }
+
+export interface PassConfig {
+  serialNumber?: string | null;
+  barcodes: any[];
+  voided: boolean;
+  headerFields: any[];
+  primaryFields: any[];
+  secondaryFields: any[];
+  backFields: any[];
+  authenticationToken?: string | null;
+  webServiceURL?: string | null;
+  logoText?: string | null;
+}
