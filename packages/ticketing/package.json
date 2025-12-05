@@ -42,12 +42,12 @@
   },
   "peerDependencies": {
     "@parse/node-apn": "^6.5.0",
+    "@react-pdf/renderer": "^4.3.1",
     "express": "5.x",
     "fastify": ">= 5.2 < 6",
-    "@react-pdf/renderer": "^4.3.1",
-    "qrcode": "^1.5.4",
-    "googleapis": "^144.0.0"
-  },  
+    "googleapis": "^144.0.0",
+    "qrcode": "^1.5.4"
+  },
   "peerDependenciesMeta": {
     "@parse/node-apn": {
       "optional": false
@@ -69,13 +69,14 @@
     }
   },
   "devDependencies": {
+    "@react-pdf/renderer": "^4.3.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.13",
+    "@walletpass/pass-js": "^6.9.1",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
-    "typescript": "^5.8.3",
-    "@react-pdf/renderer": "^4.3.1",
+    "googleapis": "^144.0.0",
     "qrcode": "^1.5.4",
-    "googleapis": "^144.0.0"
+    "typescript": "^5.8.3"
   }
 }
