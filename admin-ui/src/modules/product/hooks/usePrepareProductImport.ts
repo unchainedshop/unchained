@@ -11,17 +11,10 @@ export type ProductType =
 
 export interface ImportableProduct {
   _id?: string;
-  locale?: string;
-  title: string;
-  slug?: string;
   status: 'DRAFT' | 'ACTIVE' | 'DELETED';
   type: ProductType;
   tags: string[];
   sequence: number;
-  description?: string;
-  vendor?: string;
-  brand?: string;
-  labels: string[];
   sku?: string;
   baseUnit?: string;
   updated?: string;
@@ -31,6 +24,10 @@ export interface ImportableProduct {
     heightInMillimeters?: number;
     lengthInMillimeters?: number;
     widthInMillimeters?: number;
+  };
+  warehousing?: {
+    sku?: string;
+    baseUnit?: string;
   };
   content?: Record<string, any>;
 }
@@ -59,12 +56,16 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
     row['supply.heightInMillimeters'] ||
     row['supply.lengthInMillimeters'] ||
     row['supply.widthInMillimeters'];
+  const hasWarehousing = row['sku'] || row['baseUnit'];
   const content = normalizeProductContent(row);
-  const defaultLocale = Object.keys(content)[0] || '';
   const mapped: ImportableProduct = {
     _id: row['_id'] || undefined,
-    sku: row['sku'] || undefined,
-    baseUnit: row['baseUnit'] || undefined,
+    warehousing: hasWarehousing
+      ? {
+          sku: row['sku'] || undefined,
+          baseUnit: row['baseUnit'] || undefined,
+        }
+      : undefined,
     sequence: parseInt(row['sequence'] || '0', 10),
     status: row['status'] || null,
     type: row['__typename'] as ProductType,
@@ -72,9 +73,6 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
     updated: row['updated'] || undefined,
     published: row['published'] || undefined,
     content,
-    title: defaultLocale ? content[defaultLocale].title || '' : '',
-    description: defaultLocale ? content[defaultLocale].description || '' : '',
-    labels: defaultLocale ? content[defaultLocale].labels || [] : [],
     supply: hasSupply
       ? {
           weightInGram: row['supply.weightInGram']
