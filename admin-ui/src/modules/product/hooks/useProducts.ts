@@ -51,7 +51,7 @@ const useProducts = ({
   sort: sortOptions = [],
   forceLocale = '',
 }: IProductsQueryVariables & { forceLocale?: string } = {}) => {
-  const { data, loading, error, fetchMore } = useQuery<
+  const { data, loading, error, fetchMore, client } = useQuery<
     IProductsQuery,
     IProductsQueryVariables
   >(ProductsQuery, {
@@ -89,6 +89,7 @@ const useProducts = ({
     loading,
     error,
     loadMore,
+    client,
   };
 };
 

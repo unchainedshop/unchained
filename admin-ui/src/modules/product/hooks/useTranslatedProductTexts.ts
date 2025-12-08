@@ -7,7 +7,7 @@ import {
 import useUnchainedContext from '../../UnchainedContext/useUnchainedContext';
 import ProductTextsFragment from '../fragments/ProductTextsFragment';
 
-const GetTranslatedProductTextsQuery = (inlineFragment = '') => gql`
+export const GetTranslatedProductTextsQuery = (inlineFragment = '') => gql`
   query TranslatedProductTexts($productId: ID!) {
     translatedProductTexts(productId: $productId) {
       ...ProductTextsFragment
