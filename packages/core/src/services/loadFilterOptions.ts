@@ -27,6 +27,7 @@ export async function loadFilterOptionsService(
         },
         { modules: this },
       );
+      // TODO: Optimize set intersection
       const filteredProductIdSet = productIdSet.intersection(new Set(filterOptionProductIds));
 
       const normalizedValues = values && this.filters.parse(filter, values, [value]);
