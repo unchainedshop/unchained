@@ -6,10 +6,10 @@ import Button from '../../common/components/Button';
 import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import { useCSVImport } from '../../common/hooks/useCSVImport';
-import useProductImport, {
+import usePrepareProductImport, {
   productMapper,
   validateProduct,
-} from '../hooks/useProductImport';
+} from '../hooks/usePrepareProductImport';
 
 import parseCSV from 'papaparse';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
@@ -19,11 +19,11 @@ const ProductImport = () => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const { setModal } = useModal();
-  const { importProduct } = useProductImport();
+  const { prepareProductImport } = usePrepareProductImport();
 
   const { isImporting, importItems } = useCSVImport({
     validate: validateProduct,
-    process: importProduct,
+    process: prepareProductImport,
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,16 +47,10 @@ const ProductImport = () => {
       skipEmptyLines: true,
     });
     const products = productsCSV.data.map(productMapper);
-    await importItems(products);
+    const result = await importItems(products);
     setModal(
       <ImportResultMessage
-        result={{
-          created: 0,
-          updated: 0,
-          success: 0,
-          failed: 0,
-          errors: [],
-        }}
+        result={result}
         entityName="products"
         onClose={() => setModal('')}
       />,

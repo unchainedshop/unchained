@@ -5,8 +5,6 @@ import Button from '../../common/components/Button';
 interface ImportResult {
   success: number;
   failed: number;
-  created: number;
-  updated: number;
   errors: string[];
 }
 
@@ -39,13 +37,10 @@ const ImportResultMessage: React.FC<ImportResultMessageProps> = ({
         {formatMessage(
           {
             id: 'items_imported',
-            defaultMessage:
-              '{count} {entityName} imported successfully ({created} created, {updated} updated)',
+            defaultMessage: '{count} {entityName} imported successfully',
           },
           {
             count: result.success,
-            created: result.created,
-            updated: result.updated,
             entityName,
           },
         )}

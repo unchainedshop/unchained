@@ -1,7 +1,5 @@
 import { useApolloClient } from '@apollo/client/react';
 import { CSVRow } from '../../common/utils/csvUtils';
-import useAddWork from '../../work/hooks/useAddWork';
-import { IWorkType } from '../../../gql/types';
 import { fetchExistingProductId } from '../utils/fetchExistingProductId';
 
 export type ProductType =
@@ -117,7 +115,6 @@ const buildProductEvents = (
       _id: product._id,
       specification: {
         ...product,
-        type: 'SimpleProduct', // or keep as product.type
         created: exists ? undefined : now,
         updated: exists ? now : undefined,
         published: product.status === 'ACTIVE' ? now : null,
@@ -130,28 +127,19 @@ const buildProductEvents = (
   };
 };
 
-const useProductImport = () => {
+const usePrepareProductImport = () => {
   const apollo = useApolloClient();
-  const { addWork } = useAddWork();
 
-  const importProduct = async (products: ImportableProduct[]) => {
+  const prepareProductImport = async (products: ImportableProduct[]) => {
     const existingIds = await Promise.all(
       products.map(({ _id }) => _id && fetchExistingProductId(_id, apollo)),
     );
     const existingSet = new Set(existingIds.filter(Boolean));
 
-    const events = products.map((p) => buildProductEvents(p, existingSet));
-    await addWork({
-      type: IWorkType.BulkImport,
-      input: {
-        createShouldUpsertIfIDExists: true,
-        updateShouldUpsertIfIDNotExists: true,
-        events,
-      },
-    });
+    return products.map((p) => buildProductEvents(p, existingSet));
   };
 
-  return { importProduct };
+  return { prepareProductImport };
 };
 
-export default useProductImport;
+export default usePrepareProductImport;
