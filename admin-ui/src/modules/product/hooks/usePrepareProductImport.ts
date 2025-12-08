@@ -23,8 +23,15 @@ export interface ImportableProduct {
   brand?: string;
   labels: string[];
   sku?: string;
+  baseUnit?: string;
   updated?: string;
   published?: string;
+  supply?: {
+    weightInGram?: number;
+    heightInMillimeters?: number;
+    lengthInMillimeters?: number;
+    widthInMillimeters?: number;
+  };
   content?: Record<string, any>;
 }
 
@@ -47,13 +54,19 @@ const normalizeProductContent = (row: CSVRow) => {
 };
 
 export const productMapper = (row: CSVRow): ImportableProduct => {
+  const hasSupply =
+    row['supply.weightInGram'] ||
+    row['supply.heightInMillimeters'] ||
+    row['supply.lengthInMillimeters'] ||
+    row['supply.widthInMillimeters'];
   const content = normalizeProductContent(row);
   const defaultLocale = Object.keys(content)[0] || '';
   const mapped: ImportableProduct = {
     _id: row['_id'] || undefined,
     sku: row['sku'] || undefined,
+    baseUnit: row['baseUnit'] || undefined,
     sequence: parseInt(row['sequence'] || '0', 10),
-    status: row['status'] || 'DRAFT',
+    status: row['status'] || null,
     type: row['__typename'] as ProductType,
     tags: row['tags'] ? (row['tags'] as string).split(';') : [],
     updated: row['updated'] || undefined,
@@ -62,6 +75,22 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
     title: defaultLocale ? content[defaultLocale].title || '' : '',
     description: defaultLocale ? content[defaultLocale].description || '' : '',
     labels: defaultLocale ? content[defaultLocale].labels || [] : [],
+    supply: hasSupply
+      ? {
+          weightInGram: row['supply.weightInGram']
+            ? parseFloat(row['supply.weightInGram'] as string)
+            : undefined,
+          heightInMillimeters: row['supply.heightInMillimeters']
+            ? parseFloat(row['supply.heightInMillimeters'] as string)
+            : undefined,
+          lengthInMillimeters: row['supply.lengthInMillimeters']
+            ? parseFloat(row['supply.lengthInMillimeters'] as string)
+            : undefined,
+          widthInMillimeters: row['supply.widthInMillimeters']
+            ? parseFloat(row['supply.widthInMillimeters'] as string)
+            : undefined,
+        }
+      : undefined,
   };
 
   return mapped;
@@ -121,6 +150,7 @@ const buildProductEvents = (
         status: product.status === 'ACTIVE' ? 'ACTIVE' : null,
         warehousing: {
           sku: product.sku,
+          baseUnit: product.baseUnit,
         },
       },
     },

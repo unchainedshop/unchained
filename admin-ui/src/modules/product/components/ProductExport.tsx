@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import Button from '../../common/components/Button';
 import { fetchTranslatedTextsForAllProducts } from '../utils/fetchTranslatedTextsForAllProducts';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
@@ -10,6 +10,7 @@ const PRODUCT_SCHEMA = {
   base: [
     '_id',
     'sku',
+    'baseUnit',
     'sequence',
     'status',
     'tags',
@@ -28,55 +29,87 @@ const PRODUCT_SCHEMA = {
   ],
 };
 
-const buildHeaders = (locales) => [
+const buildHeaders = (locales: string[]) => [
   ...PRODUCT_SCHEMA.base,
   ...locales.flatMap((locale) =>
     PRODUCT_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
+  'supply.weightInGram',
+  'supply.heightInMillimeters',
+  'supply.lengthInMillimeters',
+  'supply.widthInMillimeters',
 ];
 
 const ProductExport = () => {
-  const { products, loading, client } = useProducts({ limit: 10000 });
+  const { products, loading, client } = useProducts({ limit: 0 });
   const { languageDialectList } = useApp();
   const { formatMessage } = useIntl();
-  const [loadingTranslations, setLoadingTranslations] = useState(false);
 
-  const locales = languageDialectList?.map(({ isoCode }) => isoCode) || [];
-  const headers = buildHeaders(locales);
+  const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
 
-  const extractRow = useCallback((product) => product, [locales]);
+  const locales = useMemo(
+    () => languageDialectList?.map((l) => l.isoCode) ?? [],
+    [languageDialectList],
+  );
 
-  const { exportCSV, isExporting } = useCSVExport(products, extractRow, {
-    headers,
+  const headersBase = useMemo(() => buildHeaders(locales), [locales]);
+
+  const { exportCSV, isExporting } = useCSVExport(products, (p) => p, {
+    headers: headersBase,
   });
 
   const handleExport = useCallback(async () => {
-    setLoadingTranslations(true);
+    setIsLoadingTranslations(true);
 
-    const map = await fetchTranslatedTextsForAllProducts(products, client);
+    const translationMap = await fetchTranslatedTextsForAllProducts(
+      products,
+      client,
+    );
+    setIsLoadingTranslations(false);
 
-    setLoadingTranslations(false);
+    const translations = {};
+    for (const productId in translationMap) {
+      translations[productId] = {};
+      for (const t of translationMap[productId]) {
+        translations[productId][t.locale] = t;
+      }
+    }
 
-    const extractRowWithMap = (product) => {
-      const row: any = {};
+    const rows = products.map((product) => {
+      const row: Record<string, any> = {};
+      if ((product as any)?.supply)
+        PRODUCT_SCHEMA.base.forEach((key) => {
+          row[key] = product[key] ?? '';
+        });
 
-      PRODUCT_SCHEMA.base.forEach((key) => {
-        row[key] = product[key] ?? '';
-      });
+      row['sku'] = (product as any).sku ?? '';
+      row['baseUnit'] = (product as any).baseUnit ?? '';
+      row['supply.weightInGram'] = (product as any)?.dimensions?.weight ?? '';
+      row['supply.heightInMillimeters'] =
+        (product as any)?.dimensions?.height ?? '';
+      row['supply.lengthInMillimeters'] =
+        (product as any)?.dimensions?.length ?? '';
+      row['supply.widthInMillimeters'] =
+        (product as any)?.dimensions?.width ?? '';
 
-      const translations = map[product._id] || [];
+      const productTexts = translations[product._id] || {};
+
       locales.forEach((locale) => {
-        const text = translations.find((t) => t.locale === locale) ?? {};
+        const text = productTexts[locale] || {};
+
         PRODUCT_SCHEMA.textFields.forEach((field) => {
-          let val = text[field];
-          if (Array.isArray(val)) val = val.join(';');
-          row[`texts.${locale}.${field}`] = val || '';
+          let value = text[field];
+
+          if (Array.isArray(value)) value = value.join(';');
+
+          row[`texts.${locale}.${field}`] = value ?? '';
         });
       });
 
       return row;
-    };
-    exportCSV('products_export', products.map(extractRowWithMap));
+    });
+
+    exportCSV('products_export', rows);
   }, [products, client, exportCSV, locales]);
 
   if (loading) return null;
@@ -84,10 +117,10 @@ const ProductExport = () => {
   return (
     <Button
       onClick={handleExport}
-      disabled={isExporting || loadingTranslations || !products.length}
+      disabled={isExporting || isLoadingTranslations || !products.length}
       variant="secondary"
       text={
-        loadingTranslations
+        isLoadingTranslations
           ? formatMessage({
               id: 'loading_translations',
               defaultMessage: 'Loading translations...',

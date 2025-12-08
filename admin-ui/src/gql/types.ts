@@ -13766,12 +13766,20 @@ export type IProductsQuery = {
         }>;
       }
     | {
+        sku?: string | null;
+        baseUnit?: string | null;
         _id: string;
         sequence: number;
         status: IProductStatus;
         tags?: Array<any> | null;
         updated?: any | null;
         published?: any | null;
+        dimensions?: {
+          weight?: number | null;
+          length?: number | null;
+          width?: number | null;
+          height?: number | null;
+        } | null;
         catalogPrice?: { amount: number; currencyCode: string } | null;
         proxies: Array<
           | { __typename: 'BundleProduct' }
@@ -15358,6 +15366,21 @@ export type IUserTokensQuery = {
       };
     }>;
   } | null;
+};
+
+export type IProductExistQueryVariables = Exact<{
+  productId?: InputMaybe<Scalars['ID']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type IProductExistQuery = {
+  product?:
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | null;
 };
 
 export type IQuotationDetailFragment = {
