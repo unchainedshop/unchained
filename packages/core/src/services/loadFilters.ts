@@ -33,6 +33,8 @@ export async function loadFiltersService(
     return leftIndex - rightIndex;
   });
 
+  const allProductIdSet = new Set(options.productIds || []);
+
   return Promise.all(
     sortedFilters.map(async (filter) => {
       const { examinedProductIdSet, filteredByOtherFiltersSet, filteredByThisFilterSet } =
@@ -41,7 +43,7 @@ export async function loadFiltersService(
           {
             searchQuery,
             forceLiveCollection: !!options.forceLiveCollection,
-            allProductIds: options.productIds,
+            allProductIdSet,
             otherFilters: sortedFilters,
           },
           { modules: this },
