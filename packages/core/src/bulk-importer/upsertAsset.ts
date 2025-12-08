@@ -1,6 +1,9 @@
+import { createLogger } from '@unchainedshop/logger';
 import { Modules } from '../modules.js';
 import { Services } from '../services/index.js';
 import { z } from 'zod';
+
+const logger = createLogger('unchained:bulk-import');
 
 export const AssetSchema = z.object({
   _id: z.string().optional(),
@@ -40,9 +43,9 @@ const upsertAsset = async (
       meta,
     });
 
-    if (!assetObject) throw new Error('Media not created');
-    return assetObject;
-  } catch {
+    if (!assetObject) return null;
+  } catch (e) {
+    logger.warn(`Unable to upsert asset ${fileId || fileName}: ${e.message}`);
     return null;
   }
 };

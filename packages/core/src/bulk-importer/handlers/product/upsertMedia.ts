@@ -40,7 +40,6 @@ export default async function upsertMedia(
 
   const productMediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
-      const tags = mediaData?.tags ? convertTagsToLowerCase(mediaData?.tags)! : [];
       const file = await upsertAsset(
         'product-media',
         { meta: { ...(asset.meta || {}), productId }, ...asset },
@@ -48,6 +47,7 @@ export default async function upsertMedia(
       );
       if (!file) throw new Error(`Unable to create binary ${asset._id}`);
       const fileId = file._id;
+      const tags = mediaData?.tags ? convertTagsToLowerCase(mediaData?.tags)! : [];
       const productMedia = await upsertProductMedia(
         {
           ...mediaData,

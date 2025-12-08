@@ -13,6 +13,16 @@ export const configureGridFSFileUploadModule = ({ db }) => {
     ) => {
       const options = { bucketName: `file_uploads_${directoryName}` };
       const bucket = new GridFSBucket(db, options);
+
+      if (fileId) {
+        try {
+          // Try removing the target if it already exists
+          await bucket.delete(fileId);
+        } catch {
+          /* */
+        }
+      }
+
       return bucket.openUploadStreamWithId(fileId, fileName, uploadOptions);
     },
     getFileInfo: async (directoryName, fileId) => {
