@@ -258,7 +258,12 @@ export const FilterDirector: IFilterDirector = {
       unchainedAPI,
     );
 
-    const examinedProductIdSet = new Set(allProductIds).intersection(new Set(filteredProductIds));
+    // Optimize: Create Set from allProductIds, iterate through smaller filteredProductIds
+    const allSet = new Set(allProductIds);
+    const examinedProductIdSet = new Set<string>();
+    for (const id of filteredProductIds) {
+      if (allSet.has(id)) examinedProductIdSet.add(id);
+    }
     const values = filterQueryParsed[filter.key];
 
     // The filteredProductIdSet is a set of product id's that:
