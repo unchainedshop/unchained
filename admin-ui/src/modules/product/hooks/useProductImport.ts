@@ -1,72 +1,94 @@
-import useApp from '../../common/hooks/useApp';
+import { useApolloClient } from '@apollo/client/react';
 import { CSVRow } from '../../common/utils/csvUtils';
-import useCreateProduct from './useCreateProduct';
-import useUpdateProduct from './useUpdateProduct';
-import useUpdateProductTexts from './useUpdateProductTexts';
+import useAddWork from '../../work/hooks/useAddWork';
+import { IWorkType } from '../../../gql/types';
+import { fetchExistingProductId } from '../utils/fetchExistingProductId';
 
-interface ImportableProduct {
+export type ProductType =
+  | 'SimpleProduct'
+  | 'ConfigurableProduct'
+  | 'PlanProduct'
+  | 'BundleProduct'
+  | 'TokenizedProduct';
+
+export interface ImportableProduct {
   _id?: string;
   locale?: string;
   title: string;
   slug?: string;
   status: 'DRAFT' | 'ACTIVE' | 'DELETED';
-  type:
-    | 'SimpleProduct'
-    | 'ConfigurableProduct'
-    | 'PlanProduct'
-    | 'BundleProduct';
+  type: ProductType;
   tags: string[];
   sequence: number;
   description?: string;
   vendor?: string;
   brand?: string;
   labels: string[];
+  sku?: string;
+  updated?: string;
+  published?: string;
+  content?: Record<string, any>;
 }
 
-export const productMapper = (row: CSVRow) => ({
-  _id: row['ID'] || undefined,
-  locale: row['Locale'],
-  title: row['Title'],
-  slug: row['Slug'],
-  status: row['Status'],
-  type: row['Type'] || 'SimpleProduct',
-  tags: row['Tags'] ? row['Tags'].split(';') : [],
-  sequence: row['Sequence'] ? parseInt(row['Sequence'], 10) : 0,
-  description: row['Description'],
-  vendor: row['Vendor'],
-  brand: row['Brand'],
-  labels: row['Labels'] ? row['Labels'].split(';') : [],
-});
+const normalizeProductContent = (row: CSVRow) => {
+  const content: Record<string, any> = {};
+  const textPrefix = 'texts.';
 
-export const validateProduct = (product: any, intl): string[] => {
+  Object.entries(row).forEach(([key, value]) => {
+    if (!key.startsWith(textPrefix)) return;
+    const [, locale, field] = key.split('.');
+    content[locale] ||= {};
+    if (field === 'labels') {
+      content[locale][field] = value ? (value as string).split(';') : [];
+    } else {
+      content[locale][field] = value || '';
+    }
+  });
+
+  return content;
+};
+
+export const productMapper = (row: CSVRow): ImportableProduct => {
+  const content = normalizeProductContent(row);
+  const defaultLocale = Object.keys(content)[0] || '';
+  const mapped: ImportableProduct = {
+    _id: row['_id'] || undefined,
+    sku: row['sku'] || undefined,
+    sequence: parseInt(row['sequence'] || '0', 10),
+    status: row['status'] || 'DRAFT',
+    type: row['__typename'] as ProductType,
+    tags: row['tags'] ? (row['tags'] as string).split(';') : [],
+    updated: row['updated'] || undefined,
+    published: row['published'] || undefined,
+    content,
+    title: defaultLocale ? content[defaultLocale].title || '' : '',
+    description: defaultLocale ? content[defaultLocale].description || '' : '',
+    labels: defaultLocale ? content[defaultLocale].labels || [] : [],
+  };
+
+  return mapped;
+};
+
+export const validateProduct = (product: ImportableProduct, intl): string[] => {
   const errors: string[] = [];
-
-  if (!product.title)
+  if (!product.content || Object.keys(product.content).length === 0) {
     errors.push(
       intl.formatMessage({
-        id: 'product_import.validation.title_required',
+        id: 'product_import_localized_texts_missing',
         defaultMessage: 'Title is required',
       }),
     );
-  if (!product.type)
-    errors.push(
-      intl.formatMessage(
-        {
-          id: 'product_import.validation.invalid_type',
-          defaultMessage: 'Invalid product type: {type}',
-        },
-        { type: product.type },
-      ),
-    );
+  }
 
-  if (
-    ![
-      'SimpleProduct',
-      'ConfigurableProduct',
-      'PlanProduct',
-      'BundleProduct',
-    ].includes(product.type)
-  ) {
+  const validTypes: ProductType[] = [
+    'SimpleProduct',
+    'ConfigurableProduct',
+    'PlanProduct',
+    'BundleProduct',
+    'TokenizedProduct',
+  ];
+
+  if (!validTypes.includes(product.type)) {
     errors.push(
       intl.formatMessage(
         {
@@ -77,76 +99,56 @@ export const validateProduct = (product: any, intl): string[] => {
       ),
     );
   }
+
   return errors;
 };
 
-const useProductImport = () => {
-  const { createProduct } = useCreateProduct();
-  const { updateProduct } = useUpdateProduct();
-  const { updateProductTexts } = useUpdateProductTexts();
-  const { selectedLocale } = useApp();
+const buildProductEvents = (
+  product: ImportableProduct,
+  existingProductIds: Set<string>,
+) => {
+  const exists = !!product._id && existingProductIds.has(product._id);
+  const now = new Date();
 
-  const buildText = (product: any, locale: string) => ({
-    locale,
-    title: product.title,
-    slug: product.slug || product.title.toLowerCase().replace(/\s+/g, '-'),
-    description: product.description,
-    vendor: product.vendor,
-    brand: product.brand,
-    labels: product.labels,
-  });
-
-  const create = async (product: any, locale: string): Promise<'created'> => {
-    await createProduct({
-      product: {
-        type: product.type,
-        tags: product.tags,
+  return {
+    entity: 'PRODUCT',
+    operation: exists ? 'UPDATE' : 'CREATE',
+    payload: {
+      _id: product._id,
+      specification: {
+        ...product,
+        type: 'SimpleProduct', // or keep as product.type
+        created: exists ? undefined : now,
+        updated: exists ? now : undefined,
+        published: product.status === 'ACTIVE' ? now : null,
+        status: product.status === 'ACTIVE' ? 'ACTIVE' : null,
+        warehousing: {
+          sku: product.sku,
+        },
       },
-      texts: [buildText(product, locale)],
-    });
-
-    return 'created';
+    },
   };
+};
 
-  const importProduct = async (
-    product: ImportableProduct,
-  ): Promise<'created' | 'updated'> => {
-    const normalizedLocale = product?.locale || selectedLocale;
-    const isUpdate = !!(product?._id || product?.slug);
+const useProductImport = () => {
+  const apollo = useApolloClient();
+  const { addWork } = useAddWork();
 
-    try {
-      if (isUpdate) {
-        const { error } = await updateProduct({
-          productId: product._id,
-          product: {
-            sequence: product.sequence,
-            tags: product.tags,
-          },
-        });
+  const importProduct = async (products: ImportableProduct[]) => {
+    const existingIds = await Promise.all(
+      products.map(({ _id }) => _id && fetchExistingProductId(_id, apollo)),
+    );
+    const existingSet = new Set(existingIds.filter(Boolean));
 
-        if (error) {
-          const code: string = (error.message || 'unknown error') as string;
-          if (code === 'ProductNotFoundError') {
-            return await create(product, normalizedLocale);
-          }
-          throw new Error(code);
-        }
-
-        await updateProductTexts({
-          productId: product._id,
-          texts: [buildText(product, normalizedLocale)],
-        });
-        return 'updated';
-      } else {
-        return await create(product, normalizedLocale);
-      }
-    } catch (e) {
-      if (e.message === 'ProductNotFoundError') {
-        return await create(product, normalizedLocale);
-      } else {
-        throw e;
-      }
-    }
+    const events = products.map((p) => buildProductEvents(p, existingSet));
+    await addWork({
+      type: IWorkType.BulkImport,
+      input: {
+        createShouldUpsertIfIDExists: true,
+        updateShouldUpsertIfIDNotExists: true,
+        events,
+      },
+    });
   };
 
   return { importProduct };

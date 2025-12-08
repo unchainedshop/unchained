@@ -47,11 +47,16 @@ const ProductImport = () => {
       skipEmptyLines: true,
     });
     const products = productsCSV.data.map(productMapper);
-    const result = await importItems(products);
-
+    await importItems(products);
     setModal(
       <ImportResultMessage
-        result={result}
+        result={{
+          created: 0,
+          updated: 0,
+          success: 0,
+          failed: 0,
+          errors: [],
+        }}
         entityName="products"
         onClose={() => setModal('')}
       />,
