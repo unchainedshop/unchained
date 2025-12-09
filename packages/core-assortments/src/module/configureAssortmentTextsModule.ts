@@ -46,7 +46,7 @@ export const configureAssortmentTextsModule = ({
   const upsertLocalizedText = async (
     assortmentId: string,
     locale: Intl.Locale,
-    text: Omit<AssortmentText, 'assortmentId' | 'locale'>,
+    text: Omit<Partial<AssortmentText>, 'assortmentId' | 'locale'>,
   ) => {
     const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
@@ -141,7 +141,9 @@ export const configureAssortmentTextsModule = ({
     // Mutations
     updateTexts: async (
       assortmentId: string,
-      texts: Omit<AssortmentText, 'assortmentId'>[],
+      texts: ({
+        locale: AssortmentText['locale'];
+      } & Omit<Partial<AssortmentText>, 'assortmentId' | 'locale'>)[],
     ): Promise<AssortmentText[]> => {
       const assortmentTexts = (
         await Promise.all(

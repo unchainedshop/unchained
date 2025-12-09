@@ -36,14 +36,8 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     },
     locale: Intl.Locale,
     text: Omit<
-      ProductVariationText,
-      | '_id'
-      | 'locale'
-      | 'productVariationId'
-      | 'productVariationOptionValue'
-      | 'created'
-      | 'updated'
-      | 'deleted'
+      Partial<ProductVariationText>,
+      'locale' | 'productVariationId' | 'productVariationOptionValue'
     >,
   ): Promise<ProductVariationText> => {
     const productVariationText = (await ProductVariationTexts.findOneAndUpdate(
@@ -267,15 +261,10 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       // Mutations
       updateVariationTexts: async (
         productVariationId: string,
-        texts: Omit<
-          ProductVariationText,
-          | '_id'
-          | 'productVariationId'
-          | 'productVariationOptionValue'
-          | 'created'
-          | 'updated'
-          | 'deleted'
-        >[],
+        texts: ({ locale: ProductVariationText['locale'] } & Omit<
+          Partial<ProductVariationText>,
+          'locale' | 'productVariationId' | 'productVariationOptionValue'
+        >)[],
         productVariationOptionValue?: string,
       ): Promise<ProductVariationText[]> => {
         const productVariationTexts = await Promise.all(

@@ -23,7 +23,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
   const upsertLocalizedText = async (
     productMediaId: string,
     locale: Intl.Locale,
-    text: Omit<ProductMediaText, 'productMediaId' | 'locale' | 'created' | 'updated' | 'deleted'>,
+    text: Omit<Partial<ProductMediaText>, 'productMediaId' | 'locale'>,
   ): Promise<ProductMediaText> => {
     const productMediaText = (await ProductMediaTexts.findOneAndUpdate(
       {
@@ -251,12 +251,15 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       // Mutations
       updateMediaTexts: async (
         productMediaId: string,
-        texts: Omit<ProductMediaText, 'productMediaId' | 'created' | 'updated' | 'deleted'>[],
+        texts: ({ locale: ProductMediaText['locale'] } & Omit<
+          Partial<ProductMediaText>,
+          'productMediaId' | 'locale'
+        >)[],
       ): Promise<ProductMediaText[]> => {
         const mediaTexts = (
           await Promise.all(
-            texts.map(async ({ locale, ...localizations }) =>
-              upsertLocalizedText(productMediaId, new Intl.Locale(locale), localizations),
+            texts.map(async ({ locale, ...text }) =>
+              upsertLocalizedText(productMediaId, new Intl.Locale(locale), text),
             ),
           )
         ).filter(Boolean) as ProductMediaText[];

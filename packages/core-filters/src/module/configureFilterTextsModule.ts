@@ -14,10 +14,7 @@ export const configureFilterTextsModule = ({
   const upsertLocalizedText = async (
     params: { filterId: string; filterOptionValue?: string | null },
     locale: Intl.Locale,
-    text: Omit<
-      FilterText,
-      '_id' | 'filterId' | 'filterOptionValue' | 'locale' | 'created' | 'updated' | 'deleted'
-    >,
+    text: Omit<Partial<FilterText>, 'filterId' | 'filterOptionValue' | 'locale'>,
   ) => {
     const { filterId, filterOptionValue } = params;
 
@@ -87,7 +84,9 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (
       params: { filterId: string; filterOptionValue?: string | null },
-      texts: Omit<FilterText, '_id' | 'filterId' | 'filterOptionValue' | 'created'>[],
+      texts: ({
+        locale: FilterText['locale'];
+      } & Omit<Partial<FilterText>, 'filterId' | 'filterOptionValue' | 'locale'>)[],
     ) => {
       const filterTexts = (
         await Promise.all(
