@@ -362,6 +362,12 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       ...productData
     }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted' | 'slugs'> &
       Pick<Partial<Product>, '_id' | 'created' | 'updated' | 'deleted'>): Promise<Product> => {
+      if (!ProductTypes[type]) {
+        throw new Error(
+          `Invalid product type: ${type}, must be one of ${Object.keys(ProductTypes).join(', ')}`,
+        );
+      }
+
       if (productData._id) {
         await deleteProductPermanently(
           {

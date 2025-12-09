@@ -60,7 +60,7 @@ export default [
     }
 
     input CreateProductInput {
-      type: String!
+      type: ProductType!
       tags: [LowerCaseString!]
     }
 

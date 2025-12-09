@@ -1,5 +1,13 @@
 export default [
   /* GraphQL */ `
+    enum ProductType {
+      SimpleProduct
+      ConfigurableProduct
+      BundleProduct
+      PlanProduct
+      TokenizedProduct
+    }
+
     enum ProductStatus {
       """
       Unpublished (hidden from catalog)
