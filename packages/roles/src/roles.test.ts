@@ -1,7 +1,7 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
-import { isFunction, permissions, has } from './roles-index.js';
-import { Role, Roles } from './roles.js';
+import { isFunction, permissions, has } from './roles-index.ts';
+import { Role, Roles } from './roles.ts';
 
 describe('Role', () => {
   beforeEach(() => {

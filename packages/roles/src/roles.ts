@@ -1,5 +1,5 @@
-import { has } from './utils/has.js';
-import { isFunction } from './utils/isFunction.js';
+import { has } from './utils/has.ts';
+import { isFunction } from './utils/isFunction.ts';
 
 interface RoleUserContext {
   userId?: string;
@@ -134,13 +134,16 @@ export const Roles: RolesInterface = {
  * Constructs a new role
  */
 export class Role implements RoleInterface {
+  name: string;
+
   allowRules: Record<string, any>;
 
   helpers: Record<string, any>;
 
-  constructor(public name: string) {
+  constructor(name: string) {
     if (has(Roles.roles, name)) throw new Error(`"${name}" role is already defined`);
 
+    this.name = name;
     this.allowRules = {};
     this.helpers = {};
 

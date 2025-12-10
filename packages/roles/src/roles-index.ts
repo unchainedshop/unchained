@@ -1,5 +1,5 @@
-export * from './roles.js';
+export * from './roles.ts';
 
-export { has } from './utils/has.js';
-export { isFunction } from './utils/isFunction.js';
-export { permissions } from './utils/permissions.js';
+export { has } from './utils/has.ts';
+export { isFunction } from './utils/isFunction.ts';
+export { permissions } from './utils/permissions.ts';
