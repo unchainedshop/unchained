@@ -1,3 +1,3 @@
-export * from './db/WorkQueueCollection.js';
+export * from './db/WorkQueueCollection.ts';
 
-export * from './module/configureWorkerModule.js';
+export * from './module/configureWorkerModule.ts';

@@ -1,15 +1,17 @@
-import { isDocumentDBCompatModeEnabled, TimestampFields } from '@unchainedshop/mongodb';
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { isDocumentDBCompatModeEnabled, type TimestampFields } from '@unchainedshop/mongodb';
+import { type mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 const ONE_DAY_IN_SECONDS = 86400;
 
-export enum WorkStatus {
-  NEW = 'NEW',
-  ALLOCATED = 'ALLOCATED',
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-  DELETED = 'DELETED',
-}
+export const WorkStatus = {
+  NEW: 'NEW',
+  ALLOCATED: 'ALLOCATED',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  DELETED: 'DELETED',
+} as const;
+
+export type WorkStatus = (typeof WorkStatus)[keyof typeof WorkStatus];
 
 export type Work = {
   _id: string;

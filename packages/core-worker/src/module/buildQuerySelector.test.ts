@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { WorkStatus } from '../worker-index.js';
-import { buildQuerySelector } from './configureWorkerModule.js';
+import { WorkStatus } from '../worker-index.ts';
+import { buildQuerySelector } from './configureWorkerModule.ts';
 
 describe('Worker', () => {
   describe('buildQuerySelector', () => {

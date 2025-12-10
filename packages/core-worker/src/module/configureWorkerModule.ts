@@ -3,19 +3,19 @@ import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
   buildSortOptions,
-  mongodb,
+  type mongodb,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   buildObfuscatedFieldsFilter,
-  DateFilterInput,
+  type DateFilterInput,
   SortDirection,
-  SortOption,
+  type SortOption,
 } from '@unchainedshop/utils';
-import { Work, WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.js';
+import { type Work, WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.ts';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -35,13 +35,15 @@ export interface WorkResult<Result = unknown> {
   error?: any;
 }
 
-export enum WorkerEventTypes {
-  ADDED = 'WORK_ADDED',
-  ALLOCATED = 'WORK_ALLOCATED',
-  FINISHED = 'WORK_FINISHED',
-  DELETED = 'WORK_DELETED',
-  RESCHEDULED = 'WORK_RESCHEDULED',
-}
+export const WorkerEventTypes = {
+  ADDED: 'WORK_ADDED',
+  ALLOCATED: 'WORK_ALLOCATED',
+  FINISHED: 'WORK_FINISHED',
+  DELETED: 'WORK_DELETED',
+  RESCHEDULED: 'WORK_RESCHEDULED',
+} as const;
+
+export type WorkerEventTypes = (typeof WorkerEventTypes)[keyof typeof WorkerEventTypes];
 
 export interface WorkerSettingsOptions {
   blacklistedVariables?: string[];
