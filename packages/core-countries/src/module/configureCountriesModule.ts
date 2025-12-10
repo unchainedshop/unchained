@@ -1,14 +1,14 @@
 import {
   mongodb,
-  TimestampFields,
-  ModuleInput,
+  type TimestampFields,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
-import { CountriesCollection } from '../db/CountriesCollection.js';
+import { CountriesCollection } from '../db/CountriesCollection.ts';
 
 export type Country = {
   _id: string;

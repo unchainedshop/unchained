@@ -1,1 +1,1 @@
-export * from './module/configureCountriesModule.js';
+export * from './module/configureCountriesModule.ts';
