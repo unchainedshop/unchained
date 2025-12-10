@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { removeConfidentialServiceHashes } from './configureUsersModule.js';
-import user from '../../tests/mock/user-mock.js';
-import { User } from '../db/UsersCollection.js';
+import { removeConfidentialServiceHashes } from './configureUsersModule.ts';
+import user from '../../tests/mock/user-mock.ts';
+import type { User } from '../db/UsersCollection.ts';
 
 describe('removeConfidentialServiceHashes', () => {
   it('Should remove sensitive user credentials ', () => {

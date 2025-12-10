@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { type mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 export interface WebAuthnCredentialsCreationRequest {
   challenge: string;

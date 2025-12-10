@@ -1,12 +1,12 @@
 import {
-  TimestampFields,
-  Address,
-  Contact,
-  mongodb,
+  type TimestampFields,
+  type Address,
+  type Contact,
+  type mongodb,
   buildDbIndexes,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
-import { DateFilterInput } from '@unchainedshop/utils';
+import type { DateFilterInput } from '@unchainedshop/utils';
 
 export interface UserProfile {
   displayName?: string;

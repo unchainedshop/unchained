@@ -1,23 +1,25 @@
-import { insensitiveTrimmedRegexOperator, mongodb } from '@unchainedshop/mongodb';
-import { User } from './db/UsersCollection.js';
+import { insensitiveTrimmedRegexOperator, type mongodb } from '@unchainedshop/mongodb';
+import type { User } from './db/UsersCollection.ts';
 export interface UserRegistrationData extends Partial<User> {
   email?: string;
   password: string | null;
   webAuthnPublicKeyCredentials?: any;
 }
 
-export enum UserAccountAction {
-  RESET_PASSWORD = 'reset-password',
-  VERIFY_EMAIL = 'verify-email',
-  ENROLL_ACCOUNT = 'enroll-account',
-  PASSWORD_RESETTED = 'password-resetted',
-  EMAIL_VERIFIED = 'email-verified',
-}
+export const UserAccountAction = {
+  RESET_PASSWORD: 'reset-password',
+  VERIFY_EMAIL: 'verify-email',
+  ENROLL_ACCOUNT: 'enroll-account',
+  PASSWORD_RESETTED: 'password-resetted',
+  EMAIL_VERIFIED: 'email-verified',
+} as const;
+
+export type UserAccountAction = (typeof UserAccountAction)[keyof typeof UserAccountAction];
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
   earliestValidTokenDate: (
-    type: UserAccountAction.VERIFY_EMAIL | UserAccountAction.RESET_PASSWORD,
+    type: typeof UserAccountAction.VERIFY_EMAIL | typeof UserAccountAction.RESET_PASSWORD,
   ) => Date;
   validateEmail: (email: string) => Promise<boolean>;
   validateUsername: (username: string) => Promise<boolean>;

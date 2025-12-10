@@ -1,6 +1,6 @@
-import { ModuleInput } from '@unchainedshop/mongodb';
+import type { ModuleInput } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
+import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.ts';
 
 import type {
   Fido2Lib as Fido2LibType,

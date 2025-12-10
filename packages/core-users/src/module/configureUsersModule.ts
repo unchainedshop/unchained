@@ -1,33 +1,33 @@
 import * as bcrypt from 'bcryptjs';
 import {
-  ModuleInput,
-  Address,
-  Contact,
+  type ModuleInput,
+  type Address,
+  type Contact,
   generateDbFilterById,
   buildSortOptions,
-  mongodb,
+  type mongodb,
   generateDbObjectId,
   insensitiveTrimmedRegexOperator,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import {
-  User,
-  UserQuery,
-  Email,
-  UserLastLogin,
-  UserProfile,
+  type User,
+  type UserQuery,
+  type Email,
+  type UserLastLogin,
+  type UserProfile,
   UsersCollection,
-} from '../db/UsersCollection.js';
+} from '../db/UsersCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { systemLocale, SortDirection, SortOption, sha256 } from '@unchainedshop/utils';
+import { systemLocale, SortDirection, type SortOption, sha256 } from '@unchainedshop/utils';
 import {
   UserAccountAction,
-  UserRegistrationData,
+  type UserRegistrationData,
   userSettings,
-  UserSettingsOptions,
-} from '../users-settings.js';
-import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
-import * as pbkdf2 from './pbkdf2.js';
+  type UserSettingsOptions,
+} from '../users-settings.ts';
+import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts';
+import * as pbkdf2 from './pbkdf2.ts';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
