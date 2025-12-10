@@ -30,8 +30,8 @@
     "clean": "tsc -b --clean",
     "build": "tsc -b",
     "start": "node --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
-    "dev:run": "node --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --no-warnings --loader ts-node/esm src/boot.ts",
-    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --loader ts-node/esm --watch src/boot.ts",
+    "dev:run": "node --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --no-warnings src/boot.ts",
+    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --watch src/boot.ts",
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
@@ -61,7 +61,6 @@
     "@types/node": "^24.0.13",
     "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.6.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

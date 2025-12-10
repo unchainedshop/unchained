@@ -29,9 +29,9 @@
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env boot.js",
-    "dev": "node --env-file .env.defaults --env-file-if-exists=.env --watch boot.ts",
-    "test-mcp-oauth": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env ./test-mcp-oauth.ts"
+    "start": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env lib/boot.js",
+    "dev": "node --env-file=.env.defaults --env-file-if-exists=.env --watch boot.ts",
+    "test-mcp-oauth": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env test-mcp-oauth.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
