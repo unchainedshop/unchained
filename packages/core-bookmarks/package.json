@@ -9,9 +9,10 @@
     "build": "tsc -b",
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
-    "test": "tsx --test",
-    "test:watch": "tsx --test --watch"
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
@@ -36,7 +37,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.13",
-    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

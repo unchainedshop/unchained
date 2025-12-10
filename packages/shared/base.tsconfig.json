@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "removeComments": true,
     "declaration": true,
-    "declarationMap": true,
     "esModuleInterop": true,
     "incremental": true,
     "forceConsistentCasingInFileNames": true,

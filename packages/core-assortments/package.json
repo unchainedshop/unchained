@@ -12,6 +12,7 @@
     "test": "node --test",
     "test:watch": "node --test --watch"
   },
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"

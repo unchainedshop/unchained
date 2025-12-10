@@ -3,10 +3,10 @@ import {
   generateDbFilterById,
   generateDbObjectId,
   mongodb,
-  TimestampFields,
-  ModuleInput,
+  type TimestampFields,
+  type ModuleInput,
 } from '@unchainedshop/mongodb';
-import { BookmarksCollection } from '../db/BookmarksCollection.js';
+import { BookmarksCollection } from '../db/BookmarksCollection.ts';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
 

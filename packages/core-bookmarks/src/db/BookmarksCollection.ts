@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { Bookmark } from '../bookmarks-index.js';
+import type { Bookmark } from '../bookmarks-index.ts';
 
 export const BookmarksCollection = async (db: mongodb.Db) => {
   const Bookmarks = db.collection<Bookmark>('bookmarks');
