@@ -1,5 +1,5 @@
-import { getEmitHistoryAdapter, setEmitHistoryAdapter, EmitAdapter } from '@unchainedshop/events';
-import { RawPayloadType } from '@unchainedshop/events';
+import { getEmitHistoryAdapter, setEmitHistoryAdapter, type EmitAdapter } from '@unchainedshop/events';
+import type { RawPayloadType } from '@unchainedshop/events';
 
 export const configureEventHistoryAdapter = (
   createFn: ({ type, payload }: RawPayloadType<any> & { type: string }) => Promise<unknown>,

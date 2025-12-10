@@ -1,3 +1,3 @@
-export type { Event } from './db/EventsCollection.js';
+export type { Event } from './db/EventsCollection.ts';
 
-export * from './module/configureEventsModule.js';
+export * from './module/configureEventsModule.ts';

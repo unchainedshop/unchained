@@ -3,13 +3,13 @@ import {
   generateDbFilterById,
   buildSortOptions,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
-import { SortDirection, SortOption, DateFilterInput } from '@unchainedshop/utils';
-import { EventsCollection, Event } from '../db/EventsCollection.js';
-import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
+import { SortDirection, type SortOption, type DateFilterInput } from '@unchainedshop/utils';
+import { EventsCollection, type Event } from '../db/EventsCollection.ts';
+import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-events');

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { buildFindSelector } from './configureEventsModule.js';
+import { buildFindSelector } from './configureEventsModule.ts';
 
 describe('buildFindSelector', () => {
   it('Return correct filter object when passed create, queryString, types', () => {
