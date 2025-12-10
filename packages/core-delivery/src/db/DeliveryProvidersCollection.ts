@@ -1,9 +1,12 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
-export enum DeliveryProviderType {
-  SHIPPING = 'SHIPPING',
-  PICKUP = 'PICKUP',
-}
+export const DeliveryProviderType = {
+  SHIPPING: 'SHIPPING',
+  PICKUP: 'PICKUP',
+} as const;
+
+export type DeliveryProviderType = (typeof DeliveryProviderType)[keyof typeof DeliveryProviderType];
+
 export type DeliveryConfiguration = {
   key: string;
   value: string;

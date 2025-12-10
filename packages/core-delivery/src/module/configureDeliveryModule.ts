@@ -1,7 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { mongodb, generateDbFilterById, generateDbObjectId, ModuleInput } from '@unchainedshop/mongodb';
-import { DeliveryProvidersCollection, DeliveryProvider } from '../db/DeliveryProvidersCollection.js';
-import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
+import { mongodb, generateDbFilterById, generateDbObjectId, type ModuleInput } from '@unchainedshop/mongodb';
+import { DeliveryProvidersCollection, type DeliveryProvider } from '../db/DeliveryProvidersCollection.ts';
+import { deliverySettings, type DeliverySettingsOptions } from '../delivery-settings.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 

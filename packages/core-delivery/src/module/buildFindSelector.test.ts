@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { DeliveryProviderType } from '../delivery-index.js';
-import { buildFindSelector } from './configureDeliveryModule.js';
+import { DeliveryProviderType } from '../delivery-index.ts';
+import { buildFindSelector } from './configureDeliveryModule.ts';
 
 describe('Delivery', () => {
   describe('buildFindSelector', () => {

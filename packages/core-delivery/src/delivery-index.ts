@@ -1,3 +1,3 @@
-export * from './module/configureDeliveryModule.js';
-export * from './db/DeliveryProvidersCollection.js';
-export * from './delivery-settings.js';
+export * from './module/configureDeliveryModule.ts';
+export * from './db/DeliveryProvidersCollection.ts';
+export * from './delivery-settings.ts';
