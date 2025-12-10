@@ -1,6 +1,6 @@
-import { FilterType } from '../db/FiltersCollection.js';
-import createRangeFilterParser from './range.js';
-import createSwitchFilterParser from './switch.js';
+import { FilterType } from '../db/FiltersCollection.ts';
+import createRangeFilterParser from './range.ts';
+import createSwitchFilterParser from './switch.ts';
 
 export type FilterParser = (values: string[], allKeys: string[]) => (string | undefined)[];
 

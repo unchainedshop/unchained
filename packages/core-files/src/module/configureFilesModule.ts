@@ -1,8 +1,8 @@
-import { ModuleInput } from '@unchainedshop/mongodb';
+import type { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { MediaObjectsCollection, File } from '../db/MediaObjectsCollection.js';
-import { filesSettings, FilesSettingsOptions } from '../files-settings.js';
+import { MediaObjectsCollection, type File } from '../db/MediaObjectsCollection.ts';
+import { filesSettings, type FilesSettingsOptions } from '../files-settings.ts';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 

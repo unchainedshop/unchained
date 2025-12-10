@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { TimestampFields } from '@unchainedshop/mongodb';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type File = {
   _id: string;

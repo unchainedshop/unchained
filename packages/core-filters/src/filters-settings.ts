@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import makeMongoDBCache from './product-cache/mongodb.js';
+import makeMongoDBCache from './product-cache/mongodb.ts';
 
 export interface FiltersSettings {
   setCachedProductIds: (

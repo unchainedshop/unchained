@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { parseQueryArray } from './parseQueryArray.js';
+import { parseQueryArray } from './parseQueryArray.ts';
 
 describe('parseQueryArray', () => {
   it('parses empty array', () => {

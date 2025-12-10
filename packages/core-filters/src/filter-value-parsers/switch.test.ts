@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import _switch from './switch.js';
+import _switch from './switch.ts';
 
 describe('switch', () => {
   it('returns undefined if no value is provided', () => {

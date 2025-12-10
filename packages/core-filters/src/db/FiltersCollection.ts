@@ -1,16 +1,18 @@
 import {
   mongodb,
   buildDbIndexes,
-  TimestampFields,
+  type TimestampFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 
-export enum FilterType {
-  SWITCH = 'SWITCH',
-  SINGLE_CHOICE = 'SINGLE_CHOICE',
-  MULTI_CHOICE = 'MULTI_CHOICE',
-  RANGE = 'RANGE',
-}
+export const FilterType = {
+  SWITCH: 'SWITCH',
+  SINGLE_CHOICE: 'SINGLE_CHOICE',
+  MULTI_CHOICE: 'MULTI_CHOICE',
+  RANGE: 'RANGE',
+} as const;
+
+export type FilterType = (typeof FilterType)[keyof typeof FilterType];
 
 export type Filter = {
   _id: string;

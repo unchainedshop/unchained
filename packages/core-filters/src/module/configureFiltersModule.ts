@@ -1,18 +1,18 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
   mongodb,
   generateDbFilterById,
   buildSortOptions,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
-import { Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.js';
-import { configureFilterTextsModule } from './configureFilterTextsModule.js';
-import createFilterValueParser from '../filter-value-parsers/index.js';
-import { filtersSettings, FiltersSettingsOptions } from '../filters-settings.js';
-import { FilterQuery } from '../search.js';
+import { type Filter, FiltersCollection, FilterType } from '../db/FiltersCollection.ts';
+import { configureFilterTextsModule } from './configureFilterTextsModule.ts';
+import createFilterValueParser from '../filter-value-parsers/index.ts';
+import { filtersSettings, type FiltersSettingsOptions } from '../filters-settings.ts';
+import type { FilterQuery } from '../search.ts';
 
 export type FilterOption = Filter & {
   filterOption: string;

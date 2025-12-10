@@ -2,7 +2,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { sha256 } from '@unchainedshop/utils';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
-import { FiltersCollection } from '../db/FiltersCollection.js';
+import { FiltersCollection } from '../db/FiltersCollection.ts';
 
 const updateIfHashChanged = async (Collection, selector, doc) => {
   const _id = Object.values(selector).join(':');

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { buildFindSelector } from './configureFiltersModule.js';
+import { buildFindSelector } from './configureFiltersModule.ts';
 
 describe('buildFindSelector', () => {
   it('Return correct filter object when passed no argument', () => {

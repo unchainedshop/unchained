@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { FilterText } from '../db/FiltersCollection.js';
+import type { FilterText } from '../db/FiltersCollection.ts';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
 

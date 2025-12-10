@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import range from './range.js';
+import range from './range.ts';
 
 describe('range', () => {
   it('returns an empty array if no range is provided', () => {

@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { Filter } from './db/FiltersCollection.js';
+import type { Filter } from './db/FiltersCollection.ts';
 
 const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
