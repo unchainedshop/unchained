@@ -1,6 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { type ProductConfiguration, ProductType, type ProductVariation } from '@unchainedshop/core-products';
+import {
+  type ProductConfiguration,
+  ProductType,
+  type ProductVariation,
+} from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,

@@ -1,4 +1,4 @@
-import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
+import { WorkerDirector, WorkerAdapter, type IWorkerAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:bulk-import');

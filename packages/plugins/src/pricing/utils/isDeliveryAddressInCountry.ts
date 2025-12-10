@@ -1,4 +1,4 @@
-import { Order, OrderDelivery } from '@unchainedshop/core-orders';
+import type { Order, OrderDelivery } from '@unchainedshop/core-orders';
 
 export default function isDeliveryAddressInCountry(
   {

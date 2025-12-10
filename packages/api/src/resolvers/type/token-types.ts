@@ -1,5 +1,9 @@
 import type { Context } from '../../context.ts';
-import { type TokenSurrogate, TokenStatus, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import {
+  type TokenSurrogate,
+  TokenStatus,
+  WarehousingProviderType,
+} from '@unchainedshop/core-warehousing';
 import { WorkStatus } from '@unchainedshop/core-worker';
 import { checkAction } from '../../acl.ts';
 import { actions } from '../../roles/index.ts';

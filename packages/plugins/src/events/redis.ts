@@ -1,5 +1,5 @@
 import { createClient } from '@redis/client';
-import { setEmitAdapter, EmitAdapter } from '@unchainedshop/events';
+import { setEmitAdapter, type EmitAdapter } from '@unchainedshop/events';
 
 const { REDIS_PORT = '6379', REDIS_HOST, REDIS_DB = '0' } = process.env;
 

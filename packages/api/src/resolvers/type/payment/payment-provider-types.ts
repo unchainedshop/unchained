@@ -1,6 +1,10 @@
 import type { Context } from '../../../context.ts';
 import type { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
-import { PaymentDirector, type PaymentPricingContext, PaymentPricingDirector } from '@unchainedshop/core';
+import {
+  PaymentDirector,
+  type PaymentPricingContext,
+  PaymentPricingDirector,
+} from '@unchainedshop/core';
 
 export const PaymentProvider = {
   interface(provider: PaymentProviderType) {

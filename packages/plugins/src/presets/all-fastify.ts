@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { FastifyInstance } from 'fastify';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { FastifyInstance } from 'fastify';
 
 import connectCryptoToFastify from './crypto-fastify.js';
 import connectBaseToFastify from './base-fastify.js';

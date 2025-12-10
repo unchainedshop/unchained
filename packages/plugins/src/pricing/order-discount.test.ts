@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 
-import { OrderDiscount } from './order-discount.js';
+import { OrderDiscount } from './order-discount.ts';
 
 describe('OrderDelivery ', () => {
   it('isActivatedFor', () => {

@@ -1,14 +1,14 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  IProductPricingAdapter,
+  type IProductPricingAdapter,
   ProductPricingRowCategory,
 } from '@unchainedshop/core';
 import {
   resolveTaxCategoryFromDeliveryProvider,
   resolveTaxCategoryFromProduct,
   SwissTaxCategories,
-  SwissTaxCategoryResolver,
+  type SwissTaxCategoryResolver,
 } from './tax/ch.js';
 import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.js';
 

@@ -1,6 +1,6 @@
 import { OrderPricingSheet } from '@unchainedshop/core';
-import { Order } from '@unchainedshop/core-orders';
-import { Transaction, TransactionState } from './api-types.js';
+import type { Order } from '@unchainedshop/core-orders';
+import { type Transaction, TransactionState } from './api-types.js';
 
 const roundToDecimals = (number, decimals) => {
   const num = Math.pow(10, decimals);

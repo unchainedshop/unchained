@@ -1,8 +1,8 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/api';
+import { type Context } from '@unchainedshop/api';
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { CryptopayModule } from './module.js';
-import { ProductPriceRate } from '@unchainedshop/core-products';
+import { type CryptopayModule } from './module.js';
+import { type ProductPriceRate } from '@unchainedshop/core-products';
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_MAX_RATE_AGE = '360' } = process.env;
 

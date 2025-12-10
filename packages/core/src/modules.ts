@@ -17,14 +17,22 @@ import {
   type EnrollmentsSettingsOptions,
 } from '@unchainedshop/core-enrollments';
 import { configureEventsModule, type EventsModule } from '@unchainedshop/core-events';
-import { configureFilesModule, type FilesModule, type FilesSettingsOptions } from '@unchainedshop/core-files';
+import {
+  configureFilesModule,
+  type FilesModule,
+  type FilesSettingsOptions,
+} from '@unchainedshop/core-files';
 import {
   configureFiltersModule,
   type FiltersModule,
   type FiltersSettingsOptions,
 } from '@unchainedshop/core-filters';
 import { configureLanguagesModule, type LanguagesModule } from '@unchainedshop/core-languages';
-import { configureOrdersModule, type OrdersModule, type OrdersSettingsOptions } from '@unchainedshop/core-orders';
+import {
+  configureOrdersModule,
+  type OrdersModule,
+  type OrdersSettingsOptions,
+} from '@unchainedshop/core-orders';
 import {
   configurePaymentModule,
   type PaymentModule,
@@ -40,9 +48,17 @@ import {
   type QuotationsModule,
   type QuotationsSettingsOptions,
 } from '@unchainedshop/core-quotations';
-import { configureUsersModule, type UserSettingsOptions, type UsersModule } from '@unchainedshop/core-users';
+import {
+  configureUsersModule,
+  type UserSettingsOptions,
+  type UsersModule,
+} from '@unchainedshop/core-users';
 import { configureWarehousingModule, type WarehousingModule } from '@unchainedshop/core-warehousing';
-import { configureWorkerModule, type WorkerModule, type WorkerSettingsOptions } from '@unchainedshop/core-worker';
+import {
+  configureWorkerModule,
+  type WorkerModule,
+  type WorkerSettingsOptions,
+} from '@unchainedshop/core-worker';
 import { type MigrationRepository, type ModuleInput, type mongodb } from '@unchainedshop/mongodb';
 
 export interface Modules {

@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import express from 'express';
 
 import handler from '../payment/cryptopay/handler-express.js';

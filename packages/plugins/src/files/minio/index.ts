@@ -1,12 +1,12 @@
 import { Readable } from 'node:stream';
 import type { ReadableStream } from 'node:stream/web';
-import { UploadFileData } from '@unchainedshop/file-upload';
+import { type UploadFileData } from '@unchainedshop/file-upload';
 import {
   FileAdapter,
   FileDirector,
   buildHashedFilename,
   resolveExpirationDate,
-  IFileAdapter,
+  type IFileAdapter,
 } from '@unchainedshop/file-upload';
 import mime from 'mime/lite';
 import { Client } from 'minio';

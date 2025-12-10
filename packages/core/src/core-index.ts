@@ -1,7 +1,10 @@
 import { type mongodb, type MigrationRepository, type ModuleInput } from '@unchainedshop/mongodb';
 import initServices, { type CustomServices, type Services } from './services/index.ts';
 import initModules, { type Modules, type ModuleOptions } from './modules.ts';
-import createBulkImporterFactory, { type BulkImporter, type BulkImportHandler } from './bulk-importer/index.ts';
+import createBulkImporterFactory, {
+  type BulkImporter,
+  type BulkImportHandler,
+} from './bulk-importer/index.ts';
 
 import {
   WorkerDirector,

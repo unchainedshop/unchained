@@ -1,4 +1,4 @@
-import { OrderDelivery } from './order-delivery.js';
+import { OrderDelivery } from './order-delivery.ts';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 

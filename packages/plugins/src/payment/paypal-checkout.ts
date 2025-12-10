@@ -1,6 +1,6 @@
 import {
   OrderPricingSheet,
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,

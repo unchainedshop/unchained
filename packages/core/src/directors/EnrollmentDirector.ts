@@ -1,5 +1,9 @@
 import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
-import type { EnrollmentAdapterActions, EnrollmentContext, IEnrollmentAdapter } from './EnrollmentAdapter.ts';
+import type {
+  EnrollmentAdapterActions,
+  EnrollmentContext,
+  IEnrollmentAdapter,
+} from './EnrollmentAdapter.ts';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { Enrollment } from '@unchainedshop/core-enrollments';

@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 import handler from '../payment/cryptopay/handler-fastify.js';
 import { configureExportToken } from '../worker/export-token.js';

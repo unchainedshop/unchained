@@ -12,8 +12,8 @@
     "build": "tsc -b",
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
-    "test": "tsx --test",
-    "test:watch": "tsx --test --watch"
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
   "repository": {
     "type": "git",
@@ -128,7 +128,6 @@
     "nodemailer": "^7.0.5",
     "p-memoize": "^8.0.0",
     "stripe": "^20.0.0",
-    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

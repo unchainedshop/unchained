@@ -1,4 +1,4 @@
-import { WorkerDirector, WorkerAdapter, IWorkerAdapter } from '@unchainedshop/core';
+import { WorkerDirector, WorkerAdapter, type IWorkerAdapter } from '@unchainedshop/core';
 import { spawn } from 'node:child_process';
 import { writeFile, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';

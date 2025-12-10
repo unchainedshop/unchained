@@ -1,7 +1,7 @@
 import {
-  UnchainedCore,
-  IWarehousingAdapter,
-  WarehousingContext,
+  type UnchainedCore,
+  type IWarehousingAdapter,
+  type WarehousingContext,
   WarehousingError,
   WarehousingDirector,
   WarehousingAdapter,

@@ -1,4 +1,4 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 
 export const ZombieKillerWorker: IWorkerAdapter<
   { bulkImportMaxAgeInDays: number },

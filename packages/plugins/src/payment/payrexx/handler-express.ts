@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:payrexx:handler');

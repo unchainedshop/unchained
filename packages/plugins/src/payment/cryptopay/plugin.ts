@@ -1,13 +1,12 @@
 import {
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
   OrderPricingSheet,
 } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-
-import { CryptopayModule } from './module.js';
+import { type CryptopayModule } from './module.js';
 import deriveBtcAddress from './derive-btc-address.js';
 import deriveEthAddress from './derive-eth-address.js';
 import denoteAmount from './denote-amount.js';
@@ -16,10 +15,12 @@ const logger = createLogger('unchained:cryptopay');
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_BTC_XPUB, CRYPTOPAY_ETH_XPUB } = process.env;
 
-enum CryptopayCurrencies {
-  BTC = 'BTC',
-  ETH = 'ETH',
-}
+const CryptopayCurrencies = {
+  BTC: 'BTC',
+  ETH: 'ETH',
+} as const;
+
+type CryptopayCurrencies = (typeof CryptopayCurrencies)[keyof typeof CryptopayCurrencies];
 
 interface CryptopayAddress {
   currencyCode: CryptopayCurrencies;

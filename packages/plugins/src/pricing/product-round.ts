@@ -1,7 +1,7 @@
 import {
   ProductPricingAdapter,
   ProductPricingDirector,
-  IProductPricingAdapter,
+  type IProductPricingAdapter,
 } from '@unchainedshop/core';
 
 interface PriceRoundSettings {

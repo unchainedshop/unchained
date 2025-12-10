@@ -1,6 +1,6 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import later from '@breejs/later';
-import { ProductPriceRate } from '@unchainedshop/core-products';
+import type { ProductPriceRate } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
 const getExchangeRates = async (base): Promise<{ currency: string; rates: Record<string, string> }> => {

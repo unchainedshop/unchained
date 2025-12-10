@@ -1,6 +1,6 @@
 import {
   DeliveryPricingRowCategory,
-  IDeliveryPricingAdapter,
+  type IDeliveryPricingAdapter,
   DeliveryPricingAdapter,
   DeliveryPricingDirector,
 } from '@unchainedshop/core';

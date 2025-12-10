@@ -1,5 +1,5 @@
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Product } from '@unchainedshop/core-products';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { Product } from '@unchainedshop/core-products';
 
 const startOf2024 = new Date('2024-01-01T00:00:00.000+0100');
 

@@ -2,10 +2,10 @@ import { calculation as calcUtils } from '@unchainedshop/utils';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductDiscountConfiguration,
-  IProductPricingAdapter,
+  type ProductDiscountConfiguration,
+  type IProductPricingAdapter,
   ProductPricingRowCategory,
-  Discount,
+  type Discount,
 } from '@unchainedshop/core';
 
 const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {

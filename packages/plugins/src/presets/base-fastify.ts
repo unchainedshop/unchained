@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import handler from '../files/gridfs/handler-fastify.js';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;

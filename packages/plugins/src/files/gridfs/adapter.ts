@@ -6,13 +6,13 @@ import {
   FileDirector,
   buildHashedFilename,
   resolveExpirationDate,
-  IFileAdapter,
+  type IFileAdapter,
 } from '@unchainedshop/file-upload';
-import { UploadFileData } from '@unchainedshop/file-upload';
+import { type UploadFileData } from '@unchainedshop/file-upload';
 import sign from './sign.js';
 import { filesSettings } from '@unchainedshop/core-files';
-import { UnchainedCore } from '@unchainedshop/core';
-import { GridFSFileUploadsModule } from './index.js';
+import { type UnchainedCore } from '@unchainedshop/core';
+import { type GridFSFileUploadsModule } from './index.js';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 

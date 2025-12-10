@@ -1,5 +1,5 @@
 import {
-  IProductPricingAdapter,
+  type IProductPricingAdapter,
   ProductPricingDirector,
   ProductPricingAdapter,
 } from '@unchainedshop/core';

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import denoteAmount from './denote-amount.js';
+import denoteAmount from './denote-amount.ts';
 
 describe('Denote Amount', () => {
   it('Handle amount with 18 decimals', () => {

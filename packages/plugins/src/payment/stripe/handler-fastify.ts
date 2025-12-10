@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { stripe } from './stripe.js';
 
 const logger = createLogger('unchained:stripe:handler');

@@ -1,9 +1,9 @@
 import {
-  IOrderPricingAdapter,
+  type IOrderPricingAdapter,
   OrderPricingRowCategory,
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderDiscountConfiguration,
+  type OrderDiscountConfiguration,
   DeliveryPricingSheet,
   PaymentPricingSheet,
   ProductPricingSheet,

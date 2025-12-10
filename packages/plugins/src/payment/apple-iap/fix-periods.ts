@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import { type UnchainedCore } from '@unchainedshop/core';
 
 export const fixPeriods = async (
   { transactionId, enrollmentId, orderId, transactions },

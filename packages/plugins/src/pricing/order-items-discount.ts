@@ -2,8 +2,8 @@ import {
   ProductPricingSheet,
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderDiscountConfiguration,
-  IOrderPricingAdapter,
+  type OrderDiscountConfiguration,
+  type IOrderPricingAdapter,
   OrderPricingRowCategory,
   resolveRatioAndTaxDivisorForPricingSheet,
 } from '@unchainedshop/core';

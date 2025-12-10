@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { HalfPriceManual } from './discount-half-price-manual.js';
+import { HalfPriceManual } from './discount-half-price-manual.ts';
 
 describe('HalfPriceManual', () => {
   it('isManualAdditionAllowed', async () => {

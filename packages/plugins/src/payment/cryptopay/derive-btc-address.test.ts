@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import deriveBtcAddress from './derive-btc-address.js';
+import deriveBtcAddress from './derive-btc-address.ts';
 
 describe('BTC Address Derivation', () => {
   it('returns a deterministic BIP44 child address', () => {

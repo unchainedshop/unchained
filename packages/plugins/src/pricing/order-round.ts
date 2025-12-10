@@ -1,7 +1,7 @@
 import {
   OrderPricingAdapter,
   OrderPricingDirector,
-  IOrderPricingAdapter,
+  type IOrderPricingAdapter,
   OrderPricingRowCategory,
 } from '@unchainedshop/core';
 

@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/api';
+import { type Context } from '@unchainedshop/api';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import { fixPeriods } from './fix-periods.js';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
-import { AppleTransactionsModule } from './module.js';
+import { type FastifyRequest, type RouteHandlerMethod } from 'fastify';
+import { type AppleTransactionsModule } from './module.js';
 
 const logger = createLogger('unchained:apple-iap:handler');
 

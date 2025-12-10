@@ -1,7 +1,7 @@
 import {
   DeliveryPricingAdapter,
   DeliveryPricingDirector,
-  IDeliveryPricingAdapter,
+  type IDeliveryPricingAdapter,
 } from '@unchainedshop/core';
 
 export const DeliveryFreePrice: IDeliveryPricingAdapter = {

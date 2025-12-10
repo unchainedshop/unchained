@@ -1,4 +1,4 @@
-import { EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
+import { type EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:eventbridge');

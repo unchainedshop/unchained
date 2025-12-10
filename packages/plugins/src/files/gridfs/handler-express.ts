@@ -3,8 +3,8 @@ import { PassThrough } from 'node:stream';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
 import express from 'express';
 import sign from './sign.js';
-import { GridFSFileUploadsModule } from './module.js';
-import { Context } from '@unchainedshop/api';
+import { type GridFSFileUploadsModule } from './module.js';
+import { type Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core-files';
 

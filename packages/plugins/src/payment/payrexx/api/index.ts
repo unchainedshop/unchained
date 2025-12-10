@@ -2,20 +2,22 @@ import makeFetcher from './makeFetcher.js';
 
 const baseUrl = 'https://api.payrexx.com/v1.0/';
 
-export enum GatewayObjectStatus {
-  waiting = 'waiting',
-  confirmed = 'confirmed',
-  cancelled = 'cancelled',
-  declined = 'declined',
-  authorized = 'authorized',
-  reserved = 'reserved',
-  refunded = 'refunded',
-  refundpending = 'refundpending',
-  'partially-refunded' = 'partially-refunded',
-  chargeback = 'chargeback',
-  error = 'error',
-  uncaptured = '_',
-}
+export const GatewayObjectStatus = {
+  waiting: 'waiting',
+  confirmed: 'confirmed',
+  cancelled: 'cancelled',
+  declined: 'declined',
+  authorized: 'authorized',
+  reserved: 'reserved',
+  refunded: 'refunded',
+  refundpending: 'refundpending',
+  'partially-refunded': 'partially-refunded',
+  chargeback: 'chargeback',
+  error: 'error',
+  uncaptured: '_',
+} as const;
+
+export type GatewayObjectStatus = (typeof GatewayObjectStatus)[keyof typeof GatewayObjectStatus];
 
 export interface GatewayObject {
   status: GatewayObjectStatus;

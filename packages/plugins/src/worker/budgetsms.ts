@@ -1,4 +1,4 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 
 const { BUDGETSMS_USERNAME, BUDGETSMS_USERID, BUDGETSMS_HANDLE } = process.env;
 

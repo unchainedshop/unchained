@@ -1,4 +1,4 @@
-import { IEnrollmentAdapter, EnrollmentDirector, EnrollmentAdapter } from '@unchainedshop/core';
+import { type IEnrollmentAdapter, EnrollmentDirector, EnrollmentAdapter } from '@unchainedshop/core';
 
 export const rangeMatcher = (date = new Date()) => {
   const timestamp = date.getTime();

@@ -1,5 +1,5 @@
-import { Work, WorkStatus } from '@unchainedshop/core-worker';
-import { IWorkerAdapter, WorkerDirector, WorkerAdapter } from '@unchainedshop/core';
+import { type Work, WorkStatus } from '@unchainedshop/core-worker';
+import { type IWorkerAdapter, WorkerDirector, WorkerAdapter } from '@unchainedshop/core';
 import later from '@breejs/later';
 
 interface Arg {

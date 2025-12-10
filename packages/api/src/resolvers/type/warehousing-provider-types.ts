@@ -1,4 +1,8 @@
-import { WarehousingDirector, type WarehousingError, type WarehousingInterface } from '@unchainedshop/core';
+import {
+  WarehousingDirector,
+  type WarehousingError,
+  type WarehousingInterface,
+} from '@unchainedshop/core';
 import type { WarehousingProvider as WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import type { Context } from '../../context.ts';
 

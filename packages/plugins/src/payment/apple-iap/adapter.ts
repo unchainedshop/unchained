@@ -1,6 +1,11 @@
-import { IPaymentAdapter, PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core';
+import {
+  type IPaymentAdapter,
+  PaymentAdapter,
+  PaymentDirector,
+  PaymentError,
+} from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import { AppleTransactionsModule } from './module.js';
+import { type AppleTransactionsModule } from './module.js';
 import { verifyReceipt } from './verify-receipt.js';
 
 const logger = createLogger('unchained:apple-iap');

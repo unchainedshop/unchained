@@ -1,4 +1,4 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 
 const { BULKGATE_APPLICATION_ID, BULKGATE_APPLICATION_TOKEN } = process.env;
 

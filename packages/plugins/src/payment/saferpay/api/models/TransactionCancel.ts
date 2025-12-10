@@ -1,5 +1,5 @@
-import { Response } from './Response.js';
-import { Request } from './Request.js';
+import type { Response } from './Response.js';
+import type { Request } from './Request.js';
 
 export interface TransactionCancelInput extends Request {
   TransactionReference: {

@@ -1,10 +1,10 @@
 import { finished, pipeline } from 'node:stream/promises';
 import { PassThrough } from 'node:stream';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { type FastifyRequest, type RouteHandlerMethod } from 'fastify';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
 import sign from './sign.js';
-import { GridFSFileUploadsModule } from './module.js';
-import { Context } from '@unchainedshop/api';
+import { type GridFSFileUploadsModule } from './module.js';
+import { type Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core-files';
 

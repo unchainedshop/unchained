@@ -1,8 +1,8 @@
 import {
   OrderDiscountDirector,
   OrderDiscountAdapter,
-  OrderDiscountConfiguration,
-  IDiscountAdapter,
+  type OrderDiscountConfiguration,
+  type IDiscountAdapter,
 } from '@unchainedshop/core';
 
 export const HundredOff: IDiscountAdapter<OrderDiscountConfiguration> = {

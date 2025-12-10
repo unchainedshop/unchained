@@ -1,4 +1,4 @@
-import { WarehousingDirector, WarehousingAdapter, IWarehousingAdapter } from '@unchainedshop/core';
+import { WarehousingDirector, WarehousingAdapter, type IWarehousingAdapter } from '@unchainedshop/core';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
 const Store: IWarehousingAdapter = {

@@ -1,4 +1,4 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 
 const postFetch = async (url, { data, headers }) => {
   return fetch(url, {

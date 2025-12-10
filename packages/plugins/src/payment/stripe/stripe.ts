@@ -1,6 +1,6 @@
 import type { Stripe } from 'stripe';
 import type { IOrderPricingSheet } from '@unchainedshop/core';
-import { Order, OrderPayment } from '@unchainedshop/core-orders';
+import type { Order, OrderPayment } from '@unchainedshop/core-orders';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:stripe');

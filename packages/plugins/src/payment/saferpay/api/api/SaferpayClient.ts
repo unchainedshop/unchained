@@ -1,12 +1,12 @@
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { TransactionCancelInput, TransactionCancelResponse } from '../models/TransactionCancel.js';
-import { TransactionCaptureInput, TransactionCaptureResponse } from '../models/TransactionCapture.js';
-import { PaymentPageAssertInput, PaymentPageAssertResponse } from '../models/PaymentPageAssert.js';
+import type { OrderPayment } from '@unchainedshop/core-orders';
+import type { TransactionCancelInput, TransactionCancelResponse } from '../models/TransactionCancel.js';
+import type { TransactionCaptureInput, TransactionCaptureResponse } from '../models/TransactionCapture.js';
+import type { PaymentPageAssertInput, PaymentPageAssertResponse } from '../models/PaymentPageAssert.js';
 import {
-  PaymentPageInitializeInput,
-  PaymentPageInitializeResponse,
+  type PaymentPageInitializeInput,
+  type PaymentPageInitializeResponse,
 } from '../models/PaymentPageInitialize.js';
-import { RequestHeader } from '../models/Request.js';
+import type { RequestHeader } from '../models/Request.js';
 import { SaferpayConnection } from './SaferpayConnection.js';
 
 export class SaferpayClient {

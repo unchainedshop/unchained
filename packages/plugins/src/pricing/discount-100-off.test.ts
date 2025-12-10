@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { HundredOff } from './discount-100-off.js';
+import { HundredOff } from './discount-100-off.ts';
 
 describe('HundredOff', () => {
   it('isManualAdditionAllowed', async () => {

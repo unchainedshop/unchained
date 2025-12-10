@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import generateSignature from './generateSignature';
+import generateSignature from './generateSignature.ts';
 
 describe('Datatrans Signature', () => {
   it('Correct hashing applies', async () => {

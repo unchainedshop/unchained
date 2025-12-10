@@ -1,6 +1,11 @@
 import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
-import { PaymentError, type IPaymentActions, type IPaymentAdapter, type PaymentContext } from './PaymentAdapter.ts';
+import {
+  PaymentError,
+  type IPaymentActions,
+  type IPaymentAdapter,
+  type PaymentContext,
+} from './PaymentAdapter.ts';
 import type { PaymentProvider } from '@unchainedshop/core-payment';
 import { type Order, type OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
 

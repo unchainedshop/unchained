@@ -1,4 +1,8 @@
-import { BasePricingSheet, type IBasePricingSheet, type PricingSheetParams } from '../directors/index.ts';
+import {
+  BasePricingSheet,
+  type IBasePricingSheet,
+  type PricingSheetParams,
+} from '../directors/index.ts';
 import type { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.ts';
 
 export const DeliveryPricingRowCategory = {

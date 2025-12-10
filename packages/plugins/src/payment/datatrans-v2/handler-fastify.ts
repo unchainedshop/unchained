@@ -1,8 +1,8 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 import generateSignature, { Security } from './generateSignature.js';
-import { StatusResponseSuccess } from './api/types.js';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { StatusResponseSuccess } from './api/types.js';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const {
   DATATRANS_SIGN_KEY,

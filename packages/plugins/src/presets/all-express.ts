@@ -1,5 +1,5 @@
 import express from 'express';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 import connectCryptoToExpress from './crypto-express.js';
 import connectBaseToExpress from './base-express.js';

@@ -1,5 +1,5 @@
 import {
-  IOrderPricingAdapter,
+  type IOrderPricingAdapter,
   OrderPricingDirector,
   OrderPricingAdapter,
   ProductPricingSheet,

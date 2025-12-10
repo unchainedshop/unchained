@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import { WebhookData } from './types.js';
+import type { WebhookData } from './types.js';
 import { getTransaction, getTransactionCompletion } from './api.js';
 
 const logger = createLogger('unchained:postfinance-checkout:handler');

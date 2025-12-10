@@ -1,10 +1,10 @@
 import { PostFinanceApiClient } from './api-client.js';
 import {
-  Transaction,
-  TransactionCreate,
-  TransactionCompletion,
-  Token,
-  RefundCreate,
+  type Transaction,
+  type TransactionCreate,
+  type TransactionCompletion,
+  type Token,
+  type RefundCreate,
   RefundType,
 } from './api-types.js';
 

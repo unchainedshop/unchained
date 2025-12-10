@@ -1,4 +1,4 @@
-import { IDeliveryAdapter, DeliveryAdapter, DeliveryDirector } from '@unchainedshop/core';
+import { type IDeliveryAdapter, DeliveryAdapter, DeliveryDirector } from '@unchainedshop/core';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 
 const Post: IDeliveryAdapter = {

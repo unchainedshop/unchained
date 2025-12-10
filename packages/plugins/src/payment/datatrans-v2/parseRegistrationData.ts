@@ -1,5 +1,5 @@
 import splitProperties from './splitProperties.js';
-import { StatusResponseSuccess } from './api/types.js';
+import type { StatusResponseSuccess } from './api/types.js';
 import { sha256 } from '@unchainedshop/utils';
 
 export default async function parseRegistrationData(transaction: StatusResponseSuccess) {

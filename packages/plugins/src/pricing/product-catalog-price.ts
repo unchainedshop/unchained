@@ -1,7 +1,7 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  IProductPricingAdapter,
+  type IProductPricingAdapter,
 } from '@unchainedshop/core';
 import { ProductType } from '@unchainedshop/core-products';
 

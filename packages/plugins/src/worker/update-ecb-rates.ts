@@ -1,5 +1,5 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
-import { ProductPriceRate } from '@unchainedshop/core-products';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import type { ProductPriceRate } from '@unchainedshop/core-products';
 import later from '@breejs/later';
 import { createLogger } from '@unchainedshop/logger';
 

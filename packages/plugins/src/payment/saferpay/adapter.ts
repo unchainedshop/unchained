@@ -1,10 +1,10 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { PaymentPageInitializeInput, SaferpayClient } from './api/index.js';
+import { type PaymentPageInitializeInput, SaferpayClient } from './api/index.js';
 import { buildSignature } from './buildSignature.js';
-import { SaferpayTransactionsModule } from './module.js';
+import type { SaferpayTransactionsModule } from './module.js';
 import {
   OrderPricingSheet,
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,

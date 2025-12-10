@@ -1,4 +1,4 @@
-import { IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:worker:push-notification');

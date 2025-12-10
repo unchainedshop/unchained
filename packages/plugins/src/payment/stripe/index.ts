@@ -2,7 +2,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
 import {
   OrderPricingSheet,
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,

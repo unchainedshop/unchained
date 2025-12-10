@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { type Context } from '@unchainedshop/api';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import { fixPeriods } from './fix-periods.js';

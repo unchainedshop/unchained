@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import isDeliveryAddressInCountry from './isDeliveryAddressInCountry.js';
+import isDeliveryAddressInCountry from './isDeliveryAddressInCountry.ts';
 
 describe('isDeliveryAddressInCountry', () => {
   const context = {

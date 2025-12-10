@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { rangeMatcher } from '../enrollments/licensed.js';
+import { rangeMatcher } from '../enrollments/licensed.ts';
 
 describe('rangeMatcher', () => {
   const now = new Date();

@@ -3,7 +3,7 @@ import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.j
 import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
 import {
   OrderPricingSheet,
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,

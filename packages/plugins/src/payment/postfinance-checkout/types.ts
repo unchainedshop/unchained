@@ -1,13 +1,17 @@
-export enum IntegrationModes {
-  PaymentPage = 'PaymentPage',
-  Lightbox = 'Lightbox',
-  iFrame = 'iFrame',
-}
+export const IntegrationModes = {
+  PaymentPage: 'PaymentPage',
+  Lightbox: 'Lightbox',
+  iFrame: 'iFrame',
+} as const;
 
-export enum CompletionModes {
-  Immediate = 'Immediate',
-  Deferred = 'Deferred',
-}
+export type IntegrationModes = (typeof IntegrationModes)[keyof typeof IntegrationModes];
+
+export const CompletionModes = {
+  Immediate: 'Immediate',
+  Deferred: 'Deferred',
+} as const;
+
+export type CompletionModes = (typeof CompletionModes)[keyof typeof CompletionModes];
 
 export interface SignResponse {
   transactionId: number;

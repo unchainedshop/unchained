@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import deriveEthAddress from './derive-eth-address.js';
+import deriveEthAddress from './derive-eth-address.ts';
 
 describe('ETH Address Derivation', () => {
   it('returns a deterministic BIP44 child address', () => {

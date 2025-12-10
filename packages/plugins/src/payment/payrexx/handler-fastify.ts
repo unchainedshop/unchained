@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:payrexx:handler');
 

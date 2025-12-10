@@ -1,7 +1,7 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { ProductText } from '@unchainedshop/core-products';
-import { AssortmentText } from '@unchainedshop/core-assortments';
-import { FilterDirector, FilterAdapter, IFilterAdapter } from '@unchainedshop/core';
+import { type ProductText } from '@unchainedshop/core-products';
+import { type AssortmentText } from '@unchainedshop/core-assortments';
+import { FilterDirector, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 

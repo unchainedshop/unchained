@@ -1,4 +1,4 @@
-import { IQuotationAdapter, QuotationDirector, QuotationAdapter } from '@unchainedshop/core';
+import { type IQuotationAdapter, QuotationDirector, QuotationAdapter } from '@unchainedshop/core';
 
 const ManualOffering: IQuotationAdapter = {
   ...QuotationAdapter,

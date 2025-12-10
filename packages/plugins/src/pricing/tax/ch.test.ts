@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { SwissTaxCategories } from './ch';
+import { SwissTaxCategories } from './ch.ts';
 
 describe('SwissTaxCategories', () => {
   it('DEFAULT rate', () => {

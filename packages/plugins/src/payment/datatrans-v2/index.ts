@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import createDatatransAPI from './api/index.js';
-import {
+import type {
   AuthorizeAuthenticatedResponseSuccess,
   AuthorizeResponseSuccess,
   InitResponseSuccess,
@@ -11,7 +11,7 @@ import {
 import parseRegistrationData from './parseRegistrationData.js';
 import roundedAmountFromOrder from './roundedAmountFromOrder.js';
 import {
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
@@ -19,8 +19,8 @@ import {
   PaymentPricingSheet,
   OrderPricingSheet,
 } from '@unchainedshop/core';
-import { Order, OrderPayment } from '@unchainedshop/core-orders';
-import { PaymentConfiguration } from '@unchainedshop/core-payment';
+import type { Order, OrderPayment } from '@unchainedshop/core-orders';
+import type { PaymentConfiguration } from '@unchainedshop/core-payment';
 
 const logger = createLogger('unchained:datatrans');
 

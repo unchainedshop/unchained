@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import {
-  IPaymentAdapter,
+  type IPaymentAdapter,
   PaymentAdapter,
   PaymentDirector,
   PaymentError,
