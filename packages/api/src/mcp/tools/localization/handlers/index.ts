@@ -1,9 +1,9 @@
-import createLocalization from './createLocalization.js';
-import updateLocalization from './updateLocalization.js';
-import removeLocalization from './removeLocalization.js';
-import getLocalization from './getLocalization.js';
-import listLocalizations from './listLocalizations.js';
-import countLocalizations from './countLocalizations.js';
+import createLocalization from './createLocalization.ts';
+import updateLocalization from './updateLocalization.ts';
+import removeLocalization from './removeLocalization.ts';
+import getLocalization from './getLocalization.ts';
+import listLocalizations from './listLocalizations.ts';
+import countLocalizations from './countLocalizations.ts';
 
 export default {
   CREATE: createLocalization,

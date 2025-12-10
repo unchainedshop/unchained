@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '../../../context.js';
-import { assortmentManagement, AssortmentManagementSchema } from './assortmentManagement.js';
+import type { Context } from '../../../context.ts';
+import { assortmentManagement, AssortmentManagementSchema } from './assortmentManagement.ts';
 
 export const registerAssortmentTools = (server: McpServer, context: Context) => {
   server.tool(

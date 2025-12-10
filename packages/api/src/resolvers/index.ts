@@ -5,10 +5,10 @@ import {
   GraphQLDate,
   GraphQLLocale,
 } from 'graphql-scalars';
-import Query from './queries/index.js';
-import Mutation from './mutations/index.js';
-import Types from './type/index.js';
-import CustomScalars from './scalars/index.js';
+import Query from './queries/index.ts';
+import Mutation from './mutations/index.ts';
+import Types from './type/index.ts';
+import CustomScalars from './scalars/index.ts';
 
 export default {
   ...Types,

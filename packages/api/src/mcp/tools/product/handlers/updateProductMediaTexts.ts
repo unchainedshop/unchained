@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { ProductMediaNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductMediaNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function updateProductMediaTexts(
   context: Context,

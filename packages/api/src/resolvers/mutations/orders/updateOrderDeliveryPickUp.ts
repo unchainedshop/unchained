@@ -1,7 +1,7 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, OrderDeliveryNotFoundError, OrderDeliveryTypeError } from '../../../errors.js';
+import { InvalidIdError, OrderDeliveryNotFoundError, OrderDeliveryTypeError } from '../../../errors.ts';
 
 export default async function updateOrderDeliveryPickUp(
   root: never,

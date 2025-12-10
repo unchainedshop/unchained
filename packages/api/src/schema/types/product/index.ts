@@ -1,9 +1,9 @@
-import configurableProduct from './configurable-product.js';
-import simpleProduct from './simple-product.js';
-import product from './product.js';
-import bundleProduct from './bundle-product.js';
-import planProduct from './plan-product.js';
-import tokenizedProduct from './tokenized-product.js';
+import configurableProduct from './configurable-product.ts';
+import simpleProduct from './simple-product.ts';
+import product from './product.ts';
+import bundleProduct from './bundle-product.ts';
+import planProduct from './plan-product.ts';
+import tokenizedProduct from './tokenized-product.ts';
 
 export default [
   ...product,

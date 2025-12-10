@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { QuotationStatus } from '@unchainedshop/core-quotations';
-import { Context } from '../../../context.js';
-import { QuotationNotFoundError, QuotationWrongStatusError, InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { QuotationNotFoundError, QuotationWrongStatusError, InvalidIdError } from '../../../errors.ts';
 
 export default async function makeQuotationProposal(
   root: never,

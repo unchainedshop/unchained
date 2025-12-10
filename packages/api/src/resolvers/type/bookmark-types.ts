@@ -1,8 +1,8 @@
-import { Bookmark as BookmarkType } from '@unchainedshop/core-bookmarks';
-import { Product } from '@unchainedshop/core-products';
-import { User } from '@unchainedshop/core-users';
+import type { Bookmark as BookmarkType } from '@unchainedshop/core-bookmarks';
+import type { Product } from '@unchainedshop/core-products';
+import type { User } from '@unchainedshop/core-users';
 
-import { Context } from '../../context.js';
+import type { Context } from '../../context.ts';
 
 export type HelperType<T> = (bookmark: BookmarkType, _: never, context: Context) => T;
 

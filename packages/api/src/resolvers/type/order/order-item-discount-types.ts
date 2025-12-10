@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { OrderPositionDiscount } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { OrderPositionDiscount } from '@unchainedshop/core-orders';
 
 export const OrderItemDiscount = {
   _id: (obj: OrderPositionDiscount) => {

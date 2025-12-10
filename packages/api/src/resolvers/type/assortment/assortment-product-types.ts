@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
-import { Assortment, AssortmentProduct as AssortmentProductType } from '@unchainedshop/core-assortments';
-import { Product } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import type { Assortment, AssortmentProduct as AssortmentProductType } from '@unchainedshop/core-assortments';
+import type { Product } from '@unchainedshop/core-products';
 
 type HelperType<T> = (assortmentProduct: AssortmentProductType, _: never, context: Context) => T;
 

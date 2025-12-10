@@ -1,8 +1,8 @@
 import { ProductType } from '@unchainedshop/core-products';
-import { Context } from '../../../../context.js';
-import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getBundleItems(context: Context, params: Params<'GET_BUNDLE_ITEMS'>) {
   const { modules } = context;

@@ -1,8 +1,8 @@
 import { createLogger } from '@unchainedshop/logger';
-import { checkAction } from '../acl.js';
-import { actions } from '../roles/index.js';
-import { Context } from '../context.js';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import { checkAction } from '../acl.ts';
+import { actions } from '../roles/index.ts';
+import type { Context } from '../context.ts';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:bulk-import');
 

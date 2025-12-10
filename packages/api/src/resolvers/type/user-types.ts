@@ -1,20 +1,20 @@
-import { Bookmark } from '@unchainedshop/core-bookmarks';
-import { SortOption } from '@unchainedshop/utils';
-import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { File } from '@unchainedshop/core-files';
-import { Language } from '@unchainedshop/core-languages';
-import { Order, OrderStatus } from '@unchainedshop/core-orders';
-import { PaymentCredentials } from '@unchainedshop/core-payment';
-import { Quotation } from '@unchainedshop/core-quotations';
-import { Email, User as UserType, UserProfile } from '@unchainedshop/core-users';
-import { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import type { Bookmark } from '@unchainedshop/core-bookmarks';
+import type { SortOption } from '@unchainedshop/utils';
+import type { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import type { File } from '@unchainedshop/core-files';
+import type { Language } from '@unchainedshop/core-languages';
+import type { Order, OrderStatus } from '@unchainedshop/core-orders';
+import type { PaymentCredentials } from '@unchainedshop/core-payment';
+import type { Quotation } from '@unchainedshop/core-quotations';
+import type { Email, User as UserType, UserProfile } from '@unchainedshop/core-users';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { Roles, permissions } from '@unchainedshop/roles';
-import { ProductReview } from '@unchainedshop/core-products';
-import { Contact } from '@unchainedshop/mongodb';
-import { Country } from '@unchainedshop/core-countries';
-import { checkAction, checkTypeResolver } from '../../acl.js';
-import { actions } from '../../roles/index.js';
-import { Context } from '../../context.js';
+import type { ProductReview } from '@unchainedshop/core-products';
+import type { Contact } from '@unchainedshop/mongodb';
+import type { Country } from '@unchainedshop/core-countries';
+import { checkAction, checkTypeResolver } from '../../acl.ts';
+import { actions } from '../../roles/index.ts';
+import type { Context } from '../../context.ts';
 
 export interface PushSubscription {
   _id: string;

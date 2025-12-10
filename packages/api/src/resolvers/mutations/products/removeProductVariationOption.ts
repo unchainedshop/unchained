@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors.ts';
 
 export default async function removeProductVariationOption(
   root: never,

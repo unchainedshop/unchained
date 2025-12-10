@@ -1,4 +1,4 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
 import {
@@ -7,7 +7,7 @@ import {
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
   OrderWrongStatusError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 
 export default async function updateCartPaymentGeneric(
   root: never,

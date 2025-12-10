@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors.ts';
 import { PaymentDirector } from '@unchainedshop/core';
 
 export default async function signPaymentProviderForCredentialRegistration(

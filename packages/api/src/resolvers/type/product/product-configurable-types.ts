@@ -1,4 +1,4 @@
-import {
+import type {
   Product as ProductType,
   ProductAssignment,
   ProductConfiguration,
@@ -6,8 +6,8 @@ import {
   ProductVariation,
   ProductPrice,
 } from '@unchainedshop/core-products';
-import { Context } from '../../../context.js';
-import { Product } from './product-types.js';
+import type { Context } from '../../../context.ts';
+import { Product } from './product-types.ts';
 
 export const ConfigurableProduct = {
   ...Product,

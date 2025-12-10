@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Modules } from '../../../modules.ts';
+import { FilterType } from '@unchainedshop/core-filters';
 
 export const LocalizedContentSchema = z.record(
   z.string(), // locale
@@ -12,7 +13,7 @@ export const LocalizedContentSchema = z.record(
 export const FilterCreatePayloadSchema = z.object({
   _id: z.string(),
   specification: z.object({
-    type: z.string(),
+    type: z.enum(FilterType),
     key: z.string(),
     isActive: z.boolean().optional(),
     options: z

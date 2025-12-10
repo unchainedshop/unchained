@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Order } from '@unchainedshop/core-orders';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { Order } from '@unchainedshop/core-orders';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

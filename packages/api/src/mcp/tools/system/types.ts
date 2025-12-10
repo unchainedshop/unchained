@@ -1,5 +1,5 @@
 import { WorkStatus } from '@unchainedshop/core-worker';
-import { SortOption } from '@unchainedshop/utils';
+import type { SortOption } from '@unchainedshop/utils';
 
 export interface WorkListOptions {
   limit?: number;

@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { FileUploadExpiredError, FileNotFoundError } from '../../../errors.js';
+import { FileUploadExpiredError, FileNotFoundError } from '../../../errors.ts';
 
 export default async function confirmMediaUpload(
   root: never,

@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   LocalizationManagementSchema,
   LocalizationManagementZodSchema,
-  LocalizationManagementParams,
-  ActionName,
-} from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
+  type LocalizationManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.ts';
 
-export { LocalizationManagementSchema, LocalizationManagementZodSchema, LocalizationManagementParams };
+export { LocalizationManagementSchema, LocalizationManagementZodSchema };
+export type { LocalizationManagementParams };
 
 export async function localizationManagement(context: Context, params: LocalizationManagementParams) {
   const { action, ...actionParams } = params;

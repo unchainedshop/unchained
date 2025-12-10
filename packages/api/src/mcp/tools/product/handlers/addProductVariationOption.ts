@@ -1,8 +1,8 @@
-import { ProductVariation } from '@unchainedshop/core-products';
-import { Context } from '../../../../context.js';
-import { ProductVariationNotFoundError } from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+import type { ProductVariation } from '@unchainedshop/core-products';
+import type { Context } from '../../../../context.ts';
+import { ProductVariationNotFoundError } from '../../../../errors.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function addProductVariationOption(
   context: Context,

@@ -1,10 +1,10 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { PaymentDirector, DeliveryDirector, WarehousingDirector } from '@unchainedshop/core';
 import {
   PaymentProviderNotFoundError,
   DeliverProviderNotFoundError,
   WarehousingProviderNotFoundError,
-} from '../../../../errors.js';
+} from '../../../../errors.ts';
 
 export type ProviderType = 'PAYMENT' | 'DELIVERY' | 'WAREHOUSING';
 

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { OrderQuery } from '@unchainedshop/core-orders';
-import { Context } from '../../../context.js';
+import type { OrderQuery } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
 
 export default async function ordersCount(
   root: never,

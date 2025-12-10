@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   QuotationManagementSchema,
   QuotationManagementZodSchema,
-  QuotationManagementParams,
-  ActionName,
-} from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
+  type QuotationManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { QuotationManagementSchema, QuotationManagementZodSchema, QuotationManagementParams };
+export { QuotationManagementSchema, QuotationManagementZodSchema };
+export type { QuotationManagementParams };
 
 export async function quotationManagement(context: Context, params: QuotationManagementParams) {
   const { action, ...actionParams } = params;

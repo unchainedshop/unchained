@@ -1,11 +1,11 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import {
   OrderItemNotFoundError,
   OrderWrongStatusError,
   InvalidIdError,
   OrderNotFoundError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 
 export default async function removeCartItem(
   root: never,

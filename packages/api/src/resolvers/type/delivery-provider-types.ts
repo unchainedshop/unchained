@@ -1,8 +1,8 @@
 import {
-  DeliveryProvider as DeliveryProviderActual,
+  type DeliveryProvider as DeliveryProviderActual,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
-import { DeliveryProviderInterface } from './delivery-provider-interface.js';
+import { DeliveryProviderInterface } from './delivery-provider-interface.ts';
 
 export const DeliveryProvider = {
   __resolveType: async (provider: DeliveryProviderActual) => {

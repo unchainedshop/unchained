@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { resolveDateRange } from '../../../utils/orderFilters.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+import { resolveDateRange } from '../../../utils/orderFilters.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getTopProducts(context: Context, params: Params<'TOP_PRODUCTS'>) {
   const { modules } = context;

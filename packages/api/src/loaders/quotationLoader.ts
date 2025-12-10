@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Quotation } from '@unchainedshop/core-quotations';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { Quotation } from '@unchainedshop/core-quotations';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

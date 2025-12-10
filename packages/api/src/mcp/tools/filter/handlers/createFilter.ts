@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { FilterDirector } from '@unchainedshop/core';
-import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
-import { Params } from '../schemas.js';
-import { FilterText } from '@unchainedshop/core-filters';
+import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.ts';
+import type { Params } from '../schemas.ts';
+import type { FilterText } from '@unchainedshop/core-filters';
 
 export default async function createFilter(context: Context, params: Params<'CREATE'>) {
   const { modules } = context;

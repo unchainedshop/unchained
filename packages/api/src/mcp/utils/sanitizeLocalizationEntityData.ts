@@ -1,9 +1,9 @@
-import {
+import type {
   LocalizationType,
   LocalizationEntity,
   LocalizationUpdateEntity,
-} from '../tools/localization/types.js';
-import validateIsoCode from './validateIsoCode.js';
+} from '../tools/localization/types.ts';
+import validateIsoCode from './validateIsoCode.ts';
 
 const sanitizeEntityData = (
   localizationType: LocalizationType,

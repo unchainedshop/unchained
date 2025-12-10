@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function updateProductTexts(
   root: never,

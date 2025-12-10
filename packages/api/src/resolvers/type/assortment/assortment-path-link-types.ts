@@ -1,5 +1,5 @@
-import { AssortmentLink } from '@unchainedshop/core-assortments';
-import { Context } from '../../../context.js';
+import type { AssortmentLink } from '@unchainedshop/core-assortments';
+import type { Context } from '../../../context.ts';
 
 export const AssortmentPathLink = {
   link(linkObj) {

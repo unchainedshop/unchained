@@ -7,7 +7,7 @@
 import { assert } from 'node:console';
 import util from 'node:util';
 import * as session from 'express-session';
-import { Collection, MongoClient, MongoClientOptions, WriteConcernSettings } from 'mongodb';
+import { Collection, MongoClient, type MongoClientOptions, type WriteConcernSettings } from 'mongodb';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api');

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { FilterQuery } from '@unchainedshop/core-filters';
-import { Context } from '../../../context.js';
+import type { FilterQuery } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
 
 export default async function filtersCount(
   root: never,

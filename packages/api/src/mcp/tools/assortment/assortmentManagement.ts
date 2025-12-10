@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   AssortmentManagementSchema,
   AssortmentManagementZodSchema,
-  AssortmentManagementParams,
-  ActionName,
-} from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
+  type AssortmentManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { AssortmentManagementSchema, AssortmentManagementZodSchema, AssortmentManagementParams };
+export { AssortmentManagementSchema, AssortmentManagementZodSchema };
+export type { AssortmentManagementParams };
 
 export async function assortmentManagement(context: Context, params: AssortmentManagementParams) {
   const { action, ...actionParams } = params;

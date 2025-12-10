@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption } from '@unchainedshop/utils';
-import { Context } from '../../../context.js';
+import type { SortOption } from '@unchainedshop/utils';
+import type { Context } from '../../../context.ts';
 
 export default async function productReviews(
   root: never,

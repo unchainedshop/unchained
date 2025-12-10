@@ -1,4 +1,4 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 
 const getShopInfo = async ({ loaders, countryCode, locale, version }: Context) => {
   const language = await loaders.languageLoader.load({ isoCode: locale.language });

@@ -1,5 +1,5 @@
 import { DeliveryDirector, DeliveryPricingDirector } from '@unchainedshop/core';
-import { Context } from '../../context.js';
+import type { Context } from '../../context.ts';
 
 export const DeliveryProviderInterface = {
   async isActive(deliveryProvider, _, context: Context) {

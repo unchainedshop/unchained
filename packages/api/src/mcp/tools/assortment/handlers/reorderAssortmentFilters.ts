@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function reorderAssortmentFilters(
   context: Context,

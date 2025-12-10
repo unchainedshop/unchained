@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '../../../context.js';
-import { filterManagement, FilterManagementSchema } from './filterManagement.js';
+import type { Context } from '../../../context.ts';
+import { filterManagement, FilterManagementSchema } from './filterManagement.ts';
 
 export const registerFilterTools = (server: McpServer, context: Context) => {
   server.tool(

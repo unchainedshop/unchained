@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { User } from '@unchainedshop/core-users';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { User } from '@unchainedshop/core-users';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

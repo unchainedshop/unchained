@@ -1,6 +1,6 @@
 import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
-import { Context } from '../../context.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import type { Context } from '../../context.ts';
+import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 export async function getNormalizedQuotationDetails(quotationId: string, context: Context) {
   const { modules, loaders, locale } = context;

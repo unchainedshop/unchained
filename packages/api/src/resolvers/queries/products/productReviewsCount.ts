@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { ProductReviewQuery } from '@unchainedshop/core-products';
-import { Context } from '../../../context.js';
+import type { ProductReviewQuery } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
 
 export default async function productReviewsCount(
   root: never,

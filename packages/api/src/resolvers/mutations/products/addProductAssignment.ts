@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { ProductConfiguration, ProductType, ProductVariation } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import { type ProductConfiguration, ProductType, type ProductVariation } from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,
@@ -8,7 +8,7 @@ import {
   ProductVariationVectorInvalid,
   ProductVariationVectorAlreadySet,
   ProductVariationInfinityLoop,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 const extractVariationMatrix = (variations: ProductVariation[] = []) => {
   const cartesianProduct = (arrays) => {
     return arrays.reduce(

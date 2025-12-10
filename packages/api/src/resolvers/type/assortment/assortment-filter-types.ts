@@ -1,5 +1,5 @@
-import { AssortmentFilter as AssortmentFilterType } from '@unchainedshop/core-assortments';
-import { Context } from '../../../context.js';
+import type { AssortmentFilter as AssortmentFilterType } from '@unchainedshop/core-assortments';
+import type { Context } from '../../../context.ts';
 
 export const AssortmentFilter = {
   async assortment(obj: AssortmentFilterType, _, { loaders }: Context) {

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { QuotationStatus } from '@unchainedshop/core-quotations';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
@@ -10,7 +10,7 @@ import {
   ProductNotFoundError,
   OrderNotFoundError,
   QuotationItemConfigurationError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 import { QuotationDirector } from '@unchainedshop/core';
 
 export default async function addCartQuotation(

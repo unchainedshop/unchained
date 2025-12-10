@@ -1,5 +1,5 @@
 import { WorkerDirector } from '@unchainedshop/core';
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 
 const activeWorkTypes = async ({ modules }: Context) => {
   const typeList = await modules.worker.activeWorkTypes();

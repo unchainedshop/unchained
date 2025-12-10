@@ -1,5 +1,5 @@
-import { Context } from '../../context.js';
-import { SearchConfiguration } from '@unchainedshop/core-filters';
+import type { Context } from '../../context.ts';
+import type { SearchConfiguration } from '@unchainedshop/core-filters';
 
 export interface SearchResultData {
   searchConfiguration: SearchConfiguration & { productSelector: any };

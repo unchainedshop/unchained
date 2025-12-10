@@ -1,6 +1,6 @@
 import { OrderPricingSheet } from '@unchainedshop/core';
-import { Context } from '../../context.js';
-import { getNormalizedProductDetails } from './getNormalizedProductDetails.js';
+import type { Context } from '../../context.ts';
+import { getNormalizedProductDetails } from './getNormalizedProductDetails.ts';
 import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 
 export async function getNormalizedOrderDetails(

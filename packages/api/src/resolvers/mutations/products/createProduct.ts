@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Product, ProductText } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import type { Product, ProductText } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 
 export default async function createProduct(

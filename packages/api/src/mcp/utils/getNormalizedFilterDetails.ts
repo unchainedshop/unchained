@@ -1,4 +1,4 @@
-import { Context } from '../../context.js';
+import type { Context } from '../../context.ts';
 
 export async function getNormalizedFilterDetails(filterId: string, context: Context) {
   const { modules, locale, loaders } = context;

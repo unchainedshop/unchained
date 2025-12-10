@@ -1,12 +1,12 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { ProductType } from '@unchainedshop/core-products';
 import {
   CyclicProductBundlingNotSupportedError,
   ProductNotFoundError,
   ProductWrongTypeError,
-} from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+} from '../../../../errors.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function addBundleItem(context: Context, params: Params<'ADD_BUNDLE_ITEM'>) {
   const { modules } = context;

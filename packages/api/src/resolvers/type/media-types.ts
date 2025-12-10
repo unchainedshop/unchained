@@ -1,7 +1,7 @@
-import { File as FileType, getFileAdapter } from '@unchainedshop/core-files';
-import { Context } from '../../context.js';
-import { checkAction } from '../../acl.js';
-import { actions } from '../../roles/index.js';
+import { type File as FileType, getFileAdapter } from '@unchainedshop/core-files';
+import type { Context } from '../../context.ts';
+import { checkAction } from '../../acl.ts';
+import { actions } from '../../roles/index.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api');

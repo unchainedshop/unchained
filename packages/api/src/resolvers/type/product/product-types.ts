@@ -1,14 +1,14 @@
 import {
-  ProductText,
+  type ProductText,
   ProductStatus,
-  Product as IProduct,
+  type Product as IProduct,
   ProductType,
 } from '@unchainedshop/core-products';
-import { SortOption } from '@unchainedshop/utils';
-import { AssortmentPathLink } from '@unchainedshop/core-assortments';
-import { ProductMedia } from '@unchainedshop/core-products';
-import { ProductReview } from '@unchainedshop/core-products';
-import { Context } from '../../../context.js';
+import type { SortOption } from '@unchainedshop/utils';
+import type { AssortmentPathLink } from '@unchainedshop/core-assortments';
+import type { ProductMedia } from '@unchainedshop/core-products';
+import type { ProductReview } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
 
 export const Product = {
   __resolveType: (product: IProduct): string => {

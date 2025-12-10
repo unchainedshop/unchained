@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { Assortment, AssortmentText } from '@unchainedshop/core-assortments';
-import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import type { Assortment, AssortmentText } from '@unchainedshop/core-assortments';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function createAssortment(context: Context, params: Params<'CREATE'>) {
   const { modules } = context;

@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { ProductMedia } from '@unchainedshop/core-products';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { ProductMedia } from '@unchainedshop/core-products';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

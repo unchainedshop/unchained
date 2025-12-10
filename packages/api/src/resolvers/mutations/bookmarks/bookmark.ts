@@ -4,8 +4,8 @@ import {
   ProductNotFoundError,
   BookmarkNotFoundError,
   MultipleBookmarksFound,
-} from '../../../errors.js';
-import { Context } from '../../../context.js';
+} from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function bookmark(
   root: never,

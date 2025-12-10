@@ -1,8 +1,8 @@
 import { resolveBestSupported, resolveBestCurrency } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
-import { UnchainedHTTPServerContext } from './context.js';
+import type { UnchainedHTTPServerContext } from './context.ts';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:api');
 

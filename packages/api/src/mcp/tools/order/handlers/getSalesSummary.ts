@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { formatSummaryMap, resolveDateRange, resolveOrderFilters } from '../../../utils/orderFilters.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { formatSummaryMap, resolveDateRange, resolveOrderFilters } from '../../../utils/orderFilters.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getSalesSummary(context: Context, params: Params<'SALES_SUMMARY'>) {
   const { modules } = context;

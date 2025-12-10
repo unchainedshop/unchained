@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { UserWeb3AddressNotFoundError, UserWeb3AddressSignatureError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { UserWeb3AddressNotFoundError, UserWeb3AddressSignatureError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 import type { keccak_256 as Keccak256Type } from '@noble/hashes/sha3.js';
 import type { bytesToHex as BytesToHex, hexToBytes as HexToBytes } from '@noble/hashes/utils.js';

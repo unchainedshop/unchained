@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '../../context.js';
+import type { Context } from '../../context.ts';
 
 export const registerLocalizationResources = (server: McpServer, context: Context) => {
   server.resource(

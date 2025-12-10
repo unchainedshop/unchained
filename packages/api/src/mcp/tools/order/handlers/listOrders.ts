@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
-import { resolveOrderFilters } from '../../../utils/orderFilters.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.ts';
+import { resolveOrderFilters } from '../../../utils/orderFilters.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function listOrders(context: Context, params: Params<'LIST'>) {
   const { modules } = context;

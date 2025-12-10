@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '../../../context.js';
-import { localizationManagement, LocalizationManagementSchema } from './localizationManagement.js';
+import type { Context } from '../../../context.ts';
+import { localizationManagement, LocalizationManagementSchema } from './localizationManagement.ts';
 
 export const registerLocalizationTools = (server: McpServer, context: Context) => {
   server.tool(

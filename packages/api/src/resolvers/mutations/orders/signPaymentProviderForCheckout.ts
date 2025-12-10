@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { OrderPaymentStatus } from '@unchainedshop/core-orders';
 import {
@@ -9,7 +9,7 @@ import {
   OrderWrongPaymentStatusError,
   PaymentProviderNotFoundError,
   UserNoCartError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 import { PaymentDirector } from '@unchainedshop/core';
 
 export default async function signPaymentProviderForCheckout(

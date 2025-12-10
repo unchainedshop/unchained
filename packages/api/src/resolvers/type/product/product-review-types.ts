@@ -1,11 +1,11 @@
-import { Context } from '../../../context.js';
-import { Product } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import type { Product } from '@unchainedshop/core-products';
 import {
-  ProductReview as ProductReviewType,
+  type ProductReview as ProductReviewType,
   ProductReviewVoteType,
-  ProductVote,
+  type ProductVote,
 } from '@unchainedshop/core-products';
-import { User } from '@unchainedshop/core-users';
+import type { User } from '@unchainedshop/core-users';
 
 type HelperType<P, T> = (product: ProductReviewType, params: P, context: Context) => T;
 

@@ -1,11 +1,11 @@
-import { AssortmentLink } from '@unchainedshop/core-assortments';
+import type { AssortmentLink } from '@unchainedshop/core-assortments';
 import { log } from '@unchainedshop/logger';
 import {
   AssortmentNotFoundError,
   CyclicAssortmentLinkNotSupportedError,
   InvalidIdError,
-} from '../../../errors.js';
-import { Context } from '../../../context.js';
+} from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function addAssortmentLink(
   root: never,

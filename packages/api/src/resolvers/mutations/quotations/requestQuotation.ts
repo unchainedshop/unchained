@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async function requestQuotation(
   root: never,

@@ -1,7 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
-import { checkAction } from '../acl.js';
-import { actions } from '../roles/index.js';
-import { Context } from '../context.js';
+import { checkAction } from '../acl.ts';
+import { actions } from '../roles/index.ts';
+import type { Context } from '../context.ts';
 import { getFileAdapter } from '@unchainedshop/core-files';
 
 const logger = createLogger('unchained:temp-upload');

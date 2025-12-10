@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { DeliverProviderNotFoundError, InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { DeliverProviderNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async function updateDeliveryProvider(
   root: never,

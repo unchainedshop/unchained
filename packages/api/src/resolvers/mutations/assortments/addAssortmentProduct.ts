@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { AssortmentProduct } from '@unchainedshop/core-assortments';
-import { AssortmentNotFoundError, ProductNotFoundError, InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import type { AssortmentProduct } from '@unchainedshop/core-assortments';
+import { AssortmentNotFoundError, ProductNotFoundError, InvalidIdError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function addAssortmentProduct(
   root: never,

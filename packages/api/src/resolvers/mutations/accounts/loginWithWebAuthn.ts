@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { UserNotFoundError, WebAuthnDisabledError } from '../../../errors.js';
-import { User } from '@unchainedshop/core-users';
+import type { Context } from '../../../context.ts';
+import { UserNotFoundError, WebAuthnDisabledError } from '../../../errors.ts';
+import type { User } from '@unchainedshop/core-users';
 
 export default async function loginWithWebAuthn(
   root: never,

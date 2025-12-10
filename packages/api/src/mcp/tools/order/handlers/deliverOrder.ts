@@ -1,13 +1,13 @@
 import { OrderDeliveryStatus } from '@unchainedshop/core-orders';
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import {
   OrderNotFoundError,
   OrderWrongDeliveryStatusError,
   OrderWrongStatusError,
   OrderDeliveryNotFoundError,
-} from '../../../../errors.js';
-import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
-import { Params } from '../schemas.js';
+} from '../../../../errors.ts';
+import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function deliverOrder(context: Context, params: Params<'DELIVER_ORDER'>) {
   const { modules, services } = context;

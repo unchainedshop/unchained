@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { UserWebAuthnCredentialsNotFoundError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { UserWebAuthnCredentialsNotFoundError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function removeWebAuthnCredentials(
   root: never,

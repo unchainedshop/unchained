@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
 
 export default async function emptyCart(
   root: never,

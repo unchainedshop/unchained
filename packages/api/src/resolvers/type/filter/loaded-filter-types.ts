@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Filter, SearchQuery } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
+import type { Filter, SearchQuery } from '@unchainedshop/core-filters';
 import { FilterDirector } from '@unchainedshop/core';
 
 export interface LoadedFilterData {

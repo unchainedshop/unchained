@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
 import moniker from 'moniker';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { User } from '@unchainedshop/core-users';
+import type { User } from '@unchainedshop/core-users';
 
 export default async function loginAsGuest(root: never, _: any, context: Context) {
   log('mutation loginAsGuest');

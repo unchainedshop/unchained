@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { InvalidIdError } from '../../../errors.ts';
 
 export default async function work(
   root: never,

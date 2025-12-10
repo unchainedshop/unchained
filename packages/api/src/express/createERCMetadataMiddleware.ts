@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '../context.js';
-import { Request, RequestHandler } from 'express';
+import type { Context } from '../context.ts';
+import type { Request, RequestHandler } from 'express';
 
 const logger = createLogger('unchained:erc-metadata');
 

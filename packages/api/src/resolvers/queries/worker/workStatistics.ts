@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { DateFilterInput } from '@unchainedshop/utils';
+import type { Context } from '../../../context.ts';
+import type { DateFilterInput } from '@unchainedshop/utils';
 
 export default async function workStatistics(
   root: never,

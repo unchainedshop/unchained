@@ -1,9 +1,9 @@
-import createProvider from './createProvider.js';
-import updateProvider from './updateProvider.js';
-import removeProvider from './removeProvider.js';
-import getProvider from './getProvider.js';
-import listProviders from './listProviders.js';
-import getProviderInterfaces from './getProviderInterfaces.js';
+import createProvider from './createProvider.ts';
+import updateProvider from './updateProvider.ts';
+import removeProvider from './removeProvider.ts';
+import getProvider from './getProvider.ts';
+import listProviders from './listProviders.ts';
+import getProviderInterfaces from './getProviderInterfaces.ts';
 
 export default {
   CREATE: createProvider,

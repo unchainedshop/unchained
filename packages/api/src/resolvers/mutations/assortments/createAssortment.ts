@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Assortment, AssortmentText } from '@unchainedshop/core-assortments';
-import { Context } from '../../../context.js';
+import type { Assortment, AssortmentText } from '@unchainedshop/core-assortments';
+import type { Context } from '../../../context.ts';
 
 export default async function createAssortment(
   root: never,

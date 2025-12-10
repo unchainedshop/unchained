@@ -1,7 +1,7 @@
-import { AssortmentMediaText } from '@unchainedshop/core-assortments';
-import { Context } from '../../../../context.js';
-import { AssortmentMediaNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { AssortmentMediaText } from '@unchainedshop/core-assortments';
+import type { Context } from '../../../../context.ts';
+import { AssortmentMediaNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function updateAssortmentMediaTexts(
   context: Context,

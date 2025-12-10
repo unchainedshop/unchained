@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../../../context.js';
-import { orderManagement, OrderManagementSchema } from './orderManagement.js';
+import type { Context } from '../../../context.ts';
+import { orderManagement, OrderManagementSchema } from './orderManagement.ts';
 
 export const registerOrderTools = (server: McpServer, context: Context) => {
   server.tool(

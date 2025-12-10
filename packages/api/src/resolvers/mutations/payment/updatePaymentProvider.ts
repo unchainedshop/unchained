@@ -1,7 +1,7 @@
-import { Context } from '../../../context.js';
-import { PaymentProvider } from '@unchainedshop/core-payment';
+import type { Context } from '../../../context.ts';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
-import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors.js';
+import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async (
   root: never,

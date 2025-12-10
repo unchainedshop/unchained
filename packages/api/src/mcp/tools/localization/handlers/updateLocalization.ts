@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
-import sanitizeEntityData from '../../../utils/sanitizeLocalizationEntityData.js';
-import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
+import type { Context } from '../../../../context.ts';
+import sanitizeEntityData from '../../../utils/sanitizeLocalizationEntityData.ts';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.ts';
 
-import { Params } from '../schemas.js';
+import type { Params } from '../schemas.ts';
 
 export default async function updateLocalization(context: Context, params: Params<'UPDATE'>) {
   const { localizationType, entityId, entity } = params;

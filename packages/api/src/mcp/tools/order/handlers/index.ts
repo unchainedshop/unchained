@@ -1,14 +1,14 @@
-import listOrders from './listOrders.js';
-import getSalesSummary from './getSalesSummary.js';
-import getMonthlyBreakdown from './getMonthlyBreakdown.js';
-import getTopCustomers from './getTopCustomers.js';
-import getTopProducts from './getTopProducts.js';
-import getUserCart from './getUserCart.js';
-import getOrder from './getOrder.js';
-import payOrder from './payOrder.js';
-import deliverOrder from './deliverOrder.js';
-import confirmOrder from './confirmOrder.js';
-import rejectOrder from './rejectOrder.js';
+import listOrders from './listOrders.ts';
+import getSalesSummary from './getSalesSummary.ts';
+import getMonthlyBreakdown from './getMonthlyBreakdown.ts';
+import getTopCustomers from './getTopCustomers.ts';
+import getTopProducts from './getTopProducts.ts';
+import getUserCart from './getUserCart.ts';
+import getOrder from './getOrder.ts';
+import payOrder from './payOrder.ts';
+import deliverOrder from './deliverOrder.ts';
+import confirmOrder from './confirmOrder.ts';
+import rejectOrder from './rejectOrder.ts';
 
 export default {
   LIST: listOrders,

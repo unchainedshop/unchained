@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { PaymentDirector } from '@unchainedshop/core';
 
 export default async function paymentInterfaces(

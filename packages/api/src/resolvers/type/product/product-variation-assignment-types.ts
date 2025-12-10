@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Product, ProductAssignment, ProductConfiguration } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import type { Product, ProductAssignment, ProductConfiguration } from '@unchainedshop/core-products';
 
 export type AssignmentHelperType<T> = (
   data: { product: Product; assignment: ProductAssignment },

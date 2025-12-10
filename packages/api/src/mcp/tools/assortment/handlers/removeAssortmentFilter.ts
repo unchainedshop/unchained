@@ -1,5 +1,5 @@
-import { Context } from '../../../../context.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeAssortmentFilter(context: Context, params: Params<'REMOVE_FILTER'>) {
   const { modules } = context;

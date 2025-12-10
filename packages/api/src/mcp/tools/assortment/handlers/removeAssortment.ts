@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { AssortmentNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { AssortmentNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeAssortment(context: Context, params: Params<'REMOVE'>) {
   const { modules } = context;

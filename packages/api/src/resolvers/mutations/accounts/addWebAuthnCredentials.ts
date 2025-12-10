@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { WebAuthnDisabledError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { WebAuthnDisabledError } from '../../../errors.ts';
 
 export default async function addWebAuthnCredentials(
   root: never,

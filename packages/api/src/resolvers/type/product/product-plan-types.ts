@@ -1,10 +1,10 @@
-import {
+import type {
   ProductConfiguration,
   ProductPrice,
   Product as ProductType,
 } from '@unchainedshop/core-products';
-import { Context } from '../../../context.js';
-import { Product } from './product-types.js';
+import type { Context } from '../../../context.ts';
+import { Product } from './product-types.ts';
 
 export const PlanProduct = {
   ...Product,

@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { EnrollmentPeriod as EnrollmentPeriodType } from '@unchainedshop/core-enrollments';
+import type { Context } from '../../../context.ts';
+import type { EnrollmentPeriod as EnrollmentPeriodType } from '@unchainedshop/core-enrollments';
 
 export const EnrollmentPeriod = {
   async order(period: EnrollmentPeriodType, _: never, { loaders }: Context) {

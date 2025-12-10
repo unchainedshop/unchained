@@ -1,5 +1,5 @@
-import { Context } from '../../context.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import type { Context } from '../../context.ts';
+import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 const normalizeProxyAssignments = async (assignment, context: Context) => {
   const { loaders, modules, locale } = context;

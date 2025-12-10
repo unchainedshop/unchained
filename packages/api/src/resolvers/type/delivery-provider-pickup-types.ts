@@ -1,7 +1,7 @@
 import { DeliveryDirector } from '@unchainedshop/core';
-import { Context } from '../../context.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { DeliveryProviderInterface } from './delivery-provider-interface.js';
+import type { Context } from '../../context.ts';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { DeliveryProviderInterface } from './delivery-provider-interface.ts';
 
 export const DeliveryProviderPickUp = {
   ...DeliveryProviderInterface,

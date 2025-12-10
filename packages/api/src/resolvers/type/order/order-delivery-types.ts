@@ -1,6 +1,6 @@
-import { OrderDelivery as OrderDeliveryType } from '@unchainedshop/core-orders';
+import type { OrderDelivery as OrderDeliveryType } from '@unchainedshop/core-orders';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 
 export const OrderDelivery = {
   __resolveType: async (obj: OrderDeliveryType, { loaders }: Context) => {

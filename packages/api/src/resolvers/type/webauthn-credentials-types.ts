@@ -1,4 +1,4 @@
-import { Context } from '../../context.js';
+import type { Context } from '../../context.ts';
 
 export const WebAuthnCredentials = {
   async _id(obj: {

@@ -1,9 +1,9 @@
 import type * as mcpSDKServerLibraryTypes from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/types.js';
 import type * as mcpSDKServerTypes from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '../context.js';
+import type { Context } from '../context.ts';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
-import initMCPServer from '../mcp/index.js';
+import initMCPServer from '../mcp/index.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:mcp');

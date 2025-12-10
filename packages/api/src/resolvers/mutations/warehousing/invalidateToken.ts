@@ -1,11 +1,11 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   InvalidIdError,
   TokenNotFoundError,
   ProductNotFoundError,
   TokenWrongStatusError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector } from '@unchainedshop/core';
 

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { SearchFilterQuery } from '@unchainedshop/core-filters';
-import { Context } from '../../../context.js';
+import type { SearchFilterQuery } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
 
 export default async function searchProducts(
   root: never,

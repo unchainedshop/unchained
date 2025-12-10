@@ -1,6 +1,6 @@
 import { PaymentPricingSheet } from '@unchainedshop/core';
-import { Context } from '../../../context.js';
-import { OrderPayment } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { OrderPayment } from '@unchainedshop/core-orders';
 
 export const OrderPaymentCard = {
   status(obj: OrderPayment, _: never, { modules }: Context) {

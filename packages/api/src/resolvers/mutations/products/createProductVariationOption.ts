@@ -1,7 +1,7 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors.js';
-import { VariationInputText } from './createProductVariation.js';
+import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors.ts';
+import type { VariationInputText } from './createProductVariation.ts';
 
 export default async function createProductVariationOption(
   root: never,

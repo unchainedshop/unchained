@@ -1,8 +1,8 @@
 import { ProductType } from '@unchainedshop/core-products';
-import { Context } from '../../context.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import type { Context } from '../../context.ts';
+import normalizeMediaUrl from './normalizeMediaUrl.ts';
 import { createLogger } from '@unchainedshop/logger';
-import normalizeProxyAssignments from './normalizeProxyAssignments.js';
+import normalizeProxyAssignments from './normalizeProxyAssignments.ts';
 
 const logger = createLogger('unchained:api:mcp');
 export async function getNormalizedProductDetails(productId: string, context: Context) {

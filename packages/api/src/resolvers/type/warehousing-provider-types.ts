@@ -1,6 +1,6 @@
-import { WarehousingDirector, WarehousingError, WarehousingInterface } from '@unchainedshop/core';
-import { WarehousingProvider as WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { Context } from '../../context.js';
+import { WarehousingDirector, type WarehousingError, type WarehousingInterface } from '@unchainedshop/core';
+import type { WarehousingProvider as WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import type { Context } from '../../context.ts';
 
 export type HelperType<P, T> = (provider: WarehousingProviderType, params: P, context: Context) => T;
 

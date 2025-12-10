@@ -1,12 +1,12 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import {
   ProductLinkedToActiveBundleError,
   ProductLinkedToActiveVariationError,
   ProductLinkedToEnrollmentError,
   ProductLinkedToQuotationError,
   ProductNotFoundError,
-} from '../../../../errors.js';
-import { Params } from '../schemas.js';
+} from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeProduct(context: Context, params: Params<'REMOVE'>) {
   const { modules, services } = context;

@@ -1,11 +1,11 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import {
   ProductNotFoundError,
   OrderQuantityTooLowError,
   OrderWrongStatusError,
   OrderNotFoundError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addMultipleCartProducts(

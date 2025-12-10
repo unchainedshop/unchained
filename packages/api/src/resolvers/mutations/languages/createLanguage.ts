@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Language } from '@unchainedshop/core-languages';
+import type { Context } from '../../../context.ts';
+import type { Language } from '@unchainedshop/core-languages';
 import { log } from '@unchainedshop/logger';
 
 export default async function createLanguage(

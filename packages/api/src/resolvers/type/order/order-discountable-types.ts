@@ -1,11 +1,11 @@
-import {
+import type {
   Order,
   OrderPosition,
   OrderDelivery,
   OrderDiscount,
   OrderPayment,
 } from '@unchainedshop/core-orders';
-import { Price } from '@unchainedshop/utils';
+import type { Price } from '@unchainedshop/utils';
 
 export const OrderDiscountableType = {
   OrderItemDiscount: 'OrderItemDiscount',

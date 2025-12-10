@@ -1,10 +1,10 @@
 import { PaymentDirector } from '@unchainedshop/core';
-import { Context } from '../../../context.js';
-import {
+import type { Context } from '../../../context.ts';
+import type {
   PaymentCredentials as PaymentCredentialsType,
   PaymentProvider,
 } from '@unchainedshop/core-payment';
-import { User } from '@unchainedshop/core-users';
+import type { User } from '@unchainedshop/core-users';
 
 export type HelperType<P, T> = (credentials: PaymentCredentialsType, params: P, context: Context) => T;
 

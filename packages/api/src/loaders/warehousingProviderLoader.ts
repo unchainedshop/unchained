@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

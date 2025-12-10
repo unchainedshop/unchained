@@ -1,6 +1,6 @@
 import { WorkerDirector } from '@unchainedshop/core';
-import { Context } from '../../context.js';
-import { Work as WorkType } from '@unchainedshop/core-worker';
+import type { Context } from '../../context.ts';
+import type { Work as WorkType } from '@unchainedshop/core-worker';
 import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
 
 type HelperType<P, T> = (work: WorkType, params: P, context: Context) => T;

@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { createYoga, createSchema, YogaServerOptions, YogaSchemaDefinition } from 'graphql-yoga';
+import { createYoga, createSchema, type YogaServerOptions, type YogaSchemaDefinition } from 'graphql-yoga';
 
 const logger = createLogger('unchained:api');
 

@@ -1,5 +1,5 @@
 {
-  "extends": "../shared/base.tsconfig.json",
+  "extends": ["../shared/base.tsconfig.json", "../shared/node-native.tsconfig.json"],
   "compilerOptions": {
     "declarationDir": "./lib",
     "rootDir": "./src",

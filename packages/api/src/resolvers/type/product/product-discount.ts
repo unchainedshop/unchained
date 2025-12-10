@@ -1,4 +1,4 @@
-import { ProductDiscount as ProductDiscountType } from '@unchainedshop/core-products';
+import type { ProductDiscount as ProductDiscountType } from '@unchainedshop/core-products';
 import { ProductDiscountDirector } from '@unchainedshop/core';
 
 export const ProductDiscount = {

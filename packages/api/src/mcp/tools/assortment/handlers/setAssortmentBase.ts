@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { AssortmentNotFoundError } from '../../../../errors.js';
-import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { AssortmentNotFoundError } from '../../../../errors.ts';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function setAssortmentBase(context: Context, params: Params<'SET_BASE'>) {
   const { modules } = context;

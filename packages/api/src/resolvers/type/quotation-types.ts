@@ -1,5 +1,5 @@
-import { Quotation as QuotationType } from '@unchainedshop/core-quotations';
-import { Context } from '../../context.js';
+import type { Quotation as QuotationType } from '@unchainedshop/core-quotations';
+import type { Context } from '../../context.ts';
 
 export const Quotation = {
   country: async (obj: QuotationType, _: never, { loaders }: Context) =>

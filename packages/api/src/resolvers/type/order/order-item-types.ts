@@ -1,11 +1,11 @@
-import { Context } from '../../../context.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
-import { Quotation } from '@unchainedshop/core-quotations';
-import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
-import { Price } from '@unchainedshop/utils';
+import type { Context } from '../../../context.ts';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { Order } from '@unchainedshop/core-orders';
+import type { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
+import type { Product } from '@unchainedshop/core-products';
+import type { Quotation } from '@unchainedshop/core-quotations';
+import type { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { Price } from '@unchainedshop/utils';
 import { ProductPricingSheet } from '@unchainedshop/core';
 
 const getPricingSheet = async (orderPosition: OrderPosition, { loaders }: Context) => {

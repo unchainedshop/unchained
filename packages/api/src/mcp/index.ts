@@ -1,15 +1,15 @@
 import type { McpServer as McpServerType } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../context.js';
-import { registerFilterTools } from './tools/filter/index.js';
-import { registerProductTools } from './tools/product/index.js';
-import { registerLocalizationTools } from './tools/localization/index.js';
-import { registerProviderTools } from './tools/provider/index.js';
-import { registerOrderTools } from './tools/order/index.js';
-import { registerQuotationTools } from './tools/quotation/index.js';
-import { registerAssortmentTools } from './tools/assortment/index.js';
-import { registerUsersTools } from './tools/users/index.js';
-import { registerSystemTools } from './tools/system/index.js';
-import { registerLocalizationResources } from './resources/localization.js';
+import type { Context } from '../context.ts';
+import { registerFilterTools } from './tools/filter/index.ts';
+import { registerProductTools } from './tools/product/index.ts';
+import { registerLocalizationTools } from './tools/localization/index.ts';
+import { registerProviderTools } from './tools/provider/index.ts';
+import { registerOrderTools } from './tools/order/index.ts';
+import { registerQuotationTools } from './tools/quotation/index.ts';
+import { registerAssortmentTools } from './tools/assortment/index.ts';
+import { registerUsersTools } from './tools/users/index.ts';
+import { registerSystemTools } from './tools/system/index.ts';
+import { registerLocalizationResources } from './resources/localization.ts';
 
 export default function createMcpServer(server: McpServerType, context: Context, roles) {
   if (!roles?.includes('admin')) {

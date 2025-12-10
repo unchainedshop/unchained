@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { ProductVariationNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductVariationNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function updateProductVariationTexts(
   context: Context,

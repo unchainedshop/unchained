@@ -1,6 +1,6 @@
 import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
-import { WorkListOptions } from '../types.js';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { WorkListOptions } from '../types.ts';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 const listWork = async (context: UnchainedCore, options?: WorkListOptions) => {
   const { modules } = context;

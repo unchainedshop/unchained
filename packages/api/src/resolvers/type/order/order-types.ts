@@ -1,17 +1,17 @@
-import { Context } from '../../../context.js';
-import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/core-currencies';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Enrollment } from '@unchainedshop/core-enrollments';
-import {
+import type { Context } from '../../../context.ts';
+import type { Country } from '@unchainedshop/core-countries';
+import type { Currency } from '@unchainedshop/core-currencies';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { Enrollment } from '@unchainedshop/core-enrollments';
+import type {
   Order as OrderType,
   OrderPosition,
   OrderPayment,
   OrderDiscount,
   OrderDelivery,
 } from '@unchainedshop/core-orders';
-import { User } from '@unchainedshop/core-users';
-import { Price } from '@unchainedshop/utils';
+import type { User } from '@unchainedshop/core-users';
+import type { Price } from '@unchainedshop/utils';
 import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {

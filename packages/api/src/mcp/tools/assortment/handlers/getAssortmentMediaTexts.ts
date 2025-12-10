@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { AssortmentMediaNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { AssortmentMediaNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getAssortmentMediaTexts(
   context: Context,

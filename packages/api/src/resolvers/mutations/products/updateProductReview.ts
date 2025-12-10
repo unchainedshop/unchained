@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { ProductReview } from '@unchainedshop/core-products';
-import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import type { ProductReview } from '@unchainedshop/core-products';
+import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async function updateProductReview(
   root: never,

@@ -1,9 +1,9 @@
-import scalars from './scalars.js';
-import directives from './directives.js';
-import types from './types/index.js';
-import inputTypes from './inputTypes.js';
-import query from './query.js';
-import mutation from './mutation.js';
+import scalars from './scalars.ts';
+import directives from './directives.ts';
+import types from './types/index.ts';
+import inputTypes from './inputTypes.ts';
+import query from './query.ts';
+import mutation from './mutation.ts';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';

@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   FilterManagementSchema,
   FilterManagementZodSchema,
-  FilterManagementParams,
-  ActionName,
-} from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
+  type FilterManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { FilterManagementSchema, FilterManagementZodSchema, FilterManagementParams };
+export { FilterManagementSchema, FilterManagementZodSchema };
+export type { FilterManagementParams };
 
 export async function filterManagement(context: Context, params: FilterManagementParams) {
   const { action, ...actionParams } = params;

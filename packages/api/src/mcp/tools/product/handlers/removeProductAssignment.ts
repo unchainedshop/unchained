@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { ProductType } from '@unchainedshop/core-products';
-import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeProductAssignment(
   context: Context,

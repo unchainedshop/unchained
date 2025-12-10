@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { ProductNotFoundError } from '../../../../errors.js';
-import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductNotFoundError } from '../../../../errors.ts';
+import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getProductMedia(context: Context, params: Params<'GET_MEDIA'>) {
   const { modules } = context;

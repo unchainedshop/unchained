@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
-import { AssortmentNotFoundError } from '../../../../errors.js';
-import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
-import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { AssortmentNotFoundError } from '../../../../errors.ts';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
+import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getAssortmentFilters(context: Context, params: Params<'GET_FILTERS'>) {
   const { modules } = context;

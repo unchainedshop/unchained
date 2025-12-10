@@ -1,5 +1,5 @@
-import { User, UserRegistrationData } from '@unchainedshop/core-users';
-import { Context } from '../../../context.js';
+import type { User, UserRegistrationData } from '@unchainedshop/core-users';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   AuthOperationFailedError,
@@ -8,7 +8,7 @@ import {
   UsernameOrEmailRequiredError,
   PasswordOrWebAuthnPublicKeyRequiredError,
   PasswordInvalidError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 
 export default async function createUser(root: never, params: UserRegistrationData, context: Context) {
   const { modules, userId } = context;

@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   UsersManagementSchema,
   UsersManagementZodSchema,
-  UsersManagementParams,
-  ActionName,
-} from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
+  type UsersManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { UsersManagementSchema, UsersManagementZodSchema, UsersManagementParams };
+export { UsersManagementSchema, UsersManagementZodSchema };
+export type { UsersManagementParams };
 
 export async function usersManagement(context: Context, params: UsersManagementParams) {
   const { action, ...actionParams } = params;

@@ -1,5 +1,5 @@
-import { Context } from '../../../../context.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import type { Params } from '../schemas.ts';
 
 const getEventsStatistics = async ({ modules }: Context, options: Params<'EVENT_STATISTICS'>) => {
   const statistics = await modules.events.getReport(options as any);

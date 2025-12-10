@@ -1,5 +1,5 @@
-import { Context } from '../../../../context.js';
-import { WorkCountOptions } from '../types.js';
+import type { Context } from '../../../../context.ts';
+import type { WorkCountOptions } from '../types.ts';
 
 const countWork = async ({ modules }: Context, options?: WorkCountOptions) => {
   const countOptions = options || {};

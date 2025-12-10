@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getUserCart(context: Context, params: Params<'GET_CART'>) {
   const { modules, countryCode } = context;

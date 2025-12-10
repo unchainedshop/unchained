@@ -1,8 +1,8 @@
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { Context } from '../../../../context.js';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../../../errors.js';
-import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { OrderNotFoundError, OrderWrongStatusError } from '../../../../errors.ts';
+import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function rejectOrder(context: Context, params: Params<'REJECT_ORDER'>) {
   const { modules, services } = context;

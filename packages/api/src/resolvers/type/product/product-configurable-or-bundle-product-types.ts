@@ -1,4 +1,4 @@
-import { Product as IProduct, ProductType } from '@unchainedshop/core-products';
+import { type Product as IProduct, ProductType } from '@unchainedshop/core-products';
 
 export const ConfigurableOrBundleProduct = {
   __resolveType: (product: IProduct): string => {

@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import {
   ProductNotFoundError,
   InvalidIdError,
@@ -7,7 +7,7 @@ import {
   ProductLinkedToActiveBundleError,
   ProductLinkedToEnrollmentError,
   ProductLinkedToQuotationError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 
 export default async function removeProduct(
   root: never,

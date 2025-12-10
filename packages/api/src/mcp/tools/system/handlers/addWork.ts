@@ -1,7 +1,7 @@
 import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
-import { Context } from '../../../../context.js';
-import { Params } from '../schemas.js';
-import { WorkData } from '@unchainedshop/core-worker';
+import type { Context } from '../../../../context.ts';
+import type { Params } from '../schemas.ts';
+import type { WorkData } from '@unchainedshop/core-worker';
 
 const addWork = async (context: Context, options: Params<'WORKER_ADD'>) => {
   const { modules } = context;

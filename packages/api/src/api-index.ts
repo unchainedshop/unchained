@@ -1,24 +1,24 @@
-import createGraphQLServer, { GraphQLServerOptions } from './createGraphQLServer.js';
+import createGraphQLServer, { type GraphQLServerOptions } from './createGraphQLServer.ts';
 import {
   createContextResolver,
   setCurrentContextResolver,
   getCurrentContextResolver,
-  AdminUiConfig,
-  UnchainedContextResolver,
-} from './context.js';
-import { UnchainedCore } from '@unchainedshop/core';
-export * from './events.js';
-export * from './context.js';
-export * from './locale-context.js';
-export * from './loaders/index.js';
-export * from './errors.js';
-export * as acl from './acl.js';
-export * as roles from './roles/index.js';
+  type AdminUiConfig,
+  type UnchainedContextResolver,
+} from './context.ts';
+import type { UnchainedCore } from '@unchainedshop/core';
+export * from './events.ts';
+export * from './context.ts';
+export * from './locale-context.ts';
+export * from './loaders/index.ts';
+export * from './errors.ts';
+export * as acl from './acl.ts';
+export * as roles from './roles/index.ts';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
-import { buildDefaultTypeDefs } from './schema/index.js';
-import resolvers from './resolvers/index.js';
-import { actions } from './roles/index.js';
+import { buildDefaultTypeDefs } from './schema/index.ts';
+import resolvers from './resolvers/index.ts';
+import { actions } from './roles/index.ts';
 
 export type UnchainedServerOptions = {
   roles?: any;

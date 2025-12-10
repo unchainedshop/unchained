@@ -1,5 +1,5 @@
-import { mongodb } from '@unchainedshop/mongodb';
-import { Context } from '../../../context.js';
+import type { mongodb } from '@unchainedshop/mongodb';
+import type { Context } from '../../../context.ts';
 
 function buildDateMatch(dateField: string, dateRange?: { start?: string; end?: string }) {
   if (!dateRange?.start && !dateRange?.end) return { [dateField]: { $exists: true } };

@@ -1,6 +1,6 @@
-import { Order } from '@unchainedshop/core-orders';
-import { Context } from '../../../context.js';
-import { Price } from '@unchainedshop/utils';
+import type { Order } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { Price } from '@unchainedshop/utils';
 
 export const OrderGlobalDiscount = {
   _id(

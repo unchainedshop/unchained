@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Language } from '@unchainedshop/core-languages';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { Language } from '@unchainedshop/core-languages';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

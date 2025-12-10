@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../../../context.js';
-import { systemManagement } from './systemManagement.js';
-import { SystemManagementSchema } from './schemas.js';
+import type { Context } from '../../../context.ts';
+import { systemManagement } from './systemManagement.ts';
+import { SystemManagementSchema } from './schemas.ts';
 
 export const registerSystemTools = (server: McpServer, context: Context) => {
   server.tool(

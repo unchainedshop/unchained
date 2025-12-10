@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { OrderDeliveryStatus } from '@unchainedshop/core-orders';
 import {
   OrderNotFoundError,
@@ -7,7 +7,7 @@ import {
   OrderWrongStatusError,
   InvalidIdError,
   OrderDeliveryNotFoundError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 
 export default async function deliverOrder(
   root: never,

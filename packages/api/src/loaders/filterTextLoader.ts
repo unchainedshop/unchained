@@ -1,8 +1,8 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import DataLoader from 'dataloader';
-import buildLocaleMap from './buildLocaleMap.js';
-import { FilterText } from '@unchainedshop/core-filters';
-import buildTextMap from './buildTextMap.js';
+import buildLocaleMap from './buildLocaleMap.ts';
+import type { FilterText } from '@unchainedshop/core-filters';
+import buildTextMap from './buildTextMap.ts';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<

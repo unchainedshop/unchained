@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidCredentialsError, UsernameOrEmailRequiredError } from '../../../errors.js';
-import { Context } from '../../../context.js';
-import { User } from '@unchainedshop/core-users';
+import { InvalidCredentialsError, UsernameOrEmailRequiredError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
+import type { User } from '@unchainedshop/core-users';
 
 export default async function loginWithPassword(
   root: never,

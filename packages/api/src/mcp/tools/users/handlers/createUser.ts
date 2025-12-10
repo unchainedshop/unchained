@@ -1,12 +1,12 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import {
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
   PasswordInvalidError,
   AuthOperationFailedError,
-} from '../../../../errors.js';
-import { Params } from '../schemas.js';
-import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.js';
+} from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
+import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.ts';
 
 export default async function createUser(context: Context, params: Params<'CREATE'>) {
   const { modules } = context;

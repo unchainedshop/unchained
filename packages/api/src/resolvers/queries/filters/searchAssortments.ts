@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { SearchQuery } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
+import type { SearchQuery } from '@unchainedshop/core-filters';
 import { log } from '@unchainedshop/logger';
 
 export default async function searchAssortments(root: never, query: SearchQuery, context: Context) {

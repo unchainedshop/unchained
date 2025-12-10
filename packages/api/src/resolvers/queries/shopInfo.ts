@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import { Context } from '../../context.js';
+import type { Context } from '../../context.ts';
 import { log } from '@unchainedshop/logger';
 
 export default function shopInfo(

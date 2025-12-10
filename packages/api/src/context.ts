@@ -1,8 +1,8 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import instantiateLoaders, { UnchainedLoaders } from './loaders/index.js';
-import { getLocaleContext, UnchainedLocaleContext } from './locale-context.js';
-import { UnchainedServerOptions } from './api-index.js';
-import { User } from '@unchainedshop/core-users';
+import type { UnchainedCore } from '@unchainedshop/core';
+import instantiateLoaders, { type UnchainedLoaders } from './loaders/index.ts';
+import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.ts';
+import type { UnchainedServerOptions } from './api-index.ts';
+import type { User } from '@unchainedshop/core-users';
 
 export type LoginFn = (
   user: User,

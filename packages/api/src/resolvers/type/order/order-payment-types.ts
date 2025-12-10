@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { OrderPayment as OrderPaymentType } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { OrderPayment as OrderPaymentType } from '@unchainedshop/core-orders';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 
 export const OrderPayment = {

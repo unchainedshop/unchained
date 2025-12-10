@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getUserEnrollments(context: Context, params: Params<'GET_ENROLLMENTS'>) {
   const { modules } = context;

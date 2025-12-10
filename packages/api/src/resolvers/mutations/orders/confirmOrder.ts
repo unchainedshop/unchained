@@ -1,7 +1,7 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.js';
+import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
 
 export default async function confirmOrder(
   root: never,

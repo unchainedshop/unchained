@@ -1,23 +1,23 @@
 import e from 'express';
 import session from 'express-session';
 import multer from 'multer';
-import MongoStore from '../mongo-store.js';
+import MongoStore from '../mongo-store.ts';
 import { Passport } from 'passport';
-import { YogaServerInstance } from 'graphql-yoga';
+import type { YogaServerInstance } from 'graphql-yoga';
 import { mongodb } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
-import { User } from '@unchainedshop/core-users';
+import type { User } from '@unchainedshop/core-users';
 
-import { getCurrentContextResolver, LoginFn, LogoutFn } from '../context.js';
-import createBulkImportMiddleware from './createBulkImportMiddleware.js';
-import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
-import createTempUploadMiddleware from './createTempUploadMiddleware.js';
-import createMCPMiddleware from './createMCPMiddleware.js';
-import { API_EVENTS } from '../events.js';
-import { ChatConfiguration } from '../chat/utils.js';
-import { connectChat } from './chatHandler.js';
-import { CipherKey } from 'node:crypto';
+import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
+import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
+import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
+import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
+import createMCPMiddleware from './createMCPMiddleware.ts';
+import { API_EVENTS } from '../events.ts';
+import type { ChatConfiguration } from '../chat/utils.ts';
+import { connectChat } from './chatHandler.ts';
+import type { CipherKey } from 'node:crypto';
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;

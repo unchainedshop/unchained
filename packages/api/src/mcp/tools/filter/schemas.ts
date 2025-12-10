@@ -4,7 +4,7 @@ import {
   SortingSchema,
   SearchSchema,
   LocalizationTextSchema,
-} from '../../utils/sharedSchemas.js';
+} from '../../utils/sharedSchemas.ts';
 
 export const FilterTextInputSchema = LocalizationTextSchema.describe('Filter localized text data');
 

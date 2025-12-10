@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
+import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.ts';
 import { ProductVariationType, ProductType } from '@unchainedshop/core-products';
 
 export interface VariationInputText {

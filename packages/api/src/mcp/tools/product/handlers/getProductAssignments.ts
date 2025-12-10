@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { ProductType } from '@unchainedshop/core-products';
-import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
-import normalizeProxyAssignments from '../../../utils/normalizeProxyAssignments.js';
+import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
+import normalizeProxyAssignments from '../../../utils/normalizeProxyAssignments.ts';
 
 export default async function getProductAssignments(
   context: Context,

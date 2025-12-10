@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
-import { Assortment } from '@unchainedshop/core-assortments';
-import { SearchFilterQuery } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
+import type { Assortment } from '@unchainedshop/core-assortments';
+import type { SearchFilterQuery } from '@unchainedshop/core-filters';
 
 export const AssortmentTypes = {
   assortmentPaths(obj: Assortment, _, { modules, loaders }: Context) {

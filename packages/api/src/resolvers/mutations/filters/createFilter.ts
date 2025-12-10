@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Filter } from '@unchainedshop/core-filters';
-import { Context } from '../../../context.js';
-import { FilterDirector, FilterInputText } from '@unchainedshop/core';
-import { DuplicateFilterKeyError } from '../../../errors.js';
+import type { Filter } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
+import { FilterDirector, type FilterInputText } from '@unchainedshop/core';
+import { DuplicateFilterKeyError } from '../../../errors.ts';
 
 export default async function createFilter(
   root: never,

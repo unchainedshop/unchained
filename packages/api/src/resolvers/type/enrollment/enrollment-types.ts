@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Enrollment as EnrollmentType } from '@unchainedshop/core-enrollments';
+import type { Context } from '../../../context.ts';
+import type { Enrollment as EnrollmentType } from '@unchainedshop/core-enrollments';
 
 export const Enrollment = {
   isExpired: (obj: EnrollmentType, params: { referenceDate?: Date }, { modules }: Context) => {

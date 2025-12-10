@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption } from '@unchainedshop/utils';
-import { FilterQuery } from '@unchainedshop/core-filters';
-import { Context } from '../../../context.js';
+import type { SortOption } from '@unchainedshop/utils';
+import type { FilterQuery } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
 
 export default async function filters(
   root: never,

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { ProductQuery } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import type { ProductQuery } from '@unchainedshop/core-products';
 
 export default async function productsCount(
   root: never,

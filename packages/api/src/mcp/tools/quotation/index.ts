@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../../../context.js';
-import { quotationManagement, QuotationManagementSchema } from './quotationManagement.js';
+import type { Context } from '../../../context.ts';
+import { quotationManagement, QuotationManagementSchema } from './quotationManagement.ts';
 
 export const registerQuotationTools = (server: McpServer, context: Context) => {
   server.tool(

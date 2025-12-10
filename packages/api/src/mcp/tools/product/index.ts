@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../../../context.js';
-import { productManagement, ProductManagementSchema } from './productManagement.js';
+import type { Context } from '../../../context.ts';
+import { productManagement, ProductManagementSchema } from './productManagement.ts';
 
 export const registerProductTools = (server: McpServer, context: Context) => {
   server.tool(

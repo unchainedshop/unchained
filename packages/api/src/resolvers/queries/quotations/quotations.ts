@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption } from '@unchainedshop/utils';
-import { QuotationQuery } from '@unchainedshop/core-quotations';
-import { Context } from '../../../context.js';
+import type { SortOption } from '@unchainedshop/utils';
+import type { QuotationQuery } from '@unchainedshop/core-quotations';
+import type { Context } from '../../../context.ts';
 
 export default async function quotations(
   root: never,

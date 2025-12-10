@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeLocalization(context: Context, params: Params<'REMOVE'>) {
   const { localizationType, entityId } = params;

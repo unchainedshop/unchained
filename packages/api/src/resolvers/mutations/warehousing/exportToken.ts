@@ -1,8 +1,8 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { WorkStatus } from '@unchainedshop/core-worker';
 
-import { InvalidIdError, TokenNotFoundError, TokenWrongStatusError } from '../../../errors.js';
+import { InvalidIdError, TokenNotFoundError, TokenWrongStatusError } from '../../../errors.ts';
 
 export default async function exportToken(
   root: never,

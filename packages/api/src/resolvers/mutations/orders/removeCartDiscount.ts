@@ -1,12 +1,12 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 
 import {
   OrderDiscountNotFoundError,
   OrderWrongStatusError,
   InvalidIdError,
   OrderNotFoundError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 import { OrderDiscountTrigger } from '@unchainedshop/core-orders';
 import { OrderDiscountDirector } from '@unchainedshop/core';
 

@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import {
+import type { Context } from '../../../context.ts';
+import type {
   ProductVariation as ProductVariationType,
   ProductVariationText,
 } from '@unchainedshop/core-products';

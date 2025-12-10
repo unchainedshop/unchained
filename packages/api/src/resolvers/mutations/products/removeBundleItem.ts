@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { ProductType } from '@unchainedshop/core-products';
-import { Context } from '../../../context.js';
-import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.ts';
 
 export default async function removeBundleItem(
   root: never,

@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { resolveDateRange } from '../../../utils/orderFilters.js';
-import { Params } from '../schemas.js';
+import { resolveDateRange } from '../../../utils/orderFilters.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getTopCustomers(context: Context, params: Params<'TOP_CUSTOMERS'>) {
   const { modules, loaders } = context;

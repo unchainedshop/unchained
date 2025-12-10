@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { BookmarkAlreadyExistsError, InvalidIdError, ProductNotFoundError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { BookmarkAlreadyExistsError, InvalidIdError, ProductNotFoundError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function createBookmark(
   root: never,

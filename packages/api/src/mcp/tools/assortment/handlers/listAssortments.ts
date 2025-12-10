@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function listAssortments(context: Context, params: Params<'LIST'>) {
   const { modules } = context;

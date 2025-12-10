@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
-import { ProductType, ProductVariation } from '@unchainedshop/core-products';
-import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductType, type ProductVariation } from '@unchainedshop/core-products';
+import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function addProductAssignment(context: Context, params: Params<'ADD_ASSIGNMENT'>) {
   const { modules } = context;

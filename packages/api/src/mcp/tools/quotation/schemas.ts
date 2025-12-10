@@ -4,7 +4,7 @@ import {
   SortingSchema,
   SearchSchema,
   DateRangeSchema,
-} from '../../utils/sharedSchemas.js';
+} from '../../utils/sharedSchemas.ts';
 
 export const QuotationStatusEnum = z.enum([
   'REQUESTED',

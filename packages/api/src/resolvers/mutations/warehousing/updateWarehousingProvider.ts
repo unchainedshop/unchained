@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { WarehousingProvider } from '@unchainedshop/core-warehousing';
-import { WarehousingProviderNotFoundError, InvalidIdError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import { WarehousingProviderNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async function updateWarehousingProvider(
   root: never,

@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { CountryQuery } from '@unchainedshop/core-countries';
+import type { Context } from '../../../context.ts';
+import type { CountryQuery } from '@unchainedshop/core-countries';
 import { log } from '@unchainedshop/logger';
 
 export default async function countriesCount(

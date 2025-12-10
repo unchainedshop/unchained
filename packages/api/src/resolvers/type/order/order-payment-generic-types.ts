@@ -1,6 +1,6 @@
 import { PaymentPricingSheet } from '@unchainedshop/core';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { Context } from '../../../context.js';
+import type { OrderPayment } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
 
 export const OrderPaymentGeneric = {
   status(obj: OrderPayment, _: never, { modules }: Context) {

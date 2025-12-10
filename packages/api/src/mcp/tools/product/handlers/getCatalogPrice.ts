@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { ProductNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getCatalogPrice(context: Context, params: Params<'GET_CATALOG_PRICE'>) {
   const { modules, services } = context;

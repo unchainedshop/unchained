@@ -1,18 +1,18 @@
-import activeWorkTypes from './activeWorkTypes.js';
-import addWork from './addWork.js';
-import allocateWork from './allocateWork.js';
-import countEvents from './countEvents.js';
-import countWork from './countWork.js';
-import finishWork from './finishWork.js';
-import getEvent from './getEvent.js';
-import getEventsStatistics from './getEventsStatistics.js';
-import getShopInfo from './getShopInfo.js';
-import getWork from './getWork.js';
-import getWorkStatistics from './getWorkStatistics.js';
-import listEvents from './listEvents.js';
-import listWork from './listWork.js';
-import processNextWork from './processNextWork.js';
-import removeWork from './removeWork.js';
+import activeWorkTypes from './activeWorkTypes.ts';
+import addWork from './addWork.ts';
+import allocateWork from './allocateWork.ts';
+import countEvents from './countEvents.ts';
+import countWork from './countWork.ts';
+import finishWork from './finishWork.ts';
+import getEvent from './getEvent.ts';
+import getEventsStatistics from './getEventsStatistics.ts';
+import getShopInfo from './getShopInfo.ts';
+import getWork from './getWork.ts';
+import getWorkStatistics from './getWorkStatistics.ts';
+import listEvents from './listEvents.ts';
+import listWork from './listWork.ts';
+import processNextWork from './processNextWork.ts';
+import removeWork from './removeWork.ts';
 
 export default {
   SHOP_INFO: getShopInfo,

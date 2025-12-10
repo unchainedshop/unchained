@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { InvalidIdError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function currency(
   root: never,

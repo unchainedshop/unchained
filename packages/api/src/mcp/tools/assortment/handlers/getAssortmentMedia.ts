@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
-import { AssortmentNotFoundError } from '../../../../errors.js';
-import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
-import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { AssortmentNotFoundError } from '../../../../errors.ts';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
+import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getAssortmentMedia(context: Context, params: Params<'GET_MEDIA'>) {
   const { modules, loaders } = context;

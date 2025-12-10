@@ -1,5 +1,5 @@
-import { Context } from '../../context.js';
-import normalizeMediaUrl from './normalizeMediaUrl.js';
+import type { Context } from '../../context.ts';
+import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 export async function getNormalizedAssortmentDetails(
   { assortmentId, slug }: { assortmentId?: string; slug?: string },

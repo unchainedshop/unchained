@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../../../context.js';
-import { providerManagement, ProviderManagementSchema } from './providerManagement.js';
+import type { Context } from '../../../context.ts';
+import { providerManagement, ProviderManagementSchema } from './providerManagement.ts';
 
 export const registerProviderTools = (server: McpServer, context: Context) => {
   server.tool(

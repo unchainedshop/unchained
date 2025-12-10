@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Context } from '../../../context.js';
-import { usersManagement, UsersManagementSchema } from './usersManagement.js';
+import type { Context } from '../../../context.ts';
+import { usersManagement, UsersManagementSchema } from './usersManagement.ts';
 
 export const registerUsersTools = (server: McpServer, context: Context) => {
   server.tool(

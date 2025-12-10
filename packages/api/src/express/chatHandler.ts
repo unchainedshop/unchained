@@ -4,10 +4,10 @@ import type * as aiTypes from 'ai';
 import type * as mcpTypes from '@ai-sdk/mcp';
 import type * as mcpSDKClientLibraryTypes from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/client/index.js';
-import { ChatConfiguration, errorHandler } from '../chat/utils.js';
-import generateImageHandler from '../chat/generateImageHandler.js';
-import defaultSystemPrompt from '../chat/defaultSystemPrompt.js';
-import normalizeToolsIndex from '../chat/normalizeToolsIndex.js';
+import { type ChatConfiguration, errorHandler } from '../chat/utils.ts';
+import generateImageHandler from '../chat/generateImageHandler.ts';
+import defaultSystemPrompt from '../chat/defaultSystemPrompt.ts';
+import normalizeToolsIndex from '../chat/normalizeToolsIndex.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');

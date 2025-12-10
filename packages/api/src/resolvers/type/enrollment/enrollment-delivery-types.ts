@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Enrollment } from '@unchainedshop/core-enrollments';
+import type { Context } from '../../../context.ts';
+import type { Enrollment } from '@unchainedshop/core-enrollments';
 
 export const EnrollmentDelivery = {
   provider: async ({ deliveryProviderId }: Enrollment['delivery'], _: never, { loaders }: Context) => {

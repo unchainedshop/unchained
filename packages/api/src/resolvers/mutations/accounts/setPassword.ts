@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { UserNotFoundError, InvalidIdError, PasswordInvalidError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { UserNotFoundError, InvalidIdError, PasswordInvalidError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function setPassword(
   root: never,

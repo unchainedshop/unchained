@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Filter } from '@unchainedshop/core-filters';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { Filter } from '@unchainedshop/core-filters';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

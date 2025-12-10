@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Country } from '@unchainedshop/core-countries';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { Country } from '@unchainedshop/core-countries';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

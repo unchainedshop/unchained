@@ -34,8 +34,8 @@
     "build": "tsc -b",
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
-    "test": "tsx --test",
-    "test:watch": "tsx --test --watch"
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
   "repository": {
     "type": "git",
@@ -151,7 +151,6 @@
     "fastify": "^5.4.0",
     "multer": "^2.0.1",
     "passport": "^0.7.0",
-    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

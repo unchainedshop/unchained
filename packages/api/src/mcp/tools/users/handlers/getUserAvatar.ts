@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function getUserAvatar(context: Context, params: Params<'GET_AVATAR'>) {
   const { modules, loaders } = context;

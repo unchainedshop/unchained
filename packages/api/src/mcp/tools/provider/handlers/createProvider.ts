@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { ProviderConfigurationInvalid } from '../../../../errors.js';
-import { getProviderConfig } from '../utils/getProviderConfig.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProviderConfigurationInvalid } from '../../../../errors.ts';
+import { getProviderConfig } from '../utils/getProviderConfig.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function createProvider(context: Context, params: Params<'CREATE'>) {
   const { providerType, provider } = params;

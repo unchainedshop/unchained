@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption, DateFilterInput } from '@unchainedshop/utils';
-import { UserQuery } from '@unchainedshop/core-users';
-import { Context } from '../../../context.js';
+import type { SortOption, DateFilterInput } from '@unchainedshop/utils';
+import type { UserQuery } from '@unchainedshop/core-users';
+import type { Context } from '../../../context.ts';
 
 export default async function users(
   root: never,

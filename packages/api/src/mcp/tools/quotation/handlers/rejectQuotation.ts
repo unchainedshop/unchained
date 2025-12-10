@@ -1,8 +1,8 @@
 import { QuotationStatus } from '@unchainedshop/core-quotations';
-import { Context } from '../../../../context.js';
-import { QuotationNotFoundError, QuotationWrongStatusError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
-import { getNormalizedQuotationDetails } from '../../../utils/getNormalizedQuotationDetails.js';
+import type { Context } from '../../../../context.ts';
+import { QuotationNotFoundError, QuotationWrongStatusError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
+import { getNormalizedQuotationDetails } from '../../../utils/getNormalizedQuotationDetails.ts';
 
 export default async function rejectQuotation(context: Context, params: Params<'REJECT'>) {
   const { modules, services } = context;

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductReviewNotFoundError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { InvalidIdError, ProductReviewNotFoundError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function productReview(
   root: never,

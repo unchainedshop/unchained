@@ -1,6 +1,6 @@
 import { DeliveryDirector, DeliveryPricingSheet } from '@unchainedshop/core';
-import { Context } from '../../../context.js';
-import { OrderDelivery } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export const OrderDeliveryPickUp = {
   async activePickUpLocation(orderDelivery: OrderDelivery, _: never, requestContext: Context) {

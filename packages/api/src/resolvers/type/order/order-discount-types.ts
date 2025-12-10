@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { OrderDiscount as OrderDiscountType } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { OrderDiscount as OrderDiscountType } from '@unchainedshop/core-orders';
 import { OrderDiscountDirector } from '@unchainedshop/core';
 
 export const OrderDiscount = {

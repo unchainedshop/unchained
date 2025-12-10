@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { FilterNotFoundError } from '../../../../errors.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { FilterNotFoundError } from '../../../../errors.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeFilter(context: Context, params: Params<'REMOVE'>) {
   const { modules } = context;

@@ -1,5 +1,5 @@
-import { ProductBundleItem } from '@unchainedshop/core-products';
-import { PlanProduct } from './product-plan-types.js';
+import type { ProductBundleItem } from '@unchainedshop/core-products';
+import { PlanProduct } from './product-plan-types.ts';
 
 export const BundleProduct = {
   ...PlanProduct,

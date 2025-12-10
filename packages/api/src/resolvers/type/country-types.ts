@@ -1,6 +1,6 @@
-import { Context } from '../../context.js';
-import { Country as CountryType } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/core-currencies';
+import type { Context } from '../../context.ts';
+import type { Country as CountryType } from '@unchainedshop/core-countries';
+import type { Currency } from '@unchainedshop/core-currencies';
 
 export type HelperType<P, T> = (country: CountryType, params: P, context: Context) => T;
 

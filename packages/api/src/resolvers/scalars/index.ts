@@ -1,4 +1,4 @@
-import LowerCaseString from './LowerCaseString.js';
+import LowerCaseString from './LowerCaseString.ts';
 
 export default {
   LowerCaseString,

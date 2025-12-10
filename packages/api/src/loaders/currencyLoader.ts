@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { Currency } from '@unchainedshop/core-currencies';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { Currency } from '@unchainedshop/core-currencies';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

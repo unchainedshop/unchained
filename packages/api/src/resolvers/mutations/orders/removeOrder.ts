@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { OrderNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { OrderNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function removeOrder(
   root: never,

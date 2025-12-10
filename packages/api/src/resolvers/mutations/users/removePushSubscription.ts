@@ -1,4 +1,4 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 
 const removePushSubscription = async (_, { p256dh }, context: Context) => {

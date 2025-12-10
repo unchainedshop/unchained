@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SearchSchema } from '../../utils/sharedSchemas.js';
+import { SearchSchema } from '../../utils/sharedSchemas.ts';
 
 export const ProviderTypeEnum = z
   .enum(['PAYMENT', 'DELIVERY', 'WAREHOUSING'])

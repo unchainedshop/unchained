@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
-import { Params } from '../schemas.js';
-import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.js';
+import type { Context } from '../../../../context.ts';
+import type { Params } from '../schemas.ts';
+import { getNormalizedUserDetails } from '../../../utils/getNormalizedUserDetails.ts';
 
 export default async function setUserTags(context: Context, params: Params<'SET_TAGS'>) {
   const { modules } = context;

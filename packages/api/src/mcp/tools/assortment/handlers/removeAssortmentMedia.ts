@@ -1,6 +1,6 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 
-import { Params } from '../schemas.js';
+import type { Params } from '../schemas.ts';
 
 export default async function removeAssortmentMedia(context: Context, params: Params<'REMOVE_MEDIA'>) {
   const { modules } = context;

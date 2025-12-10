@@ -1,7 +1,7 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
+import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
 
 export default async function activateEnrollment(
   root: never,

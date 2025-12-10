@@ -5,7 +5,7 @@ import {
   SortingSchema,
   SearchSchema,
   LocalizationTextSchema,
-} from '../../utils/sharedSchemas.js';
+} from '../../utils/sharedSchemas.ts';
 
 export const sortDirectionKeys = Object.keys(SortDirection) as [string, ...string[]];
 

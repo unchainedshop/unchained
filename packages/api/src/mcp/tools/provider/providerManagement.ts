@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   ProviderManagementSchema,
   ProviderManagementZodSchema,
-  ProviderManagementParams,
-  ActionName,
-} from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
+  type ProviderManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.ts';
 
-export { ProviderManagementSchema, ProviderManagementZodSchema, ProviderManagementParams };
+export { ProviderManagementSchema, ProviderManagementZodSchema };
+export type { ProviderManagementParams };
 
 export async function providerManagement(context: Context, params: ProviderManagementParams) {
   const { action, ...actionParams } = params;

@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { OrderCheckoutError, OrderNotFoundError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { OrderCheckoutError, OrderNotFoundError } from '../../../errors.ts';
 import { createLogger, log } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api');

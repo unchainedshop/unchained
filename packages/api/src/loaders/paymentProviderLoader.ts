@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { PaymentProvider } from '@unchainedshop/core-payment';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
 import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>

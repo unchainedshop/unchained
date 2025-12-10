@@ -1,15 +1,15 @@
-import {
+import type {
   Product,
   ProductContractConfiguration,
   ProductContractStandard,
 } from '@unchainedshop/core-products';
-import { WarehousingProvider } from '@unchainedshop/core-warehousing';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 
-import { Context } from '../../../context.js';
-import { PlanProduct } from './product-plan-types.js';
-import { checkAction } from '../../../acl.js';
-import { actions } from '../../../roles/index.js';
+import type { Context } from '../../../context.ts';
+import { PlanProduct } from './product-plan-types.ts';
+import { checkAction } from '../../../acl.ts';
+import { actions } from '../../../roles/index.ts';
 
 export const TokenizedProduct = {
   ...PlanProduct,

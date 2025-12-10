@@ -1,11 +1,11 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   OrderWrongStatusError,
   OrderDiscountCodeAlreadyPresentError,
   OrderDiscountCodeNotValidError,
   OrderNotFoundError,
-} from '../../../errors.js';
+} from '../../../errors.ts';
 
 export default async function addCartDiscount(
   root: never,

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { UserNotFoundError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { UserNotFoundError } from '../../../errors.ts';
 
 export default async function heartbeat(
   root: never,

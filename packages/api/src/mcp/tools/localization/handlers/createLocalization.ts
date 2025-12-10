@@ -1,9 +1,9 @@
-import { Context } from '../../../../context.js';
-import sanitizeEntityData from '../../../utils/sanitizeLocalizationEntityData.js';
-import validateIsoCode from '../../../utils/validateIsoCode.js';
-import { getLocalizationsConfig } from '../getLocalizationsConfig.js';
+import type { Context } from '../../../../context.ts';
+import sanitizeEntityData from '../../../utils/sanitizeLocalizationEntityData.ts';
+import validateIsoCode from '../../../utils/validateIsoCode.ts';
+import { getLocalizationsConfig } from '../getLocalizationsConfig.ts';
 
-import { Params } from '../schemas.js';
+import type { Params } from '../schemas.ts';
 
 export default async function createLocalization(context: Context, params: Params<'CREATE'>) {
   const { localizationType, entity } = params;

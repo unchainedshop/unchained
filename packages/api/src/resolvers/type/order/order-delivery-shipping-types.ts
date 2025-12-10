@@ -1,6 +1,6 @@
 import { DeliveryPricingSheet } from '@unchainedshop/core';
-import { Context } from '../../../context.js';
-import { OrderDelivery } from '@unchainedshop/core-orders';
+import type { Context } from '../../../context.ts';
+import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export const OrderDeliveryShipping = {
   address(obj: OrderDelivery) {

@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { Context } from '../../../context.js';
-import { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
-import { Address, Contact } from '@unchainedshop/mongodb';
+import type { Context } from '../../../context.ts';
+import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
+import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateEnrollmentParams {
   enrollmentId: string;

@@ -6,7 +6,7 @@ import {
   SortingSchema,
   SearchSchema,
   LocalizationTextSchema,
-} from '../../utils/sharedSchemas.js';
+} from '../../utils/sharedSchemas.ts';
 
 export const productTypeKeys = Object.keys(ProductType) as [string, ...string[]];
 export const productVariationTypeKeys = Object.keys(ProductVariationType) as [string, ...string[]];

@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
-import { OrderPayment } from '@unchainedshop/core-orders';
-import { Price } from '@unchainedshop/utils';
+import type { Context } from '../../../context.ts';
+import type { OrderPayment } from '@unchainedshop/core-orders';
+import type { Price } from '@unchainedshop/utils';
 
 export const OrderPaymentDiscount = {
   _id: (orderDelivery: Price & { discountId: string; item: OrderPayment }) =>

@@ -1,8 +1,8 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { actionValidators, ActionName, SystemManagementParams } from './schemas.js';
-import actionHandlers from './handlers/index.js';
-import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.js';
+import { actionValidators, type ActionName, type SystemManagementParams } from './schemas.ts';
+import actionHandlers from './handlers/index.ts';
+import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
 export async function systemManagement(context: Context, params: SystemManagementParams) {
   const { action, ...actionParams } = params;
@@ -25,4 +25,5 @@ export async function systemManagement(context: Context, params: SystemManagemen
   }
 }
 
-export { SystemManagementSchema, SystemManagementZodSchema, SystemManagementParams } from './schemas.js';
+export { SystemManagementSchema, SystemManagementZodSchema } from './schemas.ts';
+export type { SystemManagementParams } from './schemas.ts';

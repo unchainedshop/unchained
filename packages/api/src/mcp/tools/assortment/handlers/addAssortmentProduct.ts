@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { AssortmentNotFoundError, ProductNotFoundError } from '../../../../errors.js';
-import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { AssortmentNotFoundError, ProductNotFoundError } from '../../../../errors.ts';
+import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function addAssortmentProduct(context: Context, params: Params<'ADD_PRODUCT'>) {
   const { modules } = context;

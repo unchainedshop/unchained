@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 
 type FindEventsParams = Parameters<Context['modules']['events']['findEvents']>['0'];
 

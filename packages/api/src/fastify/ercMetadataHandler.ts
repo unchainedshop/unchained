@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '../context.js';
-import { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { Context } from '../context.ts';
+import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { ProductContractStandard } from '@unchainedshop/core-products';
 
 const logger = createLogger('unchained:api:erc-metadata');

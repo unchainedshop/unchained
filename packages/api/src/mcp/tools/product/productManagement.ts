@@ -1,16 +1,17 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   ProductManagementSchema,
   ProductManagementZodSchema,
-  ProductManagementParams,
-  ActionName,
-} from './schemas.js';
-import { actionHandlers } from './handlers/index.js';
-import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.js';
+  type ProductManagementParams,
+  type ActionName,
+} from './schemas.ts';
+import { actionHandlers } from './handlers/index.ts';
+import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.ts';
 
-export { ProductManagementSchema, ProductManagementZodSchema, ProductManagementParams };
+export { ProductManagementSchema, ProductManagementZodSchema };
+export type { ProductManagementParams };
 
 export async function productManagement(context: Context, params: ProductManagementParams) {
   const { action, ...actionParams } = params;

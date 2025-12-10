@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
-import { Product, ProductConfiguration } from '@unchainedshop/core-products';
-import { ProductVariation } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
+import type { Product, ProductConfiguration } from '@unchainedshop/core-products';
+import type { ProductVariation } from '@unchainedshop/core-products';
 
 export type AssignmentVectorHelperType<T> = (
   data: { product: Product } & ProductConfiguration,

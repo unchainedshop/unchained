@@ -4,7 +4,7 @@ import {
   SortingSchema,
   SearchSchema,
   DateRangeSchema,
-} from '../../utils/sharedSchemas.js';
+} from '../../utils/sharedSchemas.ts';
 import { WorkStatus } from '@unchainedshop/core-worker';
 
 export const WorkStatusKeys = Object.keys(WorkStatus) as [string, ...string[]];

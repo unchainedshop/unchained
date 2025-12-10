@@ -1,10 +1,10 @@
 // Import the function to be tested.
 import { describe, it, mock } from 'node:test';
 import assert from 'node:assert';
-import { admin } from '../src/roles/admin.js';
-import { actions } from '../src/roles/index.js';
-import { checkAction, ensureActionExists, ensureIsFunction } from '../src/acl.js';
-import { NoPermissionError, PermissionSystemError } from '../src/errors.js';
+import { admin } from '../src/roles/admin.ts';
+import { actions } from '../src/roles/index.ts';
+import { checkAction, ensureActionExists, ensureIsFunction } from '../src/acl.ts';
+import { NoPermissionError, PermissionSystemError } from '../src/errors.ts';
 import { Roles } from '@unchainedshop/roles';
 
 describe('API', () => {

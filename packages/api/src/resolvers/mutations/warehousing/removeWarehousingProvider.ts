@@ -1,6 +1,6 @@
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, WarehousingProviderNotFoundError } from '../../../errors.js';
+import { InvalidIdError, WarehousingProviderNotFoundError } from '../../../errors.ts';
 
 export default async function removeWarehousingProvider(
   root: never,

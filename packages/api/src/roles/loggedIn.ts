@@ -1,5 +1,5 @@
-import { Context } from '../context.js';
-import { User } from '@unchainedshop/core-users';
+import type { Context } from '../context.ts';
+import type { User } from '@unchainedshop/core-users';
 
 export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isMyself = (user: User, params: { userId?: string } = {}, ownUser: { userId?: string } = {}) => {

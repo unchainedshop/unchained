@@ -1,13 +1,13 @@
-import createFilter from './createFilter.js';
-import updateFilter from './updateFilter.js';
-import removeFilter from './removeFilter.js';
-import getFilter from './getFilter.js';
-import listFilters from './listFilters.js';
-import countFilters from './countFilters.js';
-import createFilterOption from './createFilterOption.js';
-import removeFilterOption from './removeFilterOption.js';
-import updateFilterTexts from './updateFilterTexts.js';
-import getFilterTexts from './getFilterTexts.js';
+import createFilter from './createFilter.ts';
+import updateFilter from './updateFilter.ts';
+import removeFilter from './removeFilter.ts';
+import getFilter from './getFilter.ts';
+import listFilters from './listFilters.ts';
+import countFilters from './countFilters.ts';
+import createFilterOption from './createFilterOption.ts';
+import removeFilterOption from './removeFilterOption.ts';
+import updateFilterTexts from './updateFilterTexts.ts';
+import getFilterTexts from './getFilterTexts.ts';
 
 export default {
   CREATE: createFilter,

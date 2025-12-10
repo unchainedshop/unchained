@@ -1,5 +1,5 @@
-import { Context } from '../../../../context.js';
-import { EventCountOptions } from '../types.js';
+import type { Context } from '../../../../context.ts';
+import type { EventCountOptions } from '../types.ts';
 
 const countEvents = async ({ modules }: Context, options?: EventCountOptions) => {
   const count = await modules.events.count(options || {});

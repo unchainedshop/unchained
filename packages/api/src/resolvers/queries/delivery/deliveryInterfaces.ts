@@ -1,5 +1,5 @@
 import { DeliveryDirector } from '@unchainedshop/core';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
 

@@ -1,8 +1,8 @@
-import { Context } from '../../../../context.js';
+import type { Context } from '../../../../context.ts';
 import { FilterDirector } from '@unchainedshop/core';
-import { FilterNotFoundError } from '../../../../errors.js';
-import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.js';
-import { Params } from '../schemas.js';
+import { FilterNotFoundError } from '../../../../errors.ts';
+import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function removeFilterOption(context: Context, params: Params<'REMOVE_OPTION'>) {
   const { modules } = context;

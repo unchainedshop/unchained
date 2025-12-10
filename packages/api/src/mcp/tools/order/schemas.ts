@@ -5,7 +5,7 @@ import {
   SearchSchema,
   DateRangeSchema,
   OrderFilterSchema,
-} from '../../utils/sharedSchemas.js';
+} from '../../utils/sharedSchemas.ts';
 
 export const OrderStatusEnum = z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
 export const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);

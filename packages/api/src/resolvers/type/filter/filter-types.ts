@@ -1,5 +1,5 @@
-import { Context } from '../../../context.js';
-import { Filter as FilterType } from '@unchainedshop/core-filters';
+import type { Context } from '../../../context.ts';
+import type { Filter as FilterType } from '@unchainedshop/core-filters';
 
 export const Filter = {
   options: (obj: FilterType) => {

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import buildLocaleMap from './buildLocaleMap.js';
+import buildLocaleMap from './buildLocaleMap.ts';
 
 const testTexts = [
   // 1 has translations in French and German

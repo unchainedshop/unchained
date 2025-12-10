@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
-import { Context } from '../../../context.js';
+import { FilterNotFoundError, InvalidIdError } from '../../../errors.ts';
+import type { Context } from '../../../context.ts';
 
 export default async function updateFilterTexts(
   root: never,

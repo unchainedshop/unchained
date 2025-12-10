@@ -1,5 +1,5 @@
-import { Product, ProductBundleItem as ProductBundleItemType } from '@unchainedshop/core-products';
-import { Context } from '../../../context.js';
+import type { Product, ProductBundleItem as ProductBundleItemType } from '@unchainedshop/core-products';
+import type { Context } from '../../../context.ts';
 
 export interface ProductBundleItemHelperTypes {
   product: (bundleItem: ProductBundleItemType, _: never, context: Context) => Promise<Product>;

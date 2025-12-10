@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '../../../context.js';
-import { ProductTokenization, ProductType } from '@unchainedshop/core-products';
-import { ProductNotFoundError, InvalidIdError, ProductWrongStatusError } from '../../../errors.js';
+import type { Context } from '../../../context.ts';
+import { type ProductTokenization, ProductType } from '@unchainedshop/core-products';
+import { ProductNotFoundError, InvalidIdError, ProductWrongStatusError } from '../../../errors.ts';
 
 export default async function updateProductTokenization(
   root: never,

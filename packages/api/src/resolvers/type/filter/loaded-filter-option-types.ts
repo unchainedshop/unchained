@@ -1,5 +1,5 @@
 import { FilterDirector } from '@unchainedshop/core';
-import { Context } from '../../../context.js';
+import type { Context } from '../../../context.ts';
 
 export const LoadedFilterOption = {
   filteredProductsCount: async ({ filteredProductIdSet, searchQuery }, _: never, context: Context) => {

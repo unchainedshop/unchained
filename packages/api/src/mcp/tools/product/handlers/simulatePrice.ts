@@ -1,7 +1,7 @@
-import { Context } from '../../../../context.js';
-import { ProductNotFoundError } from '../../../../errors.js';
-import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
-import { Params } from '../schemas.js';
+import type { Context } from '../../../../context.ts';
+import { ProductNotFoundError } from '../../../../errors.ts';
+import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
+import type { Params } from '../schemas.ts';
 
 export default async function simulatePrice(context: Context, params: Params<'SIMULATE_PRICE'>) {
   const { services } = context;

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
-import { PaginationSchema, SortingSchema, SearchSchema } from '../../utils/sharedSchemas.js';
+import { PaginationSchema, SortingSchema, SearchSchema } from '../../utils/sharedSchemas.ts';
 
 export const sortDirectionKeys = Object.keys(SortDirection) as [
   keyof typeof SortDirection,
