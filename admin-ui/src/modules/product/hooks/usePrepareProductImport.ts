@@ -1,4 +1,5 @@
 import { CSVRow } from '../../common/utils/csvUtils';
+import { PRODUCT_TYPES } from '../ProductTypes';
 
 export type ProductType =
   | 'SimpleProduct'
@@ -102,16 +103,7 @@ export const validateProduct = (product: ImportableProduct, intl): string[] => {
       }),
     );
   }
-
-  const validTypes: ProductType[] = [
-    'SimpleProduct',
-    'ConfigurableProduct',
-    'PlanProduct',
-    'BundleProduct',
-    'TokenizedProduct',
-  ];
-
-  if (!validTypes.includes(product.type)) {
+  if (!Object.values(PRODUCT_TYPES).includes(product.type)) {
     errors.push(
       intl.formatMessage(
         {

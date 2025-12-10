@@ -6,6 +6,7 @@ import useProducts from '../hooks/useProducts';
 import useApp from '../../common/hooks/useApp';
 import { useIntl } from 'react-intl';
 import { IProduct } from '../../../gql/types';
+import { PRODUCT_TYPES } from '../ProductTypes';
 
 const PRODUCT_SCHEMA = {
   base: [
@@ -80,8 +81,10 @@ const ProductExport = () => {
       const row: Record<string, any> = {};
 
       PRODUCT_SCHEMA.base.forEach((key) => {
-        row[key] = product[key] ?? '';
+        if (key === '__typename') row[key] = PRODUCT_TYPES[product[key]];
+        else row[key] = product[key] ?? '';
       });
+
       row['supply.weightInGram'] = (product as any)?.dimensions?.weight ?? '';
       row['supply.heightInMillimeters'] =
         (product as any)?.dimensions?.height ?? '';
