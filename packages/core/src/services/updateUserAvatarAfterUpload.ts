@@ -1,6 +1,6 @@
-import { File } from '@unchainedshop/core-files';
-import { removeFilesService } from './removeFiles.js';
-import { Modules } from '../modules.js';
+import type { File } from '@unchainedshop/core-files';
+import { removeFilesService } from './removeFiles.ts';
+import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');

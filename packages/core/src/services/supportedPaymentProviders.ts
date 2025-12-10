@@ -1,7 +1,7 @@
-import { PaymentProvider, paymentSettings } from '@unchainedshop/core-payment';
-import { PaymentDirector } from '../directors/PaymentDirector.js';
-import { PaymentContext } from '../directors/PaymentAdapter.js';
-import { Modules } from '../modules.js';
+import { type PaymentProvider, paymentSettings } from '@unchainedshop/core-payment';
+import { PaymentDirector } from '../directors/PaymentDirector.ts';
+import type { PaymentContext } from '../directors/PaymentAdapter.ts';
+import type { Modules } from '../modules.ts';
 
 export async function supportedPaymentProvidersService(this: Modules, params: PaymentContext) {
   const allProviders = await this.payment.paymentProviders.allProviders();

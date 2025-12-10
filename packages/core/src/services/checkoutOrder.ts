@@ -1,9 +1,9 @@
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
-import { nextUserCartService } from './nextUserCart.js';
-import { validateOrderService } from './validateOrder.js';
-import { processOrderService } from './processOrder.js';
-import { User } from '@unchainedshop/core-users';
+import type { Modules } from '../modules.ts';
+import { nextUserCartService } from './nextUserCart.ts';
+import { validateOrderService } from './validateOrder.ts';
+import { processOrderService } from './processOrder.ts';
+import type { User } from '@unchainedshop/core-users';
 
 export async function checkoutOrderService(
   this: Modules,

@@ -1,6 +1,6 @@
-import { Price, PricingCalculation } from '@unchainedshop/utils';
+import type { Price, PricingCalculation } from '@unchainedshop/utils';
 
-import { BasePricingSheet, IPricingSheet, PricingSheetParams } from '../directors/index.js';
+import { BasePricingSheet, type IPricingSheet, type PricingSheetParams } from '../directors/index.ts';
 
 export interface ProductPricingCalculation extends PricingCalculation {
   discountId?: string;
@@ -8,11 +8,15 @@ export interface ProductPricingCalculation extends PricingCalculation {
   isNetPrice: boolean;
   rate?: number;
 }
-export enum ProductPricingRowCategory {
-  Item = 'ITEM',
-  Discount = 'DISCOUNT',
-  Tax = 'TAX',
-}
+
+export const ProductPricingRowCategory = {
+  Item: 'ITEM',
+  Discount: 'DISCOUNT',
+  Tax: 'TAX',
+} as const;
+
+export type ProductPricingRowCategory =
+  (typeof ProductPricingRowCategory)[keyof typeof ProductPricingRowCategory];
 
 export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
   addItem: (params: Omit<ProductPricingCalculation, 'category' | 'discountId'>) => void;

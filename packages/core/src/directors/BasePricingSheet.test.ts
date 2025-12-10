@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test';
-import { resolveRatioAndTaxDivisorForPricingSheet } from './BasePricingSheet';
+import { resolveRatioAndTaxDivisorForPricingSheet } from './BasePricingSheet.ts';
 import assert from 'node:assert';
 
 describe('resolveRatioAndTaxDivisorForPricingSheet', () => {

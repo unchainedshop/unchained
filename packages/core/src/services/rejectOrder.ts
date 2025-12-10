@@ -1,6 +1,6 @@
-import { Order, OrderStatus } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
-import { processOrderService } from './processOrder.js';
+import { type Order, OrderStatus } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
+import { processOrderService } from './processOrder.ts';
 
 export async function rejectOrderService(
   this: Modules,

@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { Modules } from '../../../modules.js';
-import { Services } from '../../../services/index.js';
-import upsertVariations, { ProductVariationSchema } from './upsertVariations.js';
-import upsertMedia from './upsertMedia.js';
-import { MediaSchema } from '../assortment/upsertMedia.js';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
+import type { Modules } from '../../../modules.ts';
+import type { Services } from '../../../services/index.ts';
+import upsertVariations, { ProductVariationSchema } from './upsertVariations.ts';
+import upsertMedia from './upsertMedia.ts';
+import { MediaSchema } from '../assortment/upsertMedia.ts';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 import { ProductType } from '@unchainedshop/core-products';
 
 export const ProductCreateSpecificationSchema = z.object({

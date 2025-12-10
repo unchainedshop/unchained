@@ -1,15 +1,15 @@
-import { Product, ProductConfiguration } from '@unchainedshop/core-products';
-import { User } from '@unchainedshop/core-users';
-import { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
+import type { Product, ProductConfiguration } from '@unchainedshop/core-products';
+import type { User } from '@unchainedshop/core-users';
+import type { Order, OrderDiscount, OrderPosition } from '@unchainedshop/core-orders';
 import {
-  IProductPricingSheet,
-  ProductPricingCalculation,
+  type IProductPricingSheet,
+  type ProductPricingCalculation,
   ProductPricingSheet,
-  IProductPricingAdapter,
-  ProductPricingAdapterContext,
+  type IProductPricingAdapter,
+  type ProductPricingAdapterContext,
   BasePricingDirector,
-  IPricingDirector,
-} from '../directors/index.js';
+  type IPricingDirector,
+} from '../directors/index.ts';
 
 export type ProductPricingContext =
   | {

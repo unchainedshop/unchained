@@ -1,6 +1,7 @@
-import { DeliveryConfiguration, DeliveryProviderType } from '@unchainedshop/core-delivery';
-import { DeliveryAdapter, DeliveryContext, DeliveryDirector } from '../core-index.js';
-import { Work } from '@unchainedshop/core-worker';
+import type { DeliveryConfiguration } from '@unchainedshop/core-delivery';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
+import { DeliveryAdapter, type DeliveryContext, DeliveryDirector } from '../core-index.ts';
+import type { Work } from '@unchainedshop/core-worker';
 
 export default function registerShippingDelivery({
   adapterId,

@@ -1,16 +1,16 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
-import { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.js';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.ts';
 import {
-  Filter,
+  type Filter,
   filtersSettings,
   FilterType,
-  SearchConfiguration,
-  SearchFilterQuery,
-  SearchQuery,
+  type SearchConfiguration,
+  type SearchFilterQuery,
+  type SearchQuery,
 } from '@unchainedshop/core-filters';
-import { Product } from '@unchainedshop/core-products';
-import { Modules } from '../modules.js';
+import type { Product } from '@unchainedshop/core-products';
+import type { Modules } from '../modules.ts';
 
 export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(

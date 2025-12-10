@@ -1,5 +1,5 @@
-import { SearchQuery } from '@unchainedshop/core-filters';
-import { FilterAdapter, FilterDirector } from '../core-index.js';
+import type { SearchQuery } from '@unchainedshop/core-filters';
+import { FilterAdapter, FilterDirector } from '../core-index.ts';
 
 export default function registerProductSearchFilter({
   orderIndex = 0,

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { Modules } from '../../../modules.js';
-import { Services } from '../../../services/index.js';
+import type { Modules } from '../../../modules.ts';
+import type { Services } from '../../../services/index.ts';
 
 export const ProductRemovePayloadSchema = z.object({
   _id: z.string(),

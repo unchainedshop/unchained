@@ -1,6 +1,6 @@
-import { Order } from '@unchainedshop/core-orders';
-import { OrderDiscountDirector } from '../directors/OrderDiscountDirector.js';
-import { Modules } from '../modules.js';
+import type { Order } from '@unchainedshop/core-orders';
+import { OrderDiscountDirector } from '../directors/OrderDiscountDirector.ts';
+import type { Modules } from '../modules.ts';
 
 export async function createManualOrderDiscountService(
   this: Modules,

@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test';
-import { periodForReferenceDate } from './EnrollmentAdapter.js';
+import { periodForReferenceDate } from './EnrollmentAdapter.ts';
 import assert from 'node:assert';
 
 describe('periodForReferenceDate', () => {

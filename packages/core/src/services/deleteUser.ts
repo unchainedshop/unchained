@@ -1,4 +1,4 @@
-import { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
 export async function deleteUserService(this: Modules, { userId }: { userId: string }) {
   const user = await this.users.markDeleted(userId);

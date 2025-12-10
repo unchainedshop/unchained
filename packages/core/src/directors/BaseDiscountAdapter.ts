@@ -1,8 +1,8 @@
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
-import { IPricingSheet } from './BasePricingSheet.js';
-import { PricingCalculation } from '@unchainedshop/utils';
-import { Order, OrderDiscount } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
+import type { IPricingSheet } from './BasePricingSheet.ts';
+import type { PricingCalculation } from '@unchainedshop/utils';
+import type { Order, OrderDiscount } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 export interface DiscountContext {
   code?: string;
   orderDiscount?: OrderDiscount;

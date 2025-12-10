@@ -1,18 +1,18 @@
 import {
-  Order,
-  OrderDelivery,
+  type Order,
+  type OrderDelivery,
   OrderDeliveryStatus,
-  OrderPayment,
+  type OrderPayment,
   OrderPaymentStatus,
-  OrderPosition,
+  type OrderPosition,
   OrderStatus,
 } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
-import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.js';
-import { Product, ProductType } from '@unchainedshop/core-products';
+import type { Modules } from '../modules.ts';
+import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.ts';
+import { type Product, ProductType } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.js';
-import { fullfillQuotationService } from './fullfillQuotation.js';
+import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.ts';
+import { fullfillQuotationService } from './fullfillQuotation.ts';
 
 const isAutoConfirmationEnabled = async (
   {

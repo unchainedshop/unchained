@@ -1,8 +1,8 @@
-import { Product, ProductConfiguration } from '@unchainedshop/core-products';
-import { ProductPricingDirector } from '../core-index.js';
-import { User } from '@unchainedshop/core-users';
-import { Modules } from '../modules.js';
-import { Order, OrderDiscount } from '@unchainedshop/core-orders';
+import type { Product, ProductConfiguration } from '@unchainedshop/core-products';
+import { ProductPricingDirector } from '../core-index.ts';
+import type { User } from '@unchainedshop/core-users';
+import type { Modules } from '../modules.ts';
+import type { Order, OrderDiscount } from '@unchainedshop/core-orders';
 
 export async function simulateProductPricingService(
   this: Modules,

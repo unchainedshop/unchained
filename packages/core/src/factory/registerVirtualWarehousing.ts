@@ -1,9 +1,9 @@
 import {
-  TokenSurrogate,
-  WarehousingConfiguration,
+  type TokenSurrogate,
+  type WarehousingConfiguration,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
-import { WarehousingAdapter, WarehousingContext, WarehousingDirector } from '../core-index.js';
+import { WarehousingAdapter, type WarehousingContext, WarehousingDirector } from '../core-index.ts';
 
 export default function registerVirtualWarehousing<Metadata = Record<string, any>>({
   adapterId,

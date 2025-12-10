@@ -1,9 +1,9 @@
-import { Order, OrderPosition } from '@unchainedshop/core-orders';
-import { Product } from '@unchainedshop/core-products';
-import { Enrollment } from '@unchainedshop/core-enrollments';
-import { Modules } from '../modules.js';
-import { EnrollmentDirector } from '../directors/index.js';
-import { initializeEnrollmentService } from './initializeEnrollment.js';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
+import type { Product } from '@unchainedshop/core-products';
+import type { Enrollment } from '@unchainedshop/core-enrollments';
+import type { Modules } from '../modules.ts';
+import { EnrollmentDirector } from '../directors/index.ts';
+import { initializeEnrollmentService } from './initializeEnrollment.ts';
 
 export async function createEnrollmentFromCheckoutService(
   this: Modules,

@@ -1,9 +1,9 @@
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
 import {
-  Enrollment,
-  EnrollmentOrderPositionTemplate,
-  EnrollmentPeriod,
-  EnrollmentPlan,
+  type Enrollment,
+  type EnrollmentOrderPositionTemplate,
+  type EnrollmentPeriod,
+  type EnrollmentPlan,
   addToDate,
 } from '@unchainedshop/core-enrollments';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';

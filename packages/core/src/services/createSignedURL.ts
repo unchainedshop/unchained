@@ -1,5 +1,5 @@
-import { getFileFromFileData, getFileAdapter, SignedFileUpload } from '@unchainedshop/core-files';
-import { Modules } from '../modules.js';
+import { getFileFromFileData, getFileAdapter, type SignedFileUpload } from '@unchainedshop/core-files';
+import type { Modules } from '../modules.ts';
 
 export async function createSignedURLService(
   this: Modules,

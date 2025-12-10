@@ -1,4 +1,4 @@
-import { PricingCalculation } from '@unchainedshop/utils';
+import type { PricingCalculation } from '@unchainedshop/utils';
 export interface PricingDiscount {
   discountId: string;
   amount: number;

@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { ProductMedia } from '@unchainedshop/core-products';
-import { Modules } from '../../../modules.js';
-import { Services } from '../../../services/index.js';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import upsertAsset, { AssetSchema } from '../../upsertAsset.js';
+import type { ProductMedia } from '@unchainedshop/core-products';
+import type { Modules } from '../../../modules.ts';
+import type { Services } from '../../../services/index.ts';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
+import upsertAsset, { AssetSchema } from '../../upsertAsset.ts';
 
 export const MediaSchema = z.object({
   _id: z.string().optional(),

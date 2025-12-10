@@ -1,6 +1,6 @@
 import { userSettings } from '@unchainedshop/core-users';
-import { migrateBookmarksService } from './migrateBookmarks.js';
-import { migrateOrderCartsService } from './migrateOrderCart.js';
+import { migrateBookmarksService } from './migrateBookmarks.ts';
+import { migrateOrderCartsService } from './migrateOrderCart.ts';
 
 export async function migrateUserDataService(userIdBeforeLogin: string, userId: string) {
   const user = await this.users.findUserById(userId);

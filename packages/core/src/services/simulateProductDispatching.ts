@@ -1,9 +1,9 @@
-import { Modules } from '../modules.js';
-import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
-import { Product } from '@unchainedshop/core-products';
-import { EstimatedDispatch, WarehousingDirector } from '../directors/WarehousingDirector.js';
-import { WarehousingContext } from '../directors/WarehousingAdapter.js';
-import { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { Modules } from '../modules.ts';
+import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.ts';
+import type { Product } from '@unchainedshop/core-products';
+import { type EstimatedDispatch, WarehousingDirector } from '../directors/WarehousingDirector.ts';
+import type { WarehousingContext } from '../directors/WarehousingAdapter.ts';
+import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export async function simulateProductDispatchingService(
   this: Modules,

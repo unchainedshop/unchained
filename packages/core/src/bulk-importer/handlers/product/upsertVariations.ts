@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ProductVariation } from '@unchainedshop/core-products';
-import { Modules } from '../../../modules.js';
+import type { ProductVariation } from '@unchainedshop/core-products';
+import type { Modules } from '../../../modules.ts';
 
 const ProductVariationOptionSchema = z.object({
   value: z.string(),

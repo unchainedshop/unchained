@@ -1,5 +1,5 @@
 import { getFileAdapter } from '@unchainedshop/core-files';
-import { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
 export async function createDownloadStreamService(
   this: Modules,

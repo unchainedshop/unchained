@@ -1,19 +1,21 @@
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Product } from '@unchainedshop/core-products';
-import { Order, OrderPosition } from '@unchainedshop/core-orders';
-import {
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { Product } from '@unchainedshop/core-products';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
+import type {
   TokenSurrogate,
   WarehousingConfiguration,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
 
-export enum WarehousingError {
-  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
-  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
-  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
-}
+export const WarehousingError = {
+  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+} as const;
+
+export type WarehousingError = (typeof WarehousingError)[keyof typeof WarehousingError];
 
 export interface WarehousingAdapterActions {
   configurationError: () => WarehousingError | null;

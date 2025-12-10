@@ -1,9 +1,9 @@
-import { BaseDirector, IBaseDirector, PricingCalculation } from '@unchainedshop/utils';
-import { BasePricingAdapterContext, BasePricingContext, IPricingAdapter } from './BasePricingAdapter.js';
-import { IPricingSheet } from './BasePricingSheet.js';
-import { OrderDiscountDirector } from './OrderDiscountDirector.js';
+import { BaseDirector, type IBaseDirector, type PricingCalculation } from '@unchainedshop/utils';
+import type { BasePricingAdapterContext, BasePricingContext, IPricingAdapter } from './BasePricingAdapter.ts';
+import type { IPricingSheet } from './BasePricingSheet.ts';
+import { OrderDiscountDirector } from './OrderDiscountDirector.ts';
 import { createLogger } from '@unchainedshop/logger';
-import { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
 const logger = createLogger('unchained:core');
 

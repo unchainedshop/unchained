@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AssortmentProduct } from '@unchainedshop/core-assortments';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import { Modules } from '../../../modules.js';
+import type { AssortmentProduct } from '@unchainedshop/core-assortments';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
+import type { Modules } from '../../../modules.ts';
 
 export const AssortmentProductSchema = z.object({
   _id: z.string().optional(),

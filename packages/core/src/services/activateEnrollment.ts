@@ -1,7 +1,7 @@
-import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { Modules } from '../modules.js';
-import { processEnrollmentService } from './processEnrollment.js';
-import { addMessageService } from './addMessage.js';
+import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import type { Modules } from '../modules.ts';
+import { processEnrollmentService } from './processEnrollment.ts';
+import { addMessageService } from './addMessage.ts';
 
 export async function activateEnrollmentService(this: Modules, enrollment: Enrollment) {
   if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;

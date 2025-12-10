@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import createFilter from './create.js';
-import { Modules } from '../../../modules.js';
+import createFilter from './create.ts';
+import type { Modules } from '../../../modules.ts';
 
 export const LocalizedContentSchema = z.record(
   z.string(), // locale

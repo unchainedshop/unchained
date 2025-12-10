@@ -1,7 +1,7 @@
-import { TokenSurrogate, WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { Product } from '@unchainedshop/core-products';
-import { WarehousingDirector } from '../directors/WarehousingDirector.js';
-import { Modules } from '../modules.js';
+import { type TokenSurrogate, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import type { Product } from '@unchainedshop/core-products';
+import { WarehousingDirector } from '../directors/WarehousingDirector.ts';
+import type { Modules } from '../modules.ts';
 
 export async function ercMetadataService(
   this: Modules,

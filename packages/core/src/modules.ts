@@ -1,49 +1,49 @@
 import {
-  AssortmentsModule,
-  AssortmentsSettingsOptions,
+  type AssortmentsModule,
+  type AssortmentsSettingsOptions,
   configureAssortmentsModule,
 } from '@unchainedshop/core-assortments';
-import { BookmarksModule, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
-import { configureCountriesModule, CountriesModule } from '@unchainedshop/core-countries';
-import { configureCurrenciesModule, CurrenciesModule } from '@unchainedshop/core-currencies';
+import { type BookmarksModule, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
+import { configureCountriesModule, type CountriesModule } from '@unchainedshop/core-countries';
+import { configureCurrenciesModule, type CurrenciesModule } from '@unchainedshop/core-currencies';
 import {
   configureDeliveryModule,
-  DeliveryModule,
-  DeliverySettingsOptions,
+  type DeliveryModule,
+  type DeliverySettingsOptions,
 } from '@unchainedshop/core-delivery';
 import {
   configureEnrollmentsModule,
-  EnrollmentsModule,
-  EnrollmentsSettingsOptions,
+  type EnrollmentsModule,
+  type EnrollmentsSettingsOptions,
 } from '@unchainedshop/core-enrollments';
-import { configureEventsModule, EventsModule } from '@unchainedshop/core-events';
-import { configureFilesModule, FilesModule, FilesSettingsOptions } from '@unchainedshop/core-files';
+import { configureEventsModule, type EventsModule } from '@unchainedshop/core-events';
+import { configureFilesModule, type FilesModule, type FilesSettingsOptions } from '@unchainedshop/core-files';
 import {
   configureFiltersModule,
-  FiltersModule,
-  FiltersSettingsOptions,
+  type FiltersModule,
+  type FiltersSettingsOptions,
 } from '@unchainedshop/core-filters';
-import { configureLanguagesModule, LanguagesModule } from '@unchainedshop/core-languages';
-import { configureOrdersModule, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/core-orders';
+import { configureLanguagesModule, type LanguagesModule } from '@unchainedshop/core-languages';
+import { configureOrdersModule, type OrdersModule, type OrdersSettingsOptions } from '@unchainedshop/core-orders';
 import {
   configurePaymentModule,
-  PaymentModule,
-  PaymentSettingsOptions,
+  type PaymentModule,
+  type PaymentSettingsOptions,
 } from '@unchainedshop/core-payment';
 import {
   configureProductsModule,
-  ProductsModule,
-  ProductsSettingsOptions,
+  type ProductsModule,
+  type ProductsSettingsOptions,
 } from '@unchainedshop/core-products';
 import {
   configureQuotationsModule,
-  QuotationsModule,
-  QuotationsSettingsOptions,
+  type QuotationsModule,
+  type QuotationsSettingsOptions,
 } from '@unchainedshop/core-quotations';
-import { configureUsersModule, UserSettingsOptions, UsersModule } from '@unchainedshop/core-users';
-import { configureWarehousingModule, WarehousingModule } from '@unchainedshop/core-warehousing';
-import { configureWorkerModule, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
-import { MigrationRepository, ModuleInput, mongodb } from '@unchainedshop/mongodb';
+import { configureUsersModule, type UserSettingsOptions, type UsersModule } from '@unchainedshop/core-users';
+import { configureWarehousingModule, type WarehousingModule } from '@unchainedshop/core-warehousing';
+import { configureWorkerModule, type WorkerModule, type WorkerSettingsOptions } from '@unchainedshop/core-worker';
+import { type MigrationRepository, type ModuleInput, type mongodb } from '@unchainedshop/mongodb';
 
 export interface Modules {
   assortments: AssortmentsModule;

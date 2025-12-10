@@ -1,6 +1,6 @@
 import { beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert';
-import { ProductPricingSheet } from './ProductPricingSheet.js';
+import { ProductPricingSheet } from './ProductPricingSheet.ts';
 
 const TAX = { category: 'TAX', amount: 50, isNetPrice: false, isTaxable: false };
 const TAX2 = { category: 'TAX', amount: 25, isNetPrice: false, isTaxable: false };

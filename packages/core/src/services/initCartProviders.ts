@@ -1,9 +1,9 @@
-import { Order } from '@unchainedshop/core-orders';
+import type { Order } from '@unchainedshop/core-orders';
 import { deliverySettings } from '@unchainedshop/core-delivery';
 import { paymentSettings } from '@unchainedshop/core-payment';
-import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.js';
-import { supportedPaymentProvidersService } from './supportedPaymentProviders.js';
-import { Modules } from '../modules.js';
+import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.ts';
+import { supportedPaymentProvidersService } from './supportedPaymentProviders.ts';
+import type { Modules } from '../modules.ts';
 
 export async function initCartProvidersService(this: Modules, order: Order) {
   let updatedOrder = order;

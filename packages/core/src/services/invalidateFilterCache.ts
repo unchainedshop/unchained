@@ -1,5 +1,5 @@
-import { Modules } from '../modules.js';
-import { FilterDirector } from '../core-index.js';
+import type { Modules } from '../modules.ts';
+import { FilterDirector } from '../core-index.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');

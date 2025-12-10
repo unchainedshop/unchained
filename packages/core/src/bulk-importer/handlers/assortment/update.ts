@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.js';
-import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortmentChildren.js';
-import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.js';
-import upsertMedia, { MediaSchema } from './upsertMedia.js';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import createAssortment, { AssortmentCreatePayloadSchema } from './create.js';
-import { Modules } from '../../../modules.js';
-import { Services } from '../../../services/index.js';
+import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.ts';
+import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortmentChildren.ts';
+import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.ts';
+import upsertMedia, { MediaSchema } from './upsertMedia.ts';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
+import createAssortment, { AssortmentCreatePayloadSchema } from './create.ts';
+import type { Modules } from '../../../modules.ts';
+import type { Services } from '../../../services/index.ts';
 
 export const AssortmentUpdatePayloadSchema = z.object({
   _id: z.string(),

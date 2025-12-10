@@ -1,7 +1,7 @@
-import { mongodb, MigrationRepository, ModuleInput } from '@unchainedshop/mongodb';
-import initServices, { CustomServices, Services } from './services/index.js';
-import initModules, { Modules, ModuleOptions } from './modules.js';
-import createBulkImporterFactory, { BulkImporter, BulkImportHandler } from './bulk-importer/index.js';
+import { type mongodb, type MigrationRepository, type ModuleInput } from '@unchainedshop/mongodb';
+import initServices, { type CustomServices, type Services } from './services/index.ts';
+import initModules, { type Modules, type ModuleOptions } from './modules.ts';
+import createBulkImporterFactory, { type BulkImporter, type BulkImportHandler } from './bulk-importer/index.ts';
 
 import {
   WorkerDirector,
@@ -17,13 +17,13 @@ import {
   ProductPricingDirector,
   QuotationDirector,
   WarehousingDirector,
-} from './directors/index.js';
-import { IBaseAdapter } from '@unchainedshop/utils';
+} from './directors/index.ts';
+import type { IBaseAdapter } from '@unchainedshop/utils';
 
-export * from './bulk-importer/index.js';
-export * from './services/index.js';
-export * from './directors/index.js';
-export * from './factory/index.js';
+export * from './bulk-importer/index.ts';
+export * from './services/index.ts';
+export * from './directors/index.ts';
+export * from './factory/index.ts';
 
 export interface UnchainedCoreOptions {
   db: mongodb.Db;

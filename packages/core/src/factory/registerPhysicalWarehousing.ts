@@ -1,5 +1,6 @@
-import { WarehousingConfiguration, WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { WarehousingAdapter, WarehousingContext, WarehousingDirector } from '../core-index.js';
+import type { WarehousingConfiguration } from '@unchainedshop/core-warehousing';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { WarehousingAdapter, type WarehousingContext, WarehousingDirector } from '../core-index.ts';
 
 export default function registerPhysicalWarehousing({
   adapterId,

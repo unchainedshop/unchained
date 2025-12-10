@@ -1,6 +1,6 @@
-import { Quotation, QuotationStatus } from '@unchainedshop/core-quotations';
-import { Modules } from '../modules.js';
-import { processQuotationService } from './processQuotation.js';
+import { type Quotation, QuotationStatus } from '@unchainedshop/core-quotations';
+import type { Modules } from '../modules.ts';
+import { processQuotationService } from './processQuotation.ts';
 
 export async function proposeQuotationService(
   this: Modules,

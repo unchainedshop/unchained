@@ -1,6 +1,6 @@
-import { SearchQuery, defaultFilterSelector } from '@unchainedshop/core-filters';
-import { Modules } from '../modules.js';
-import { FilterDirector } from '../directors/FilterDirector.js';
+import { type SearchQuery, defaultFilterSelector } from '@unchainedshop/core-filters';
+import type { Modules } from '../modules.ts';
+import { FilterDirector } from '../directors/FilterDirector.ts';
 
 export async function loadFiltersService(
   this: Modules,

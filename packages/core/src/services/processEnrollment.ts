@@ -1,6 +1,6 @@
-import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { Modules } from '../modules.js';
-import { EnrollmentDirector } from '../core-index.js';
+import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import type { Modules } from '../modules.ts';
+import { EnrollmentDirector } from '../core-index.ts';
 
 const findNextStatus = async (
   enrollment: Enrollment,

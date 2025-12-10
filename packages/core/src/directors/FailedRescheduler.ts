@@ -1,6 +1,6 @@
 import { defaultLogger } from '@unchainedshop/logger';
 import { subscribe } from '@unchainedshop/events';
-import { Work, WorkData, WorkerEventTypes } from '@unchainedshop/core-worker';
+import { type Work, type WorkData, WorkerEventTypes } from '@unchainedshop/core-worker';
 
 export interface FailedReschedulerParams {
   transformRetry?: (workData: WorkData, lastFailedWork: Work) => Promise<WorkData | null>;

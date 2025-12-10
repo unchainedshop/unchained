@@ -1,9 +1,9 @@
-import {
+import type {
   Quotation,
   QuotationItemConfiguration,
   QuotationProposal,
 } from '@unchainedshop/core-quotations';
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
 
 export interface QuotationContext {
   quotation?: Quotation;
@@ -29,12 +29,14 @@ export type IQuotationAdapter = IBaseAdapter & {
   actions: (params: QuotationContext) => QuotationAdapterActions;
 };
 
-export enum QuotationError {
-  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
-  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
-  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
-}
+export const QuotationError = {
+  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+} as const;
+
+export type QuotationError = (typeof QuotationError)[keyof typeof QuotationError];
 
 export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,

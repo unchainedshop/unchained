@@ -1,10 +1,10 @@
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortmentChildren.js';
-import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.js';
-import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.js';
-import upsertMedia, { MediaSchema } from './upsertMedia.js';
-import { Modules } from '../../../modules.js';
-import { Services } from '../../../services/index.js';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
+import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortmentChildren.ts';
+import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.ts';
+import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.ts';
+import upsertMedia, { MediaSchema } from './upsertMedia.ts';
+import type { Modules } from '../../../modules.ts';
+import type { Services } from '../../../services/index.ts';
 import { z } from 'zod';
 
 export const AssortmentCreatePayloadSchema = z.object({

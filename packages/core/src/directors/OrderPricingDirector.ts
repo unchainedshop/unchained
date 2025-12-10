@@ -1,14 +1,14 @@
 import {
-  IOrderPricingSheet,
-  OrderPricingCalculation,
+  type IOrderPricingSheet,
+  type OrderPricingCalculation,
   OrderPricingSheet,
-  IOrderPricingAdapter,
-  OrderPricingAdapterContext,
+  type IOrderPricingAdapter,
+  type OrderPricingAdapterContext,
   BasePricingDirector,
-  PricingDiscount,
-  IPricingDirector,
-} from '../directors/index.js';
-import { Order, OrderDelivery, OrderPayment, OrderPosition } from '@unchainedshop/core-orders';
+  type PricingDiscount,
+  type IPricingDirector,
+} from '../directors/index.ts';
+import type { Order, OrderDelivery, OrderPayment, OrderPosition } from '@unchainedshop/core-orders';
 
 export interface OrderPricingContext {
   currencyCode: string;

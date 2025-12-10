@@ -1,8 +1,8 @@
 import { resolveBestCurrency } from '@unchainedshop/utils';
-import { User } from '@unchainedshop/core-users';
+import type { User } from '@unchainedshop/core-users';
 import { ordersSettings } from '@unchainedshop/core-orders';
-import { initCartProvidersService } from './initCartProviders.js';
-import { Modules } from '../modules.js';
+import { initCartProvidersService } from './initCartProviders.ts';
+import type { Modules } from '../modules.ts';
 
 export async function nextUserCartService(
   this: Modules,

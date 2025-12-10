@@ -1,16 +1,17 @@
-import { IBaseDirector, BaseDirector } from '@unchainedshop/utils';
-import { WarehousingProvider, TokenSurrogate } from '@unchainedshop/core-warehousing';
+import type { IBaseDirector } from '@unchainedshop/utils';
+import { BaseDirector } from '@unchainedshop/utils';
+import type { WarehousingProvider, TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');
 
 import {
   DeliveryDirector,
-  IWarehousingAdapter,
-  WarehousingContext,
+  type IWarehousingAdapter,
+  type WarehousingContext,
   WarehousingError,
-} from '../directors/index.js';
-import { Modules } from '../modules.js';
+} from '../directors/index.ts';
+import type { Modules } from '../modules.ts';
 
 export interface EstimatedDispatch {
   shipping?: Date;

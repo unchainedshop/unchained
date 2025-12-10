@@ -1,8 +1,8 @@
-import { Order, OrderDelivery, OrderPosition } from '@unchainedshop/core-orders';
-import { WarehousingDirector } from '../directors/index.js';
-import { Modules } from '../modules.js';
-import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.js';
-import { Product } from '@unchainedshop/core-products';
+import type { Order, OrderDelivery, OrderPosition } from '@unchainedshop/core-orders';
+import { WarehousingDirector } from '../directors/index.ts';
+import type { Modules } from '../modules.ts';
+import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.ts';
+import type { Product } from '@unchainedshop/core-products';
 
 export async function updateSchedulingService(
   this: Modules,

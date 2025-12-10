@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { Modules } from '../../../modules.js';
-import { Services } from '../../../services/index.js';
-import upsertVariations, { ProductVariationSchema } from './upsertVariations.js';
-import upsertMedia, { MediaSchema } from './upsertMedia.js';
-import createProduct, { ProductCreatePayloadSchema } from './create.js';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
+import type { Modules } from '../../../modules.ts';
+import type { Services } from '../../../services/index.ts';
+import upsertVariations, { ProductVariationSchema } from './upsertVariations.ts';
+import upsertMedia, { MediaSchema } from './upsertMedia.ts';
+import createProduct, { ProductCreatePayloadSchema } from './create.ts';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 
 export const ProductUpdateSpecificationSchema = z.object({
   type: z.string().optional(),

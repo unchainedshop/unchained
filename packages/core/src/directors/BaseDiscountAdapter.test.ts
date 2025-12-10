@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { BaseDiscountAdapter } from './BaseDiscountAdapter.js';
+import { BaseDiscountAdapter } from './BaseDiscountAdapter.ts';
 
 describe('BaseDiscountAdapter instantiation', () => {
   const adapter = BaseDiscountAdapter;

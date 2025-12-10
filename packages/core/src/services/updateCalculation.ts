@@ -1,20 +1,20 @@
 import {
-  OrderDelivery,
+  type OrderDelivery,
   OrderDiscountTrigger,
-  OrderPayment,
-  Order,
-  OrderPosition,
+  type OrderPayment,
+  type Order,
+  type OrderPosition,
 } from '@unchainedshop/core-orders';
-import { initCartProvidersService } from './initCartProviders.js';
-import { Modules } from '../modules.js';
-import { updateSchedulingService } from './updateScheduling.js';
+import { initCartProvidersService } from './initCartProviders.ts';
+import type { Modules } from '../modules.ts';
+import { updateSchedulingService } from './updateScheduling.ts';
 import {
   OrderDiscountDirector,
   OrderPricingDirector,
   DeliveryPricingDirector,
   ProductPricingDirector,
   PaymentPricingDirector,
-} from '../directors/index.js';
+} from '../directors/index.ts';
 
 export async function updateCalculationService(this: Modules, orderId: string) {
   let order = await this.orders.findOrder({ orderId });

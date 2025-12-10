@@ -1,4 +1,4 @@
-import { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
 const hashBookmark = (bookmark) => {
   return `${bookmark.productId}:${bookmark.userId}:${JSON.stringify(bookmark.meta || {})}`;

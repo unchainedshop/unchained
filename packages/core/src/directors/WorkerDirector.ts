@@ -1,8 +1,8 @@
-import { Work, WorkData, WorkResult } from '@unchainedshop/core-worker';
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
-import { ScheduleData } from '@breejs/later';
-import { IWorkerAdapter } from './WorkerAdapter.js';
-import { Modules } from '../modules.js';
+import type { Work, WorkData, WorkResult } from '@unchainedshop/core-worker';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { ScheduleData } from '@breejs/later';
+import type { IWorkerAdapter } from './WorkerAdapter.ts';
+import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');

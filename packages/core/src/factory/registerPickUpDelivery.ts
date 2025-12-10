@@ -1,10 +1,10 @@
 import {
-  DeliveryConfiguration,
-  DeliveryLocation,
+  type DeliveryConfiguration,
+  type DeliveryLocation,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
-import { DeliveryAdapter, DeliveryContext, DeliveryDirector } from '../core-index.js';
-import { Work } from '@unchainedshop/core-worker';
+import { DeliveryAdapter, type DeliveryContext, DeliveryDirector } from '../core-index.ts';
+import type { Work } from '@unchainedshop/core-worker';
 
 export default function registerPickUpDelivery({
   adapterId,

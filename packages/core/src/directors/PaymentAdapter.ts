@@ -6,14 +6,16 @@ import type {
   PaymentProvider,
   PaymentProviderType,
 } from '@unchainedshop/core-payment';
-import type { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
-export enum PaymentError {
-  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
-  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
-  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
-}
+export const PaymentError = {
+  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+} as const;
+
+export type PaymentError = (typeof PaymentError)[keyof typeof PaymentError];
 
 export interface ChargeResult {
   transactionId?: string;

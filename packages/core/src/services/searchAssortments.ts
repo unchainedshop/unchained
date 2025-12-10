@@ -2,10 +2,10 @@ import {
   defaultAssortmentSelector,
   defaultFilterSelector,
   defaultSortStage,
-  SearchQuery,
+  type SearchQuery,
 } from '@unchainedshop/core-filters';
-import { Modules } from '../modules.js';
-import { FilterDirector, SearchAssortmentsOptions } from '../directors/index.js';
+import type { Modules } from '../modules.ts';
+import { FilterDirector, type SearchAssortmentsOptions } from '../directors/index.ts';
 
 export async function searchAssortmentsService(
   this: Modules,

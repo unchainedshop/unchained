@@ -1,7 +1,7 @@
-import { Quotation, QuotationStatus } from '@unchainedshop/core-quotations';
-import { Modules } from '../modules.js';
-import { QuotationDirector } from '../core-index.js';
-import { addMessageService } from './addMessage.js';
+import { type Quotation, QuotationStatus } from '@unchainedshop/core-quotations';
+import type { Modules } from '../modules.ts';
+import { QuotationDirector } from '../core-index.ts';
+import { addMessageService } from './addMessage.ts';
 
 const findNextStatus = async (quotation: Quotation, modules: Modules): Promise<QuotationStatus> => {
   let status = quotation.status as QuotationStatus;

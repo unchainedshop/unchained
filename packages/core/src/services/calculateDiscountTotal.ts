@@ -1,5 +1,5 @@
-import { Order, OrderDiscount } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
+import type { Order, OrderDiscount } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 import {
   OrderPricingRowCategory,
   OrderPricingSheet,
@@ -9,7 +9,7 @@ import {
   ProductPricingSheet,
   PaymentPricingRowCategory,
   PaymentPricingSheet,
-} from '../directors/index.js';
+} from '../directors/index.ts';
 
 export async function calculateDiscountTotalService(
   this: Modules,

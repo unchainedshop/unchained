@@ -1,15 +1,15 @@
-import { PricingCalculation } from '@unchainedshop/utils';
+import type { PricingCalculation } from '@unchainedshop/utils';
 import {
   BasePricingAdapter,
-  BasePricingAdapterContext,
-  IPricingAdapter,
-  IPricingSheet,
-} from '../directors/index.js';
-import { PaymentPricingSheet } from './PaymentPricingSheet.js';
-import { PaymentProvider } from '@unchainedshop/core-payment';
-import { OrderDiscount, OrderPayment, Order } from '@unchainedshop/core-orders';
-import { User } from '@unchainedshop/core-users';
-import { Modules } from '../modules.js';
+  type BasePricingAdapterContext,
+  type IPricingAdapter,
+  type IPricingSheet,
+} from '../directors/index.ts';
+import { PaymentPricingSheet } from './PaymentPricingSheet.ts';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
+import type { OrderDiscount, OrderPayment, Order } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
+import type { Modules } from '../modules.ts';
 
 export interface PaymentPricingCalculation extends PricingCalculation {
   discountId?: string;

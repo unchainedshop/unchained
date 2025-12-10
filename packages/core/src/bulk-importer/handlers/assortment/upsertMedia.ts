@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { Services } from '../../../services/index.js';
-import { Modules } from '../../../modules.js';
-import upsertAsset, { AssetSchema } from '../../upsertAsset.js';
-import { AssortmentMediaType } from '@unchainedshop/core-assortments';
+import type { Services } from '../../../services/index.ts';
+import type { Modules } from '../../../modules.ts';
+import upsertAsset, { AssetSchema } from '../../upsertAsset.ts';
+import type { AssortmentMediaType } from '@unchainedshop/core-assortments';
 
 export const MediaSchema = z.object({
   _id: z.string().optional(),

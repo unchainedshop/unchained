@@ -1,8 +1,8 @@
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
-import { PaymentError, IPaymentActions, IPaymentAdapter, PaymentContext } from './PaymentAdapter.js';
-import { PaymentProvider } from '@unchainedshop/core-payment';
-import { Order, OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
+import { PaymentError, type IPaymentActions, type IPaymentAdapter, type PaymentContext } from './PaymentAdapter.ts';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
+import { type Order, type OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
 
 const buildPaymentProviderActionsContext = (
   orderPayment: OrderPayment,

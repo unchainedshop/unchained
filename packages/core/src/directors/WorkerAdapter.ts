@@ -1,8 +1,8 @@
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
-import { WorkResult } from '@unchainedshop/core-worker';
-import { ModuleOptions, Modules } from '../modules.js';
-import { Services } from '../services/index.js';
-import { BulkImporter } from '../bulk-importer/index.js';
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
+import type { WorkResult } from '@unchainedshop/core-worker';
+import type { ModuleOptions, Modules } from '../modules.ts';
+import type { Services } from '../services/index.ts';
+import type { BulkImporter } from '../bulk-importer/index.ts';
 
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;

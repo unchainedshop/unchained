@@ -1,10 +1,10 @@
-import { PaymentConfiguration } from '@unchainedshop/core-payment';
+import type { PaymentConfiguration } from '@unchainedshop/core-payment';
 import {
-  PaymentContext,
+  type PaymentContext,
   PaymentAdapter,
   PaymentDirector,
-  PaymentChargeActionResult,
-} from '../core-index.js';
+  type PaymentChargeActionResult,
+} from '../core-index.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 
 export default function registerInvoicePayment({

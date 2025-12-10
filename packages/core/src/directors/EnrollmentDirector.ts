@@ -1,8 +1,8 @@
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
-import { EnrollmentAdapterActions, EnrollmentContext, IEnrollmentAdapter } from './EnrollmentAdapter.js';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { EnrollmentAdapterActions, EnrollmentContext, IEnrollmentAdapter } from './EnrollmentAdapter.ts';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
-import { Enrollment } from '@unchainedshop/core-enrollments';
+import type { Enrollment } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');

@@ -1,6 +1,6 @@
 import { ProductStatus } from '@unchainedshop/core-products';
-import { updateCalculationService } from './updateCalculation.js';
-import { Modules } from '../modules.js';
+import { updateCalculationService } from './updateCalculation.ts';
+import type { Modules } from '../modules.ts';
 
 export async function removeProductService(
   this: Modules,

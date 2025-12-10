@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
-import { Modules } from '../../../modules.js';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
+import type { Modules } from '../../../modules.ts';
 
 export const AssortmentFilterSchema = z.object({
   _id: z.string().optional(),

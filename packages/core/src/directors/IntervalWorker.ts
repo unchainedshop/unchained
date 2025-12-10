@@ -1,5 +1,5 @@
-import later, { ScheduleData } from '@breejs/later';
-import { BaseWorker, IWorker } from './BaseWorker.js';
+import later, { type ScheduleData } from '@breejs/later';
+import { BaseWorker, type IWorker } from './BaseWorker.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const { NODE_ENV } = process.env;

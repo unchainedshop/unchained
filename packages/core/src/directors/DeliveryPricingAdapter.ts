@@ -1,15 +1,15 @@
-import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
+import { DeliveryPricingSheet } from './DeliveryPricingSheet.ts';
 import {
-  BasePricingAdapterContext,
-  IPricingAdapter,
-  IPricingSheet,
+  type BasePricingAdapterContext,
+  type IPricingAdapter,
+  type IPricingSheet,
   BasePricingAdapter,
-} from '../directors/index.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { PricingCalculation } from '@unchainedshop/utils';
-import { OrderDelivery, OrderDiscount, Order } from '@unchainedshop/core-orders';
-import { User } from '@unchainedshop/core-users';
-import { Modules } from '../modules.js';
+} from '../directors/index.ts';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { PricingCalculation } from '@unchainedshop/utils';
+import type { OrderDelivery, OrderDiscount, Order } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
+import type { Modules } from '../modules.ts';
 
 export interface DeliveryPricingCalculation extends PricingCalculation {
   discountId?: string;

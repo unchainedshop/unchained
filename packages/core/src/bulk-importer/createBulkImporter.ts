@@ -3,12 +3,12 @@ import JSONStream from 'minipass-json-stream';
 import { PassThrough, Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { mongodb } from '@unchainedshop/mongodb';
-import * as AssortmentHandlers from './handlers/assortment/index.js';
-import * as FilterHandlers from './handlers/filter/index.js';
-import * as ProductHandlers from './handlers/product/index.js';
+import * as AssortmentHandlers from './handlers/assortment/index.ts';
+import * as FilterHandlers from './handlers/filter/index.ts';
+import * as ProductHandlers from './handlers/product/index.ts';
 import { createLogger } from '@unchainedshop/logger';
-import { Modules } from '../modules.js';
-import { Services } from '../services/index.js';
+import type { Modules } from '../modules.ts';
+import type { Services } from '../services/index.ts';
 
 const logger = createLogger('unchained:bulk-import');
 

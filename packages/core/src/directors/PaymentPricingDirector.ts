@@ -1,15 +1,15 @@
 import {
   BasePricingDirector,
-  IPricingDirector,
-  IPaymentPricingAdapter,
-  IPaymentPricingSheet,
-  PaymentPricingAdapterContext,
-  PaymentPricingCalculation,
-} from '../directors/index.js';
-import { PaymentPricingSheet } from './PaymentPricingSheet.js';
-import { PaymentProvider } from '@unchainedshop/core-payment';
-import { OrderPayment, Order } from '@unchainedshop/core-orders';
-import { User } from '@unchainedshop/core-users';
+  type IPricingDirector,
+  type IPaymentPricingAdapter,
+  type IPaymentPricingSheet,
+  type PaymentPricingAdapterContext,
+  type PaymentPricingCalculation,
+} from '../directors/index.ts';
+import { PaymentPricingSheet } from './PaymentPricingSheet.ts';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
+import type { OrderPayment, Order } from '@unchainedshop/core-orders';
+import type { User } from '@unchainedshop/core-users';
 
 export type PaymentPricingContext =
   | {

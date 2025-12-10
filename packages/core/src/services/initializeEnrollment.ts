@@ -1,8 +1,8 @@
-import { Enrollment } from '@unchainedshop/core-enrollments';
-import { EnrollmentDirector } from '../core-index.js';
-import { processEnrollmentService } from './processEnrollment.js';
-import { Modules } from '../modules.js';
-import { addMessageService } from './addMessage.js';
+import type { Enrollment } from '@unchainedshop/core-enrollments';
+import { EnrollmentDirector } from '../core-index.ts';
+import { processEnrollmentService } from './processEnrollment.ts';
+import type { Modules } from '../modules.ts';
+import { addMessageService } from './addMessage.ts';
 
 export async function initializeEnrollmentService(
   this: Modules,

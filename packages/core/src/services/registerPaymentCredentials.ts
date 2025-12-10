@@ -1,6 +1,6 @@
-import { PaymentContext } from '../directors/PaymentAdapter.js';
-import { PaymentDirector } from '../directors/PaymentDirector.js';
-import { Modules } from '../modules.js';
+import type { PaymentContext } from '../directors/PaymentAdapter.ts';
+import { PaymentDirector } from '../directors/PaymentDirector.ts';
+import type { Modules } from '../modules.ts';
 
 export async function registerPaymentCredentialsService(
   this: Modules,

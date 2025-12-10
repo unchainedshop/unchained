@@ -1,6 +1,6 @@
 import later from '@breejs/later';
-import { Work, WorkData } from '@unchainedshop/core-worker';
-import { WorkerDirector } from './WorkerDirector.js';
+import type { Work, WorkData } from '@unchainedshop/core-worker';
+import { WorkerDirector } from './WorkerDirector.ts';
 
 export interface IWorker<P extends { workerId?: string }> {
   key: string;

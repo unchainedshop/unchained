@@ -1,12 +1,15 @@
-import { BasePricingSheet, IBasePricingSheet, PricingSheetParams } from '../directors/index.js';
-import { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.js';
+import { BasePricingSheet, type IBasePricingSheet, type PricingSheetParams } from '../directors/index.ts';
+import type { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.ts';
 
-export enum DeliveryPricingRowCategory {
-  Delivery = 'DELIVERY',
-  Discount = 'DISCOUNT',
-  Tax = 'TAX',
-  Item = 'ITEM', // Propably unused
-}
+export const DeliveryPricingRowCategory = {
+  Delivery: 'DELIVERY',
+  Discount: 'DISCOUNT',
+  Tax: 'TAX',
+  Item: 'ITEM', // Propably unused
+} as const;
+
+export type DeliveryPricingRowCategory =
+  (typeof DeliveryPricingRowCategory)[keyof typeof DeliveryPricingRowCategory];
 
 export const DeliveryPricingSheet = (
   params: PricingSheetParams<DeliveryPricingCalculation>,

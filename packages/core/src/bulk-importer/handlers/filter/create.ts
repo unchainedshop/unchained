@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Modules } from '../../../modules.js';
+import type { Modules } from '../../../modules.ts';
 
 export const LocalizedContentSchema = z.record(
   z.string(), // locale

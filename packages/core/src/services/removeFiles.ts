@@ -1,5 +1,5 @@
 import { getFileAdapter } from '@unchainedshop/core-files';
-import { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
 export async function removeFilesService(this: Modules, { fileIds }: { fileIds: string[] }) {
   if (fileIds && typeof fileIds !== 'string' && !Array.isArray(fileIds))

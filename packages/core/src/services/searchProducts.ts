@@ -2,10 +2,10 @@ import {
   defaultFilterSelector,
   defaultProductSelector,
   defaultSortStage,
-  SearchQuery,
+  type SearchQuery,
 } from '@unchainedshop/core-filters';
-import { Modules } from '../modules.js';
-import { FilterDirector, SearchProductsOptions } from '../directors/index.js';
+import type { Modules } from '../modules.ts';
+import { FilterDirector, type SearchProductsOptions } from '../directors/index.ts';
 
 export async function searchProductsService(
   this: Modules,

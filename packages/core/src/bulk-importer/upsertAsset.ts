@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Modules } from '../modules.js';
-import { Services } from '../services/index.js';
+import type { Modules } from '../modules.ts';
+import type { Services } from '../services/index.ts';
 import { z } from 'zod';
 
 const logger = createLogger('unchained:bulk-import');

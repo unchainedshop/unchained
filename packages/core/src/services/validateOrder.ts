@@ -1,5 +1,5 @@
-import { Order, ordersSettings } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
+import { type Order, ordersSettings } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 
 export async function validateOrderService(this: Modules, order: Order) {
   if (!order.contact) throw new Error('Contact data not provided');

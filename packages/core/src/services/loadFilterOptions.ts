@@ -1,6 +1,6 @@
-import { FilterType, Filter, SearchQuery } from '@unchainedshop/core-filters';
-import { Modules } from '../modules.js';
-import { FilterDirector, parseQueryArray } from '../directors/FilterDirector.js';
+import { FilterType, type Filter, type SearchQuery } from '@unchainedshop/core-filters';
+import type { Modules } from '../modules.ts';
+import { FilterDirector, parseQueryArray } from '../directors/FilterDirector.ts';
 
 export async function loadFilterOptionsService(
   this: Modules,

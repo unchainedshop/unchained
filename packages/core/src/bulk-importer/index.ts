@@ -1,3 +1,3 @@
-import { default as createBulkImporterFactory } from './createBulkImporter.js';
-export * from './createBulkImporter.js';
+import { default as createBulkImporterFactory } from './createBulkImporter.ts';
+export * from './createBulkImporter.ts';
 export default createBulkImporterFactory;

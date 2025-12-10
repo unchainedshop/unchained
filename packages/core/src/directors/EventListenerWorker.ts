@@ -1,5 +1,5 @@
 import { subscribe } from '@unchainedshop/events';
-import { BaseWorker, IWorker } from './BaseWorker.js';
+import { BaseWorker, type IWorker } from './BaseWorker.ts';
 import { WorkerEventTypes } from '@unchainedshop/core-worker';
 import { setTimeout } from 'node:timers/promises';
 import { createLogger } from '@unchainedshop/logger';

@@ -1,13 +1,13 @@
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import {
-  DeliveryAdapterActions,
-  DeliveryContext,
-  IDeliveryAdapter,
+  type DeliveryAdapterActions,
+  type DeliveryContext,
+  type IDeliveryAdapter,
   DeliveryError,
-} from './DeliveryAdapter.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Order, OrderDeliveryStatus } from '@unchainedshop/core-orders';
-import { Modules } from '../modules.js';
+} from './DeliveryAdapter.ts';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { type Order, OrderDeliveryStatus } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');

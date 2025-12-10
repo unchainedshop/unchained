@@ -1,6 +1,6 @@
-import { User } from '@unchainedshop/core-users';
-import { Modules } from '../modules.js';
-import { nextUserCartService } from './nextUserCart.js';
+import type { User } from '@unchainedshop/core-users';
+import type { Modules } from '../modules.ts';
+import { nextUserCartService } from './nextUserCart.ts';
 
 export async function findOrInitCartService(
   this: Modules,

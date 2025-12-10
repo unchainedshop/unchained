@@ -1,9 +1,9 @@
-import { Assortment } from '@unchainedshop/core-assortments';
+import type { Assortment } from '@unchainedshop/core-assortments';
 import { mongodb } from '@unchainedshop/mongodb';
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
-import { Product } from '@unchainedshop/core-products';
-import { Filter, SearchConfiguration, SearchQuery } from '@unchainedshop/core-filters';
-import { Modules } from '../modules.js';
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
+import type { Product } from '@unchainedshop/core-products';
+import type { Filter, SearchConfiguration, SearchQuery } from '@unchainedshop/core-filters';
+import type { Modules } from '../modules.ts';
 
 export interface FilterInputText {
   locale: string;

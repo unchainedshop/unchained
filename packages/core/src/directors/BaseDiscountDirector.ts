@@ -1,6 +1,6 @@
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
-import { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.js';
-import { Modules } from '../modules.js';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.ts';
+import type { Modules } from '../modules.ts';
 
 export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
   IDiscountAdapter<DiscountConfiguration>

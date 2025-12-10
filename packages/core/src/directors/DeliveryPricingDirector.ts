@@ -1,12 +1,12 @@
-import { DeliveryPricingSheet, BasePricingDirector, IPricingDirector } from '../directors/index.js';
+import { DeliveryPricingSheet, BasePricingDirector, type IPricingDirector } from '../directors/index.ts';
 
 import {
-  DeliveryPricingAdapterContext,
-  DeliveryPricingCalculation,
-  IDeliveryPricingAdapter,
-  IDeliveryPricingSheet,
-} from './DeliveryPricingAdapter.js';
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
+  type DeliveryPricingAdapterContext,
+  type DeliveryPricingCalculation,
+  type IDeliveryPricingAdapter,
+  type IDeliveryPricingSheet,
+} from './DeliveryPricingAdapter.ts';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 
 import type { Order } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';

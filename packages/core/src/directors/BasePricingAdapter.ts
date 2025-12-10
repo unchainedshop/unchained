@@ -1,7 +1,7 @@
-import { IPricingSheet } from './BasePricingSheet.js';
-import { BaseAdapter, IBaseAdapter, PricingCalculation } from '@unchainedshop/utils';
-import { Discount } from './BasePricingDirector.js';
-import { Order, OrderDiscount } from '@unchainedshop/core-orders';
+import type { IPricingSheet } from './BasePricingSheet.ts';
+import { BaseAdapter, type IBaseAdapter, type PricingCalculation } from '@unchainedshop/utils';
+import type { Discount } from './BasePricingDirector.ts';
+import type { Order, OrderDiscount } from '@unchainedshop/core-orders';
 
 interface IDiscountableItem {
   _id: string;

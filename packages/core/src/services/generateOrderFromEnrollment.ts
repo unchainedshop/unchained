@@ -1,7 +1,7 @@
-import { Modules } from '../modules.js';
-import { Enrollment, EnrollmentOrderPositionTemplate } from '@unchainedshop/core-enrollments';
-import { updateCalculationService } from './updateCalculation.js';
-import { checkoutOrderService } from './checkoutOrder.js';
+import type { Modules } from '../modules.ts';
+import type { Enrollment, EnrollmentOrderPositionTemplate } from '@unchainedshop/core-enrollments';
+import { updateCalculationService } from './updateCalculation.ts';
+import { checkoutOrderService } from './checkoutOrder.ts';
 
 export async function generateOrderFromEnrollmentService(
   this: Modules,

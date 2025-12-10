@@ -1,4 +1,4 @@
-import { FilterAdapter, FilterDirector } from '../core-index.js';
+import { FilterAdapter, FilterDirector } from '../core-index.ts';
 
 export default function registerProductDiscoverabilityFilter({
   orderIndex = 0,

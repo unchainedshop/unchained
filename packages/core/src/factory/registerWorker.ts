@@ -1,4 +1,4 @@
-import { WorkerAdapter, WorkerDirector } from '../core-index.js';
+import { WorkerAdapter, WorkerDirector } from '../core-index.ts';
 
 export default function registerWorker<Input = any, Result = any>({
   type,

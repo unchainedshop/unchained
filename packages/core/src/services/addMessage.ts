@@ -1,6 +1,6 @@
-import { Work } from '@unchainedshop/core-worker';
-import { MessagingDirector } from '../core-index.js';
-import { Modules } from '../modules.js';
+import type { Work } from '@unchainedshop/core-worker';
+import { MessagingDirector } from '../core-index.ts';
+import type { Modules } from '../modules.ts';
 
 export async function addMessageService<T = Record<string, any>>(
   this: Modules,

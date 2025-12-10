@@ -1,15 +1,15 @@
-import { Product, ProductConfiguration } from '@unchainedshop/core-products';
-import { Order } from '@unchainedshop/core-orders';
+import type { Product, ProductConfiguration } from '@unchainedshop/core-products';
+import type { Order } from '@unchainedshop/core-orders';
 import {
-  IProductPricingSheet,
-  ProductPricingCalculation,
+  type IProductPricingSheet,
+  type ProductPricingCalculation,
   ProductPricingSheet,
   BasePricingAdapter,
-  BasePricingAdapterContext,
-  IPricingAdapter,
-} from '../directors/index.js';
-import { Modules } from '../modules.js';
-import { User } from '@unchainedshop/core-users';
+  type BasePricingAdapterContext,
+  type IPricingAdapter,
+} from '../directors/index.ts';
+import type { Modules } from '../modules.ts';
+import type { User } from '@unchainedshop/core-users';
 
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   countryCode: string;

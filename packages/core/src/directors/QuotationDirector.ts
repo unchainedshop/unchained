@@ -1,10 +1,10 @@
-import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import {
   QuotationError,
-  IQuotationAdapter,
-  QuotationAdapterActions,
-  QuotationContext,
-} from './QuotationAdapter.js';
+  type IQuotationAdapter,
+  type QuotationAdapterActions,
+  type QuotationContext,
+} from './QuotationAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');

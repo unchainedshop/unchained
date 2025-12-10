@@ -1,17 +1,20 @@
 import {
-  PaymentPricingCalculation,
-  IPaymentPricingSheet,
+  type PaymentPricingCalculation,
+  type IPaymentPricingSheet,
   BasePricingSheet,
-  IBasePricingSheet,
-  PricingSheetParams,
-} from '../directors/index.js';
+  type IBasePricingSheet,
+  type PricingSheetParams,
+} from '../directors/index.ts';
 
-export enum PaymentPricingRowCategory {
-  Item = 'ITEM',
-  Payment = 'PAYMENT',
-  Discount = 'DISCOUNT',
-  Tax = 'TAX',
-}
+export const PaymentPricingRowCategory = {
+  Item: 'ITEM',
+  Payment: 'PAYMENT',
+  Discount: 'DISCOUNT',
+  Tax: 'TAX',
+} as const;
+
+export type PaymentPricingRowCategory =
+  (typeof PaymentPricingRowCategory)[keyof typeof PaymentPricingRowCategory];
 
 export const PaymentPricingSheet = (
   params: PricingSheetParams<PaymentPricingCalculation>,

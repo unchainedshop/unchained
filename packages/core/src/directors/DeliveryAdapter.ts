@@ -11,14 +11,16 @@ import type {
   DeliveryProvider,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
-import type { Modules } from '../modules.js';
+import type { Modules } from '../modules.ts';
 
-export enum DeliveryError {
-  ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
-  NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
-  INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
-}
+export const DeliveryError = {
+  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+} as const;
+
+export type DeliveryError = (typeof DeliveryError)[keyof typeof DeliveryError];
 
 export interface DeliveryAdapterActions {
   configurationError: (transactionContext?: any) => DeliveryError | null;

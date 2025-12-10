@@ -1,5 +1,5 @@
-import { getFileFromFileData, getFileAdapter, File } from '@unchainedshop/core-files';
-import { Modules } from '../modules.js';
+import { getFileFromFileData, getFileAdapter, type File } from '@unchainedshop/core-files';
+import type { Modules } from '../modules.ts';
 
 export async function uploadFileFromStreamService(
   this: Modules,

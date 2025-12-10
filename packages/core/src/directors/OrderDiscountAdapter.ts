@@ -1,8 +1,8 @@
 import {
   BaseDiscountAdapter,
-  IDiscountAdapter,
-  OrderDiscountConfiguration,
-} from '../directors/index.js';
+  type IDiscountAdapter,
+  type OrderDiscountConfiguration,
+} from '../directors/index.ts';
 
 export const OrderDiscountAdapter = BaseDiscountAdapter as Omit<
   IDiscountAdapter<OrderDiscountConfiguration>,
