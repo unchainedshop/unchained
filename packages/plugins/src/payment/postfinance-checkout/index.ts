@@ -19,9 +19,9 @@ import {
   getTransaction,
   refundTransaction,
   voidTransaction,
-} from './api.js';
-import { orderIsPaid } from './utils.js';
-import { CompletionModes, IntegrationModes, type SignResponse } from './types.js';
+} from './api.ts';
+import { orderIsPaid } from './utils.ts';
+import { CompletionModes, IntegrationModes, type SignResponse } from './types.ts';
 import {
   type TransactionCreate,
   type LineItem,
@@ -30,7 +30,7 @@ import {
   TransactionCompletionBehavior,
   TransactionState,
   CreationEntityState,
-} from './api-types.js';
+} from './api-types.ts';
 
 const {
   PFCHECKOUT_SPACE_ID,
@@ -267,5 +267,5 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
 PaymentDirector.registerAdapter(PostfinanceCheckout);
 
-export * from './types.js';
-export * from './api-types.js';
+export * from './types.ts';
+export * from './api-types.ts';

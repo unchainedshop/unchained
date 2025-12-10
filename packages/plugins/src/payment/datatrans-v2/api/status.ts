@@ -1,4 +1,4 @@
-import type { FetchDatatransFn, StatusRequestPayload, StatusResponse } from './types.js';
+import type { FetchDatatransFn, StatusRequestPayload, StatusResponse } from './types.ts';
 
 export default async function status({ transactionId }: StatusRequestPayload): Promise<StatusResponse> {
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;

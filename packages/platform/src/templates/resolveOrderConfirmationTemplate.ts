@@ -1,5 +1,5 @@
 import type { TemplateResolver } from '@unchainedshop/core';
-import { transformOrderToText } from './order-parser/index.js';
+import { transformOrderToText } from './order-parser/index.ts';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 

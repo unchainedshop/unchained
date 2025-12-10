@@ -5,8 +5,8 @@ import {
   DeliveryPricingDirector,
 } from '@unchainedshop/core';
 
-import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from './tax/ch.js';
-import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.js';
+import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from './tax/ch.ts';
+import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.ts';
 
 export const DeliverySwissTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,

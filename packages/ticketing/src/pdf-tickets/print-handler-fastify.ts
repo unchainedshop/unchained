@@ -1,7 +1,7 @@
 import { checkAction } from '@unchainedshop/api/lib/acl.js';
 import { actions } from '@unchainedshop/api/lib/roles/index.js';
-import { RendererTypes, getRenderer } from '../template-registry.js';
-import { TicketingAPI } from '../types.js';
+import { RendererTypes, getRenderer } from '../template-registry.ts';
+import type { TicketingAPI } from '../types.ts';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 

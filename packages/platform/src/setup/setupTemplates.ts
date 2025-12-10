@@ -2,13 +2,13 @@ import { MessagingDirector, type UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 import { type Order, OrderStatus } from '@unchainedshop/core-orders';
 import type { RawPayloadType } from '@unchainedshop/events';
-import { resolveOrderRejectionTemplate } from '../templates/resolveOrderRejectionTemplate.js';
-import { resolveAccountActionTemplate } from '../templates/resolveAccountActionTemplate.js';
-import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliveryTemplate.js';
-import { resolveOrderConfirmationTemplate } from '../templates/resolveOrderConfirmationTemplate.js';
-import { resolveQuotationStatusTemplate } from '../templates/resolveQuotationStatusTemplate.js';
-import { resolveEnrollmentStatusTemplate } from '../templates/resolveEnrollmentStatusTemplate.js';
-import { resolveErrorReportTemplate } from '../templates/resolveErrorReportTemplate.js';
+import { resolveOrderRejectionTemplate } from '../templates/resolveOrderRejectionTemplate.ts';
+import { resolveAccountActionTemplate } from '../templates/resolveAccountActionTemplate.ts';
+import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliveryTemplate.ts';
+import { resolveOrderConfirmationTemplate } from '../templates/resolveOrderConfirmationTemplate.ts';
+import { resolveQuotationStatusTemplate } from '../templates/resolveQuotationStatusTemplate.ts';
+import { resolveEnrollmentStatusTemplate } from '../templates/resolveEnrollmentStatusTemplate.ts';
+import { resolveErrorReportTemplate } from '../templates/resolveErrorReportTemplate.ts';
 
 export const MessageTypes = {
   ACCOUNT_ACTION: 'ACCOUNT_ACTION',

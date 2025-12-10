@@ -1,7 +1,7 @@
 import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import baseModules from '@unchainedshop/plugins/presets/base.js';
 import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
-import { connect, unchainedLogger, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import seed from './seed.ts';
 import Fastify from 'fastify';
 import setupZitadel from './zitadel.ts';

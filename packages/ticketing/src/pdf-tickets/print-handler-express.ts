@@ -1,7 +1,7 @@
 import { checkAction } from '@unchainedshop/api/lib/acl.js';
 import { actions } from '@unchainedshop/api/lib/roles/index.js';
-import { Context } from '@unchainedshop/api';
-import { RendererTypes, getRenderer } from '../template-registry.js';
+import type { Context } from '@unchainedshop/api';
+import { RendererTypes, getRenderer } from '../template-registry.ts';
 import type { Request, Response } from 'express';
 
 import { createLogger } from '@unchainedshop/logger';

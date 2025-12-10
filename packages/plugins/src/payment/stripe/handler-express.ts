@@ -1,6 +1,6 @@
 import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import { stripe } from './stripe.js';
+import { stripe } from './stripe.ts';
 
 const logger = createLogger('unchained:stripe:handler');
 

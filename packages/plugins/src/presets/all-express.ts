@@ -1,16 +1,16 @@
 import express from 'express';
 import type { UnchainedCore } from '@unchainedshop/core';
 
-import connectCryptoToExpress from './crypto-express.js';
-import connectBaseToExpress from './base-express.js';
+import connectCryptoToExpress from './crypto-express.ts';
+import connectBaseToExpress from './base-express.ts';
 
-import { datatransHandler } from '../payment/datatrans-v2/handler-express.js';
-import { stripeHandler } from '../payment/stripe/handler-express.js';
-import { postfinanceCheckoutHandler } from '../payment/postfinance-checkout/handler-express.js';
-import { appleIAPHandler } from '../payment/apple-iap/handler-express.js';
-import { payrexxHandler } from '../payment/payrexx/handler-express.js';
-import { saferpayHandler } from '../payment/saferpay/handler-express.js';
-import { configureGenerateOrderAutoscheduling } from '../worker/enrollment-order-generator.js';
+import { datatransHandler } from '../payment/datatrans-v2/handler-express.ts';
+import { stripeHandler } from '../payment/stripe/handler-express.ts';
+import { postfinanceCheckoutHandler } from '../payment/postfinance-checkout/handler-express.ts';
+import { appleIAPHandler } from '../payment/apple-iap/handler-express.ts';
+import { payrexxHandler } from '../payment/payrexx/handler-express.ts';
+import { saferpayHandler } from '../payment/saferpay/handler-express.ts';
+import { configureGenerateOrderAutoscheduling } from '../worker/enrollment-order-generator.ts';
 
 const {
   STRIPE_WEBHOOK_PATH = '/payment/stripe',

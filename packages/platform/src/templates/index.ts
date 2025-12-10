@@ -1,9 +1,9 @@
-export { resolveOrderRejectionTemplate } from './resolveOrderRejectionTemplate.js';
-export { resolveAccountActionTemplate } from './resolveAccountActionTemplate.js';
-export { resolveForwardDeliveryTemplate } from './resolveForwardDeliveryTemplate.js';
-export { resolveOrderConfirmationTemplate } from './resolveOrderConfirmationTemplate.js';
-export { resolveQuotationStatusTemplate } from './resolveQuotationStatusTemplate.js';
-export { resolveEnrollmentStatusTemplate } from './resolveEnrollmentStatusTemplate.js';
-export { resolveErrorReportTemplate } from './resolveErrorReportTemplate.js';
+export { resolveOrderRejectionTemplate } from './resolveOrderRejectionTemplate.ts';
+export { resolveAccountActionTemplate } from './resolveAccountActionTemplate.ts';
+export { resolveForwardDeliveryTemplate } from './resolveForwardDeliveryTemplate.ts';
+export { resolveOrderConfirmationTemplate } from './resolveOrderConfirmationTemplate.ts';
+export { resolveQuotationStatusTemplate } from './resolveQuotationStatusTemplate.ts';
+export { resolveEnrollmentStatusTemplate } from './resolveEnrollmentStatusTemplate.ts';
+export { resolveErrorReportTemplate } from './resolveErrorReportTemplate.ts';
 
-export * as parser from './order-parser/index.js';
+export * as parser from './order-parser/index.ts';

@@ -1,7 +1,7 @@
 import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import { buildSignature } from './buildSignature.js';
-import type { SaferpayTransactionsModule } from './module.js';
+import { buildSignature } from './buildSignature.ts';
+import type { SaferpayTransactionsModule } from './module.ts';
 
 const logger = createLogger('unchained:saferpay:handler');
 

@@ -1,7 +1,7 @@
 import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
-import type { WebhookData } from './types.js';
-import { getTransaction, getTransactionCompletion } from './api.js';
+import type { WebhookData } from './types.ts';
+import { getTransaction, getTransactionCompletion } from './api.ts';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:postfinance-checkout:handler');

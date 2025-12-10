@@ -1,1 +1,1 @@
-export { default as setAccessToken } from './setAccessToken.js';
+export { default as setAccessToken } from './setAccessToken.ts';

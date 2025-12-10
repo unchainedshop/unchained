@@ -9,8 +9,8 @@ import {
   resolveTaxCategoryFromProduct,
   SwissTaxCategories,
   type SwissTaxCategoryResolver,
-} from './tax/ch.js';
-import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.js';
+} from './tax/ch.ts';
+import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.ts';
 
 export const ProductSwissTax: IProductPricingAdapter = {
   ...ProductPricingAdapter,

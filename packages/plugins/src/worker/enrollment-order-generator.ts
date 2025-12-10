@@ -1,5 +1,10 @@
 import { enrollmentsSettings, EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { EnrollmentDirector, WorkerDirector, WorkerAdapter, type IWorkerAdapter } from '@unchainedshop/core';
+import {
+  EnrollmentDirector,
+  WorkerDirector,
+  WorkerAdapter,
+  type IWorkerAdapter,
+} from '@unchainedshop/core';
 
 const GenerateOrderWorker: IWorkerAdapter<never, any> = {
   ...WorkerAdapter,

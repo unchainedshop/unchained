@@ -6,10 +6,10 @@ import {
   OrderPricingSheet,
 } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import { type CryptopayModule } from './module.js';
-import deriveBtcAddress from './derive-btc-address.js';
-import deriveEthAddress from './derive-eth-address.js';
-import denoteAmount from './denote-amount.js';
+import { type CryptopayModule } from './module.ts';
+import deriveBtcAddress from './derive-btc-address.ts';
+import deriveEthAddress from './derive-eth-address.ts';
+import denoteAmount from './denote-amount.ts';
 
 const logger = createLogger('unchained:cryptopay');
 

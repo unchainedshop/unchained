@@ -15,9 +15,9 @@ tsc --build -w       # Watch mode for TypeScript compilation across all packages
 ### Testing
 ```bash
 npm test                    # Run all tests (unit + integration)
-npm run test:run:unit       # Run unit tests only (uses tsx --test in packages/)
+npm run test:run:unit       # Run unit tests only (uses node --test in packages/)
 npm run test:run:integration # Run integration tests (uses kitchensink example + tests/)
-tsx --test path/to/test.ts  # Run a single test file
+node --test path/to/test.ts  # Run a single test file
 ```
 
 ### Package-Level Commands

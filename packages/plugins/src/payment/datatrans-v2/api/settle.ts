@@ -1,4 +1,4 @@
-import type { FetchDatatransFn, SettleRequestPayload, SettleResponse } from './types.js';
+import type { FetchDatatransFn, SettleRequestPayload, SettleResponse } from './types.ts';
 
 export default async function settle({
   transactionId,

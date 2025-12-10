@@ -5,7 +5,7 @@ import { connect } from '@unchainedshop/api/express';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-express.js';
 import { createLogger } from '@unchainedshop/logger';
-import seed from './seed.js';
+import seed from './seed.ts';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenAI } from '@ai-sdk/openai';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';

@@ -1,4 +1,4 @@
-import handler from '../files/gridfs/handler-express.js';
+import handler from '../files/gridfs/handler-express.ts';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 

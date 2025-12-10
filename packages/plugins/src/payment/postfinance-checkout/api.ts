@@ -1,4 +1,4 @@
-import { PostFinanceApiClient } from './api-client.js';
+import { PostFinanceApiClient } from './api-client.ts';
 import {
   type Transaction,
   type TransactionCreate,
@@ -6,7 +6,7 @@ import {
   type Token,
   type RefundCreate,
   RefundType,
-} from './api-types.js';
+} from './api-types.ts';
 
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
 const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID as string, 10);

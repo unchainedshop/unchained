@@ -2,7 +2,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import {
   type CryptopayTransaction,
   CryptopayTransactionsCollection,
-} from './db/CryptopayTransactions.js';
+} from './db/CryptopayTransactions.ts';
 
 const configureCryptopayModule = ({ db }) => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);

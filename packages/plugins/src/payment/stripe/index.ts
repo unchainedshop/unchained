@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.js';
+import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.ts';
 import {
   OrderPricingSheet,
   type IPaymentAdapter,

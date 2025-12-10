@@ -1,2 +1,2 @@
-import '../../pricing/product-swiss-tax.js';
-import '../../pricing/delivery-swiss-tax.js';
+import '../../pricing/product-swiss-tax.ts';
+import '../../pricing/delivery-swiss-tax.ts';

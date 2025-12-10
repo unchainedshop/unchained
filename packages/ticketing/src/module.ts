@@ -1,13 +1,13 @@
 import { createLogger } from '@unchainedshop/logger';
-import { buildDbIndexes, ModuleInput } from '@unchainedshop/mongodb';
+import { buildDbIndexes, type ModuleInput } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '@unchainedshop/core-files';
 import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing';
-import { UnchainedCore } from '@unchainedshop/core';
-import { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import { File } from '@unchainedshop/core-files';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import type { File } from '@unchainedshop/core-files';
 
-import { RendererTypes, getRenderer } from './template-registry.js';
-import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.js';
+import { RendererTypes, getRenderer } from './template-registry.ts';
+import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.ts';
 
 export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';
 

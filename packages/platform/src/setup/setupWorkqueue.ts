@@ -8,7 +8,7 @@ import {
   type IWorker,
   type UnchainedCore,
 } from '@unchainedshop/core';
-import { runMigrations } from '../migrations/runMigrations.js';
+import { runMigrations } from '../migrations/runMigrations.ts';
 import type { MigrationRepository } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:worker');

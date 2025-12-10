@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
-import appleWalletHandler from './mobile-tickets/apple-handler-fastify.js';
-import googleWalletHandler from './mobile-tickets/google-handler-fastify.js';
-import printTicketsHandler from './pdf-tickets/print-handler-fastify.js';
+import appleWalletHandler from './mobile-tickets/apple-handler-fastify.ts';
+import googleWalletHandler from './mobile-tickets/google-handler-fastify.ts';
+import printTicketsHandler from './pdf-tickets/print-handler-fastify.ts';
 
 export default (app: FastifyInstance) => {
   const {

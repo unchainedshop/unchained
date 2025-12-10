@@ -5,7 +5,7 @@ import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
-import seed from './seed.js';
+import seed from './seed.ts';
 import { useErrorHandler } from '@envelop/core';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';

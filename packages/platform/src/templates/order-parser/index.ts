@@ -1,5 +1,5 @@
-import { getOrderPositionsData } from './getOrderPositionsData.js';
-import { getOrderSummaryData } from './getOrderSummaryData.js';
+import { getOrderPositionsData } from './getOrderPositionsData.ts';
+import { getOrderSummaryData } from './getOrderSummaryData.ts';
 import type { Order } from '@unchainedshop/core-orders';
 import type { UnchainedCore } from '@unchainedshop/core';
 

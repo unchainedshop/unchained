@@ -1,7 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { Context } from '@unchainedshop/api';
-import generateSignature, { Security } from './generateSignature.js';
-import type { StatusResponseSuccess } from './api/types.js';
+import generateSignature, { Security } from './generateSignature.ts';
+import type { StatusResponseSuccess } from './api/types.ts';
 
 const {
   DATATRANS_SIGN_KEY,

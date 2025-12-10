@@ -1,6 +1,6 @@
 // https://api-reference.datatrans.ch/#operation/Authorize
 
-import type { FetchDatatransFn, AuthorizeRequestPayload, AuthorizeResponse } from './types.js';
+import type { FetchDatatransFn, AuthorizeRequestPayload, AuthorizeResponse } from './types.ts';
 
 export default async function authorize({
   ...payload

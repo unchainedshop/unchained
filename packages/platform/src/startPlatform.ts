@@ -3,11 +3,11 @@ import { initCore, type UnchainedCoreOptions } from '@unchainedshop/core';
 import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { setupAccounts } from './setup/setupAccounts.js';
-import { setupUploadHandlers } from './setup/setupUploadHandlers.js';
-import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
-import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.js';
-import { createMigrationRepository } from './migrations/migrationRepository.js';
+import { setupAccounts } from './setup/setupAccounts.ts';
+import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
+import { setupTemplates, MessageTypes } from './setup/setupTemplates.ts';
+import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.ts';
+import { createMigrationRepository } from './migrations/migrationRepository.ts';
 import type { IRoleOptionConfig } from '@unchainedshop/roles';
 
 export { MessageTypes };

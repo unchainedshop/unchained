@@ -9,8 +9,8 @@
     "build": "tsc -b",
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
-    "test": "tsx --test",
-    "test:watch": "tsx --test --watch"
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
   "repository": {
     "type": "git",

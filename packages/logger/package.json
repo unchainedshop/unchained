@@ -11,7 +11,7 @@
     "watch": "tsc -w",
     "test": "node --test",
     "test:watch": "node --test --watch",
-    "benchmark": "tsx benchmarks/benchmark.ts"
+    "benchmark": "node benchmarks/benchmark.ts"
   },
   "repository": {
     "type": "git",

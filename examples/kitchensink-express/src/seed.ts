@@ -1,6 +1,6 @@
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 const logger = console;
 const {

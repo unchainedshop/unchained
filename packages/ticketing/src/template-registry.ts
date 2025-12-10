@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 
 export type PDFRenderer = (
   {
@@ -22,16 +22,24 @@ export type PassRenderer = (
   passTypeIdentifier?: string;
 }>;
 
-export enum RendererTypes {
-  GOOGLE_WALLET = 'google-wallet',
-  APPLE_WALLET = 'apple-wallet',
-  ORDER_PDF = 'order',
-}
+export const RendererTypes = {
+  GOOGLE_WALLET: 'google-wallet',
+  APPLE_WALLET: 'apple-wallet',
+  ORDER_PDF: 'order',
+} as const;
+
+export type RendererTypes = (typeof RendererTypes)[keyof typeof RendererTypes];
 
 export const renderers = new Map<string, PDFRenderer | PassRenderer>();
 
-export type RegisterRendererFn = ((type: RendererTypes.ORDER_PDF, renderer: PDFRenderer) => void) &
-  ((type: RendererTypes.GOOGLE_WALLET | RendererTypes.APPLE_WALLET, renderer: PassRenderer) => void);
+export type RegisterRendererFn = ((
+  type: typeof RendererTypes.ORDER_PDF,
+  renderer: PDFRenderer,
+) => void) &
+  ((
+    type: typeof RendererTypes.GOOGLE_WALLET | typeof RendererTypes.APPLE_WALLET,
+    renderer: PassRenderer,
+  ) => void);
 
 export const registerRenderer: RegisterRendererFn = function registerRenderer(
   type: RendererTypes,
@@ -40,8 +48,8 @@ export const registerRenderer: RegisterRendererFn = function registerRenderer(
   renderers.set(type, renderer);
 };
 
-export type GetRendererFn = ((type: RendererTypes.ORDER_PDF) => PDFRenderer) &
-  ((type: RendererTypes.GOOGLE_WALLET | RendererTypes.APPLE_WALLET) => PassRenderer);
+export type GetRendererFn = ((type: typeof RendererTypes.ORDER_PDF) => PDFRenderer) &
+  ((type: typeof RendererTypes.GOOGLE_WALLET | typeof RendererTypes.APPLE_WALLET) => PassRenderer);
 
 export const getRenderer: GetRendererFn = function getRenderer(type: RendererTypes) {
   return renderers.get(type) as any;

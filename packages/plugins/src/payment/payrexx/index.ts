@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
-import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.js';
-import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
+import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.ts';
+import createPayrexxAPI, { GatewayObjectStatus } from './api/index.ts';
 import {
   OrderPricingSheet,
   type IPaymentAdapter,

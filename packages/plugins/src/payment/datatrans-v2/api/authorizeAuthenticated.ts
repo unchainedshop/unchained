@@ -2,7 +2,7 @@ import type {
   FetchDatatransFn,
   AuthorizeAuthenticatedRequestPayload,
   AuthorizeAuthenticatedResponse,
-} from './types.js';
+} from './types.ts';
 
 export default async function authorizeAuthenticated({
   transactionId,

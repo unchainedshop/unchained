@@ -1,5 +1,5 @@
 import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { type AppleTransaction, AppleTransactionsCollection } from './db/AppleTransactionsCollection.js';
+import { type AppleTransaction, AppleTransactionsCollection } from './db/AppleTransactionsCollection.ts';
 
 export const configureAppleTransactionsModule = async ({ db }) => {
   const AppleTransactions = await AppleTransactionsCollection(db);

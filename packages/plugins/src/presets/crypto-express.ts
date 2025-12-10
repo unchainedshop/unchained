@@ -1,8 +1,8 @@
 import type { UnchainedCore } from '@unchainedshop/core';
 import express from 'express';
 
-import handler from '../payment/cryptopay/handler-express.js';
-import { configureExportToken } from '../worker/export-token.js';
+import handler from '../payment/cryptopay/handler-express.ts';
+import { configureExportToken } from '../worker/export-token.ts';
 
 const { CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay' } = process.env;
 

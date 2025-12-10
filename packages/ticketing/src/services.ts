@@ -1,5 +1,5 @@
-import { TicketingModule } from './module.js';
-import { Bound, UnchainedCore } from '@unchainedshop/core';
+import type { TicketingModule } from './module.ts';
+import type { Bound, UnchainedCore } from '@unchainedshop/core';
 
 async function cancelTicketsForProduct(
   this: TicketingModule & UnchainedCore['modules'],

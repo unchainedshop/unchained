@@ -1,4 +1,4 @@
-import makeFetcher from './makeFetcher.js';
+import makeFetcher from './makeFetcher.ts';
 
 const baseUrl = 'https://api.payrexx.com/v1.0/';
 

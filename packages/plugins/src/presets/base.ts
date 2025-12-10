@@ -1,42 +1,42 @@
 // Delivery
-import '../delivery/post.js';
+import '../delivery/post.ts';
 
 // Payment
-import '../payment/invoice.js';
+import '../payment/invoice.ts';
 
 // Warehousing
-import '../warehousing/store.js';
+import '../warehousing/store.ts';
 
 // Pricing
-import '../pricing/free-payment.js';
-import '../pricing/free-delivery.js';
-import '../pricing/order-items.js';
-import '../pricing/order-discount.js';
-import '../pricing/order-delivery.js';
-import '../pricing/order-payment.js';
-import '../pricing/product-catalog-price.js';
-import '../pricing/product-discount.js';
+import '../pricing/free-payment.ts';
+import '../pricing/free-delivery.ts';
+import '../pricing/order-items.ts';
+import '../pricing/order-discount.ts';
+import '../pricing/order-delivery.ts';
+import '../pricing/order-payment.ts';
+import '../pricing/product-catalog-price.ts';
+import '../pricing/product-discount.ts';
 
 // Quotations
-import '../quotations/manual.js';
+import '../quotations/manual.ts';
 
 // Enrollments
-import '../enrollments/licensed.js';
+import '../enrollments/licensed.ts';
 
 // Event Queue
-import '../events/node-event-emitter.js';
+import '../events/node-event-emitter.ts';
 
 // Workers
-import '../worker/bulk-import.js';
-import '../worker/zombie-killer.js';
-import '../worker/message.js';
-import '../worker/external.js';
-import '../worker/http-request.js';
-import '../worker/heartbeat.js';
-import '../worker/email.js';
-import '../worker/error-notifications.js';
+import '../worker/bulk-import.ts';
+import '../worker/zombie-killer.ts';
+import '../worker/message.ts';
+import '../worker/external.ts';
+import '../worker/http-request.ts';
+import '../worker/heartbeat.ts';
+import '../worker/email.ts';
+import '../worker/error-notifications.ts';
 
 // Asset Management
-import gridfsModules from '../files/gridfs/index.js';
+import gridfsModules from '../files/gridfs/index.ts';
 
 export default gridfsModules;

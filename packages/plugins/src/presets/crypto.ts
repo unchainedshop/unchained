@@ -1,11 +1,11 @@
-import cryptopayModules from '../payment/cryptopay/index.js';
+import cryptopayModules from '../payment/cryptopay/index.ts';
 
 // Warehousing
-import '../warehousing/eth-minter.js';
+import '../warehousing/eth-minter.ts';
 
-import '../pricing/product-price-rateconversion.js';
-import '../worker/update-ecb-rates.js';
-import '../worker/update-coinbase-rates.js';
-import '../worker/export-token.js';
+import '../pricing/product-price-rateconversion.ts';
+import '../worker/update-ecb-rates.ts';
+import '../worker/update-coinbase-rates.ts';
+import '../worker/export-token.ts';
 
 export default cryptopayModules;

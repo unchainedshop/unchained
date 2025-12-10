@@ -1,16 +1,16 @@
 import { subscribe } from '@unchainedshop/events';
-import { RawPayloadType } from '@unchainedshop/events';
-import { WorkerEventTypes, Work } from '@unchainedshop/core-worker';
-import { RendererTypes, registerRenderer } from './template-registry.js';
-import ticketingModules, { TicketingModule } from './module.js';
+import type { RawPayloadType } from '@unchainedshop/events';
+import { WorkerEventTypes, type Work } from '@unchainedshop/core-worker';
+import { RendererTypes, registerRenderer } from './template-registry.ts';
+import ticketingModules, { type TicketingModule } from './module.ts';
 
-import { TicketingAPI } from './types.js';
-import setupMagicKey from './magic-key.js';
-import ticketingServices, { TicketingServices } from './services.js';
+import type { TicketingAPI } from './types.ts';
+import setupMagicKey from './magic-key.ts';
+import ticketingServices, { type TicketingServices } from './services.ts';
 
-export type { TicketingAPI, RendererTypes };
+export type { TicketingAPI, RendererTypes, TicketingModule, TicketingServices };
 
-export { ticketingServices, ticketingModules, TicketingModule, TicketingServices };
+export { ticketingServices, ticketingModules };
 
 export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);

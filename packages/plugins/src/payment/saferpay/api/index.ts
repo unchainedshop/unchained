@@ -1,8 +1,8 @@
-export { SaferpayClient } from './api/SaferpayClient.js';
+export { SaferpayClient } from './api/SaferpayClient.ts';
 
 export type {
   PaymentPageInitializeInput,
   PaymentPageInitializeResponse,
-} from './models/PaymentPageInitialize.js';
-export type { PaymentPageAssertInput, PaymentPageAssertResponse } from './models/PaymentPageAssert.js';
-export type { TransactionCancelInput, TransactionCancelResponse } from './models/TransactionCancel.js';
+} from './models/PaymentPageInitialize.ts';
+export type { PaymentPageAssertInput, PaymentPageAssertResponse } from './models/PaymentPageAssert.ts';
+export type { TransactionCancelInput, TransactionCancelResponse } from './models/TransactionCancel.ts';

@@ -1,6 +1,6 @@
-import type { Response } from './Response.js';
-import type { Request } from './Request.js';
-import type { TransactionAmount } from './Transaction.js';
+import type { Response } from './Response.ts';
+import type { Request } from './Request.ts';
+import type { TransactionAmount } from './Transaction.ts';
 
 export interface TransactionCaptureInput extends Request {
   TransactionReference: {

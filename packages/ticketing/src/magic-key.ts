@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 import { roles } from '@unchainedshop/api';
-import { TicketingAPI } from './types.js';
+import type { TicketingAPI } from './types.ts';
 
 const isMagicKeyValidForOrder = async (
   obj: any,

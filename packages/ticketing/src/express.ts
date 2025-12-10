@@ -1,7 +1,7 @@
 import express from 'express';
-import appleWalletHandler from './mobile-tickets/apple-handler-express.js';
-import googleWalletHandler from './mobile-tickets/google-handler-express.js';
-import printTicketsHandler from './pdf-tickets/print-handler-express.js';
+import appleWalletHandler from './mobile-tickets/apple-handler-express.ts';
+import googleWalletHandler from './mobile-tickets/google-handler-express.ts';
+import printTicketsHandler from './pdf-tickets/print-handler-express.ts';
 
 export default (app: express.Express) => {
   const {

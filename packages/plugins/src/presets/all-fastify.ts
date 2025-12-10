@@ -1,16 +1,16 @@
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { FastifyInstance } from 'fastify';
 
-import connectCryptoToFastify from './crypto-fastify.js';
-import connectBaseToFastify from './base-fastify.js';
+import connectCryptoToFastify from './crypto-fastify.ts';
+import connectBaseToFastify from './base-fastify.ts';
 
-import { stripeHandler } from '../payment/stripe/handler-fastify.js';
-import { postfinanceCheckoutHandler } from '../payment/postfinance-checkout/handler-fastify.js';
-import { datatransHandler } from '../payment/datatrans-v2/handler-fastify.js';
-import { appleIAPHandler } from '../payment/apple-iap/handler-fastify.js';
-import { payrexxHandler } from '../payment/payrexx/handler-fastify.js';
-import { saferpayHandler } from '../payment/saferpay/handler-fastify.js';
-import { configureGenerateOrderAutoscheduling } from '../worker/enrollment-order-generator.js';
+import { stripeHandler } from '../payment/stripe/handler-fastify.ts';
+import { postfinanceCheckoutHandler } from '../payment/postfinance-checkout/handler-fastify.ts';
+import { datatransHandler } from '../payment/datatrans-v2/handler-fastify.ts';
+import { appleIAPHandler } from '../payment/apple-iap/handler-fastify.ts';
+import { payrexxHandler } from '../payment/payrexx/handler-fastify.ts';
+import { saferpayHandler } from '../payment/saferpay/handler-fastify.ts';
+import { configureGenerateOrderAutoscheduling } from '../worker/enrollment-order-generator.ts';
 
 const {
   STRIPE_WEBHOOK_PATH = '/payment/stripe',

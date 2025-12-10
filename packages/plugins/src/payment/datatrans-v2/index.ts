@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import createDatatransAPI from './api/index.js';
+import createDatatransAPI from './api/index.ts';
 import type {
   AuthorizeAuthenticatedResponseSuccess,
   AuthorizeResponseSuccess,
@@ -7,9 +7,9 @@ import type {
   ResponseError,
   StatusResponseSuccess,
   ValidateResponseSuccess,
-} from './api/types.js';
-import parseRegistrationData from './parseRegistrationData.js';
-import roundedAmountFromOrder from './roundedAmountFromOrder.js';
+} from './api/types.ts';
+import parseRegistrationData from './parseRegistrationData.ts';
+import roundedAmountFromOrder from './roundedAmountFromOrder.ts';
 import {
   type IPaymentAdapter,
   PaymentAdapter,

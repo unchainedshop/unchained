@@ -3,10 +3,10 @@ import { startPlatform, setAccessToken } from '@unchainedshop/platform';
 import baseModules from '@unchainedshop/plugins/presets/base.js';
 import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
-import setupTicketing, { ticketingModules, TicketingAPI } from '@unchainedshop/ticketing';
+import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
-import seed from './seed.js';
+import seed from './seed.ts';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),

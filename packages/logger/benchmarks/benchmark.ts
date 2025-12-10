@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import { createLogger, resetLoggerInitialization } from '../src/createLogger.js';
+import { createLogger, resetLoggerInitialization } from '../src/createLogger.ts';
 
 interface BenchmarkResult {
   name: string;
