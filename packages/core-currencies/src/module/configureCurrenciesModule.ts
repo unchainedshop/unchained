@@ -3,12 +3,12 @@ import {
   generateDbFilterById,
   buildSortOptions,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { CurrenciesCollection, Currency, CurrencyQuery } from '../db/CurrenciesCollection.js';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
+import { CurrenciesCollection, type Currency, type CurrencyQuery } from '../db/CurrenciesCollection.ts';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 

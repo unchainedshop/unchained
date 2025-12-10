@@ -1,7 +1,7 @@
 import {
   mongodb,
   buildDbIndexes,
-  TimestampFields,
+  type TimestampFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 

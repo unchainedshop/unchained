@@ -1,2 +1,2 @@
-export * from './module/configureCurrenciesModule.js';
-export * from './db/CurrenciesCollection.js';
+export * from './module/configureCurrenciesModule.ts';
+export * from './db/CurrenciesCollection.ts';

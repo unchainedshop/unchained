@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { buildFindSelector } from './configureCurrenciesModule.js';
+import { buildFindSelector } from './configureCurrenciesModule.ts';
 
 describe('buildFindSelector', () => {
   it('should return correct filter object', () => {
