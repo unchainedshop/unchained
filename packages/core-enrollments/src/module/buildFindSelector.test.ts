@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { buildFindSelector } from './configureEnrollmentsModule.js';
-import { EnrollmentStatus } from '../db/EnrollmentsCollection.js';
+import { buildFindSelector } from './configureEnrollmentsModule.ts';
+import { EnrollmentStatus } from '../db/EnrollmentsCollection.ts';
 
 describe('buildFindSelector', () => {
   it('Should correct filter when passed status, userId and queryString', () => {

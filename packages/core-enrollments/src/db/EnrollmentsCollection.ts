@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
-import { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
+import { type TimestampFields, type LogFields, type Address, type Contact } from '@unchainedshop/mongodb';
 
 export interface EnrollmentPeriod {
   start: Date;
@@ -14,12 +14,14 @@ export interface EnrollmentPlan {
   quantity: number;
 }
 
-export enum EnrollmentStatus {
-  INITIAL = 'INITIAL',
-  ACTIVE = 'ACTIVE',
-  PAUSED = 'PAUSED',
-  TERMINATED = 'TERMINATED',
-}
+export const EnrollmentStatus = {
+  INITIAL: 'INITIAL',
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  TERMINATED: 'TERMINATED',
+} as const;
+
+export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof EnrollmentStatus];
 
 export interface EnrollmentOrderPositionTemplate {
   context?: any;

@@ -1,23 +1,23 @@
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
-  Enrollment,
-  EnrollmentPeriod,
-  EnrollmentPlan,
+  type Enrollment,
+  type EnrollmentPeriod,
+  type EnrollmentPlan,
   EnrollmentStatus,
-} from '../db/EnrollmentsCollection.js';
+} from '../db/EnrollmentsCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   buildSortOptions,
   mongodb,
-  Address,
-  Contact,
+  type Address,
+  type Contact,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
-import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
-import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
+import { EnrollmentsCollection } from '../db/EnrollmentsCollection.ts';
+import { enrollmentsSettings, type EnrollmentsSettingsOptions } from '../enrollments-settings.ts';
 
 export interface EnrollmentQuery {
   status?: EnrollmentStatus[];

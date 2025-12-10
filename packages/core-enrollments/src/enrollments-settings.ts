@@ -1,6 +1,6 @@
 import later from '@breejs/later';
 import { generateRandomHash } from '@unchainedshop/utils';
-import { Enrollment } from './db/EnrollmentsCollection.js';
+import type { Enrollment } from './db/EnrollmentsCollection.ts';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');
 
