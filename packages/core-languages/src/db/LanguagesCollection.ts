@@ -1,5 +1,5 @@
 import {
-  TimestampFields,
+  type TimestampFields,
   buildDbIndexes,
   isDocumentDBCompatModeEnabled,
   mongodb,

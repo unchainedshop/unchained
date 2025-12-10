@@ -1,4 +1,4 @@
-import { assertDocumentDBCompatMode, ModuleInput } from '@unchainedshop/mongodb';
+import { assertDocumentDBCompatMode, type ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -6,9 +6,9 @@ import {
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
-import { Language, LanguagesCollection } from '../db/LanguagesCollection.js';
+import { type Language, LanguagesCollection } from '../db/LanguagesCollection.ts';
 
 export type LanguageQuery = mongodb.Filter<Language> & {
   includeInactive?: boolean;

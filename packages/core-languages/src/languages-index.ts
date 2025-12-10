@@ -1,2 +1,2 @@
-export * from './module/configureLanguagesModule.js';
-export * from './db/LanguagesCollection.js';
+export * from './module/configureLanguagesModule.ts';
+export * from './db/LanguagesCollection.ts';
