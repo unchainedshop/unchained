@@ -14,31 +14,37 @@ npm install @unchainedshop/api
 ## Usage
 
 ```typescript
+import express from 'express';
 import { startAPIServer } from '@unchainedshop/api';
-import { createHandler } from '@unchainedshop/api/express';
+import { connect } from '@unchainedshop/api/express';
 
-// Start API server
-const { handler, yoga } = await startAPIServer({
+const app = express();
+
+// Start API server (returns GraphQL Yoga server instance)
+const graphqlHandler = await startAPIServer({
   unchainedAPI: unchainedCore,
   adminUiConfig: {
     // Admin UI configuration
   },
 });
 
-// Use with Express
-import express from 'express';
-const app = express();
-app.use('/graphql', createHandler(handler));
+// Connect Express app with Unchained API
+connect(app, { graphqlHandler, db, unchainedAPI: unchainedCore }, {
+  adminUI: true, // Enable admin UI
+});
+
+app.listen(4010);
 ```
 
 ### With Fastify
 
 ```typescript
-import { createHandler } from '@unchainedshop/api/fastify';
 import Fastify from 'fastify';
+import { connect } from '@unchainedshop/api/fastify';
 
 const fastify = Fastify();
-fastify.register(createHandler(handler));
+await connect(fastify, { graphqlHandler, db, unchainedAPI: unchainedCore });
+await fastify.listen({ port: 4010 });
 ```
 
 ## API Overview
@@ -54,10 +60,11 @@ fastify.register(createHandler(handler));
 
 ### Server Adapters
 
-| Import Path | Description |
-|-------------|-------------|
-| `@unchainedshop/api/express` | Express middleware handler |
-| `@unchainedshop/api/fastify` | Fastify plugin handler |
+| Import Path | Export | Description |
+|-------------|--------|-------------|
+| `@unchainedshop/api/express` | `connect` | Connect Express app with Unchained API |
+| `@unchainedshop/api/express` | `adminUIRouter` | Admin UI Express router |
+| `@unchainedshop/api/fastify` | `connect` | Connect Fastify app with Unchained API |
 
 ### Context
 

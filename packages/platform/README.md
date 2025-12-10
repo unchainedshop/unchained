@@ -142,8 +142,8 @@ The `startPlatform` function returns:
 | Property | Description |
 |----------|-------------|
 | `unchainedAPI` | Complete Unchained core API instance |
-| `graphqlHandler` | GraphQL request handler for Express/Fastify |
-| `yoga` | GraphQL Yoga instance |
+| `graphqlHandler` | GraphQL Yoga server instance for Express/Fastify |
+| `db` | MongoDB database instance |
 
 ## License
 
