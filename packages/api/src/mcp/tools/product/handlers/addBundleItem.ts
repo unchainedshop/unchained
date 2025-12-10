@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductType } from '@unchainedshop/core-products';
 import {
   CyclicProductBundlingNotSupportedError,
   ProductNotFoundError,
@@ -14,11 +14,11 @@ export default async function addBundleItem(context: Context, params: Params<'AD
   const product = await modules.products.findProduct({ productId: bundleId });
   if (!product) throw new ProductNotFoundError({ productId: bundleId });
 
-  if (product.type !== ProductTypes.BundleProduct)
+  if (product.type !== ProductType.BUNDLE_PRODUCT)
     throw new ProductWrongTypeError({
       productId: bundleId,
       received: product.type,
-      required: ProductTypes.BundleProduct,
+      required: ProductType.BUNDLE_PRODUCT,
     });
 
   const itemProduct = await modules.products.findProduct({ productId: bundleProductId });

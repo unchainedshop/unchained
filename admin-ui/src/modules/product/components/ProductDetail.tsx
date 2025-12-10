@@ -28,7 +28,6 @@ import ProductReviews from '../../product-review/components/ProductReviews';
 import BundleProducts from './BundleProducts';
 import TagList from '../../common/components/TagList';
 import useUpdateProduct from '../hooks/useUpdateProduct';
-import { PRODUCT_TYPES } from '../ProductTypes';
 import useAuth from '../../Auth/useAuth';
 import ProductAssignmentForm from './ProductAssignmentForm';
 import ProductTokenizationForm from './ProductTokenizationForm';
@@ -126,12 +125,12 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       title: formatMessage({ id: 'media', defaultMessage: 'Media' }),
       Icon: <FilmIcon className="h-5 w-5" />,
     },
-    __typename !== PRODUCT_TYPES.ConfigurableProduct && {
+    __typename !== 'ConfigurableProduct' && {
       id: 'commerce',
       title: formatMessage({ id: 'commerce', defaultMessage: 'Commerce' }),
       Icon: <ShoppingBagIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.SimpleProduct && {
+    __typename === 'SimpleProduct' && {
       id: 'supply',
       title: formatMessage({
         id: 'supply',
@@ -139,7 +138,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       }),
       Icon: <ChartPieIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.SimpleProduct && {
+    __typename === 'SimpleProduct' && {
       id: 'warehousing',
       title: formatMessage({
         id: 'warehousing',
@@ -147,7 +146,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       }),
       Icon: <ArchiveBoxIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.ConfigurableProduct && {
+    __typename === 'ConfigurableProduct' && {
       id: 'variations',
       title: formatMessage({
         id: 'variations',
@@ -155,7 +154,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       }),
       Icon: <SwatchIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.BundleProduct && {
+    __typename === 'BundleProduct' && {
       id: 'bundled_products',
       title: formatMessage({
         id: 'bundled_items',
@@ -163,7 +162,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       }),
       Icon: <PresentationChartLineIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.PlanProduct && {
+    __typename === 'PlanProduct' && {
       id: 'subscriptions',
       title: formatMessage({
         id: 'subscriptions',
@@ -171,7 +170,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       }),
       Icon: <UsersIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.ConfigurableProduct && {
+    __typename === 'ConfigurableProduct' && {
       id: 'assignments',
       title: formatMessage({
         id: 'assignments',
@@ -179,7 +178,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       }),
       Icon: <LinkIcon className="h-5 w-5" />,
     },
-    __typename === PRODUCT_TYPES.TokenizedProduct && {
+    __typename === 'TokenizedProduct' && {
       id: 'token',
       title: formatMessage({
         id: 'token',

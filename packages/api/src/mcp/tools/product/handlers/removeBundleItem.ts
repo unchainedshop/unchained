@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductType } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
 import { Params } from '../schemas.js';
 
@@ -10,11 +10,11 @@ export default async function removeBundleItem(context: Context, params: Params<
   const bundle = await modules.products.findProduct({ productId: bundleId });
   if (!bundle) throw new ProductNotFoundError({ productId: bundleId });
 
-  if (bundle.type !== ProductTypes.BundleProduct) {
+  if (bundle.type !== ProductType.BUNDLE_PRODUCT) {
     throw new ProductWrongTypeError({
       productId: bundleId,
       received: bundle.type,
-      required: ProductTypes.BundleProduct,
+      required: ProductType.BUNDLE_PRODUCT,
     });
   }
 

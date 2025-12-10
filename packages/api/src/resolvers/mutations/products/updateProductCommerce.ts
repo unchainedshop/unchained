@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { ProductCommerce, ProductTypes } from '@unchainedshop/core-products';
+import { ProductCommerce, ProductType } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
 import { Context } from '../../../context.js';
 
@@ -15,11 +15,11 @@ export default async function updateProductCommerce(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  if (product.type === ProductTypes.ConfigurableProduct) {
+  if (product.type === ProductType.CONFIGURABLE_PRODUCT) {
     throw new ProductWrongTypeError({
       productId: productId,
       received: product.type,
-      required: { not: ProductTypes.ConfigurableProduct },
+      required: { not: ProductType.CONFIGURABLE_PRODUCT },
     });
   }
 

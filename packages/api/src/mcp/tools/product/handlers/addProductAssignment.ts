@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { ProductTypes, ProductVariation } from '@unchainedshop/core-products';
+import { ProductType, ProductVariation } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
@@ -11,11 +11,11 @@ export default async function addProductAssignment(context: Context, params: Par
   const proxyProduct = await modules.products.findProduct({ productId: proxyId });
   if (!proxyProduct) throw new ProductNotFoundError({ productId: proxyId });
 
-  if (proxyProduct.type !== ProductTypes.ConfigurableProduct) {
+  if (proxyProduct.type !== ProductType.CONFIGURABLE_PRODUCT) {
     throw new ProductWrongTypeError({
       productId: proxyId,
       received: proxyProduct.type,
-      required: ProductTypes.ConfigurableProduct,
+      required: ProductType.CONFIGURABLE_PRODUCT,
     });
   }
 

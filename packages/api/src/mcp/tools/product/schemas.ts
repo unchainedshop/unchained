@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SortDirection } from '@unchainedshop/utils';
-import { ProductTypes, ProductVariationType } from '@unchainedshop/core-products';
+import { ProductType, ProductVariationType } from '@unchainedshop/core-products';
 import {
   PaginationSchema,
   SortingSchema,
@@ -8,7 +8,7 @@ import {
   LocalizationTextSchema,
 } from '../../utils/sharedSchemas.js';
 
-export const productTypeKeys = Object.keys(ProductTypes) as [string, ...string[]];
+export const productTypeKeys = Object.keys(ProductType) as [string, ...string[]];
 export const productVariationTypeKeys = Object.keys(ProductVariationType) as [string, ...string[]];
 export const sortDirectionKeys = Object.keys(SortDirection) as [string, ...string[]];
 

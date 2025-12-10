@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
-import { ProductTokenization } from '@unchainedshop/core-products';
+import { ProductTokenization, ProductType } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError, ProductWrongStatusError } from '../../../errors.js';
 
 export default async function updateProductTokenization(
@@ -16,10 +15,10 @@ export default async function updateProductTokenization(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  if (product?.type !== ProductTypes.TokenizedProduct)
+  if (product?.type !== ProductType.TOKENIZED_PRODUCT)
     throw new ProductWrongStatusError({
       received: product?.type,
-      required: ProductTypes.TokenizedProduct,
+      required: ProductType.TOKENIZED_PRODUCT,
     });
 
   await modules.products.update(productId, { tokenization });

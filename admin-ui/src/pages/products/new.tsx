@@ -10,7 +10,6 @@ import {
 } from '../../modules/forms/hooks/useForm';
 import ProductForm from '../../modules/product/components/ProductForm';
 import useCreateProduct from '../../modules/product/hooks/useCreateProduct';
-import { PRODUCT_TYPES } from '../../modules/product/ProductTypes';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 
 const AddProduct = () => {
@@ -25,7 +24,7 @@ const AddProduct = () => {
   const onSubmit: OnSubmitType = async ({ texts, type, tags }) => {
     const { data, error } = await createProduct({
       product: {
-        type: PRODUCT_TYPES[type],
+        type,
         tags,
       },
       texts,

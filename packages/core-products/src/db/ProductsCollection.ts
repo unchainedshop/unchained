@@ -12,12 +12,12 @@ export enum ProductStatus {
   DELETED = 'DELETED',
 }
 
-export enum ProductTypes {
-  SimpleProduct = 'SIMPLE_PRODUCT',
-  ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
-  BundleProduct = 'BUNDLE_PRODUCT',
-  PlanProduct = 'PLAN_PRODUCT',
-  TokenizedProduct = 'TOKENIZED_PRODUCT',
+export enum ProductType {
+  SIMPLE_PRODUCT = 'SIMPLE_PRODUCT',
+  CONFIGURABLE_PRODUCT = 'CONFIGURABLE_PRODUCT',
+  BUNDLE_PRODUCT = 'BUNDLE_PRODUCT',
+  PLAN_PRODUCT = 'PLAN_PRODUCT',
+  TOKENIZED_PRODUCT = 'TOKENIZED_PRODUCT',
 }
 export interface ProductContractConfiguration {
   tokenId?: string;
@@ -110,7 +110,7 @@ export type Product = {
   status?: string | null;
   supply?: ProductSupply;
   tags: string[];
-  type: string;
+  type: ProductType;
   warehousing?: ProductWarehousing;
   tokenization?: ProductTokenization;
 } & TimestampFields;

@@ -7,7 +7,7 @@ import {
   WarehousingAdapter,
 } from '@unchainedshop/core';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { ProductContractStandard, ProductTypes } from '@unchainedshop/core-products';
+import { ProductContractStandard, ProductType } from '@unchainedshop/core-products';
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '@unchainedshop/core-files';
@@ -55,7 +55,7 @@ const ETHMinter: IWarehousingAdapter = {
       ...WarehousingAdapter.actions(configuration, context),
 
       isActive() {
-        return product?.type === ProductTypes.TokenizedProduct;
+        return product?.type === ProductType.TOKENIZED_PRODUCT;
       },
 
       configurationError() {

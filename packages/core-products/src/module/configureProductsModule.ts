@@ -16,7 +16,7 @@ import {
   ProductConfiguration,
   ProductsCollection,
   ProductStatus,
-  ProductTypes,
+  ProductType,
 } from '../db/ProductsCollection.js';
 import { configureProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
@@ -327,7 +327,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     ): Promise<Product> => {
       const productId = product._id as string;
 
-      if (product.type === ProductTypes.ConfigurableProduct) {
+      if (product.type === ProductType.CONFIGURABLE_PRODUCT) {
         const variations = await productVariations.findProductVariations({
           productId,
         });
@@ -362,12 +362,6 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       ...productData
     }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted' | 'slugs'> &
       Pick<Partial<Product>, '_id' | 'created' | 'updated' | 'deleted'>): Promise<Product> => {
-      if (!ProductTypes[type]) {
-        throw new Error(
-          `Invalid product type: ${type}, must be one of ${Object.keys(ProductTypes).join(', ')}`,
-        );
-      }
-
       if (productData._id) {
         await deleteProductPermanently(
           {
@@ -380,7 +374,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       const { insertedId: productId } = await Products.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
-        type: ProductTypes[type],
+        type,
         status: InternalProductStatus.DRAFT,
         sequence: sequence ?? (await Products.countDocuments({})) + 10,
         slugs: [],
@@ -395,10 +389,6 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
 
     update: async (productId: string, doc: mongodb.UpdateFilter<Product>): Promise<string> => {
       const updateDoc = doc;
-      if (doc.type) {
-        updateDoc.type = ProductTypes[doc.type];
-      }
-
       const product = await Products.findOneAndUpdate(
         generateDbFilterById(productId),
         {

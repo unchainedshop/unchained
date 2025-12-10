@@ -106,7 +106,7 @@ Status:
       "updated": null,
       "sequence": "",
       "tags": ["nice"],
-      "type": "SimpleProduct",
+      "type": "SIMPLE_PRODUCT",
       "published": "2020-01-01T00:00Z",
       "commerce": {
         "salesUnit": "ST",

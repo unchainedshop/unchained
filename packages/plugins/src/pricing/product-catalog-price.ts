@@ -3,7 +3,7 @@ import {
   ProductPricingAdapter,
   IProductPricingAdapter,
 } from '@unchainedshop/core';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductType } from '@unchainedshop/core-products';
 
 export const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -38,7 +38,7 @@ export const ProductPrice: IProductPricingAdapter = {
             isNetPrice: Boolean(price.isNetPrice),
             meta: { adapter: ProductPrice.key },
           });
-        } else if (product.type === ProductTypes.BundleProduct) {
+        } else if (product.type === ProductType.BUNDLE_PRODUCT) {
           for (const bundleItem of product.bundleItems || []) {
             const bundledProduct = await modules.products.findProduct({
               productId: bundleItem.productId,

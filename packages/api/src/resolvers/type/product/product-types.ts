@@ -1,6 +1,9 @@
-import { ProductText, Product as ProductType } from '@unchainedshop/core-products';
-import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
-import { objectInvert } from '@unchainedshop/utils';
+import {
+  ProductText,
+  ProductStatus,
+  Product as IProduct,
+  ProductType,
+} from '@unchainedshop/core-products';
 import { SortOption } from '@unchainedshop/utils';
 import { AssortmentPathLink } from '@unchainedshop/core-assortments';
 import { ProductMedia } from '@unchainedshop/core-products';
@@ -8,17 +11,27 @@ import { ProductReview } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
 
 export const Product = {
-  __resolveType: (product: ProductType): string => {
-    const invertedProductTypes = objectInvert(ProductTypes);
-    return invertedProductTypes[product.type];
+  __resolveType: (product: IProduct): string => {
+    switch (product.type) {
+      case ProductType.CONFIGURABLE_PRODUCT:
+        return 'ConfigurableProduct';
+      case ProductType.BUNDLE_PRODUCT:
+        return 'BundleProduct';
+      case ProductType.PLAN_PRODUCT:
+        return 'PlanProduct';
+      case ProductType.TOKENIZED_PRODUCT:
+        return 'TokenizedProduct';
+      default:
+        return 'SimpleProduct';
+    }
   },
 
-  async proxies(product: ProductType, _: never, context: Context): Promise<ProductType[]> {
+  async proxies(product: IProduct, _: never, context: Context): Promise<IProduct[]> {
     return context.loaders.productProxiesLoader.load({ productId: product._id });
   },
 
   async assortmentPaths(
-    product: ProductType,
+    product: IProduct,
     params: {
       forceLocale?: string;
     },
@@ -46,7 +59,7 @@ export const Product = {
   },
 
   async media(
-    product: ProductType,
+    product: IProduct,
     params: {
       limit: number;
       offset: number;
@@ -67,7 +80,7 @@ export const Product = {
   },
 
   async reviews(
-    product: ProductType,
+    product: IProduct,
     {
       limit = 10,
       offset = 0,
@@ -90,7 +103,7 @@ export const Product = {
     });
   },
   async reviewsCount(
-    product: ProductType,
+    product: IProduct,
     params: {
       queryString?: string;
     },
@@ -100,7 +113,7 @@ export const Product = {
   },
 
   async siblings(
-    product: ProductType,
+    product: IProduct,
     params: {
       assortmentId?: string;
       limit: number;
@@ -131,12 +144,12 @@ export const Product = {
     });
   },
 
-  status(product: ProductType, _, { modules }: Context): ProductStatus {
+  status(product: IProduct, _, { modules }: Context): ProductStatus {
     return modules.products.normalizedStatus(product);
   },
 
   async texts(
-    product: ProductType,
+    product: IProduct,
     {
       forceLocale,
     }: {

@@ -492,7 +492,7 @@ export type ICreateProductBundleItemInput = {
 
 export type ICreateProductInput = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
-  type: Scalars['String']['input'];
+  type: IProductType;
 };
 
 export type ICreateProductVariationInput = {
@@ -2779,6 +2779,14 @@ export type IProductTexts = {
   title?: Maybe<Scalars['String']['output']>;
   vendor?: Maybe<Scalars['String']['output']>;
 };
+
+export enum IProductType {
+  BundleProduct = 'BUNDLE_PRODUCT',
+  ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
+  PlanProduct = 'PLAN_PRODUCT',
+  SimpleProduct = 'SIMPLE_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT',
+}
 
 export type IProductVariation = {
   _id: Scalars['ID']['output'];

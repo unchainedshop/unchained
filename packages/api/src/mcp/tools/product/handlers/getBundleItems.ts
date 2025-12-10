@@ -1,5 +1,5 @@
+import { ProductType } from '@unchainedshop/core-products';
 import { Context } from '../../../../context.js';
-import { ProductTypes } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongTypeError } from '../../../../errors.js';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.js';
 import { Params } from '../schemas.js';
@@ -11,11 +11,11 @@ export default async function getBundleItems(context: Context, params: Params<'G
   const bundle = await modules.products.findProduct({ productId: bundleId });
   if (!bundle) throw new ProductNotFoundError({ productId: bundleId });
 
-  if (bundle.type !== ProductTypes.BundleProduct) {
+  if (bundle.type !== ProductType.BUNDLE_PRODUCT) {
     throw new ProductWrongTypeError({
       productId: bundleId,
       received: bundle.type,
-      required: ProductTypes.BundleProduct,
+      required: ProductType.BUNDLE_PRODUCT,
     });
   }
   return { product: await getNormalizedProductDetails(bundleId, context) };

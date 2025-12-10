@@ -1,6 +1,5 @@
 import { Context } from '../../../context.js';
-import { ProductConfiguration } from '@unchainedshop/core-products';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductConfiguration, ProductType } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 
@@ -17,11 +16,11 @@ export default async function removeProductAssignment(
   const product = await modules.products.findProduct({ productId: proxyId });
   if (!product) throw new ProductNotFoundError({ proxyId });
 
-  if (product.type !== ProductTypes.ConfigurableProduct)
+  if (product.type !== ProductType.CONFIGURABLE_PRODUCT)
     throw new ProductWrongTypeError({
       productId: proxyId,
       received: product.type,
-      required: ProductTypes.ConfigurableProduct,
+      required: ProductType.CONFIGURABLE_PRODUCT,
     });
 
   await modules.products.assignments.removeAssignment(proxyId, { vectors });

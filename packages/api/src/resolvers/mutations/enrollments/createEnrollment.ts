@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../context.js';
-import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
+import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   ProductWrongStatusError,
@@ -32,7 +32,7 @@ export default async function createEnrollment(
     throw new ProductWrongStatusError({ status: product.status });
   }
 
-  if (product.type !== ProductTypes.PlanProduct) throw new ProductWrongTypeError({ type: product.type });
+  if (product.type !== ProductType.PLAN_PRODUCT) throw new ProductWrongTypeError({ type: product.type });
 
   const enrollment = await modules.enrollments.create({
     billingAddress,

@@ -5,9 +5,10 @@ import upsertVariations, { ProductVariationSchema } from './upsertVariations.js'
 import upsertMedia from './upsertMedia.js';
 import { MediaSchema } from '../assortment/upsertMedia.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
+import { ProductType } from '@unchainedshop/core-products';
 
 export const ProductCreateSpecificationSchema = z.object({
-  type: z.string(),
+  type: z.enum(ProductType),
   sequence: z.number(),
   status: z.string().optional().nullable(), // or null!
   published: z.string().datetime().optional().nullable(), // or null!

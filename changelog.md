@@ -1,3 +1,26 @@
+# Unchained Engine v4.4
+
+## Minor
+- Small breaking change for `Mutation.createProduct` and BulkImport Product payloads: type is now an enum of uppercase types. This is needed so users understand how to pass the types. Admin UI changes needed.
+- Improve performance of facet filtering by 2x
+- MCP and AI server packages are now optional peer dependencies. This allows for a better opt-in experience with less dependencies in general.
+- Upgrade to Zod 4
+- Improve Admin UI for ticketing and add a new "Messages" tab to the Work Queue so it's easier to track messaging based work items
+- Support for MongoDB Node.js driver 7.0
+- Inline connect-mongo including copyright due to untrusted downstream dependencies
+- Add more loaders to improve product variation fetching 
+- Adds Node.js 25 support
+
+## Patch
+- Fix Admin UI Date Formats to use browser default
+- Fix GridFS plugin crashing when an already existing asset _id is used to write files. Now removes the existing binary first.
+- Fix types for updateTexts in core modules assortments, products and filters
+- Fix Keycloak MCP auth in oidc example
+- Fix v4 regression to re-introduce user scoped filter plugins
+- Fix v4 regression not returning impersonator during impersonation in Query.impersonator
+- Improve rounding behavior in orders
+- Improve Readme's
+
 # Unchained Engine v4.3
 
 ## Minor

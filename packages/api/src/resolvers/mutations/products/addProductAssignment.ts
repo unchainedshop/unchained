@@ -1,8 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { ProductTypes, ProductVariation } from '@unchainedshop/core-products';
-
 import { Context } from '../../../context.js';
-import { ProductConfiguration } from '@unchainedshop/core-products';
+import { ProductConfiguration, ProductType, ProductVariation } from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,
@@ -64,11 +62,11 @@ export default async function addProductAssignment(
 
   if (productId === proxyId) throw new ProductVariationInfinityLoop({ productId });
 
-  if (proxyProduct.type !== ProductTypes.ConfigurableProduct)
+  if (proxyProduct.type !== ProductType.CONFIGURABLE_PRODUCT)
     throw new ProductWrongTypeError({
       proxyId,
       received: proxyProduct.type,
-      required: ProductTypes.ConfigurableProduct,
+      required: ProductType.CONFIGURABLE_PRODUCT,
     });
   const variations = await modules.products.variations.findProductVariations({
     productId: proxyId,

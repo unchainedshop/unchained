@@ -9,7 +9,7 @@ import {
 } from '@unchainedshop/core-orders';
 import { Modules } from '../modules.js';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.js';
-import { Product, ProductTypes } from '@unchainedshop/core-products';
+import { Product, ProductType } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.js';
 import { fullfillQuotationService } from './fullfillQuotation.js';
@@ -169,7 +169,7 @@ export async function processOrderService(
         }),
       );
       const tokenizedItems = mappedProductOrderPositions.filter(
-        (item) => item.product?.type === ProductTypes.TokenizedProduct,
+        (item) => item.product?.type === ProductType.TOKENIZED_PRODUCT,
       ) as { orderPosition: OrderPosition; product: Product }[];
 
       if (tokenizedItems.length > 0) {
@@ -205,7 +205,7 @@ export async function processOrderService(
 
       // Enrollments: Generate enrollments for plan products
       const planItems = mappedProductOrderPositions.filter(
-        (item) => item.product?.type === ProductTypes.PlanProduct && !order.originEnrollmentId,
+        (item) => item.product?.type === ProductType.PLAN_PRODUCT && !order.originEnrollmentId,
       );
       if (planItems.length > 0) {
         await createEnrollmentFromCheckoutService.bind(this)(order, {

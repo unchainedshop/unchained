@@ -1,5 +1,5 @@
 import { Context } from '../../../../context.js';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductType } from '@unchainedshop/core-products';
 import {
   CountryNotFoundError,
   CurrencyNotFoundError,
@@ -24,42 +24,42 @@ export default async function updateProduct(context: Context, params: Params<'UP
   if (product.meta !== undefined) updateData.meta = product.meta;
 
   if (product.plan !== undefined) {
-    if (existingProduct.type !== ProductTypes.PlanProduct) {
+    if (existingProduct.type !== ProductType.PLAN_PRODUCT) {
       throw new ProductWrongStatusError({
         received: existingProduct.type,
-        required: ProductTypes.PlanProduct,
+        required: ProductType.PLAN_PRODUCT,
       });
     }
     updateData.plan = product.plan;
   }
 
   if (product.warehousing !== undefined) {
-    if (existingProduct.type !== ProductTypes.SimpleProduct) {
+    if (existingProduct.type !== ProductType.SIMPLE_PRODUCT) {
       throw new ProductWrongTypeError({
         productId,
         received: existingProduct.type,
-        required: ProductTypes.SimpleProduct,
+        required: ProductType.SIMPLE_PRODUCT,
       });
     }
     updateData.warehousing = product.warehousing;
   }
 
   if (product.supply !== undefined) {
-    if (existingProduct.type !== ProductTypes.SimpleProduct) {
+    if (existingProduct.type !== ProductType.SIMPLE_PRODUCT) {
       throw new ProductWrongTypeError({
         productId,
         received: existingProduct.type,
-        required: ProductTypes.SimpleProduct,
+        required: ProductType.SIMPLE_PRODUCT,
       });
     }
     updateData.supply = product.supply;
   }
 
   if (product.tokenization !== undefined) {
-    if (existingProduct.type !== ProductTypes.TokenizedProduct) {
+    if (existingProduct.type !== ProductType.TOKENIZED_PRODUCT) {
       throw new ProductWrongStatusError({
         received: existingProduct.type,
-        required: ProductTypes.TokenizedProduct,
+        required: ProductType.TOKENIZED_PRODUCT,
       });
     }
     updateData.tokenization = product.tokenization;

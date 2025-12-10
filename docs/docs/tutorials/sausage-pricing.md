@@ -147,7 +147,7 @@ Now open the admin UI and add a new product, tag it with "sausage", set a price,
 
 ```graphql
 mutation {
-  createProduct(product: { type: "SimpleProduct", title: "Cervelat", tags: "sausage" }) {
+  createProduct(product: { type: "SIMPLE_PRODUCT", title: "Cervelat", tags: "sausage" }) {
     _id
   }
 }

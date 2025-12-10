@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
-import { ProductBundleItem } from '@unchainedshop/core-products';
+import { ProductBundleItem, ProductType } from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,
@@ -22,11 +21,11 @@ export default async function createProductBundleItem(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  if (product.type !== ProductTypes.BundleProduct)
+  if (product.type !== ProductType.BUNDLE_PRODUCT)
     throw new ProductWrongTypeError({
       productId,
       received: product.type,
-      required: ProductTypes.BundleProduct,
+      required: ProductType.BUNDLE_PRODUCT,
     });
 
   const itemProduct = await modules.products.findProduct({ productId: item.productId });

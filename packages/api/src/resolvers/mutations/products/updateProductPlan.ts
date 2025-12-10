@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../context.js';
-import { ProductPlan } from '@unchainedshop/core-products';
+import { ProductPlan, ProductType } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError, ProductWrongStatusError } from '../../../errors.js';
 
 export default async function updateProductPlan(
@@ -16,10 +15,10 @@ export default async function updateProductPlan(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  if (product?.type !== ProductTypes.PlanProduct)
+  if (product?.type !== ProductType.PLAN_PRODUCT)
     throw new ProductWrongStatusError({
       received: product?.type,
-      required: ProductTypes.PlanProduct,
+      required: ProductType.PLAN_PRODUCT,
     });
 
   await modules.products.update(productId, { plan });

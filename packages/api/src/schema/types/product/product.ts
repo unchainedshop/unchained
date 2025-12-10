@@ -1,11 +1,11 @@
 export default [
   /* GraphQL */ `
     enum ProductType {
-      SimpleProduct
-      ConfigurableProduct
-      BundleProduct
-      PlanProduct
-      TokenizedProduct
+      SIMPLE_PRODUCT
+      CONFIGURABLE_PRODUCT
+      BUNDLE_PRODUCT
+      PLAN_PRODUCT
+      TOKENIZED_PRODUCT
     }
 
     enum ProductStatus {

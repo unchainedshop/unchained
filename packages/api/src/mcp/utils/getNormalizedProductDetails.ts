@@ -1,4 +1,4 @@
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductType } from '@unchainedshop/core-products';
 import { Context } from '../../context.js';
 import normalizeMediaUrl from './normalizeMediaUrl.js';
 import { createLogger } from '@unchainedshop/logger';
@@ -22,7 +22,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     productId,
   });
 
-  if (product.type === ProductTypes.ConfigurableProduct) {
+  if (product.type === ProductType.CONFIGURABLE_PRODUCT) {
     variations = await context.modules.products.variations.findProductVariations({
       productId: product?._id,
     });
@@ -33,7 +33,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
     );
   }
 
-  if (product.type === ProductTypes.BundleProduct) {
+  if (product.type === ProductType.BUNDLE_PRODUCT) {
     bundleItems = await Promise.all(
       (product.bundleItems || []).map(async (item) => {
         const bundleItemProduct = await loaders.productLoader.load({
