@@ -1,6 +1,6 @@
 import { BaseDirector } from '@unchainedshop/utils';
-import { IFileAdapter } from './FileAdapter.js';
-import { UploadedFile } from '../types.js';
+import type { IFileAdapter } from './FileAdapter.ts';
+import type { UploadedFile } from '../types.ts';
 
 export type UploadFileCallback<UnchainedAPI = unknown> = (
   file: UploadedFile,

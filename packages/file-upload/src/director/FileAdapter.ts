@@ -1,6 +1,6 @@
 import type { Readable } from 'node:stream';
-import { BaseAdapter, IBaseAdapter } from '@unchainedshop/utils';
-import { UploadedFile, UploadFileData } from '../types.js';
+import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
+import type { UploadedFile, UploadFileData } from '../types.ts';
 
 export interface IFileAdapter<Context = unknown> extends IBaseAdapter {
   createDownloadURL: (file: UploadedFile, expiry?: number) => Promise<string | null>;

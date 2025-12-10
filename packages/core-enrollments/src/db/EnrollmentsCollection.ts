@@ -1,5 +1,10 @@
 import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
-import { type TimestampFields, type LogFields, type Address, type Contact } from '@unchainedshop/mongodb';
+import {
+  type TimestampFields,
+  type LogFields,
+  type Address,
+  type Contact,
+} from '@unchainedshop/mongodb';
 
 export interface EnrollmentPeriod {
   start: Date;

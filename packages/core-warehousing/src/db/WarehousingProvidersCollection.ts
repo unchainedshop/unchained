@@ -5,7 +5,8 @@ export const WarehousingProviderType = {
   VIRTUAL: 'VIRTUAL',
 } as const;
 
-export type WarehousingProviderType = (typeof WarehousingProviderType)[keyof typeof WarehousingProviderType];
+export type WarehousingProviderType =
+  (typeof WarehousingProviderType)[keyof typeof WarehousingProviderType];
 
 export type WarehousingConfiguration = { key: string; value: string }[];
 

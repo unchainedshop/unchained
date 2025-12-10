@@ -6,7 +6,11 @@ import {
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { type ProductMedia, ProductMediaCollection, type ProductMediaText } from '../db/ProductMediaCollection.ts';
+import {
+  type ProductMedia,
+  ProductMediaCollection,
+  type ProductMediaText,
+} from '../db/ProductMediaCollection.ts';
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',

@@ -1,7 +1,7 @@
-import buildHashedFilename from './build-hashed-filename.js';
-import resolveExpirationDate from './put-expiration.js';
+import buildHashedFilename from './build-hashed-filename.ts';
+import resolveExpirationDate from './put-expiration.ts';
 
-export { FileDirector } from './director/FileDirector.js';
-export { FileAdapter, IFileAdapter } from './director/FileAdapter.js';
+export { FileDirector } from './director/FileDirector.ts';
+export { FileAdapter, type IFileAdapter } from './director/FileAdapter.ts';
 export { buildHashedFilename, resolveExpirationDate };
-export type * from './types.js';
+export type * from './types.ts';

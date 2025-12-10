@@ -50,7 +50,8 @@ export const ProductContractStandard = {
   ERC1155: 'ERC1155',
 } as const;
 
-export type ProductContractStandard = (typeof ProductContractStandard)[keyof typeof ProductContractStandard];
+export type ProductContractStandard =
+  (typeof ProductContractStandard)[keyof typeof ProductContractStandard];
 
 export interface ProductConfiguration {
   key: string;

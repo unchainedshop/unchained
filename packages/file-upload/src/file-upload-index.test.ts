@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import buildHashedFilename from './build-hashed-filename.js';
+import buildHashedFilename from './build-hashed-filename.ts';
 
 describe('File Uploader', () => {
   it('Generate unique file name', async () => {
