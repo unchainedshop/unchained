@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert';
-import { createLogger, resetLoggerInitialization } from '../src/createLogger.js';
+import { createLogger, resetLoggerInitialization } from '../src/createLogger.ts';
 
 describe('createLogger', () => {
   const originalEnv = process.env;

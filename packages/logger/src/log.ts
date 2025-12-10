@@ -1,4 +1,4 @@
-import { createLogger } from './createLogger.js';
+import { createLogger } from './createLogger.ts';
 
 const logger = createLogger('unchained');
 

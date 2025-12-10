@@ -1,3 +1,3 @@
-export * from './createLogger.js';
-export * from './logger.types.js';
-export * from './log.js';
+export * from './createLogger.ts';
+export * from './logger.types.ts';
+export * from './log.ts';

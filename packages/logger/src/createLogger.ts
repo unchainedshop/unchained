@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 import { stringify } from 'safe-stable-stringify';
-import { LogLevel } from './logger.types.js';
+import { LogLevel } from './logger.types.ts';
 
 /**
  * Performance optimization: Cache compiled regex patterns to avoid recreating them
@@ -66,13 +66,15 @@ const colors = {
 };
 
 // Log level configuration
-enum LogLevelValue {
-  TRACE = 0,
-  DEBUG = 1,
-  INFO = 2,
-  WARN = 3,
-  ERROR = 4,
-}
+const LogLevelValue = {
+  TRACE: 0,
+  DEBUG: 1,
+  INFO: 2,
+  WARN: 3,
+  ERROR: 4,
+} as const;
+
+type LogLevelValue = (typeof LogLevelValue)[keyof typeof LogLevelValue];
 
 const logLevelMap: Record<string, LogLevelValue> = {
   [LogLevel.Verbose]: LogLevelValue.TRACE,
