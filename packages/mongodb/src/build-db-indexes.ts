@@ -1,4 +1,4 @@
-import { Collection, Document, CreateIndexesOptions, IndexSpecification } from 'mongodb';
+import type { Collection, Document, CreateIndexesOptions, IndexSpecification } from 'mongodb';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:mongodb');

@@ -1,4 +1,4 @@
-import { Collection, Document, Filter } from 'mongodb';
+import type { Collection, Document, Filter } from 'mongodb';
 import { systemLocale } from '@unchainedshop/utils';
 
 const extendSelectorWithLocale = (selector, locale) => {

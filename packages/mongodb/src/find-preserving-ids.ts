@@ -1,4 +1,4 @@
-import { Collection, FindOptions, Filter, Document } from 'mongodb';
+import type { Collection, FindOptions, Filter, Document } from 'mongodb';
 
 const sortByIndex = {
   index: 1,

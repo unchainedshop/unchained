@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { SortDirection } from '@unchainedshop/utils';
-import { buildSortOptions, generateDbObjectId } from './mongodb-index.js';
+import { buildSortOptions, generateDbObjectId } from './mongodb-index.ts';
 
 describe('Mongo', () => {
   it('Init', () => {

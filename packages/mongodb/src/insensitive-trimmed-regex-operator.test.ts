@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.js';
+import { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.ts';
 
 /* eslint-disable no-useless-escape */
 

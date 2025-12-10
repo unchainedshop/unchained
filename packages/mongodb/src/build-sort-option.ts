@@ -1,5 +1,5 @@
-import { SortOption } from '@unchainedshop/utils';
-import { Sort } from 'mongodb';
+import type { SortOption } from '@unchainedshop/utils';
+import type { Sort } from 'mongodb';
 
 const SORT_DIRECTIONS = {
   ASC: 1,

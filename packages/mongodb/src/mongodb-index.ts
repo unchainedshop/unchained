@@ -1,19 +1,19 @@
 import * as mongodb from 'mongodb';
 
-export { initDb, startDb, stopDb } from './initDb.js';
+export { initDb, startDb, stopDb } from './initDb.ts';
 
 /*
  * Db utils
  */
 
-export { generateDbObjectId } from './generate-db-object-id.js';
-export { generateDbFilterById } from './generate-db-filter-by-id.js';
-export { buildDbIndexes } from './build-db-indexes.js';
-export { findPreservingIds } from './find-preserving-ids.js';
-export { buildSortOptions } from './build-sort-option.js';
-export { findLocalizedText } from './find-localized-text.js';
-export { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.js';
-export * from './documentdb-compat-mode.js';
+export { generateDbObjectId } from './generate-db-object-id.ts';
+export { generateDbFilterById } from './generate-db-filter-by-id.ts';
+export { buildDbIndexes } from './build-db-indexes.ts';
+export { findPreservingIds } from './find-preserving-ids.ts';
+export { buildSortOptions } from './build-sort-option.ts';
+export { findLocalizedText } from './find-localized-text.ts';
+export { insensitiveTrimmedRegexOperator } from './insensitive-trimmed-regex-operator.ts';
+export * from './documentdb-compat-mode.ts';
 
 export { mongodb };
 

@@ -1,4 +1,4 @@
-import { Filter } from 'mongodb';
+import type { Filter } from 'mongodb';
 
 export const generateDbFilterById = <T extends { _id: string }>(
   id: unknown,
