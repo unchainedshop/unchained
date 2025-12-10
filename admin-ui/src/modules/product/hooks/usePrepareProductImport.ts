@@ -75,16 +75,19 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
     supply: hasSupply
       ? {
           weightInGram: row['supply.weightInGram']
-            ? parseFloat(row['supply.weightInGram'] as string)
+            ? (parseFloat(row['supply.weightInGram'] as string) ?? undefined)
             : undefined,
           heightInMillimeters: row['supply.heightInMillimeters']
-            ? parseFloat(row['supply.heightInMillimeters'] as string)
+            ? (parseFloat(row['supply.heightInMillimeters'] as string) ??
+              undefined)
             : undefined,
           lengthInMillimeters: row['supply.lengthInMillimeters']
-            ? parseFloat(row['supply.lengthInMillimeters'] as string)
+            ? (parseFloat(row['supply.lengthInMillimeters'] as string) ??
+              undefined)
             : undefined,
           widthInMillimeters: row['supply.widthInMillimeters']
-            ? parseFloat(row['supply.widthInMillimeters'] as string)
+            ? (parseFloat(row['supply.widthInMillimeters'] as string) ??
+              undefined)
             : undefined,
         }
       : undefined,
