@@ -1,13 +1,13 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
-  Address,
-  Contact,
+  type Address,
+  type Contact,
   generateDbFilterById,
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { Order, OrderStatus } from '../db/OrdersCollection.js';
-import { OrderPosition } from '../db/OrderPositionsCollection.js';
+import { type Order, OrderStatus } from '../db/OrdersCollection.ts';
+import type { OrderPosition } from '../db/OrderPositionsCollection.ts';
 
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',

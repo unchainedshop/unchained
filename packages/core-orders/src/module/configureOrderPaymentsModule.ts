@@ -1,7 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { PricingCalculation } from '@unchainedshop/utils';
-import { OrderPayment, OrderPaymentStatus } from '../db/OrderPaymentsCollection.js';
+import type { PricingCalculation } from '@unchainedshop/utils';
+import { type OrderPayment, OrderPaymentStatus } from '../db/OrderPaymentsCollection.ts';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 

@@ -1,5 +1,5 @@
-import { MigrationRepository } from '@unchainedshop/mongodb';
-import { OrdersCollection } from '../orders-index.js';
+import type { MigrationRepository } from '@unchainedshop/mongodb';
+import { OrdersCollection } from '../orders-index.ts';
 
 export default function renameCurrencyCode(repository: MigrationRepository) {
   repository?.register({

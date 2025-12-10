@@ -1,20 +1,20 @@
-import { generateDbFilterById, ModuleInput, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, type ModuleInput, mongodb } from '@unchainedshop/mongodb';
 import { createRequire } from 'node:module';
-import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
-import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.js';
-import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.js';
-import { OrderPositionsCollection } from '../db/OrderPositionsCollection.js';
-import { OrdersCollection, Order, OrderStatus } from '../db/OrdersCollection.js';
-import { ordersSettings, OrdersSettingsOptions } from '../orders-settings.js';
-import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.js';
-import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.js';
-import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.js';
-import { configureOrderPositionsModule } from './configureOrderPositionsModule.js';
-import { configureOrderModuleMutations } from './configureOrdersModule-mutations.js';
-import { configureOrdersModuleQueries } from './configureOrdersModule-queries.js';
+import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.ts';
+import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.ts';
+import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.ts';
+import { OrderPositionsCollection } from '../db/OrderPositionsCollection.ts';
+import { OrdersCollection, type Order, OrderStatus } from '../db/OrdersCollection.ts';
+import { ordersSettings, type OrdersSettingsOptions } from '../orders-settings.ts';
+import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.ts';
+import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.ts';
+import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.ts';
+import { configureOrderPositionsModule } from './configureOrderPositionsModule.ts';
+import { configureOrderModuleMutations } from './configureOrdersModule-mutations.ts';
+import { configureOrdersModuleQueries } from './configureOrdersModule-queries.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 
-import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
+import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
 
 // @kontsedal/locco uses a deprecated way of importing files in ESM (node16 behavior)
 const require = createRequire(import.meta.url);

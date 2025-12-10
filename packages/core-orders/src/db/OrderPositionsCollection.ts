@@ -1,5 +1,5 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
-import { Price } from '@unchainedshop/utils';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
+import type { Price } from '@unchainedshop/utils';
 
 export type OrderPosition = {
   _id: string;

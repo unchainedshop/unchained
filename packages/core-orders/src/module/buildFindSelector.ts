@@ -1,4 +1,4 @@
-import { OrderQuery, Order } from '../db/OrdersCollection.js';
+import type { OrderQuery, Order } from '../db/OrdersCollection.ts';
 import { assertDocumentDBCompatMode, mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({

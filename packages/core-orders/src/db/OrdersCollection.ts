@@ -1,20 +1,22 @@
 import {
   mongodb,
   buildDbIndexes,
-  Address,
-  Contact,
-  LogFields,
-  TimestampFields,
+  type Address,
+  type Contact,
+  type LogFields,
+  type TimestampFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
-import { DateFilterInput } from '@unchainedshop/utils';
+import type { DateFilterInput } from '@unchainedshop/utils';
 
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  FULLFILLED = 'FULLFILLED',
-  REJECTED = 'REJECTED',
-}
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  FULLFILLED: 'FULLFILLED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
 export type Order = {
   _id: string;

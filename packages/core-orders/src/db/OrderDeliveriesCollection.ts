@@ -1,11 +1,13 @@
-import { mongodb, buildDbIndexes, LogFields, TimestampFields } from '@unchainedshop/mongodb';
-import { Price } from '@unchainedshop/utils';
+import { mongodb, buildDbIndexes, type LogFields, type TimestampFields } from '@unchainedshop/mongodb';
+import type { Price } from '@unchainedshop/utils';
 
-export enum OrderDeliveryStatus {
-  OPEN = 'OPEN', // Null value is mapped to OPEN status
-  DELIVERED = 'DELIVERED',
-  RETURNED = 'RETURNED',
-}
+export const OrderDeliveryStatus = {
+  OPEN: 'OPEN', // Null value is mapped to OPEN status
+  DELIVERED: 'DELIVERED',
+  RETURNED: 'RETURNED',
+} as const;
+
+export type OrderDeliveryStatus = (typeof OrderDeliveryStatus)[keyof typeof OrderDeliveryStatus];
 
 export type OrderDelivery = {
   _id: string;

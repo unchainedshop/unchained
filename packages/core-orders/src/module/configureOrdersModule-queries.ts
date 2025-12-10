@@ -1,7 +1,7 @@
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
-import buildFindSelector from './buildFindSelector.js';
-import { Order, OrderQuery } from '../db/OrdersCollection.js';
+import buildFindSelector from './buildFindSelector.ts';
+import { type Order, type OrderQuery } from '../db/OrdersCollection.ts';
 
 export interface OrderReport {
   newCount: number;

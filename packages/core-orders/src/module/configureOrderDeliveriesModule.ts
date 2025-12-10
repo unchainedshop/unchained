@@ -1,7 +1,7 @@
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { PricingCalculation } from '@unchainedshop/utils';
-import { OrderDelivery, OrderDeliveryStatus } from '../db/OrderDeliveriesCollection.js';
+import type { PricingCalculation } from '@unchainedshop/utils';
+import { type OrderDelivery, OrderDeliveryStatus } from '../db/OrderDeliveriesCollection.ts';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 

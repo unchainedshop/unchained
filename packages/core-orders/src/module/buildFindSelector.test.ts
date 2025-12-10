@@ -1,14 +1,14 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { OrderStatus } from '../db/OrdersCollection.js';
-import { buildFindByIdSelector as buildFindByIdSelectorForDelivery } from './configureOrderDeliveriesModule.js';
-import { buildFindOrderDiscountByIdSelector } from './configureOrderDiscountsModule.js';
+import { OrderStatus } from '../db/OrdersCollection.ts';
+import { buildFindByIdSelector as buildFindByIdSelectorForDelivery } from './configureOrderDeliveriesModule.ts';
+import { buildFindOrderDiscountByIdSelector } from './configureOrderDiscountsModule.ts';
 import {
   buildFindOrderPaymentByIdSelector,
   buildFindByContextDataSelector,
-} from './configureOrderPaymentsModule.js';
-import { buildFindOrderPositionByIdSelector } from './configureOrderPositionsModule.js';
-import buildFindSelectorForOrder from './buildFindSelector.js';
+} from './configureOrderPaymentsModule.ts';
+import { buildFindOrderPositionByIdSelector } from './configureOrderPositionsModule.ts';
+import buildFindSelectorForOrder from './buildFindSelector.ts';
 
 describe('OrderPosition', () => {
   describe('buildFindSelector', () => {

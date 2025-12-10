@@ -1,7 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { PricingCalculation } from '@unchainedshop/utils';
-import { OrderPosition } from '../db/OrderPositionsCollection.js';
+import type { PricingCalculation } from '@unchainedshop/utils';
+import type { OrderPosition } from '../db/OrderPositionsCollection.ts';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',

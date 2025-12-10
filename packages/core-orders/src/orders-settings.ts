@@ -1,5 +1,5 @@
 import { generateRandomHash } from '@unchainedshop/utils';
-import { Order } from './db/OrdersCollection.js';
+import type { Order } from './db/OrdersCollection.ts';
 
 export interface OrderSettingsOrderPositionValidation<Product = unknown> {
   order: Order;

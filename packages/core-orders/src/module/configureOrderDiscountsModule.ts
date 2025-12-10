@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { OrderDiscount, OrderDiscountTrigger } from '../db/OrderDiscountsCollection.js';
+import { type OrderDiscount, OrderDiscountTrigger } from '../db/OrderDiscountsCollection.ts';
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',

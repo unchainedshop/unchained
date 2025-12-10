@@ -1,5 +1,5 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
-import { Price } from '@unchainedshop/utils';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
+import type { Price } from '@unchainedshop/utils';
 
 export type OrderDiscount = {
   _id: string;
@@ -24,7 +24,9 @@ export const OrderDiscountsCollection = async (db: mongodb.Db) => {
   return OrderDiscounts;
 };
 
-export enum OrderDiscountTrigger {
-  USER = 'USER',
-  SYSTEM = 'SYSTEM',
-}
+export const OrderDiscountTrigger = {
+  USER: 'USER',
+  SYSTEM: 'SYSTEM',
+} as const;
+
+export type OrderDiscountTrigger = (typeof OrderDiscountTrigger)[keyof typeof OrderDiscountTrigger];
