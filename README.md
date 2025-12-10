@@ -106,6 +106,22 @@ Foundational utilities used across all layers:
 | [@unchainedshop/plugins](packages/plugins/README.md) | Official plugin collection for payment, delivery, pricing, and more |
 | [@unchainedshop/ticketing](packages/ticketing/README.md) | Event ticketing with PDF generation and Apple/Google Wallet passes |
 
+### Admin UI
+
+| Package | Description |
+|---------|-------------|
+| [admin-ui](admin-ui/README.md) | Next.js admin interface for managing the e-commerce platform |
+
+### Examples
+
+| Example | Description |
+|---------|-------------|
+| [Kitchensink (Fastify)](examples/kitchensink/README.md) | Full-featured example with Fastify, all plugins, ticketing, and AI integration |
+| [Kitchensink (Express)](examples/kitchensink-express/README.md) | Full-featured example with Express, MCP server, and AI integration |
+| [Ticketing](examples/ticketing/README.md) | Event ticketing with PDF and wallet passes |
+| [Minimal](examples/minimal/README.md) | Minimal setup example |
+| [OIDC](examples/oidc/README.md) | OpenID Connect authentication example |
+
 ## Plugin Architecture
 
 Unchained uses a Director/Adapter pattern for extensibility. Directors manage collections of adapters that implement specific behaviors.
@@ -189,6 +205,17 @@ unchained/
 │   └── ...
 └── tests/              # Integration tests
 ```
+
+## Migration Guides
+
+- [Migration to v4](MIGRATION-V4.md)
+- [Migration to v3](MIGRATION-V3.md)
+- [Migration to v2](MIGRATION-V2.md)
+
+## Resources
+
+- [Changelog](CHANGELOG.md)
+- [Benchmarks](BENCHMARKS.md)
 
 ## Contributing
 
