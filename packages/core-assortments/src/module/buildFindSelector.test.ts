@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test';
-import { buildFindSelector } from './configureAssortmentsModule.js';
+import { buildFindSelector } from './configureAssortmentsModule.ts';
 import assert from 'node:assert';
 
 describe('buildFindSelector', () => {

@@ -1,6 +1,6 @@
-import { slugify as defaultSlugify, Tree } from '@unchainedshop/utils';
-import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness.js';
-import makeMongoDBCache from './product-cache/mongodb.js';
+import { slugify as defaultSlugify, type Tree } from '@unchainedshop/utils';
+import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness.ts';
+import makeMongoDBCache from './product-cache/mongodb.ts';
 import { mongodb } from '@unchainedshop/mongodb';
 
 export interface AssortmentsSettings {

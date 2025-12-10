@@ -1,10 +1,10 @@
-import { Tree } from '@unchainedshop/utils';
+import { type Tree } from '@unchainedshop/utils';
 import {
   concatItemsByLevels,
   divideTreeByLevels,
   fillToSameLengthArray,
   fillUp,
-} from './zipTreeByDeepness.js';
+} from './zipTreeByDeepness.ts';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 

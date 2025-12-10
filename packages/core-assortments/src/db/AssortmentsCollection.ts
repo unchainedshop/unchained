@@ -2,7 +2,7 @@ import {
   buildDbIndexes,
   isDocumentDBCompatModeEnabled,
   mongodb,
-  TimestampFields,
+  type TimestampFields,
 } from '@unchainedshop/mongodb';
 
 export type AssortmentProductIdCacheRecord = {

@@ -1,7 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.js';
-import { AssortmentLink, InvalidateCacheFn } from '../db/AssortmentsCollection.js';
+import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.ts';
+import { type AssortmentLink, type InvalidateCacheFn } from '../db/AssortmentsCollection.ts';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',

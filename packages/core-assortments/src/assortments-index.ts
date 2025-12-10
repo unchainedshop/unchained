@@ -1,11 +1,11 @@
-export * from './db/AssortmentMediaCollection.js';
-export * from './db/AssortmentsCollection.js';
+export * from './db/AssortmentMediaCollection.ts';
+export * from './db/AssortmentsCollection.ts';
 
-export * from './module/configureAssortmentsModule.js';
-export * from './module/configureAssortmentFiltersModule.js';
-export * from './module/configureAssortmentLinksModule.js';
-export * from './module/configureAssortmentMediaModule.js';
-export * from './module/configureAssortmentProductsModule.js';
-export * from './module/configureAssortmentTextsModule.js';
+export * from './module/configureAssortmentsModule.ts';
+export * from './module/configureAssortmentFiltersModule.ts';
+export * from './module/configureAssortmentLinksModule.ts';
+export * from './module/configureAssortmentMediaModule.ts';
+export * from './module/configureAssortmentProductsModule.ts';
+export * from './module/configureAssortmentTextsModule.ts';
 
-export * from './assortments-settings.js';
+export * from './assortments-settings.ts';

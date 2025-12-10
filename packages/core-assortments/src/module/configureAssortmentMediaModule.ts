@@ -4,10 +4,13 @@ import {
   generateDbFilterById,
   generateDbObjectId,
   mongodb,
-  ModuleInput,
+  type ModuleInput,
 } from '@unchainedshop/mongodb';
-import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
-import { AssortmentMediaText, AssortmentMediaType } from '../db/AssortmentMediaCollection.js';
+import {
+  AssortmentMediaCollection,
+  type AssortmentMediaText,
+  type AssortmentMediaType,
+} from '../db/AssortmentMediaCollection.ts';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',

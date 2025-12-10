@@ -1,4 +1,4 @@
-import { walkUpFromAssortment, walkUpFromProduct } from './build-paths.js';
+import { walkUpFromAssortment, walkUpFromProduct } from './build-paths.ts';
 
 export const walk = async (params) => {
   const { productId } = params;

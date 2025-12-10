@@ -1,4 +1,4 @@
-import { Tree } from '@unchainedshop/utils';
+import { type Tree } from '@unchainedshop/utils';
 
 export const fillUp = <T>(arr: T[], size: number): T[] =>
   [...arr, ...new Array(size).fill(null)].slice(0, size);

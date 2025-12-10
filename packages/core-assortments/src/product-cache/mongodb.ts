@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
+import { AssortmentsCollection } from '../db/AssortmentsCollection.ts';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');

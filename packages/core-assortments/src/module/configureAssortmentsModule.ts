@@ -1,4 +1,4 @@
-import { Tree, SortOption, SortDirection } from '@unchainedshop/utils';
+import { type Tree, type SortOption, SortDirection } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -6,25 +6,25 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import {
-  Assortment,
-  AssortmentLink,
-  AssortmentProduct,
-  AssortmentQuery,
+  type Assortment,
+  type AssortmentLink,
+  type AssortmentProduct,
+  type AssortmentQuery,
   AssortmentsCollection,
-  InvalidateCacheFn,
-} from '../db/AssortmentsCollection.js';
-import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.js';
-import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.js';
-import { assortmentsSettings, AssortmentsSettingsOptions } from '../assortments-settings.js';
-import { configureAssortmentProductsModule } from './configureAssortmentProductsModule.js';
-import { configureAssortmentTextsModule } from './configureAssortmentTextsModule.js';
-import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
-import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
+  type InvalidateCacheFn,
+} from '../db/AssortmentsCollection.ts';
+import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.ts';
+import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.ts';
+import { assortmentsSettings, type AssortmentsSettingsOptions } from '../assortments-settings.ts';
+import { configureAssortmentProductsModule } from './configureAssortmentProductsModule.ts';
+import { configureAssortmentTextsModule } from './configureAssortmentTextsModule.ts';
+import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.ts';
+import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.ts';
 
 export interface AssortmentPathLink {
   assortmentId: string;
@@ -34,7 +34,7 @@ export interface AssortmentPathLink {
 
 export type BreadcrumbAssortmentLinkFunction = (childAssortmentId: string) => Promise<AssortmentLink[]>;
 
-export type BreacrumbAssortmentProductFunction = (productId: string) => Promise<AssortmentProduct[]>;
+export type BreadcrumbAssortmentProductFunction = (productId: string) => Promise<AssortmentProduct[]>;
 
 const logger = createLogger('unchained:core');
 
@@ -367,7 +367,7 @@ export const configureAssortmentsModule = async (
         },
       }: {
         resolveAssortmentLinks?: BreadcrumbAssortmentLinkFunction;
-        resolveAssortmentProducts?: BreacrumbAssortmentProductFunction;
+        resolveAssortmentProducts?: BreadcrumbAssortmentProductFunction;
       },
     ): Promise<{ links: AssortmentPathLink[] }[]> => {
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({

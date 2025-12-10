@@ -1,7 +1,7 @@
 import {
-  BreacrumbAssortmentProductFunction,
-  BreadcrumbAssortmentLinkFunction,
-} from '../../assortments-index.js';
+  type BreadcrumbAssortmentProductFunction,
+  type BreadcrumbAssortmentLinkFunction,
+} from '../../assortments-index.ts';
 
 const walkAssortmentLinks =
   (resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction) => async (rootAssortmentId) => {
@@ -36,7 +36,7 @@ export const walkUpFromProduct = async ({
   resolveAssortmentLinks,
   productId,
 }: {
-  resolveAssortmentProducts: BreacrumbAssortmentProductFunction;
+  resolveAssortmentProducts: BreadcrumbAssortmentProductFunction;
   resolveAssortmentLinks: BreadcrumbAssortmentLinkFunction;
   productId: string;
 }) => {

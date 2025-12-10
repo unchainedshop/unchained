@@ -1,5 +1,5 @@
-import { Tree } from '@unchainedshop/utils';
-import zipTreeBySimplyFlattening from './zipTreeBySimplyFlattening.js';
+import { type Tree } from '@unchainedshop/utils';
+import zipTreeBySimplyFlattening from './zipTreeBySimplyFlattening.ts';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 
