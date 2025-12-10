@@ -6,24 +6,24 @@ import Button from '../../common/components/Button';
 import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import { useCSVImport } from '../../common/hooks/useCSVImport';
-import usePrepareProductImport, {
-  productMapper,
-  validateProduct,
-} from '../hooks/usePrepareProductImport';
 
 import parseCSV from 'papaparse';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
+import usePrepareAssortmentImport, {
+  assortmentMapper,
+  validateAssortment,
+} from '../hooks/usePrepareAssortmentImport';
 
-const ProductImport = () => {
+const AssortmentImport = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const { setModal } = useModal();
-  const { prepareProductImport } = usePrepareProductImport();
+  const { prepareAssortmentImport } = usePrepareAssortmentImport();
 
   const { isImporting, importItems } = useCSVImport({
-    validate: validateProduct,
-    process: prepareProductImport,
+    validate: validateAssortment,
+    process: prepareAssortmentImport,
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,16 +42,16 @@ const ProductImport = () => {
 
     const content = await file.text();
 
-    const productsCSV = parseCSV.parse(content, {
+    const assortmentsCSV = parseCSV.parse(content, {
       header: true,
       skipEmptyLines: true,
     });
-    const products = productsCSV.data.map(productMapper);
-    const result = await importItems(products);
+    const assortments = assortmentsCSV.data.map(assortmentMapper);
+    const result = await importItems(assortments);
     setModal(
       <ImportResultMessage
         result={result}
-        entityName="products"
+        entityName="assortments"
         onClose={() => setModal('')}
       />,
     );
@@ -59,7 +59,7 @@ const ProductImport = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  if (!hasRole(IRoleAction.ManageProducts)) return null;
+  if (!hasRole(IRoleAction.ManageAssortments)) return null;
 
   return (
     <>
@@ -84,4 +84,4 @@ const ProductImport = () => {
   );
 };
 
-export default ProductImport;
+export default AssortmentImport;

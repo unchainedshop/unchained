@@ -1,85 +1,134 @@
-import React from 'react';
-import { IRoleAction } from '../../../gql/types';
-
-import { useIntl } from 'react-intl';
+import React, { useCallback, useState, useMemo } from 'react';
 import Button from '../../common/components/Button';
-import useProducts from '../hooks/useProducts';
-import useAuth from '../../Auth/useAuth';
+import { fetchTranslatedTextsForAllProducts } from '../utils/fetchTranslatedTextsForAllProducts';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
+import useProducts from '../hooks/useProducts';
+import useApp from '../../common/hooks/useApp';
+import { useIntl } from 'react-intl';
 import { IProduct } from '../../../gql/types';
+import { PRODUCT_TYPES } from '../ProductTypes';
 
-const CSV_HEADERS = [
-  'ID',
-  'Locale',
-  'Title',
-  'Slug',
-  'Status',
-  'Type',
-  'Tags',
-  'Sequence',
-  'Price',
-  'Currency',
-  'Description',
-  'Vendor',
-  'Brand',
-  'Labels',
-  'Created',
-  'Updated',
-  'Published',
+const PRODUCT_SCHEMA = {
+  base: [
+    '_id',
+    'sku',
+    'baseUnit',
+    'sequence',
+    'status',
+    'tags',
+    'updated',
+    'published',
+    '__typename',
+  ],
+  textFields: [
+    'title',
+    'subtitle',
+    'description',
+    'vendor',
+    'brand',
+    'labels',
+    'slug',
+  ],
+};
+
+const buildHeaders = (locales: string[]) => [
+  ...PRODUCT_SCHEMA.base,
+  ...locales.flatMap((locale) =>
+    PRODUCT_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
+  ),
+  'supply.weightInGram',
+  'supply.heightInMillimeters',
+  'supply.lengthInMillimeters',
+  'supply.widthInMillimeters',
 ];
-interface Product extends IProduct {
-  type: string;
-  __typename: string;
-  catalogPrice: any;
-}
-const extractProductRow = (product: Product) => ({
-  ID: product._id,
-  Locale: product.texts?.locale || '',
-  Title: product.texts?.title || '',
-  Slug: product.texts?.slug || '',
-  Status: product.status,
-  Type: product.__typename || product.type || 'SimpleProduct',
-  Tags: product.tags?.join(';') || '',
-  Sequence: product.sequence || '',
-  Price: product.catalogPrice?.amount || '',
-  Currency: product.catalogPrice?.currencyCode || '',
-  Description: product.texts?.description || '',
-  Vendor: product.texts?.vendor || '',
-  Brand: product.texts?.brand || '',
-  Labels: product.texts?.labels?.join(';') || '',
-  Created: product.created || '',
-  Updated: product.updated || '',
-  Published: product.published || '',
-});
 
 const ProductExport = () => {
+  const { products, loading, client } = useProducts({ limit: 0 });
+  const { languageDialectList } = useApp();
   const { formatMessage } = useIntl();
-  const { hasRole } = useAuth();
-  const { products: allProducts, loading } = useProducts({
-    limit: 10000,
-    offset: 0,
-    includeDrafts: true,
-  });
 
-  const { isExporting, exportCSV } = useCSVExport<Product>(
-    allProducts as Product[],
-    extractProductRow,
-    {
-      headers: CSV_HEADERS,
-    },
+  const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
+
+  const locales = useMemo(
+    () => languageDialectList?.map((l) => l.isoCode) ?? [],
+    [languageDialectList],
   );
 
-  if (!hasRole(IRoleAction.ViewProduct)) return null;
+  const headersBase = useMemo(() => buildHeaders(locales), [locales]);
+
+  const { exportCSV, isExporting } = useCSVExport(products, (p) => p, {
+    headers: headersBase,
+  });
+
+  const handleExport = useCallback(async () => {
+    setIsLoadingTranslations(true);
+
+    const translationMap = await fetchTranslatedTextsForAllProducts(
+      products as IProduct[],
+      client,
+    );
+    setIsLoadingTranslations(false);
+
+    const translations = {};
+    for (const productId in translationMap) {
+      translations[productId] = {};
+      for (const t of translationMap[productId]) {
+        translations[productId][t.locale] = t;
+      }
+    }
+
+    const rows = products.map(({ ...product }) => {
+      const row: Record<string, any> = {};
+
+      PRODUCT_SCHEMA.base.forEach((key) => {
+        if (key === '__typename') row[key] = PRODUCT_TYPES[product[key]];
+        else row[key] = product[key] ?? '';
+      });
+
+      row['supply.weightInGram'] = (product as any)?.dimensions?.weight ?? '';
+      row['supply.heightInMillimeters'] =
+        (product as any)?.dimensions?.height ?? '';
+      row['supply.lengthInMillimeters'] =
+        (product as any)?.dimensions?.length ?? '';
+      row['supply.widthInMillimeters'] =
+        (product as any)?.dimensions?.width ?? '';
+
+      const productTexts = translations[product._id] || {};
+
+      locales.forEach((locale) => {
+        const text = productTexts[locale] || {};
+
+        PRODUCT_SCHEMA.textFields.forEach((field) => {
+          let value = text[field];
+
+          if (Array.isArray(value)) value = value.join(';');
+
+          row[`texts.${locale}.${field}`] = value ?? '';
+        });
+      });
+
+      return row;
+    });
+
+    exportCSV('products_export', rows);
+  }, [products, client, exportCSV, locales]);
+
+  if (loading) return null;
 
   return (
     <Button
-      onClick={() => exportCSV('products_export')}
-      disabled={isExporting || loading || !allProducts?.length}
+      onClick={handleExport}
+      disabled={isExporting || isLoadingTranslations || !products.length}
       variant="secondary"
       text={
-        isExporting
-          ? formatMessage({ id: 'exporting', defaultMessage: 'Exporting...' })
-          : formatMessage({ id: 'export', defaultMessage: 'Export' })
+        isLoadingTranslations
+          ? formatMessage({
+              id: 'loading_translations',
+              defaultMessage: 'Loading translations...',
+            })
+          : isExporting
+            ? formatMessage({ id: 'exporting', defaultMessage: 'Exporting...' })
+            : formatMessage({ id: 'export', defaultMessage: 'Export' })
       }
     />
   );

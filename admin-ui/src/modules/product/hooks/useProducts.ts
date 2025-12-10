@@ -9,6 +9,7 @@ import {
 } from '../../../gql/types';
 
 import ProductBriefFragment from '../fragments/ProductBriefFragment';
+import ProductDimensionFragment from '../fragments/ProductDimensionFragment';
 
 const ProductsQuery = gql`
   query Products(
@@ -30,6 +31,13 @@ const ProductsQuery = gql`
       sort: $sort
     ) {
       ...ProductBriefFragment
+      ... on SimpleProduct {
+        sku
+        baseUnit
+        dimensions {
+          ...ProductDimensionFragment
+        }
+      }
     }
     productsCount(
       tags: $tags
@@ -38,6 +46,7 @@ const ProductsQuery = gql`
       queryString: $queryString
     )
   }
+  ${ProductDimensionFragment}
   ${ProductBriefFragment}
 `;
 
@@ -51,7 +60,7 @@ const useProducts = ({
   sort: sortOptions = [],
   forceLocale = '',
 }: IProductsQueryVariables & { forceLocale?: string } = {}) => {
-  const { data, loading, error, fetchMore } = useQuery<
+  const { data, loading, error, fetchMore, client } = useQuery<
     IProductsQuery,
     IProductsQueryVariables
   >(ProductsQuery, {
@@ -89,6 +98,7 @@ const useProducts = ({
     loading,
     error,
     loadMore,
+    client,
   };
 };
 
