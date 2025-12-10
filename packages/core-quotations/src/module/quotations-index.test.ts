@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { buildFindSelector } from './configureQuotationsModule.js';
+import { buildFindSelector } from './configureQuotationsModule.ts';
 
 describe('Quotation', () => {
   describe('buildFindSelector', () => {

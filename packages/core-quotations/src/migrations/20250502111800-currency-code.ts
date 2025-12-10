@@ -1,5 +1,5 @@
-import { MigrationRepository } from '@unchainedshop/mongodb';
-import { QuotationsCollection } from '../quotations-index.js';
+import type { MigrationRepository } from '@unchainedshop/mongodb';
+import { QuotationsCollection } from '../quotations-index.ts';
 
 export default function renameCurrencyCode(repository: MigrationRepository) {
   repository?.register({

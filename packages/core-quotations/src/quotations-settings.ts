@@ -1,5 +1,5 @@
 import { generateRandomHash } from '@unchainedshop/utils';
-import { Quotation } from './db/QuotationsCollection.js';
+import type { Quotation } from './db/QuotationsCollection.ts';
 
 export interface QuotationsSettings {
   quotationNumberHashFn: (quotation: Quotation, index: number) => string;

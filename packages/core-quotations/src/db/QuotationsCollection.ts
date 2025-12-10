@@ -1,18 +1,20 @@
 import {
   mongodb,
   buildDbIndexes,
-  TimestampFields,
-  LogFields,
+  type TimestampFields,
+  type LogFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 
-export enum QuotationStatus {
-  REQUESTED = 'REQUESTED',
-  PROCESSING = 'PROCESSING',
-  PROPOSED = 'PROPOSED',
-  FULLFILLED = 'FULLFILLED',
-  REJECTED = 'REJECTED',
-}
+export const QuotationStatus = {
+  REQUESTED: 'REQUESTED',
+  PROCESSING: 'PROCESSING',
+  PROPOSED: 'PROPOSED',
+  FULLFILLED: 'FULLFILLED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export type QuotationStatus = (typeof QuotationStatus)[keyof typeof QuotationStatus];
 
 export interface QuotationProposal {
   price?: number;

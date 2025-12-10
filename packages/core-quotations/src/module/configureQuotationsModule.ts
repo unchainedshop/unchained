@@ -1,18 +1,18 @@
-import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { Quotation, QuotationStatus } from '../db/QuotationsCollection.js';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
+import { type Quotation, QuotationStatus } from '../db/QuotationsCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   buildSortOptions,
   mongodb,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
-import { QuotationsCollection } from '../db/QuotationsCollection.js';
-import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-settings.js';
+import { QuotationsCollection } from '../db/QuotationsCollection.ts';
+import { quotationsSettings, type QuotationsSettingsOptions } from '../quotations-settings.ts';
 
-import renameCurrencyCode from '../migrations/20250502111800-currency-code.js';
+import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
 
 export interface QuotationQuery extends mongodb.Filter<Quotation> {
   userId?: string;
