@@ -3,6 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "removeComments": true,
     "declaration": true,
+    "sourceMap": false,
     "esModuleInterop": true,
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
@@ -15,7 +16,6 @@
     "strictPropertyInitialization": true,
     "strictBindCallApply": true,
     "noEmitOnError": true,
-    "sourceMap": true,
     "target": "esnext",
     "types": ["node"],
     "composite": true
