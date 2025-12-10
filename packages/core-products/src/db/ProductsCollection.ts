@@ -1,24 +1,28 @@
 import {
   mongodb,
   buildDbIndexes,
-  TimestampFields,
+  type TimestampFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
-import { Price } from '@unchainedshop/utils';
+import type { Price } from '@unchainedshop/utils';
 
-export enum ProductStatus {
-  DRAFT = 'DRAFT',
-  ACTIVE = 'ACTIVE',
-  DELETED = 'DELETED',
-}
+export const ProductStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  DELETED: 'DELETED',
+} as const;
 
-export enum ProductType {
-  SIMPLE_PRODUCT = 'SIMPLE_PRODUCT',
-  CONFIGURABLE_PRODUCT = 'CONFIGURABLE_PRODUCT',
-  BUNDLE_PRODUCT = 'BUNDLE_PRODUCT',
-  PLAN_PRODUCT = 'PLAN_PRODUCT',
-  TOKENIZED_PRODUCT = 'TOKENIZED_PRODUCT',
-}
+export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus];
+
+export const ProductType = {
+  SIMPLE_PRODUCT: 'SIMPLE_PRODUCT',
+  CONFIGURABLE_PRODUCT: 'CONFIGURABLE_PRODUCT',
+  BUNDLE_PRODUCT: 'BUNDLE_PRODUCT',
+  PLAN_PRODUCT: 'PLAN_PRODUCT',
+  TOKENIZED_PRODUCT: 'TOKENIZED_PRODUCT',
+} as const;
+
+export type ProductType = (typeof ProductType)[keyof typeof ProductType];
 export interface ProductContractConfiguration {
   tokenId?: string;
   supply?: number;
@@ -41,10 +45,12 @@ export interface ProductSupply {
   widthInMillimeters?: number;
 }
 
-export enum ProductContractStandard {
-  ERC721 = 'ERC721',
-  ERC1155 = 'ERC1155',
-}
+export const ProductContractStandard = {
+  ERC721: 'ERC721',
+  ERC1155: 'ERC1155',
+} as const;
+
+export type ProductContractStandard = (typeof ProductContractStandard)[keyof typeof ProductContractStandard];
 
 export interface ProductConfiguration {
   key: string;

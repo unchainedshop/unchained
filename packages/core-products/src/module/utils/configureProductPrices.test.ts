@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { getDecimals, normalizeRate } from '../configureProductPrices.js';
+import { getDecimals, normalizeRate } from '../configureProductPrices.ts';
 
 describe('Rate conversion', () => {
   it('getDecimals', () => {

@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { getPriceLevels } from './getPriceLevels.js';
-import product from '../../mock/product.js';
+import { getPriceLevels } from './getPriceLevels.ts';
+import product from '../../mock/product.ts';
 
 describe('Price level', () => {
   it('Should return empty array when country code is not specified', () => {

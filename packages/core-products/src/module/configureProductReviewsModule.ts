@@ -1,4 +1,4 @@
-import { assertDocumentDBCompatMode, ModuleInput } from '@unchainedshop/mongodb';
+import { assertDocumentDBCompatMode, type ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -6,13 +6,13 @@ import {
   mongodb,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
-  ProductReview,
+  type ProductReview,
   ProductReviewsCollection,
   ProductReviewVoteType,
-  ProductVote,
-} from '../db/ProductReviewsCollection.js';
+  type ProductVote,
+} from '../db/ProductReviewsCollection.ts';
 
 export interface ProductReviewQuery {
   productId?: string;

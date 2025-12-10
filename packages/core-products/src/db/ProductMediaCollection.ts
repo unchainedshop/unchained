@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
 export type ProductMedia = {
   _id: string;

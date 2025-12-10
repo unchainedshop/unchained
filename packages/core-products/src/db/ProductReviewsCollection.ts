@@ -1,15 +1,17 @@
 import {
   mongodb,
   buildDbIndexes,
-  TimestampFields,
+  type TimestampFields,
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 
-export enum ProductReviewVoteType {
-  UPVOTE = 'UPVOTE',
-  DOWNVOTE = 'DOWNVOTE',
-  REPORT = 'REPORT',
-}
+export const ProductReviewVoteType = {
+  UPVOTE: 'UPVOTE',
+  DOWNVOTE: 'DOWNVOTE',
+  REPORT: 'REPORT',
+} as const;
+
+export type ProductReviewVoteType = (typeof ProductReviewVoteType)[keyof typeof ProductReviewVoteType];
 
 export interface ProductVote {
   meta?: any;

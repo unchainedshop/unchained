@@ -5,25 +5,25 @@ import {
   buildSortOptions,
   mongodb,
   generateDbObjectId,
-  ModuleInput,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption, Price } from '@unchainedshop/utils';
+import { SortDirection, type SortOption, type Price } from '@unchainedshop/utils';
 import {
-  Product,
-  ProductAssignment,
-  ProductBundleItem,
-  ProductConfiguration,
+  type Product,
+  type ProductAssignment,
+  type ProductBundleItem,
+  type ProductConfiguration,
   ProductsCollection,
   ProductStatus,
   ProductType,
-} from '../db/ProductsCollection.js';
-import { configureProductMediaModule } from './configureProductMediaModule.js';
-import { configureProductPricesModule } from './configureProductPrices.js';
-import { configureProductReviewsModule } from './configureProductReviewsModule.js';
-import { configureProductTextsModule } from './configureProductTextsModule.js';
-import { configureProductVariationsModule } from './configureProductVariationsModule.js';
-import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
+} from '../db/ProductsCollection.ts';
+import { configureProductMediaModule } from './configureProductMediaModule.ts';
+import { configureProductPricesModule } from './configureProductPrices.ts';
+import { configureProductReviewsModule } from './configureProductReviewsModule.ts';
+import { configureProductTextsModule } from './configureProductTextsModule.ts';
+import { configureProductVariationsModule } from './configureProductVariationsModule.ts';
+import { productsSettings, type ProductsSettingsOptions } from '../products-settings.ts';
 
 export interface ProductQuery {
   queryString?: string;

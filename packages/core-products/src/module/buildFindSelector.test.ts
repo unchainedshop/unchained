@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { buildFindSelector } from './configureProductsModule';
+import { buildFindSelector } from './configureProductsModule.ts';
 
 describe('Product', () => {
   describe('buildFindSelector', () => {

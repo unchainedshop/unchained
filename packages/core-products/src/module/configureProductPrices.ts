@@ -1,12 +1,12 @@
-import { getPriceLevels } from './utils/getPriceLevels.js';
-import { getPriceRange } from './utils/getPriceRange.js';
-import { ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.js';
+import { getPriceLevels } from './utils/getPriceLevels.ts';
+import { getPriceRange } from './utils/getPriceRange.ts';
+import { type ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.ts';
 import {
-  Product,
-  ProductConfiguration,
-  ProductPrice,
-  ProductPriceRange,
-} from '../db/ProductsCollection.js';
+  type Product,
+  type ProductConfiguration,
+  type ProductPrice,
+  type ProductPriceRange,
+} from '../db/ProductsCollection.ts';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {

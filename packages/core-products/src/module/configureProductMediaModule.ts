@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/mongodb';
+import type { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -6,7 +6,7 @@ import {
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { ProductMedia, ProductMediaCollection, ProductMediaText } from '../db/ProductMediaCollection.js';
+import { type ProductMedia, ProductMediaCollection, type ProductMediaText } from '../db/ProductMediaCollection.ts';
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',

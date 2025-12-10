@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { getPriceRange } from './getPriceRange.js';
-import product from '../../mock/product.js';
-import { getPriceLevels } from './getPriceLevels.js';
+import { getPriceRange } from './getPriceRange.ts';
+import product from '../../mock/product.ts';
+import { getPriceLevels } from './getPriceLevels.ts';
 
 describe('Price Range', () => {
   it('Should return the minimum and maximum price of a product when there are multiple prices', () => {

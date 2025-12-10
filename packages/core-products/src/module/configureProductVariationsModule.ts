@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/mongodb';
+import type { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -7,11 +7,11 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import {
-  ProductVariation,
+  type ProductVariation,
   ProductVariationsCollection,
-  ProductVariationText,
+  type ProductVariationText,
   ProductVariationType,
-} from '../db/ProductVariationsCollection.js';
+} from '../db/ProductVariationsCollection.ts';
 
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',

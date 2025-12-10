@@ -6,8 +6,8 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { productsSettings } from '../products-settings.js';
-import { Product, ProductText } from '../db/ProductsCollection.js';
+import { productsSettings } from '../products-settings.ts';
+import type { Product, ProductText } from '../db/ProductsCollection.ts';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 

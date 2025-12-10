@@ -1,9 +1,11 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
-export enum ProductVariationType {
-  COLOR = 'COLOR',
-  TEXT = 'TEXT',
-}
+export const ProductVariationType = {
+  COLOR: 'COLOR',
+  TEXT: 'TEXT',
+} as const;
+
+export type ProductVariationType = (typeof ProductVariationType)[keyof typeof ProductVariationType];
 
 export type ProductVariation = {
   _id: string;
