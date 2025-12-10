@@ -1,6 +1,6 @@
-export * from './adapter.js';
+export * from './adapter.ts';
 
-import appleTransactionsModule, { type AppleTransactionsModule } from './module.js';
+import appleTransactionsModule, { type AppleTransactionsModule } from './module.ts';
 
 export type { AppleTransactionsModule };
 export default appleTransactionsModule;

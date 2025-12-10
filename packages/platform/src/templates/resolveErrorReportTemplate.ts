@@ -1,4 +1,4 @@
-import { TemplateResolver } from '@unchainedshop/core';
+import type { TemplateResolver } from '@unchainedshop/core';
 import { stringify } from 'safe-stable-stringify';
 
 const {

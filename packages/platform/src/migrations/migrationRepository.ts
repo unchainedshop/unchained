@@ -1,4 +1,4 @@
-import { mongodb, Migration, MigrationRepository } from '@unchainedshop/mongodb';
+import { mongodb, type Migration, type MigrationRepository } from '@unchainedshop/mongodb';
 
 export const createMigrationRepository = (db: mongodb.Db): MigrationRepository => {
   const migrations = new Map();

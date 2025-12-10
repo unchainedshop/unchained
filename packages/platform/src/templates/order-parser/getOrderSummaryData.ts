@@ -1,5 +1,5 @@
-import { Order } from '@unchainedshop/core-orders';
-import { UnchainedCore, OrderPricingSheet, OrderPricingRowCategory } from '@unchainedshop/core';
+import type { Order } from '@unchainedshop/core-orders';
+import { type UnchainedCore, OrderPricingSheet, OrderPricingRowCategory } from '@unchainedshop/core';
 import { ch } from '@unchainedshop/utils';
 
 type PriceFormatter = ({ amount, currencyCode }: { amount: number; currencyCode: string }) => string;

@@ -1,15 +1,15 @@
 import {
   EventListenerWorker,
   FailedRescheduler,
-  FailedReschedulerParams,
+  type FailedReschedulerParams,
   IntervalWorker,
-  IntervalWorkerParams,
-  IScheduler,
-  IWorker,
-  UnchainedCore,
+  type IntervalWorkerParams,
+  type IScheduler,
+  type IWorker,
+  type UnchainedCore,
 } from '@unchainedshop/core';
 import { runMigrations } from '../migrations/runMigrations.js';
-import { MigrationRepository } from '@unchainedshop/mongodb';
+import type { MigrationRepository } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:worker');
 

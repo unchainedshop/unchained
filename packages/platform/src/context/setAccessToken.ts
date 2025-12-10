@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { sha256 } from '@unchainedshop/utils';
 
 export default async (

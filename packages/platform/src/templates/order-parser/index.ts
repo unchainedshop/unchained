@@ -1,7 +1,7 @@
 import { getOrderPositionsData } from './getOrderPositionsData.js';
 import { getOrderSummaryData } from './getOrderSummaryData.js';
-import { Order } from '@unchainedshop/core-orders';
-import { UnchainedCore } from '@unchainedshop/core';
+import type { Order } from '@unchainedshop/core-orders';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 export const transformOrderToText = async (
   { order, locale }: { order: Order; locale: Intl.Locale },

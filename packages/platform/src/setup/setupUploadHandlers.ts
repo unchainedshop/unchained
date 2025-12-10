@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { FileDirector } from '@unchainedshop/file-upload';
 
 export const setupUploadHandlers = ({ services, modules }: UnchainedCore) => {

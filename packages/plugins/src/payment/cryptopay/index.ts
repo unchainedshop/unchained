@@ -1,6 +1,6 @@
-import './plugin.js';
+import './plugin.ts';
 
-import cryptopayModules, { type CryptopayModule } from './module.js';
+import cryptopayModules, { type CryptopayModule } from './module.ts';
 
 export type { CryptopayModule };
 

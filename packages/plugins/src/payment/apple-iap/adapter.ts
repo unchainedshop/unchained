@@ -5,8 +5,8 @@ import {
   PaymentError,
 } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import { type AppleTransactionsModule } from './module.js';
-import { verifyReceipt } from './verify-receipt.js';
+import { type AppleTransactionsModule } from './module.ts';
+import { verifyReceipt } from './verify-receipt.ts';
 
 const logger = createLogger('unchained:apple-iap');
 

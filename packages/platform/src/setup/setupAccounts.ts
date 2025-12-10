@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {

@@ -1,6 +1,6 @@
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import { generateDbFilterById, MigrationRepository } from '@unchainedshop/mongodb';
+import { generateDbFilterById, type MigrationRepository } from '@unchainedshop/mongodb';
 import { createMigrationRunner } from './createMigrationRunner.js';
 
 export const runMigrations = async ({

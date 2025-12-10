@@ -1,7 +1,7 @@
-import { MessagingDirector, UnchainedCore } from '@unchainedshop/core';
+import { MessagingDirector, type UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
-import { Order, OrderStatus } from '@unchainedshop/core-orders';
-import { RawPayloadType } from '@unchainedshop/events';
+import { type Order, OrderStatus } from '@unchainedshop/core-orders';
+import type { RawPayloadType } from '@unchainedshop/events';
 import { resolveOrderRejectionTemplate } from '../templates/resolveOrderRejectionTemplate.js';
 import { resolveAccountActionTemplate } from '../templates/resolveAccountActionTemplate.js';
 import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliveryTemplate.js';
@@ -10,15 +10,17 @@ import { resolveQuotationStatusTemplate } from '../templates/resolveQuotationSta
 import { resolveEnrollmentStatusTemplate } from '../templates/resolveEnrollmentStatusTemplate.js';
 import { resolveErrorReportTemplate } from '../templates/resolveErrorReportTemplate.js';
 
-export enum MessageTypes {
-  ACCOUNT_ACTION = 'ACCOUNT_ACTION',
-  DELIVERY = 'DELIVERY',
-  ORDER_CONFIRMATION = 'ORDER_CONFIRMATION',
-  ORDER_REJECTION = 'ORDER_REJECTION',
-  QUOTATION_STATUS = 'QUOTATION_STATUS',
-  ENROLLMENT_STATUS = 'ENROLLMENT_STATUS',
-  ERROR_REPORT = 'ERROR_REPORT',
-}
+export const MessageTypes = {
+  ACCOUNT_ACTION: 'ACCOUNT_ACTION',
+  DELIVERY: 'DELIVERY',
+  ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
+  ORDER_REJECTION: 'ORDER_REJECTION',
+  QUOTATION_STATUS: 'QUOTATION_STATUS',
+  ENROLLMENT_STATUS: 'ENROLLMENT_STATUS',
+  ERROR_REPORT: 'ERROR_REPORT',
+} as const;
+
+export type MessageTypes = (typeof MessageTypes)[keyof typeof MessageTypes];
 
 export const setupTemplates = (unchainedAPI: UnchainedCore) => {
   MessagingDirector.registerTemplate(MessageTypes.ACCOUNT_ACTION, resolveAccountActionTemplate);

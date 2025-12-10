@@ -9,10 +9,10 @@ import {
   type IFileAdapter,
 } from '@unchainedshop/file-upload';
 import { type UploadFileData } from '@unchainedshop/file-upload';
-import sign from './sign.js';
+import sign from './sign.ts';
 import { filesSettings } from '@unchainedshop/core-files';
 import { type UnchainedCore } from '@unchainedshop/core';
-import { type GridFSFileUploadsModule } from './index.js';
+import { type GridFSFileUploadsModule } from './index.ts';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
