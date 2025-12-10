@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/core';
-import { PassConfig } from './types.js';
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { PassConfig } from './types.js';
 
 let Template: any = null;
 let constants: any = null;
