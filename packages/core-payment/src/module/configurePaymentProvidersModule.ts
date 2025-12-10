@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { PaymentProvider } from '../db/PaymentProvidersCollection.js';
+import type { PaymentProvider } from '../db/PaymentProvidersCollection.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 

@@ -1,9 +1,9 @@
-import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.js';
-import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
-import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.js';
-import { configurePaymentProvidersModule } from './configurePaymentProvidersModule.js';
-import { paymentSettings, PaymentSettingsOptions } from '../payment-settings.js';
-import { ModuleInput } from '@unchainedshop/mongodb';
+import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.ts';
+import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.ts';
+import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.ts';
+import { configurePaymentProvidersModule } from './configurePaymentProvidersModule.ts';
+import { paymentSettings, type PaymentSettingsOptions } from '../payment-settings.ts';
+import type { ModuleInput } from '@unchainedshop/mongodb';
 
 export const configurePaymentModule = async ({
   db,

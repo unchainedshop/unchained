@@ -1,9 +1,11 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
-export enum PaymentProviderType {
-  INVOICE = 'INVOICE',
-  GENERIC = 'GENERIC',
-}
+export const PaymentProviderType = {
+  INVOICE: 'INVOICE',
+  GENERIC: 'GENERIC',
+} as const;
+
+export type PaymentProviderType = (typeof PaymentProviderType)[keyof typeof PaymentProviderType];
 
 export type PaymentConfiguration = {
   key: string;
