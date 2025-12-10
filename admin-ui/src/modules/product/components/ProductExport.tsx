@@ -5,6 +5,7 @@ import { useCSVExport } from '../../common/hooks/useCSVExport';
 import useProducts from '../hooks/useProducts';
 import useApp from '../../common/hooks/useApp';
 import { useIntl } from 'react-intl';
+import { IProduct } from '../../../gql/types';
 
 const PRODUCT_SCHEMA = {
   base: [
@@ -62,7 +63,7 @@ const ProductExport = () => {
     setIsLoadingTranslations(true);
 
     const translationMap = await fetchTranslatedTextsForAllProducts(
-      products,
+      products as IProduct[],
       client,
     );
     setIsLoadingTranslations(false);
@@ -75,15 +76,12 @@ const ProductExport = () => {
       }
     }
 
-    const rows = products.map((product) => {
+    const rows = products.map(({ ...product }) => {
       const row: Record<string, any> = {};
-      if ((product as any)?.supply)
-        PRODUCT_SCHEMA.base.forEach((key) => {
-          row[key] = product[key] ?? '';
-        });
 
-      row['sku'] = (product as any).sku ?? '';
-      row['baseUnit'] = (product as any).baseUnit ?? '';
+      PRODUCT_SCHEMA.base.forEach((key) => {
+        row[key] = product[key] ?? '';
+      });
       row['supply.weightInGram'] = (product as any)?.dimensions?.weight ?? '';
       row['supply.heightInMillimeters'] =
         (product as any)?.dimensions?.height ?? '';

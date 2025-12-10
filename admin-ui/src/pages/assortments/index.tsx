@@ -19,6 +19,8 @@ import AssortmentDetailPage from './AssortmentDetailPage';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
 import useApp from '../../modules/common/hooks/useApp';
+import AssortmentExport from '../../modules/assortment/components/AssortmentExport';
+import AssortmentImport from '../../modules/assortment/components/AssortmentImport';
 
 const GetCurrentView = ({
   options,
@@ -130,7 +132,10 @@ const AssortmentsView = () => {
           id: 'add_assortment',
           defaultMessage: 'Add Assortment',
         })}
-      />
+      >
+        <AssortmentExport />
+        <AssortmentImport />
+      </PageHeader>
       <div>
         <ListHeader>
           <div className="lg:flex gap-5">
