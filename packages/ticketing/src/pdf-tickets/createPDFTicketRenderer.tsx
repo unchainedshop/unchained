@@ -1,7 +1,7 @@
 import React from 'react';
-import { Order } from '@unchainedshop/core-orders';
-import { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import { TicketingAPI } from '../types.js';
+import type { Order } from '@unchainedshop/core-orders';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import type { TicketingAPI } from '../types.js';
 
 let PDFRenderer: any = null;
 let QRCode: any = null;
