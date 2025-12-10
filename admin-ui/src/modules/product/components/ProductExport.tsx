@@ -42,8 +42,14 @@ const buildHeaders = (locales: string[]) => [
   'supply.widthInMillimeters',
 ];
 
-const ProductExport = () => {
-  const { products, loading, client } = useProducts({ limit: 0 });
+const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
+  const { products, loading, client } = useProducts({
+    limit: 0,
+    queryString,
+    includeDrafts,
+    tags,
+    sort,
+  });
   const { languageDialectList } = useApp();
   const { formatMessage } = useIntl();
 

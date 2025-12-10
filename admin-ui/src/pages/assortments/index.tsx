@@ -133,7 +133,13 @@ const AssortmentsView = () => {
           defaultMessage: 'Add Assortment',
         })}
       >
-        <AssortmentExport />
+        <AssortmentExport
+          includeInactive={includeInactive}
+          includeLeaves={includeLeaves}
+          queryString={queryString}
+          sort={sort}
+          tags={tags}
+        />
         <AssortmentImport />
       </PageHeader>
       <div>

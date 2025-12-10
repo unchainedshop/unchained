@@ -6,6 +6,7 @@ import useApp from '../../common/hooks/useApp';
 import { useIntl } from 'react-intl';
 import useAssortments from '../hooks/useAssortments';
 import { IAssortment } from '../../../gql/types';
+import { convertSortFieldsToQueryFormat } from '../../common/utils/utils';
 
 const ASSORTMENT_SCHEMA = {
   base: ['_id', 'isActive', 'isBase', 'isRoot', 'sequence', 'tags'],
@@ -19,8 +20,22 @@ const buildHeaders = (locales: string[]) => [
   ),
 ];
 
-const AssortmentExport = () => {
-  const { assortments, loading, client } = useAssortments({ limit: 0 });
+const AssortmentExport = ({
+  includeInactive,
+  includeLeaves,
+  queryString,
+  tags,
+  sort,
+}) => {
+  const sortKeys = convertSortFieldsToQueryFormat(sort);
+  const { assortments, loading, client } = useAssortments({
+    limit: 0,
+    queryString,
+    includeInactive,
+    includeLeaves,
+    tags,
+    sort: sortKeys,
+  });
   const { languageDialectList } = useApp();
   const { formatMessage } = useIntl();
 
