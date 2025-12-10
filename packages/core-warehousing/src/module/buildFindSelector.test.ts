@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { WarehousingProviderType } from '../db/WarehousingProvidersCollection.js';
-import { buildFindSelector } from './configureWarehousingModule.js';
+import { WarehousingProviderType } from '../db/WarehousingProvidersCollection.ts';
+import { buildFindSelector } from './configureWarehousingModule.ts';
 
 describe('Warehousing', () => {
   describe('buildFindSelector', () => {

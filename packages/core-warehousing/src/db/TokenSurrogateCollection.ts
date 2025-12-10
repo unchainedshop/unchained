@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
+import { type mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
 
 export interface TokenSurrogate {
   _id: string;
@@ -15,11 +15,13 @@ export interface TokenSurrogate {
   meta: any;
 }
 
-export enum TokenStatus {
-  CENTRALIZED = 'CENTRALIZED',
-  EXPORTING = 'EXPORTING',
-  DECENTRALIZED = 'DECENTRALIZED',
-}
+export const TokenStatus = {
+  CENTRALIZED: 'CENTRALIZED',
+  EXPORTING: 'EXPORTING',
+  DECENTRALIZED: 'DECENTRALIZED',
+} as const;
+
+export type TokenStatus = (typeof TokenStatus)[keyof typeof TokenStatus];
 
 export const TokenSurrogateCollection = async (db: mongodb.Db) => {
   const TokenSurrogates = db.collection<TokenSurrogate>('token_surrogates');

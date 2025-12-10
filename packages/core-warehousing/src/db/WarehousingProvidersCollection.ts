@@ -1,9 +1,11 @@
-import { mongodb, buildDbIndexes, TimestampFields } from '@unchainedshop/mongodb';
+import { type mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
-export enum WarehousingProviderType {
-  PHYSICAL = 'PHYSICAL',
-  VIRTUAL = 'VIRTUAL',
-}
+export const WarehousingProviderType = {
+  PHYSICAL: 'PHYSICAL',
+  VIRTUAL: 'VIRTUAL',
+} as const;
+
+export type WarehousingProviderType = (typeof WarehousingProviderType)[keyof typeof WarehousingProviderType];
 
 export type WarehousingConfiguration = { key: string; value: string }[];
 

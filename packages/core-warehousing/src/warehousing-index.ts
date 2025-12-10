@@ -1,3 +1,3 @@
-export * from './module/configureWarehousingModule.js';
-export * from './db/TokenSurrogateCollection.js';
-export * from './db/WarehousingProvidersCollection.js';
+export * from './module/configureWarehousingModule.ts';
+export * from './db/TokenSurrogateCollection.ts';
+export * from './db/WarehousingProvidersCollection.ts';

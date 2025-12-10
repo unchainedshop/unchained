@@ -2,15 +2,15 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbObjectId,
-  mongodb,
-  ModuleInput,
+  type mongodb,
+  type ModuleInput,
   assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import {
-  WarehousingProvider,
+  type WarehousingProvider,
   WarehousingProvidersCollection,
-} from '../db/WarehousingProvidersCollection.js';
-import { TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
+} from '../db/WarehousingProvidersCollection.ts';
+import { type TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 
