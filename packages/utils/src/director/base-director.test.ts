@@ -1,6 +1,6 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
-import { BaseDirector, IBaseDirector } from './BaseDirector.js';
+import { BaseDirector, type IBaseDirector } from './BaseDirector.ts';
 
 const adapter1 = {
   key: 'adapter1',

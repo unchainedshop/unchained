@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { resolveBestSupported, slugify, systemLocale } from './utils-index.js';
-import generateHashId from './generate-random-hash.js';
+import { resolveBestSupported, slugify, systemLocale } from './utils-index.ts';
+import generateHashId from './generate-random-hash.ts';
 
 describe('Utils', () => {
   it('Locale', () => {

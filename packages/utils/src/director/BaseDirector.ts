@@ -1,4 +1,4 @@
-import { IBaseAdapter } from './BaseAdapter.js';
+import type { IBaseAdapter } from './BaseAdapter.ts';
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {
   getAdapters: (options?: { adapterFilter?: (adapter: Adapter) => boolean }) => Adapter[];

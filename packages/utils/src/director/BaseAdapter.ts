@@ -1,4 +1,4 @@
-import { defaultLogger, LogLevel } from '@unchainedshop/logger';
+import { defaultLogger, type LogLevel, LogLevel as LogLevelEnum } from '@unchainedshop/logger';
 
 export interface IBaseAdapter {
   key: string;
@@ -15,7 +15,7 @@ export interface IBaseAdapter {
 }
 
 export const BaseAdapter: Omit<IBaseAdapter, 'key' | 'label' | 'version'> = {
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
+  log(message: string, { level = LogLevelEnum.Debug, ...options } = {}) {
     defaultLogger[level](message, options);
   },
 

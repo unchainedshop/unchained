@@ -7,7 +7,7 @@ import {
   resolveAmountAndTax,
   applyDiscountToMultipleShares,
   calculateAmountToSplit,
-} from './calculation';
+} from './calculation.ts';
 
 describe('roundToNext', () => {
   it('rounds to the next multiple of precision correctly when the value is positive', () => {
