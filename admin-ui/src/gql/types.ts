@@ -7158,15 +7158,6 @@ export type IUpdateAssortmentTextsMutation = {
   }>;
 };
 
-export type IAssortmentExistQueryVariables = Exact<{
-  assortmentId?: InputMaybe<Scalars['ID']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-export type IAssortmentExistQuery = {
-  assortment?: { _id: string; deleted?: any | null } | null;
-};
-
 export type IAddressFragment = {
   firstName?: string | null;
   lastName?: string | null;
@@ -15375,21 +15366,6 @@ export type IUserTokensQuery = {
       };
     }>;
   } | null;
-};
-
-export type IProductExistQueryVariables = Exact<{
-  productId?: InputMaybe<Scalars['ID']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-export type IProductExistQuery = {
-  product?:
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
-    | null;
 };
 
 export type IQuotationDetailFragment = {

@@ -1,6 +1,4 @@
-import { useApolloClient } from '@apollo/client/react';
 import { CSVRow } from '../../common/utils/csvUtils';
-import { fetchExistingProductId } from '../utils/fetchExistingProductId';
 
 export type ProductType =
   | 'SimpleProduct'
@@ -128,22 +126,16 @@ export const validateProduct = (product: ImportableProduct, intl): string[] => {
   return errors;
 };
 
-const buildProductEvents = (
-  product: ImportableProduct,
-  existingProductIds: Set<string>,
-) => {
-  const exists = !!product._id && existingProductIds.has(product._id);
+const buildProductEvents = (product: ImportableProduct) => {
   const now = new Date();
 
   return {
     entity: 'PRODUCT',
-    operation: exists ? 'UPDATE' : 'CREATE',
+    operation: 'CREATE',
     payload: {
       _id: product._id,
       specification: {
         ...product,
-        created: exists ? undefined : now,
-        updated: exists ? now : undefined,
         published: product.status === 'ACTIVE' ? now : null,
         status: product.status === 'ACTIVE' ? 'ACTIVE' : null,
         warehousing: {
@@ -156,17 +148,8 @@ const buildProductEvents = (
 };
 
 const usePrepareProductImport = () => {
-  const apollo = useApolloClient();
-
-  const prepareProductImport = async (products: ImportableProduct[]) => {
-    const existingIds = await Promise.all(
-      products.map(({ _id }) => _id && fetchExistingProductId(_id, apollo)),
-    );
-    const existingSet = new Set(existingIds.filter(Boolean));
-
-    return products.map((p) => buildProductEvents(p, existingSet));
-  };
-
+  const prepareProductImport = async (products: ImportableProduct[]) =>
+    products.map((p) => buildProductEvents(p));
   return { prepareProductImport };
 };
 

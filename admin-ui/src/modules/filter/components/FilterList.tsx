@@ -20,7 +20,7 @@ const FilterList = ({
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
   const { hasRole } = useAuth();
-  const { filters, filtersCount, loading, loadMore, hasMore } = useFilters({
+  const { filters, loading, loadMore, hasMore } = useFilters({
     queryString,
     limit,
     includeInactive,

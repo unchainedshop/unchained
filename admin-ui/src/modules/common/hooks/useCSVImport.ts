@@ -43,7 +43,6 @@ export const useCSVImport = <T>({ validate, process }: UseImportOptions<T>) => {
         type: IWorkType.BulkImport,
         input: {
           createShouldUpsertIfIDExists: true,
-          updateShouldUpsertIfIDNotExists: true,
           events,
         },
       });

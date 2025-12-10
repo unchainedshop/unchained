@@ -1,6 +1,4 @@
-import { useApolloClient } from '@apollo/client/react';
 import { CSVRow } from '../../common/utils/csvUtils';
-import { fetchExistingAssortmentId } from '../utils/fetchExistingAssortmentId';
 
 export interface ImportableAssortment {
   _id?: string;
@@ -58,42 +56,24 @@ export const validateAssortment = (
   return errors;
 };
 
-const buildAssortmentEvents = (
-  assortment: ImportableAssortment,
-  existingAssortmentIds: Set<string>,
-) => {
-  const exists = !!assortment._id && existingAssortmentIds.has(assortment._id);
+const buildAssortmentEvents = (assortment: ImportableAssortment) => {
   const now = new Date();
 
   return {
     entity: 'assortment',
-    operation: exists ? 'UPDATE' : 'CREATE',
+    operation: 'CREATE',
     payload: {
       _id: assortment._id,
       specification: {
         ...assortment,
-        created: exists ? undefined : now,
-        updated: exists ? now : undefined,
       },
     },
   };
 };
 
 const usePrepareAssortmentImport = () => {
-  const apollo = useApolloClient();
-
-  const prepareAssortmentImport = async (
-    assortments: ImportableAssortment[],
-  ) => {
-    const existingIds = await Promise.all(
-      assortments.map(
-        ({ _id }) => _id && fetchExistingAssortmentId(_id, apollo),
-      ),
-    );
-    const existingSet = new Set(existingIds.filter(Boolean));
-
-    return assortments.map((p) => buildAssortmentEvents(p, existingSet));
-  };
+  const prepareAssortmentImport = async (assortments: ImportableAssortment[]) =>
+    assortments.map((p) => buildAssortmentEvents(p));
 
   return { prepareAssortmentImport };
 };
