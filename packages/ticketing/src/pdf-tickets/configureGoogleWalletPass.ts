@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { Context } from '@unchainedshop/api';
-import { EventTicketClass, GoogleWalletPassConfigOptions } from './types.js';
+import type { Context } from '@unchainedshop/api';
+import type { EventTicketClass, GoogleWalletPassConfigOptions } from './types.js';
 
 let google: any = null;
 let jwt: any = null;
@@ -236,14 +236,14 @@ export default function configureGoogleWalletPass(config: GoogleWalletPassConfig
       heroImage:
         isProduction && url
           ? {
-              sourceUri: { uri: url },
-              contentDescription: {
-                defaultValue: {
-                  language: normalizedUserLocale || 'de-CH',
-                  value: 'Hero image description',
-                },
+            sourceUri: { uri: url },
+            contentDescription: {
+              defaultValue: {
+                language: normalizedUserLocale || 'de-CH',
+                value: 'Hero image description',
               },
-            }
+            },
+          }
           : undefined,
     });
 

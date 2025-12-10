@@ -1,4 +1,4 @@
-import { TicketingAPI } from '../types.js';
+import type { TicketingAPI } from '../types.js';
 
 export const generateOrderSVG = async (order, tokens, { modules }: TicketingAPI) => {
   let QRCode: any | null = null;
