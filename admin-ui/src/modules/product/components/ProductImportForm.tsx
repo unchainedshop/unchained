@@ -1,9 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
 import { CSVRow } from '../../common/utils/csvUtils';
-import { productMapper } from '../hooks/usePrepareProductImport';
 
 const ProductImportForm = ({ onImport }) => {
   const productsFileRef = useRef<HTMLInputElement>(null);
@@ -30,40 +29,16 @@ const ProductImportForm = ({ onImport }) => {
     e.target.value = '';
   };
 
-  const normalizeProducts = () => {
-    const productMap: Record<string, any> = {};
-    productsCSV.forEach((product) => {
-      productMap[product._id!] = productMapper(product);
-      const prices = pricesCSV.filter(
-        (option) => option['productId'] === product._id,
-      );
-      if (prices.length)
-        productMap[product._id!].commerce = {
-          pricing: prices.map(
-            ({ amount, maxQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
-              amount: parseInt(amount) ?? 0,
-              isNetPrice: isNetPrice === 'true',
-              isTaxable: isTaxable === 'true',
-              maxQuantity: maxQuantity || 0,
-              ...restPrice,
-            }),
-          ),
-        };
-    });
-    return Object.values(productMap);
-  };
-
-  const handleImport = async () => {
+  const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      const normalized = normalizeProducts();
-      await onImport(normalized);
+      await onImport({ productsCSV, pricesCSV });
     } catch (err: any) {
       console.error('Error importing products:', err);
     } finally {
       setIsImporting(false);
     }
-  };
+  }, [productsCSV, pricesCSV]);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">

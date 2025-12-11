@@ -29,6 +29,14 @@ export interface ImportableProduct {
     baseUnit?: string;
   };
   content?: Record<string, any>;
+  commerce?: {
+    amount: number;
+    isNetPrice: boolean;
+    isTaxable: boolean;
+    maxQuantity: number;
+    currencyCode: string;
+    countryCode: string;
+  }[];
 }
 
 const normalizeProductContent = (row: CSVRow) => {
@@ -96,26 +104,21 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
   return mapped;
 };
 
-export const validateProduct = (product: ImportableProduct, intl): string[] => {
+export const validateProduct = ({ productsCSV }: any, intl): string[] => {
   const errors: string[] = [];
-  if (!product.content || Object.keys(product.content).length === 0) {
-    errors.push(
-      intl.formatMessage({
-        id: 'product_import_localized_texts_missing',
-        defaultMessage: 'Title is required',
-      }),
-    );
-  }
-  if (!Object.values(PRODUCT_TYPES).includes(product.type)) {
-    errors.push(
-      intl.formatMessage(
-        {
-          id: 'product_import.validation.invalid_type',
-          defaultMessage: 'Invalid product type: {type}',
-        },
-        { type: product.type },
-      ),
-    );
+
+  for (const product of productsCSV) {
+    if (!Object.values(PRODUCT_TYPES).includes(product?.__typename)) {
+      errors.push(
+        intl.formatMessage(
+          {
+            id: 'product_import.validation.invalid_type',
+            defaultMessage: 'Invalid product type: {type}',
+          },
+          { type: product.type },
+        ),
+      );
+    }
   }
 
   return errors;
@@ -137,14 +140,35 @@ const buildProductEvents = (product: ImportableProduct) => {
           sku: product.sku,
           baseUnit: product.baseUnit,
         },
+        commerce: product.commerce ? { pricing: product.commerce } : undefined,
       },
     },
   };
 };
 
 const usePrepareProductImport = () => {
-  const prepareProductImport = async (products: ImportableProduct[]) =>
-    products.map((p) => buildProductEvents(p));
+  const prepareProductImport = async ({
+    productsCSV,
+    pricesCSV,
+  }): Promise<any> => {
+    return (productsCSV || []).map((product) => {
+      const prices = (pricesCSV || []).filter(
+        (option) => option['productId'] === product._id,
+      );
+      let price = undefined;
+      if (prices.length)
+        price = prices.map(
+          ({ amount, maxQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
+            amount: parseInt(amount) ?? 0,
+            isNetPrice: isNetPrice === 'true',
+            isTaxable: isTaxable === 'true',
+            maxQuantity: maxQuantity || 0,
+            ...restPrice,
+          }),
+        );
+      return buildProductEvents({ ...productMapper(product), commerce: price });
+    });
+  };
   return { prepareProductImport };
 };
 

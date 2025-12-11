@@ -30,7 +30,6 @@ const ProductImport = () => {
       <ProductImportForm
         onImport={async (normalizedProducts) => {
           const result = await importItems(normalizedProducts);
-          console.log(result);
           setModal(
             <ImportResultMessage
               result={result}

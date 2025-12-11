@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
@@ -29,29 +29,16 @@ const FilterImportForm = ({ onImport }) => {
     e.target.value = '';
   };
 
-  const normalizeFiltersWithOptions = () => {
-    const filterMap: Record<string, any> = {};
-    filtersCSV.forEach((filter) => {
-      filterMap[filter._id!] = { ...filter };
-      const options = optionsCSV.filter(
-        (option) => option['filterId'] === filter._id,
-      );
-      if (options.length) filterMap[filter._id!].options = options;
-    });
-    return Object.values(filterMap);
-  };
-
-  const handleImport = async () => {
+  const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      const normalized = normalizeFiltersWithOptions();
-      await onImport(normalized);
+      await onImport({ filtersCSV, optionsCSV });
     } catch (err: any) {
       console.error('Error importing filters:', err);
     } finally {
       setIsImporting(false);
     }
-  };
+  }, [filtersCSV, optionsCSV]);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
