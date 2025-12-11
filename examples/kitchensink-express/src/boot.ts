@@ -47,7 +47,6 @@ try {
 
   // Warning: Do not use this in production
   await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
-
   await httpServer.listen({ port: process.env.PORT || 3000 });
   logger.info(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
 } catch (error) {
