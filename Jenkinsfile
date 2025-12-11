@@ -1,9 +1,8 @@
 pipeline {
-  agent {
-    label "docker-agent"
-  }
+  agent any
   environment {
-    REGISTRY_AUTH = credentials('eec0f0c2-9b9d-4b26-8da5-58222499d901')
+    REGISTRY_AUTH = credentials('ucc-registry-unchained')
+    DOCKER_BUILDKIT = 0
     DOTENV_PATH = credentials('unchained-dotenv')
     kitchensink = ''
     docs = ''
