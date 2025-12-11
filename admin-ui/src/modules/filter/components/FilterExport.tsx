@@ -7,7 +7,7 @@ import useApp from '../../common/hooks/useApp';
 import { useIntl } from 'react-intl';
 
 const FILTER_SCHEMA = {
-  filterFields: ['_id', 'key', 'type', 'isActive', 'created', 'updated'],
+  filterFields: ['_id', 'key', 'type', 'isActive'],
   optionFields: ['optionId', 'filterId', 'value'],
   textFields: ['title', 'subtitle'],
 };

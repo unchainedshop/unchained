@@ -87,31 +87,6 @@ export const validateFilter = (filter: any, intl): string[] => {
             'Options are required for SINGLE_CHOICE or MULTI_CHOICE filters',
         }),
       );
-    } else {
-      filter.options.forEach((opt, i) => {
-        if (!opt.value)
-          errors.push(
-            intl.formatMessage(
-              {
-                id: 'filter_import.option_value_missing',
-                defaultMessage: 'Option {i} must have a value',
-              },
-              { i },
-            ),
-          );
-        if (!opt.content || Object.keys(opt.content).length === 0) {
-          errors.push(
-            intl.formatMessage(
-              {
-                id: 'filter_import.option_texts_missing',
-                defaultMessage:
-                  'Option {value} must have at least one locale text',
-              },
-              { value: opt.value },
-            ),
-          );
-        }
-      });
     }
   }
 
