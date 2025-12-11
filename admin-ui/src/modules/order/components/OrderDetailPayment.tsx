@@ -47,7 +47,7 @@ const OrderDetailPayment = ({ order }) => {
           toast.success(
             formatMessage({
               id: 'order_paid',
-              defaultMessage: 'Order payed successfully',
+              defaultMessage: 'Order paid successfully',
             }),
           );
         }}

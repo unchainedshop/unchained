@@ -1799,7 +1799,7 @@
     "defaultMessage": "{count, plural, one {# Order} other {# Orders}}"
   },
   "order_paid": {
-    "defaultMessage": "Order payed successfully"
+    "defaultMessage": "Order paid successfully"
   },
   "order_payment_fees": {
     "defaultMessage": "Fees"

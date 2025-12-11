@@ -597,7 +597,7 @@
   "order_id": "Order",
   "order_number": "Order #",
   "order_page_title": "{count, plural, one {# Order} other {# Orders}}",
-  "order_paid": "Order payed successfully",
+  "order_paid": "Order paid successfully",
   "order_payment_fees": "Fees",
   "order_placed": "Order placed",
   "order_reject_success": "Order rejected successfully",

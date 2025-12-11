@@ -72,10 +72,17 @@ mutation LoginAsGuest {
 }
 ```
 
-Save the `_id` (token) and include it in all subsequent requests:
-```http
-Authorization: Bearer <your-token>
-```
+:::info Authentication
+Unchained uses **cookie-based authentication**. When you call `loginAsGuest` (or any login mutation), the server responds with a `Set-Cookie` header containing `unchained_token`.
+
+**In the GraphQL Playground:**
+- Cookies are automatically handled if you enable "request.credentials" in settings
+- Go to Settings (gear icon) and set `"request.credentials": "include"`
+
+**In your application:**
+- Ensure your HTTP client is configured to include credentials (cookies)
+- Example with fetch: `fetch(url, { credentials: 'include' })`
+:::
 
 ### Step 2: Add Product to Cart
 
@@ -149,7 +156,7 @@ mutation SetProviders {
 ### Step 4: Set Delivery Address
 
 ```graphql
-mutation SetAddress {
+mutation SetDeliveryAddress {
   updateCartDeliveryShipping(
     deliveryProviderId: "your-delivery-provider-id"
     address: {
@@ -166,7 +173,33 @@ mutation SetAddress {
 }
 ```
 
-### Step 5: Review & Checkout
+### Step 5: Set Billing Address
+
+:::caution Required Step
+A billing address is required for checkout. Without it, the checkout will fail with `OrderCheckoutError: Billing address not provided`.
+:::
+
+```graphql
+mutation SetBillingAddress {
+  updateCart(billingAddress: {
+    firstName: "John"
+    lastName: "Doe"
+    addressLine: "123 Main Street"
+    postalCode: "8000"
+    city: "Zurich"
+    countryCode: "CH"
+  }) {
+    _id
+    billingAddress {
+      firstName
+      lastName
+      city
+    }
+  }
+}
+```
+
+### Step 6: Review & Checkout
 
 Review your cart and checkout in one step:
 
@@ -196,7 +229,7 @@ query ReviewCart {
 }
 ```
 
-### Step 6: Checkout
+### Step 7: Checkout
 
 ```graphql
 mutation Checkout {
