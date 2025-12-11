@@ -116,7 +116,12 @@ To have a working checkout, you need:
 
 ## Next Steps
 
-Your Unchained project is now initialized and running locally, and you should see your first confirmed order in the Admin UI. You can now turn to our next section, "Platform Configuration," to find out how to configure and/or extend your project to your needs.
+Your Unchained project is now initialized and running locally! Continue with the Quick Start guide:
+
+- **[Create Your First Product](./first-product)** - Learn how to create and publish products in the Admin UI
+- **[Create Your First Order](./first-order)** - Complete the checkout flow and see your first order
+
+Once you've completed the Quick Start, explore [Platform Configuration](../platform-configuration/) to customize your shop.
 
 ## Development Workflow / Troubleshooting
 

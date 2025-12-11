@@ -12,6 +12,7 @@ pipeline {
     stage('Test') {
       steps {
         script {
+          sh 'touch ./env && chmod 666 ./env'
           sh 'cp ${DOTENV_PATH} ./env'
           docker.build("ci:latest")
           sh 'docker run ci:latest npm run lint'
