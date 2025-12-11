@@ -17,7 +17,7 @@ Unchained Engine is a high-performance, code-first e-commerce platform that give
 
 New to Unchained? Start here.
 
-- [Quick Start](/quick-start) - Get running in minutes
+- [Quick Start](/quick-start/) - Get running in minutes
 - [First Product](/quick-start/first-product) - Create your first product
 - [First Order](/quick-start/first-order) - Complete a checkout
 
@@ -53,10 +53,10 @@ Step-by-step tutorials.
 <div className="row margin-top--lg">
 <div className="col col--6">
 
-### [Platform Configuration](/platform-configuration)
+### [Platform Configuration](/platform-configuration/)
 Configure your Unchained instance with environment variables, modules, and messaging.
 
-### [Plugins](/plugins)
+### [Plugins](/plugins/)
 Pre-built integrations for payment providers (Stripe, PayPal, Saferpay), delivery, warehousing, and more.
 
 ### [Extending](/extend/graphql)
@@ -68,10 +68,10 @@ Build custom functionality with GraphQL extensions, custom modules, pricing adap
 ### [Admin UI](/admin-ui/overview)
 Manage products, orders, and users through the built-in administration interface.
 
-### [Guides](/guides)
+### [Guides](/guides/)
 Practical tutorials covering storefronts, multi-language, multi-currency, bulk imports, and more.
 
-### [Troubleshooting](/troubleshooting)
+### [Troubleshooting](/troubleshooting/)
 Common issues, debugging tips, and FAQ.
 
 </div>
