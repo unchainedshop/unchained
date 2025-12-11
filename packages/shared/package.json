@@ -1,14 +1,14 @@
 {
   "name": "@unchainedshop/shared",
   "private": true,
-  "version": "4.3.4",
+  "version": "4.4.0",
   "scripts": {
     "clean": "",
     "build": "",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
-    "@types/node": "^24.0.13",
+    "@types/node": "^25.0.0",
     "typescript": "^5.8.3"
   }
 }

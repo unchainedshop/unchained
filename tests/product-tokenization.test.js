@@ -40,7 +40,7 @@ test.describe('Product Tokenization', () => {
         `,
         variables: {
           product: {
-            type: 'TokenizedProduct',
+            type: 'TOKENIZED_PRODUCT',
           },
           texts: [
             {
@@ -132,7 +132,7 @@ test.describe('Product Tokenization', () => {
         `,
         variables: {
           product: {
-            type: 'SimpleProduct',
+            type: 'SIMPLE_PRODUCT',
           },
           texts: [
             {

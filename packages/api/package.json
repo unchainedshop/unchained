@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "4.3.6",
+  "version": "4.4.0",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
@@ -58,7 +58,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@ai-sdk/mcp": "^0.0.11",
+    "@ai-sdk/mcp": "^0.0.*",
     "@fastify/cookie": ">= 11 < 12",
     "@fastify/multipart": ">= 9 < 10",
     "@fastify/session": ">= 11 < 12",
@@ -122,11 +122,11 @@
     }
   },
   "dependencies": {
-    "@unchainedshop/core": "^4.3.0",
-    "@unchainedshop/events": "^4.3.0",
-    "@unchainedshop/logger": "^4.3.0",
-    "@unchainedshop/roles": "^4.3.0",
-    "@unchainedshop/utils": "^4.3.0",
+    "@unchainedshop/core": "^4.4.0",
+    "@unchainedshop/events": "^4.4.0",
+    "@unchainedshop/logger": "^4.4.0",
+    "@unchainedshop/roles": "^4.4.0",
+    "@unchainedshop/utils": "^4.4.0",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
     "graphql-scalars": "^1.24.2",
@@ -136,7 +136,7 @@
     "zod": "^3.25.76 || ^4"
   },
   "devDependencies": {
-    "@ai-sdk/mcp": "^0.0.11",
+    "@ai-sdk/mcp": "^0.0.*",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
     "@fastify/session": "^11.1.0",
@@ -146,7 +146,7 @@
     "@noble/hashes": "^2.0.0",
     "@types/express": "^5.0.3",
     "@types/express-session": "^1.18.2",
-    "@types/node": "^24.0.13",
+    "@types/node": "^25.0.0",
     "ai": "^5.0.80",
     "express": "^5.1.0",
     "express-session": "^1.18.1",

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-users",
-  "version": "4.3.5",
+  "version": "4.4.0",
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
@@ -34,12 +34,12 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
-    "@unchainedshop/events": "^4.3.0",
-    "@unchainedshop/file-upload": "^4.3.0",
-    "@unchainedshop/logger": "^4.3.0",
-    "@unchainedshop/mongodb": "^4.3.0",
-    "@unchainedshop/roles": "^4.3.0",
-    "@unchainedshop/utils": "^4.3.0"
+    "@unchainedshop/events": "^4.4.0",
+    "@unchainedshop/file-upload": "^4.4.0",
+    "@unchainedshop/logger": "^4.4.0",
+    "@unchainedshop/mongodb": "^4.4.0",
+    "@unchainedshop/roles": "^4.4.0",
+    "@unchainedshop/utils": "^4.4.0"
   },
   "peerDependencies": {
     "fido2-lib": ">= 3.5 < 4"
@@ -50,7 +50,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^24.0.13",
+    "@types/node": "^25.0.0",
     "fido2-lib": "^3.5.3",
     "typescript": "^5.8.3"
   }

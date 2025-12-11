@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-products",
-  "version": "4.3.5",
+  "version": "4.4.0",
   "main": "lib/products-index.js",
   "types": "lib/products-index.d.ts",
   "type": "module",
@@ -33,12 +33,12 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.3.0",
-    "@unchainedshop/file-upload": "^4.3.0",
-    "@unchainedshop/utils": "^4.3.0"
+    "@unchainedshop/events": "^4.4.0",
+    "@unchainedshop/file-upload": "^4.4.0",
+    "@unchainedshop/utils": "^4.4.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.13",
+    "@types/node": "^25.0.0",
     "typescript": "^5.8.3"
   }
 }

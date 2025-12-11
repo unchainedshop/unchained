@@ -34,7 +34,7 @@ function extractGraphQLBlocks(content, filePath) {
       code: match[1].trim(),
       lineNumber,
       filePath,
-      type: 'graphql'
+      type: 'graphql',
     });
   }
 
@@ -46,7 +46,7 @@ function extractGraphQLBlocks(content, filePath) {
       code: match[1].trim(),
       lineNumber,
       filePath,
-      type: 'gql'
+      type: 'gql',
     });
   }
 
@@ -74,7 +74,7 @@ const allBlocks = [];
 const results = {
   valid: [],
   invalid: [],
-  parseErrors: []
+  parseErrors: [],
 };
 
 for (const file of mdFiles) {
@@ -95,7 +95,7 @@ for (const block of allBlocks) {
   if (!result.parsed) {
     results.parseErrors.push({
       ...block,
-      error: result.parseError
+      error: result.parseError,
     });
     console.log(`\n❌ PARSE ERROR in ${relPath}:${block.lineNumber}`);
     console.log(`   Error: ${result.parseError}`);
@@ -103,7 +103,7 @@ for (const block of allBlocks) {
   } else if (result.errors.length > 0) {
     results.invalid.push({
       ...block,
-      errors: result.errors
+      errors: result.errors,
     });
     console.log(`\n❌ VALIDATION ERROR in ${relPath}:${block.lineNumber}`);
     for (const err of result.errors) {
@@ -141,31 +141,40 @@ if (results.invalid.length > 0 || results.parseErrors.length > 0) {
   for (const [file, blocks] of errorFiles) {
     console.log(`\n📄 ${file}`);
     for (const block of blocks) {
-      console.log(`   Line ${block.lineNumber}: ${block.error || block.errors.map(e => e.message).join('; ')}`);
+      console.log(
+        `   Line ${block.lineNumber}: ${block.error || block.errors.map((e) => e.message).join('; ')}`,
+      );
     }
   }
 }
 
 // Write detailed JSON report
-fs.writeFileSync('/tmp/graphql-validation-report.json', JSON.stringify({
-  summary: {
-    total: allBlocks.length,
-    valid: results.valid.length,
-    invalid: results.invalid.length,
-    parseErrors: results.parseErrors.length
-  },
-  invalid: results.invalid.map(b => ({
-    file: b.filePath.replace('/Users/pozylon/Repositories/unchained/docs/docs/', ''),
-    line: b.lineNumber,
-    errors: b.errors.map(e => e.message),
-    code: b.code
-  })),
-  parseErrors: results.parseErrors.map(b => ({
-    file: b.filePath.replace('/Users/pozylon/Repositories/unchained/docs/docs/', ''),
-    line: b.lineNumber,
-    error: b.error,
-    code: b.code
-  }))
-}, null, 2));
+fs.writeFileSync(
+  '/tmp/graphql-validation-report.json',
+  JSON.stringify(
+    {
+      summary: {
+        total: allBlocks.length,
+        valid: results.valid.length,
+        invalid: results.invalid.length,
+        parseErrors: results.parseErrors.length,
+      },
+      invalid: results.invalid.map((b) => ({
+        file: b.filePath.replace('/Users/pozylon/Repositories/unchained/docs/docs/', ''),
+        line: b.lineNumber,
+        errors: b.errors.map((e) => e.message),
+        code: b.code,
+      })),
+      parseErrors: results.parseErrors.map((b) => ({
+        file: b.filePath.replace('/Users/pozylon/Repositories/unchained/docs/docs/', ''),
+        line: b.lineNumber,
+        error: b.error,
+        code: b.code,
+      })),
+    },
+    null,
+    2,
+  ),
+);
 
 console.log('\n\nDetailed report written to /tmp/graphql-validation-report.json');

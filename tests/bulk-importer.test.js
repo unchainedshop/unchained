@@ -38,7 +38,7 @@ test.describe('Bulk Importer', () => {
                   specification: {
                     sequence: 1,
                     tags: ['nice'],
-                    type: 'SimpleProduct',
+                    type: 'SIMPLE_PRODUCT',
                     published: '2020-01-01T00:00Z',
                     commerce: {
                       salesUnit: 'ST',
@@ -207,7 +207,7 @@ test.describe('Bulk Importer', () => {
                   specification: {
                     sequence: 2,
                     tags: ['awesome2'],
-                    type: 'SimpleProduct',
+                    type: 'SIMPLE_PRODUCT',
                     published: '2020-01-01T00:00Z',
                     commerce: {
                       salesUnit: 'ST',

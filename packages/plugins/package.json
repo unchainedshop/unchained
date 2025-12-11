@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/plugins",
-  "version": "4.3.5",
+  "version": "4.4.0",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
@@ -36,18 +36,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^4.3.0",
-    "@unchainedshop/core-delivery": "^4.3.0",
-    "@unchainedshop/core-enrollments": "^4.3.0",
-    "@unchainedshop/core-orders": "^4.3.0",
-    "@unchainedshop/core-payment": "^4.3.0",
-    "@unchainedshop/core-products": "^4.3.0",
-    "@unchainedshop/core-warehousing": "^4.3.0",
-    "@unchainedshop/core-worker": "^4.3.0",
-    "@unchainedshop/events": "^4.3.0",
-    "@unchainedshop/file-upload": "^4.3.0",
-    "@unchainedshop/logger": "^4.3.0",
-    "@unchainedshop/utils": "^4.3.0"
+    "@unchainedshop/api": "^4.4.0",
+    "@unchainedshop/core-delivery": "^4.4.0",
+    "@unchainedshop/core-enrollments": "^4.4.0",
+    "@unchainedshop/core-orders": "^4.4.0",
+    "@unchainedshop/core-payment": "^4.4.0",
+    "@unchainedshop/core-products": "^4.4.0",
+    "@unchainedshop/core-warehousing": "^4.4.0",
+    "@unchainedshop/core-worker": "^4.4.0",
+    "@unchainedshop/events": "^4.4.0",
+    "@unchainedshop/file-upload": "^4.4.0",
+    "@unchainedshop/logger": "^4.4.0",
+    "@unchainedshop/utils": "^4.4.0"
   },
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": ">= 3.714 < 4",
@@ -122,7 +122,7 @@
     "@scure/btc-signer": "^2.0.0",
     "@types/breejs__later": "^4.1.5",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.13",
+    "@types/node": "^25.0.0",
     "expiry-map": "^2.0.0",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
