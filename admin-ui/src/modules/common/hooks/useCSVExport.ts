@@ -20,12 +20,13 @@ export function useCSVExport<T>(
   const [isExporting, setIsExporting] = useState(false);
 
   const exportCSV = useCallback(
-    (filenamePrefix = 'export') => {
-      if (!data?.length) return;
+    (filenamePrefix = 'export', overrideData) => {
+      const normalizedData = overrideData || data || [];
+      if (!normalizedData?.length) return;
       setIsExporting(true);
 
       try {
-        const rows: CSVRow[] = data.map(extractRow);
+        const rows: CSVRow[] = overrideData.map(extractRow);
         const headers: string[] =
           explicitHeaders ??
           (() => {

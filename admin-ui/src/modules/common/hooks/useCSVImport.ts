@@ -1,57 +1,58 @@
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
-interface ImportResult {
-  success: number;
-  failed: number;
-  created: number;
-  updated: number;
-  errors: string[];
-}
+import useAddWork from '../../work/hooks/useAddWork';
+import { IWorkType } from '../../../gql/types';
 
 interface UseImportOptions<T> {
   validate: (item: T, intl: any) => string[];
-  process: (item: T) => Promise<'created' | 'updated'>;
+  process: (item: T[]) => Promise<
+    {
+      entity: string;
+      operation: string;
+      payload: any;
+    }[]
+  >;
 }
 
 export const useCSVImport = <T>({ validate, process }: UseImportOptions<T>) => {
+  const { addWork } = useAddWork();
   const [isImporting, setIsImporting] = useState(false);
   const intl = useIntl();
 
-  const importItems = async (items: T[]): Promise<ImportResult> => {
-    const result: ImportResult = {
+  const importItems = async (items: T[]) => {
+    const result = {
       success: 0,
       failed: 0,
       created: 0,
       updated: 0,
-      errors: [],
+      errors: [] as string[],
     };
+    try {
+      setIsImporting(true);
+      for (const [index, item] of items.entries()) {
+        const errors = validate(item, intl);
 
-    setIsImporting(true);
-
-    for (const [index, item] of items.entries()) {
-      const errors = validate(item, intl);
-
-      if (errors.length > 0) {
-        result.failed++;
-        result.errors.push(`Row ${index + 2}: ${errors.join(', ')}`);
-        continue;
+        if (errors.length > 0) {
+          result.failed++;
+          result.errors.push(`Row ${index + 2}: ${errors.join(', ')}`);
+          continue;
+        }
       }
-
-      try {
-        const action = await process(item);
-        result.success++;
-        if (action === 'created') result.created++;
-        else if (action === 'updated') result.updated++;
-      } catch (err) {
-        result.failed++;
-        result.errors.push(
-          `Row ${index + 2}: ${err.message || 'Unknown error'}`,
-        );
-      }
+      const events = await process(items);
+      await addWork({
+        type: IWorkType.BulkImport,
+        input: {
+          createShouldUpsertIfIDExists: true,
+          events,
+        },
+      });
+      result.success = events?.length - result?.failed;
+      setIsImporting(false);
+      return result;
+    } catch (err) {
+      console.error('Import failed:', err);
+      setIsImporting(false);
     }
-
-    setIsImporting(false);
-    return result;
   };
 
   return { isImporting, importItems };

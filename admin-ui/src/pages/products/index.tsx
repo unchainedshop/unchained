@@ -94,7 +94,12 @@ const Products = () => {
             defaultMessage: 'Add Product',
           })}
         >
-          <ProductExport />
+          <ProductExport
+            includeDrafts={includeDrafts}
+            queryString={queryString}
+            sort={sortKeys}
+            tags={tags}
+          />
           <ProductImport />
         </PageHeader>
       </div>

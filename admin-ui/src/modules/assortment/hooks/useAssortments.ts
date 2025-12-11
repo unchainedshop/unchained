@@ -57,26 +57,26 @@ const useAssortments = ({
   sort: sortOptions = [],
   forceLocale = '',
 }: IAssortmentsQueryVariables & { forceLocale?: string } = {}) => {
-  const { data, loading, error, fetchMore } = useQuery<IAssortmentsQuery>(
-    AssortmentsQuery,
-    {
-      variables: {
-        queryString,
-        tags,
-        slugs: slugs || null,
-        limit,
-        offset,
-        includeInactive,
-        includeLeaves,
-        sort: (sortOptions as ISortOptionInput[]).length
-          ? sortOptions
-          : [{ key: 'sequence', value: 'ASC' }],
-      },
-      context: {
-        headers: { forceLocale },
-      },
+  const { data, loading, error, fetchMore, client } = useQuery<
+    IAssortmentsQuery,
+    IAssortmentsQueryVariables
+  >(AssortmentsQuery, {
+    variables: {
+      queryString,
+      tags,
+      slugs: slugs || null,
+      limit,
+      offset,
+      includeInactive,
+      includeLeaves,
+      sort: (sortOptions as ISortOptionInput[]).length
+        ? sortOptions
+        : ([{ key: 'sequence', value: 'ASC' }] as ISortOptionInput[]),
     },
-  );
+    context: {
+      headers: { forceLocale },
+    },
+  });
   const assortments = data?.assortments || [];
   const assortmentsCount = data?.assortmentsCount;
   const hasMore = assortments?.length < assortmentsCount;
@@ -94,6 +94,7 @@ const useAssortments = ({
     hasMore,
     assortments: data?.assortments || [],
     loadMore,
+    client,
   };
 };
 
