@@ -2,7 +2,7 @@
 sidebar_position: 3
 title: Start your first Unchained Project
 sidebar_label: Initialize and Run (Local)
-pagination_next: platform-configuration/index
+pagination_next: quick-start/first-product
 ---
 
 # Start your first Unchained Project
@@ -39,17 +39,24 @@ mkdir my-shop && cd my-shop
 npm init @unchainedshop
 ```
 
-When prompted for the template, select:
-- **Full Stack E-Commerce**
+When running the init command, you'll be prompted with several questions:
 
 ```bash
+# 1. Select template type
 ? What type of template do you want ›
-Full Stack E-Commerce <--
+Full Stack E-Commerce <-- Select this
 Storefront
 Unchained Engine
-```
 
-When prompted for the directory name, just press Enter.
+# 2. Enter project name (or press Enter for default)
+? Name of project › my-shop
+
+# 3. Enter directory name (press Enter to use current directory)
+? Directory name relative to current directory › .
+
+# 4. Initialize git repository (choose based on your preference)
+? Do you want Initialize git? › no / yes
+```
 
 ### Start the Engine
 
@@ -67,13 +74,22 @@ npm run dev
 
 Both services will be started in parallel, the backend and the storefront.
 
-You should see:
+You should see output similar to:
 ```
-🚀 Unchained Engine started
-🍎 Storefront: http://localhost:3000
-🔑 Admin UI: http://localhost:4010
-📍 GraphQL Playground: http://localhost:4010/graphql
+[dev:engine] Server listening at http://[::]:4010
+[dev:storefront] - Local: http://localhost:3000
 ```
+
+:::note
+- The exact output format may vary depending on your terminal
+- If port 3000 is already in use, the storefront will automatically use the next available port
+- You may see `.env not found` warnings - this is normal, as defaults are loaded from `.env.defaults`
+:::
+
+**Access Points:**
+- **Admin UI**: http://localhost:4010
+- **Storefront**: http://localhost:3000
+- **GraphQL Playground**: http://localhost:4010/graphql
 
 ### Verify Engine Installation
 
