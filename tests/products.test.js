@@ -161,7 +161,7 @@ test.describe('Products', () => {
         `,
         variables: {
           product: {
-            type: 'SimpleProduct',
+            type: 'SIMPLE_PRODUCT',
             tags: ['simple'],
           },
           texts: [{ title: 'Simple Product', locale: 'de' }],
