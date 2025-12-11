@@ -18,6 +18,8 @@ This Quick Start guide is organized into the following sections:
 
 1. **[Development Environment Setup](./setup-environment)** - Install required tools and prepare your system
 2. **[Initialize Your Project](./run-local)** - Create and configure your full-stack project based on Unchained Engine and Unchained Storefront
+3. **[Your First Product](./first-product)** - Create and publish your first product in the Admin UI
+4. **[Your First Order](./first-order)** - Complete the checkout flow and create your first order
 
 ## Architecture Overview
 
