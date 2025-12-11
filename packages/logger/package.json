@@ -23,8 +23,10 @@
     "core"
   ],
   "authors": [
-    "Joël Meiller",
-    "Pascal Kaufmann"
+    "Pascal Kaufmann",
+    "Mikael Araya",
+    "Vedran Rudelj",
+    "Joël Meiller"
   ],
   "license": "EUPL-1.2",
   "bugs": {
