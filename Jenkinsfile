@@ -4,7 +4,6 @@ pipeline {
     REGISTRY_AUTH = credentials('ucc-registry-unchained')
     DOCKER_BUILDKIT = 0
     DOTENV_PATH = credentials('unchained-dotenv')
-    kitchensink = ''
     docs = ''
   }
   tools { dockerTool "docker" }
@@ -27,43 +26,17 @@ pipeline {
         }
       }
     }
-    stage('Build') {
-      parallel {
-        stage('Example: Kitchensink') {
-          stages {
-            stage('Building') {
-              steps{
-                script {
-                  kitchensink = docker.build("registry.ucc.dev/unchained/kitchensink","-f ./examples/kitchensink/Dockerfile ./examples/kitchensink")
-                }
-              }
-            }
-            stage('Pushing to Registry') {
-              steps {
-                script {
-                  kitchensink.push("${GIT_BRANCH}-latest")
-                }
-              }
-            }
-          }
+    stage('Building') {
+      steps{
+        script {
+          docs = docker.build("registry.ucc.dev/unchained/docs",'-f ./docs/Dockerfile ./docs')
         }
-        stage('Documentation') {
-          stages {
-            stage('Building') {
-              steps{
-                script {
-                  docs = docker.build("registry.ucc.dev/unchained/docs",'-f ./docs/Dockerfile ./docs')
-                }
-              }
-            }
-            stage('Pushing to Registry') {
-              steps {
-                script {
-                  docs.push("${GIT_BRANCH}-latest")
-                }
-              }
-            }
-          }
+      }
+    }
+    stage('Pushing to Registry') {
+      steps {
+        script {
+          docs.push("${GIT_BRANCH}-latest")
         }
       }
     }
@@ -71,7 +44,6 @@ pipeline {
       when { branch 'develop' }
       steps {
         script {
-          kitchensink.push("next")
           docs.push("next")
         }
       }
@@ -80,7 +52,6 @@ pipeline {
       when { branch 'master' }
       steps {
         script {
-          kitchensink.push("latest")
           docs.push("latest")
         }
       }
@@ -89,7 +60,6 @@ pipeline {
       when { buildingTag() }
       steps {
         script {
-          kitchensink.push("stable")
           docs.push("stable")
         }
       }
