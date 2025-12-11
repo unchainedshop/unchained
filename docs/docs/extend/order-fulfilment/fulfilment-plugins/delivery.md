@@ -2,16 +2,12 @@
 sidebar_position: 2
 sidebar_label: Delivery
 title: Write a Delivery Provider Plugin
----
-:::info
-Customize delivery
-:::
----
-title: "Delivery Providers"
-description: Customize delivery 
+description: Customize delivery
 ---
 
-In order to register available delivery options, you either have to use the builtin ones or have to add a plugin to the supported delivery provider by implementing the [IDeliveryAdapter](https://docs.unchained.shop/types/types/delivery.IDeliveryAdapter.html) interface and registering the adapter on the global [DeliveryDirector](https://docs.unchained.shop/types/types/delivery.IDeliveryDirector.html)
+# Delivery Provider Plugins
+
+In order to register available delivery options, you either have to use the builtin ones or have to add a plugin to the supported delivery provider by implementing the `IDeliveryAdapter` interface and registering the adapter on the global `DeliveryDirector`
 
 There can be multiple delivery adapter implementation for a shop and all of them will be executed based on their `orderIndex` value. Delivery adapters with lowe `orderIndex` are executed first.
 
@@ -95,11 +91,11 @@ const ShopPickUp: IDeliveryAdapter = {
 };
 ```
 
-- **typeSupported(type: [DeliveryProviderType](https://docs.unchained.shop/types/enums/delivery.DeliveryProviderType.html))**: Defines which type of delivery providers this adapter support.
-- **configurationError(transactionContext: any): [DeliveryError](https://docs.unchained.shop/types/enums/delivery.DeliveryError.html)**: returns any issue found with the delivery adapter configuration.  its passed current transaction object that lets you check if everything is working for proper functioning of the adapter.
+- **typeSupported(type: DeliveryProviderType)**: Defines which type of delivery providers this adapter support.
+- **configurationError(transactionContext: any): DeliveryError**: returns any issue found with the delivery adapter configuration.  its passed current transaction object that lets you check if everything is working for proper functioning of the adapter.
 - **estimatedDeliveryThroughput(warehousingThroughputTime: number)**: Used to send an estimation delivery time of the adapter.
 - **isActive**: Used to enable or disable the adapter.
 - **isAutoReleaseAllowed**: Determined if the delivery provider should change status automatically or if manual confirmation of delivery is required.
-- **pickUpLocationById(locationId: string): [DeliveryLocation](https://docs.unchained.shop/types/interfaces/delivery.DeliveryLocation.html)**: returns a delivery location with the specified ID from the list of locations returned from `pickUpLocations`.
-- **pickUpLocations: [DeliveryLocation](https://docs.unchained.shop/types/interfaces/delivery.DeliveryLocation.html)[]** returns list of delivery locations available with a particular delivery adapter
+- **pickUpLocationById(locationId: string): DeliveryLocation**: returns a delivery location with the specified ID from the list of locations returned from `pickUpLocations`.
+- **pickUpLocations: DeliveryLocation[]** returns list of delivery locations available with a particular delivery adapter
 - **send: any**: Determines the if an order is delivered or not. if this function returns a trueish value the order delivery status will be changed to **DELIVERED**, if it returns false order delivery status stays the same (PENDING) but the order status can be changed but if it throws an error the order will be canceled.

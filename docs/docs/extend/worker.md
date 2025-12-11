@@ -2,16 +2,16 @@
 sidebar_position: 11
 sidebar_label: Work Queue
 title: Work Queue
+description: Add custom background workers
 ---
-:::info
- Add custom background workers
-:::
+
+# Work Queue
 
 ## WorkAdapter
 
 You can add different types of works to perform various task based on different input and triggers. Work can be a cron operation that run on a given interval to do a system backup or send an email to a user after a certain operation.
 
-In order to make use of work to perform any task you need to implement the [IWorkAdapter](https://docs.unchained.shop/types/types/worker.IWorkerAdapter.html) interface and register it to the global WorkDirector which implements the [IWorkDirector](https://docs.unchained.shop/types/types/worker.IWorkerDirector.html).
+In order to make use of work to perform any task you need to implement the `IWorkerAdapter` interface and register it to the global WorkDirector which implements the `IWorkerDirector`.
 
 Below is an example of work adapter that checks if all works are healthy and working correctly, runs on the  `wait` interval value passed as input
 
@@ -60,7 +60,7 @@ const Heartbeat: IWorkerAdapter<Arg, Result> = {
 };
 
 ```
-- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using the [WorkerModule](https://docs.unchained.shop/types/types/worker.WorkerModule.html).[addWork](https://docs.unchained.shop/types/types/worker.WorkerModule.html#__type.addWork):(data: [WorkData](https://docs.unchained.shop/types/interfaces/worker.WorkData.html), userId: string) function
+- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using `WorkerModule.addWork(data: WorkData, userId: string)` function
 - **doWork**: function that defines the actual work that is going to be performed by the work adapter
 
 ## Registering Work Adapter

@@ -1,79 +1,198 @@
 ---
-sidebar_position: 9
-sidebar_label: Product pricing
+sidebar_position: 1
+sidebar_label: Product Pricing
 title: Product Pricing
+description: Custom product pricing adapters
 ---
-:::info
-Add a product pricing plugins
-:::
 
+# Product Pricing
 
+Product pricing adapters calculate prices when products are queried or added to cart. Use them to implement taxes, discounts, rounding, and currency conversion.
 
-To manipulate a specific product price or the entire product price in your system you can create a custom plugin by extending
-the `ProductPricingAdapter` and registering it on to the `ProductPricingDirector`.
+For conceptual overview, see [Pricing System](../../concepts/pricing-system.md).
 
-The sample code below will create a custom product price plugin that will round each product price to the next 50th.
+## Creating an Adapter
+
+Extend `ProductPricingAdapter` and register it with `ProductPricingDirector`:
 
 ```typescript
-
 import {
   ProductPricingAdapter,
   ProductPricingDirector,
 } from '@unchainedshop/core-pricing';
 
-const roundToNext = (value) =>
-  value % 50 === 50 / 2 ? value + 50 / 2 : value + (50 - (value % 50));
-
-class ProductPriceRound extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.price-round';
-
-  static version = '1.0';
-
-  static label = 'Round product price to the next precision number';
-
-  static orderIndex = 2;
+class MyProductPricing extends ProductPricingAdapter {
+  static key = 'my-shop.pricing.custom';
+  static version = '1.0.0';
+  static label = 'Custom Product Pricing';
+  static orderIndex = 0;
 
   static isActivatedFor({ product, currencyCode }) {
-    return true;
+    return true; // Activate for all products
   }
 
   async calculate() {
-    const { currencyCode, quantity } = this.context;
-    const { calculation = [] } = this.calculation;
+    const { product, quantity, currencyCode } = this.context;
 
-    if (calculation?.length) {
-      const [productPrice] = calculation;
-      pricingAdapter.resetCalculation();
-      pricingAdapter.resultSheet().addItem({
-        amount: roundToNext(productPrice.amount) * quantity,
-        isTaxable: productPrice.isTaxable,
-        isNetPrice: productPrice.isNetPrice,
+    this.result.addItem({
+      amount: 1000, // 10.00 in cents
+      isTaxable: true,
+      isNetPrice: true,
+      category: 'BASE',
+      meta: { adapter: this.constructor.key },
+    });
+
+    return super.calculate();
+  }
+}
+
+ProductPricingDirector.registerAdapter(MyProductPricing);
+```
+
+## Examples
+
+### Tax Calculation
+
+```typescript
+class SwissTaxAdapter extends ProductPricingAdapter {
+  static key = 'my-shop.pricing.swiss-tax';
+  static orderIndex = 20; // After base price and discounts
+
+  static isActivatedFor({ country }) {
+    return country === 'CH';
+  }
+
+  async calculate() {
+    const taxRate = 0.081; // 8.1% Swiss VAT
+    const taxableAmount = this.calculation.sum({ isTaxable: true });
+
+    if (taxableAmount > 0) {
+      this.result.addItem({
+        amount: Math.round(taxableAmount * taxRate),
+        isTaxable: false,
+        isNetPrice: false,
+        category: 'TAX',
+        meta: { rate: taxRate, adapter: this.constructor.key },
+      });
+    }
+
+    return super.calculate();
+  }
+}
+```
+
+### Bulk Discount
+
+```typescript
+class BulkDiscountAdapter extends ProductPricingAdapter {
+  static key = 'my-shop.pricing.bulk-discount';
+  static orderIndex = 10; // After base price, before tax
+
+  async calculate() {
+    const { quantity } = this.context;
+
+    if (quantity >= 10) {
+      const baseTotal = this.calculation.sum({ category: 'BASE' });
+      const discountRate = 0.1; // 10% off
+
+      this.result.addItem({
+        amount: -Math.round(baseTotal * discountRate),
+        isTaxable: true,
+        isNetPrice: true,
+        category: 'DISCOUNT',
+        meta: { type: 'bulk', rate: discountRate },
+      });
+    }
+
+    return super.calculate();
+  }
+}
+```
+
+### Price Rounding
+
+```typescript
+class PriceRoundingAdapter extends ProductPricingAdapter {
+  static key = 'my-shop.pricing.rounding';
+  static orderIndex = 30; // Run last
+
+  async calculate() {
+    const { calculation = [] } = this;
+
+    if (calculation.length) {
+      const [basePrice] = calculation;
+      const rounded = this.roundToNext(basePrice.amount, 50);
+
+      this.resetCalculation();
+      this.result.addItem({
+        amount: rounded,
+        isTaxable: basePrice.isTaxable,
+        isNetPrice: basePrice.isNetPrice,
         meta: { adapter: this.constructor.key },
       });
     }
 
-    return pricingAdapter.calculate();;
+    return super.calculate();
+  }
+
+  roundToNext(value: number, precision: number) {
+    const remainder = value % precision;
+    return remainder === 0 ? value : value + (precision - remainder);
   }
 }
-
-ProductPricingDirector.registerAdapter(ProductPriceRound);
 ```
 
-Explanation:
-
-`ProductPricingAdapter` is responsible for calculating the price of a product whenever it is queried. This is useful in cases where you may have some bushiness logic to be applied to the price of a product such as rounding, currency conversion, discount, tax etc... before any further calculation is made to it or simply presented to the user.
-In the above code sample we created a product price plugin that will round every product price to the next 50th digit.
-few things to note about extending the `ProductPricingAdapter` :
-
-- `key :` is a unique identifier associated with the specific plugin and two product price adapter can not have an identical value for key
-- `orderIndex :` determines the order in which a particular product price adapter should be executed. `ProductPricingAdapter`'s are executed in ascending order of there `orderIndex` value so adapters with the smallest value will be executed first. this is very useful when you have pricing business logics that need to be applied in a certain order. eg. discount should be applied to a product before tax is calculated.
-- `isActivatedFor :` returns boolean value that determine if the plugin is active or not. it is passed an object containing `product` & `currency` of the current execution context. This allows you to activate or deactivate by returning `true` or `false` respectively based on your business rule.
-- `calculate :` this is the actual function where the manipulation happens. You need to make sure if a `calculation` object exists for this particular product price context before you make any adjustment. Finally call `pricingAdapter.calculate();` after applying your changes so that they can take effect.
-
-Returning `null` from here will stop the execution of any other `ProductPriceAdapter` that may exist in the system so you should always return result of `pricingAdapter.calculate();` call unless you want this behavior.
-
-Last step is registering your `ProductPricingAdapter` on the `ProductPricingDirector` like so:
+### Currency Conversion
 
 ```typescript
-ProductPricingDirector.registerAdapter(ProductPriceRound);
+class CurrencyConversionAdapter extends ProductPricingAdapter {
+  static key = 'my-shop.pricing.currency';
+  static orderIndex = 1;
+
+  async calculate() {
+    const { currencyCode, baseCurrencyCode } = this.context;
+
+    if (currencyCode !== baseCurrencyCode) {
+      const rate = await this.getExchangeRate(baseCurrencyCode, currencyCode);
+
+      for (const item of this.calculation) {
+        item.amount = Math.round(item.amount * rate);
+      }
+    }
+
+    return super.calculate();
+  }
+
+  async getExchangeRate(from: string, to: string) {
+    // Fetch from your exchange rate service
+    return 1.1;
+  }
+}
 ```
+
+## Adapter Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | string | Unique identifier |
+| `version` | string | Version for tracking |
+| `label` | string | Human-readable name |
+| `orderIndex` | number | Execution order (lower = earlier) |
+
+## Context Properties
+
+Available in `this.context`:
+
+| Property | Description |
+|----------|-------------|
+| `product` | The product being priced |
+| `quantity` | Quantity requested |
+| `currencyCode` | Target currency |
+| `country` | Country code |
+
+## Related
+
+- [Pricing System](../../concepts/pricing-system.md) - Conceptual overview
+- [Delivery Pricing](./delivery-pricing.md) - Shipping fees
+- [Payment Pricing](./payment-pricing.md) - Payment fees
+- [Order Discounts](./order-discounts.md) - Order-level discounts

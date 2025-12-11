@@ -23,16 +23,11 @@ This Quick Start guide is organized into the following sections:
 
 Unchained Engine follows a headless architecture with three main components:
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Storefront    │────▶│ Unchained Engine│◀────│    Admin UI     │
-│   (Next.js)     │     │   (GraphQL API) │     │      (SPA)      │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                │
-                                ▼
-                        ┌─────────────────┐
-                        │     MongoDB     │
-                        └─────────────────┘
+```mermaid
+flowchart TD
+    S[Storefront<br/>Next.js] --> E[Unchained Engine<br/>GraphQL API]
+    A[Admin UI<br/>SPA] --> E
+    E --> M[(MongoDB)]
 ```
 
 - **Unchained Engine**: The core API server providing GraphQL endpoints

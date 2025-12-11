@@ -21,9 +21,7 @@ the following operations.
 
 You can override the default template and/or add your own email/SMS notification. In order to add a
 custom `EMAIL` or `SMS` notification you must create a function that implement the
-[TemplateResolver](https://docs.unchained.shop/types/types/messaging.TemplateResolver.html) and register
-the template the
-[IMessagingDirector](https://docs.unchained.shop/types/types/messaging.IMessagingDirector.html). After
+`TemplateResolver` and register the template with the `IMessagingDirector`. After
 that you only need to add work in the queue with the corresponding type(EMAIL/SMS) with template name you
 want to use and any required dynamic data required in the template.
 
@@ -95,5 +93,4 @@ const someResolver =  async (root, params, context: AppContext) => {
 
 If you want to override the existing template with your own custom template, follow the steps above and
 register the template using the same name as the message type you want to override. Look into
-[MessageTypes](https://docs.unchained.shop/types/enums/platform.MessageTypes.html) definition to see all
-the built in message template name used in the engine.
+the `MessageTypes` enum definition to see all the built in message template name used in the engine.

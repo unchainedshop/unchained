@@ -1,18 +1,25 @@
 ---
 sidebar_position: 1
-title: Assortments Options
+title: Assortments Module
 sidebar_label: Assortments
+description: Product categorization and hierarchical organization
 ---
+
+# Assortments Module
+
+The assortments module manages product categorization, hierarchical structures, and product caching.
+
+## Configuration Options
 
 ```typescript
 export interface AssortmentsSettingsOptions {
   getCachedProductIds: (
-      assortmentId: string,
+    assortmentId: string,
   ) => Promise<undefined | string[]>;
 
   setCachedProductIds: (
-      assortmentId: string,
-      productIds: string[],
+    assortmentId: string,
+    productIds: string[],
   ) => Promise<number>;
 
   slugify: (title: string) => string;
@@ -80,9 +87,9 @@ import zipTreeBySimplyFlattening from "@unchainedshop/core-assortments/tree-zipp
 const options = {
   modules: {
     assortments: {
-      zipTree: zipTreeBySimplyFlattening
+      zipTree: zipTreeBySimplyFlattening,
     },
-  }
+  },
 };
 ```
 
@@ -101,3 +108,29 @@ After calculating the product order, the system calls `setCachedProductIds` to s
 :::warning
 If you customize `setCachedProductIds`, ensure you also customize `getCachedProductIds`.
 :::
+
+## Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `ASSORTMENT_CREATE` | `{ assortment }` | Emitted when an assortment is created |
+| `ASSORTMENT_UPDATE` | `{ assortmentId }` | Emitted when an assortment is updated |
+| `ASSORTMENT_REMOVE` | `{ assortmentId }` | Emitted when an assortment is removed |
+| `ASSORTMENT_SET_BASE` | `{ assortmentId }` | Emitted when base assortment is set |
+| `ASSORTMENT_ADD_PRODUCT` | `{ assortmentProduct }` | Emitted when a product is added |
+| `ASSORTMENT_REMOVE_PRODUCT` | `{ assortmentProductId }` | Emitted when a product is removed |
+| `ASSORTMENT_REORDER_PRODUCTS` | `{ assortmentProducts }` | Emitted when products are reordered |
+| `ASSORTMENT_ADD_LINK` | `{ assortmentLink }` | Emitted when a link is added |
+| `ASSORTMENT_REMOVE_LINK` | `{ assortmentLinkId }` | Emitted when a link is removed |
+| `ASSORTMENT_ADD_FILTER` | `{ assortmentFilter }` | Emitted when a filter is added |
+| `ASSORTMENT_REMOVE_FILTER` | `{ assortmentFilterId }` | Emitted when a filter is removed |
+| `ASSORTMENT_REORDER_FILTERS` | `{ assortmentFilters }` | Emitted when filters are reordered |
+| `ASSORTMENT_ADD_MEDIA` | `{ assortmentMedia }` | Emitted when media is added |
+| `ASSORTMENT_REMOVE_MEDIA` | `{ assortmentMediaId }` | Emitted when media is removed |
+| `ASSORTMENT_REORDER_MEDIA` | `{ assortmentMedias }` | Emitted when media is reordered |
+| `ASSORTMENT_UPDATE_TEXT` | `{ assortmentId, locale }` | Emitted when text is updated |
+| `ASSORTMENT_UPDATE_MEDIA_TEXT` | `{ assortmentMediaId }` | Emitted when media text is updated |
+
+## More Information
+
+For API usage and detailed documentation, see the [core-assortments package on GitHub](https://github.com/unchainedshop/unchained/tree/master/packages/core-assortments).

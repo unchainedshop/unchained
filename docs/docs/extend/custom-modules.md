@@ -2,11 +2,10 @@
 sidebar_position: 3
 sidebar_label: Custom Modules
 title: Write Custom Modules
+description: Configure custom modules and services
 ---
-:::info
-Configure custom modules and services
-:::
 
+# Custom Modules
 
 There might be cases where the out of the box functionalities are not enough to solve a particular problem.
 

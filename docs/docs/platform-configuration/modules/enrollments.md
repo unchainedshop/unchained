@@ -1,8 +1,15 @@
 ---
 sidebar_position: 6
-title: Enrollments Options
+title: Enrollments Module
 sidebar_label: Enrollments
+description: Subscription and recurring order management
 ---
+
+# Enrollments Module
+
+The enrollments module manages subscriptions and recurring orders.
+
+## Configuration Options
 
 ```typescript
 export interface EnrollmentsSettingsOptions {
@@ -22,22 +29,34 @@ const defaultSchedule = later.parse.text('every 59 minutes');
 
 This does not control if a new invoice actually is created, that is based on the enrollment plugin implementation and state of the user's enrollment.
 
-### Order Number Creation
+### Enrollment Number Creation
 
-The `enrollmentNumberHashFn` is used to generate human-readble codes that can be easily spelled out to support staff. The default is a hashids based function that generates an alphanumeric uppercase string with length 6 without the hard to distinguish 0IOl etc. If the number has already been taken, the function gets iteratively called with an increasing `index`.
+The `enrollmentNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default is a hashids based function that generates an alphanumeric uppercase string with length 6 without the hard to distinguish 0IOl etc. If the number has already been taken, the function gets iteratively called with an increasing `index`.
 
 [Default Random Hash Generator](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/generate-random-hash.ts)
 
-
-### Example custom configuration:
+### Example Custom Configuration
 
 ```typescript
 const options = {
   modules: {
     enrollments: {
       autoSchedulingSchedule: later.parse.text('every 7 days'),
-      enrollmentNumberHashFn: (enrollment, try) => (enrollment.sequence + 300000 + try)
+      enrollmentNumberHashFn: (enrollment, index) => enrollment.sequence + 300000 + index,
     },
-  }
+  },
 };
 ```
+
+## Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `ENROLLMENT_CREATE` | `{ enrollment }` | Emitted when an enrollment is created |
+| `ENROLLMENT_UPDATE` | `{ enrollment, field }` | Emitted when an enrollment is updated |
+| `ENROLLMENT_REMOVE` | `{ enrollmentId }` | Emitted when an enrollment is removed |
+| `ENROLLMENT_ADD_PERIOD` | `{ enrollment }` | Emitted when a period is added to an enrollment |
+
+## More Information
+
+For API usage and detailed documentation, see the [core-enrollments package on GitHub](https://github.com/unchainedshop/unchained/tree/master/packages/core-enrollments).

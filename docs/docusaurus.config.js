@@ -11,6 +11,10 @@ const config = {
   title: ' Unchained Engine',
   tagline: 'Headless Code-First E-Commerce SDK for Node.js',
   favicon: 'img/favicon-32x32.png',
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
 
   // Set the production url of your site here
   url: 'https://docs.unchained.shop',
@@ -24,7 +28,7 @@ const config = {
   projectName: 'unchained', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -41,10 +45,8 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          routeBasePath: '/src/docs', // Serve the docs at the site's root
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/unchainedshop/unchained/tree/main/docs',
+          routeBasePath: '/',
+          editUrl: 'https://github.com/unchainedshop/unchained/tree/master/docs/',
         },
         blog: false,
         theme: {
@@ -66,24 +68,46 @@ const config = {
       navbar: {
         title: 'Unchained Engine',
         logo: {
-          alt: 'my site Logo',
+          alt: 'Unchained Engine Logo',
           src: 'img/unchained-logomark.svg',
         },
         items: [
           {
             type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            sidebarId: 'docsSidebar',
             position: 'left',
             label: 'Docs',
           },
           {
+            type: 'docSidebar',
+            sidebarId: 'guidesSidebar',
             position: 'left',
-            label: 'Types',
-            href: 'https://docs.unchained.shop/types/index.html',
+            label: 'Guides',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'adminUiSidebar',
+            position: 'left',
+            label: 'Admin UI',
+          },
+          {
+            position: 'left',
+            label: 'GraphQL Playground',
+            href: 'https://engine.unchained.shop/graphql',
+          },
+          {
+            href: 'https://github.com/unchainedshop/unchained/blob/master/CHANGELOG.md',
+            label: 'Changelog',
+            position: 'right',
           },
           {
             href: 'https://github.com/unchainedshop/unchained',
             label: 'GitHub',
+            position: 'right',
+          },
+          {
+            href: 'https://unchained.shop',
+            label: 'Website',
             position: 'right',
           },
         ],

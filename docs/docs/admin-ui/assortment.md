@@ -91,5 +91,5 @@ To add products to an assortment, navigate to the "Products" tab on the assortme
 It's important to note that a product can belong to multiple categories, so there is no restriction on assigning a product to multiple assortments. This can help you create a more flexible and intuitive product catalog, where customers can find products based on their needs and interests, rather than being limited by a strict category structure.
 
 By assigning products to assortments, you can also help customers discover related or complementary products, which can increase sales and customer satisfaction. Keep in mind that products need to be created before they can be assigned to an assortment. If you haven't created any products yet, you can do so by following the instructions provided in the [Products](./products) documentation.
-Cc©
+
 ![diagram](../assets/assortment-product-setting.png)

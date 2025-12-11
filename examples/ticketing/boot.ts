@@ -29,9 +29,11 @@ try {
 
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+    initPluginMiddlewares: (app) => {
+      connectBasePluginsToFastify(app);
+      connectTicketingToFastify(app);
+    }
   });
-  connectBasePluginsToFastify(fastify);
-  connectTicketingToFastify(fastify);
 
   await seed(platform.unchainedAPI);
   await setAccessToken(platform.unchainedAPI, 'admin', 'secret');

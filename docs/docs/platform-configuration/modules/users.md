@@ -1,8 +1,15 @@
 ---
 sidebar_position: 11
 sidebar_label: Users
-title: Users Options
+title: Users Module
+description: User management, authentication, and profile configuration
 ---
+
+# Users Module
+
+The users module handles user authentication, registration, profiles, and account management.
+
+## Configuration Options
 
 ```typescript
 export interface UserSettingsOptions {
@@ -41,9 +48,9 @@ const options = {
     users: {
       earliestValidTokenDate: () => {
         return new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 30);
-      };
+      },
     },
-  }
+  },
 };
 ```
 
@@ -58,10 +65,10 @@ const options = {
   modules: {
     users: {
       validateEmail: (emailAddress) => {
-        return emailAddress.endsWith("@unchained.shop")
-      };
+        return emailAddress.endsWith("@unchained.shop");
+      },
     },
-  }
+  },
 };
 ```
 
@@ -73,4 +80,29 @@ By default, Unchained does the following:
 4. Sanitize the user data in `validateNewUser` to: lowercase e-mail, lowercase username.
 
 :::warning
-Security Advice: If you use a 3rd party identity provider for example Zitadel, Microsoft Entra or Keycloak, you should propably disable registration by throwing an error in `validateNewUser` and disable changing username/e-mail on unchained users by returning false in the validate* functions.
+Security Advice: If you use a 3rd party identity provider for example Zitadel, Microsoft Entra or Keycloak, you should probably disable registration by throwing an error in `validateNewUser` and disable changing username/e-mail on unchained users by returning false in the validate* functions.
+:::
+
+## Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `USER_CREATE` | `{ user }` | Emitted when a user is created |
+| `USER_UPDATE` | `{ userId }` | Emitted when a user is updated |
+| `USER_REMOVE` | `{ userId }` | Emitted when a user is removed |
+| `USER_ACCOUNT_ACTION` | `{ action, userId }` | Emitted for account actions (verify email, reset password) |
+| `USER_ADD_ROLES` | `{ userId, roles }` | Emitted when roles are added to a user |
+| `USER_UPDATE_USERNAME` | `{ userId }` | Emitted when username is updated |
+| `USER_UPDATE_PASSWORD` | `{ userId }` | Emitted when password is updated |
+| `USER_UPDATE_AVATAR` | `{ userId }` | Emitted when avatar is updated |
+| `USER_UPDATE_GUEST` | `{ userId }` | Emitted when guest status changes |
+| `USER_UPDATE_HEARTBEAT` | `{ userId }` | Emitted on user heartbeat |
+| `USER_UPDATE_PROFILE` | `{ userId }` | Emitted when profile is updated |
+| `USER_UPDATE_BILLING_ADDRESS` | `{ userId }` | Emitted when billing address is updated |
+| `USER_UPDATE_LAST_CONTACT` | `{ userId }` | Emitted when last contact is updated |
+| `USER_UPDATE_ROLE` | `{ userId }` | Emitted when role is updated |
+| `USER_UPDATE_TAGS` | `{ userId }` | Emitted when tags are updated |
+
+## More Information
+
+For API usage and detailed documentation, see the [core-users package on GitHub](https://github.com/unchainedshop/unchained/tree/master/packages/core-users).

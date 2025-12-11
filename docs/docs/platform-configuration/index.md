@@ -17,7 +17,7 @@ To customize an Unchained Engine project, follow these topics:
 
 The main entry point for an Unchained Engine project is `startPlatform` imported from `@unchainedshop/platform`. Calling it will initialize the Unchained Core, add default messaging templates, and set up the background worker.
 
-To make things a bit more simple, Unchained offers different [presets](./plugins/presets.md) for loading functionalities out-of-the box:
+To make things a bit more simple, Unchained offers different [presets](./plugin-presets.md) for loading functionalities out-of-the box:
 - `base` (Simple Catalog Price based Pricing strategies, Manual Delivery & Invoice Payment, GridFS Asset Storage)
 - `crypto` (Currency-Rate Updating Workers for ECB & Coinbase, Currency-Converting Pricing Plugin, Event ERC721 Token Lazy-Minting on Ethereum, Payment through Unchained Cryptopay)
 - `countries/ch` (Switzerland Tax Calculation and Migros PickMup Integration)
@@ -30,13 +30,9 @@ To see it in context, it's best to see an example using Unchained with Fastify, 
 ```ts
 import Fastify from "fastify";
 import { startPlatform } from "@unchainedshop/platform";
-import {
-  connect,
-  unchainedLogger,
-} from "@unchainedshop/api/lib/fastify/index.js";
+import { connect, unchainedLogger } from "@unchainedshop/api/fastify";
 import defaultModules from "@unchainedshop/plugins/presets/all.js";
 import connectDefaultPluginsToFastify from "@unchainedshop/plugins/presets/all-fastify.js";
-import { fastifyRouter } from "@unchainedshop/api/lib/fastify/index.js";
 
 // Set up the Fastify web server in insecure mode and set the unchained default logger as request logger
 const fastify = Fastify({
@@ -54,17 +50,9 @@ try {
   // Use the connect from @unchainedshop/api to connect Unchained to Fastify, setting up the basic endpoints like /graphql
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== "production",
+    initPluginMiddlewares: connectDefaultPluginsToFastify
   });
-
-  // Connect custom rest endpoints of all the plugins with Fastify, for example
-  // /rest/payment/datatrans, a webhook endpoint for the Datatrans Payment Provider
-  connectDefaultPluginsToFastify(fastify, platform);
-
-  // Bind the official @unchainedshop/adminui to /, a simple statically built SPA that uses the GraphQL endpoint of Unchained Engine
-  fastify.register(fastifyRouter, {
-    prefix: "/",
-  });
-
+  
   // Tell Fastify to start listening on a port, thus accepting connections
   await fastify.listen({
     host: "::",
@@ -83,11 +71,72 @@ To configure various aspects of the platform, `startPlatform` accepts a configur
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
   - `schema`:  Object (GraphQL Executable Schema that gets merged with the default schema, do not use it together with typeDefs & resolvers specified!)
   - `context`: Special function to extend the underlying [GraphQL context](https://the-guild.dev/graphql/yoga-server/docs/features/context). Check the [OIDC Example](https://github.com/unchainedshop/unchained/blob/master/examples/oidc/boot.ts) for how you could use it to add custom Auth functionality.
-  - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details.
-  - `rolesOptions`: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html): Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
-  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of data import and e-commerce engine. For more information about the bulk import API, refer [here](../tutorials/bulk-import).
-  - `workQueueOptions`: [SetupWorkqueueOptions](https://docs.unchained.shop/types/interfaces/platform.SetupWorkqueueOptions.html) Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
+  - `options`: Module-specific configuration options (see [Module Options](#module-options) below)
+  - `rolesOptions`: `IRoleOptionConfig`: Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
+  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of data import and e-commerce engine. For more information about the bulk import API, refer to the [Bulk Import Guide](../guides/bulk-import).
+  - `workQueueOptions`: `SetupWorkqueueOptions` Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
   - `adminUiConfig`: Customize the Unchained Admin UI, for example configuring a Single-Sign-On Link for external Auth support via oAuth.
+
+## Module Options
+
+The `options` parameter accepts module-specific configuration:
+
+```typescript
+await startPlatform({
+  options: {
+    // Assortments module
+    assortments: {
+      slugify: (title) => customSlugify(title),
+    },
+    // Products module
+    products: {
+      slugify: (title) => customSlugify(title),
+    },
+    // Delivery module
+    delivery: {
+      filterSupportedProviders: async ({ providers, order }, unchainedAPI) => providers,
+      determineDefaultProvider: async ({ providers, order }, unchainedAPI) => providers[0],
+    },
+    // Payment module
+    payment: {
+      filterSupportedProviders: async ({ providers, order }, unchainedAPI) => providers,
+      determineDefaultProvider: async ({ providers, order }, unchainedAPI) => providers[0],
+    },
+    // Orders module
+    orders: {
+      ensureUserHasCart: true,
+      orderNumberHashFn: (order, index) => `ORD-${index}`,
+      lockOrderDuringCheckout: true,
+    },
+    // Users module
+    users: {
+      mergeUserCartsOnLogin: true,
+      autoMessagingAfterUserCreation: true,
+      validatePassword: async (password) => password.length >= 8,
+      validateEmail: async (email) => email.includes('@'),
+    },
+    // Enrollments module
+    enrollments: {
+      enrollmentNumberHashFn: (enrollment, index) => `ENR-${index}`,
+    },
+    // Quotations module
+    quotations: {
+      quotationNumberHashFn: (quotation, index) => `QUO-${index}`,
+    },
+    // Files module
+    files: {
+      transformUrl: (url, params) => url,
+      privateFileSharingMaxAge: 3600,
+    },
+    // Worker module
+    worker: {
+      blacklistedVariables: ['SECRET_KEY'],
+    },
+  },
+});
+```
+
+For detailed documentation of each module's options, see the respective module documentation under [Modules](./modules/).
 
 
 These options are extended by `YogaServerOptions` so you can pass all options you can normally pass to `createYoga`, add plugins [Yoga GraphQL Plugins](https://the-guild.dev/graphql/yoga-server/docs/features/envelop-plugins) or configure [batching](https://the-guild.dev/graphql/yoga-server/docs/features/request-batching) and other more advanced GraphQL features. Check the [Yoga documentation](https://the-guild.dev/graphql/yoga-server/docs) for more information.

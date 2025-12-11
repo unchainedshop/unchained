@@ -7,7 +7,7 @@ sidebar_title: Manage currencies
 
 The e-commerce platform and Admin UI provide a user-friendly interface to enable multiple currency support, including blockchain tokens. Once you add a currency and activate it, it can be used throughout the entire system, from product pricing to order processing.
 
-If you add a cryptocurrency, you have the option to configure a contract address, which can be used to distinguish tokens on a blockchain. This information can be read by a cryptocurrency payment plugin, such as [Cryptopay](../platform-configuration/plugins/cryptopay), to determine which currency is being used for a particular transaction.
+If you add a cryptocurrency, you have the option to configure a contract address, which can be used to distinguish tokens on a blockchain. This information can be read by a cryptocurrency payment plugin, such as [Cryptopay](../plugins/payment/cryptopay), to determine which currency is being used for a particular transaction.
 
 In the Admin UI, you can perform the following currency-related actions:
 - View all the currencies and search/filter them by their name or status.

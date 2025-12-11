@@ -3,105 +3,366 @@ sidebar_position: 8
 sidebar_label: Payment
 title: Write a Payment Provider Plugin
 ---
-:::info
-Customize Payment
-:::
 
+# Payment Provider Plugins
 
- You can add multiple payment method types to a shop such as `CARD` & `INVOICE` but before you can start accepting payment you need to add a payment adapter by implementing the [IPaymentAdapter](https://docs.unchained.shop/types/types/payments.IPaymentAdapter.html) and registering it to the global Payment director that implements the [IPaymentDirector](https://docs.unchained.shop/types/types/payments.IPaymentDirector.html).
+Payment adapters handle payment processing for orders. Unchained supports multiple payment types (`CARD`, `INVOICE`, `GENERIC`) and you can implement custom adapters for any payment gateway.
 
-Below is an example implementation of `Pre-Paid INVOICE` payment provider type that will require a manual confirmation of order payment 
+For an overview of how payment fits into the order lifecycle, see [Order Lifecycle](../../../concepts/order-lifecycle).
+
+## Payment Types
+
+| Type | Description | Use Cases |
+|------|-------------|-----------|
+| `CARD` | Credit/debit card payments | Stripe, PayPal, Braintree |
+| `INVOICE` | Invoice-based payments | Pre-paid or post-paid invoices |
+| `GENERIC` | Other payment methods | Crypto, bank transfer, cash |
+
+## Creating a Payment Adapter
+
+Implement the `IPaymentAdapter` interface and register it with the `PaymentDirector`.
+
+### Example: Pre-Paid Invoice
+
+This example shows a pre-paid invoice provider that blocks order confirmation until payment is received:
 
 ```typescript
-
-import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import {
   PaymentDirector,
-  PaymentAdapter,
-  PaymentProviderType,
-  PaymentError,
-} from '@unchainedshop/core-payment';
+  type IPaymentAdapter,
+  type PaymentChargeActionResult,
+} from '@unchainedshop/core';
 
-const ShopPayment: IPaymentAdapter = {
-  key: 'ch.Shop.payment',
-  label: 'Shop Payment',
+const PrePaidInvoice: IPaymentAdapter = {
+  key: 'shop.example.payment.prepaid-invoice',
+  label: 'Pre-Paid Invoice',
   version: '1.0.0',
 
-  initialConfiguration: PaymentConfiguration =  [],
+  // Initial configuration (optional)
+  initialConfiguration: [],
 
-  typeSupported: (type: PaymentProviderType): boolean => {
-    return type === PaymentProviderType.INVOICE;
+  // Which payment types this adapter supports
+  typeSupported(type) {
+    return type === 'INVOICE';
   },
 
-  actions: (params): IPaymentActions => {
+  actions(params) {
     const { context, paymentContext } = params;
     const { order } = paymentContext;
     const { modules } = context;
 
     return {
-
-      configurationError: (transactionContext?: any) => {
+      // Return configuration errors (e.g., missing API keys)
+      configurationError() {
         return null;
       },
-      isActive: (transactionContext?: any): boolean => {
+
+      // Is this adapter active for the current context?
+      isActive() {
         return true;
       },
 
-      isPayLaterAllowed: (transactionContext?: any): boolean => {
-        return false;
-      },
-      charge: async (transactionContext?: any):Promise<PaymentChargeActionResult | false> => {
-        return false;
-      },
-      register: async (transactionContext?: any): boolean => {
-        return {
-          token: '',
-        };
-      },
-
-      sign: async (transactionContext?: any): Promise<string> => {
-        return null;
-      },
-
-      validate: async (token?: any): Promise<boolean> => {
+      // Can the order be confirmed before payment?
+      // false = payment must complete first (pre-paid)
+      // true = order can proceed without payment (post-paid)
+      isPayLaterAllowed() {
         return false;
       },
 
-      cancel: async (transactionContext?: any): Promise<boolean> => {
+      // Process payment charge
+      async charge(): Promise<PaymentChargeActionResult | false> {
+        // For pre-paid invoice:
+        // - Return false: payment not yet received, stay in PENDING
+        // - Return { transactionId }: payment received, proceed
+        // - Throw error: abort checkout entirely
         return false;
       },
 
-      confirm: async (transactionContext?: any) => {
-        return false;
+      // Register a payment method (e.g., save card for future use)
+      async register() {
+        return { token: '' };
       },
 
+      // Sign a payment request (e.g., for client-side SDK initialization)
+      async sign() {
+        return '';
+      },
+
+      // Validate a payment token
+      async validate(token) {
+        return true;
+      },
+
+      // Cancel/refund payment
+      async cancel() {
+        return true;
+      },
+
+      // Confirm a previously authorized payment
+      async confirm() {
+        return { transactionId: '' };
+      },
     };
   },
 };
 
-
+// Register the adapter
+PaymentDirector.registerAdapter(PrePaidInvoice);
 ```
-<!-- - **typeSupported: (type: [PaymentProviderType](https://docs.unchained.shop/types/enums/payments.PaymentProviderType.html))**: Defines what the payment adapter represents.
- - **configurationError**: returns any error that occurred for a payment adapter, could be missing required environment  variable for example
- - **isActive**: Used to disable payment adapter for a given context
- - **isPayLaterAllowed**: if you return true an order can be complete without depending on a payment status if returned false payment needs to be completed for a successful completion of an order
- - **register**: Registers a payment provider
- - **sign**: Used to authenticate user information using there submitted payment provider credential
- - **validate**
- - **cancel**: cancels payment 
-  **charge: async (transactionContext?: any):Promise<[PaymentChargeActionResult](https://docs.unchained.shop/types/types/payments.PaymentChargeActionResult.html) | false>**: used for adding charge to the payment provider selected, for example it might be calling the charge API endpoint of a specific card payment provider.
- - **charge**: If you return true, the status will be changed to PAID, if you return false, the order payment status stays the same but the order status might change if you throw an error, you cancel the checkout process 
 
+## Adapter Methods Reference
 
+### `typeSupported(type)`
 
-
-## Registering payment adapter
-
-
-In order to register your custom payment adapter for use, you need to register it to the global payment director
+Determines which payment types this adapter handles.
 
 ```typescript
-import { PaymentDirector } from '@unchainedshop/core-payment'
-
-PaymentDirector.registerAdapter(ShopPayment); -->
+typeSupported(type) {
+  return type === 'CARD';
+}
 ```
+
+### `configurationError()`
+
+Return any configuration errors. Called when validating the provider setup.
+
+```typescript
+configurationError() {
+  if (!process.env.PAYMENT_API_KEY) {
+    return { code: 'MISSING_API_KEY', message: 'Payment API key is required' };
+  }
+  return null;
+}
+```
+
+### `isActive()`
+
+Determines if the adapter is active for the current transaction context.
+
+```typescript
+isActive() {
+  // Disable for specific countries
+  const { order } = this.paymentContext;
+  return order.countryCode !== 'BLOCKED_COUNTRY';
+}
+```
+
+### `isPayLaterAllowed()`
+
+Controls whether order confirmation can proceed before payment completes.
+
+| Return Value | Behavior |
+|--------------|----------|
+| `true` | Order can be confirmed without payment (post-paid) |
+| `false` | Payment must complete before order confirmation (pre-paid) |
+
+```typescript
+isPayLaterAllowed() {
+  // Post-paid invoice: allow order to proceed
+  return true;
+}
+```
+
+### `charge()`
+
+Process the payment charge. This is called during checkout.
+
+| Return Value | Behavior |
+|--------------|----------|
+| `{ transactionId }` | Payment successful, proceed with checkout |
+| `false` | Payment not complete yet, order stays in PENDING |
+| Throws error | Abort checkout, order stays in OPEN (cart) |
+
+```typescript
+async charge() {
+  try {
+    const result = await paymentGateway.charge({
+      amount: order.pricing().total().amount,
+      currency: order.currency,
+    });
+    return { transactionId: result.id };
+  } catch (error) {
+    // Throw to abort checkout
+    throw new Error('Payment failed: ' + error.message);
+  }
+}
+```
+
+### `register()`
+
+Register a payment method for future use (e.g., save a credit card).
+
+```typescript
+async register() {
+  const token = await paymentGateway.createCustomer(user);
+  return { token };
+}
+```
+
+### `sign()`
+
+Sign a payment request for client-side SDK initialization.
+
+```typescript
+async sign() {
+  // Create a client token for Stripe Elements, PayPal buttons, etc.
+  const clientSecret = await paymentGateway.createPaymentIntent({
+    amount: order.pricing().total().amount,
+  });
+  return clientSecret;
+}
+```
+
+### `validate(token)`
+
+Validate a payment token.
+
+```typescript
+async validate(token) {
+  const isValid = await paymentGateway.validateToken(token);
+  return isValid;
+}
+```
+
+### `cancel()`
+
+Cancel or refund a payment. Called when an order is rejected.
+
+```typescript
+async cancel() {
+  const { orderPayment } = this.paymentContext;
+  if (orderPayment.transactionId) {
+    await paymentGateway.refund(orderPayment.transactionId);
+  }
+  return true;
+}
+```
+
+### `confirm()`
+
+Confirm a previously authorized payment. Called when order transitions to CONFIRMED.
+
+```typescript
+async confirm() {
+  const { orderPayment } = this.paymentContext;
+  const result = await paymentGateway.capturePayment(orderPayment.transactionId);
+  return { transactionId: result.id };
+}
+```
+
+## Webhook Integration
+
+Most payment gateways require webhooks for async payment confirmations. Create an endpoint to handle these:
+
+```typescript
+import express from 'express';
+
+const app = express();
+
+app.post('/webhooks/payment', async (req, res) => {
+  const event = req.body;
+
+  if (event.type === 'payment_intent.succeeded') {
+    const { orderId } = event.data.metadata;
+
+    // Confirm the order
+    await modules.orders.checkout(orderId, {
+      transactionId: event.data.id,
+    });
+  }
+
+  res.json({ received: true });
+});
+```
+
+## Example: Card Payment with Stripe
+
+```typescript
+import Stripe from 'stripe';
+import { PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const StripePayment: IPaymentAdapter = {
+  key: 'shop.example.payment.stripe',
+  label: 'Stripe Card Payment',
+  version: '1.0.0',
+
+  typeSupported(type) {
+    return type === 'CARD';
+  },
+
+  actions(params) {
+    const { paymentContext } = params;
+    const { order, orderPayment } = paymentContext;
+
+    return {
+      configurationError() {
+        if (!process.env.STRIPE_SECRET_KEY) {
+          return { code: 'STRIPE_KEY_MISSING' };
+        }
+        return null;
+      },
+
+      isActive() {
+        return true;
+      },
+
+      isPayLaterAllowed() {
+        return false;
+      },
+
+      async sign() {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: order.pricing().total().amount,
+          currency: order.currency.toLowerCase(),
+          metadata: { orderId: order._id },
+        });
+        return paymentIntent.client_secret;
+      },
+
+      async charge() {
+        // Payment is confirmed via webhook
+        if (orderPayment.context?.paymentIntentId) {
+          const intent = await stripe.paymentIntents.retrieve(
+            orderPayment.context.paymentIntentId
+          );
+          if (intent.status === 'succeeded') {
+            return { transactionId: intent.id };
+          }
+        }
+        return false;
+      },
+
+      async cancel() {
+        if (orderPayment.transactionId) {
+          await stripe.refunds.create({
+            payment_intent: orderPayment.transactionId,
+          });
+        }
+        return true;
+      },
+
+      async confirm() {
+        return { transactionId: orderPayment.transactionId };
+      },
+
+      async register() {
+        return { token: '' };
+      },
+
+      async validate() {
+        return true;
+      },
+    };
+  },
+};
+
+PaymentDirector.registerAdapter(StripePayment);
+```
+
+## Related
+
+- [Director/Adapter Pattern](../../../concepts/director-adapter-pattern) - Understanding the plugin architecture
+- [Order Lifecycle](../../../concepts/order-lifecycle) - How payment fits into checkout
+- [Stripe Plugin](../../../plugins/payment/stripe) - Stripe payment adapter

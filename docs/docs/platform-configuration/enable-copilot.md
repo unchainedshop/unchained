@@ -18,7 +18,7 @@ export OPENAI_COMPAT_MODEL=gpt-oss
 Alternatively, you can choose any of the services or deploy your own LLM. It just needs to expose an OpenAI compatible API endpoint, and then you can connect the Admin UI with a pre-configured provider:
 
 ```ts
-import { connectChat, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect } from '@unchainedshop/api/fastify';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 ...
 connect(fastify...
@@ -28,14 +28,12 @@ if (process.env.OPENAI_COMPAT_API_URL && process.env.OPENAI_COMPAT_MODEL) {
     name: 'local',
     baseURL: process.env.OPENAI_COMPAT_API_URL,
   });
-  connectChat(fastify, {
-    model: provider.chatModel(process.env.OPENAI_COMPAT_MODEL)
+  connect(fastify, {
+    chat: {
+      model: provider.chatModel(process.env.OPENAI_COMPAT_MODEL)
+    }
   });
 }
-...
-fastify.register(fastifyRouter, {
-  prefix: '/',
-});
 ...
 ```
 
@@ -45,7 +43,7 @@ fastify.register(fastifyRouter, {
 If you have an OpenAI API Key at hand, go this way:
 
 ```ts
-import { connectChat, fastifyRouter } from '@unchainedshop/api/lib/fastify/index.js';
+import { connectChat } from '@unchainedshop/api/fastify';
 import { openai } from '@ai-sdk/openai';
 ...
 connect(fastify...
@@ -56,10 +54,6 @@ if (process.env.OPENAI_API_KEY) {
         imageGenerationTool: { model: openai.image('gpt-image-1') },
     });
 }
-...
-fastify.register(fastifyRouter, {
-  prefix: '/',
-});
 ...
 ```
 

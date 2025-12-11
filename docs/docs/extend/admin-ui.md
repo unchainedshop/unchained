@@ -2,10 +2,10 @@
 sidebar_position: 10
 title: Admin UI Extension
 sidebar_label: Admin UI Extension
+description: Extending Admin UI
 ---
-:::info
- Extending Admin UI 
-:::
+
+# Admin UI Extension
 
 Admin UI out of the box supports most of the administration tasks a user wants to perform. 
 However, unchained is flexible and can be extended to support any data or data structure by [Extending the schema](./graphql). While this is great, but it means the data will not be accessible through admin UI.
@@ -16,8 +16,7 @@ that contains fragments of the additional types and inject to the unchained plat
 the configuration object `AdminUiConfig` has a field called `customProperties` that is an array of `AdminUiConfigCustomEntityInterface` objects where `AdminUiConfigCustomEntityInterface` type has two fields: `entityName`, which is a non-nullable string, and `inlineFragment`, which is also a non-nullable string that holds the fragment definition.
 
 
-```graphql
-
+```js
 const config = {
   customProperties: [
     {

@@ -2,15 +2,14 @@
 sidebar_position: 9
 sidebar_label: Quotations
 title: Quotations
+description: Customizing quotation
 ---
-:::info
-Customizing quotation
-:::
 
+# Quotation Adapters
 
 ## QuotationAdapter
 
-You can accept quotation requests for a shop items. For every quotation received you can setup a quotation adapter to process this request manually or automatically. In order to process quotation request you need to create a quotation adapter that implements the [IQuotationAdapter](https://docs.unchained.shop/types/types/quotations.IQuotationAdapter.html) and register the adapter on the global quotation director that implements the [IQuotationDirector](https://docs.unchained.shop/types/types/quotations.IQuotationDirector.html).
+You can accept quotation requests for a shop items. For every quotation received you can setup a quotation adapter to process this request manually or automatically. In order to process quotation request you need to create a quotation adapter that implements the `IQuotationAdapter` and register the adapter on the global quotation director that implements the `IQuotationDirector`.
 
 There can be multiple quotation adapters configured and active for a store and all of them will be executed for every quotation requests based on there `orderIndex` value. Quotation adapters that have smaller `orderIndex` value will be executed first.
 
@@ -74,15 +73,15 @@ export const ManualOffering: IQuotationAdapter = {
 ```
 
 
-- **isActivatedFor: (quotationContext: [QuotationContext](https://docs.unchained.shop/types/types/quotations.QuotationContext.html), unchainedAPI: [UnchainedCore](https://docs.unchained.shop/types/interfaces/core.UnchainedCore.html))**: Determines for which type of quotation request an adapter is active for. it can be based on the actual quotation in question or any condition you can think of.
-- **configurationError: [QuotationError](https://docs.unchained.shop/types/enums/quotations.QuotationError.html)**: Returns any error that occurred while initializing the adapter. it can be missing environment variable or and other missing required values.
+- **isActivatedFor: (quotationContext: QuotationContext, unchainedAPI: UnchainedCore)**: Determines for which type of quotation request an adapter is active for. it can be based on the actual quotation in question or any condition you can think of.
+- **configurationError: QuotationError**: Returns any error that occurred while initializing the adapter. it can be missing environment variable or and other missing required values.
 - **isManualRequestVerificationRequired**: defines if a quotation should be considered valid and ready for quote automatically or should be verified by someone manually.
 - **isManualProposalRequired** Define if a user can respond to quotation request manually or not.
 - **quote**: Responds with the actual quotation request.
 - **rejectRequest** Will mark a quotation as rejected if returned to based on any condition check performed.
 - **submitRequest**: Will approve a quotation request for processing if you return true from this function.
 - **verifyRequest** It will mark the quotation as verified for a certain quotation if this function returns true.
-- **transformItemConfiguration(params: [QuotationItemConfiguration](https://docs.unchained.shop//types/interfaces/quotations.QuotationItemConfiguration.html))**: A quotation request is submitted as a `JSON` value and there is no predefined format of quotation request. use this function to transform the submitted `JSON` from the front end into a structure that will be best to work with in an adapter.
+- **transformItemConfiguration(params: QuotationItemConfiguration)**: A quotation request is submitted as a `JSON` value and there is no predefined format of quotation request. use this function to transform the submitted `JSON` from the front end into a structure that will be best to work with in an adapter.
 
 
 

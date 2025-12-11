@@ -2,11 +2,10 @@
 sidebar_position: 6
 title: Extend the GraphQL API
 sidebar_label: GraphQL API
-
+description: Extending the schema to hold custom types
 ---
-:::info
- Extending the schema to hold custom types
-:::
+
+# Extend the GraphQL API
 
 We know that any two projects don't have the same business logic and data model. Projects need different data models to hold data for of there domain so for this reason unchained is build to be easily extended to hold custom data a project might need.
 
@@ -24,7 +23,7 @@ Let's follow the above guide to extend the `Product` entity.
 
 **Extend entity include the custom fields**
 
-```graphql
+```js
 const typeDefs = [
    /* GraphQL */ `
      extend type Product {
@@ -83,21 +82,19 @@ That was all, everything is setup and the schema will be updated to include the 
 Assuming we have a `SimulatedProduct` product type with a `productId` `test-product-id`, we can use the `mutation.updateProduct` to assign values for the new fields.
 
 ```graphql
-mutation {
+mutation UpdateProductMeta {
   updateProduct(
     productId: "test-product-id"
     product: {
-      meta: { "size": "large", "expiryDate": new Date("2023-09-17").getTime() }
+      meta: { size: "large", expiryDate: "1694908800000" }
     }
   ) {
-      _id
-    ... on SimpleProduct {
-      size
-      expiryDate
-    }
+    _id
   }
 }
 ```
+
+Note: The `size` and `expiryDate` fields shown above are custom fields added via resolvers and would need to be queried after the type extensions are registered.
 
 This will return with the updated value:
 
@@ -174,3 +171,116 @@ const resolverDefs = {
 ```
 
 For detail reference about graphql schema and how to extend the refer to the official [graphql documentation](https://graphql.org/learn/schema/)
+
+## Using Pothos GraphQL
+
+If you prefer a code-first approach to GraphQL, you can use [Pothos](https://pothos-graphql.dev/) with Unchained. This allows you to define your schema using TypeScript instead of SDL.
+
+### Setup
+
+```typescript
+import { buildDefaultTypeDefs } from '@unchainedshop/api/lib/schema/index.js';
+import unchainedResolvers from '@unchainedshop/api/lib/resolvers/index.js';
+import { makeExecutableSchema, mergeSchemas } from '@graphql-tools/schema';
+import SchemaBuilder from '@pothos/core';
+import { startPlatform } from '@unchainedshop/platform';
+import { roles } from '@unchainedshop/api';
+
+// Build the Unchained schema
+const unchainedSchema = makeExecutableSchema({
+  typeDefs: buildDefaultTypeDefs({
+    actions: Object.keys(roles.actions),
+  }),
+  resolvers: [unchainedResolvers],
+});
+
+// Create Pothos builder
+const builder = new SchemaBuilder({});
+
+// Define your custom types
+builder.queryType({
+  fields: (t) => ({
+    hello: t.string({
+      args: {
+        name: t.arg.string(),
+      },
+      resolve: (parent, { name }, unchainedContext) => {
+        return `Hello, ${name || 'World'}!`;
+      },
+    }),
+  }),
+});
+
+// Merge schemas
+const schema = mergeSchemas({
+  schemas: [unchainedSchema, builder.toSchema()],
+});
+
+// Start with merged schema
+const engine = await startPlatform({
+  schema,
+});
+```
+
+### Adding Custom Types
+
+```typescript
+const builder = new SchemaBuilder({});
+
+// Define a custom type
+builder.objectType('CustomProduct', {
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    name: t.exposeString('name'),
+    customField: t.string({
+      resolve: (parent) => `Custom: ${parent.name}`,
+    }),
+  }),
+});
+
+// Add query for custom type
+builder.queryType({
+  fields: (t) => ({
+    customProducts: t.field({
+      type: ['CustomProduct'],
+      resolve: async (parent, args, context) => {
+        // Use Unchained context to fetch data
+        const products = await context.modules.products.findProducts({});
+        return products.map(p => ({
+          id: p._id,
+          name: p.texts?.title || 'Untitled',
+        }));
+      },
+    }),
+  }),
+});
+```
+
+### Adding Mutations
+
+```typescript
+builder.mutationType({
+  fields: (t) => ({
+    createCustomEntry: t.field({
+      type: 'String',
+      args: {
+        input: t.arg({
+          type: builder.inputType('CreateCustomEntryInput', {
+            fields: (t) => ({
+              name: t.string({ required: true }),
+              value: t.int({ required: true }),
+            }),
+          }),
+          required: true,
+        }),
+      },
+      resolve: async (parent, { input }, context) => {
+        // Your custom mutation logic
+        return `Created: ${input.name}`;
+      },
+    }),
+  }),
+});
+```
+
+This approach is useful when you want type-safe schema definitions and auto-completion in your IDE.

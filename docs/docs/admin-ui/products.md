@@ -2,7 +2,7 @@
 sidebar_position: 12
 title: Products
 sidebar_title: Manage products
-sidebare_label: Products
+sidebar_label: Products
 ---
 
 

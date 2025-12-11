@@ -2,11 +2,10 @@
 sidebar_position: 3
 title: Search Behavior
 sidebar_label: Search
+description: Learn about the search feature
 ---
 
-:::info
-Learn about the search feature
-:::
+# Search Behavior
 
 Unchained allows you to search and filter products and assortments.
 
@@ -50,18 +49,12 @@ There are two ways to search for products in Unchained:
    query Assortment($assortmentId: ID) {
      assortment(assortmentId: $assortmentId) {
        searchProducts {
-         filteredProducts
+         filteredProductsCount
          filters {
-           filteredProducts
-           definition {
-             _id
-           }
+           filteredProductsCount
            isSelected
            options {
-             filteredProducts
-             definition {
-               _id
-             }
+             filteredProductsCount
              isSelected
            }
          }
