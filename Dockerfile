@@ -7,7 +7,7 @@ WORKDIR /source
 ENV HOME=/root
 ENV NVM_DIR=$HOME/.nvm
 
-RUN apt update -y && apt install -y curl unzip && \
+RUN apt update -y && apt install -y curl unzip libatomic1 && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
     chmod +x $NVM_DIR/nvm.sh && \
     . $NVM_DIR/nvm.sh && \
