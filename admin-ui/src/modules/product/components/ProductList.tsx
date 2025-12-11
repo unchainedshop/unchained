@@ -31,7 +31,6 @@ const ProductList = ({
   if (loading && products?.length === 0) {
     return <Loading />;
   }
-
   return (
     <InfiniteScroll loading={loading} hasMore={hasMore} onLoadMore={loadMore}>
       <Table className="min-w-full ">

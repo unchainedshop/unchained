@@ -7,7 +7,7 @@ import {
 
 import FilterTextsFragment from '../fragments/FilterTextsFragment';
 
-const TranslatedFilterTextsQuery = gql`
+export const TranslatedFilterTextsQuery = gql`
   query TranslatedFilterTexts($filterId: ID!, $filterOptionValue: String) {
     translatedFilterTexts(
       filterId: $filterId
