@@ -23,6 +23,8 @@ import useFiltersCount from '../../modules/filter/hooks/useFiltersCount';
 import FilterDetailPage from './FilterDetailPage';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import FilterExport from '../../modules/filter/components/FilterExport';
+import FilterImport from '../../modules/filter/components/FilterImport';
 
 const FiltersListView = () => {
   const { query, push } = useRouter();
@@ -117,7 +119,14 @@ const FiltersListView = () => {
             id: 'add_filter',
             defaultMessage: 'Add Filter',
           })}
-        />
+        >
+          <FilterExport
+            queryString={queryString}
+            includeInactive={includeInactive}
+            sortKeys={sortKeys}
+          />
+          <FilterImport />
+        </PageHeader>
       </div>
 
       <div className="min-w-full overflow-x-auto px-1">

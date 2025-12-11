@@ -39,7 +39,7 @@ const useFilters = ({
   sort = [],
   forceLocale = '',
 }: IFiltersQueryVariables & { forceLocale?: string } = {}) => {
-  const { data, loading, error, fetchMore } = useQuery<
+  const { data, loading, error, fetchMore, client } = useQuery<
     IFiltersQuery,
     IFiltersQueryVariables & { forceLocale?: string }
   >(FiltersQuery, {
@@ -71,6 +71,7 @@ const useFilters = ({
     loading,
     error,
     loadMore,
+    client,
   };
 };
 
