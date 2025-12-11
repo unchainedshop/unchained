@@ -26,7 +26,8 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "start": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env ./boot.js"
+    "start": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env ./boot.js",
+    "build": ""
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

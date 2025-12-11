@@ -33,6 +33,6 @@ RUN npm ci
 
 ADD . /source/
 
-RUN npm run build -ws
+RUN npm run build
 
 CMD ["npm"]
