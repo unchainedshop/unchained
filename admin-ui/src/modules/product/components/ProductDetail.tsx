@@ -216,7 +216,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
           defaultValue={product?.tags}
           onSubmit={onUpdateTags}
           enableEdit={hasRole(IRoleAction.ManageProducts)}
-          availableTagOptions={shopInfo.adminUiConfig?.productTags
+          availableTagOptions={shopInfo?.adminUiConfig?.productTags
             .filter((t) => !(product?.tags || [])?.includes(t))
             .map((tag) => ({ value: tag, label: tag }))}
         />

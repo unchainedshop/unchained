@@ -239,7 +239,7 @@ const Layout = ({
       name: formatMessage({ id: 'extensions', defaultMessage: 'Extensions' }),
       icon: LinkIcon,
       href: '/',
-      children: shopInfo.adminUiConfig.externalLinks?.map((link) => {
+      children: shopInfo?.adminUiConfig?.externalLinks?.map((link) => {
         let normalizedHref = link.href;
         if (link?.target === 'SELF')
           normalizedHref = `/external?url=${link.href}`;

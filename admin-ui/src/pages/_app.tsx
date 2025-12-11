@@ -31,7 +31,7 @@ const UnchainedAdmin = ({ Component, componentName, pageProps, router }) => {
 
   const getLayout = Component.getLayout
     ? (page) => (
-        <AuthWrapper>
+        <>
           <div className="absolute top-4 left-4">
             <ImageWithFallback
               src={process.env.NEXT_PUBLIC_LOGO}
@@ -45,7 +45,7 @@ const UnchainedAdmin = ({ Component, componentName, pageProps, router }) => {
             <ThemeToggle />
           </div>
           {Component.getLayout(page)}
-        </AuthWrapper>
+        </>
       )
     : (page) => <Layout componentName={componentName}>{page}</Layout>;
 
@@ -97,26 +97,28 @@ const UnchainedAdmin = ({ Component, componentName, pageProps, router }) => {
           ) : null}
         </Head>
         <ApolloProvider client={apollo}>
-          <AppContextWrapper>
-            <UnchainedContextWrapper>
-              <ThemeWrapper>
-                <ChatProvider>
-                  <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    newestOnTop={false}
-                    closeOnClick
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                  />
-                  <ModalWrapper>
-                    {getLayout(<Component {...pageProps} />)}
-                  </ModalWrapper>
-                </ChatProvider>
-              </ThemeWrapper>
-            </UnchainedContextWrapper>
-          </AppContextWrapper>
+          <AuthWrapper>
+            <AppContextWrapper>
+              <UnchainedContextWrapper>
+                <ThemeWrapper>
+                  <ChatProvider>
+                    <ToastContainer
+                      position="top-right"
+                      autoClose={5000}
+                      newestOnTop={false}
+                      closeOnClick
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                    />
+                    <ModalWrapper>
+                      {getLayout(<Component {...pageProps} />)}
+                    </ModalWrapper>
+                  </ChatProvider>
+                </ThemeWrapper>
+              </UnchainedContextWrapper>
+            </AppContextWrapper>
+          </AuthWrapper>
         </ApolloProvider>
       </ErrorBoundary>
     </IntlWrapper>
