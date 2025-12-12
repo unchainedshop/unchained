@@ -10,9 +10,9 @@ export const OrderDelivery = {
 
     switch (provider?.type) {
       case DeliveryProviderType.PICKUP:
-        return 'DeliveryProviderPickUp';
+        return 'OrderDeliveryPickUp';
       default:
-        return 'DeliveryProviderShipping';
+        return 'OrderDeliveryShipping';
     }
   },
 };

@@ -43,7 +43,7 @@ const upsertAsset = async (
       meta,
     });
 
-    if (!assetObject) return null;
+    return assetObject;
   } catch (e) {
     logger.warn(`Unable to upsert asset ${fileId || fileName}: ${e.message}`);
     return null;

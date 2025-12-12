@@ -42,9 +42,9 @@ export const Order = {
   async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery | null> {
     const orderDelivery =
       order.deliveryId &&
-      modules.orders.deliveries.findDelivery({
+      (await modules.orders.deliveries.findDelivery({
         orderDeliveryId: order.deliveryId,
-      });
+      }));
 
     if (!orderDelivery) return null;
     return orderDelivery;
