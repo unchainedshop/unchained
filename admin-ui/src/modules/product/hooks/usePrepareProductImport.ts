@@ -178,11 +178,16 @@ const usePrepareProductImport = () => {
         );
 
       if (bundles.length)
-        bundleItems = bundles.map(({ bundleItemProductId, quantity }) => ({
-          productId: bundleItemProductId,
-          quantity: Number(quantity || 1),
-          configuration: [],
-        }));
+        bundleItems = bundles.map(
+          ({ bundleItemProductId, quantity, configuration }) => ({
+            productId: bundleItemProductId,
+            quantity: Number(quantity || 1),
+            configuration: (configuration || '').split(';').map((v) => {
+              const [key, value] = v.split(':');
+              return { key, value };
+            }),
+          }),
+        );
       return buildProductEvents({
         ...productMapper(product),
         commerce: price,

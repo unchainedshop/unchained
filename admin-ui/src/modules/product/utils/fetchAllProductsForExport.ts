@@ -7,7 +7,6 @@ import {
   IProductBundleItemsQueryVariables,
   IProductCatalogPricesQuery,
   IProductCatalogPricesQueryVariables,
-  IProductType,
   ITranslatedProductTextsQuery,
   ITranslatedProductTextsQueryVariables,
 } from '../../../gql/types';
@@ -15,11 +14,11 @@ import { ProductCatalogPricesQuery } from '../hooks/useProductCatalogPrices';
 import { ProductBundleItemQuery } from '../hooks/useProductBundleItems';
 interface ProductExportMap {
   products: Record<string, Record<string, any>[]>;
-  prices: Record<string, Record<string, any>>;
-  bundles: Record<string, Record<string, any>>;
+  prices: Record<string, any[]>;
+  bundles: Record<string, any[]>;
 }
 
-export async function fetchTranslatedTextsForAllProducts(
+export async function fetchAllProductsForExport(
   products: IProduct[],
   client: ApolloClient,
 ) {
@@ -57,8 +56,15 @@ export async function fetchTranslatedTextsForAllProducts(
             productId: product._id,
           },
         });
-        result.bundles[product._id] =
-          (bundleItems?.product as IBundleProduct)?.bundleItems || [];
+        result.bundles[product._id] = (
+          (bundleItems?.product as IBundleProduct)?.bundleItems || []
+        ).map((item) => ({
+          ...item,
+          configuration: [
+            { key: 'first', value: 'first value' },
+            { key: 'second', value: 'second value' },
+          ],
+        }));
       }
     }),
   );
