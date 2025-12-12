@@ -68,7 +68,7 @@ export interface ProductPrice extends Price {
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode: string;
-  maxQuantity?: number;
+  minQuantity?: number;
 }
 
 export interface ProductPriceRange {
