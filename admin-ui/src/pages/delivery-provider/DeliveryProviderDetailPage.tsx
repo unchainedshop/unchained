@@ -125,14 +125,16 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
                       className="border rounded-md p-3 bg-slate-50 dark:bg-slate-800"
                     >
                       <div className="font-medium">{loc.name}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-300">
-                        {loc.address.addressLine}
-                        {loc.address.addressLine2
-                          ? `, ${loc.address.addressLine2}`
-                          : ''}
-                        , {loc.address.city}, {loc.address.regionCode},{' '}
-                        {loc.address.postalCode}, {loc.address.countryCode}
-                      </div>
+                      {loc.address && (
+                        <div className="text-sm text-slate-600 dark:text-slate-300">
+                          {loc.address.addressLine}
+                          {loc.address.addressLine2
+                            ? `, ${loc.address.addressLine2}`
+                            : ''}
+                          , {loc.address.city}, {loc.address.regionCode},{' '}
+                          {loc.address.postalCode}, {loc.address.countryCode}
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
