@@ -1,6 +1,5 @@
 import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
-
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
 import TextField from '../../forms/components/TextField';
@@ -9,7 +8,7 @@ import useAuth from '../../Auth/useAuth';
 import { useMemo } from 'react';
 import useScaffoldVariationProduct from '../hooks/useScaffoldVariationProduct';
 import SelectField from '../../forms/components/SelectField';
-import { PRODUCT_TYPES } from '../ProductTypes';
+import { IProductType } from '../../../gql/types';
 
 const ProductAssignmentScaffoldForm = ({
   proxyProduct,
@@ -52,7 +51,7 @@ const ProductAssignmentScaffoldForm = ({
     enableReinitialize: true,
     initialValues: {
       title: defaultTitle,
-      type: PRODUCT_TYPES.SimpleProduct,
+      type: IProductType.SimpleProduct,
     },
   });
 
@@ -76,9 +75,8 @@ const ProductAssignmentScaffoldForm = ({
           required
           name="type"
           options={Object.fromEntries(
-            Object.entries(PRODUCT_TYPES).filter(
-              ([, value]) => value !== PRODUCT_TYPES.ConfigurableProduct,
-            ),
+            // TODO: Fix this mapping when ProductTypes is fixed
+            Object.entries(IProductType).map(([key, value]) => [value, key]),
           )}
         />
       </div>

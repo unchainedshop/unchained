@@ -44,7 +44,7 @@ const SelectField = (props: SelectFieldProps) => {
             {field.placeholder || field.label}
           </option>
 
-          {Object.entries(options).map(([display, value]: any) => (
+          {Object.entries(options).map(([value, display]: any) => (
             <option className="dark:text-slate-200" key={value} value={value}>
               {display}
             </option>

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { IRoleAction } from '../../../gql/types';
+import { IProductType, IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
@@ -8,7 +8,6 @@ import TextField from '../../forms/components/TextField';
 import SubmitButton from '../../forms/components/SubmitButton';
 import SelectField from '../../forms/components/SelectField';
 import useAuth from '../../Auth/useAuth';
-import { PRODUCT_TYPES } from '../ProductTypes';
 import useScaffoldBundleItem from '../hooks/useScaffoldBundleItem';
 
 const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
@@ -44,7 +43,7 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
     enableReinitialize: true,
     initialValues: {
       title: defaultTitle,
-      type: PRODUCT_TYPES.SimpleProduct,
+      type: IProductType.SimpleProduct,
       quantity: 1,
     },
   });
@@ -80,10 +79,10 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
           required
           name="type"
           options={Object.fromEntries(
-            Object.entries(PRODUCT_TYPES).filter(
-              ([, value]) =>
-                value !== PRODUCT_TYPES.ConfigurableProduct &&
-                value !== PRODUCT_TYPES.BundleProduct,
+            Object.entries(IProductType).filter(
+              ([key, value]) =>
+                value !== IProductType.ConfigurableProduct &&
+                value !== IProductType.BundleProduct,
             ),
           )}
         />

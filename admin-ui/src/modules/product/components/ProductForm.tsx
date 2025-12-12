@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import { IRoleAction } from '../../../gql/types';
+import { IProductType, IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
 
@@ -13,7 +13,6 @@ import useForm, {
   OnSubmitType,
 } from '../../forms/hooks/useForm';
 import HelpText from '../../common/components/HelpText';
-import { PRODUCT_TYPES } from '../ProductTypes';
 import useApp from '../../common/hooks/useApp';
 
 const ProductForm = ({
@@ -34,7 +33,7 @@ const ProductForm = ({
   const form = useForm({
     submit: async (values) => {
       const { title, subtitle, type, tags } = values;
-
+      console.log(values);
       if (!title || !type) {
         return { success: false };
       }
@@ -55,7 +54,7 @@ const ProductForm = ({
     initialValues: {
       title: '',
       subtitle: '',
-      type: 'SimpleProduct',
+      type: IProductType.SimpleProduct,
       tags: [],
     },
   });
@@ -90,7 +89,9 @@ const ProductForm = ({
           placeholder={formatMessage({ id: 'type', defaultMessage: 'Type' })}
           required
           name="type"
-          options={PRODUCT_TYPES}
+          options={Object.fromEntries(
+            Object.entries(IProductType).map(([key, value]) => [value, key]),
+          )}
         />
 
         <TagInputField

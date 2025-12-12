@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import useApp from '../../common/hooks/useApp';
-import { PRODUCT_TYPES } from '../ProductTypes';
 import useCreateProduct from './useCreateProduct';
+import { IProductType } from '../../../gql/types';
 
 function useScaffoldBundleItem({ onSuccess }) {
   const { selectedLocale } = useApp();
@@ -16,7 +16,7 @@ function useScaffoldBundleItem({ onSuccess }) {
       },
     ];
     const { data } = await createProduct({
-      product: { type: type || PRODUCT_TYPES.SimpleProduct },
+      product: { type: type || IProductType.SimpleProduct },
       texts,
     });
 

@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 import useApp from '../../common/hooks/useApp';
-import { PRODUCT_TYPES } from '../ProductTypes';
 import useAddProductAssignment from './useAddProductAssignment';
 import useCreateProduct from './useCreateProduct';
+import { IProductType } from '../../../gql/types';
 
 function useScaffoldVariationProduct({ proxyProduct, vectors, onSuccess }) {
   const { selectedLocale } = useApp();
@@ -19,7 +19,7 @@ function useScaffoldVariationProduct({ proxyProduct, vectors, onSuccess }) {
       },
     ];
     const { data } = await createProduct({
-      product: { type: type || PRODUCT_TYPES.SimpleProduct },
+      product: { type: type || IProductType.SimpleProduct },
       texts,
     });
 
