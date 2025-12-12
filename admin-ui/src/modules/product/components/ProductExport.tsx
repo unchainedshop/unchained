@@ -12,7 +12,6 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
     tags,
     sort,
   });
-
   const { exportProducts, isLoading } = useProductExport(products, client);
   const { formatMessage } = useIntl();
 

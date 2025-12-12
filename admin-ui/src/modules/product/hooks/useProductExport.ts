@@ -41,6 +41,8 @@ const PRODUCT_SCHEMA = {
     'quantity',
     'configuration',
   ],
+  variationItemHeaders: ['productId', 'variationId', 'key', 'type'],
+  variationTextFields: ['title', 'subtitle'],
 };
 
 const buildProductHeaders = (locales: string[]) => [
@@ -56,6 +58,14 @@ const buildProductHeaders = (locales: string[]) => [
 
 const buildPriceHeaders = () => [...PRODUCT_SCHEMA.priceFields];
 const buildBundleHeaders = () => [...PRODUCT_SCHEMA.bundleItemHeaders];
+const buildVariationHeaders = (locales) => [
+  ...PRODUCT_SCHEMA.variationItemHeaders,
+  ...locales.flatMap((locale) =>
+    PRODUCT_SCHEMA.variationTextFields.map(
+      (field) => `texts.${locale}.${field}`,
+    ),
+  ),
+];
 
 const mapTranslations = (translationMap: any) => {
   const all = {};
@@ -89,6 +99,31 @@ const buildBundleRows = (productId: string, bundleEntries: any[]) => {
       .map((config) => Object.values(config).join(':'))
       .join(';'),
   }));
+};
+
+const buildVariationRows = (
+  productId: string,
+  variations: Record<string, any>,
+  locales: string[],
+) => {
+  const rows = Object.values(variations).map((v) => {
+    const row = {
+      productId: productId,
+      variationId: v._id,
+      type: v.type,
+      key: v.key,
+    };
+
+    locales.forEach((locale) => {
+      const texts = v[locale] || {};
+      PRODUCT_SCHEMA.variationTextFields.forEach((field) => {
+        row[`texts.${locale}.${field}`] = texts[field] ?? '';
+      });
+    });
+
+    return row;
+  });
+  return rows;
 };
 
 const buildProductRow = (
@@ -134,6 +169,10 @@ export const useProductExport = (products: IProduct[] | any[], client: any) => {
   const productHeaders = useMemo(() => buildProductHeaders(locales), [locales]);
   const priceHeaders = useMemo(buildPriceHeaders, []);
   const bundleHeaders = useMemo(buildBundleHeaders, []);
+  const variationHeaders = useMemo(
+    () => buildVariationHeaders(locales),
+    [locales],
+  );
 
   const { exportCSV: exportProductsCSV, isExporting } = useCSVExport(
     products,
@@ -149,10 +188,14 @@ export const useProductExport = (products: IProduct[] | any[], client: any) => {
     headers: bundleHeaders,
   });
 
+  const { exportCSV: exportVariationsCSV } = useCSVExport(products, (p) => p, {
+    headers: variationHeaders,
+  });
+
   const exportProducts = useCallback(async () => {
     setIsLoadingTranslations(true);
 
-    const map = await fetchAllProductsForExport(products, client);
+    const map = await fetchAllProductsForExport(products, client, locales);
     setIsLoadingTranslations(false);
 
     const translations = mapTranslations(map);
@@ -160,18 +203,21 @@ export const useProductExport = (products: IProduct[] | any[], client: any) => {
     const productRows = [];
     const priceRows = [];
     const bundleRows = [];
+    const variationRows = [];
 
     for (const product of products) {
       const pid = product._id;
-
       productRows.push(buildProductRow(product, locales, translations));
       priceRows.push(...buildPriceRows(pid, map.prices[pid] ?? []));
       bundleRows.push(...buildBundleRows(pid, map.bundles[pid] ?? []));
+      variationRows.push(
+        ...buildVariationRows(pid, map.variations[pid] ?? [], locales),
+      );
     }
-
     exportProductsCSV('products_export', productRows);
     exportPricesCSV('products_prices_export', priceRows);
     exportBundlesCSV('products_bundle_items_export', bundleRows);
+    exportVariationsCSV('products_variations_export', variationRows);
   }, [products, locales, client, exportProductsCSV]);
 
   return {
