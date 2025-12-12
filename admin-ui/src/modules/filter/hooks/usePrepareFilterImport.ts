@@ -51,67 +51,46 @@ const normalizeOptions = (row: CSVRow) => {
   };
 };
 
-export const validateFilter = (filter: any, intl): string[] => {
+export const validateFilter = (
+  { filtersCSV, optionsCSV }: any,
+  intl,
+): string[] => {
   const errors: string[] = [];
-
-  if (!filter._id)
-    errors.push(
-      intl.formatMessage({
-        id: 'filter_import.id_missing',
-        defaultMessage: 'Filter _id is required',
-      }),
-    );
-  if (!filter.key)
-    errors.push(
-      intl.formatMessage({
-        id: 'filter_import.key_missing',
-        defaultMessage: 'Filter key is required',
-      }),
-    );
-  if (!filter.type)
-    errors.push(
-      intl.formatMessage({
-        id: 'filter_import.type_missing',
-        defaultMessage: 'Filter type is required',
-      }),
-    );
-
-  if (
-    [IFilterType.SingleChoice, IFilterType.MultiChoice].includes(filter.type)
-  ) {
-    if (!filter.options || filter.options.length === 0) {
+  for (const filter of filtersCSV) {
+    if (!filter._id)
       errors.push(
         intl.formatMessage({
-          id: 'filter_import.options_missing',
-          defaultMessage:
-            'Options are required for SINGLE_CHOICE or MULTI_CHOICE filters',
+          id: 'filter_import.id_missing',
+          defaultMessage: 'Filter _id is required',
         }),
       );
-    } else {
-      filter.options.forEach((opt, i) => {
-        if (!opt.value)
-          errors.push(
-            intl.formatMessage(
-              {
-                id: 'filter_import.option_value_missing',
-                defaultMessage: 'Option {i} must have a value',
-              },
-              { i },
-            ),
-          );
-        if (!opt.content || Object.keys(opt.content).length === 0) {
-          errors.push(
-            intl.formatMessage(
-              {
-                id: 'filter_import.option_texts_missing',
-                defaultMessage:
-                  'Option {value} must have at least one locale text',
-              },
-              { value: opt.value },
-            ),
-          );
-        }
-      });
+    if (!filter.key)
+      errors.push(
+        intl.formatMessage({
+          id: 'filter_import.key_missing',
+          defaultMessage: 'Filter key is required',
+        }),
+      );
+    if (!filter.type)
+      errors.push(
+        intl.formatMessage({
+          id: 'filter_import.type_missing',
+          defaultMessage: 'Filter type is required',
+        }),
+      );
+
+    if (
+      [IFilterType.SingleChoice, IFilterType.MultiChoice].includes(filter.type)
+    ) {
+      if (!(optionsCSV || []).find((o) => o.filterId === filter._id)) {
+        errors.push(
+          intl.formatMessage({
+            id: 'filter_import.options_missing',
+            defaultMessage:
+              'Options are required for SINGLE_CHOICE or MULTI_CHOICE filters',
+          }),
+        );
+      }
     }
   }
 
@@ -135,8 +114,14 @@ const buildFilterEvents = (filter: FilterPayload) => ({
 });
 
 export const usePrepareFilterImport = () => {
-  const prepareFilterImport = async (filters: FilterPayload[]) =>
-    filters.map(buildFilterEvents);
+  const prepareFilterImport = async ({ filtersCSV, optionsCSV }) => {
+    return filtersCSV.map((filter) => {
+      const options = (optionsCSV || []).filter(
+        (option) => option['filterId'] === filter._id,
+      );
 
+      return buildFilterEvents({ ...filter, options });
+    });
+  };
   return { prepareFilterImport };
 };

@@ -23,10 +23,15 @@ export function useCSVExport<T>(
     (filenamePrefix = 'export', overrideData) => {
       const normalizedData = overrideData || data || [];
       if (!normalizedData?.length) return;
+
       setIsExporting(true);
 
       try {
-        const rows: CSVRow[] = overrideData.map(extractRow);
+        const rows: CSVRow[] =
+          overrideData === undefined
+            ? normalizedData.map(extractRow)
+            : normalizedData;
+
         const headers: string[] =
           explicitHeaders ??
           (() => {

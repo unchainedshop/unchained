@@ -29,6 +29,15 @@ const PRODUCT_SCHEMA = {
     'labels',
     'slug',
   ],
+  priceFields: [
+    'productId',
+    'amount',
+    'currencyCode',
+    'countryCode',
+    'isTaxable',
+    'isNetPrice',
+    'maxQuantity',
+  ],
 };
 
 const buildHeaders = (locales: string[]) => [
@@ -41,6 +50,8 @@ const buildHeaders = (locales: string[]) => [
   'supply.lengthInMillimeters',
   'supply.widthInMillimeters',
 ];
+
+const buildProductPriceHeaders = () => [...PRODUCT_SCHEMA.priceFields];
 
 const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
   const { products, loading, client } = useProducts({
@@ -61,9 +72,13 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
   );
 
   const headersBase = useMemo(() => buildHeaders(locales), [locales]);
+  const priceHeaders = useMemo(() => buildProductPriceHeaders(), []);
 
   const { exportCSV, isExporting } = useCSVExport(products, (p) => p, {
     headers: headersBase,
+  });
+  const { exportCSV: exportPricesCSV } = useCSVExport(products, (p) => p, {
+    headers: priceHeaders,
   });
 
   const handleExport = useCallback(async () => {
@@ -76,15 +91,26 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
     setIsLoadingTranslations(false);
 
     const translations = {};
-    for (const productId in translationMap) {
+    for (const productId in translationMap.products) {
       translations[productId] = {};
-      for (const t of translationMap[productId]) {
+      for (const t of translationMap.products[productId]) {
         translations[productId][t.locale] = t;
       }
     }
-
-    const rows = products.map(({ ...product }) => {
+    const productPricesRows: Record<string, any>[] = [];
+    const productsRows = products.map(({ ...product }) => {
       const row: Record<string, any> = {};
+      const prices = translationMap?.prices[product._id] ?? [];
+      prices.forEach((pRow) => {
+        productPricesRows.push({
+          productId: product._id,
+          amount: pRow['amount'] ?? '',
+          isNetPrice: pRow['isNetPrice'] ?? '',
+          isTaxable: pRow['isTaxable'] ?? '',
+          currencyCode: pRow.currency.isoCode,
+          countryCode: pRow.country.isoCode,
+        });
+      });
 
       PRODUCT_SCHEMA.base.forEach((key) => {
         if (key === '__typename') row[key] = PRODUCT_TYPES[product[key]];
@@ -116,7 +142,8 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
       return row;
     });
 
-    exportCSV('products_export', rows);
+    exportCSV('products_export', productsRows);
+    exportPricesCSV('products_prices_export', productPricesRows);
   }, [products, client, exportCSV, locales]);
 
   if (loading) return null;

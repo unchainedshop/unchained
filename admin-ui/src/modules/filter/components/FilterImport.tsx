@@ -10,6 +10,7 @@ import {
   validateFilter,
 } from '../hooks/usePrepareFilterImport';
 import FilterImportForm from './FilterImportForm';
+import ImportResultMessage from '../../modal/components/ImportResultMessage';
 
 const FilterImport = () => {
   const { formatMessage } = useIntl();
@@ -27,8 +28,14 @@ const FilterImport = () => {
     setModal(
       <FilterImportForm
         onImport={async (normalizedFilters) => {
-          await importItems(normalizedFilters);
-          setModal(null);
+          const result = await importItems(normalizedFilters);
+          setModal(
+            <ImportResultMessage
+              result={result}
+              entityName="products"
+              onClose={() => setModal('')}
+            />,
+          );
         }}
       />,
     );

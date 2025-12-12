@@ -4,11 +4,11 @@ import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
 import { CSVRow } from '../../common/utils/csvUtils';
 
-const FilterImportForm = ({ onImport }) => {
-  const filtersFileRef = useRef<HTMLInputElement>(null);
-  const optionsFileRef = useRef<HTMLInputElement>(null);
-  const [filtersCSV, setFiltersCSV] = useState<CSVRow[]>([]);
-  const [optionsCSV, setOptionsCSV] = useState<CSVRow[]>([]);
+const ProductImportForm = ({ onImport }) => {
+  const productsFileRef = useRef<HTMLInputElement>(null);
+  const pricesFileRef = useRef<HTMLInputElement>(null);
+  const [productsCSV, setProductsCSV] = useState<CSVRow[]>([]);
+  const [pricesCSV, setPricesCSV] = useState<CSVRow[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const { formatMessage } = useIntl();
 
@@ -32,58 +32,58 @@ const FilterImportForm = ({ onImport }) => {
   const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      await onImport({ filtersCSV, optionsCSV });
+      await onImport({ productsCSV, pricesCSV });
     } catch (err: any) {
-      console.error('Error importing filters:', err);
+      console.error('Error importing products:', err);
     } finally {
       setIsImporting(false);
     }
-  }, [filtersCSV, optionsCSV]);
+  }, [productsCSV, pricesCSV]);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
       <h3 className="text-center text-lg font-semibold">
         {formatMessage({
-          id: 'filter_import_title',
-          defaultMessage: 'Import Filters',
+          id: 'products_import_title',
+          defaultMessage: 'Import Products',
         })}
       </h3>
       <p className="text-center text-sm text-gray-600">
         {formatMessage({
-          id: 'filter_import_description',
+          id: 'product_import_description',
           defaultMessage:
-            'Select your filters CSV and optional filter options CSV, then click Import.',
+            'Select your products CSV and optional Product prices CSV, then click Import.',
         })}
       </p>
 
       <input
-        ref={filtersFileRef}
+        ref={productsFileRef}
         type="file"
         accept=".csv"
-        onChange={(e) => handleFileChange(e, setFiltersCSV)}
+        onChange={(e) => handleFileChange(e, setProductsCSV)}
         className="hidden"
       />
       <input
-        ref={optionsFileRef}
+        ref={pricesFileRef}
         type="file"
         accept=".csv"
-        onChange={(e) => handleFileChange(e, setOptionsCSV)}
+        onChange={(e) => handleFileChange(e, setPricesCSV)}
         className="hidden"
       />
 
       <Button
         text={
-          filtersCSV.length
+          productsCSV.length
             ? formatMessage({
-                id: 'filters_file_selected',
-                defaultMessage: 'Filters CSV Selected',
+                id: 'products_file_selected',
+                defaultMessage: 'Products CSV Selected',
               })
             : formatMessage({
-                id: 'select_filters_csv',
-                defaultMessage: 'Select Filters CSV',
+                id: 'select_products_csv',
+                defaultMessage: 'Select Products CSV',
               })
         }
-        onClick={() => filtersFileRef.current?.click()}
+        onClick={() => productsFileRef.current?.click()}
         variant="secondary"
         disabled={isImporting}
         className="w-full"
@@ -91,19 +91,19 @@ const FilterImportForm = ({ onImport }) => {
 
       <Button
         text={
-          optionsCSV.length
+          pricesCSV.length
             ? formatMessage({
-                id: 'options_file_selected',
-                defaultMessage: 'Options CSV Selected',
+                id: 'prices_file_selected',
+                defaultMessage: 'Prices CSV Selected',
               })
             : formatMessage({
-                id: 'select_options_csv',
-                defaultMessage: 'Select Filter Options CSV (Optional)',
+                id: 'select_prices_csv',
+                defaultMessage: 'Select Product prices CSV (Optional)',
               })
         }
-        onClick={() => optionsFileRef.current?.click()}
+        onClick={() => pricesFileRef.current?.click()}
         variant="secondary"
-        disabled={isImporting}
+        disabled={isImporting || !productsCSV.length}
         className="w-full"
       />
 
@@ -114,22 +114,22 @@ const FilterImportForm = ({ onImport }) => {
             : formatMessage({ id: 'import', defaultMessage: 'Import' })
         }
         onClick={handleImport}
-        disabled={isImporting || !filtersCSV.length}
+        disabled={isImporting || !productsCSV.length}
         variant="primary"
         className="w-full"
       />
 
-      {filtersCSV.length > 0 && (
+      {productsCSV.length > 0 && (
         <p className="text-center text-xs text-gray-500">
           {formatMessage(
             {
               id: 'ready_to_import',
-              defaultMessage: 'Ready to import {filters} filters{options}.',
+              defaultMessage: 'Ready to import {products} products{prices}.',
             },
             {
-              filters: filtersCSV.length,
-              options: optionsCSV.length
-                ? ` with ${optionsCSV.length} options`
+              products: productsCSV.length,
+              prices: pricesCSV.length
+                ? ` with ${pricesCSV.length} prices`
                 : '',
             },
           )}
@@ -139,4 +139,4 @@ const FilterImportForm = ({ onImport }) => {
   );
 };
 
-export default FilterImportForm;
+export default ProductImportForm;

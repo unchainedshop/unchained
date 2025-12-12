@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
@@ -7,15 +7,12 @@ import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import { useCSVImport } from '../../common/hooks/useCSVImport';
 import usePrepareProductImport, {
-  productMapper,
   validateProduct,
 } from '../hooks/usePrepareProductImport';
-
-import parseCSV from 'papaparse';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
+import ProductImportForm from './ProductImportForm';
 
 const ProductImport = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const { setModal } = useModal();
@@ -26,52 +23,29 @@ const ProductImport = () => {
     process: prepareProductImport,
   });
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  if (!hasRole(IRoleAction.ManageProducts)) return null;
 
-    if (!file.name.endsWith('.csv')) {
-      setModal(
-        formatMessage({
-          id: 'select_valid_csv_error',
-          defaultMessage: 'Please select a valid CSV file.',
-        }),
-      );
-      return;
-    }
-
-    const content = await file.text();
-
-    const productsCSV = parseCSV.parse(content, {
-      header: true,
-      skipEmptyLines: true,
-    });
-    const products = productsCSV.data.map(productMapper);
-    const result = await importItems(products);
+  const handleOpenImport = () => {
     setModal(
-      <ImportResultMessage
-        result={result}
-        entityName="products"
-        onClose={() => setModal('')}
+      <ProductImportForm
+        onImport={async (normalizedProducts) => {
+          const result = await importItems(normalizedProducts);
+          setModal(
+            <ImportResultMessage
+              result={result}
+              entityName="products"
+              onClose={() => setModal('')}
+            />,
+          );
+        }}
       />,
     );
-
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
-
-  if (!hasRole(IRoleAction.ManageProducts)) return null;
 
   return (
     <>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".csv"
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-      />
       <Button
-        onClick={() => fileInputRef.current?.click()}
+        onClick={handleOpenImport}
         disabled={isImporting}
         variant="secondary"
         text={

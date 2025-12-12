@@ -6,7 +6,7 @@ import {
 } from '../../../gql/types';
 import ProductCatalogPriceFragment from '../fragments/ProductCatalogPriceFragment';
 
-const ProductCatalogPricesQuery = gql`
+export const ProductCatalogPricesQuery = gql`
   query ProductCatalogPrices($productId: ID!) {
     productCatalogPrices(productId: $productId) {
       ...ProductCatalogPriceFragment
