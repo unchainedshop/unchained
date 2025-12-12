@@ -38,6 +38,7 @@ const PRODUCT_SCHEMA = {
     'isNetPrice',
     'maxQuantity',
   ],
+  bundleItemHeaders: ['productId', 'bundleItemProductId', 'quantity'],
 };
 
 const buildHeaders = (locales: string[]) => [
@@ -52,6 +53,9 @@ const buildHeaders = (locales: string[]) => [
 ];
 
 const buildProductPriceHeaders = () => [...PRODUCT_SCHEMA.priceFields];
+const buildProductBundleItemsHeaders = () => [
+  ...PRODUCT_SCHEMA.bundleItemHeaders,
+];
 
 const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
   const { products, loading, client } = useProducts({
@@ -73,12 +77,20 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
 
   const headersBase = useMemo(() => buildHeaders(locales), [locales]);
   const priceHeaders = useMemo(() => buildProductPriceHeaders(), []);
+  const bundleItemsHeaders = useMemo(
+    () => buildProductBundleItemsHeaders(),
+    [],
+  );
 
   const { exportCSV, isExporting } = useCSVExport(products, (p) => p, {
     headers: headersBase,
   });
   const { exportCSV: exportPricesCSV } = useCSVExport(products, (p) => p, {
     headers: priceHeaders,
+  });
+
+  const { exportCSV: exportBundleItemsCSV } = useCSVExport(products, (p) => p, {
+    headers: bundleItemsHeaders,
   });
 
   const handleExport = useCallback(async () => {
@@ -98,6 +110,7 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
       }
     }
     const productPricesRows: Record<string, any>[] = [];
+    const productBundleItemRows: Record<string, any>[] = [];
     const productsRows = products.map(({ ...product }) => {
       const row: Record<string, any> = {};
       const prices = translationMap?.prices[product._id] ?? [];
@@ -109,6 +122,18 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
           isTaxable: pRow['isTaxable'] ?? '',
           currencyCode: pRow.currency.isoCode,
           countryCode: pRow.country.isoCode,
+        });
+      });
+
+      const bundles = translationMap?.bundles[product._id] ?? [];
+      bundles.forEach((bRow) => {
+        productBundleItemRows.push({
+          productId: product._id,
+          bundleItemProductId: bRow.product._id,
+          quantity: bRow.quantity ?? 1,
+          configuration: Object.entries(bRow.configuration || [])
+            .map(([key, value]) => `${key}:${value}`)
+            .join(';'),
         });
       });
 
@@ -144,6 +169,7 @@ const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
 
     exportCSV('products_export', productsRows);
     exportPricesCSV('products_prices_export', productPricesRows);
+    exportBundleItemsCSV('products_bundle_items_export', productBundleItemRows);
   }, [products, client, exportCSV, locales]);
 
   if (loading) return null;

@@ -6715,6 +6715,7 @@ export type IAssortmentPathsQuery = {
 export type IAssortmentProductsQueryVariables = Exact<{
   assortmentId?: InputMaybe<Scalars['ID']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IAssortmentProductsQuery = {
@@ -10620,193 +10621,21 @@ export type IAddProductReviewVoteMutationVariables = Exact<{
   productReviewId: Scalars['ID']['input'];
   type: IProductReviewVoteType;
   meta?: InputMaybe<Scalars['JSON']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IAddProductReviewVoteMutation = {
-  addProductReviewVote: {
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    rating?: number | null;
-    title?: string | null;
-    review?: string | null;
-    upVote?: number | null;
-    downVote?: number | null;
-    voteReport?: number | null;
-    author: {
-      _id: string;
-      username?: string | null;
-      name: string;
-      isGuest: boolean;
-      profile?: {
-        displayName?: string | null;
-        address?: {
-          firstName?: string | null;
-          lastName?: string | null;
-        } | null;
-      } | null;
-      avatar?: { _id: string; url?: string | null } | null;
-    };
-    product:
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        };
-    ownVotes: Array<{ timestamp: any; type: IProductReviewVoteType }>;
-  };
+  addProductReviewVote: { _id: string };
 };
 
 export type ICreateProductReviewMutationVariables = Exact<{
   productId: Scalars['ID']['input'];
   productReview: IProductReviewInput;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type ICreateProductReviewMutation = {
-  createProductReview: {
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    rating?: number | null;
-    title?: string | null;
-    review?: string | null;
-    upVote?: number | null;
-    downVote?: number | null;
-    voteReport?: number | null;
-    author: {
-      _id: string;
-      username?: string | null;
-      name: string;
-      isGuest: boolean;
-      profile?: {
-        displayName?: string | null;
-        address?: {
-          firstName?: string | null;
-          lastName?: string | null;
-        } | null;
-      } | null;
-      avatar?: { _id: string; url?: string | null } | null;
-    };
-    product:
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        };
-    ownVotes: Array<{ timestamp: any; type: IProductReviewVoteType }>;
-  };
+  createProductReview: { _id: string };
 };
 
 export type IProductReviewByProductQueryVariables = Exact<{
@@ -10815,6 +10644,7 @@ export type IProductReviewByProductQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IProductReviewByProductQuery = {
@@ -11293,97 +11123,11 @@ export type IRemoveProductReviewMutation = {
 export type IRemoveProductReviewVoteMutationVariables = Exact<{
   productReviewId: Scalars['ID']['input'];
   type: IProductReviewVoteType;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IRemoveProductReviewVoteMutation = {
-  removeProductReviewVote: {
-    _id: string;
-    created?: any | null;
-    updated?: any | null;
-    deleted?: any | null;
-    rating?: number | null;
-    title?: string | null;
-    review?: string | null;
-    upVote?: number | null;
-    downVote?: number | null;
-    voteReport?: number | null;
-    author: {
-      _id: string;
-      username?: string | null;
-      name: string;
-      isGuest: boolean;
-      profile?: {
-        displayName?: string | null;
-        address?: {
-          firstName?: string | null;
-          lastName?: string | null;
-        } | null;
-      } | null;
-      avatar?: { _id: string; url?: string | null } | null;
-    };
-    product:
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        }
-      | {
-          _id: string;
-          texts?: {
-            _id: string;
-            title?: string | null;
-            subtitle?: string | null;
-          } | null;
-          media: Array<{
-            _id: string;
-            file?: { _id: string; url?: string | null } | null;
-          }>;
-        };
-    ownVotes: Array<{ timestamp: any; type: IProductReviewVoteType }>;
-  };
+  removeProductReviewVote: { _id: string };
 };
 
 export type IUserProductReviewsQueryVariables = Exact<{
@@ -11391,6 +11135,7 @@ export type IUserProductReviewsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IUserProductReviewsQuery = {
@@ -13142,6 +12887,7 @@ export type IProductAssignmentsQuery = {
 export type IProductBundleItemsQueryVariables = Exact<{
   productId?: InputMaybe<Scalars['ID']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IProductBundleItemsQuery = {
@@ -13471,6 +13217,7 @@ export type IProductReviewsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IProductReviewsQuery = {
@@ -13679,6 +13426,7 @@ export type IProductsQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IProductsQuery = {
@@ -15316,6 +15064,7 @@ export type IUpdateProductWarehousingMutation = {
 
 export type IUserTokensQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IUserTokensQuery = {
@@ -16245,6 +15994,7 @@ export type IInvalidateTokenMutation = {
 
 export type ITokenQueryVariables = Exact<{
   tokenId: Scalars['ID']['input'];
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type ITokenQuery = {
@@ -16312,6 +16062,7 @@ export type ITokensQueryVariables = Exact<{
   queryString?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type ITokensQuery = {

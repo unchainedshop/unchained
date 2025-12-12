@@ -7,8 +7,10 @@ import { CSVRow } from '../../common/utils/csvUtils';
 const ProductImportForm = ({ onImport }) => {
   const productsFileRef = useRef<HTMLInputElement>(null);
   const pricesFileRef = useRef<HTMLInputElement>(null);
+  const bundleItemsFileRef = useRef<HTMLInputElement>(null);
   const [productsCSV, setProductsCSV] = useState<CSVRow[]>([]);
   const [pricesCSV, setPricesCSV] = useState<CSVRow[]>([]);
+  const [bundleItemsCSV, setBundleItemsCSV] = useState<CSVRow[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const { formatMessage } = useIntl();
 
@@ -32,13 +34,13 @@ const ProductImportForm = ({ onImport }) => {
   const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      await onImport({ productsCSV, pricesCSV });
+      await onImport({ productsCSV, pricesCSV, bundleItemsCSV });
     } catch (err: any) {
       console.error('Error importing products:', err);
     } finally {
       setIsImporting(false);
     }
-  }, [productsCSV, pricesCSV]);
+  }, [productsCSV, pricesCSV, bundleItemsCSV]);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
@@ -52,7 +54,7 @@ const ProductImportForm = ({ onImport }) => {
         {formatMessage({
           id: 'product_import_description',
           defaultMessage:
-            'Select your products CSV and optional Product prices CSV, then click Import.',
+            'Select your products CSV and optional Product prices & bundle items CSV, then click Import.',
         })}
       </p>
 
@@ -68,6 +70,13 @@ const ProductImportForm = ({ onImport }) => {
         type="file"
         accept=".csv"
         onChange={(e) => handleFileChange(e, setPricesCSV)}
+        className="hidden"
+      />
+      <input
+        ref={bundleItemsFileRef}
+        type="file"
+        accept=".csv"
+        onChange={(e) => handleFileChange(e, setBundleItemsCSV)}
         className="hidden"
       />
 
@@ -106,6 +115,23 @@ const ProductImportForm = ({ onImport }) => {
         disabled={isImporting || !productsCSV.length}
         className="w-full"
       />
+      <Button
+        text={
+          bundleItemsCSV.length
+            ? formatMessage({
+                id: 'bundle_items_file_selected',
+                defaultMessage: 'Bundle items CSV Selected',
+              })
+            : formatMessage({
+                id: 'select_bundle_items_csv',
+                defaultMessage: 'Select Product bundle items CSV (Optional)',
+              })
+        }
+        onClick={() => bundleItemsFileRef.current?.click()}
+        variant="secondary"
+        disabled={isImporting || !productsCSV.length}
+        className="w-full"
+      />
 
       <Button
         text={
@@ -124,12 +150,16 @@ const ProductImportForm = ({ onImport }) => {
           {formatMessage(
             {
               id: 'ready_to_import',
-              defaultMessage: 'Ready to import {products} products{prices}.',
+              defaultMessage:
+                'Ready to import {products} products{prices}{bundleItems}.',
             },
             {
               products: productsCSV.length,
               prices: pricesCSV.length
                 ? ` with ${pricesCSV.length} prices`
+                : '',
+              bundleItems: bundleItemsCSV.length
+                ? ` with ${pricesCSV.length} bundle items`
                 : '',
             },
           )}

@@ -4,18 +4,17 @@ import {
   ICreateProductReviewMutation,
   ICreateProductReviewMutationVariables,
 } from '../../../gql/types';
-import ProductReviewDetailFragment from '../fragments/ProductReviewDetailFragment';
 
 const CreateProductReviewMutation = gql`
   mutation CreateProductReview(
     $productId: ID!
     $productReview: ProductReviewInput!
+    $forceLocale: Locale
   ) {
     createProductReview(productId: $productId, productReview: $productReview) {
-      ...ProductReviewDetailFragment
+      _id
     }
   }
-  ${ProductReviewDetailFragment}
 `;
 
 const useCreateProductReview = () => {
@@ -23,7 +22,6 @@ const useCreateProductReview = () => {
     ICreateProductReviewMutation,
     ICreateProductReviewMutationVariables
   >(CreateProductReviewMutation);
-
   const createProductReview = async ({
     productId,
     productReview: { title, rating, review },

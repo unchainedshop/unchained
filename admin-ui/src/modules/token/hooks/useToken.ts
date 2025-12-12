@@ -5,7 +5,7 @@ import TokenFragment from '../../product/fragments/TokenFragment';
 import ProductBriefFragment from '../../product/fragments/ProductBriefFragment';
 
 const TokenQuery = gql`
-  query Token($tokenId: ID!) {
+  query Token($tokenId: ID!, $forceLocale: Locale) {
     token(tokenId: $tokenId) {
       ...TokenFragment
       product {

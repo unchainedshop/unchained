@@ -79,11 +79,13 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
           required
           name="type"
           options={Object.fromEntries(
-            Object.entries(IProductType).filter(
-              ([key, value]) =>
-                value !== IProductType.ConfigurableProduct &&
-                value !== IProductType.BundleProduct,
-            ),
+            Object.entries(IProductType)
+              .filter(
+                ([, value]) =>
+                  value !== IProductType.ConfigurableProduct &&
+                  value !== IProductType.BundleProduct,
+              )
+              .map(([key, value]) => [value, key]),
           )}
         />
         <TextField

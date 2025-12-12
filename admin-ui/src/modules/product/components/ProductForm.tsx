@@ -33,7 +33,6 @@ const ProductForm = ({
   const form = useForm({
     submit: async (values) => {
       const { title, subtitle, type, tags } = values;
-      console.log(values);
       if (!title || !type) {
         return { success: false };
       }

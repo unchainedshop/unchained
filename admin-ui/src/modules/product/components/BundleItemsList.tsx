@@ -7,12 +7,16 @@ import useModal from '../../modal/hooks/useModal';
 import useProductBundleItems from '../hooks/useProductBundleItems';
 import useRemoveBundleItem from '../hooks/useRemoveBundleItem';
 import BundleProductsListItem from './BundleProductsListItem';
+import useApp from '../../common/hooks/useApp';
 
 const BundleItemsList = ({ productId }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
-
-  const { bundleItems, loading } = useProductBundleItems({ productId });
+  const { selectedLocale } = useApp();
+  const { bundleItems, loading } = useProductBundleItems({
+    productId,
+    forceLocale: selectedLocale,
+  });
   const { removeBundleItem } = useRemoveBundleItem();
 
   const onRemoveBundleItem = async (index) => {

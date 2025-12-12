@@ -8,7 +8,7 @@ import ProductBriefFragment from '../fragments/ProductBriefFragment';
 import TokenFragment from '../fragments/TokenFragment';
 
 const UserTokensQuery = gql`
-  query UserTokens($userId: ID!) {
+  query UserTokens($userId: ID!, $forceLocale: Locale) {
     user(userId: $userId) {
       _id
       web3Addresses {

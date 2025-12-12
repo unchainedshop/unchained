@@ -20,6 +20,7 @@ const ProductsQuery = gql`
     $offset: Int
     $includeDrafts: Boolean
     $sort: [SortOptionInput!]
+    $forceLocale: Locale
   ) {
     products(
       queryString: $queryString

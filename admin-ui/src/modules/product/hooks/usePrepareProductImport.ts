@@ -37,6 +37,10 @@ export interface ImportableProduct {
     currencyCode: string;
     countryCode: string;
   }[];
+  bundleItems?: {
+    productId: string;
+    quantity: number;
+  }[];
 }
 
 const normalizeProductContent = (row: CSVRow) => {
@@ -141,6 +145,7 @@ const buildProductEvents = (product: ImportableProduct) => {
           baseUnit: product.baseUnit,
         },
         commerce: product.commerce ? { pricing: product.commerce } : undefined,
+        bundleItems: product?.bundleItems,
       },
     },
   };
@@ -150,12 +155,17 @@ const usePrepareProductImport = () => {
   const prepareProductImport = async ({
     productsCSV,
     pricesCSV,
+    bundleItemsCSV,
   }): Promise<any> => {
     return (productsCSV || []).map((product) => {
       const prices = (pricesCSV || []).filter(
         (option) => option['productId'] === product._id,
       );
+      const bundles = (bundleItemsCSV || []).filter(
+        (item) => item['productId'] === product._id,
+      );
       let price = undefined;
+      let bundleItems = undefined;
       if (prices.length)
         price = prices.map(
           ({ amount, maxQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
@@ -166,7 +176,18 @@ const usePrepareProductImport = () => {
             ...restPrice,
           }),
         );
-      return buildProductEvents({ ...productMapper(product), commerce: price });
+
+      if (bundles.length)
+        bundleItems = bundles.map(({ bundleItemProductId, quantity }) => ({
+          productId: bundleItemProductId,
+          quantity: Number(quantity || 1),
+          configuration: [],
+        }));
+      return buildProductEvents({
+        ...productMapper(product),
+        commerce: price,
+        bundleItems,
+      });
     });
   };
   return { prepareProductImport };

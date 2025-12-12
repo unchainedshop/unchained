@@ -4,7 +4,7 @@ import {
   IAddProductReviewVoteMutation,
   IAddProductReviewVoteMutationVariables,
 } from '../../../gql/types';
-import ProductReviewDetailFragment from '../fragments/ProductReviewDetailFragment';
+
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',
   DOWNVOTE = 'DOWNVOTE',
@@ -15,16 +15,16 @@ const AddProductReviewVoteMutation = gql`
     $productReviewId: ID!
     $type: ProductReviewVoteType!
     $meta: JSON
+    $forceLocale: Locale
   ) {
     addProductReviewVote(
       productReviewId: $productReviewId
       type: $type
       meta: $meta
     ) {
-      ...ProductReviewDetailFragment
+      _id
     }
   }
-  ${ProductReviewDetailFragment}
 `;
 
 const useAddProductReviewVote = () => {
@@ -32,7 +32,6 @@ const useAddProductReviewVote = () => {
     IAddProductReviewVoteMutation,
     IAddProductReviewVoteMutationVariables
   >(AddProductReviewVoteMutation);
-
   const addProductReviewVote = async ({
     productReviewId,
     type,

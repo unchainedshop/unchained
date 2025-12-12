@@ -4,19 +4,17 @@ import {
   IRemoveProductReviewVoteMutation,
   IRemoveProductReviewVoteMutationVariables,
 } from '../../../gql/types';
-import ProductReviewDetailFragment from '../fragments/ProductReviewDetailFragment';
-import { ProductReviewVoteType } from './useAddProductReviewVote';
 
 const RemoveProductReviewVoteMutation = gql`
   mutation RemoveProductReviewVote(
     $productReviewId: ID!
     $type: ProductReviewVoteType!
+    $forceLocale: Locale
   ) {
     removeProductReviewVote(productReviewId: $productReviewId, type: $type) {
-      ...ProductReviewDetailFragment
+      _id
     }
   }
-  ${ProductReviewDetailFragment}
 `;
 
 const useRemoveProductReviewVote = () => {
@@ -24,7 +22,6 @@ const useRemoveProductReviewVote = () => {
     IRemoveProductReviewVoteMutation,
     IRemoveProductReviewVoteMutationVariables
   >(RemoveProductReviewVoteMutation);
-
   const removeProductReviewVote = async ({
     productReviewId,
     type,

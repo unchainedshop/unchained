@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 const ProductBriefFragment = gql`
   fragment ProductBriefFragment on Product {
-    texts {
+    texts(forceLocale: $forceLocale) {
       _id
       slug
       title

@@ -1,24 +1,29 @@
 import { ApolloClient } from '@apollo/client';
 import { GetTranslatedProductTextsQuery } from '../hooks/useTranslatedProductTexts';
 import {
+  IBundleProduct,
   IProduct,
+  IProductBundleItemsQuery,
+  IProductBundleItemsQueryVariables,
   IProductCatalogPricesQuery,
   IProductCatalogPricesQueryVariables,
+  IProductType,
   ITranslatedProductTextsQuery,
   ITranslatedProductTextsQueryVariables,
 } from '../../../gql/types';
 import { ProductCatalogPricesQuery } from '../hooks/useProductCatalogPrices';
+import { ProductBundleItemQuery } from '../hooks/useProductBundleItems';
 interface ProductExportMap {
   products: Record<string, Record<string, any>[]>;
   prices: Record<string, Record<string, any>>;
+  bundles: Record<string, Record<string, any>>;
 }
 
 export async function fetchTranslatedTextsForAllProducts(
   products: IProduct[],
   client: ApolloClient,
 ) {
-  const result: ProductExportMap = { products: {}, prices: {} };
-
+  const result: ProductExportMap = { products: {}, prices: {}, bundles: {} };
   await Promise.all(
     products.map(async (product: any) => {
       const { data } = await client.query<
@@ -41,6 +46,20 @@ export async function fetchTranslatedTextsForAllProducts(
         },
       });
       result.prices[product._id] = pricesData?.productCatalogPrices || [];
+
+      if (product.__typename === 'BundleProduct') {
+        const { data: bundleItems } = await client.query<
+          IProductBundleItemsQuery,
+          IProductBundleItemsQueryVariables
+        >({
+          query: ProductBundleItemQuery,
+          variables: {
+            productId: product._id,
+          },
+        });
+        result.bundles[product._id] =
+          (bundleItems?.product as IBundleProduct)?.bundleItems || [];
+      }
     }),
   );
 
