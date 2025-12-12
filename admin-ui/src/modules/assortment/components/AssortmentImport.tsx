@@ -22,7 +22,7 @@ const AssortmentImport = () => {
   const { prepareAssortmentImport } = usePrepareAssortmentImport();
 
   const { isImporting, importItems } = useCSVImport({
-    validate: validateAssortment,
+    validate: validateAssortment as any, // TODO: FIX type
     process: prepareAssortmentImport,
   });
 

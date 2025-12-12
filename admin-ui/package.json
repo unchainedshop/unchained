@@ -30,8 +30,8 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "engines": {
-    "node": ">=22",
-    "npm": ">=10"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "contributors": [
     "Vedran Rudelj <vedran@unchained.shop> (http://www.unchained.shop)",
