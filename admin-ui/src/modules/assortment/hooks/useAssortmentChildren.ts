@@ -7,7 +7,7 @@ import {
 import { parseSlug } from '../../common/utils/getUniqueId';
 import AssortmentChildrenFragment from '../fragments/AssortmentChildrenFragment';
 
-const AssortmentChildrenQuery = gql`
+export const AssortmentChildrenQuery = gql`
   query AssortmentChildren(
     $slugs: [String!]
     $includeInactive: Boolean

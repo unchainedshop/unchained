@@ -4,7 +4,7 @@ import { IAssortmentLinksQuery } from '../../../gql/types';
 import { parseUniqueId } from '../../common/utils/getUniqueId';
 import AssortmentFragment from '../fragments/AssortmentFragment';
 
-const AssortmentLinksQuery = gql`
+export const AssortmentLinksQuery = gql`
   query AssortmentLinks($assortmentId: ID, $slug: String) {
     assortment(assortmentId: $assortmentId, slug: $slug) {
       _id

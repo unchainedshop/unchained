@@ -8,7 +8,7 @@ import { parseUniqueId } from '../../common/utils/getUniqueId';
 import ProductBriefFragment from '../../product/fragments/ProductBriefFragment';
 import useApp from '../../common/hooks/useApp';
 
-const AssortmentProductsQuery = gql`
+export const AssortmentProductsQuery = gql`
   query AssortmentProducts(
     $assortmentId: ID
     $slug: String
