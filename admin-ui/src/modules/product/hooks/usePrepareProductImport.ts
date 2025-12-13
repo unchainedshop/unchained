@@ -163,7 +163,7 @@ const usePrepareProductImport = () => {
     bundleItemsCSV,
     variationsCSV,
     variationOptionsCSV,
-  }): Promise<any> => {
+  }: any): Promise<any> => {
     return (productsCSV || []).map((product) => {
       const prices = (pricesCSV || []).filter(
         (option) => option['productId'] === product._id,

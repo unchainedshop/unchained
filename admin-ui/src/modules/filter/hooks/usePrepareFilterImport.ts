@@ -114,7 +114,7 @@ const buildFilterEvents = (filter: FilterPayload) => ({
 });
 
 export const usePrepareFilterImport = () => {
-  const prepareFilterImport = async ({ filtersCSV, optionsCSV }) => {
+  const prepareFilterImport = async ({ filtersCSV, optionsCSV }: any) => {
     return filtersCSV.map((filter) => {
       const options = (optionsCSV || []).filter(
         (option) => option['filterId'] === filter._id,

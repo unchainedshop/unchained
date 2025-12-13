@@ -40,18 +40,18 @@ export const assortmentMapper = (row: CSVRow): ImportableAssortment => {
   return mapped;
 };
 
-export const validateAssortment = (
-  assortment: ImportableAssortment,
-  intl,
-): string[] => {
+export const validateAssortment = (assortmentCSV, intl): string[] => {
   const errors: string[] = [];
-  if (!assortment.content || Object.keys(assortment.content).length === 0) {
-    errors.push(
-      intl.formatMessage({
-        id: 'assortment_import_localized_texts_missing',
-        defaultMessage: 'Title is required',
-      }),
-    );
+  for (const assortment of assortmentCSV) {
+    const normalized = normalizeAssortmentContent(assortment);
+    if (!normalized || !Object.values(normalized).some((v) => v.title)) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_import_localized_texts_missing',
+          defaultMessage: 'Title is required',
+        }),
+      );
+    }
   }
   return errors;
 };
@@ -72,9 +72,11 @@ const buildAssortmentEvents = (assortment: ImportableAssortment) => {
 };
 
 const usePrepareAssortmentImport = () => {
-  const prepareAssortmentImport = async (assortments: ImportableAssortment[]) =>
-    assortments.map((p) => buildAssortmentEvents(p));
-
+  const prepareAssortmentImport = async (assortmentCSV) => {
+    return assortmentCSV.map((assortment) => {
+      return buildAssortmentEvents(assortmentMapper(assortment));
+    });
+  };
   return { prepareAssortmentImport };
 };
 

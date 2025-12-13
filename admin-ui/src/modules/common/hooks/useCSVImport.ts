@@ -2,10 +2,15 @@ import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import useAddWork from '../../work/hooks/useAddWork';
 import { IWorkType } from '../../../gql/types';
+export interface ImportResult {
+  success: number;
+  failed: number;
+  errors: string[];
+}
 
 interface UseImportOptions<T> {
   validate: (items: T[], intl: any) => string[];
-  process: (item: any) => Promise<
+  process: (item: T[]) => Promise<
     {
       entity: string;
       operation: string;
@@ -19,12 +24,10 @@ export const useCSVImport = <T>({ validate, process }: UseImportOptions<T>) => {
   const [isImporting, setIsImporting] = useState(false);
   const intl = useIntl();
 
-  const importItems = async (items: T[]) => {
+  const importItems = async (items: T[]): Promise<ImportResult | undefined> => {
     const result = {
       success: 0,
       failed: 0,
-      created: 0,
-      updated: 0,
       errors: [] as string[],
     };
     try {

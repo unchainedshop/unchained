@@ -28,7 +28,7 @@ const ProductImport = () => {
   const handleOpenImport = () => {
     setModal(
       <ProductImportForm
-        onImport={async (normalizedProducts) => {
+        onImport={async (normalizedProducts: any) => {
           const result = await importItems(normalizedProducts);
           setModal(
             <ImportResultMessage

@@ -17,7 +17,7 @@ const FilterImport = () => {
   const { hasRole } = useAuth();
   const { setModal } = useModal();
   const { prepareFilterImport } = usePrepareFilterImport();
-  const { isImporting, importItems } = useCSVImport<any>({
+  const { isImporting, importItems } = useCSVImport({
     validate: validateFilter,
     process: prepareFilterImport,
   });

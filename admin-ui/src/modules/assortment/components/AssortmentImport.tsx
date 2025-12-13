@@ -10,9 +10,18 @@ import { useCSVImport } from '../../common/hooks/useCSVImport';
 import parseCSV from 'papaparse';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
 import usePrepareAssortmentImport, {
-  assortmentMapper,
   validateAssortment,
 } from '../hooks/usePrepareAssortmentImport';
+
+export interface AssortmentCSVRow {
+  _id?: string;
+  isActive?: string;
+  isBase?: string;
+  isRoot?: string;
+  sequence?: string;
+  tags?: string;
+  [key: string]: any;
+}
 
 const AssortmentImport = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,8 +30,8 @@ const AssortmentImport = () => {
   const { setModal } = useModal();
   const { prepareAssortmentImport } = usePrepareAssortmentImport();
 
-  const { isImporting, importItems } = useCSVImport({
-    validate: validateAssortment as any, // TODO: FIX type
+  const { isImporting, importItems } = useCSVImport<AssortmentCSVRow>({
+    validate: validateAssortment,
     process: prepareAssortmentImport,
   });
 
@@ -46,8 +55,7 @@ const AssortmentImport = () => {
       header: true,
       skipEmptyLines: true,
     });
-    const assortments = assortmentsCSV.data.map(assortmentMapper);
-    const result = await importItems(assortments);
+    const result = await importItems(assortmentsCSV?.data);
     setModal(
       <ImportResultMessage
         result={result}
