@@ -8,9 +8,13 @@ const ProductImportForm = ({ onImport }) => {
   const productsFileRef = useRef<HTMLInputElement>(null);
   const pricesFileRef = useRef<HTMLInputElement>(null);
   const bundleItemsFileRef = useRef<HTMLInputElement>(null);
+  const variationsFileRef = useRef<HTMLInputElement>(null);
+  const variationOptionsFileRef = useRef<HTMLInputElement>(null);
   const [productsCSV, setProductsCSV] = useState<CSVRow[]>([]);
   const [pricesCSV, setPricesCSV] = useState<CSVRow[]>([]);
   const [bundleItemsCSV, setBundleItemsCSV] = useState<CSVRow[]>([]);
+  const [variationsCSV, setVariationsCSV] = useState<CSVRow[]>([]);
+  const [variationOptionsCSV, setVariationOptionsCSV] = useState<CSVRow[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const { formatMessage } = useIntl();
 
@@ -34,13 +38,25 @@ const ProductImportForm = ({ onImport }) => {
   const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      await onImport({ productsCSV, pricesCSV, bundleItemsCSV });
+      await onImport({
+        productsCSV,
+        pricesCSV,
+        bundleItemsCSV,
+        variationsCSV,
+        variationOptionsCSV,
+      });
     } catch (err: any) {
       console.error('Error importing products:', err);
     } finally {
       setIsImporting(false);
     }
-  }, [productsCSV, pricesCSV, bundleItemsCSV]);
+  }, [
+    productsCSV,
+    pricesCSV,
+    bundleItemsCSV,
+    variationsCSV,
+    variationOptionsCSV,
+  ]);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
@@ -77,6 +93,20 @@ const ProductImportForm = ({ onImport }) => {
         type="file"
         accept=".csv"
         onChange={(e) => handleFileChange(e, setBundleItemsCSV)}
+        className="hidden"
+      />
+      <input
+        ref={variationsFileRef}
+        type="file"
+        accept=".csv"
+        onChange={(e) => handleFileChange(e, setVariationsCSV)}
+        className="hidden"
+      />
+      <input
+        ref={variationOptionsFileRef}
+        type="file"
+        accept=".csv"
+        onChange={(e) => handleFileChange(e, setVariationOptionsCSV)}
         className="hidden"
       />
 
@@ -135,6 +165,43 @@ const ProductImportForm = ({ onImport }) => {
 
       <Button
         text={
+          variationsCSV.length
+            ? formatMessage({
+                id: 'variations_file_selected',
+                defaultMessage: 'Variations CSV Selected',
+              })
+            : formatMessage({
+                id: 'select_variations_csv',
+                defaultMessage: 'Select Product variations CSV (Optional)',
+              })
+        }
+        onClick={() => variationsFileRef.current?.click()}
+        variant="secondary"
+        disabled={isImporting || !productsCSV.length}
+        className="w-full"
+      />
+
+      <Button
+        text={
+          variationOptionsCSV.length
+            ? formatMessage({
+                id: 'variation_options_file_selected',
+                defaultMessage: 'Variation options CSV Selected',
+              })
+            : formatMessage({
+                id: 'select_variation_options_csv',
+                defaultMessage:
+                  'Select Product variation options CSV (Optional)',
+              })
+        }
+        onClick={() => variationOptionsFileRef.current?.click()}
+        variant="secondary"
+        disabled={isImporting || !productsCSV.length}
+        className="w-full"
+      />
+
+      <Button
+        text={
           isImporting
             ? formatMessage({ id: 'importing', defaultMessage: 'Importing...' })
             : formatMessage({ id: 'import', defaultMessage: 'Import' })
@@ -159,7 +226,13 @@ const ProductImportForm = ({ onImport }) => {
                 ? ` with ${pricesCSV.length} prices`
                 : '',
               bundleItems: bundleItemsCSV.length
-                ? ` with ${pricesCSV.length} bundle items`
+                ? ` with ${bundleItemsCSV.length} bundle items`
+                : '',
+              variations: variationsCSV.length
+                ? ` with ${variationsCSV.length} variations`
+                : '',
+              variationOptions: variationOptionsCSV.length
+                ? ` with ${variationOptionsCSV.length} Variation options`
                 : '',
             },
           )}

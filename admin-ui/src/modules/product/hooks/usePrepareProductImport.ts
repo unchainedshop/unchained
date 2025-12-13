@@ -41,9 +41,10 @@ export interface ImportableProduct {
     productId: string;
     quantity: number;
   }[];
+  variations?: any[];
 }
 
-const normalizeProductContent = (row: CSVRow) => {
+const normalizeContent = (row: CSVRow) => {
   const content: Record<string, any> = {};
   const textPrefix = 'texts.';
 
@@ -68,7 +69,7 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
     row['supply.lengthInMillimeters'] ||
     row['supply.widthInMillimeters'];
   const hasWarehousing = row['sku'] || row['baseUnit'];
-  const content = normalizeProductContent(row);
+  const content = normalizeContent(row);
   const mapped: ImportableProduct = {
     _id: row['_id'] || undefined,
     warehousing: hasWarehousing
@@ -128,7 +129,10 @@ export const validateProduct = ({ productsCSV }: any, intl): string[] => {
   return errors;
 };
 
-const buildProductEvents = (product: ImportableProduct) => {
+const buildProductEvents = ({
+  variations = [],
+  ...product
+}: ImportableProduct) => {
   const now = new Date();
 
   return {
@@ -147,6 +151,7 @@ const buildProductEvents = (product: ImportableProduct) => {
         commerce: product.commerce ? { pricing: product.commerce } : undefined,
         bundleItems: product?.bundleItems,
       },
+      variations: variations?.length ? variations : undefined,
     },
   };
 };
@@ -156,6 +161,8 @@ const usePrepareProductImport = () => {
     productsCSV,
     pricesCSV,
     bundleItemsCSV,
+    variationsCSV,
+    variationOptionsCSV,
   }): Promise<any> => {
     return (productsCSV || []).map((product) => {
       const prices = (pricesCSV || []).filter(
@@ -164,8 +171,13 @@ const usePrepareProductImport = () => {
       const bundles = (bundleItemsCSV || []).filter(
         (item) => item['productId'] === product._id,
       );
+
+      const productVariations = (variationsCSV || []).filter(
+        (item) => item['productId'] === product._id,
+      );
       let price = undefined;
       let bundleItems = undefined;
+      let variations = undefined;
       if (prices.length)
         price = prices.map(
           ({ amount, maxQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
@@ -188,10 +200,26 @@ const usePrepareProductImport = () => {
             }),
           }),
         );
+      if (productVariations.length)
+        variations = productVariations.map(
+          ({ variationId, type, key, configuration, ...row }) => ({
+            variationId,
+            key,
+            type,
+            content: normalizeContent(row),
+            options: (variationOptionsCSV || [])
+              .filter((o) => o.variationId === variationId)
+              .map((o) => ({
+                value: o?.value ?? '',
+                content: normalizeContent(o),
+              })),
+          }),
+        );
       return buildProductEvents({
         ...productMapper(product),
         commerce: price,
         bundleItems,
+        variations,
       });
     });
   };
