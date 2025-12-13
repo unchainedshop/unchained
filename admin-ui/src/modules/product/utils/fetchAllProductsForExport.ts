@@ -45,19 +45,19 @@ export async function fetchAllProductsForExport(
       });
 
       result.products[product._id] = data?.translatedProductTexts || [];
-
-      const { data: pricesData } = await client.query<
-        IProductCatalogPricesQuery,
-        IProductCatalogPricesQueryVariables
-      >({
-        query: ProductCatalogPricesQuery,
-        variables: {
-          productId: product._id,
-        },
-      });
-      result.prices[product._id] = pricesData?.productCatalogPrices || [];
-
-      if (product.__typename === 'BundleProduct') {
+      if (product?.__typename !== 'ConfigurableProduct') {
+        const { data: pricesData } = await client.query<
+          IProductCatalogPricesQuery,
+          IProductCatalogPricesQueryVariables
+        >({
+          query: ProductCatalogPricesQuery,
+          variables: {
+            productId: product._id,
+          },
+        });
+        result.prices[product._id] = pricesData?.productCatalogPrices || [];
+      }
+      if (product?.__typename === 'BundleProduct') {
         const { data: bundleItems } = await client.query<
           IProductBundleItemsQuery,
           IProductBundleItemsQueryVariables
@@ -78,7 +78,7 @@ export async function fetchAllProductsForExport(
         }));
       }
 
-      if (product.__typename === 'ConfigurableProduct') {
+      if (product?.__typename === 'ConfigurableProduct') {
         await Promise.all(
           locales.map(async (locale) => {
             const { data } = await client.query<

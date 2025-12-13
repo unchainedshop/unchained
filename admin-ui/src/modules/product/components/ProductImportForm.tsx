@@ -4,19 +4,76 @@ import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
 import { CSVRow } from '../../common/utils/csvUtils';
 
-const ProductImportForm = ({ onImport }) => {
-  const productsFileRef = useRef<HTMLInputElement>(null);
-  const pricesFileRef = useRef<HTMLInputElement>(null);
-  const bundleItemsFileRef = useRef<HTMLInputElement>(null);
-  const variationsFileRef = useRef<HTMLInputElement>(null);
-  const variationOptionsFileRef = useRef<HTMLInputElement>(null);
-  const [productsCSV, setProductsCSV] = useState<CSVRow[]>([]);
-  const [pricesCSV, setPricesCSV] = useState<CSVRow[]>([]);
-  const [bundleItemsCSV, setBundleItemsCSV] = useState<CSVRow[]>([]);
-  const [variationsCSV, setVariationsCSV] = useState<CSVRow[]>([]);
-  const [variationOptionsCSV, setVariationOptionsCSV] = useState<CSVRow[]>([]);
+type CSVFileKey =
+  | 'productsCSV'
+  | 'pricesCSV'
+  | 'bundleItemsCSV'
+  | 'variationsCSV'
+  | 'variationOptionsCSV';
+
+interface FileConfig {
+  key: CSVFileKey;
+  label: string;
+  optional?: boolean;
+}
+
+const ProductImportForm = ({
+  onImport,
+}: {
+  onImport: (files: Record<CSVFileKey, CSVRow[]>) => Promise<void>;
+}) => {
+  const fileRefs = useRef<Partial<Record<CSVFileKey, HTMLInputElement>>>({});
+  const [fileData, setFileData] = useState<Record<CSVFileKey, CSVRow[]>>({
+    productsCSV: [],
+    pricesCSV: [],
+    bundleItemsCSV: [],
+    variationsCSV: [],
+    variationOptionsCSV: [],
+  });
   const [isImporting, setIsImporting] = useState(false);
   const { formatMessage } = useIntl();
+
+  const FILES: FileConfig[] = [
+    {
+      key: 'productsCSV',
+      label: formatMessage({
+        id: 'product_csv_file',
+        defaultMessage: 'Products CSV',
+      }),
+    },
+    {
+      key: 'pricesCSV',
+      label: formatMessage({
+        id: 'product_price_csv_file',
+        defaultMessage: 'Product prices CSV (Optional)',
+      }),
+      optional: true,
+    },
+    {
+      key: 'bundleItemsCSV',
+      label: formatMessage({
+        id: 'product_bundle_item_csv_file',
+        defaultMessage: 'Product bundle items CSV (Optional)',
+      }),
+      optional: true,
+    },
+    {
+      key: 'variationsCSV',
+      label: formatMessage({
+        id: 'product_variations_csv_file',
+        defaultMessage: 'Product variations CSV (Optional)',
+      }),
+      optional: true,
+    },
+    {
+      key: 'variationOptionsCSV',
+      label: formatMessage({
+        id: 'product_variation_options_csv_file',
+        defaultMessage: 'Product variation options CSV (Optional)',
+      }),
+      optional: true,
+    },
+  ];
 
   const parseFile = async (file: File) => {
     const text = await file.text();
@@ -24,39 +81,33 @@ const ProductImportForm = ({ onImport }) => {
     return result.data as CSVRow[];
   };
 
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setData: React.Dispatch<React.SetStateAction<CSVRow[]>>,
-  ) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = async (key: CSVFileKey, file?: File) => {
     if (!file) return;
     const data = await parseFile(file);
-    setData(data);
+    setFileData((prev) => ({ ...prev, [key]: data }));
+  };
+
+  const handleInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: CSVFileKey,
+  ) => {
+    const file = e.target.files?.[0];
+    await handleFileChange(key, file);
     e.target.value = '';
   };
 
   const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      await onImport({
-        productsCSV,
-        pricesCSV,
-        bundleItemsCSV,
-        variationsCSV,
-        variationOptionsCSV,
-      });
+      await onImport(fileData);
     } catch (err: any) {
       console.error('Error importing products:', err);
     } finally {
       setIsImporting(false);
     }
-  }, [
-    productsCSV,
-    pricesCSV,
-    bundleItemsCSV,
-    variationsCSV,
-    variationOptionsCSV,
-  ]);
+  }, [fileData, onImport]);
+
+  const isProductsSelected = fileData.productsCSV.length > 0;
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
@@ -74,131 +125,37 @@ const ProductImportForm = ({ onImport }) => {
         })}
       </p>
 
-      <input
-        ref={productsFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setProductsCSV)}
-        className="hidden"
-      />
-      <input
-        ref={pricesFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setPricesCSV)}
-        className="hidden"
-      />
-      <input
-        ref={bundleItemsFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setBundleItemsCSV)}
-        className="hidden"
-      />
-      <input
-        ref={variationsFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setVariationsCSV)}
-        className="hidden"
-      />
-      <input
-        ref={variationOptionsFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setVariationOptionsCSV)}
-        className="hidden"
-      />
+      {FILES.map(({ key, label, optional }) => (
+        <React.Fragment key={key}>
+          <input
+            ref={(el) => {
+              fileRefs.current[key] = el ?? null;
+            }}
+            type="file"
+            accept=".csv"
+            onChange={(e) => handleInputChange(e, key)}
+            className="hidden"
+          />
 
-      <Button
-        text={
-          productsCSV.length
-            ? formatMessage({
-                id: 'products_file_selected',
-                defaultMessage: 'Products CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_products_csv',
-                defaultMessage: 'Select Products CSV',
-              })
-        }
-        onClick={() => productsFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting}
-        className="w-full"
-      />
-
-      <Button
-        text={
-          pricesCSV.length
-            ? formatMessage({
-                id: 'prices_file_selected',
-                defaultMessage: 'Prices CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_prices_csv',
-                defaultMessage: 'Select Product prices CSV (Optional)',
-              })
-        }
-        onClick={() => pricesFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting || !productsCSV.length}
-        className="w-full"
-      />
-      <Button
-        text={
-          bundleItemsCSV.length
-            ? formatMessage({
-                id: 'bundle_items_file_selected',
-                defaultMessage: 'Bundle items CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_bundle_items_csv',
-                defaultMessage: 'Select Product bundle items CSV (Optional)',
-              })
-        }
-        onClick={() => bundleItemsFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting || !productsCSV.length}
-        className="w-full"
-      />
-
-      <Button
-        text={
-          variationsCSV.length
-            ? formatMessage({
-                id: 'variations_file_selected',
-                defaultMessage: 'Variations CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_variations_csv',
-                defaultMessage: 'Select Product variations CSV (Optional)',
-              })
-        }
-        onClick={() => variationsFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting || !productsCSV.length}
-        className="w-full"
-      />
-
-      <Button
-        text={
-          variationOptionsCSV.length
-            ? formatMessage({
-                id: 'variation_options_file_selected',
-                defaultMessage: 'Variation options CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_variation_options_csv',
-                defaultMessage:
-                  'Select Product variation options CSV (Optional)',
-              })
-        }
-        onClick={() => variationOptionsFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting || !productsCSV.length}
-        className="w-full"
-      />
+          <Button
+            text={
+              fileData[key].length
+                ? formatMessage({
+                    id: `${key}_file_selected`,
+                    defaultMessage: `${label} Selected`,
+                  })
+                : formatMessage({
+                    id: `select_${key}`,
+                    defaultMessage: `Select ${label}`,
+                  })
+            }
+            onClick={() => fileRefs.current[key]?.click()}
+            variant="secondary"
+            disabled={isImporting || (!isProductsSelected && optional)}
+            className="w-full"
+          />
+        </React.Fragment>
+      ))}
 
       <Button
         text={
@@ -207,32 +164,32 @@ const ProductImportForm = ({ onImport }) => {
             : formatMessage({ id: 'import', defaultMessage: 'Import' })
         }
         onClick={handleImport}
-        disabled={isImporting || !productsCSV.length}
+        disabled={isImporting || !isProductsSelected}
         variant="primary"
         className="w-full"
       />
 
-      {productsCSV.length > 0 && (
+      {isProductsSelected && (
         <p className="text-center text-xs text-gray-500">
           {formatMessage(
             {
               id: 'ready_to_import',
               defaultMessage:
-                'Ready to import {products} products{prices}{bundleItems}.',
+                'Ready to import {products} products{prices}{bundleItems}{variations}{variationOptions}.',
             },
             {
-              products: productsCSV.length,
-              prices: pricesCSV.length
-                ? ` with ${pricesCSV.length} prices`
+              products: fileData.productsCSV.length,
+              prices: fileData.pricesCSV.length
+                ? ` with ${fileData.pricesCSV.length} prices`
                 : '',
-              bundleItems: bundleItemsCSV.length
-                ? ` with ${bundleItemsCSV.length} bundle items`
+              bundleItems: fileData.bundleItemsCSV.length
+                ? ` with ${fileData.bundleItemsCSV.length} bundle items`
                 : '',
-              variations: variationsCSV.length
-                ? ` with ${variationsCSV.length} variations`
+              variations: fileData.variationsCSV.length
+                ? ` with ${fileData.variationsCSV.length} variations`
                 : '',
-              variationOptions: variationOptionsCSV.length
-                ? ` with ${variationOptionsCSV.length} Variation options`
+              variationOptions: fileData.variationOptionsCSV.length
+                ? ` with ${fileData.variationOptionsCSV.length} Variation options`
                 : '',
             },
           )}

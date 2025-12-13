@@ -118,9 +118,12 @@ const buildVariationRows = (
   locales: string[],
 ) => {
   const variationRows: Record<string, any>[] = [];
-  const variationOptionRows: Record<string, any>[] = [];
+  const optionMap: Record<string, any> = {};
 
-  Object.values(variations).forEach((variation) => {
+  const VARIATION_FIELDS = PRODUCT_SCHEMA.variationTextFields;
+  const OPTION_FIELDS = PRODUCT_SCHEMA.variationOptionTextFields;
+
+  for (const variation of Object.values(variations)) {
     const variationRow: Record<string, any> = {
       productId,
       variationId: variation._id,
@@ -128,33 +131,55 @@ const buildVariationRows = (
       key: variation.key,
     };
 
-    locales.forEach((locale) => {
-      const localeData = variation[locale] ?? {};
-      const texts = localeData.texts ?? {};
-      const options = localeData.options ?? [];
-      PRODUCT_SCHEMA.variationTextFields.forEach((field) => {
+    for (const locale of locales) {
+      const localeData = variation[locale];
+      if (!localeData) continue;
+
+      const { texts = {}, options = [] } = localeData;
+      for (const field of VARIATION_FIELDS) {
         variationRow[`texts.${locale}.${field}`] = texts[field] ?? '';
-      });
-      options.forEach((option) => {
-        const optionRow: Record<string, any> = {
-          variationId: variation._id,
-          value: option?.value ?? '',
-        };
+      }
+      for (const option of options) {
+        if (!option) continue;
 
-        PRODUCT_SCHEMA.variationOptionTextFields.forEach((field) => {
-          optionRow[`texts.${locale}.${field}`] = option?.texts?.[field] ?? '';
-        });
+        const optionKey = `${variation._id}:${option.value}`;
+        const existing = optionMap[optionKey];
 
-        variationOptionRows.push(optionRow);
-      });
-    });
+        if (existing) {
+          existing.texts[locale] = option.texts ?? {};
+        } else {
+          optionMap[optionKey] = {
+            productId,
+            variationId: variation._id,
+            value: option.value ?? '',
+            texts: { [locale]: option.texts ?? {} },
+          };
+        }
+      }
+    }
 
     variationRows.push(variationRow);
-  });
-  return {
-    variationRows,
-    variationOptionRows,
-  };
+  }
+  const variationOptionRows: Record<string, any>[] = [];
+
+  for (const opt of Object.values(optionMap)) {
+    const row: Record<string, any> = {
+      productId: opt.productId,
+      variationId: opt.variationId,
+      value: opt.value,
+    };
+
+    for (const locale of locales) {
+      const texts = opt.texts[locale] || {};
+      for (const field of OPTION_FIELDS) {
+        row[`texts.${locale}.${field}`] = texts[field] ?? '';
+      }
+    }
+
+    variationOptionRows.push(row);
+  }
+
+  return { variationRows, variationOptionRows };
 };
 
 const buildProductRow = (

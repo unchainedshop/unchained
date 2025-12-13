@@ -181,11 +181,11 @@ const usePrepareProductImport = () => {
       if (prices.length)
         price = prices.map(
           ({ amount, maxQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
+            ...restPrice,
             amount: parseInt(amount) ?? 0,
             isNetPrice: isNetPrice === 'true',
             isTaxable: isTaxable === 'true',
-            maxQuantity: maxQuantity || 0,
-            ...restPrice,
+            maxQuantity: parseInt(maxQuantity, 2) || 0,
           }),
         );
 
