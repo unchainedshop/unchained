@@ -43,6 +43,8 @@ const PRODUCT_SCHEMA = {
   ],
   variationItemHeaders: ['productId', 'variationId', 'key', 'type'],
   variationTextFields: ['title', 'subtitle'],
+  variationOptionItemHeaders: ['variationId', 'value'],
+  variationOptionTextFields: ['title', 'subtitle'],
 };
 
 const buildProductHeaders = (locales: string[]) => [
@@ -62,6 +64,15 @@ const buildVariationHeaders = (locales) => [
   ...PRODUCT_SCHEMA.variationItemHeaders,
   ...locales.flatMap((locale) =>
     PRODUCT_SCHEMA.variationTextFields.map(
+      (field) => `texts.${locale}.${field}`,
+    ),
+  ),
+];
+
+const buildVariationOptionsHeaders = (locales) => [
+  ...PRODUCT_SCHEMA.variationOptionItemHeaders,
+  ...locales.flatMap((locale) =>
+    PRODUCT_SCHEMA.variationOptionTextFields.map(
       (field) => `texts.${locale}.${field}`,
     ),
   ),
@@ -106,24 +117,44 @@ const buildVariationRows = (
   variations: Record<string, any>,
   locales: string[],
 ) => {
-  const rows = Object.values(variations).map((v) => {
-    const row = {
-      productId: productId,
-      variationId: v._id,
-      type: v.type,
-      key: v.key,
+  const variationRows: Record<string, any>[] = [];
+  const variationOptionRows: Record<string, any>[] = [];
+
+  Object.values(variations).forEach((variation) => {
+    const variationRow: Record<string, any> = {
+      productId,
+      variationId: variation._id,
+      type: variation.type,
+      key: variation.key,
     };
 
     locales.forEach((locale) => {
-      const texts = v[locale] || {};
+      const localeData = variation[locale] ?? {};
+      const texts = localeData.texts ?? {};
+      const options = localeData.options ?? [];
       PRODUCT_SCHEMA.variationTextFields.forEach((field) => {
-        row[`texts.${locale}.${field}`] = texts[field] ?? '';
+        variationRow[`texts.${locale}.${field}`] = texts[field] ?? '';
+      });
+      options.forEach((option) => {
+        const optionRow: Record<string, any> = {
+          variationId: variation._id,
+          value: option?.value ?? '',
+        };
+
+        PRODUCT_SCHEMA.variationOptionTextFields.forEach((field) => {
+          optionRow[`texts.${locale}.${field}`] = option?.texts?.[field] ?? '';
+        });
+
+        variationOptionRows.push(optionRow);
       });
     });
 
-    return row;
+    variationRows.push(variationRow);
   });
-  return rows;
+  return {
+    variationRows,
+    variationOptionRows,
+  };
 };
 
 const buildProductRow = (
@@ -173,6 +204,10 @@ export const useProductExport = (products: IProduct[] | any[], client: any) => {
     () => buildVariationHeaders(locales),
     [locales],
   );
+  const variationOptionHeaders = useMemo(
+    () => buildVariationOptionsHeaders(locales),
+    [locales],
+  );
 
   const { exportCSV: exportProductsCSV, isExporting } = useCSVExport(
     products,
@@ -192,6 +227,14 @@ export const useProductExport = (products: IProduct[] | any[], client: any) => {
     headers: variationHeaders,
   });
 
+  const { exportCSV: exportVariationOptionsCSV } = useCSVExport(
+    products,
+    (p) => p,
+    {
+      headers: variationOptionHeaders,
+    },
+  );
+
   const exportProducts = useCallback(async () => {
     setIsLoadingTranslations(true);
 
@@ -204,20 +247,28 @@ export const useProductExport = (products: IProduct[] | any[], client: any) => {
     const priceRows = [];
     const bundleRows = [];
     const variationRows = [];
-
+    const variationOptionsRows = [];
     for (const product of products) {
       const pid = product._id;
       productRows.push(buildProductRow(product, locales, translations));
       priceRows.push(...buildPriceRows(pid, map.prices[pid] ?? []));
       bundleRows.push(...buildBundleRows(pid, map.bundles[pid] ?? []));
-      variationRows.push(
-        ...buildVariationRows(pid, map.variations[pid] ?? [], locales),
-      );
+      const {
+        variationRows: variations,
+        variationOptionRows: variationOptions,
+      } = buildVariationRows(pid, map.variations[pid] ?? [], locales);
+      variationRows.push(...variations);
+      variationOptionsRows.push(...variationOptions);
     }
+
     exportProductsCSV('products_export', productRows);
     exportPricesCSV('products_prices_export', priceRows);
     exportBundlesCSV('products_bundle_items_export', bundleRows);
     exportVariationsCSV('products_variations_export', variationRows);
+    exportVariationOptionsCSV(
+      'products_variation_options_export',
+      variationOptionsRows,
+    );
   }, [products, locales, client, exportProductsCSV]);
 
   return {

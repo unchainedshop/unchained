@@ -103,7 +103,10 @@ export async function fetchAllProductsForExport(
                 };
               }
 
-              result.variations[product._id][v._id][locale] = v.texts || {};
+              result.variations[product._id][v._id][locale] = {
+                options: v.options,
+                texts: v.texts,
+              };
             });
           }),
         );
