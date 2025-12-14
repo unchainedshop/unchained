@@ -8,6 +8,9 @@ export interface ImportableAssortment {
   tags: string[];
   sequence: number;
   content?: Record<string, any>;
+  filters?: any[];
+  children?: any[];
+  products?: any[];
 }
 
 const normalizeAssortmentContent = (row: CSVRow) => {
@@ -40,7 +43,7 @@ export const assortmentMapper = (row: CSVRow): ImportableAssortment => {
   return mapped;
 };
 
-export const validateAssortment = (assortmentCSV, intl): string[] => {
+export const validateAssortment = ({ assortmentCSV }: any, intl): string[] => {
   const errors: string[] = [];
   for (const assortment of assortmentCSV) {
     const normalized = normalizeAssortmentContent(assortment);
@@ -56,9 +59,12 @@ export const validateAssortment = (assortmentCSV, intl): string[] => {
   return errors;
 };
 
-const buildAssortmentEvents = (assortment: ImportableAssortment) => {
-  const now = new Date();
-
+const buildAssortmentEvents = ({
+  children,
+  products,
+  filters,
+  ...assortment
+}: ImportableAssortment) => {
   return {
     entity: 'assortment',
     operation: 'CREATE',
@@ -67,14 +73,78 @@ const buildAssortmentEvents = (assortment: ImportableAssortment) => {
       specification: {
         ...assortment,
       },
+      products,
+      filters,
+      children,
     },
   };
 };
 
 const usePrepareAssortmentImport = () => {
-  const prepareAssortmentImport = async (assortmentCSV) => {
+  const prepareAssortmentImport = async ({
+    assortmentCSV,
+    assortmentProductsCSV,
+    assortmentChildrenCSV,
+    assortmentFiltersCSV,
+  }: any): Promise<any> => {
+    console.log({
+      assortmentCSV,
+      assortmentProductsCSV,
+      assortmentChildrenCSV,
+      assortmentFiltersCSV,
+    });
     return assortmentCSV.map((assortment) => {
-      return buildAssortmentEvents(assortmentMapper(assortment));
+      const assortmentProducts = (assortmentProductsCSV || [])?.filter(
+        (p) => p.assortmentId === assortment._id,
+      );
+      const assortmentLinks = (assortmentChildrenCSV || [])?.filter(
+        (l) => l.assortmentId === assortment._id,
+      );
+      const assortmentFilters = (assortmentFiltersCSV || [])?.filter(
+        (f) => f.assortmentId === assortment._id,
+      );
+
+      let children = undefined;
+      let filters = undefined;
+      let products = undefined;
+
+      if (assortmentProducts.length) {
+        products = assortmentProducts.map(
+          ({ productId, tags, sortKey, _id }) => ({
+            productId,
+            tags: tags ? (tags as string).split(';') : [],
+            sortKey: sortKey ? Number(sortKey) : undefined,
+            _id,
+          }),
+        );
+      }
+
+      if (assortmentLinks.length) {
+        children = assortmentLinks.map(
+          ({ assortmentChildId, tags, sortKey, _id }) => ({
+            assortmentId: assortmentChildId,
+            tags: tags ? (tags as string).split(';') : [],
+            sortKey: sortKey ? Number(sortKey) : undefined,
+            _id,
+          }),
+        );
+      }
+
+      if (assortmentFilters.length) {
+        filters = assortmentFilters.map(({ filterId, tags, sortKey, _id }) => ({
+          filterId,
+          tags: tags ? (tags as string).split(';') : [],
+          sortKey: sortKey ? Number(sortKey) : undefined,
+          _id,
+        }));
+      }
+
+      return buildAssortmentEvents({
+        ...assortmentMapper(assortment),
+        filters,
+        products,
+        children,
+      });
     });
   };
   return { prepareAssortmentImport };
