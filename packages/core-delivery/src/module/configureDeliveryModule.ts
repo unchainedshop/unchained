@@ -8,6 +8,7 @@ import {
 import {
   DeliveryProvidersCollection,
   type DeliveryProvider,
+  type DeliveryProviderType,
 } from '../db/DeliveryProvidersCollection.ts';
 import { deliverySettings, type DeliverySettingsOptions } from '../delivery-settings.ts';
 import pMemoize from 'p-memoize';
@@ -25,11 +26,29 @@ export interface DeliveryInterface {
   version: string;
 }
 
+export interface DeliveryProviderQuery {
+  _id?: { $in: string[] };
+  type?: DeliveryProviderType;
+  includeDeleted?: boolean;
+  queryString?: string;
+}
+
 export const buildFindSelector = ({
   includeDeleted = false,
+  queryString,
   ...rest
-}: mongodb.Filter<DeliveryProvider> & { includeDeleted?: boolean } = {}) => {
-  return { ...(includeDeleted ? {} : { deleted: null }), ...rest };
+}: DeliveryProviderQuery = {}): mongodb.Filter<DeliveryProvider> => {
+  const selector: mongodb.Filter<DeliveryProvider> = {
+    ...(includeDeleted ? {} : { deleted: null }),
+    ...rest,
+  };
+
+  if (queryString) {
+    const regex = new RegExp(queryString, 'i');
+    selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
+  }
+
+  return selector;
 };
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
@@ -46,7 +65,7 @@ export const configureDeliveryModule = async ({
 
   return {
     // Queries
-    count: async (query: mongodb.Filter<DeliveryProvider>): Promise<number> => {
+    count: async (query: DeliveryProviderQuery = {}): Promise<number> => {
       const providerCount = await DeliveryProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
@@ -67,7 +86,7 @@ export const configureDeliveryModule = async ({
     },
 
     findProviders: async (
-      query: mongodb.Filter<DeliveryProvider> & { includeDeleted?: boolean },
+      query: DeliveryProviderQuery = {},
       options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<DeliveryProvider[]> => {
       const providers = DeliveryProviders.find(buildFindSelector(query), options);

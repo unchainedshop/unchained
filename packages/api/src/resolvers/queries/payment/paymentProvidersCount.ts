@@ -1,11 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import type { PaymentProvider } from '@unchainedshop/core-payment';
+import type { PaymentProviderType } from '@unchainedshop/core-payment';
 
 export default async function paymentProvidersCount(
-  root: never,
+  _root: never,
   params: {
-    type?: PaymentProvider | null;
+    type?: PaymentProviderType | null;
   },
   { modules, userId }: Context,
 ) {

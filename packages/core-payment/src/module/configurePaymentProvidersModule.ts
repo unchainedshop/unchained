@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import type { PaymentProvider } from '../db/PaymentProvidersCollection.ts';
+import type { PaymentProvider, PaymentProviderType } from '../db/PaymentProvidersCollection.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 
@@ -18,11 +18,29 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
+export interface PaymentProviderQuery {
+  _id?: { $in: string[] };
+  type?: PaymentProviderType;
+  includeDeleted?: boolean;
+  queryString?: string;
+}
+
 export const buildFindSelector = ({
   includeDeleted = false,
+  queryString,
   ...rest
-}: mongodb.Filter<PaymentProvider> & { includeDeleted?: boolean } = {}) => {
-  return { ...(includeDeleted ? {} : { deleted: null }), ...rest };
+}: PaymentProviderQuery = {}): mongodb.Filter<PaymentProvider> => {
+  const selector: mongodb.Filter<PaymentProvider> = {
+    ...(includeDeleted ? {} : { deleted: null }),
+    ...rest,
+  };
+
+  if (queryString) {
+    const regex = new RegExp(queryString, 'i');
+    selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
+  }
+
+  return selector;
 };
 
 export const configurePaymentProvidersModule = (
@@ -32,7 +50,7 @@ export const configurePaymentProvidersModule = (
 
   return {
     // Queries
-    count: async (query: mongodb.Filter<PaymentProvider>): Promise<number> => {
+    count: async (query: PaymentProviderQuery = {}): Promise<number> => {
       const providerCount = await PaymentProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
@@ -53,7 +71,7 @@ export const configurePaymentProvidersModule = (
     },
 
     findProviders: async (
-      query: mongodb.Filter<PaymentProvider> & { includeDeleted?: boolean },
+      query: PaymentProviderQuery = {},
       options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<PaymentProvider[]> => {
       const providers = PaymentProviders.find(buildFindSelector(query), options);

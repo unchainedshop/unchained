@@ -8,6 +8,7 @@ import {
 } from '@unchainedshop/mongodb';
 import {
   type WarehousingProvider,
+  type WarehousingProviderType,
   WarehousingProvidersCollection,
 } from '../db/WarehousingProvidersCollection.ts';
 import { type TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.ts';
@@ -29,11 +30,29 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
 
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
+export interface WarehousingProviderQuery {
+  _id?: { $in: string[] };
+  type?: WarehousingProviderType;
+  includeDeleted?: boolean;
+  queryString?: string;
+}
+
 export const buildFindSelector = ({
   includeDeleted = false,
+  queryString,
   ...rest
-}: mongodb.Filter<WarehousingProvider> & { includeDeleted?: boolean } = {}) => {
-  return { ...(includeDeleted ? {} : { deleted: null }), ...rest };
+}: WarehousingProviderQuery = {}): mongodb.Filter<WarehousingProvider> => {
+  const selector: mongodb.Filter<WarehousingProvider> = {
+    ...(includeDeleted ? {} : { deleted: null }),
+    ...rest,
+  };
+
+  if (queryString) {
+    const regex = new RegExp(queryString, 'i');
+    selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
+  }
+
+  return selector;
 };
 export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
@@ -53,7 +72,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
   return {
     // Queries
-    count: async (query: mongodb.Filter<WarehousingProvider>): Promise<number> => {
+    count: async (query: WarehousingProviderQuery = {}): Promise<number> => {
       const providerCount = await WarehousingProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
@@ -105,7 +124,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     findProviders: async (
-      query: mongodb.Filter<WarehousingProvider> & { includeDeleted?: boolean },
+      query: WarehousingProviderQuery = {},
       options: mongodb.FindOptions = { sort: { created: 1 } },
     ): Promise<WarehousingProvider[]> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
