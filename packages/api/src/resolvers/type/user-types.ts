@@ -113,12 +113,6 @@ const {
   viewUserProductReviews,
 } = actions as Record<string, string>;
 
-const getPrimaryEmail = (user: UserType) => {
-  return (user.emails || []).toSorted(
-    (left, right) => Number(right.verified) - Number(left.verified),
-  )?.[0];
-};
-
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
   created: checkTypeResolver(viewUserPrivateInfos, 'created'),
@@ -144,7 +138,7 @@ export const User: UserHelperTypes = {
 
   primaryEmail: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return getPrimaryEmail(user);
+    return context.modules.users.primaryEmail(user);
   },
 
   isInitialPassword: async (user, params, context) => {
