@@ -3,11 +3,11 @@ import { FilterNotFoundError, InvalidIdError } from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
 
 export default async function removeFilter(
-  root: never,
+  _root: never,
   { filterId }: { filterId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log(`mutation removeFilter ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });
@@ -15,8 +15,5 @@ export default async function removeFilter(
   const filter = await modules.filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  await modules.assortments.filters.deleteMany({ filterId });
-  await modules.filters.delete(filterId);
-
-  return filter;
+  return services.filters.removeFilter({ filter });
 }

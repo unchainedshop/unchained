@@ -39,6 +39,7 @@ import { rejectQuotationService } from './rejectQuotation.ts';
 import { verifyQuotationService } from './verifyQuotation.ts';
 import { loadFiltersService } from './loadFilters.ts';
 import { loadFilterOptionsService } from './loadFilterOptions.ts';
+import { removeFilterService } from './removeFilter.ts';
 import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
@@ -173,6 +174,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       invalidateFilterCache: invalidateFilterCacheService as Bound<typeof invalidateFilterCacheService>,
       loadFilters: loadFiltersService as Bound<typeof loadFiltersService>,
       loadFilterOptions: loadFilterOptionsService as Bound<typeof loadFilterOptionsService>,
+      removeFilter: removeFilterService as Bound<typeof removeFilterService>,
     },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
