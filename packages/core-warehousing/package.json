@@ -4,6 +4,7 @@
   "main": "lib/warehousing-index.js",
   "types": "lib/warehousing-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

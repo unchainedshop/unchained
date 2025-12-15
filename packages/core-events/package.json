@@ -4,6 +4,7 @@
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

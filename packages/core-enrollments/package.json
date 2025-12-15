@@ -4,6 +4,7 @@
   "main": "lib/enrollments-index.js",
   "types": "lib/enrollments-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

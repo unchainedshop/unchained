@@ -4,6 +4,7 @@
   "main": "lib/payment-index.js",
   "types": "lib/payment-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

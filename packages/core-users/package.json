@@ -4,6 +4,7 @@
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

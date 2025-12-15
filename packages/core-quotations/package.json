@@ -4,6 +4,7 @@
   "main": "lib/quotations-index.js",
   "types": "lib/quotations-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

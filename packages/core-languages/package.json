@@ -4,6 +4,7 @@
   "main": "lib/languages-index.js",
   "types": "lib/languages-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

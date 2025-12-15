@@ -4,6 +4,7 @@
   "main": "lib/orders-index.js",
   "types": "lib/orders-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

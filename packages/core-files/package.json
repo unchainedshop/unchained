@@ -4,6 +4,7 @@
   "main": "lib/files-index.js",
   "types": "lib/files-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

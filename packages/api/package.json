@@ -4,6 +4,7 @@
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./lib/api-index.js",

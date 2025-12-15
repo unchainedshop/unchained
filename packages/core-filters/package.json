@@ -4,6 +4,7 @@
   "main": "lib/filters-index.js",
   "types": "lib/filters-index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

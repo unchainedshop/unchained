@@ -1,3 +1,4 @@
+import { registerEvents } from '@unchainedshop/events';
 import createGraphQLServer, { type GraphQLServerOptions } from './createGraphQLServer.ts';
 import {
   createContextResolver,
@@ -7,6 +8,7 @@ import {
   type UnchainedContextResolver,
 } from './context.ts';
 import type { UnchainedCore } from '@unchainedshop/core';
+import { API_EVENTS } from './events.ts';
 export * from './events.ts';
 export * from './context.ts';
 export * from './locale-context.ts';
@@ -28,6 +30,8 @@ export type UnchainedServerOptions = {
 } & Partial<GraphQLServerOptions>;
 
 export const startAPIServer = async (options: UnchainedServerOptions) => {
+  registerEvents(Object.keys(API_EVENTS));
+
   const {
     unchainedAPI,
     context: customContext,
