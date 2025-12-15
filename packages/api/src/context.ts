@@ -4,6 +4,8 @@ import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.
 import type { UnchainedServerOptions } from './api-index.ts';
 import type { User } from '@unchainedshop/core-users';
 
+const { npm_package_version, UNCHAINED_API_VERSION } = process.env;
+
 export type LoginFn = (
   user: User,
   options?: {
@@ -64,13 +66,6 @@ export type UnchainedContextResolver<Request = any, Response = any> = (
   res?: Response,
 ) => Promise<Context>;
 
-const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
-  with: { type: 'json' },
-});
-
-const { UNCHAINED_API_VERSION = packageJson?.version || process.env.npm_package_version || 'n/a' } =
-  process.env;
-
 export const createContextResolver =
   (
     unchainedAPI: UnchainedCore,
@@ -115,6 +110,6 @@ export const createContextResolver =
       ...userContext,
       ...abstractHttpServerContext,
       loaders,
-      version: UNCHAINED_API_VERSION,
+      version: UNCHAINED_API_VERSION || npm_package_version || 'n/a',
     };
   };

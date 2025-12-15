@@ -271,9 +271,16 @@ export const connect = (
 
 const fallbackLandingPageHandler = (request, reply) => {
   if (request.raw.method === 'GET') {
-    const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
-    const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
-    return reply.type('text/html').send(readFileSync(staticPath + '/index.html'));
+    try {
+      // Try to resolve from package exports first (works in non-bundled environments)
+      const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
+      const staticPath = new URL(staticURL).pathname;
+      return reply.type('text/html').send(readFileSync(staticPath));
+    } catch {
+      // Fallback for bundled environments: use relative path from this file
+      const fallbackPath = new URL('../../index.html', import.meta.url).pathname;
+      return reply.type('text/html').send(readFileSync(fallbackPath));
+    }
   } else {
     return reply.status(404).send();
   }

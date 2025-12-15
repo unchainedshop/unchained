@@ -10,6 +10,8 @@ import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './set
 import { createMigrationRepository } from './migrations/migrationRepository.ts';
 import type { IRoleOptionConfig } from '@unchainedshop/roles';
 
+const { UNCHAINED_API_VERSION, npm_package_version } = process.env;
+
 export { MessageTypes };
 
 export type PlatformOptions = {
@@ -102,10 +104,9 @@ export const startPlatform = async ({
     ...workQueueOptions,
   });
 
-  const { default: packageJson } = await import(`${import.meta.dirname}/../package.json`, {
-    with: { type: 'json' },
-  });
-  defaultLogger.info(`Unchained Engine running`, { version: packageJson.version });
+  const version = UNCHAINED_API_VERSION || npm_package_version || 'n/a';
+
+  defaultLogger.info(`Unchained Engine running`, { version });
 
   const cleanup = (signal) => async () => {
     defaultLogger.debug('Stopping Workqueue', { signal });
@@ -114,7 +115,7 @@ export const startPlatform = async ({
     await graphqlHandler.dispose();
     defaultLogger.debug('Stopping DB Connection', { signal });
     await stopDb();
-    defaultLogger.debug(`Unchained Engine exiting`, { signal, version: packageJson.version });
+    defaultLogger.debug(`Unchained Engine exiting`, { signal, version });
     process.exit(0);
   };
 
