@@ -5,7 +5,7 @@ import { useCSVExport } from '../../common/hooks/useCSVExport';
 import { IProduct } from '../../../gql/types';
 import useApp from '../../common/hooks/useApp';
 
-const PRODUCT_SCHEMA = {
+export const PRODUCT_CSV_SCHEMA = {
   base: [
     '_id',
     'sku',
@@ -48,9 +48,9 @@ const PRODUCT_SCHEMA = {
 };
 
 const buildProductHeaders = (locales: string[]) => [
-  ...PRODUCT_SCHEMA.base,
+  ...PRODUCT_CSV_SCHEMA.base,
   ...locales.flatMap((locale) =>
-    PRODUCT_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
+    PRODUCT_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
   'supply.weightInGram',
   'supply.heightInMillimeters',
@@ -58,21 +58,21 @@ const buildProductHeaders = (locales: string[]) => [
   'supply.widthInMillimeters',
 ];
 
-const buildPriceHeaders = () => [...PRODUCT_SCHEMA.priceFields];
-const buildBundleHeaders = () => [...PRODUCT_SCHEMA.bundleItemHeaders];
+const buildPriceHeaders = () => [...PRODUCT_CSV_SCHEMA.priceFields];
+const buildBundleHeaders = () => [...PRODUCT_CSV_SCHEMA.bundleItemHeaders];
 const buildVariationHeaders = (locales) => [
-  ...PRODUCT_SCHEMA.variationItemHeaders,
+  ...PRODUCT_CSV_SCHEMA.variationItemHeaders,
   ...locales.flatMap((locale) =>
-    PRODUCT_SCHEMA.variationTextFields.map(
+    PRODUCT_CSV_SCHEMA.variationTextFields.map(
       (field) => `texts.${locale}.${field}`,
     ),
   ),
 ];
 
 const buildVariationOptionsHeaders = (locales) => [
-  ...PRODUCT_SCHEMA.variationOptionItemHeaders,
+  ...PRODUCT_CSV_SCHEMA.variationOptionItemHeaders,
   ...locales.flatMap((locale) =>
-    PRODUCT_SCHEMA.variationOptionTextFields.map(
+    PRODUCT_CSV_SCHEMA.variationOptionTextFields.map(
       (field) => `texts.${locale}.${field}`,
     ),
   ),
@@ -120,8 +120,8 @@ const buildVariationRows = (
   const variationRows: Record<string, any>[] = [];
   const optionMap: Record<string, any> = {};
 
-  const VARIATION_FIELDS = PRODUCT_SCHEMA.variationTextFields;
-  const OPTION_FIELDS = PRODUCT_SCHEMA.variationOptionTextFields;
+  const VARIATION_FIELDS = PRODUCT_CSV_SCHEMA.variationTextFields;
+  const OPTION_FIELDS = PRODUCT_CSV_SCHEMA.variationOptionTextFields;
 
   for (const variation of Object.values(variations)) {
     const variationRow: Record<string, any> = {
@@ -189,7 +189,7 @@ const buildProductRow = (
 ) => {
   const row: Record<string, any> = {};
 
-  PRODUCT_SCHEMA.base.forEach((key) => {
+  PRODUCT_CSV_SCHEMA.base.forEach((key) => {
     row[key] =
       key === '__typename' ? PRODUCT_TYPES[product[key]] : (product[key] ?? '');
   });
@@ -206,7 +206,7 @@ const buildProductRow = (
   locales.forEach((locale) => {
     const text = productTexts[locale] || {};
 
-    PRODUCT_SCHEMA.textFields.forEach((field) => {
+    PRODUCT_CSV_SCHEMA.textFields.forEach((field) => {
       const value = Array.isArray(text[field])
         ? text[field].join(';')
         : (text[field] ?? '');

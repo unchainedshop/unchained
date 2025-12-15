@@ -1,48 +1,11 @@
+import { IProductStatus, IProductVariationType } from '../../../gql/types';
 import { CSVRow } from '../../common/utils/csvUtils';
 import { PRODUCT_TYPES } from '../ProductTypes';
-
-export type ProductType =
-  | 'SimpleProduct'
-  | 'ConfigurableProduct'
-  | 'PlanProduct'
-  | 'BundleProduct'
-  | 'TokenizedProduct';
-
-export interface ImportableProduct {
-  _id?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'DELETED';
-  type: ProductType;
-  tags: string[];
-  sequence: number;
-  sku?: string;
-  baseUnit?: string;
-  updated?: string;
-  published?: string;
-  supply?: {
-    weightInGram?: number;
-    heightInMillimeters?: number;
-    lengthInMillimeters?: number;
-    widthInMillimeters?: number;
-  };
-  warehousing?: {
-    sku?: string;
-    baseUnit?: string;
-  };
-  content?: Record<string, any>;
-  commerce?: {
-    amount: number;
-    isNetPrice: boolean;
-    isTaxable: boolean;
-    maxQuantity: number;
-    currencyCode: string;
-    countryCode: string;
-  }[];
-  bundleItems?: {
-    productId: string;
-    quantity: number;
-  }[];
-  variations?: any[];
-}
+import {
+  BuildProductEventsParam,
+  ProductCSVRow,
+  ProductImportPayload,
+} from '../types';
 
 const normalizeContent = (row: CSVRow) => {
   const content: Record<string, any> = {};
@@ -62,7 +25,7 @@ const normalizeContent = (row: CSVRow) => {
   return content;
 };
 
-export const productMapper = (row: CSVRow): ImportableProduct => {
+export const productMapper = (row: ProductCSVRow): ProductCSVRow => {
   const hasSupply =
     row['supply.weightInGram'] ||
     row['supply.heightInMillimeters'] ||
@@ -70,7 +33,7 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
     row['supply.widthInMillimeters'];
   const hasWarehousing = row['sku'] || row['baseUnit'];
   const content = normalizeContent(row);
-  const mapped: ImportableProduct = {
+  const mapped = {
     _id: row['_id'] || undefined,
     warehousing: hasWarehousing
       ? {
@@ -78,9 +41,12 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
           baseUnit: row['baseUnit'] || undefined,
         }
       : undefined,
-    sequence: parseInt(row['sequence'] || '0', 10),
+    sequence:
+      typeof row['sequence'] === 'string'
+        ? parseInt(row['sequence'] || '0', 10)
+        : row['sequence'] || 0,
     status: row['status'] || null,
-    type: row['__typename'] as ProductType,
+    type: row['__typename'],
     tags: row['tags'] ? (row['tags'] as string).split(';') : [],
     updated: row['updated'] || undefined,
     published: row['published'] || undefined,
@@ -109,9 +75,17 @@ export const productMapper = (row: CSVRow): ImportableProduct => {
   return mapped;
 };
 
-export const validateProduct = ({ productsCSV }: any, intl): string[] => {
+export const validateProduct = (
+  {
+    productsCSV,
+    pricesCSV,
+    bundleItemsCSV,
+    variationOptionsCSV,
+    variationsCSV,
+  }: ProductImportPayload,
+  intl,
+): string[] => {
   const errors: string[] = [];
-
   for (const product of productsCSV) {
     if (!Object.values(PRODUCT_TYPES).includes(product?.__typename)) {
       errors.push(
@@ -124,6 +98,157 @@ export const validateProduct = ({ productsCSV }: any, intl): string[] => {
         ),
       );
     }
+    if (!product.sequence) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_import_sequence_required',
+          defaultMessage: 'Required field sequence missing',
+        }),
+      );
+    }
+    if (!product.status) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_import_status_required',
+          defaultMessage: 'Required field status missing',
+        }),
+      );
+    }
+    if (
+      product.status &&
+      ![
+        IProductStatus.Active,
+        IProductStatus.Draft,
+        IProductStatus.Deleted,
+      ].includes(product.status)
+    ) {
+      errors.push(
+        intl.formatMessage(
+          {
+            id: 'product_import_status_invalid',
+            defaultMessage: 'Invalid status value given {{}}',
+          },
+          { status: product.status },
+        ),
+      );
+    }
+  }
+
+  for (const price of pricesCSV) {
+    if (!price.productId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_price_import_product_id_required',
+          defaultMessage: 'Required field productId missing',
+        }),
+      );
+    }
+    if (!price.amount) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_price_import_amount_required',
+          defaultMessage: 'Required field amount missing',
+        }),
+      );
+    }
+    if (!price.countryCode) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_price_import_countryCode_required',
+          defaultMessage: 'Required field countryCode missing',
+        }),
+      );
+    }
+    if (!price.currencyCode) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_price_import_currencyCode_required',
+          defaultMessage: 'Required field currencyCode missing',
+        }),
+      );
+    }
+  }
+
+  for (const price of bundleItemsCSV) {
+    if (!price.productId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_bundle_import_product_id_required',
+          defaultMessage: 'Required field variation productId missing',
+        }),
+      );
+    }
+    if (!price.bundleItemProductId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_bundle_import_item_id_required',
+          defaultMessage: 'Required field bundleItemProductId missing',
+        }),
+      );
+    }
+  }
+
+  for (const variation of variationsCSV) {
+    if (!variation.productId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_variation_import_product_id_required',
+          defaultMessage: 'Required field variation productId missing',
+        }),
+      );
+    }
+    if (!variation.variationId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_variation_import_variation_id_required',
+          defaultMessage: 'Required field variationId missing',
+        }),
+      );
+    }
+    if (!variation.type) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_variation_import_type_required',
+          defaultMessage: 'Required field variation type missing',
+        }),
+      );
+    }
+
+    if (
+      variation.type &&
+      ![IProductVariationType.Color, IProductVariationType.Text].includes(
+        variation.type,
+      )
+    ) {
+      errors.push(
+        intl.formatMessage(
+          {
+            id: 'product_variation_import_invalid_type_required',
+            defaultMessage: 'Invalid variation type given {{}}',
+          },
+          { type: variation.type },
+        ),
+      );
+    }
+  }
+
+  for (const variationOption of variationOptionsCSV) {
+    if (!variationOption.variationId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_variation_option_import_variation_id_required',
+          defaultMessage: 'Required field variation id missing',
+        }),
+      );
+    }
+    if (!variationOption.value) {
+      errors.push(
+        intl.formatMessage({
+          id: 'product_variation_option_import_value_required',
+          defaultMessage: 'Required field variation option value missing',
+        }),
+      );
+    }
   }
 
   return errors;
@@ -132,7 +257,7 @@ export const validateProduct = ({ productsCSV }: any, intl): string[] => {
 const buildProductEvents = ({
   variations = [],
   ...product
-}: ImportableProduct) => {
+}: BuildProductEventsParam) => {
   const now = new Date();
 
   return {
@@ -163,7 +288,7 @@ const usePrepareProductImport = () => {
     bundleItemsCSV,
     variationsCSV,
     variationOptionsCSV,
-  }: any): Promise<any> => {
+  }: ProductImportPayload) => {
     return (productsCSV || []).map((product) => {
       const prices = (pricesCSV || []).filter(
         (option) => option['productId'] === product._id,

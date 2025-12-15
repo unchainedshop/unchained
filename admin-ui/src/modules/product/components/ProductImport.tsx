@@ -11,6 +11,7 @@ import usePrepareProductImport, {
 } from '../hooks/usePrepareProductImport';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
 import ProductImportForm from './ProductImportForm';
+import { ProductImportPayload } from '../types';
 
 const ProductImport = () => {
   const { formatMessage } = useIntl();
@@ -18,7 +19,7 @@ const ProductImport = () => {
   const { setModal } = useModal();
   const { prepareProductImport } = usePrepareProductImport();
 
-  const { isImporting, importItems } = useCSVImport({
+  const { isImporting, importItems } = useCSVImport<ProductImportPayload>({
     validate: validateProduct,
     process: prepareProductImport,
   });
@@ -28,7 +29,7 @@ const ProductImport = () => {
   const handleOpenImport = () => {
     setModal(
       <ProductImportForm
-        onImport={async (normalizedProducts: any) => {
+        onImport={async (normalizedProducts) => {
           const result = await importItems(normalizedProducts);
           setModal(
             <ImportResultMessage
