@@ -1,13 +1,11 @@
 import { log } from '@unchainedshop/logger';
-import moniker from 'moniker';
 import type { Context } from '../../../context.ts';
-import { generateDbObjectId } from '@unchainedshop/mongodb';
 import type { User } from '@unchainedshop/core-users';
 
 export default async function loginAsGuest(root: never, _: any, context: Context) {
   log('mutation loginAsGuest');
 
-  const guestname = `${moniker.choose()}-${generateDbObjectId(5)}`;
+  const guestname = `guest-${crypto.randomUUID()}`;
   const guestUserId = await context.modules.users.createUser(
     {
       email: `${guestname}@unchained.local`,
