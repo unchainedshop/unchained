@@ -7,15 +7,13 @@ import {
   InvalidIdError,
   OrderNotFoundError,
 } from '../../../errors.ts';
-import { OrderDiscountTrigger } from '@unchainedshop/core-orders';
-import { OrderDiscountDirector } from '@unchainedshop/core';
 
 export default async function removeCartDiscount(
-  root: never,
+  _root: never,
   { discountId }: { discountId: string },
   requestContext: Context,
 ) {
-  const { modules, services, userId } = requestContext;
+  const { modules, services, userId, locale } = requestContext;
 
   log(`mutation removeCartDiscount ${discountId}`, { userId });
 
@@ -33,21 +31,17 @@ export default async function removeCartDiscount(
   if (!order) throw new OrderNotFoundError({ orderId: orderDiscount.orderId });
 
   if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order!.status });
+    throw new OrderWrongStatusError({ status: order.status });
   }
 
-  if (orderDiscount.trigger === OrderDiscountTrigger.USER) {
-    // Release
-    const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
-    if (Adapter) {
-      const adapter = await Adapter.actions({
-        context: { order, orderDiscount, code: orderDiscount.code, ...requestContext },
-      });
-      await adapter.release();
-    }
-  }
+  const deletedDiscount = await services.orders.removeCartDiscount({
+    order,
+    orderDiscount,
+    requestContext: { localeContext: locale, userId },
+  });
 
-  const deletedDiscount = await modules.orders.discounts.delete(discountId);
+  if (!deletedDiscount) throw new OrderDiscountNotFoundError({ orderDiscount });
+
   await services.orders.updateCalculation(order._id);
   return deletedDiscount;
 }

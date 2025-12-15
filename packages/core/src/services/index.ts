@@ -40,6 +40,7 @@ import { verifyQuotationService } from './verifyQuotation.ts';
 import { loadFiltersService } from './loadFilters.ts';
 import { loadFilterOptionsService } from './loadFilterOptions.ts';
 import { removeFilterService } from './removeFilter.ts';
+import { removeCartDiscountService } from './removeCartDiscount.ts';
 import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
@@ -125,6 +126,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       resolveOrderItemDispatches: resolveOrderItemDispatchesService as Bound<
         typeof resolveOrderItemDispatchesService
       >,
+      removeCartDiscount: removeCartDiscountService as Bound<typeof removeCartDiscountService>,
     },
     products: {
       simulateProductPricing: simulateProductPricingService as Bound<
