@@ -47,7 +47,7 @@ export const PRODUCT_CSV_SCHEMA = {
   variationOptionTextFields: ['title', 'subtitle'],
 };
 
-const buildProductHeaders = (locales: string[]) => [
+export const buildProductHeaders = (locales: string[]) => [
   ...PRODUCT_CSV_SCHEMA.base,
   ...locales.flatMap((locale) =>
     PRODUCT_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
@@ -58,9 +58,11 @@ const buildProductHeaders = (locales: string[]) => [
   'supply.widthInMillimeters',
 ];
 
-const buildPriceHeaders = () => [...PRODUCT_CSV_SCHEMA.priceFields];
-const buildBundleHeaders = () => [...PRODUCT_CSV_SCHEMA.bundleItemHeaders];
-const buildVariationHeaders = (locales) => [
+export const buildPriceHeaders = () => [...PRODUCT_CSV_SCHEMA.priceFields];
+export const buildBundleHeaders = () => [
+  ...PRODUCT_CSV_SCHEMA.bundleItemHeaders,
+];
+export const buildVariationHeaders = (locales) => [
   ...PRODUCT_CSV_SCHEMA.variationItemHeaders,
   ...locales.flatMap((locale) =>
     PRODUCT_CSV_SCHEMA.variationTextFields.map(
@@ -69,7 +71,7 @@ const buildVariationHeaders = (locales) => [
   ),
 ];
 
-const buildVariationOptionsHeaders = (locales) => [
+export const buildVariationOptionsHeaders = (locales) => [
   ...PRODUCT_CSV_SCHEMA.variationOptionItemHeaders,
   ...locales.flatMap((locale) =>
     PRODUCT_CSV_SCHEMA.variationOptionTextFields.map(

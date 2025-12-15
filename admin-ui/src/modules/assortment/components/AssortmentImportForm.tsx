@@ -2,13 +2,40 @@ import React, { useCallback, useRef, useState } from 'react';
 import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
-import { CSVRow } from '../../common/utils/csvUtils';
+import { CSVRow, downloadCSV } from '../../common/utils/csvUtils';
 import {
   AssortmentCSVFileKey,
   AssortmentImportPayload,
   FileConfig,
 } from '../types';
-import { ASSORTMENT_CSV_SCHEMA } from '../hooks/useAssortmentExport';
+import {
+  ASSORTMENT_CSV_SCHEMA,
+  buildAssortmentChildrenHeaders,
+  buildAssortmentFilterHeaders,
+  buildAssortmentHeaders,
+  buildAssortmentProductHeaders,
+} from '../hooks/useAssortmentExport';
+import useApp from '../../common/hooks/useApp';
+export const getFilterCSVHeaders = (
+  key: AssortmentCSVFileKey,
+  locales: string[] = [],
+) => {
+  if (key === 'assortmentCSV') return buildAssortmentHeaders(locales);
+  if (key === 'assortmentChildrenCSV') return buildAssortmentChildrenHeaders();
+  if (key === 'assortmentFiltersCSV') return buildAssortmentFilterHeaders();
+  if (key === 'assortmentProductsCSV') return buildAssortmentProductHeaders();
+
+  return [];
+};
+
+const downloadCSVTemplate = (
+  key: AssortmentCSVFileKey,
+  fileName: string,
+  locales: string[] = [],
+) => {
+  const headers = getFilterCSVHeaders(key, locales).join(',');
+  downloadCSV(headers, fileName);
+};
 
 const REQUIRED_FIELDS: Record<AssortmentCSVFileKey, string[]> = {
   assortmentCSV: ASSORTMENT_CSV_SCHEMA.base,
@@ -25,6 +52,8 @@ const AssortmentImportForm = ({
   const fileRefs = useRef<
     Partial<Record<AssortmentCSVFileKey, HTMLInputElement>>
   >({});
+  const { languageDialectList } = useApp();
+  const locales = languageDialectList?.map((l) => l.isoCode) || [];
   const [errors, setErrors] = useState<
     Partial<Record<AssortmentCSVFileKey, string>>
   >({});
@@ -160,36 +189,56 @@ const AssortmentImportForm = ({
 
       {FILES.map(({ key, label, optional }) => (
         <React.Fragment key={key}>
-          <input
-            ref={(el) => {
-              fileRefs.current[key] = el ?? null;
-            }}
-            type="file"
-            accept=".csv"
-            onChange={(e) => handleInputChange(e, key)}
-            className="hidden"
-          />
+          <div key={key} className="flex flex-col gap-2">
+            <input
+              ref={(el) => {
+                fileRefs.current[key] = el ?? null;
+              }}
+              type="file"
+              accept=".csv"
+              onChange={(e) => handleInputChange(e, key)}
+              className="hidden"
+            />
 
-          <Button
-            text={
-              fileData[key].length
-                ? formatMessage({
-                    id: `${key}_file_selected`,
-                    defaultMessage: `${label} Selected`,
-                  })
-                : formatMessage({
-                    id: `select_${key}`,
-                    defaultMessage: `Select ${label}`,
-                  })
-            }
-            onClick={() => fileRefs.current[key]?.click()}
-            variant="secondary"
-            disabled={isImporting || (!isBaseSelected && optional)}
-            className="w-full"
-          />
-          {errors[key] && (
-            <p className="text-xs text-red-600 mt-1">{errors[key]}</p>
-          )}
+            <div className="flex justify-between items-center gap-2">
+              <Button
+                text={
+                  fileData[key].length
+                    ? formatMessage({
+                        id: `${key}_file_selected`,
+                        defaultMessage: `${label} Selected`,
+                      })
+                    : formatMessage({
+                        id: `select_${key}`,
+                        defaultMessage: `Select ${label}`,
+                      })
+                }
+                onClick={() => fileRefs.current[key]?.click()}
+                variant="secondary"
+                className="flex-1"
+                disabled={isImporting || (!isBaseSelected && optional)}
+              />
+
+              <button
+                type="button"
+                className="text-xs text-blue-600 hover:underline"
+                title="Download a CSV template with required columns"
+                onClick={() =>
+                  downloadCSVTemplate(key, `${key}_template.csv`, locales)
+                }
+              >
+                {formatMessage({
+                  id: 'download_csv_template',
+                  defaultMessage: 'Download template',
+                })}
+              </button>
+            </div>
+            {errors[key] && (
+              <p className="text-red-600 text-xs flex items-center gap-1">
+                ⚠ {errors[key]}
+              </p>
+            )}
+          </div>
         </React.Fragment>
       ))}
 

@@ -35,22 +35,22 @@ export const ASSORTMENT_CSV_SCHEMA = {
   ],
 };
 
-const buildHeaders = (locales: string[]) => [
+export const buildAssortmentHeaders = (locales: string[]) => [
   ...ASSORTMENT_CSV_SCHEMA.base,
   ...locales.flatMap((locale) =>
     ASSORTMENT_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
 ];
 
-const buildAssortmentFilterHeaders = () => [
+export const buildAssortmentFilterHeaders = () => [
   ...ASSORTMENT_CSV_SCHEMA.assortmentFilterFields,
 ];
 
-const buildAssortmentProductHeaders = () => [
+export const buildAssortmentProductHeaders = () => [
   ...ASSORTMENT_CSV_SCHEMA.assortmentProductFields,
 ];
 
-const buildAssortmentChildrenHeaders = () => [
+export const buildAssortmentChildrenHeaders = () => [
   ...ASSORTMENT_CSV_SCHEMA.assortmentChildrenFields,
 ];
 
@@ -135,7 +135,7 @@ export const useAssortmentExport = (
     [languageDialectList],
   );
 
-  const headers = useMemo(() => buildHeaders(locales), [locales]);
+  const headers = useMemo(() => buildAssortmentHeaders(locales), [locales]);
   const assortmentFilterHeaders = useMemo(
     () => buildAssortmentFilterHeaders(),
     [],

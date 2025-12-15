@@ -12,6 +12,7 @@ import usePrepareProductImport, {
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
 import ProductImportForm from './ProductImportForm';
 import { ProductImportPayload } from '../types';
+import { toast } from 'react-toastify';
 
 const ProductImport = () => {
   const { formatMessage } = useIntl();
@@ -31,13 +32,8 @@ const ProductImport = () => {
       <ProductImportForm
         onImport={async (normalizedProducts) => {
           const result = await importItems(normalizedProducts);
-          setModal(
-            <ImportResultMessage
-              result={result}
-              entityName="products"
-              onClose={() => setModal('')}
-            />,
-          );
+          setModal(null);
+          toast(<ImportResultMessage result={result} entityName="products" />);
         }}
       />,
     );

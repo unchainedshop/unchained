@@ -2,13 +2,36 @@ import React, { useCallback, useRef, useState } from 'react';
 import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
-import { CSVRow } from '../../common/utils/csvUtils';
-import { FILTER_CSV_SCHEMA } from '../hooks/useFilterExport';
+import { CSVRow, downloadCSV } from '../../common/utils/csvUtils';
+import {
+  buildFilterHeaders,
+  buildFilterOptionHeaders,
+  FILTER_CSV_SCHEMA,
+} from '../hooks/useFilterExport';
 import { CSVFileKey, FileConfig, FilterImportPayload } from '../types';
+import useApp from '../../common/hooks/useApp';
 
 const REQUIRED_FIELDS: Record<CSVFileKey, string[]> = {
   filtersCSV: FILTER_CSV_SCHEMA.filterFields,
   optionsCSV: FILTER_CSV_SCHEMA.optionFields,
+};
+
+export const getFilterCSVHeaders = (
+  key: CSVFileKey,
+  locales: string[] = [],
+) => {
+  if (key === 'filtersCSV') return buildFilterHeaders(locales);
+  if (key === 'optionsCSV') return buildFilterOptionHeaders(locales);
+  return [];
+};
+
+const downloadCSVTemplate = (
+  key: CSVFileKey,
+  fileName: string,
+  locales: string[] = [],
+) => {
+  const headers = getFilterCSVHeaders(key, locales).join(',');
+  downloadCSV(headers, fileName);
 };
 
 const FilterImportForm = ({
@@ -17,6 +40,9 @@ const FilterImportForm = ({
   onImport: (payload: FilterImportPayload) => Promise<void>;
 }) => {
   const fileRefs = useRef<Partial<Record<CSVFileKey, HTMLInputElement>>>({});
+  const { languageDialectList } = useApp();
+  const locales = languageDialectList?.map((l) => l.isoCode) || [];
+
   const [fileData, setFileData] = useState<FilterImportPayload>({
     filtersCSV: [],
     optionsCSV: [],
@@ -45,10 +71,7 @@ const FilterImportForm = ({
 
   const parseFile = async (file: File) => {
     const text = await file.text();
-    const result = parseCSV.parse(text, {
-      header: true,
-      skipEmptyLines: true,
-    });
+    const result = parseCSV.parse(text, { header: true, skipEmptyLines: true });
     return result.data as CSVRow[];
   };
 
@@ -80,15 +103,9 @@ const FilterImportForm = ({
 
   const handleFileChange = async (key: CSVFileKey, file?: File) => {
     if (!file) return;
-
     const data = await parseFile(file);
     const isValid = validateCSV(key, data);
-
-    if (isValid) {
-      setFileData((prev) => ({ ...prev, [key]: data }));
-    } else {
-      setFileData((prev) => ({ ...prev, [key]: [] }));
-    }
+    setFileData((prev) => ({ ...prev, [key]: isValid ? data : [] }));
   };
 
   const handleInputChange = async (
@@ -115,7 +132,7 @@ const FilterImportForm = ({
   const hasErrors = Object.values(errors).some(Boolean);
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
+    <div className="max-w-md mx-auto p-6 bg-white border border-gray-200 rounded-lg shadow-md flex flex-col gap-6">
       <h3 className="text-center text-lg font-semibold">
         {formatMessage({
           id: 'filter_import_title',
@@ -132,7 +149,7 @@ const FilterImportForm = ({
       </p>
 
       {FILES.map(({ key, label, optional }) => (
-        <React.Fragment key={key}>
+        <div key={key} className="flex flex-col gap-2">
           <input
             ref={(el) => {
               fileRefs.current[key] = el ?? null;
@@ -142,42 +159,58 @@ const FilterImportForm = ({
             onChange={(e) => handleInputChange(e, key)}
             className="hidden"
           />
+          <div className="flex justify-between items-center gap-2">
+            <Button
+              text={
+                fileData[key].length
+                  ? formatMessage({
+                      id: `${key}_file_selected`,
+                      defaultMessage: `${label} Selected`,
+                    })
+                  : formatMessage({
+                      id: `select_${key}`,
+                      defaultMessage: `Select ${label}`,
+                    })
+              }
+              onClick={() => fileRefs.current[key]?.click()}
+              variant="secondary"
+              className="flex-1"
+              disabled={isImporting || (!isBaseSelected && optional)}
+            />
 
-          <Button
-            text={
-              fileData[key].length
-                ? formatMessage({
-                    id: `${key}_file_selected`,
-                    defaultMessage: `${label} Selected`,
-                  })
-                : formatMessage({
-                    id: `select_${key}`,
-                    defaultMessage: `Select ${label}`,
-                  })
-            }
-            onClick={() => fileRefs.current[key]?.click()}
-            variant="secondary"
-            disabled={isImporting || (!isBaseSelected && optional)}
-            className="w-full"
-          />
-
+            <button
+              type="button"
+              className="text-xs text-blue-600 hover:underline"
+              title="Download a CSV template with required columns"
+              onClick={() =>
+                downloadCSVTemplate(key, `${key}_template.csv`, locales)
+              }
+            >
+              {formatMessage({
+                id: 'download_csv_template',
+                defaultMessage: 'Download template',
+              })}
+            </button>
+          </div>
           {errors[key] && (
-            <p className="text-xs text-red-600 mt-1">{errors[key]}</p>
+            <p className="text-red-600 text-xs flex items-center gap-1">
+              ⚠ {errors[key]}
+            </p>
           )}
-        </React.Fragment>
+        </div>
       ))}
 
       <Button
-        text={
-          isImporting
-            ? formatMessage({ id: 'importing', defaultMessage: 'Importing...' })
-            : formatMessage({ id: 'import', defaultMessage: 'Import' })
-        }
+        text={isImporting ? 'Importing…' : 'Import'}
         onClick={handleImport}
         disabled={isImporting || !isBaseSelected || hasErrors}
         variant="primary"
-        className="w-full"
-      />
+        className="w-full flex justify-center items-center gap-2"
+      >
+        {isImporting && (
+          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        )}
+      </Button>
 
       {isBaseSelected && !hasErrors && (
         <p className="text-center text-xs text-gray-500">

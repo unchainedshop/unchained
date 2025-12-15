@@ -12,6 +12,7 @@ import {
 import FilterImportForm from './FilterImportForm';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
 import { FilterImportPayload } from '../types';
+import { toast } from 'react-toastify';
 
 const FilterImport = () => {
   const { formatMessage } = useIntl();
@@ -30,13 +31,8 @@ const FilterImport = () => {
       <FilterImportForm
         onImport={async (normalizedFilters) => {
           const result = await importItems(normalizedFilters);
-          setModal(
-            <ImportResultMessage
-              result={result}
-              entityName="products"
-              onClose={() => setModal('')}
-            />,
-          );
+          setModal(null);
+          toast(<ImportResultMessage result={result} entityName="Filters" />);
         }}
       />,
     );

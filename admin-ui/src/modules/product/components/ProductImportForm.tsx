@@ -2,9 +2,17 @@ import React, { useCallback, useRef, useState } from 'react';
 import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
-import { CSVRow } from '../../common/utils/csvUtils';
+import { CSVRow, downloadCSV } from '../../common/utils/csvUtils';
 import { ProductCSVFileKey, ProductImportPayload } from '../types';
-import { PRODUCT_CSV_SCHEMA } from '../hooks/useProductExport';
+import {
+  buildBundleHeaders,
+  buildPriceHeaders,
+  buildProductHeaders,
+  buildVariationHeaders,
+  buildVariationOptionsHeaders,
+  PRODUCT_CSV_SCHEMA,
+} from '../hooks/useProductExport';
+import useApp from '../../common/hooks/useApp';
 
 interface FileConfig {
   key: ProductCSVFileKey;
@@ -19,6 +27,30 @@ const REQUIRED_FIELDS: Record<ProductCSVFileKey, string[]> = {
   variationOptionsCSV: PRODUCT_CSV_SCHEMA.variationOptionItemHeaders,
   variationsCSV: PRODUCT_CSV_SCHEMA.variationItemHeaders,
 };
+
+export const getFilterCSVHeaders = (
+  key: ProductCSVFileKey,
+  locales: string[] = [],
+) => {
+  if (key === 'productsCSV') return buildProductHeaders(locales);
+  if (key === 'bundleItemsCSV') return buildBundleHeaders();
+  if (key === 'pricesCSV') return buildPriceHeaders();
+  if (key === 'variationsCSV') return buildVariationHeaders(locales);
+  if (key === 'variationOptionsCSV')
+    return buildVariationOptionsHeaders(locales);
+
+  return [];
+};
+
+const downloadCSVTemplate = (
+  key: ProductCSVFileKey,
+  fileName: string,
+  locales: string[] = [],
+) => {
+  const headers = getFilterCSVHeaders(key, locales).join(',');
+  downloadCSV(headers, fileName);
+};
+
 const ProductImportForm = ({
   onImport,
 }: {
@@ -27,6 +59,10 @@ const ProductImportForm = ({
   const fileRefs = useRef<Partial<Record<ProductCSVFileKey, HTMLInputElement>>>(
     {},
   );
+  const { formatMessage } = useIntl();
+  const { languageDialectList } = useApp();
+  const locales = languageDialectList?.map((l) => l.isoCode) || [];
+
   const [errors, setErrors] = useState<
     Partial<Record<ProductCSVFileKey, string>>
   >({});
@@ -38,7 +74,6 @@ const ProductImportForm = ({
     variationOptionsCSV: [],
   });
   const [isImporting, setIsImporting] = useState(false);
-  const { formatMessage } = useIntl();
 
   const FILES: FileConfig[] = [
     {
@@ -82,14 +117,16 @@ const ProductImportForm = ({
     },
   ];
 
+  const parseFile = async (file: File) => {
+    const text = await file.text();
+    const result = parseCSV.parse(text, { header: true, skipEmptyLines: true });
+    return result.data as CSVRow[];
+  };
+
   const validateCSV = (key: ProductCSVFileKey, rows: CSVRow[]) => {
     if (!rows.length) return false;
-
     const headers = Object.keys(rows[0]);
-    const missing = REQUIRED_FIELDS[key].filter(
-      (field) => !headers.includes(field),
-    );
-
+    const missing = REQUIRED_FIELDS[key].filter((f) => !headers.includes(f));
     if (missing.length) {
       setErrors((prev) => ({
         ...prev,
@@ -103,27 +140,15 @@ const ProductImportForm = ({
       }));
       return false;
     }
-
     setErrors((prev) => ({ ...prev, [key]: undefined }));
     return true;
-  };
-
-  const parseFile = async (file: File) => {
-    const text = await file.text();
-    const result = parseCSV.parse(text, { header: true, skipEmptyLines: true });
-    return result.data as CSVRow[];
   };
 
   const handleFileChange = async (key: ProductCSVFileKey, file?: File) => {
     if (!file) return;
     const data = await parseFile(file);
     const isValid = validateCSV(key, data);
-
-    if (isValid) {
-      setFileData((prev) => ({ ...prev, [key]: data }));
-    } else {
-      setFileData((prev) => ({ ...prev, [key]: [] }));
-    }
+    setFileData((prev) => ({ ...prev, [key]: isValid ? data : [] }));
   };
 
   const handleInputChange = async (
@@ -139,8 +164,6 @@ const ProductImportForm = ({
     setIsImporting(true);
     try {
       await onImport(fileData);
-    } catch (err: any) {
-      console.error('Error importing products:', err);
     } finally {
       setIsImporting(false);
     }
@@ -150,7 +173,7 @@ const ProductImportForm = ({
   const hasErrors = Object.values(errors).some(Boolean);
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
+    <div className="sm:max-w-full w-full max-w-xl mx-auto p-6  bg-white border border-gray-200 rounded-lg shadow-md flex flex-col gap-6">
       <h3 className="text-center text-lg font-semibold">
         {formatMessage({
           id: 'products_import_title',
@@ -161,12 +184,12 @@ const ProductImportForm = ({
         {formatMessage({
           id: 'product_import_description',
           defaultMessage:
-            'Select your products CSV and optional Product prices & bundle items CSV, then click Import.',
+            'Select your products CSV and optional CSV files, then click Import.',
         })}
       </p>
 
       {FILES.map(({ key, label, optional }) => (
-        <React.Fragment key={key}>
+        <div key={key} className="flex flex-col gap-2">
           <input
             ref={(el) => {
               fileRefs.current[key] = el ?? null;
@@ -177,40 +200,58 @@ const ProductImportForm = ({
             className="hidden"
           />
 
-          <Button
-            text={
-              fileData[key].length
-                ? formatMessage({
-                    id: `${key}_file_selected`,
-                    defaultMessage: `${label} Selected`,
-                  })
-                : formatMessage({
-                    id: `select_${key}`,
-                    defaultMessage: `Select ${label}`,
-                  })
-            }
-            onClick={() => fileRefs.current[key]?.click()}
-            variant="secondary"
-            disabled={isImporting || (!isProductsSelected && optional)}
-            className="w-full"
-          />
+          <div className="flex justify-between items-center gap-2">
+            <Button
+              text={
+                fileData[key].length
+                  ? formatMessage({
+                      id: `${key}_file_selected`,
+                      defaultMessage: `${label} Selected`,
+                    })
+                  : formatMessage({
+                      id: `select_${key}`,
+                      defaultMessage: `Select ${label}`,
+                    })
+              }
+              onClick={() => fileRefs.current[key]?.click()}
+              variant="secondary"
+              className="flex-1"
+              disabled={isImporting || (!isProductsSelected && optional)}
+            />
+
+            <button
+              type="button"
+              className="text-xs text-blue-600 hover:underline"
+              title="Download a CSV template with required columns"
+              onClick={() =>
+                downloadCSVTemplate(key, `${key}_template.csv`, locales)
+              }
+            >
+              {formatMessage({
+                id: 'download_csv_template',
+                defaultMessage: 'Download template',
+              })}
+            </button>
+          </div>
           {errors[key] && (
-            <p className="text-xs text-red-600 mt-1">{errors[key]}</p>
+            <p className="text-red-600 text-xs flex items-center gap-1">
+              ⚠ {errors[key]}
+            </p>
           )}
-        </React.Fragment>
+        </div>
       ))}
 
       <Button
-        text={
-          isImporting
-            ? formatMessage({ id: 'importing', defaultMessage: 'Importing...' })
-            : formatMessage({ id: 'import', defaultMessage: 'Import' })
-        }
+        text={isImporting ? 'Importing…' : 'Import'}
         onClick={handleImport}
         disabled={isImporting || !isProductsSelected || hasErrors}
         variant="primary"
-        className="w-full"
-      />
+        className="w-full flex justify-center items-center gap-2"
+      >
+        {isImporting && (
+          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        )}
+      </Button>
 
       {isProductsSelected && !hasErrors && (
         <p className="text-center text-xs text-gray-500">
@@ -232,7 +273,7 @@ const ProductImportForm = ({
                 ? ` with ${fileData.variationsCSV.length} variations`
                 : '',
               variationOptions: fileData.variationOptionsCSV.length
-                ? ` with ${fileData.variationOptionsCSV.length} Variation options`
+                ? ` with ${fileData.variationOptionsCSV.length} variation options`
                 : '',
             },
           )}

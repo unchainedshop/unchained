@@ -10,14 +10,12 @@ interface ImportResult {
 
 interface ImportResultMessageProps {
   result: ImportResult;
-  onClose: () => void;
   title?: string;
   entityName?: string;
 }
 
 const ImportResultMessage: React.FC<ImportResultMessageProps> = ({
   result,
-  onClose,
   title,
   entityName = 'items',
 }) => {
@@ -74,12 +72,6 @@ const ImportResultMessage: React.FC<ImportResultMessageProps> = ({
           </div>
         </div>
       )}
-
-      <Button
-        onClick={onClose}
-        className="mt-4"
-        text={formatMessage({ id: 'close', defaultMessage: 'Close' })}
-      />
     </div>
   );
 };

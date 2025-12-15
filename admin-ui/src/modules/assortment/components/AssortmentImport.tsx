@@ -12,6 +12,7 @@ import usePrepareAssortmentImport, {
 } from '../hooks/usePrepareAssortmentImport';
 import AssortmentImportForm from './AssortmentImportForm';
 import { AssortmentImportPayload } from '../types';
+import { toast } from 'react-toastify';
 
 const AssortmentImport = () => {
   const { formatMessage } = useIntl();
@@ -29,12 +30,9 @@ const AssortmentImport = () => {
       <AssortmentImportForm
         onImport={async (normalizedProducts: AssortmentImportPayload) => {
           const result = await importItems(normalizedProducts);
-          setModal(
-            <ImportResultMessage
-              result={result}
-              entityName="assortments"
-              onClose={() => setModal('')}
-            />,
+          setModal(null);
+          toast(
+            <ImportResultMessage result={result} entityName="Assortments" />,
           );
         }}
       />,

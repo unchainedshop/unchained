@@ -20,7 +20,7 @@ const normalizeAssortmentContent = (row: AssortmentCSVRow) => {
 
 export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
   const content = normalizeAssortmentContent(row);
-  const mapped = {
+  return {
     _id: row['_id'] || undefined,
     sequence:
       typeof row['sequence'] === 'string'
@@ -32,8 +32,6 @@ export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
     tags: row['tags'] ? (row['tags'] as string).split(';') : ([] as any),
     content,
   };
-
-  return mapped;
 };
 
 export const validateAssortment = (
