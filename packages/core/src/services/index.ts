@@ -43,6 +43,8 @@ import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
 import { simulateProductInventoryService } from './simulateProductInventory.ts';
+import { simulateDeliveryPricingService } from './simulateDeliveryPricing.ts';
+import { simulatePaymentPricingService } from './simulatePaymentPricing.ts';
 import { findOrInitCartService } from './findOrInitCart.ts';
 import { addMessageService } from './addMessage.ts';
 import { generateOrderFromEnrollmentService } from './generateOrderFromEnrollment.ts';
@@ -163,6 +165,16 @@ export default function initServices(modules: Modules, customServices: CustomSer
     },
     worker: {
       addMessage: addMessageService as Bound<typeof addMessageService>,
+    },
+    delivery: {
+      simulateDeliveryPricing: simulateDeliveryPricingService as Bound<
+        typeof simulateDeliveryPricingService
+      >,
+    },
+    payment: {
+      simulatePaymentPricing: simulatePaymentPricingService as Bound<
+        typeof simulatePaymentPricingService
+      >,
     },
   };
 

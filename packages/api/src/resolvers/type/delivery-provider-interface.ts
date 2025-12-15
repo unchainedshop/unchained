@@ -1,4 +1,4 @@
-import { DeliveryDirector, DeliveryPricingDirector } from '@unchainedshop/core';
+import { DeliveryDirector } from '@unchainedshop/core';
 import type { Context } from '../../context.ts';
 
 export const DeliveryProviderInterface = {
@@ -23,33 +23,24 @@ export const DeliveryProviderInterface = {
   },
 
   async simulatedPrice(deliveryProvider, args, context: Context) {
-    const { loaders, countryCode, user } = context;
+    const { loaders, services, countryCode, user } = context;
     const { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext } = args;
 
     const order = await loaders.orderLoader.load({ orderId });
-    const currencyCode = forcedCurrencyCode || order?.currencyCode || context.currencyCode;
+    if (!order || !user) return null;
 
-    const pricingContext = {
-      countryCode,
-      currencyCode,
-      provider: deliveryProvider,
-      order,
-      providerContext,
-      user: user!,
-    };
+    const currencyCode = forcedCurrencyCode || order.currencyCode || context.currencyCode;
 
-    const calculated = await DeliveryPricingDirector.rebuildCalculation(pricingContext, context);
-    if (!calculated?.length) return null;
-
-    const pricing = DeliveryPricingDirector.calculationSheet(pricingContext, calculated);
-    const orderPrice = pricing.total({ useNetPrice });
-
-    return {
-      amount: orderPrice.amount,
-      currencyCode: orderPrice.currencyCode,
-      countryCode,
-      isTaxable: pricing.taxSum() > 0,
-      isNetPrice: useNetPrice,
-    };
+    return services.delivery.simulateDeliveryPricing(
+      {
+        countryCode,
+        currencyCode,
+        provider: deliveryProvider,
+        order,
+        providerContext,
+        user,
+      },
+      { useNetPrice },
+    );
   },
 };

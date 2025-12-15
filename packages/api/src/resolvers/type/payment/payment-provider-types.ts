@@ -1,10 +1,6 @@
 import type { Context } from '../../../context.ts';
 import type { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
-import {
-  PaymentDirector,
-  type PaymentPricingContext,
-  PaymentPricingDirector,
-} from '@unchainedshop/core';
+import { PaymentDirector } from '@unchainedshop/core';
 
 export const PaymentProvider = {
   interface(provider: PaymentProviderType) {
@@ -32,36 +28,23 @@ export const PaymentProvider = {
     { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext },
     requestContext: Context,
   ) {
-    const { loaders, countryCode, user } = requestContext;
+    const { loaders, services, countryCode, user } = requestContext;
 
     const order = await loaders.orderLoader.load({ orderId });
-    const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
-    const pricingContext: PaymentPricingContext = {
-      countryCode,
-      currencyCode,
-      provider: paymentProvider,
-      order,
-      providerContext,
-      user,
-    };
+    if (!order || !user) return null;
 
-    const calculated = await PaymentPricingDirector.rebuildCalculation(pricingContext, requestContext);
+    const currencyCode = forcedCurrencyCode || order.currencyCode || requestContext.currencyCode;
 
-    if (!calculated || !calculated.length) return null;
-
-    const pricing = PaymentPricingDirector.calculationSheet(pricingContext, calculated);
-
-    const orderPrice = pricing.total({ useNetPrice }) as {
-      amount: number;
-      currencyCode: string;
-    };
-
-    return {
-      amount: orderPrice.amount,
-      currencyCode: orderPrice.currencyCode,
-      countryCode,
-      isTaxable: pricing.taxSum() > 0,
-      isNetPrice: useNetPrice,
-    };
+    return services.payment.simulatePaymentPricing(
+      {
+        countryCode,
+        currencyCode,
+        provider: paymentProvider,
+        order,
+        providerContext,
+        user,
+      },
+      { useNetPrice },
+    );
   },
 };
