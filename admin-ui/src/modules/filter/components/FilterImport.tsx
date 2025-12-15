@@ -11,13 +11,14 @@ import {
 } from '../hooks/usePrepareFilterImport';
 import FilterImportForm from './FilterImportForm';
 import ImportResultMessage from '../../modal/components/ImportResultMessage';
+import { FilterImportPayload } from '../types';
 
 const FilterImport = () => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const { setModal } = useModal();
   const { prepareFilterImport } = usePrepareFilterImport();
-  const { isImporting, importItems } = useCSVImport({
+  const { isImporting, importItems } = useCSVImport<FilterImportPayload>({
     validate: validateFilter,
     process: prepareFilterImport,
   });

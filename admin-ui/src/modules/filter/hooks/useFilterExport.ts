@@ -4,23 +4,23 @@ import { IFilter } from '../../../gql/types';
 import { fetchTranslatedTextsForAllFilters } from '../utils/fetchTranslatedTextsForAllFilters';
 import useApp from '../../common/hooks/useApp';
 
-const FILTER_SCHEMA = {
+export const FILTER_CSV_SCHEMA = {
   filterFields: ['_id', 'key', 'type', 'isActive'],
   optionFields: ['optionId', 'filterId', 'value'],
   textFields: ['title', 'subtitle'],
 };
 
-const buildFilterHeaders = (locales: string[]) => [
-  ...FILTER_SCHEMA.filterFields,
+export const buildFilterHeaders = (locales: string[]) => [
+  ...FILTER_CSV_SCHEMA.filterFields,
   ...locales.flatMap((locale) =>
-    FILTER_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
+    FILTER_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
 ];
 
-const buildFilterOptionHeaders = (locales: string[]) => [
-  ...FILTER_SCHEMA.optionFields,
+export const buildFilterOptionHeaders = (locales: string[]) => [
+  ...FILTER_CSV_SCHEMA.optionFields,
   ...locales.flatMap((locale) =>
-    FILTER_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
+    FILTER_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
 ];
 
@@ -67,7 +67,7 @@ export const useFilterExport = (filters: IFilter[] | any[], client: any) => {
       const texts = translationMap?.filters?.[filter._id] || {};
       locales.forEach((locale) => {
         const t = texts[locale] || {};
-        FILTER_SCHEMA.textFields.forEach((field) => {
+        FILTER_CSV_SCHEMA.textFields.forEach((field) => {
           row[`texts.${locale}.${field}`] = t[field] ?? '';
         });
       });
@@ -85,7 +85,7 @@ export const useFilterExport = (filters: IFilter[] | any[], client: any) => {
         const texts = translationMap?.options?.[option._id] || {};
         locales.forEach((locale) => {
           const t = texts[locale] || {};
-          FILTER_SCHEMA.textFields.forEach((field) => {
+          FILTER_CSV_SCHEMA.textFields.forEach((field) => {
             row[`texts.${locale}.${field}`] = t[field] ?? '';
           });
         });

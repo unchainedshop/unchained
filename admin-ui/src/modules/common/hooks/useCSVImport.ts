@@ -2,21 +2,18 @@ import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import useAddWork from '../../work/hooks/useAddWork';
 import { IWorkType } from '../../../gql/types';
+
 export interface ImportResult {
   success: number;
   failed: number;
   errors: string[];
 }
 
-interface UseImportOptions<T> {
-  validate: (items: T[], intl: any) => string[];
-  process: (item: T[]) => Promise<
-    {
-      entity: string;
-      operation: string;
-      payload: any;
-    }[]
-  >;
+export interface UseImportOptions<T> {
+  validate: (items: T, intl: any) => string[];
+  process: (
+    item: T,
+  ) => Promise<{ entity: string; operation: string; payload: any }[]>;
 }
 
 export const useCSVImport = <T>({ validate, process }: UseImportOptions<T>) => {
@@ -24,12 +21,13 @@ export const useCSVImport = <T>({ validate, process }: UseImportOptions<T>) => {
   const [isImporting, setIsImporting] = useState(false);
   const intl = useIntl();
 
-  const importItems = async (items: T[]): Promise<ImportResult | undefined> => {
-    const result = {
+  const importItems = async (items: T): Promise<ImportResult | undefined> => {
+    const result: ImportResult = {
       success: 0,
       failed: 0,
       errors: [] as string[],
     };
+
     try {
       setIsImporting(true);
 
@@ -46,7 +44,8 @@ export const useCSVImport = <T>({ validate, process }: UseImportOptions<T>) => {
           events,
         },
       });
-      result.success = events?.length - result?.failed;
+
+      result.success = events.length - result.failed;
       setIsImporting(false);
       return result;
     } catch (err) {
