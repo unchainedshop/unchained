@@ -1,21 +1,6 @@
 import { CSVRow } from '../../common/utils/csvUtils';
 import { IFilterType } from '../../../gql/types';
-
-export interface FilterOptionPayload {
-  _id?: string;
-  value: string;
-  content?: Record<string, { title?: string; subtitle?: string }>;
-}
-
-export interface FilterPayload {
-  _id?: string;
-  type: IFilterType;
-  key: string;
-  isActive?: boolean | string;
-  content: Record<string, { title?: string; subtitle?: string }>;
-  options?: FilterOptionPayload[];
-  meta?: Record<string, any>;
-}
+import { BuildFilterEventsParam, FilterImportPayload } from '../types';
 
 const normalizeContent = (
   row: CSVRow,
@@ -52,7 +37,7 @@ const normalizeOptions = (row: CSVRow) => {
 };
 
 export const validateFilter = (
-  { filtersCSV, optionsCSV }: any,
+  { filtersCSV, optionsCSV }: FilterImportPayload,
   intl,
 ): string[] => {
   const errors: string[] = [];
@@ -78,26 +63,49 @@ export const validateFilter = (
           defaultMessage: 'Filter type is required',
         }),
       );
-
     if (
-      [IFilterType.SingleChoice, IFilterType.MultiChoice].includes(filter.type)
-    ) {
-      if (!(optionsCSV || []).find((o) => o.filterId === filter._id)) {
-        errors.push(
-          intl.formatMessage({
-            id: 'filter_import.options_missing',
-            defaultMessage:
-              'Options are required for SINGLE_CHOICE or MULTI_CHOICE filters',
-          }),
-        );
-      }
-    }
+      filter.type &&
+      ![
+        IFilterType.SingleChoice,
+        IFilterType.MultiChoice,
+        IFilterType.Range,
+        IFilterType.Switch,
+      ].includes(filter.type)
+    )
+      errors.push(
+        intl.formatMessage(
+          {
+            id: 'filter_csv_invalid_type_set',
+            defaultMessage: 'invalid filter type {type}',
+          },
+          {
+            type: filter.type,
+          },
+        ),
+      );
+  }
+
+  for (const option of optionsCSV) {
+    if (!option.value)
+      errors.push(
+        intl.formatMessage({
+          id: 'filter_option_csv_value_missing',
+          defaultMessage: 'Filter options value is required',
+        }),
+      );
+    if (!option.filterId)
+      errors.push(
+        intl.formatMessage({
+          id: 'filter_option_csv_filterId_missing',
+          defaultMessage: 'Filter option filterId is required',
+        }),
+      );
   }
 
   return errors;
 };
 
-const buildFilterEvents = (filter: FilterPayload) => ({
+const buildFilterEvents = (filter: BuildFilterEventsParam) => ({
   entity: 'FILTER',
   operation: 'CREATE',
   payload: {
@@ -105,7 +113,7 @@ const buildFilterEvents = (filter: FilterPayload) => ({
     specification: {
       type: filter['type'] as IFilterType,
       key: filter['key'] || '',
-      isActive: filter['isActive'] === 'true' || filter['isActive'] === true,
+      isActive: filter['isActive'] === 'true',
       content: normalizeContent(filter),
       options: (filter?.options ?? []).map(normalizeOptions),
       meta: {},
@@ -114,7 +122,10 @@ const buildFilterEvents = (filter: FilterPayload) => ({
 });
 
 export const usePrepareFilterImport = () => {
-  const prepareFilterImport = async ({ filtersCSV, optionsCSV }: any) => {
+  const prepareFilterImport = async ({
+    filtersCSV,
+    optionsCSV,
+  }: FilterImportPayload): Promise<any> => {
     return filtersCSV.map((filter) => {
       const options = (optionsCSV || []).filter(
         (option) => option['filterId'] === filter._id,

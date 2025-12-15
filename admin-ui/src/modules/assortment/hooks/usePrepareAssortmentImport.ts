@@ -87,12 +87,6 @@ const usePrepareAssortmentImport = () => {
     assortmentChildrenCSV,
     assortmentFiltersCSV,
   }: any): Promise<any> => {
-    console.log({
-      assortmentCSV,
-      assortmentProductsCSV,
-      assortmentChildrenCSV,
-      assortmentFiltersCSV,
-    });
     return assortmentCSV.map((assortment) => {
       const assortmentProducts = (assortmentProductsCSV || [])?.filter(
         (p) => p.assortmentId === assortment._id,

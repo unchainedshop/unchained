@@ -3,42 +3,116 @@ import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
 import { CSVRow } from '../../common/utils/csvUtils';
+import { FILTER_CSV_SCHEMA } from '../hooks/useFilterExport';
+import { CSVFileKey, FileConfig, FilterImportPayload } from '../types';
 
-const FilterImportForm = ({ onImport }) => {
-  const filtersFileRef = useRef<HTMLInputElement>(null);
-  const optionsFileRef = useRef<HTMLInputElement>(null);
-  const [filtersCSV, setFiltersCSV] = useState<CSVRow[]>([]);
-  const [optionsCSV, setOptionsCSV] = useState<CSVRow[]>([]);
+const REQUIRED_FIELDS: Record<CSVFileKey, string[]> = {
+  filtersCSV: FILTER_CSV_SCHEMA.filterFields,
+  optionsCSV: FILTER_CSV_SCHEMA.optionFields,
+};
+
+const FilterImportForm = ({
+  onImport,
+}: {
+  onImport: (payload: FilterImportPayload) => Promise<void>;
+}) => {
+  const fileRefs = useRef<Partial<Record<CSVFileKey, HTMLInputElement>>>({});
+  const [fileData, setFileData] = useState<FilterImportPayload>({
+    filtersCSV: [],
+    optionsCSV: [],
+  });
+  const [errors, setErrors] = useState<Partial<Record<CSVFileKey, string>>>({});
   const [isImporting, setIsImporting] = useState(false);
   const { formatMessage } = useIntl();
 
+  const FILES: FileConfig[] = [
+    {
+      key: 'filtersCSV',
+      label: formatMessage({
+        id: 'filters_csv_file',
+        defaultMessage: 'Filters CSV',
+      }),
+    },
+    {
+      key: 'optionsCSV',
+      label: formatMessage({
+        id: 'filter_options_csv_file',
+        defaultMessage: 'Filter options CSV (Optional)',
+      }),
+      optional: true,
+    },
+  ];
+
   const parseFile = async (file: File) => {
     const text = await file.text();
-    const result = parseCSV.parse(text, { header: true, skipEmptyLines: true });
+    const result = parseCSV.parse(text, {
+      header: true,
+      skipEmptyLines: true,
+    });
     return result.data as CSVRow[];
   };
 
-  const handleFileChange = async (
+  const validateCSV = (key: CSVFileKey, rows: CSVRow[]) => {
+    if (!rows.length) return false;
+
+    const headers = Object.keys(rows[0]);
+    const missing = REQUIRED_FIELDS[key].filter(
+      (field) => !headers.includes(field),
+    );
+
+    if (missing.length) {
+      setErrors((prev) => ({
+        ...prev,
+        [key]: formatMessage(
+          {
+            id: 'csv_missing_fields',
+            defaultMessage: 'Missing required columns: {fields}',
+          },
+          { fields: missing.join(', ') },
+        ),
+      }));
+      return false;
+    }
+
+    setErrors((prev) => ({ ...prev, [key]: undefined }));
+    return true;
+  };
+
+  const handleFileChange = async (key: CSVFileKey, file?: File) => {
+    if (!file) return;
+
+    const data = await parseFile(file);
+    const isValid = validateCSV(key, data);
+
+    if (isValid) {
+      setFileData((prev) => ({ ...prev, [key]: data }));
+    } else {
+      setFileData((prev) => ({ ...prev, [key]: [] }));
+    }
+  };
+
+  const handleInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    setData: React.Dispatch<React.SetStateAction<CSVRow[]>>,
+    key: CSVFileKey,
   ) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const data = await parseFile(file);
-    setData(data);
+    await handleFileChange(key, file);
     e.target.value = '';
   };
 
   const handleImport = useCallback(async () => {
     setIsImporting(true);
     try {
-      await onImport({ filtersCSV, optionsCSV });
-    } catch (err: any) {
+      await onImport(fileData);
+    } catch (err) {
       console.error('Error importing filters:', err);
     } finally {
       setIsImporting(false);
     }
-  }, [filtersCSV, optionsCSV]);
+  }, [fileData, onImport]);
+
+  const isBaseSelected = fileData.filtersCSV.length > 0;
+  const hasErrors = Object.values(errors).some(Boolean);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
@@ -48,6 +122,7 @@ const FilterImportForm = ({ onImport }) => {
           defaultMessage: 'Import Filters',
         })}
       </h3>
+
       <p className="text-center text-sm text-gray-600">
         {formatMessage({
           id: 'filter_import_description',
@@ -56,56 +131,41 @@ const FilterImportForm = ({ onImport }) => {
         })}
       </p>
 
-      <input
-        ref={filtersFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setFiltersCSV)}
-        className="hidden"
-      />
-      <input
-        ref={optionsFileRef}
-        type="file"
-        accept=".csv"
-        onChange={(e) => handleFileChange(e, setOptionsCSV)}
-        className="hidden"
-      />
+      {FILES.map(({ key, label, optional }) => (
+        <React.Fragment key={key}>
+          <input
+            ref={(el) => {
+              fileRefs.current[key] = el ?? null;
+            }}
+            type="file"
+            accept=".csv"
+            onChange={(e) => handleInputChange(e, key)}
+            className="hidden"
+          />
 
-      <Button
-        text={
-          filtersCSV.length
-            ? formatMessage({
-                id: 'filters_file_selected',
-                defaultMessage: 'Filters CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_filters_csv',
-                defaultMessage: 'Select Filters CSV',
-              })
-        }
-        onClick={() => filtersFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting}
-        className="w-full"
-      />
+          <Button
+            text={
+              fileData[key].length
+                ? formatMessage({
+                    id: `${key}_file_selected`,
+                    defaultMessage: `${label} Selected`,
+                  })
+                : formatMessage({
+                    id: `select_${key}`,
+                    defaultMessage: `Select ${label}`,
+                  })
+            }
+            onClick={() => fileRefs.current[key]?.click()}
+            variant="secondary"
+            disabled={isImporting || (!isBaseSelected && optional)}
+            className="w-full"
+          />
 
-      <Button
-        text={
-          optionsCSV.length
-            ? formatMessage({
-                id: 'options_file_selected',
-                defaultMessage: 'Options CSV Selected',
-              })
-            : formatMessage({
-                id: 'select_options_csv',
-                defaultMessage: 'Select Filter Options CSV (Optional)',
-              })
-        }
-        onClick={() => optionsFileRef.current?.click()}
-        variant="secondary"
-        disabled={isImporting}
-        className="w-full"
-      />
+          {errors[key] && (
+            <p className="text-xs text-red-600 mt-1">{errors[key]}</p>
+          )}
+        </React.Fragment>
+      ))}
 
       <Button
         text={
@@ -114,22 +174,22 @@ const FilterImportForm = ({ onImport }) => {
             : formatMessage({ id: 'import', defaultMessage: 'Import' })
         }
         onClick={handleImport}
-        disabled={isImporting || !filtersCSV.length}
+        disabled={isImporting || !isBaseSelected || hasErrors}
         variant="primary"
         className="w-full"
       />
 
-      {filtersCSV.length > 0 && (
+      {isBaseSelected && !hasErrors && (
         <p className="text-center text-xs text-gray-500">
           {formatMessage(
             {
-              id: 'ready_to_import',
+              id: 'ready_to_import_filters',
               defaultMessage: 'Ready to import {filters} filters{options}.',
             },
             {
-              filters: filtersCSV.length,
-              options: optionsCSV.length
-                ? ` with ${optionsCSV.length} options`
+              filters: fileData.filtersCSV.length,
+              options: fileData.optionsCSV.length
+                ? ` with ${fileData.optionsCSV.length} options`
                 : '',
             },
           )}
