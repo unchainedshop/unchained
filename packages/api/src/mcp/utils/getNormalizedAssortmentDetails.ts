@@ -15,10 +15,9 @@ export async function getNormalizedAssortmentDetails(
     locale,
   });
 
-  const filters = await modules.assortments.filters.findFilters(
-    { assortmentId: assortment._id },
-    { sort: { sortKey: 1 } },
-  );
+  const filters = await modules.assortments.filters.findFilters({
+    assortmentId: assortment._id,
+  });
 
   const assortmentMedias = await modules.assortments.media.findAssortmentMedias({
     assortmentId: normalizedAssortmentId,
@@ -32,10 +31,9 @@ export async function getNormalizedAssortmentDetails(
       assortmentId: assortment._id,
     })) || [];
 
-  const products = await modules.assortments.products.findAssortmentProducts(
-    { assortmentId: assortment._id },
-    { sort: { sortKey: 1 } },
-  );
+  const products = await modules.assortments.products.findAssortmentProducts({
+    assortmentId: assortment._id,
+  });
 
   const assortmentIds = assortmentChildLinks.map(({ childAssortmentId }) => childAssortmentId);
 

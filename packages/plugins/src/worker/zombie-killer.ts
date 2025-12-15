@@ -65,10 +65,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
         {},
         { projection: { mediaId: 1 } },
       );
-      const assortmentMedia = await modules.assortments.media.findAssortmentMedias(
-        {},
-        { projection: { mediaId: 1 } },
-      );
+      const assortmentMedia = await modules.assortments.media.findAssortmentMedias({});
 
       const allFileIdsLinked = [...productMedia, ...assortmentMedia].map((l) => l?.mediaId);
       const allFileIdsRelevant = (

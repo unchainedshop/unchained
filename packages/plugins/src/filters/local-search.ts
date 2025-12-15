@@ -1,6 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { type ProductText } from '@unchainedshop/core-products';
-import { type AssortmentText } from '@unchainedshop/core-assortments';
 import { FilterDirector, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
@@ -49,21 +48,26 @@ const LocalSearch: IFilterAdapter = {
           return assortmentIds;
         }
 
-        const selector: mongodb.Filter<AssortmentText> = {
-          $text: { $search: queryString },
-        };
-
-        if (assortmentIds) {
-          selector.assortmentId = { $in: assortmentIds };
-        }
-
-        const assortments = await params.modules.assortments.texts.findTexts(selector, {
-          projection: {
-            assortmentId: 1,
-          },
+        // TODO: Implement SQLite-based text search
+        // For now, return all assortmentIds when there's a search query
+        // since $text search is not available in SQLite
+        const assortments = await params.modules.assortments.texts.findTexts({
+          assortmentIds,
         });
 
-        return assortments.map(({ assortmentId }) => assortmentId);
+        // Simple text matching (case-insensitive) until FTS is implemented
+        // Normalize hyphens to spaces for flexible matching
+        const matchingAssortments = assortments.filter((text) => {
+          const searchLower = queryString.toLowerCase().replace(/-/g, ' ');
+          const normalizeText = (t?: string) => t?.toLowerCase().replace(/-/g, ' ');
+          return (
+            normalizeText(text.title)?.includes(searchLower) ||
+            normalizeText(text.subtitle)?.includes(searchLower) ||
+            normalizeText(text.description)?.includes(searchLower)
+          );
+        });
+
+        return matchingAssortments.map(({ assortmentId }) => assortmentId);
       },
 
       async transformFilterSelector(last) {

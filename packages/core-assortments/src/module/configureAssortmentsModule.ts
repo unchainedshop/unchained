@@ -1,22 +1,17 @@
 import { type Tree, type SortOption, SortDirection } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbFilterById,
-  findPreservingIds,
-  buildSortOptions,
-  mongodb,
-  generateDbObjectId,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
+import { type ModuleInput, generateId, toSqliteDate } from '@unchainedshop/sqlite';
 import { createLogger } from '@unchainedshop/logger';
 import {
   type Assortment,
   type AssortmentLink,
   type AssortmentProduct,
   type AssortmentQuery,
-  AssortmentsCollection,
   type InvalidateCacheFn,
+  initAssortmentsSchema,
+  ASSORTMENTS_TABLE,
+  ASSORTMENT_LINKS_TABLE,
+  ASSORTMENT_PRODUCTS_TABLE,
 } from '../db/AssortmentsCollection.ts';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.ts';
 import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.ts';
@@ -53,96 +48,131 @@ export const buildFindSelector = ({
   includeLeaves = false,
   includeInactive = false,
   queryString,
-}: AssortmentQuery) => {
-  const selector: mongodb.Filter<Assortment> = assortmentSelector || {};
-  selector.deleted = null;
+}: AssortmentQuery): { where: string; params: any[] } => {
+  const conditions: string[] = ['deleted IS NULL'];
+  const params: any[] = [];
 
-  if (assortmentIds) {
-    selector._id = { $in: assortmentIds };
+  if (assortmentIds && assortmentIds.length > 0) {
+    const placeholders = assortmentIds.map(() => '?').join(', ');
+    conditions.push(`_id IN (${placeholders})`);
+    params.push(...assortmentIds);
   }
 
-  if (slugs) {
-    selector.slugs = { $in: slugs };
+  if (slugs && slugs.length > 0) {
+    // Check if any slug in the JSON array matches using json_each
+    const slugConditions = slugs
+      .map(() => `EXISTS (SELECT 1 FROM json_each(json_extract(data, '$.slugs')) WHERE value = ?)`)
+      .join(' OR ');
+    conditions.push(`(${slugConditions})`);
+    params.push(...slugs);
   }
 
   if (tags) {
-    if (Array.isArray(tags)) {
-      selector.tags = { $all: tags };
-    } else {
-      selector.tags = tags;
-    }
+    const tagArray = Array.isArray(tags) ? tags : [tags];
+    // All tags must be present - use json_each for JSON array in data column
+    tagArray.forEach((tag) => {
+      conditions.push(`EXISTS (SELECT 1 FROM json_each(json_extract(data, '$.tags')) WHERE value = ?)`);
+      params.push(tag);
+    });
   }
 
   if (!assortmentSelector && !includeLeaves) {
-    selector.isRoot = true;
+    conditions.push('is_root = 1');
   }
 
   if (queryString) {
-    assertDocumentDBCompatMode();
-    (selector as any).$text = { $search: queryString };
+    // Use FTS5 for full-text search
+    // Escape special FTS5 characters and wrap in quotes for phrase search
+    const escapedQuery = queryString.replace(/"/g, '""');
+    conditions.push(`_id IN (SELECT _id FROM assortments_fts WHERE assortments_fts MATCH ?)`);
+    params.push(`"${escapedQuery}"`);
   }
 
   if (!assortmentSelector && !includeInactive) {
-    selector.isActive = true;
+    conditions.push('is_active = 1');
   }
-  return selector;
+
+  // Handle custom selector conditions
+  if (assortmentSelector) {
+    for (const [key, value] of Object.entries(assortmentSelector)) {
+      if (key === '_id' && typeof value === 'object' && '$in' in value) {
+        const ids = value.$in as string[];
+        const placeholders = ids.map(() => '?').join(', ');
+        conditions.push(`_id IN (${placeholders})`);
+        params.push(...ids);
+      } else if (value !== undefined) {
+        const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+        conditions.push(`${snakeKey} = ?`);
+        params.push(value);
+      }
+    }
+  }
+
+  return { where: conditions.join(' AND '), params };
+};
+
+const buildOrderBy = (sort?: SortOption[]): string => {
+  if (!sort || sort.length === 0) {
+    return 'ORDER BY sequence ASC';
+  }
+  const clauses = sort.map(({ key, value }) => {
+    const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    const direction = value === SortDirection.DESC ? 'DESC' : 'ASC';
+    return `${snakeKey} ${direction}`;
+  });
+  return `ORDER BY ${clauses.join(', ')}`;
 };
 
 export const configureAssortmentsModule = async (
   moduleInput: ModuleInput<AssortmentsSettingsOptions>,
 ) => {
   const { db, options: assortmentOptions = {} } = moduleInput;
+
+  if (!db) {
+    throw new Error('Database instance is required for configureAssortmentsModule');
+  }
+
+  // Initialize schema
+  initAssortmentsSchema(db);
+
   // Events
   registerEvents(ASSORTMENT_EVENTS);
 
-  // Settings
+  // Settings - pass db for the product cache
   await assortmentsSettings.configureSettings(assortmentOptions, db);
-
-  // Collections & Mutations
-  const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =
-    await AssortmentsCollection(db);
 
   // Functions
   const findLinkedAssortments = async (assortment: Assortment): Promise<AssortmentLink[]> => {
-    return AssortmentLinks.find(
-      {
-        $or: [{ parentAssortmentId: assortment._id }, { childAssortmentId: assortment._id }],
-      },
-      {
-        sort: { sortKey: 1 },
-      },
-    ).toArray();
+    return db.query<AssortmentLink>(
+      `SELECT data FROM ${ASSORTMENT_LINKS_TABLE}
+       WHERE parent_assortment_id = ? OR child_assortment_id = ?
+       ORDER BY sort_key ASC`,
+      [assortment._id, assortment._id],
+    );
   };
 
-  const findProductAssignments = async (assortmentId: string) => {
-    return AssortmentProducts.find(
-      { assortmentId },
-      {
-        sort: { sortKey: 1 },
-      },
-    ).toArray();
+  const findProductAssignments = async (assortmentId: string): Promise<AssortmentProduct[]> => {
+    return db.query<AssortmentProduct>(
+      `SELECT data FROM ${ASSORTMENT_PRODUCTS_TABLE} WHERE assortment_id = ? ORDER BY sort_key ASC`,
+      [assortmentId],
+    );
   };
 
   // returns AssortmentProducts and child assortment links with products.
   const collectProductIdCacheTree = async (assortment: Assortment): Promise<Tree<string>> => {
-    // get assortment products related with this assortment I.E AssortmentProducts
     const productAssignments = await findProductAssignments(assortment._id);
     const ownProductIds = productAssignments.map(({ productId }) => productId);
 
-    // get assortment links parent or child linked with this assortment I.E. AssortmentLinks
     const linkedAssortments = await findLinkedAssortments(assortment);
-
-    // filter previous result set to get child assortment links
     const childAssortments = linkedAssortments.filter(
       ({ parentAssortmentId }) => parentAssortmentId === assortment._id,
     );
 
-    // perform the whole function recursively for each child
     const productIds = await Promise.all(
       childAssortments.map(async ({ childAssortmentId }) => {
-        const childAssortment = await Assortments.findOne(
-          generateDbFilterById(childAssortmentId, { isActive: true, deleted: null }),
-          {},
+        const childAssortment = db.queryOne<Assortment>(
+          `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE _id = ? AND is_active = 1 AND deleted IS NULL`,
+          [childAssortmentId],
         );
 
         if (childAssortment) {
@@ -174,18 +204,15 @@ export const configureAssortmentsModule = async (
     if (cacheOptions.skipUpstreamTraversal || updateCount === 0) return updateCount;
 
     const linkedAssortments = await findLinkedAssortments(assortment);
-
     const filteredLinkedAssortments = linkedAssortments.filter(
       ({ childAssortmentId }) => childAssortmentId === assortment._id,
     );
 
     await Promise.all(
       filteredLinkedAssortments.map(async ({ parentAssortmentId }) => {
-        const parent = await Assortments.findOne(
-          generateDbFilterById(parentAssortmentId, {
-            isActive: true,
-            deleted: null,
-          }),
+        const parent = db.queryOne<Assortment>(
+          `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE _id = ? AND is_active = 1 AND deleted IS NULL`,
+          [parentAssortmentId],
         );
 
         if (parent) {
@@ -201,11 +228,16 @@ export const configureAssortmentsModule = async (
   const invalidateCache: InvalidateCacheFn = async (selector, options) => {
     logger.debug('Invalidating productId cache for assortments');
 
-    const assortments = await Assortments.find(
-      buildFindSelector({ includeInactive: true, includeLeaves: true, ...selector }),
-    ).toArray();
+    const { where, params } = buildFindSelector({
+      includeInactive: true,
+      includeLeaves: true,
+      ...selector,
+    });
+    const assortments = db.query<Assortment>(
+      `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE ${where}`,
+      params,
+    );
 
-    // Process serially to reduce load
     const totalInvalidatedAssortments = await assortments.reduce(async (acc, assortment) => {
       const total = await acc;
       const invalidatedAssortments = await invalidateProductIdCache(assortment, options);
@@ -221,22 +253,17 @@ export const configureAssortmentsModule = async (
    * Assortment sub entities
    */
 
-  const assortmentFilters = configureAssortmentFiltersModule({
-    AssortmentFilters,
-  });
+  const assortmentFilters = configureAssortmentFiltersModule({ db });
   const assortmentLinks = configureAssortmentLinksModule({
-    AssortmentLinks,
+    db,
     invalidateCache,
   });
   const assortmentProducts = configureAssortmentProductsModule({
-    AssortmentProducts,
+    db,
     invalidateCache,
   });
-  const assortmentTexts = configureAssortmentTextsModule({
-    Assortments,
-    AssortmentTexts,
-  });
-  const assortmentMedia = await configureAssortmentMediaModule(moduleInput);
+  const assortmentTexts = configureAssortmentTextsModule({ db });
+  const assortmentMedia = await configureAssortmentMediaModule({ db });
 
   /*
    * Assortment Module
@@ -244,40 +271,49 @@ export const configureAssortmentsModule = async (
 
   return {
     findAssortment: async ({ assortmentId, slug }: { assortmentId?: string; slug?: string }) => {
-      let selector: mongodb.Filter<Assortment> = {};
-
       if (assortmentId) {
-        selector = generateDbFilterById(assortmentId);
+        return db.queryOne<Assortment>(`SELECT data FROM ${ASSORTMENTS_TABLE} WHERE _id = ?`, [
+          assortmentId,
+        ]);
       } else if (slug) {
-        selector.slugs = slug;
-      } else {
-        return null;
+        // Use json_each to search within slugs JSON array
+        return db.queryOne<Assortment>(
+          `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE EXISTS (SELECT 1 FROM json_each(json_extract(data, '$.slugs')) WHERE value = ?)`,
+          [slug],
+        );
       }
-
-      return Assortments.findOne(selector, {});
+      return null;
     },
 
-    findAssortmentIds: async (query: AssortmentQuery): Promise<string[]> => {
-      return Assortments.distinct('_id', buildFindSelector(query));
+    findAssortmentIds: async (queryParams: AssortmentQuery): Promise<string[]> => {
+      const { where, params } = buildFindSelector(queryParams);
+      return db.queryColumn<string>(`SELECT _id FROM ${ASSORTMENTS_TABLE} WHERE ${where}`, params);
     },
 
     findAssortments: async ({
       limit,
       offset,
       sort,
-      ...query
+      ...queryParams
     }: AssortmentQuery & {
       limit?: number;
       offset?: number;
       sort?: SortOption[];
     }): Promise<Assortment[]> => {
-      const defaultSortOption: SortOption[] = [{ key: 'sequence', value: SortDirection.ASC }];
-      const assortments = Assortments.find(buildFindSelector(query), {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(sort || defaultSortOption),
-      });
-      return assortments.toArray();
+      const { where, params } = buildFindSelector(queryParams);
+      const orderBy = buildOrderBy(sort || [{ key: 'sequence', value: SortDirection.ASC }]);
+
+      let sql = `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE ${where} ${orderBy}`;
+      if (limit !== undefined) {
+        sql += ` LIMIT ?`;
+        params.push(limit);
+      }
+      if (offset !== undefined) {
+        sql += ` OFFSET ?`;
+        params.push(offset);
+      }
+
+      return db.query<Assortment>(sql, params);
     },
 
     findProductIds: async ({
@@ -309,22 +345,40 @@ export const configureAssortmentsModule = async (
       assortmentId: string;
       includeInactive?: boolean;
     }): Promise<Assortment[]> => {
-      const links = await AssortmentLinks.find(
-        { parentAssortmentId: assortmentId },
-        {
-          projection: { childAssortmentId: 1 },
-          sort: { sortKey: 1 },
-        },
-      ).toArray();
+      const childAssortmentIds = db.queryColumn<string>(
+        `SELECT child_assortment_id FROM ${ASSORTMENT_LINKS_TABLE}
+         WHERE parent_assortment_id = ? ORDER BY sort_key ASC`,
+        [assortmentId],
+      );
 
-      const assortmentIds = links.map(({ childAssortmentId }) => childAssortmentId);
+      if (childAssortmentIds.length === 0) return [];
 
-      const selector = !includeInactive ? { isActive: true } : {};
-      return findPreservingIds(Assortments)(selector, assortmentIds);
+      const placeholders = childAssortmentIds.map(() => '?').join(', ');
+      const activeCondition = !includeInactive ? 'AND is_active = 1' : '';
+
+      const assortments = db.query<Assortment>(
+        `SELECT data FROM ${ASSORTMENTS_TABLE}
+         WHERE _id IN (${placeholders}) AND deleted IS NULL ${activeCondition}`,
+        childAssortmentIds,
+      );
+
+      // Preserve order from links
+      const assortmentMap = new Map<string, Assortment>();
+      assortments.forEach((assortment) => {
+        assortmentMap.set(assortment._id, assortment);
+      });
+
+      return childAssortmentIds.map((id) => assortmentMap.get(id)!).filter(Boolean);
     },
 
-    count: async (query: AssortmentQuery): Promise<number> =>
-      Assortments.countDocuments(buildFindSelector(query)),
+    count: async (queryParams: AssortmentQuery): Promise<number> => {
+      const { where, params } = buildFindSelector(queryParams);
+      const result = db.queryRaw<{ count: number }>(
+        `SELECT COUNT(*) as count FROM ${ASSORTMENTS_TABLE} WHERE ${where}`,
+        params,
+      );
+      return result[0]?.count || 0;
+    },
 
     assortmentExists: async ({
       assortmentId,
@@ -332,13 +386,7 @@ export const configureAssortmentsModule = async (
       assortmentId?: string;
       slug?: string;
     }): Promise<boolean> => {
-      const assortmentCount = await Assortments.countDocuments(
-        generateDbFilterById(assortmentId, { deleted: null }),
-        {
-          limit: 1,
-        },
-      );
-      return !!assortmentCount;
+      return db.exists(ASSORTMENTS_TABLE, { _id: assortmentId, deleted: null });
     },
 
     breadcrumbs: async (
@@ -348,22 +396,18 @@ export const configureAssortmentsModule = async (
       },
       {
         resolveAssortmentLinks = async (id: string) => {
-          return AssortmentLinks.find(
-            { childAssortmentId: id },
-            {
-              projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
-              sort: { sortKey: 1, parentAssortmentId: 1 },
-            },
-          ).toArray();
+          return db.query<AssortmentLink>(
+            `SELECT data FROM ${ASSORTMENT_LINKS_TABLE}
+             WHERE child_assortment_id = ? ORDER BY sort_key ASC, parent_assortment_id ASC`,
+            [id],
+          );
         },
         resolveAssortmentProducts = async (id: string) => {
-          return AssortmentProducts.find(
-            { productId: id },
-            {
-              projection: { _id: true, assortmentId: true, productId: true },
-              sort: { sortKey: 1, productId: 1 },
-            },
-          ).toArray();
+          return db.query<AssortmentProduct>(
+            `SELECT data FROM ${ASSORTMENT_PRODUCTS_TABLE}
+             WHERE product_id = ? ORDER BY sort_key ASC, product_id ASC`,
+            [id],
+          );
         },
       }: {
         resolveAssortmentLinks?: BreadcrumbAssortmentLinkFunction;
@@ -388,18 +432,34 @@ export const configureAssortmentsModule = async (
       sequence,
       ...rest
     }: Omit<Assortment, '_id' | 'created'> & Pick<Partial<Assortment>, '_id'>) => {
-      if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
-      const { insertedId: assortmentId } = await Assortments.insertOne({
-        _id: _id || generateDbObjectId(),
-        created: new Date(),
-        sequence: sequence || (await Assortments.countDocuments({})) + 10,
-        isBase,
+      const assortmentId = _id || generateId();
+
+      // Delete any soft-deleted assortment with same ID
+      if (_id) {
+        db.run(`DELETE FROM ${ASSORTMENTS_TABLE} WHERE _id = ? AND deleted IS NOT NULL`, [_id]);
+      }
+
+      // Get sequence if not provided
+      const finalSequence =
+        sequence ??
+        (db.queryRaw<{ count: number }>(`SELECT COUNT(*) as count FROM ${ASSORTMENTS_TABLE}`, [])[0]
+          ?.count || 0) + 10;
+
+      const now = new Date();
+      const { slugs: restSlugs, tags: restTags, ...restWithoutArrays } = rest as any;
+      const assortment = db.insert<Assortment>(ASSORTMENTS_TABLE, {
+        _id: assortmentId,
         isActive,
+        isBase,
         isRoot,
+        sequence: finalSequence,
+        slugs: restSlugs || [],
+        tags: restTags || [],
         meta,
-        ...rest,
-      });
-      const assortment = (await Assortments.findOne(generateDbFilterById(assortmentId))) as Assortment;
+        created: now,
+        ...restWithoutArrays,
+      } as Assortment);
+
       await emit('ASSORTMENT_CREATE', { assortment });
 
       return assortment;
@@ -410,17 +470,15 @@ export const configureAssortmentsModule = async (
       doc: Partial<Assortment>,
       options?: { skipInvalidation?: boolean },
     ) => {
-      const assortment = await Assortments.findOneAndUpdate(
-        generateDbFilterById(assortmentId),
-        {
-          $set: {
-            updated: new Date(),
-            ...doc,
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      // Check if document exists and is not deleted
+      const existing = db.findById<Assortment>(ASSORTMENTS_TABLE, assortmentId);
+      if (!existing || existing.deleted) return null;
+
+      const updates = { ...doc, updated: new Date() };
+      const assortment = db.update<Assortment>(ASSORTMENTS_TABLE, assortmentId, updates);
+
       if (!assortment) return null;
+
       await emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
@@ -442,18 +500,16 @@ export const configureAssortmentsModule = async (
       await assortmentTexts.deleteMany({ assortmentId });
       await assortmentMedia.deleteMediaFiles({ assortmentId });
 
-      const deletedAssortment = await Assortments.findOneAndUpdate(
-        generateDbFilterById(assortmentId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      // Soft delete using document update
+      const now = new Date();
+      const deletedAssortment = db.update<Assortment>(ASSORTMENTS_TABLE, assortmentId, {
+        deleted: now,
+        updated: now,
+      });
+
       if (!deletedAssortment) return null;
+
       if (!options?.skipInvalidation) {
-        // Invalidate all assortments
         await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
@@ -463,23 +519,19 @@ export const configureAssortmentsModule = async (
     },
 
     invalidateCache,
-    setBase: async (assortmentId: string): Promise<void> => {
-      await Assortments.updateMany(
-        { isBase: true },
-        {
-          $set: {
-            isBase: false,
-            updated: new Date(),
-          },
-        },
-      );
 
-      await Assortments.updateOne(generateDbFilterById(assortmentId), {
-        $set: {
-          isBase: true,
-          updated: new Date(),
-        },
-      });
+    setBase: async (assortmentId: string): Promise<void> => {
+      const now = toSqliteDate(new Date());
+      // Reset all to non-base using JSON update
+      db.run(
+        `UPDATE ${ASSORTMENTS_TABLE} SET data = json_set(data, '$.isBase', false, '$.updated', ?) WHERE is_base = 1`,
+        [now],
+      );
+      // Set the specified one as base
+      db.run(
+        `UPDATE ${ASSORTMENTS_TABLE} SET data = json_set(data, '$.isBase', true, '$.updated', ?) WHERE _id = ?`,
+        [now, assortmentId],
+      );
       await emit('ASSORTMENT_SET_BASE', { assortmentId });
     },
 
@@ -492,16 +544,54 @@ export const configureAssortmentsModule = async (
         sort,
       }: {
         assortmentIds: string[];
-        assortmentSelector: mongodb.Filter<Assortment>;
+        assortmentSelector: Record<string, any>;
         limit: number;
         offset: number;
-        sort: mongodb.FindOptions['sort'];
+        sort?: { key: string; value: SortDirection }[];
       }): Promise<Assortment[]> => {
-        const assortments = await findPreservingIds(Assortments)(assortmentSelector, assortmentIds, {
-          limit,
-          skip: offset,
-          sort,
-        });
+        if (assortmentIds.length === 0) return [];
+
+        const placeholders = assortmentIds.map(() => '?').join(', ');
+        const params: any[] = [...assortmentIds];
+
+        let sql = `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE _id IN (${placeholders}) AND deleted IS NULL`;
+
+        // Apply selector conditions
+        if (assortmentSelector) {
+          for (const [key, value] of Object.entries(assortmentSelector)) {
+            if (key !== '_id' && value !== undefined) {
+              const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+              sql += ` AND ${snakeKey} = ?`;
+              params.push(value);
+            }
+          }
+        }
+
+        // Order by preserving the assortmentIds order
+        const orderBy = sort ? buildOrderBy(sort) : '';
+        if (orderBy) {
+          sql += ` ${orderBy}`;
+        }
+
+        if (limit !== undefined) {
+          sql += ` LIMIT ?`;
+          params.push(limit);
+        }
+        if (offset !== undefined) {
+          sql += ` OFFSET ?`;
+          params.push(offset);
+        }
+
+        const assortments = db.query<Assortment>(sql, params);
+
+        // Preserve order from assortmentIds if no sort specified
+        if (!sort) {
+          const assortmentMap = new Map<string, Assortment>();
+          assortments.forEach((assortment) => {
+            assortmentMap.set(assortment._id, assortment);
+          });
+          return assortmentIds.map((id) => assortmentMap.get(id)!).filter(Boolean);
+        }
 
         return assortments;
       },
@@ -513,12 +603,16 @@ export const configureAssortmentsModule = async (
     links: assortmentLinks,
     products: assortmentProducts,
     texts: assortmentTexts,
+
     existingTags: async (): Promise<string[]> => {
-      const tags = await Assortments.distinct('tags', {
-        tags: { $exists: true },
-        deleted: null,
-      });
-      return tags.filter(Boolean).toSorted();
+      // Use json_each to extract unique tags from all assortments
+      return db.queryColumn<string>(
+        `SELECT DISTINCT value as tag
+         FROM ${ASSORTMENTS_TABLE}, json_each(json_extract(data, '$.tags'))
+         WHERE deleted IS NULL
+         ORDER BY tag`,
+        [],
+      );
     },
   };
 };

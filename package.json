@@ -29,6 +29,7 @@
     "packages/logger",
     "packages/utils",
     "packages/mongodb",
+    "packages/sqlite",
     "packages/events",
     "packages/file-upload",
     "packages/roles",

@@ -51,14 +51,9 @@ export const AssortmentTypes = {
   },
 
   async filterAssignments(obj: Assortment, _, { modules }: Context) {
-    return modules.assortments.filters.findFilters(
-      {
-        assortmentId: obj._id,
-      },
-      {
-        sort: { sortKey: 1 },
-      },
-    );
+    return modules.assortments.filters.findFilters({
+      assortmentId: obj._id,
+    });
   },
 
   async linkedAssortments(assortment: Assortment, _, { loaders }: Context) {
@@ -89,14 +84,9 @@ export const AssortmentTypes = {
   },
 
   async productAssignments(obj: Assortment, _, { modules }: Context) {
-    return modules.assortments.products.findAssortmentProducts(
-      {
-        assortmentId: obj._id,
-      },
-      {
-        sort: { sortKey: 1 },
-      },
-    );
+    return modules.assortments.products.findAssortmentProducts({
+      assortmentId: obj._id,
+    });
   },
 
   async texts(obj: Assortment, { forceLocale }: { forceLocale?: string }, requestContext: Context) {

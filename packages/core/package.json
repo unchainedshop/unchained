@@ -52,6 +52,7 @@
     "@unchainedshop/core-warehousing": "^4.4.0",
     "@unchainedshop/core-worker": "^4.4.0",
     "@unchainedshop/logger": "^4.4.0",
+    "@unchainedshop/sqlite": "^4.4.0",
     "@unchainedshop/utils": "^4.4.0",
     "minipass-json-stream": "^1.0.2"
   },

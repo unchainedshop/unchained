@@ -1,0 +1,52 @@
+{
+  "name": "@unchainedshop/sqlite",
+  "version": "4.4.0",
+  "description": "SQLite provider for unchained platform",
+  "main": "lib/sqlite-index.js",
+  "types": "lib/sqlite-index.d.ts",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./lib/sqlite-index.d.ts",
+      "import": "./lib/sqlite-index.js"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "tsc -b",
+    "prepublishOnly": "npm run clean && npm run build",
+    "watch": "tsc -w",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce",
+    "sqlite"
+  ],
+  "authors": [
+    "Pascal Kaufmann",
+    "Mikael Araya",
+    "Vedran Rudelj",
+    "Joël Meiller"
+  ],
+  "license": "EUPL-1.2",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "dependencies": {
+    "@unchainedshop/utils": "^4.4.0",
+    "better-sqlite3": "^11.7.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^25.0.0",
+    "typescript": "^5.8.3"
+  }
+}

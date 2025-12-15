@@ -1,16 +1,11 @@
 import { emit, registerEvents } from '@unchainedshop/events';
+import { type Database, generateId, toSqliteDate, type FindOptions } from '@unchainedshop/sqlite';
 import {
-  findLocalizedText,
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-  type ModuleInput,
-} from '@unchainedshop/mongodb';
-import {
-  AssortmentMediaCollection,
-  type AssortmentMediaText,
   type AssortmentMediaType,
-} from '../db/AssortmentMediaCollection.ts';
+  type AssortmentMediaText,
+  ASSORTMENT_MEDIA_TABLE,
+  ASSORTMENT_MEDIA_TEXTS_TABLE,
+} from '../db/AssortmentsCollection.ts';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
@@ -19,79 +14,88 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
 
-export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
+export const configureAssortmentMediaModule = async ({ db }: { db: Database }) => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
-
-  const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
 
   const upsertLocalizedText = async (
     assortmentMediaId: string,
     locale: Intl.Locale,
     text: Omit<Partial<AssortmentMediaText>, 'assortmentMediaId' | 'locale'>,
   ) => {
-    const assortmentMediaText = (await AssortmentMediaTexts.findOneAndUpdate(
-      {
+    const localeStr = locale.baseName;
+    const now = new Date();
+
+    // Check if exists
+    const existing = db.findOne<AssortmentMediaText>(ASSORTMENT_MEDIA_TEXTS_TABLE, {
+      where: { assortmentMediaId, locale: localeStr },
+    });
+
+    let assortmentMediaText: AssortmentMediaText;
+
+    if (existing) {
+      // Update existing
+      assortmentMediaText = db.update<AssortmentMediaText>(ASSORTMENT_MEDIA_TEXTS_TABLE, existing._id, {
+        ...text,
+        updated: now,
+      })!;
+    } else {
+      // Insert new
+      assortmentMediaText = db.insert<AssortmentMediaText>(ASSORTMENT_MEDIA_TEXTS_TABLE, {
+        _id: generateId(),
         assortmentMediaId,
-        locale: locale.baseName,
-      },
-      {
-        $set: {
-          updated: new Date(),
-          title: text.title,
-          subtitle: text.subtitle,
-        },
-        $setOnInsert: {
-          _id: generateDbObjectId(),
-          created: new Date(),
-          assortmentMediaId,
-          locale: locale.baseName,
-        },
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    )) as AssortmentMediaText;
+        locale: localeStr,
+        title: text.title,
+        subtitle: text.subtitle,
+        created: now,
+      } as AssortmentMediaText);
+    }
+
     await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
       assortmentMediaId,
       text: assortmentMediaText,
     });
+
     return assortmentMediaText;
   };
 
   return {
     // Queries
     findAssortmentMedia: async ({ assortmentMediaId }: { assortmentMediaId: string }) => {
-      return AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
+      return db.findById<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, assortmentMediaId);
     },
 
     findAssortmentMedias: async (
-      {
-        assortmentId,
-        tags,
-        offset,
-        limit,
-      }: {
-        assortmentId?: mongodb.Filter<AssortmentMediaType>['assortmentId'];
-        limit?: number;
-        offset?: number;
+      selector: {
+        assortmentId?: string;
+        assortmentIds?: string[];
         tags?: string[];
       },
-      options?: mongodb.FindOptions,
+      options?: FindOptions,
     ): Promise<AssortmentMediaType[]> => {
-      const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
-      if (tags && tags.length > 0) {
-        selector.tags = { $all: tags };
+      const { assortmentId, assortmentIds, tags } = selector;
+      const where: Record<string, any> = {};
+
+      if (assortmentIds && assortmentIds.length > 0) {
+        where.assortmentId = { $in: assortmentIds };
+      } else if (assortmentId) {
+        where.assortmentId = assortmentId;
       }
 
-      const mediaList = AssortmentMedia.find(selector, {
-        skip: offset,
-        limit,
-        sort: { sortKey: 1 },
-        ...options,
-      });
+      if (tags && tags.length > 0) {
+        // Check if all tags are present in the JSON array using $jsonContainsAll
+        where.tags = { $jsonContainsAll: tags };
+      }
 
-      return mediaList.toArray();
+      // Default sort by sortKey if not specified
+      const effectiveOptions = options ? { ...options } : {};
+      if (!effectiveOptions.sort) {
+        effectiveOptions.sort = { sortKey: 1 };
+      }
+
+      return db.find<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, {
+        where,
+        ...effectiveOptions,
+      });
     },
 
     create: async ({
@@ -100,28 +104,28 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       ...doc
     }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'> &
       Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'>>) => {
-      if (sortKey === undefined || sortKey === null) {
-        // Get next sort key
-        const lastAssortmentMedia = (await AssortmentMedia.findOne(
-          {
-            assortmentId: doc.assortmentId,
-          },
-          {
-            sort: { sortKey: -1 },
-          },
-        )) || { sortKey: 0 };
-        sortKey = lastAssortmentMedia.sortKey + 1;
+      const now = new Date();
+
+      // Get next sort key if not provided
+      let finalSortKey = sortKey;
+      if (finalSortKey === undefined || finalSortKey === null) {
+        const last = db.findOne<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, {
+          where: { assortmentId: doc.assortmentId },
+          sort: { sortKey: -1 },
+          limit: 1,
+        });
+        finalSortKey = (last?.sortKey || 0) + 1;
       }
 
-      const { insertedId: assortmentMediaId } = await AssortmentMedia.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
+      const assortmentMedia = db.insert<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, {
+        _id: generateId(),
+        assortmentId: doc.assortmentId,
+        mediaId: doc.mediaId,
+        sortKey: finalSortKey,
         tags,
-        ...doc,
-        sortKey,
-      });
-
-      const assortmentMedia = await AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
+        meta: doc.meta,
+        created: now,
+      } as AssortmentMediaType);
 
       await emit('ASSORTMENT_ADD_MEDIA', {
         assortmentMedia,
@@ -131,14 +135,18 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     },
 
     delete: async (assortmentMediaId: string): Promise<number> => {
-      const selector = generateDbFilterById(assortmentMediaId);
-      await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
-      const deletedResult = await AssortmentMedia.deleteOne(selector);
+      db.run(`DELETE FROM ${ASSORTMENT_MEDIA_TEXTS_TABLE} WHERE assortment_media_id = ?`, [
+        assortmentMediaId,
+      ]);
+      const { changes } = db.run(`DELETE FROM ${ASSORTMENT_MEDIA_TABLE} WHERE _id = ?`, [
+        assortmentMediaId,
+      ]);
+
       await emit('ASSORTMENT_REMOVE_MEDIA', {
         assortmentMediaId,
       });
 
-      return deletedResult.deletedCount;
+      return changes;
     },
 
     deleteMediaFiles: async ({
@@ -150,42 +158,62 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       excludedAssortmentIds?: string[];
       excludedAssortmentMediaIds?: string[];
     }): Promise<number> => {
-      const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
+      const conditions: string[] = [];
+      const params: any[] = [];
 
-      if (!assortmentId && excludedAssortmentIds) {
-        selector.assortmentId = { $nin: excludedAssortmentIds };
+      if (assortmentId) {
+        conditions.push('assortment_id = ?');
+        params.push(assortmentId);
+      } else if (excludedAssortmentIds && excludedAssortmentIds.length > 0) {
+        const placeholders = excludedAssortmentIds.map(() => '?').join(', ');
+        conditions.push(`assortment_id NOT IN (${placeholders})`);
+        params.push(...excludedAssortmentIds);
       }
 
-      if (excludedAssortmentMediaIds) {
-        selector._id = { $nin: excludedAssortmentMediaIds };
+      if (excludedAssortmentMediaIds && excludedAssortmentMediaIds.length > 0) {
+        const placeholders = excludedAssortmentMediaIds.map(() => '?').join(', ');
+        conditions.push(`_id NOT IN (${placeholders})`);
+        params.push(...excludedAssortmentMediaIds);
       }
 
-      const ids = await AssortmentMedia.find(selector, { projection: { _id: true } })
-        .map((m) => m._id)
-        .toArray();
+      // Get IDs for events and text deletion
+      let selectSql = `SELECT _id FROM ${ASSORTMENT_MEDIA_TABLE}`;
+      if (conditions.length > 0) {
+        selectSql += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      const ids = db.queryColumn<string>(selectSql, params);
 
-      await AssortmentMediaTexts.deleteMany({ assortmentMediaId: { $in: ids } });
+      if (ids.length === 0) return 0;
 
-      const deletedResult = await AssortmentMedia.deleteMany(selector);
+      // Delete texts
+      const textPlaceholders = ids.map(() => '?').join(', ');
+      db.run(
+        `DELETE FROM ${ASSORTMENT_MEDIA_TEXTS_TABLE} WHERE assortment_media_id IN (${textPlaceholders})`,
+        ids,
+      );
+
+      // Delete media
+      let deleteSql = `DELETE FROM ${ASSORTMENT_MEDIA_TABLE}`;
+      if (conditions.length > 0) {
+        deleteSql += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      const { changes } = db.run(deleteSql, params);
 
       await Promise.all(
-        ids.map(async (assortmentMediaId) =>
+        ids.map(async (id) =>
           emit('ASSORTMENT_REMOVE_MEDIA', {
-            assortmentMediaId,
+            assortmentMediaId: id,
           }),
         ),
       );
 
-      return deletedResult.deletedCount;
+      return changes;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
     update: async (assortmentMediaId: string, doc: Partial<AssortmentMediaType>) => {
-      const selector = generateDbFilterById(assortmentMediaId);
-      const modifier = { $set: doc };
-      return AssortmentMedia.findOneAndUpdate(selector, modifier, {
-        returnDocument: 'after',
-      });
+      const updates = { ...doc, updated: new Date() };
+      return db.update<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, assortmentMediaId, updates);
     },
 
     updateManualOrder: async ({
@@ -196,22 +224,24 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
         sortKey: number;
       }[];
     }): Promise<AssortmentMediaType[]> => {
-      const changedAssortmentMediaIds = await Promise.all(
-        sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
-          await AssortmentMedia.updateOne(generateDbFilterById(assortmentMediaId), {
-            $set: {
-              sortKey: sortKey + 1,
-              updated: new Date(),
-            },
-          });
+      const now = toSqliteDate(new Date());
+      const changedAssortmentMediaIds: string[] = [];
 
-          return assortmentMediaId;
-        }),
+      for (const { assortmentMediaId, sortKey } of sortKeys) {
+        db.run(
+          `UPDATE ${ASSORTMENT_MEDIA_TABLE} SET data = json_set(data, '$.sortKey', ?, '$.updated', ?) WHERE _id = ?`,
+          [sortKey + 1, now, assortmentMediaId],
+        );
+        changedAssortmentMediaIds.push(assortmentMediaId);
+      }
+
+      if (changedAssortmentMediaIds.length === 0) return [];
+
+      const placeholders = changedAssortmentMediaIds.map(() => '?').join(', ');
+      const assortmentMedias = db.query<AssortmentMediaType>(
+        `SELECT data FROM ${ASSORTMENT_MEDIA_TABLE} WHERE _id IN (${placeholders})`,
+        changedAssortmentMediaIds,
       );
-
-      const assortmentMedias = await AssortmentMedia.find({
-        _id: { $in: changedAssortmentMediaIds },
-      }).toArray();
 
       await emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias });
 
@@ -224,11 +254,27 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
 
     texts: {
       // Queries
-      findMediaTexts: async (
-        { assortmentMediaId }: mongodb.Filter<AssortmentMediaText>,
-        options?: mongodb.FindOptions,
-      ): Promise<AssortmentMediaText[]> => {
-        return AssortmentMediaTexts.find({ assortmentMediaId }, options).toArray();
+      findMediaTexts: async ({
+        assortmentMediaId,
+        assortmentMediaIds,
+      }: {
+        assortmentMediaId?: string;
+        assortmentMediaIds?: string[];
+      }): Promise<AssortmentMediaText[]> => {
+        const where: Record<string, any> = {};
+
+        if (assortmentMediaIds && assortmentMediaIds.length > 0) {
+          where.assortmentMediaId = { $in: assortmentMediaIds };
+        } else if (assortmentMediaId) {
+          where.assortmentMediaId = assortmentMediaId;
+        }
+
+        if (Object.keys(where).length === 0) return [];
+
+        return db.find<AssortmentMediaText>(ASSORTMENT_MEDIA_TEXTS_TABLE, {
+          where,
+          sort: { assortmentMediaId: 1 },
+        });
       },
 
       findLocalizedMediaText: async ({
@@ -237,14 +283,12 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       }: {
         assortmentMediaId: string;
         locale: Intl.Locale;
-      }): Promise<AssortmentMediaText> => {
-        const text = await findLocalizedText<AssortmentMediaText>(
-          AssortmentMediaTexts,
-          { assortmentMediaId },
+      }): Promise<AssortmentMediaText | null> => {
+        return db.findLocalizedText<AssortmentMediaText>(
+          ASSORTMENT_MEDIA_TEXTS_TABLE,
+          { assortment_media_id: assortmentMediaId },
           locale,
         );
-
-        return text;
       },
 
       updateMediaTexts: async (

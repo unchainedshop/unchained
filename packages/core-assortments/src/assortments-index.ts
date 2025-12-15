@@ -1,4 +1,3 @@
-export * from './db/AssortmentMediaCollection.ts';
 export * from './db/AssortmentsCollection.ts';
 
 export * from './module/configureAssortmentsModule.ts';

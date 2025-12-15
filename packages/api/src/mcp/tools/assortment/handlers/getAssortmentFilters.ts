@@ -11,10 +11,7 @@ export default async function getAssortmentFilters(context: Context, params: Par
   const assortment = await getNormalizedAssortmentDetails({ assortmentId }, context);
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-  const filters = await modules.assortments.filters.findFilters(
-    { assortmentId },
-    { sort: { sortKey: 1 } },
-  );
+  const filters = await modules.assortments.filters.findFilters({ assortmentId });
   const filters_normalized = await Promise.all(
     filters?.map(async ({ filterId, ...rest }) => ({
       ...(await getNormalizedFilterDetails(filterId, context)),

@@ -1,9 +1,15 @@
 import {
-  buildDbIndexes,
-  isDocumentDBCompatModeEnabled,
-  mongodb,
   type TimestampFields,
-} from '@unchainedshop/mongodb';
+  type Database,
+  type FindOptions,
+  toSelectOptions,
+} from '@unchainedshop/sqlite';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Re-export from sqlite for convenience
+export { type FindOptions, toSelectOptions };
 
 export type AssortmentProductIdCacheRecord = {
   _id: string;
@@ -58,10 +64,27 @@ export type Assortment = {
   tags: string[];
 } & TimestampFields;
 
+export type AssortmentMediaText = {
+  _id: string;
+  assortmentMediaId: string;
+  locale: string;
+  title?: string;
+  subtitle?: string;
+} & TimestampFields;
+
+export type AssortmentMediaType = {
+  _id: string;
+  mediaId: string;
+  assortmentId: string;
+  sortKey: number;
+  tags: string[];
+  meta?: any;
+} & TimestampFields;
+
 export interface AssortmentQuery {
   queryString?: string;
   assortmentIds?: string[];
-  assortmentSelector?: mongodb.Filter<Assortment>;
+  assortmentSelector?: Record<string, any>;
   includeInactive?: boolean;
   includeLeaves?: boolean;
   slugs?: string[];
@@ -73,95 +96,25 @@ export type InvalidateCacheFn = (
   options?: { skipUpstreamTraversal: boolean },
 ) => void;
 
-export const AssortmentsCollection = async (db: mongodb.Db) => {
-  const Assortments = db.collection<Assortment>('assortments');
-  const AssortmentTexts = db.collection<AssortmentText>('assortment_texts');
-  const AssortmentProducts = db.collection<AssortmentProduct>('assortment_products');
-  const AssortmentLinks = db.collection<AssortmentLink>('assortment_links');
-  const AssortmentFilters = db.collection<AssortmentFilter>('assortment_filters');
-  const AssortmentProductIdCache = db.collection<AssortmentProductIdCacheRecord>(
-    'assortment_productId_cache',
-  );
+// Table names as constants
+export const ASSORTMENTS_TABLE = 'assortments';
+export const ASSORTMENT_TEXTS_TABLE = 'assortment_texts';
+export const ASSORTMENT_PRODUCTS_TABLE = 'assortment_products';
+export const ASSORTMENT_LINKS_TABLE = 'assortment_links';
+export const ASSORTMENT_FILTERS_TABLE = 'assortment_filters';
+export const ASSORTMENT_MEDIA_TABLE = 'assortment_media';
+export const ASSORTMENT_MEDIA_TEXTS_TABLE = 'assortment_media_texts';
+export const ASSORTMENT_PRODUCT_ID_CACHE_TABLE = 'assortment_product_id_cache';
 
-  // Assortment Indexes
+let schemaInitialized = false;
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    // Text indexes are not supported in DocumentDB
-    // Assortments full-text search index
-    // Note: This index is only created if not in DocumentDB compatibility mode
-    await buildDbIndexes(Assortments, [
-      {
-        index: { slugs: 'text' },
-        options: {
-          name: 'assortments_fulltext_search',
-        },
-      },
-    ]);
-  }
+export const initAssortmentsSchema = (db: Database) => {
+  if (schemaInitialized) return;
 
-  await buildDbIndexes(Assortments, [
-    { index: { isActive: 1 } },
-    { index: { isRoot: 1 } },
-    { index: { sequence: 1 } },
-    { index: { slugs: 1 } },
-    { index: { tags: 1 } },
-  ]);
-
-  // AssortmentTexts indexes
-
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(AssortmentTexts, [
-      {
-        index: { title: 'text', subtitle: 'text' },
-        options: {
-          weights: {
-            title: 8,
-            subtitle: 6,
-          },
-          name: 'assortments_texts_fulltext_search',
-        },
-      },
-    ]);
-  }
-
-  await buildDbIndexes(AssortmentTexts, [
-    { index: { assortmentId: 1 } },
-    { index: { locale: 1 } },
-    { index: { slug: 1 } },
-    { index: { locale: 1, assortmentId: 1 } },
-  ]);
-
-  // AssortmentProducts indexes
-  await buildDbIndexes(AssortmentProducts, [
-    { index: { assortmentId: 1 } },
-    { index: { productId: 1 } },
-    { index: { tags: 1 } },
-    { index: { assortmentId: 1, sortKey: 1 } },
-  ]);
-
-  // AssortmentLinks indices
-  await buildDbIndexes(AssortmentLinks, [
-    { index: { parentAssortmentId: 1 } },
-    { index: { childAssortmentId: 1 } },
-    { index: { tags: 1 } },
-    { index: { parentAssortmentId: 1, sortKey: 1 } },
-    { index: { childAssortmentId: 1, parentAssortmentId: 1, sortKey: 1 } },
-  ]);
-
-  // AssortmentFilter indices
-  await buildDbIndexes(AssortmentFilters, [
-    { index: { assortmentId: 1 } },
-    { index: { filterId: 1 } },
-    { index: { tags: 1 } },
-    { index: { assortmentId: 1, sortKey: 1 } },
-  ]);
-
-  return {
-    Assortments,
-    AssortmentTexts,
-    AssortmentProducts,
-    AssortmentLinks,
-    AssortmentFilters,
-    AssortmentProductIdCache,
-  };
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const schemaPath = join(__dirname, '..', '..', 'schema.sql');
+  const schemaSql = readFileSync(schemaPath, 'utf-8');
+  db.exec(schemaSql);
+  schemaInitialized = true;
 };

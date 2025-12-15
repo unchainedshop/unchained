@@ -4,8 +4,20 @@ import {
   defaultSortStage,
   type SearchQuery,
 } from '@unchainedshop/core-filters';
+import { SortDirection } from '@unchainedshop/utils';
 import type { Modules } from '../modules.ts';
 import { FilterDirector, type SearchAssortmentsOptions } from '../directors/index.ts';
+
+// Convert MongoDB sort format to SortOption[] format
+const convertSortStage = (
+  sortStage: Record<string, 1 | -1> | undefined,
+): { key: string; value: SortDirection }[] | undefined => {
+  if (!sortStage) return undefined;
+  return Object.entries(sortStage).map(([key, value]) => ({
+    key,
+    value: value === -1 ? SortDirection.DESC : SortDirection.ASC,
+  }));
+};
 
 export async function searchAssortmentsService(
   this: Modules,
@@ -51,7 +63,7 @@ export async function searchAssortmentsService(
         offset,
         assortmentIds: totalAssortmentIds,
         assortmentSelector,
-        sort: sortStage,
+        sort: convertSortStage(sortStage as Record<string, 1 | -1>),
       }),
   };
 }

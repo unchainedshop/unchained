@@ -1,6 +1,10 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { type InvalidateCacheFn, type AssortmentProduct } from '../db/AssortmentsCollection.ts';
+import { type Database, generateId, toSqliteDate, type FindOptions } from '@unchainedshop/sqlite';
+import {
+  type InvalidateCacheFn,
+  type AssortmentProduct,
+  ASSORTMENT_PRODUCTS_TABLE,
+} from '../db/AssortmentsCollection.ts';
 
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
@@ -9,10 +13,10 @@ const ASSORTMENT_PRODUCT_EVENTS = [
 ];
 
 export const configureAssortmentProductsModule = ({
-  AssortmentProducts,
+  db,
   invalidateCache,
 }: {
-  AssortmentProducts: mongodb.Collection<AssortmentProduct>;
+  db: Database;
   invalidateCache: InvalidateCacheFn;
 }) => {
   registerEvents(ASSORTMENT_PRODUCT_EVENTS);
@@ -26,13 +30,20 @@ export const configureAssortmentProductsModule = ({
       productId: string;
       tags?: string[];
     }): Promise<string[]> => {
-      const selector: mongodb.Filter<AssortmentProduct> = { productId };
-      if (tags) {
-        selector.tags = { $in: tags };
+      let sql = `SELECT assortment_id FROM ${ASSORTMENT_PRODUCTS_TABLE} WHERE product_id = ?`;
+      const params: any[] = [productId];
+
+      if (tags && tags.length > 0) {
+        // Check if tags JSON array contains any of the specified tags
+        // Use json_extract on data column since tags is stored in JSON
+        const tagConditions = tags.map(
+          () => `EXISTS (SELECT 1 FROM json_each(json_extract(data, '$.tags')) WHERE value = ?)`,
+        );
+        sql += ` AND (${tagConditions.join(' OR ')})`;
+        params.push(...tags);
       }
-      return AssortmentProducts.find(selector, { projection: { assortmentId: true } })
-        .map(({ assortmentId }) => assortmentId)
-        .toArray();
+
+      return db.queryColumn<string>(sql, params);
     },
 
     findProductIds: async ({
@@ -42,42 +53,60 @@ export const configureAssortmentProductsModule = ({
       assortmentId: string;
       tags?: string[];
     }): Promise<string[]> => {
-      const selector: mongodb.Filter<AssortmentProduct> = { assortmentId };
-      if (tags) {
-        selector.tags = { $in: tags };
+      let sql = `SELECT product_id FROM ${ASSORTMENT_PRODUCTS_TABLE} WHERE assortment_id = ?`;
+      const params: any[] = [assortmentId];
+
+      if (tags && tags.length > 0) {
+        const tagConditions = tags.map(
+          () => `EXISTS (SELECT 1 FROM json_each(json_extract(data, '$.tags')) WHERE value = ?)`,
+        );
+        sql += ` AND (${tagConditions.join(' OR ')})`;
+        params.push(...tags);
       }
-      return AssortmentProducts.find(selector, { projection: { productId: true } })
-        .map(({ productId }) => productId)
-        .toArray();
+
+      return db.queryColumn<string>(sql, params);
     },
 
     findAssortmentProduct: async ({ assortmentProductId }: { assortmentProductId: string }) => {
-      return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId), {});
+      return db.findById<AssortmentProduct>(ASSORTMENT_PRODUCTS_TABLE, assortmentProductId);
     },
 
     findAssortmentProducts: async (
-      {
-        productId,
-        productIds,
-        assortmentId,
-        assortmentIds,
-      }: {
+      selector: {
         assortmentId?: string;
         assortmentIds?: string[];
         productId?: string;
         productIds?: string[];
       },
-      options?: mongodb.FindOptions,
+      options?: FindOptions,
     ): Promise<AssortmentProduct[]> => {
-      const selector: mongodb.Filter<AssortmentProduct> = {};
-      if (assortmentId || assortmentIds) {
-        selector.assortmentId = assortmentId || { $in: assortmentIds };
+      const { productId, productIds, assortmentId, assortmentIds } = selector;
+      const where: Record<string, any> = {};
+
+      if (assortmentIds && assortmentIds.length > 0) {
+        where.assortmentId = { $in: assortmentIds };
+      } else if (assortmentId) {
+        where.assortmentId = assortmentId;
       }
-      if (productId || productIds) {
-        selector.productId = productId || { $in: productIds };
+
+      if (productIds && productIds.length > 0) {
+        where.productId = { $in: productIds };
+      } else if (productId) {
+        where.productId = productId;
       }
-      const assortmentProducts = AssortmentProducts.find(selector, options);
-      return assortmentProducts.toArray();
+
+      if (Object.keys(where).length === 0) return [];
+
+      // Default sort by sortKey if not specified
+      const effectiveOptions = options ? { ...options } : {};
+      if (!effectiveOptions.sort) {
+        effectiveOptions.sort = { sortKey: 1 };
+      }
+
+      return db.find<AssortmentProduct>(ASSORTMENT_PRODUCTS_TABLE, {
+        where,
+        ...effectiveOptions,
+      });
     },
 
     findSiblings: async ({
@@ -87,18 +116,13 @@ export const configureAssortmentProductsModule = ({
       productId: string;
       assortmentIds: string[];
     }): Promise<string[]> => {
-      const assortmentProducts = await AssortmentProducts.find(
-        {
-          assortmentId: { $in: assortmentIds },
-          productId: { $ne: productId },
-        },
-        {
-          sort: { sortKey: 1 },
-          projection: { productId: 1 },
-        },
-      ).toArray();
+      if (assortmentIds.length === 0) return [];
 
-      return assortmentProducts.map((product) => product.productId);
+      const placeholders = assortmentIds.map(() => '?').join(', ');
+      const sql = `SELECT product_id FROM ${ASSORTMENT_PRODUCTS_TABLE}
+                   WHERE assortment_id IN (${placeholders}) AND product_id != ?
+                   ORDER BY sort_key ASC`;
+      return db.queryColumn<string>(sql, [...assortmentIds, productId]);
     },
 
     // Mutations
@@ -107,45 +131,68 @@ export const configureAssortmentProductsModule = ({
         Partial<Pick<AssortmentProduct, '_id' | 'created' | 'sortKey'>>,
       options?: { skipInvalidation?: boolean },
     ) => {
-      const { _id, assortmentId, productId, sortKey, ...rest } = doc;
-
-      const selector = {
-        ...(doc._id ? generateDbFilterById(doc._id) : {}),
-        productId,
+      const {
+        _id: assortmentProductId,
         assortmentId,
-      };
-      const $set: any = {
-        updated: new Date(),
-        ...rest,
-      };
-      const $setOnInsert: any = {
-        _id: _id || generateDbObjectId(),
         productId,
-        assortmentId,
-        created: new Date(),
-      };
+        sortKey,
+        tags = [],
+        meta,
+        ...rest
+      } = doc;
 
-      if (sortKey === undefined || sortKey === null) {
-        // Get next sort key
-        const lastAssortmentProduct = (await AssortmentProducts.findOne(
-          { assortmentId },
-          { sort: { sortKey: -1 } },
-        )) || { sortKey: 0 };
-        $setOnInsert.sortKey = lastAssortmentProduct.sortKey + 1;
-      } else {
-        $set.sortKey = sortKey;
+      // Check if exists (upsert behavior)
+      const existing = db.findOne<AssortmentProduct>(ASSORTMENT_PRODUCTS_TABLE, {
+        where: { assortmentId, productId },
+      });
+
+      const now = new Date();
+
+      if (existing) {
+        // Update existing
+        const updates: Partial<AssortmentProduct> = {
+          ...rest,
+          tags,
+          meta,
+          updated: now,
+        };
+        if (sortKey !== undefined) {
+          updates.sortKey = sortKey;
+        }
+        const assortmentProduct = db.update<AssortmentProduct>(
+          ASSORTMENT_PRODUCTS_TABLE,
+          existing._id,
+          updates,
+        );
+        await emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
+
+        if (!options?.skipInvalidation && assortmentProduct) {
+          await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
+        }
+        return assortmentProduct;
       }
 
-      const assortmentProduct = await AssortmentProducts.findOneAndUpdate(
-        selector,
-        {
-          $set,
-          $setOnInsert,
-        },
-        { upsert: true, returnDocument: 'after' },
-      );
+      // Get next sort key if not provided
+      let finalSortKey = sortKey;
+      if (finalSortKey === undefined || finalSortKey === null) {
+        const last = db.findOne<AssortmentProduct>(ASSORTMENT_PRODUCTS_TABLE, {
+          where: { assortmentId },
+          sort: { sortKey: -1 },
+          limit: 1,
+        });
+        finalSortKey = (last?.sortKey || 0) + 1;
+      }
 
-      if (!assortmentProduct) return null;
+      const assortmentProduct = db.insert<AssortmentProduct>(ASSORTMENT_PRODUCTS_TABLE, {
+        _id: assortmentProductId || generateId(),
+        assortmentId,
+        productId,
+        sortKey: finalSortKey,
+        tags,
+        meta,
+        created: now,
+        ...rest,
+      } as AssortmentProduct);
 
       await emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
@@ -157,10 +204,13 @@ export const configureAssortmentProductsModule = ({
     },
 
     delete: async (assortmentProductId: string, options?: { skipInvalidation?: boolean }) => {
-      const selector = generateDbFilterById(assortmentProductId);
-
-      const assortmentProduct = await AssortmentProducts.findOneAndDelete(selector);
+      const assortmentProduct = db.findById<AssortmentProduct>(
+        ASSORTMENT_PRODUCTS_TABLE,
+        assortmentProductId,
+      );
       if (!assortmentProduct) return null;
+
+      db.delete(ASSORTMENT_PRODUCTS_TABLE, assortmentProductId);
 
       await emit('ASSORTMENT_REMOVE_PRODUCT', {
         assortmentProductId: assortmentProduct._id,
@@ -174,14 +224,47 @@ export const configureAssortmentProductsModule = ({
     },
 
     deleteMany: async (
-      selector: mongodb.Filter<AssortmentProduct>,
+      selector: {
+        _id?: { $nin?: string[] };
+        assortmentId?: string;
+        productId?: string;
+      },
       options?: { skipInvalidation?: boolean },
     ): Promise<number> => {
-      const assortmentProducts = await AssortmentProducts.find(selector, {
-        projection: { _id: 1, assortmentId: 1 },
-      }).toArray();
+      const conditions: string[] = [];
+      const params: any[] = [];
 
-      const deletionResult = await AssortmentProducts.deleteMany(selector);
+      // Handle _id exclusion
+      if (selector._id?.$nin && selector._id.$nin.length > 0) {
+        const placeholders = selector._id.$nin.map(() => '?').join(', ');
+        conditions.push(`_id NOT IN (${placeholders})`);
+        params.push(...selector._id.$nin);
+      }
+
+      if (selector.assortmentId) {
+        conditions.push('assortment_id = ?');
+        params.push(selector.assortmentId);
+      }
+      if (selector.productId) {
+        conditions.push('product_id = ?');
+        params.push(selector.productId);
+      }
+
+      if (conditions.length === 0) return 0;
+
+      const whereClause = conditions.join(' AND ');
+
+      // Get products for events and invalidation
+      const assortmentProducts = db.query<AssortmentProduct>(
+        `SELECT data FROM ${ASSORTMENT_PRODUCTS_TABLE} WHERE ${whereClause}`,
+        params,
+      );
+
+      const { changes } = db.run(
+        `DELETE FROM ${ASSORTMENT_PRODUCTS_TABLE} WHERE ${whereClause}`,
+        params,
+      );
+
       await Promise.all(
         assortmentProducts.map(async (assortmentProduct) =>
           emit('ASSORTMENT_REMOVE_PRODUCT', {
@@ -196,7 +279,7 @@ export const configureAssortmentProductsModule = ({
         });
       }
 
-      return deletionResult.deletedCount;
+      return changes;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
@@ -205,16 +288,12 @@ export const configureAssortmentProductsModule = ({
       doc: Partial<AssortmentProduct>,
       options?: { skipInvalidation?: boolean },
     ) => {
-      const selector = generateDbFilterById(assortmentProductId);
-      const modifier = {
-        $set: {
-          ...doc,
-          updated: new Date(),
-        },
-      };
-      const assortmentProduct = await AssortmentProducts.findOneAndUpdate(selector, modifier, {
-        returnDocument: 'after',
-      });
+      const updates = { ...doc, updated: new Date() };
+      const assortmentProduct = db.update<AssortmentProduct>(
+        ASSORTMENT_PRODUCTS_TABLE,
+        assortmentProductId,
+        updates,
+      );
 
       if (!options?.skipInvalidation && assortmentProduct) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
@@ -233,21 +312,24 @@ export const configureAssortmentProductsModule = ({
       },
       options?: { skipInvalidation?: boolean },
     ): Promise<AssortmentProduct[]> => {
-      const changedAssortmentProductIds = await Promise.all(
-        sortKeys.map(async ({ assortmentProductId, sortKey }) => {
-          await AssortmentProducts.updateOne(generateDbFilterById(assortmentProductId), {
-            $set: {
-              sortKey: sortKey + 1,
-              updated: new Date(),
-            },
-          });
-          return assortmentProductId;
-        }),
-      );
+      const now = toSqliteDate(new Date());
+      const changedAssortmentProductIds: string[] = [];
 
-      const assortmentProducts = await AssortmentProducts.find({
-        _id: { $in: changedAssortmentProductIds },
-      }).toArray();
+      for (const { assortmentProductId, sortKey } of sortKeys) {
+        db.run(
+          `UPDATE ${ASSORTMENT_PRODUCTS_TABLE} SET data = json_set(data, '$.sortKey', ?, '$.updated', ?) WHERE _id = ?`,
+          [sortKey + 1, now, assortmentProductId],
+        );
+        changedAssortmentProductIds.push(assortmentProductId);
+      }
+
+      if (changedAssortmentProductIds.length === 0) return [];
+
+      const placeholders = changedAssortmentProductIds.map(() => '?').join(', ');
+      const assortmentProducts = db.query<AssortmentProduct>(
+        `SELECT data FROM ${ASSORTMENT_PRODUCTS_TABLE} WHERE _id IN (${placeholders})`,
+        changedAssortmentProductIds,
+      );
 
       if (!options?.skipInvalidation && assortmentProducts.length) {
         await invalidateCache({

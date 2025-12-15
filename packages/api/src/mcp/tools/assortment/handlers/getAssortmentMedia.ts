@@ -13,12 +13,10 @@ export default async function getAssortmentMedia(context: Context, params: Param
 
   let media;
   if (offset || tags) {
-    media = await modules.assortments.media.findAssortmentMedias({
-      assortmentId,
-      limit,
-      offset,
-      tags,
-    });
+    media = await modules.assortments.media.findAssortmentMedias(
+      { assortmentId, tags },
+      { limit, skip: offset },
+    );
   } else {
     media = (await loaders.assortmentMediasLoader.load({ assortmentId })).slice(offset, offset + limit);
   }

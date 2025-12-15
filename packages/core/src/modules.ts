@@ -60,6 +60,7 @@ import {
   type WorkerSettingsOptions,
 } from '@unchainedshop/core-worker';
 import { type MigrationRepository, type ModuleInput, type mongodb } from '@unchainedshop/mongodb';
+import { Database } from '@unchainedshop/sqlite';
 
 export interface Modules {
   assortments: AssortmentsModule;
@@ -112,10 +113,12 @@ export default async function initModules(
     }
   >,
 ): Promise<Modules> {
+  // Initialize SQLite database for modules that use it
+  const sqliteDb = await Database.create();
+
   const assortments = await configureAssortmentsModule({
-    db,
+    db: sqliteDb,
     options: options.assortments,
-    migrationRepository,
   });
   const bookmarks = await configureBookmarksModule({
     db,

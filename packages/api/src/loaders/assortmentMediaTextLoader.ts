@@ -9,14 +9,9 @@ export default (unchainedAPI: UnchainedCore) =>
     async (queries) => {
       const assortmentMediaIds = [...new Set(queries.map((q) => q.assortmentMediaId).filter(Boolean))];
 
-      const texts = await unchainedAPI.modules.assortments.media.texts.findMediaTexts(
-        { assortmentMediaId: { $in: assortmentMediaIds } },
-        {
-          sort: {
-            assortmentMediaId: 1,
-          },
-        },
-      );
+      const texts = await unchainedAPI.modules.assortments.media.texts.findMediaTexts({
+        assortmentMediaIds,
+      });
 
       const localeMap = buildLocaleMap(queries, texts);
       const textsMap = buildTextMap(localeMap, texts, (text) => text.assortmentMediaId);

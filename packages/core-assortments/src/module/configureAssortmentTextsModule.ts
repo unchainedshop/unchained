@@ -1,18 +1,16 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { type Database, generateId, toSqliteDate, type FindOptions } from '@unchainedshop/sqlite';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.ts';
-import { type Assortment, type AssortmentText } from '../db/AssortmentsCollection.ts';
+import {
+  type AssortmentText,
+  ASSORTMENT_TEXTS_TABLE,
+  ASSORTMENTS_TABLE,
+} from '../db/AssortmentsCollection.ts';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
-export const configureAssortmentTextsModule = ({
-  Assortments,
-  AssortmentTexts,
-}: {
-  Assortments: mongodb.Collection<Assortment>;
-  AssortmentTexts: mongodb.Collection<AssortmentText>;
-}) => {
+export const configureAssortmentTextsModule = ({ db }: { db: Database }) => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
   const makeSlug = async ({
@@ -25,15 +23,12 @@ export const configureAssortmentTextsModule = ({
     assortmentId: string;
   }): Promise<string> => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
-      return (
-        (await AssortmentTexts.countDocuments(
-          {
-            assortmentId: { $ne: assortmentId },
-            slug: newPotentialSlug,
-          },
-          { limit: 1 },
-        )) === 0
-      );
+      // Query using virtual column for slug
+      const existing = db.findOne<AssortmentText>(ASSORTMENT_TEXTS_TABLE, {
+        where: { slug: newPotentialSlug },
+      });
+      // Slug is unique if no document found, or if found document belongs to same assortment
+      return !existing || existing.assortmentId === assortmentId;
     };
 
     const findSlug = findUnusedSlug(checkSlugIsUnique, { slugify: assortmentsSettings.slugify });
@@ -55,59 +50,71 @@ export const configureAssortmentTextsModule = ({
       assortmentId,
     });
 
-    const modifier: any = {
-      $set: {
-        updated: new Date(),
-        ...textFields,
-      },
-      $setOnInsert: {
-        _id: generateDbObjectId(),
-        created: new Date(),
-        locale: locale.baseName,
-      },
-    };
+    const now = new Date();
+    const localeStr = locale.baseName;
 
-    if (text.slug) {
-      modifier.$set.slug = slug;
+    // Check if exists
+    const existing = db.findOne<AssortmentText>(ASSORTMENT_TEXTS_TABLE, {
+      where: { assortmentId, locale: localeStr },
+    });
+
+    let assortmentText: AssortmentText;
+
+    if (existing) {
+      // Update existing using document pattern
+      const updates: Partial<AssortmentText> = {
+        ...textFields,
+        updated: now,
+      };
+      if (text.slug) {
+        updates.slug = slug;
+      }
+      assortmentText = db.update<AssortmentText>(ASSORTMENT_TEXTS_TABLE, existing._id, updates)!;
     } else {
-      modifier.$setOnInsert.slug = slug;
+      // Insert new document
+      assortmentText = db.insert<AssortmentText>(ASSORTMENT_TEXTS_TABLE, {
+        _id: generateId(),
+        assortmentId,
+        locale: localeStr,
+        title: textFields.title,
+        subtitle: textFields.subtitle,
+        description: textFields.description,
+        slug,
+        created: now,
+      } as AssortmentText);
     }
 
-    const assortmentText = (await AssortmentTexts.findOneAndUpdate(
-      { assortmentId, locale: locale.baseName },
-      modifier,
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    )) as AssortmentText;
+    // Update assortment slugs - add the new slug
+    const assortment = db.findById<{ _id: string; slugs?: string[]; [key: string]: any }>(
+      ASSORTMENTS_TABLE,
+      assortmentId,
+    );
+    if (assortment) {
+      let slugs: string[] = assortment.slugs || [];
+      if (!slugs.includes(slug)) {
+        slugs = [...slugs, slug];
+        db.run(
+          `UPDATE ${ASSORTMENTS_TABLE} SET data = json_set(data, '$.slugs', json(?), '$.updated', ?) WHERE _id = ?`,
+          [JSON.stringify(slugs), toSqliteDate(now), assortmentId],
+        );
+      }
+    }
 
-    await Assortments.updateOne(
-      { _id: assortmentId },
-      {
-        $set: {
-          updated: new Date(),
-        },
-        $addToSet: {
-          slugs: slug,
-        },
-      },
+    // Remove this slug from other assortments
+    // Query assortments where slugs JSON array contains this slug
+    const otherAssortments = db.query<{ _id: string; slugs?: string[] }>(
+      `SELECT data FROM ${ASSORTMENTS_TABLE} WHERE _id != ? AND EXISTS (SELECT 1 FROM json_each(json_extract(data, '$.slugs')) WHERE value = ?)`,
+      [assortmentId, slug],
     );
 
-    await Assortments.updateMany(
-      {
-        _id: { $ne: assortmentId },
-        slugs: slug,
-      },
-      {
-        $set: {
-          updated: new Date(),
-        },
-        $pull: {
-          slugs: slug,
-        },
-      },
-    );
+    for (const otherAssortment of otherAssortments) {
+      const filteredSlugs = (otherAssortment.slugs || []).filter((s) => s !== slug);
+      db.run(
+        `UPDATE ${ASSORTMENTS_TABLE} SET data = json_set(data, '$.slugs', json(?), '$.updated', ?) WHERE _id = ?`,
+        [JSON.stringify(filteredSlugs), toSqliteDate(now), otherAssortment._id],
+      );
+    }
+
     await emit('ASSORTMENT_UPDATE_TEXT', {
       assortmentId,
       text: assortmentText,
@@ -119,12 +126,32 @@ export const configureAssortmentTextsModule = ({
   return {
     // Queries
     findTexts: async (
-      query: mongodb.Filter<AssortmentText>,
-      options?: mongodb.FindOptions,
+      selector: { assortmentId?: string; assortmentIds?: string[]; locale?: string },
+      options?: FindOptions,
     ): Promise<AssortmentText[]> => {
-      const texts = AssortmentTexts.find(query, options);
+      const { assortmentId, assortmentIds, locale } = selector;
+      const where: Record<string, any> = {};
 
-      return texts.toArray();
+      if (assortmentIds && assortmentIds.length > 0) {
+        where.assortmentId = { $in: assortmentIds };
+      } else if (assortmentId) {
+        where.assortmentId = assortmentId;
+      }
+
+      if (locale) {
+        where.locale = locale;
+      }
+
+      // Default sort by assortmentId if not specified
+      const effectiveOptions = options ? { ...options } : {};
+      if (!effectiveOptions.sort) {
+        effectiveOptions.sort = { assortmentId: 1 };
+      }
+
+      return db.find<AssortmentText>(ASSORTMENT_TEXTS_TABLE, {
+        where,
+        ...effectiveOptions,
+      });
     },
 
     findLocalizedText: async ({
@@ -133,9 +160,12 @@ export const configureAssortmentTextsModule = ({
     }: {
       assortmentId: string;
       locale: Intl.Locale;
-    }): Promise<AssortmentText> => {
-      const text = await findLocalizedText<AssortmentText>(AssortmentTexts, { assortmentId }, locale);
-      return text;
+    }): Promise<AssortmentText | null> => {
+      return db.findLocalizedText<AssortmentText>(
+        ASSORTMENT_TEXTS_TABLE,
+        { assortment_id: assortmentId },
+        locale,
+      );
     },
 
     // Mutations
@@ -164,15 +194,27 @@ export const configureAssortmentTextsModule = ({
       assortmentId?: string;
       excludedAssortmentIds?: string[];
     }): Promise<number> => {
-      const selector: mongodb.Filter<AssortmentText> = {};
-      if (assortmentId) {
-        selector.assortmentId = assortmentId;
-      } else if (excludedAssortmentIds) {
-        selector.assortmentId = { $nin: excludedAssortmentIds };
-      }
-      const deletedResult = await AssortmentTexts.deleteMany(selector);
+      const conditions: string[] = [];
+      const params: any[] = [];
 
-      return deletedResult.deletedCount;
+      if (assortmentId) {
+        conditions.push('assortment_id = ?');
+        params.push(assortmentId);
+      } else if (excludedAssortmentIds && excludedAssortmentIds.length > 0) {
+        const placeholders = excludedAssortmentIds.map(() => '?').join(', ');
+        conditions.push(`assortment_id NOT IN (${placeholders})`);
+        params.push(...excludedAssortmentIds);
+      }
+
+      if (conditions.length === 0) {
+        return 0;
+      }
+
+      const { changes } = db.run(
+        `DELETE FROM ${ASSORTMENT_TEXTS_TABLE} WHERE ${conditions.join(' AND ')}`,
+        params,
+      );
+      return changes;
     },
   };
 };

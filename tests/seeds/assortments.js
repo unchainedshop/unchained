@@ -1,5 +1,6 @@
 import { SimpleProduct } from './products.js';
 import { MultiChoiceFilter } from './filters.js';
+import { Database, generateId } from '@unchainedshop/sqlite';
 
 export const SimpleAssortment = [
   {
@@ -252,16 +253,66 @@ export const FrenchPngAssortmentMediaText = {
   updated: new Date('2019-09-10T14:42:16.177+0000'),
 };
 
-export default async function seedAssortments(db) {
-  await db.collection('assortments').insertMany(SimpleAssortment);
-  await db.collection('assortment_texts').findOrInsertOne(GermanAssortmentText);
-  await db.collection('assortment_texts').findOrInsertOne(FrenchAssortmentText);
-  await db.collection('assortment_links').insertMany(AssortmentLinks);
-  await db.collection('assortment_products').findOrInsertOne(AssortmentProduct);
-  await db.collection('assortment_filters').insertMany(AssortmentFilters);
-  await db.collection('assortment_media').findOrInsertOne(PngAssortmentMedia);
-  await db.collection('assortment_media_texts').findOrInsertOne(GermanPngAssortmentMediaText);
-  await db.collection('assortment_media_texts').findOrInsertOne(FrenchPngAssortmentMediaText);
+// Helper to insert document into SQLite with JSON data pattern
+function insertDocument(sqliteDb, table, doc) {
+  const _id = doc._id || generateId();
+  const data = { ...doc, _id };
+  sqliteDb.run(`INSERT OR REPLACE INTO ${table} (_id, data) VALUES (?, json(?))`, [
+    _id,
+    JSON.stringify(data),
+  ]);
+  return data;
+}
 
+export default async function seedAssortments(db) {
+  // Seed into MongoDB for other collections that still use it
   await db.collection('media_objects').findOrInsertOne(PngMedia);
+
+  // Seed assortments data into SQLite
+  // The SQLite db path must match the one used by the running server
+  // The kitchensink server runs from examples/kitchensink/ so relative paths differ
+  const sqlitePath = process.env.UNCHAINED_SQLITE_PATH || 'examples/kitchensink/.db/unchained.sqlite';
+  const sqliteDb = await Database.create({ path: sqlitePath });
+
+  // Clear existing assortment data before seeding
+  // Delete from main tables (triggers will handle FTS cleanup)
+  sqliteDb.run('DELETE FROM assortment_media_texts', []);
+  sqliteDb.run('DELETE FROM assortment_media', []);
+  sqliteDb.run('DELETE FROM assortment_filters', []);
+  sqliteDb.run('DELETE FROM assortment_products', []);
+  sqliteDb.run('DELETE FROM assortment_links', []);
+  sqliteDb.run('DELETE FROM assortment_texts', []);
+  sqliteDb.run('DELETE FROM assortment_product_id_cache', []);
+  sqliteDb.run('DELETE FROM assortments', []);
+
+  // Insert assortments
+  for (const assortment of SimpleAssortment) {
+    insertDocument(sqliteDb, 'assortments', assortment);
+  }
+
+  // Insert assortment texts
+  insertDocument(sqliteDb, 'assortment_texts', GermanAssortmentText);
+  insertDocument(sqliteDb, 'assortment_texts', FrenchAssortmentText);
+
+  // Insert assortment links
+  for (const link of AssortmentLinks) {
+    insertDocument(sqliteDb, 'assortment_links', link);
+  }
+
+  // Insert assortment products
+  insertDocument(sqliteDb, 'assortment_products', AssortmentProduct);
+
+  // Insert assortment filters
+  for (const filter of AssortmentFilters) {
+    insertDocument(sqliteDb, 'assortment_filters', filter);
+  }
+
+  // Insert assortment media
+  insertDocument(sqliteDb, 'assortment_media', PngAssortmentMedia);
+
+  // Insert assortment media texts
+  insertDocument(sqliteDb, 'assortment_media_texts', GermanPngAssortmentMediaText);
+  insertDocument(sqliteDb, 'assortment_media_texts', FrenchPngAssortmentMediaText);
+
+  sqliteDb.close();
 }
