@@ -1,3 +1,10 @@
+# Unchained Engine vNEXT
+
+## Major
+
+- `setAccessToken` utility function removed from `@unchainedshop/platform`. Use `modules.users.setAccessToken(username, plainSecret)` from `@unchainedshop/core-users` directly instead. The new method handles SHA-256 hashing internally.
+
+
 # Unchained Engine v4.4
 
 ## Minor

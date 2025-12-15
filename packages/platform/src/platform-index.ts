@@ -1,5 +1,4 @@
 export * from './startPlatform.ts';
-export * from './context/index.ts';
 export * from './templates/index.ts';
 export * from './migrations/runMigrations.ts';
 

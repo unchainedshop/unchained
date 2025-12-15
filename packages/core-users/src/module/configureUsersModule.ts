@@ -512,6 +512,20 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return updatedUser;
     },
 
+    async setAccessToken(username: string, plainSecret: string): Promise<User | null> {
+      const secret = await sha256(`${username}:${plainSecret}`);
+      const updatedUser = await Users.findOneAndUpdate(
+        { username: insensitiveTrimmedRegexOperator(username) },
+        {
+          $set: {
+            'services.token': { secret },
+          },
+        },
+        { returnDocument: 'after' },
+      );
+      return updatedUser;
+    },
+
     async verifyWeb3SignatureAndUpdate(
       user: User,
       credentials: { address: string; nonce: string },
