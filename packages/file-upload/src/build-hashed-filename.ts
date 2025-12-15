@@ -1,7 +1,4 @@
 import { sha1, slugify } from '@unchainedshop/utils';
-import baseX from 'base-x';
-
-const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
 export default async function buildHashedFilename(
   directoryName: string,
@@ -16,7 +13,7 @@ export default async function buildHashedFilename(
   const slugifiedFilenameWithExtension = [slugify(fileNameWithoutExtension), ext]
     .filter(Boolean)
     .join('.');
-  const b62converted = b62.encode(hashed);
+  const base64url = Buffer.from(hashed).toString('base64url');
 
-  return `${b62converted}-${slugifiedFilenameWithExtension}`;
+  return `${base64url}.${slugifiedFilenameWithExtension}`;
 }
