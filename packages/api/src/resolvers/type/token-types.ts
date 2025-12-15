@@ -1,13 +1,7 @@
 import type { Context } from '../../context.ts';
-import {
-  type TokenSurrogate,
-  TokenStatus,
-  WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
-import { WorkStatus } from '@unchainedshop/core-worker';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { checkAction } from '../../acl.ts';
 import { actions } from '../../roles/index.ts';
-import { WarehousingDirector } from '@unchainedshop/core';
 
 export const Token = {
   product: async (token: TokenSurrogate, params: never, { loaders }: Context) => {
@@ -19,16 +13,8 @@ export const Token = {
     return loaders.userLoader.load({ userId: token.userId });
   },
 
-  status: async (token: TokenSurrogate, params: never, { modules }: Context) => {
-    if (token.walletAddress && !token.userId) {
-      return TokenStatus.DECENTRALIZED;
-    }
-    const workItems = await modules.worker.findWorkQueue({
-      types: ['EXPORT_TOKEN'],
-      status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
-    });
-    if (workItems.find((item) => item.input?.token?._id === token._id)) return TokenStatus.EXPORTING;
-    return TokenStatus.CENTRALIZED;
+  status: async (token: TokenSurrogate, params: never, { services }: Context) => {
+    return services.warehousing.resolveTokenStatus({ token });
   },
 
   ercMetadata: async (
@@ -46,26 +32,8 @@ export const Token = {
     });
   },
 
-  isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
-    const { loaders } = context;
-    const product = await loaders.productLoader.load({ productId: token.productId });
-
-    const virtualProviders = (await context.modules.warehousing.allProviders()).filter(
-      ({ type }) => type === WarehousingProviderType.VIRTUAL,
-    );
-
-    const isInvalidateable = await WarehousingDirector.isInvalidateable(
-      virtualProviders,
-      {
-        token,
-        product,
-        quantity: token?.quantity || 1,
-        referenceDate: new Date(),
-      },
-      context,
-    );
-
-    return !!isInvalidateable;
+  isInvalidateable: async (token: TokenSurrogate, _params: never, { services }: Context) => {
+    return services.warehousing.isTokenInvalidateable({ token });
   },
 
   accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {

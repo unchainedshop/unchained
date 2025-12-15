@@ -1,4 +1,4 @@
-import { type File as FileType, getFileAdapter } from '@unchainedshop/core-files';
+import type { File as FileType } from '@unchainedshop/core-files';
 import type { Context } from '../../context.ts';
 import { checkAction } from '../../acl.ts';
 import { actions } from '../../roles/index.ts';
@@ -11,14 +11,17 @@ export interface MediaHelperTypes {
 
 export const Media: MediaHelperTypes = {
   url: async (file, params, context) => {
-    const { modules } = context;
+    const { services } = context;
     try {
       await checkAction(context, actions.downloadFile, [file, params]);
       if (!file) return null;
-      const fileUploadAdapter = getFileAdapter();
-      const url = await fileUploadAdapter.createDownloadURL(file, params?.expires);
+      const url = await services.files.createFileDownloadURL({
+        file,
+        expires: params?.expires,
+        params,
+      });
       if (!url) throw new Error('Could not create download URL');
-      return modules.files.normalizeUrl(url, params);
+      return url;
     } catch (e) {
       logger.error(e);
       return null;

@@ -1,10 +1,9 @@
 import type { Context } from '../../../context.ts';
-import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 import type { Order } from '@unchainedshop/core-orders';
 import type { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { Quotation } from '@unchainedshop/core-quotations';
-import type { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { Price } from '@unchainedshop/utils';
 import { ProductPricingSheet } from '@unchainedshop/core';
 
@@ -33,64 +32,8 @@ export const OrderItem = {
     return [];
   },
 
-  async dispatches(
-    orderPosition: OrderPosition,
-    _: never,
-    { modules, loaders }: Context,
-  ): Promise<
-    | {
-        _id: string;
-        deliveryProvider: DeliveryProvider;
-        warehousingProvider: WarehousingProvider;
-        shipping: Date;
-        earliestDelivery: Date;
-      }[]
-    | null
-  > {
-    const scheduling = orderPosition.scheduling || [];
-    const order = await loaders.orderLoader.load({
-      orderId: orderPosition.orderId,
-    });
-    const { countryCode, userId } = order;
-
-    const orderDelivery =
-      order.deliveryId &&
-      (await modules.orders.deliveries.findDelivery({
-        orderDeliveryId: order.deliveryId,
-      }));
-
-    if (!orderDelivery) return null;
-
-    const deliveryProvider = await loaders.deliveryProviderLoader.load({
-      deliveryProviderId: orderDelivery.deliveryProviderId,
-    });
-    const product = await loaders.productLoader.load({
-      productId: orderPosition.productId,
-    });
-
-    if (!deliveryProvider || !product) return null;
-
-    return Promise.all(
-      scheduling.map(async (schedule) => {
-        const warehousingProvider = await loaders.warehousingProviderLoader.load({
-          warehousingProviderId: schedule.warehousingProviderId,
-        });
-
-        const context = {
-          warehousingProvider,
-          deliveryProvider,
-          product,
-          quantity: orderPosition.quantity,
-          countryCode,
-          userId,
-          // referenceDate,
-        };
-        return {
-          ...context,
-          ...schedule,
-        };
-      }),
-    );
+  async dispatches(orderPosition: OrderPosition, _: never, { services }: Context) {
+    return services.orders.resolveOrderItemDispatches({ orderPosition });
   },
 
   async order(orderPosition: OrderPosition, _, { loaders }: Context): Promise<Order> {

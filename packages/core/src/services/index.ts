@@ -48,6 +48,12 @@ import { simulatePaymentPricingService } from './simulatePaymentPricing.ts';
 import { findOrInitCartService } from './findOrInitCart.ts';
 import { addMessageService } from './addMessage.ts';
 import { generateOrderFromEnrollmentService } from './generateOrderFromEnrollment.ts';
+import { resolveOrderItemDispatchesService } from './resolveOrderItemDispatches.ts';
+import { findProductSiblingsService } from './findProductSiblings.ts';
+import { simulateConfigurablePriceRangeService } from './simulateConfigurablePriceRange.ts';
+import { createFileDownloadURLService } from './createFileDownloadURL.ts';
+import { resolveTokenStatusService } from './resolveTokenStatus.ts';
+import { isTokenInvalidateableService } from './isTokenInvalidateable.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -84,6 +90,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       uploadFileFromStream: uploadFileFromStreamService as Bound<typeof uploadFileFromStreamService>,
       removeFiles: removeFilesService as Bound<typeof removeFilesService>,
       createDownloadStream: createDownloadStreamService as Bound<typeof createDownloadStreamService>,
+      createFileDownloadURL: createFileDownloadURLService as Bound<typeof createFileDownloadURLService>,
     },
     orders: {
       registerPaymentCredentials: registerPaymentCredentialsService as Bound<
@@ -114,6 +121,9 @@ export default function initServices(modules: Modules, customServices: CustomSer
       createManualOrderDiscount: createManualOrderDiscountService as Bound<
         typeof createManualOrderDiscountService
       >,
+      resolveOrderItemDispatches: resolveOrderItemDispatchesService as Bound<
+        typeof resolveOrderItemDispatchesService
+      >,
     },
     products: {
       simulateProductPricing: simulateProductPricingService as Bound<
@@ -126,6 +136,10 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof simulateProductInventoryService
       >,
       removeProduct: removeProductService as Bound<typeof removeProductService>,
+      findProductSiblings: findProductSiblingsService as Bound<typeof findProductSiblingsService>,
+      simulateConfigurablePriceRange: simulateConfigurablePriceRangeService as Bound<
+        typeof simulateConfigurablePriceRangeService
+      >,
     },
     users: {
       migrateUserData: migrateUserDataService as Bound<typeof migrateUserDataService>,
@@ -162,6 +176,8 @@ export default function initServices(modules: Modules, customServices: CustomSer
     },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
+      resolveTokenStatus: resolveTokenStatusService as Bound<typeof resolveTokenStatusService>,
+      isTokenInvalidateable: isTokenInvalidateableService as Bound<typeof isTokenInvalidateableService>,
     },
     worker: {
       addMessage: addMessageService as Bound<typeof addMessageService>,

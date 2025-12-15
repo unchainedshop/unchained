@@ -120,27 +120,14 @@ export const Product = {
       offset: number;
       includeInactive: boolean;
     },
-    { modules }: Context,
+    { services }: Context,
   ): Promise<(typeof product)[]> {
-    const { assortmentId, limit, offset, includeInactive = false } = params;
-
-    const productId = product._id;
-    const assortmentIds = assortmentId
-      ? [assortmentId]
-      : await modules.assortments.products.findAssortmentIds({ productId });
-
-    if (!assortmentIds.length) return [];
-
-    const productIds = await modules.assortments.products.findSiblings({
-      productId,
-      assortmentIds,
-    });
-
-    return modules.products.findProducts({
-      productIds,
-      includeDrafts: includeInactive,
-      limit,
-      offset,
+    return services.products.findProductSiblings({
+      product,
+      assortmentId: params.assortmentId,
+      limit: params.limit,
+      offset: params.offset,
+      includeInactive: params.includeInactive,
     });
   },
 

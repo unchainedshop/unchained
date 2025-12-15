@@ -4,7 +4,6 @@ import type {
   ProductConfiguration,
   ProductPriceRange,
   ProductVariation,
-  ProductPrice,
 } from '@unchainedshop/core-products';
 import type { Context } from '../../../context.ts';
 import { Product } from './product-types.ts';
@@ -103,50 +102,18 @@ export const ConfigurableProduct = {
     },
     requestContext: Context,
   ): Promise<ProductPriceRange | null> {
-    const { countryCode, modules, services } = requestContext;
-
+    const { countryCode, services } = requestContext;
     const currencyCode = forcedCurrencyCode || requestContext.currencyCode;
 
-    const products = await modules.products.proxyProducts(product, vectors, {
+    return services.products.simulateConfigurablePriceRange({
+      product,
+      currencyCode,
+      countryCode,
+      quantity,
+      useNetPrice,
+      vectors,
       includeInactive,
+      user: requestContext.user,
     });
-
-    const filteredPrices = (
-      await Promise.all(
-        products.map(async (proxyProduct) => {
-          const pricingContext = {
-            product: proxyProduct,
-            user: requestContext.user,
-            countryCode,
-            discounts: [],
-            currencyCode,
-            quantity: quantity || 1,
-          };
-
-          const pricing = await services.products.simulateProductPricing(pricingContext);
-          if (!pricing) return null;
-          const unitPrice = pricing.unitPrice({ useNetPrice });
-
-          return {
-            ...unitPrice,
-            isNetPrice: useNetPrice,
-            isTaxable: pricing.taxSum() > 0,
-            currencyCode: pricing.currencyCode,
-          };
-        }),
-      )
-    ).filter(Boolean) as ProductPrice[];
-
-    if (!filteredPrices.length) return null;
-
-    const { minPrice, maxPrice } = modules.products.prices.priceRange({
-      productId: product._id as string,
-      prices: filteredPrices,
-    });
-
-    return {
-      minPrice,
-      maxPrice,
-    };
   },
 };
