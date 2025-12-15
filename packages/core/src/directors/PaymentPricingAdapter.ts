@@ -19,10 +19,10 @@ export interface PaymentPricingCalculation extends PricingCalculation {
 }
 export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
   countryCode?: string;
-  currency?: string;
+  currencyCode?: string;
   user: User | null;
   orderPayment?: OrderPayment;
-  order: Order;
+  order?: Order;
   provider: PaymentProvider;
   discounts: OrderDiscount[];
 }
@@ -67,7 +67,7 @@ export const PaymentPricingAdapter: IPricingAdapter<
 
   actions: (params) => {
     const { context } = params;
-    const { currencyCode } = context.order;
+    const currencyCode = context.currencyCode || context.order?.currencyCode;
     const baseActions = basePricingAdapter.actions(params);
     const resultSheet = PaymentPricingSheet({ currencyCode });
 

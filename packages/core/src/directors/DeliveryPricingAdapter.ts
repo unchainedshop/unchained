@@ -41,7 +41,7 @@ export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext
   currencyCode?: string;
   provider: DeliveryProvider;
   providerContext?: any;
-  order: Order;
+  order?: Order;
   orderDelivery?: OrderDelivery;
   user: User;
   discounts: OrderDiscount[];

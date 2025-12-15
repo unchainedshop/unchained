@@ -16,7 +16,7 @@ export type PaymentPricingContext =
       countryCode?: string;
       currencyCode?: string;
       user?: User;
-      order: Order;
+      order?: Order;
       provider: PaymentProvider;
       providerContext?: any;
     }

@@ -22,14 +22,14 @@ export const DeliveryProviderInterface = {
     };
   },
 
-  async simulatedPrice(deliveryProvider, args, context: Context) {
-    const { loaders, services, countryCode, user } = context;
+  async simulatedPrice(deliveryProvider, args, requestContext: Context) {
+    const { loaders, services, countryCode, user } = requestContext;
     const { currencyCode: forcedCurrencyCode, orderId, useNetPrice, context: providerContext } = args;
 
-    const order = await loaders.orderLoader.load({ orderId });
-    if (!order || !user) return null;
+    if (!user) return null;
 
-    const currencyCode = forcedCurrencyCode || order.currencyCode || context.currencyCode;
+    const order = orderId ? await loaders.orderLoader.load({ orderId }) : undefined;
+    const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
 
     return services.delivery.simulateDeliveryPricing(
       {

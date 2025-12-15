@@ -3,7 +3,6 @@ export interface PriceType {
   isNetPrice?: boolean;
   countryCode?: string;
   currencyCode?: string;
-  currency?: string;
   amount: number;
 }
 

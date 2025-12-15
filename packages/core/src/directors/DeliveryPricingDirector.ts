@@ -18,7 +18,7 @@ export type DeliveryPricingContext =
       countryCode?: string;
       provider: DeliveryProvider;
       providerContext?: any;
-      order: Order;
+      order?: Order;
       user: User;
     }
   | { currencyCode: string; item: OrderDelivery };

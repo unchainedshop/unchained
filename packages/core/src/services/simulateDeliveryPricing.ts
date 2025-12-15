@@ -19,7 +19,7 @@ export async function simulateDeliveryPricingService(
     countryCode: string;
     provider: DeliveryProvider;
     providerContext?: any;
-    order: Order;
+    order?: Order;
     user: User;
   },
   options: { useNetPrice?: boolean } = {},

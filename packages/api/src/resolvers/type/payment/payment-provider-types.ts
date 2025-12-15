@@ -30,10 +30,10 @@ export const PaymentProvider = {
   ) {
     const { loaders, services, countryCode, user } = requestContext;
 
-    const order = await loaders.orderLoader.load({ orderId });
-    if (!order || !user) return null;
+    if (!user) return null;
 
-    const currencyCode = forcedCurrencyCode || order.currencyCode || requestContext.currencyCode;
+    const order = orderId ? await loaders.orderLoader.load({ orderId }) : undefined;
+    const currencyCode = forcedCurrencyCode || order?.currencyCode || requestContext.currencyCode;
 
     return services.payment.simulatePaymentPricing(
       {
