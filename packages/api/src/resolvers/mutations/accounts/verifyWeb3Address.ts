@@ -106,11 +106,13 @@ export default async function verifyWeb3Address(
     );
   }
 
-  const foundCredentials = user?.services?.web3?.find(
-    (service) => service.address.toLowerCase() === address.toLowerCase(),
-  );
+  const foundCredentials = modules.users.findWeb3Address(user!, address);
   if (!foundCredentials) {
     throw new UserWeb3AddressNotFoundError({ userId, address });
+  }
+
+  if (!foundCredentials.nonce) {
+    throw new UserWeb3AddressSignatureError({ userId, address: foundCredentials.address });
   }
 
   // eslint-disable-next-line
@@ -132,26 +134,5 @@ export default async function verifyWeb3Address(
     throw new UserWeb3AddressSignatureError({ userId, address: foundCredentials.address });
   }
 
-  const web3Services: any[] = user?.services?.web3.map((service) => {
-    if (foundCredentials.address === service.address) {
-      return {
-        ...service,
-        nonce: undefined,
-        verified: true,
-      };
-    }
-    return service;
-  });
-
-  return modules.users.updateUser(
-    { _id: userId },
-    {
-      $set: {
-        // eslint-disable-next-line
-        // @ts-ignore
-        'services.web3': web3Services,
-      },
-    },
-    {},
-  );
+  return modules.users.verifyWeb3Address(userId!, address);
 }

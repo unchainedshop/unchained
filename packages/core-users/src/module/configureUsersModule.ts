@@ -44,6 +44,7 @@ const USER_EVENTS = [
   'USER_UPDATE_HEARTBEAT',
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
+  'USER_UPDATE_WEB3_ADDRESS',
   'USER_REMOVE',
 ];
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
@@ -404,6 +405,118 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
             emails: { address: insensitiveTrimmedRegexOperator(address) },
           },
         },
+      );
+    },
+
+    // Web3 Address Management
+    async addWeb3Address(userId: string, address: string): Promise<User | null> {
+      const user = await Users.findOne(generateDbFilterById(userId), {});
+      if (!user) return null;
+
+      const existingEntry = user.services?.web3?.find(
+        (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+      );
+
+      if (existingEntry) return user;
+
+      const nonce = Math.floor(Math.random() * 1000000).toString();
+      const updatedUser = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $push: {
+            'services.web3': {
+              address,
+              nonce,
+            },
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      if (!updatedUser) return null;
+      await emit('USER_UPDATE_WEB3_ADDRESS', {
+        action: 'add',
+        address,
+        user: removeConfidentialServiceHashes(updatedUser),
+      });
+      return updatedUser;
+    },
+
+    async removeWeb3Address(userId: string, address: string): Promise<User | null> {
+      const user = await Users.findOne(generateDbFilterById(userId), {});
+      if (!user) return null;
+
+      const existingEntry = user.services?.web3?.find(
+        (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+      );
+
+      if (!existingEntry) return null;
+
+      const updatedUser = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $pull: {
+            'services.web3': { address: existingEntry.address },
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      if (!updatedUser) return null;
+      await emit('USER_UPDATE_WEB3_ADDRESS', {
+        action: 'remove',
+        address: existingEntry.address,
+        user: removeConfidentialServiceHashes(updatedUser),
+      });
+      return updatedUser;
+    },
+
+    async verifyWeb3Address(userId: string, address: string): Promise<User | null> {
+      const user = await Users.findOne(generateDbFilterById(userId), {});
+      if (!user) return null;
+
+      const web3Services = user.services?.web3?.map(
+        (service: { address: string; nonce?: string; verified?: boolean }) => {
+          if (service.address.toLowerCase() === address.toLowerCase()) {
+            return {
+              ...service,
+              nonce: undefined,
+              verified: true,
+            };
+          }
+          return service;
+        },
+      );
+
+      if (!web3Services) return null;
+
+      const updatedUser = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $set: {
+            'services.web3': web3Services,
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      if (!updatedUser) return null;
+      await emit('USER_UPDATE_WEB3_ADDRESS', {
+        action: 'verify',
+        address,
+        user: removeConfidentialServiceHashes(updatedUser),
+      });
+      return updatedUser;
+    },
+
+    findWeb3Address(
+      user: User,
+      address: string,
+    ): { address: string; nonce?: string; verified?: boolean } | null {
+      return (
+        user.services?.web3?.find(
+          (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+        ) || null
       );
     },
 

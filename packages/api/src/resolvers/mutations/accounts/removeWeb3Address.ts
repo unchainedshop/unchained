@@ -11,20 +11,11 @@ export default async function removeWeb3Address(
     userId,
   });
 
-  const foundCredentials = user?.services?.web3?.find(
-    (service) => service.address.toLowerCase() === address.toLowerCase(),
-  );
-  if (!foundCredentials) {
+  const updatedUser = await modules.users.removeWeb3Address(userId!, address);
+
+  if (!updatedUser) {
     throw new UserWeb3AddressNotFoundError({ userId, address });
   }
 
-  return modules.users.updateUser(
-    { _id: userId },
-    {
-      $pull: {
-        'services.web3': { address: foundCredentials.address },
-      },
-    },
-    {},
-  );
+  return updatedUser;
 }
