@@ -1,19 +1,10 @@
-import { CSVRow } from '../../common/utils/csvUtils';
+import {
+  AssortmentCSVRow,
+  AssortmentImportPayload,
+  BuildAssortmentEventsParam,
+} from '../types';
 
-export interface ImportableAssortment {
-  _id?: string;
-  isActive?: boolean;
-  isBase?: boolean;
-  isRoot?: boolean;
-  tags: string[];
-  sequence: number;
-  content?: Record<string, any>;
-  filters?: any[];
-  children?: any[];
-  products?: any[];
-}
-
-const normalizeAssortmentContent = (row: CSVRow) => {
+const normalizeAssortmentContent = (row: AssortmentCSVRow) => {
   const content: Record<string, any> = {};
   const textPrefix = 'texts.';
 
@@ -27,23 +18,33 @@ const normalizeAssortmentContent = (row: CSVRow) => {
   return content;
 };
 
-export const assortmentMapper = (row: CSVRow): ImportableAssortment => {
+export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
   const content = normalizeAssortmentContent(row);
-  const mapped: ImportableAssortment = {
+  const mapped = {
     _id: row['_id'] || undefined,
-    sequence: parseInt(row['sequence'] || '0', 10),
+    sequence:
+      typeof row['sequence'] === 'string'
+        ? parseInt(row['sequence'] || '0', 10)
+        : row['sequence'] || 0,
     isActive: row['isActive'] === 'true',
     isBase: row['isBase'] === 'true',
     isRoot: row['isRoot'] === 'true',
-
-    tags: row['tags'] ? (row['tags'] as string).split(';') : [],
+    tags: row['tags'] ? (row['tags'] as string).split(';') : ([] as any),
     content,
   };
 
   return mapped;
 };
 
-export const validateAssortment = ({ assortmentCSV }: any, intl): string[] => {
+export const validateAssortment = (
+  {
+    assortmentCSV,
+    assortmentChildrenCSV,
+    assortmentFiltersCSV,
+    assortmentProductsCSV,
+  }: AssortmentImportPayload,
+  intl,
+): string[] => {
   const errors: string[] = [];
   for (const assortment of assortmentCSV) {
     const normalized = normalizeAssortmentContent(assortment);
@@ -56,6 +57,63 @@ export const validateAssortment = ({ assortmentCSV }: any, intl): string[] => {
       );
     }
   }
+
+  for (const assortmentLink of assortmentChildrenCSV) {
+    if (!assortmentLink.assortmentId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_children_CSV_import_assortment_id_missing',
+          defaultMessage: 'Child csv record missing assortmentId',
+        }),
+      );
+    }
+    if (!assortmentLink.childAssortmentId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_children_CSV_import_child_id_missing',
+          defaultMessage: 'Child csv record missing childAssortmentId',
+        }),
+      );
+    }
+  }
+
+  for (const assortmentFilter of assortmentFiltersCSV) {
+    if (!assortmentFilter.assortmentId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_filter_CSV_import_assortment_id_missing',
+          defaultMessage: 'Assortment filter csv record missing assortmentId',
+        }),
+      );
+    }
+    if (!assortmentFilter.filterId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_filter_CSV_import_filter_id_missing',
+          defaultMessage: 'Assortment filter csv record missing filterId',
+        }),
+      );
+    }
+  }
+
+  for (const assortmentProduct of assortmentProductsCSV) {
+    if (!assortmentProduct.assortmentId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_product_CSV_import_assortment_id_missing',
+          defaultMessage: 'Product csv record missing assortmentId',
+        }),
+      );
+    }
+    if (!assortmentProduct.productId) {
+      errors.push(
+        intl.formatMessage({
+          id: 'assortment_product_CSV_import_product_id_missing',
+          defaultMessage: 'Product csv record missing productId',
+        }),
+      );
+    }
+  }
   return errors;
 };
 
@@ -64,7 +122,7 @@ const buildAssortmentEvents = ({
   products,
   filters,
   ...assortment
-}: ImportableAssortment) => {
+}: BuildAssortmentEventsParam) => {
   return {
     entity: 'assortment',
     operation: 'CREATE',
@@ -86,7 +144,7 @@ const usePrepareAssortmentImport = () => {
     assortmentProductsCSV,
     assortmentChildrenCSV,
     assortmentFiltersCSV,
-  }: any): Promise<any> => {
+  }: AssortmentImportPayload): Promise<any> => {
     return assortmentCSV.map((assortment) => {
       const assortmentProducts = (assortmentProductsCSV || [])?.filter(
         (p) => p.assortmentId === assortment._id,
@@ -115,8 +173,8 @@ const usePrepareAssortmentImport = () => {
 
       if (assortmentLinks.length) {
         children = assortmentLinks.map(
-          ({ assortmentChildId, tags, sortKey, _id }) => ({
-            assortmentId: assortmentChildId,
+          ({ childAssortmentId, tags, sortKey, _id }) => ({
+            assortmentId: childAssortmentId,
             tags: tags ? (tags as string).split(';') : [],
             sortKey: sortKey ? Number(sortKey) : undefined,
             _id,

@@ -9,7 +9,7 @@ import {
   IAssortmentProduct,
 } from '../../../gql/types';
 
-const ASSORTMENT_SCHEMA = {
+export const ASSORTMENT_CSV_SCHEMA = {
   base: ['_id', 'isActive', 'isBase', 'isRoot', 'sequence', 'tags'],
   textFields: ['title', 'subtitle', 'description', 'slug'],
   assortmentFilterFields: [
@@ -29,29 +29,29 @@ const ASSORTMENT_SCHEMA = {
   assortmentChildrenFields: [
     '_id',
     'assortmentId',
-    'assortmentChildId',
+    'childAssortmentId',
     'tags',
     'sortKey',
   ],
 };
 
 const buildHeaders = (locales: string[]) => [
-  ...ASSORTMENT_SCHEMA.base,
+  ...ASSORTMENT_CSV_SCHEMA.base,
   ...locales.flatMap((locale) =>
-    ASSORTMENT_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
+    ASSORTMENT_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
 ];
 
 const buildAssortmentFilterHeaders = () => [
-  ...ASSORTMENT_SCHEMA.assortmentFilterFields,
+  ...ASSORTMENT_CSV_SCHEMA.assortmentFilterFields,
 ];
 
 const buildAssortmentProductHeaders = () => [
-  ...ASSORTMENT_SCHEMA.assortmentProductFields,
+  ...ASSORTMENT_CSV_SCHEMA.assortmentProductFields,
 ];
 
 const buildAssortmentChildrenHeaders = () => [
-  ...ASSORTMENT_SCHEMA.assortmentChildrenFields,
+  ...ASSORTMENT_CSV_SCHEMA.assortmentChildrenFields,
 ];
 
 const mapTranslations = (translationMap: any) => {
@@ -71,13 +71,13 @@ const buildAssortmentRow = (
   translations: any,
 ) => {
   const row: Record<string, any> = {};
-  ASSORTMENT_SCHEMA.base.forEach((key) => {
+  ASSORTMENT_CSV_SCHEMA.base.forEach((key) => {
     row[key] = assortment[key] ?? '';
   });
   const assortmentTexts = translations[assortment._id] || {};
   locales.forEach((locale) => {
     const text = assortmentTexts[locale] || {};
-    ASSORTMENT_SCHEMA.textFields.forEach((field) => {
+    ASSORTMENT_CSV_SCHEMA.textFields.forEach((field) => {
       let value = text[field];
       if (Array.isArray(value)) value = value.join(';');
       row[`texts.${locale}.${field}`] = value ?? '';
@@ -120,7 +120,7 @@ const buildChildrenRows = (assortmentId: string, links: IAssortmentLink[]) => {
       _id,
       sortKey,
       tags: tags || '',
-      assortmentChildId: child?._id,
+      childAssortmentId: child?._id,
       assortmentId,
     }));
 };
