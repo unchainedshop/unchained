@@ -12,10 +12,28 @@ export interface OrderReport {
 }
 export interface OrderStatisticsRecord {
   date: string;
+  count: number;
   total: {
     amount: number;
-    currency: string;
+    currencyCode: string;
   };
+}
+
+export interface DateRange {
+  start?: string;
+  end?: string;
+}
+
+export type StatisticsDateField = 'created' | 'ordered' | 'rejected' | 'confirmed' | 'fullfilled';
+
+function buildDateMatch(dateField: string, dateRange?: DateRange) {
+  if (!dateRange?.start && !dateRange?.end) return { [dateField]: { $exists: true } };
+
+  const rangeMatch: Record<string, any> = {};
+  if (dateRange?.start) rangeMatch.$gte = new Date(dateRange.start);
+  if (dateRange?.end) rangeMatch.$lte = new Date(dateRange.end);
+
+  return { [dateField]: rangeMatch };
 }
 export interface OrderAggregateParams {
   match?: Record<string, any>;
@@ -152,6 +170,75 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       if (typeof limit === 'number') stages.push({ $limit: limit });
 
       return Orders.aggregate(stages, { allowDiskUse: true }).toArray();
+    },
+
+    // Statistics methods
+    statistics: {
+      async countByDateField(
+        dateField: StatisticsDateField,
+        dateRange?: DateRange,
+        options?: { includeCarts?: boolean },
+      ): Promise<number> {
+        const match: mongodb.BSON.Document = buildDateMatch(dateField, dateRange);
+
+        if (options?.includeCarts) {
+          match.status = null;
+          match.orderNumber = null;
+        }
+
+        const pipeline: mongodb.BSON.Document[] = [{ $match: match }, { $count: 'count' }];
+        const result = await Orders.aggregate(pipeline).toArray();
+        return result[0]?.count ?? 0;
+      },
+
+      async aggregateByDateField(
+        dateField: StatisticsDateField,
+        dateRange?: DateRange,
+        options?: { includeCarts?: boolean },
+      ): Promise<OrderStatisticsRecord[]> {
+        const match: mongodb.BSON.Document = buildDateMatch(dateField, dateRange);
+
+        if (options?.includeCarts) {
+          match.status = null;
+          match.orderNumber = null;
+        }
+
+        const pipeline: mongodb.BSON.Document[] = [
+          { $match: match },
+          {
+            $addFields: {
+              orderTotal: {
+                $reduce: {
+                  input: { $ifNull: ['$calculation', []] },
+                  initialValue: 0,
+                  in: { $add: ['$$value', { $ifNull: ['$$this.amount', 0] }] },
+                },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                date: { $dateToString: { format: '%Y-%m-%d', date: `$${dateField}` } },
+                currency: '$currencyCode',
+              },
+              totalAmount: { $sum: '$orderTotal' },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              date: '$_id.date',
+              total: { amount: '$totalAmount', currencyCode: '$_id.currency' },
+              count: 1,
+            },
+          },
+          { $sort: { date: 1 } },
+        ];
+
+        return Orders.aggregate(pipeline).toArray() as Promise<OrderStatisticsRecord[]>;
+      },
     },
   };
 };
