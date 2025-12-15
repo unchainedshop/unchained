@@ -3,6 +3,7 @@
 ## Major
 
 - `setAccessToken` utility function removed from `@unchainedshop/platform`. Use `modules.users.setAccessToken(username, plainSecret)` from `@unchainedshop/core-users` directly instead. The new method handles SHA-256 hashing internally.
+- Removed `@breejs/later` dependency. The schedule parsing is now handled by a native implementation in `@unchainedshop/core`. If you were using `later.parse.cron()` or `later.parse.text()` directly, import `schedule` from `@unchainedshop/core` instead.
 
 
 # Unchained Engine v4.4

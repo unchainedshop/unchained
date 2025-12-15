@@ -77,12 +77,11 @@ The worker returns counts of deleted items:
 Consider running this worker periodically (e.g., weekly) to keep your database clean:
 
 ```typescript
-import { WorkerDirector } from '@unchainedshop/core';
-import later from '@breejs/later';
+import { WorkerDirector, schedule } from '@unchainedshop/core';
 
 WorkerDirector.configureAutoscheduling({
   type: 'ZOMBIE_KILLER',
-  schedule: later.parse.cron('0 3 * * 0'), // Every Sunday at 3 AM
+  schedule: schedule.parse.cron('0 3 * * 0'), // Every Sunday at 3 AM
   input: { bulkImportMaxAgeInDays: 7 },
 });
 ```

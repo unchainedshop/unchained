@@ -1,4 +1,4 @@
-import later, { type ScheduleData } from '@breejs/later';
+import schedule, { type ScheduleData } from '../utils/schedule.ts';
 import { BaseWorker, type IWorker } from './BaseWorker.ts';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -12,13 +12,13 @@ export interface IntervalWorkerParams {
   schedule?: ScheduleData;
 }
 
-const defaultSchedule = later.parse.text(
+const defaultSchedule = schedule.parse.text(
   NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds',
 );
 
-export const scheduleToInterval = (schedule: ScheduleData) => {
+export const scheduleToInterval = (scheduleData: ScheduleData) => {
   const referenceDate = new Date(1000);
-  const nextDates = later.schedule(schedule).next(2, referenceDate) as Date[];
+  const nextDates = schedule.schedule(scheduleData).next(2, referenceDate) as Date[];
 
   if (!nextDates || nextDates.length < 2) {
     throw new Error('Schedule must produce at least 2 consecutive dates');

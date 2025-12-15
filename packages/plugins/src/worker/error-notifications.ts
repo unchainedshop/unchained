@@ -1,6 +1,5 @@
 import { type Work, WorkStatus } from '@unchainedshop/core-worker';
-import { type IWorkerAdapter, WorkerDirector, WorkerAdapter } from '@unchainedshop/core';
-import later from '@breejs/later';
+import { type IWorkerAdapter, WorkerDirector, WorkerAdapter, schedule } from '@unchainedshop/core';
 
 interface Arg {
   secondsPassed?: number;
@@ -10,7 +9,7 @@ interface Result {
   forked?: string;
 }
 
-const everyDayAtFourInTheNight = later.parse.cron('0 3 * * *');
+const everyDayAtFourInTheNight = schedule.parse.cron('0 3 * * *');
 
 export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
   ...WorkerAdapter,

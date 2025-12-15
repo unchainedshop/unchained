@@ -1,4 +1,4 @@
-import { startPlatform, setAccessToken } from '@unchainedshop/platform';
+import { startPlatform } from '@unchainedshop/platform';
 import baseModules from '@unchainedshop/plugins/presets/base.js';
 import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
@@ -45,7 +45,7 @@ try {
   await seed(platform.unchainedAPI);
 
   // Warning: Do not use this in production
-  await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
+  await platform.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
 
   await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 } catch (err) {

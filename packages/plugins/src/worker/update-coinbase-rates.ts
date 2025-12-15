@@ -1,5 +1,4 @@
-import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
-import later from '@breejs/later';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
 import type { ProductPriceRate } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
@@ -11,7 +10,7 @@ const getExchangeRates = async (base): Promise<{ currency: string; rates: Record
     .then((r) => r?.data);
 };
 
-const everyMinute = later.parse.cron('* * * * *');
+const everyMinute = schedule.parse.cron('* * * * *');
 
 const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,

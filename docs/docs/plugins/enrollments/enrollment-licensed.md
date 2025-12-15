@@ -188,10 +188,10 @@ Use the [Enrollment Order Generator Worker](../workers/worker-enrollment-order-g
 ```typescript
 import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator';
 import { enrollmentsSettings } from '@unchainedshop/core-enrollments';
-import later from '@breejs/later';
+import { schedule } from '@unchainedshop/core';
 
 // Run daily at midnight
-enrollmentsSettings.autoSchedulingSchedule = later.parse.cron('0 0 * * *');
+enrollmentsSettings.autoSchedulingSchedule = schedule.parse.cron('0 0 * * *');
 configureGenerateOrderAutoscheduling();
 ```
 

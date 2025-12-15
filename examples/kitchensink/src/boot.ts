@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenAI } from '@ai-sdk/openai';
-import { startPlatform, setAccessToken } from '@unchainedshop/platform';
+import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
@@ -58,7 +58,9 @@ try {
   });
 
   await seed(platform.unchainedAPI);
-  await setAccessToken(platform.unchainedAPI, 'admin', 'secret');
+
+  // Warning: Do not use this in production
+  await platform.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
 
   await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 } catch (err) {

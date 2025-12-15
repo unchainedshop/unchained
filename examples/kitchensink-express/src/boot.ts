@@ -1,6 +1,6 @@
 import express from 'express';
 import http from 'node:http';
-import { startPlatform, setAccessToken } from '@unchainedshop/platform';
+import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/express';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-express.js';
@@ -46,7 +46,7 @@ try {
   await seed(engine.unchainedAPI);
 
   // Warning: Do not use this in production
-  await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
+  await engine.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
 
   await httpServer.listen({ port: process.env.PORT || 3000 });
   logger.info(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);

@@ -1,6 +1,5 @@
-import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
 import type { ProductPriceRate } from '@unchainedshop/core-products';
-import later from '@breejs/later';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:worker:update-ecb-rates');
@@ -28,7 +27,7 @@ const getExchangeRates = async (): Promise<{ currency: string; rate: string }[]>
 
 // https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
 // CET = UTC + 1
-const everyDayAtFour = later.parse.cron('0 15 * * *');
+const everyDayAtFour = schedule.parse.cron('0 15 * * *');
 
 const baseCurrency = 'EUR';
 

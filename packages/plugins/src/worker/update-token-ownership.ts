@@ -1,7 +1,6 @@
-import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
-import later from '@breejs/later';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
 
-const everyMinute = later.parse.cron('* * * * *');
+const everyMinute = schedule.parse.cron('* * * * *');
 
 export const UpdateTokenOwnership: IWorkerAdapter<void, void> = {
   ...WorkerAdapter,

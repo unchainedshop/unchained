@@ -12,8 +12,10 @@ The enrollments module manages subscriptions and recurring orders.
 ## Configuration Options
 
 ```typescript
+import { ScheduleData } from '@unchainedshop/core';
+
 export interface EnrollmentsSettingsOptions {
-  autoSchedulingSchedule?: later.ScheduleData;
+  autoSchedulingSchedule?: ScheduleData;
   enrollmentNumberHashFn?: (enrollment: Enrollment, index: number) => string;
 }
 ```
@@ -23,8 +25,8 @@ export interface EnrollmentsSettingsOptions {
 Interval that the enrollment generator tries to generate new invoices, default behaviour:
 
 ```typescript
-import later from '@breejs/later';
-const defaultSchedule = later.parse.text('every 59 minutes');
+import { schedule } from '@unchainedshop/core';
+const defaultSchedule = schedule.parse.text('every 59 minutes');
 ```
 
 This does not control if a new invoice actually is created, that is based on the enrollment plugin implementation and state of the user's enrollment.
@@ -38,10 +40,12 @@ The `enrollmentNumberHashFn` is used to generate human-readable codes that can b
 ### Example Custom Configuration
 
 ```typescript
+import { schedule } from '@unchainedshop/core';
+
 const options = {
   modules: {
     enrollments: {
-      autoSchedulingSchedule: later.parse.text('every 7 days'),
+      autoSchedulingSchedule: schedule.parse.text('every 7 days'),
       enrollmentNumberHashFn: (enrollment, index) => enrollment.sequence + 300000 + index,
     },
   },
