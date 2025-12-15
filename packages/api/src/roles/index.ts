@@ -150,4 +150,11 @@ const configureRoles = ({
   return allRoles;
 };
 
-export { allRoles, actions, configureRoles };
+const getPublicRoles = (): string[] => {
+  return Object.values(allRoles)
+    .map((role) => role?.name)
+    .filter(Boolean)
+    .filter((name: string) => !name.startsWith('__')) as string[];
+};
+
+export { allRoles, actions, configureRoles, getPublicRoles };

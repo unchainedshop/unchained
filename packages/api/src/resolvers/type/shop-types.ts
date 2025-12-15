@@ -2,7 +2,7 @@ import type { Context } from '../../context.ts';
 import type { Country } from '@unchainedshop/core-countries';
 import type { Language } from '@unchainedshop/core-languages';
 import { checkAction } from '../../acl.ts';
-import { allRoles, actions } from '../../roles/index.ts';
+import { actions, getPublicRoles } from '../../roles/index.ts';
 
 type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
 export interface ShopHelperTypes {
@@ -26,9 +26,6 @@ export const Shop: ShopHelperTypes = {
 
   userRoles: async (_root, _params, context) => {
     await checkAction(context, (actions as any).manageUsers);
-    return Object.values(allRoles)
-      .map((i) => i?.name)
-      .filter(Boolean)
-      .filter((name: string) => name.substring(0, 2) !== '__') as string[];
+    return getPublicRoles();
   },
 };
