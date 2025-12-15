@@ -10,6 +10,15 @@ export interface OrderReport {
   confirmCount: number;
   fulfillCount: number;
 }
+
+export interface TopCustomerRecord {
+  userId: string;
+  currencyCode: string;
+  totalSpent: number;
+  orderCount: number;
+  lastOrderDate: Date;
+  averageOrderValue: number;
+}
 export interface OrderStatisticsRecord {
   date: string;
   count: number;
@@ -238,6 +247,75 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         ];
 
         return Orders.aggregate(pipeline).toArray() as Promise<OrderStatisticsRecord[]>;
+      },
+
+      async getTopCustomers(
+        orderIds: string[],
+        options?: { limit?: number },
+      ): Promise<TopCustomerRecord[]> {
+        const limit = options?.limit || 10;
+
+        const pipeline: mongodb.BSON.Document[] = [
+          { $match: { _id: { $in: orderIds } } },
+          {
+            $project: {
+              userId: 1,
+              created: 1,
+              currencyCode: 1,
+              itemAmount: {
+                $let: {
+                  vars: {
+                    item: {
+                      $first: {
+                        $filter: {
+                          input: '$calculation',
+                          as: 'c',
+                          cond: { $eq: ['$$c.category', 'ITEMS'] },
+                        },
+                      },
+                    },
+                  },
+                  in: '$$item.amount',
+                },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: { userId: '$userId', currencyCode: '$currencyCode' },
+              totalSpent: { $sum: '$itemAmount' },
+              orderCount: { $sum: 1 },
+              lastOrderDate: { $max: '$created' },
+            },
+          },
+          { $match: { totalSpent: { $gt: 0 } } },
+          {
+            $addFields: {
+              averageOrderValue: {
+                $cond: [{ $eq: ['$orderCount', 0] }, 0, { $divide: ['$totalSpent', '$orderCount'] }],
+              },
+              currencyCode: '$_id.currencyCode',
+              userId: '$_id.userId',
+            },
+          },
+          { $sort: { totalSpent: -1 } },
+          { $limit: limit },
+          {
+            $project: {
+              _id: 0,
+              userId: 1,
+              currencyCode: 1,
+              totalSpent: 1,
+              orderCount: 1,
+              lastOrderDate: 1,
+              averageOrderValue: 1,
+            },
+          },
+        ];
+
+        return Orders.aggregate(pipeline, { allowDiskUse: true }).toArray() as Promise<
+          TopCustomerRecord[]
+        >;
       },
     },
   };

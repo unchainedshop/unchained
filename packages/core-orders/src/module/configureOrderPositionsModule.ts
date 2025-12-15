@@ -21,6 +21,12 @@ export interface OrderPositionAggregateParams {
   pipeline?: mongodb.Document[];
 }
 
+export interface TopProductRecord {
+  productId: string;
+  totalSold: number;
+  totalRevenue: number;
+}
+
 export const buildFindOrderPositionByIdSelector = (orderPositionId: string, orderId?: string) =>
   generateDbFilterById(
     orderPositionId,
@@ -237,6 +243,61 @@ export const configureOrderPositionsModule = ({
       if (typeof limit === 'number') stages.push({ $limit: limit });
 
       return OrderPositions.aggregate(stages).toArray();
+    },
+
+    getTopProducts: async (
+      orderIds: string[],
+      options?: { limit?: number },
+    ): Promise<TopProductRecord[]> => {
+      const limit = options?.limit || 10;
+
+      const pipeline: mongodb.Document[] = [
+        { $match: { orderId: { $in: orderIds } } },
+        {
+          $project: {
+            productId: 1,
+            quantity: 1,
+            itemAmount: {
+              $let: {
+                vars: {
+                  item: {
+                    $first: {
+                      $filter: {
+                        input: '$calculation',
+                        as: 'c',
+                        cond: { $eq: ['$$c.category', 'ITEM'] },
+                      },
+                    },
+                  },
+                },
+                in: '$$item.amount',
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$productId',
+            totalSold: { $sum: '$quantity' },
+            totalRevenue: { $sum: '$itemAmount' },
+          },
+        },
+        { $match: { totalSold: { $gt: 0 } } },
+        { $sort: { totalSold: -1 } },
+        { $limit: limit },
+        {
+          $project: {
+            _id: 0,
+            productId: '$_id',
+            totalSold: 1,
+            totalRevenue: 1,
+          },
+        },
+      ];
+
+      return OrderPositions.aggregate(pipeline, { allowDiskUse: true }).toArray() as Promise<
+        TopProductRecord[]
+      >;
     },
   };
 };

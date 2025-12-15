@@ -8,7 +8,6 @@ export default async function getTopProducts(context: Context, params: Params<'T
   const { modules } = context;
   const { from, to, limit = 10 } = params;
 
-  const match: any = {};
   const { startDate, endDate } = resolveDateRange(from, to);
 
   const orders = await modules.orders.findOrders(
@@ -24,49 +23,13 @@ export default async function getTopProducts(context: Context, params: Params<'T
   );
   const orderIds = orders.map(({ _id }) => _id);
 
-  if (startDate) match.created = { ...(match.created || {}), $gte: startDate };
-  if (endDate) match.created = { ...(match.created || {}), $lte: endDate };
-  if (orderIds?.length) match.orderId = { $in: orderIds };
-
-  const topProducts = await modules.orders.positions.aggregatePositions({
-    match,
-    project: {
-      productId: 1,
-      quantity: 1,
-      itemAmount: {
-        $let: {
-          vars: {
-            item: {
-              $first: {
-                $filter: {
-                  input: '$calculation',
-                  as: 'c',
-                  cond: { $eq: ['$$c.category', 'ITEM'] },
-                },
-              },
-            },
-          },
-          in: '$$item.amount',
-        },
-      },
-    },
-    group: {
-      _id: '$productId',
-      totalSold: { $sum: '$quantity' },
-      totalRevenue: { $sum: '$itemAmount' },
-    },
-    matchAfterGroup: {
-      totalSold: { $gt: 0 },
-    },
-    sort: { totalSold: -1 },
-    limit,
-  });
+  const topProducts = await modules.orders.positions.getTopProducts(orderIds, { limit });
 
   const normalizedTopSellingProducts = await Promise.all(
     topProducts.map(async (p) => {
-      const product = await getNormalizedProductDetails(p._id, context);
+      const product = await getNormalizedProductDetails(p.productId, context);
       return {
-        productId: p._id?.toString?.() ?? null,
+        productId: p.productId?.toString?.() ?? null,
         product,
         totalSold: p.totalSold,
         totalRevenue: p.totalRevenue,
