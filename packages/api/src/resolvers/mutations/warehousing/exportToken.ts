@@ -1,6 +1,5 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { WorkStatus } from '@unchainedshop/core-worker';
 
 import { InvalidIdError, TokenNotFoundError, TokenWrongStatusError } from '../../../errors.ts';
 
@@ -25,13 +24,9 @@ export default async function exportToken(
   if (token.walletAddress && !token.userId) {
     throw new TokenWrongStatusError({ tokenId });
   }
-  const workItems = await modules.worker.findWorkQueue({
-    types: ['EXPORT_TOKEN'],
-    status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
-  });
-  const existingWork = workItems.find((item) => item.input?.token?._id === token._id);
-  if (!existingWork) {
-    await modules.worker.addWork({
+
+  await modules.worker.addWorkIfNotExists(
+    {
       type: 'EXPORT_TOKEN',
       retries: 5,
       input: {
@@ -39,8 +34,9 @@ export default async function exportToken(
         quantity,
         recipientWalletAddress,
       },
-    });
-  }
+    },
+    (item) => item.input?.token?._id === token._id,
+  );
 
   return modules.warehousing.findToken({ tokenId });
 }

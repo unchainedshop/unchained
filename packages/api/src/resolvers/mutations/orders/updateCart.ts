@@ -27,18 +27,12 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  if (meta) {
-    await modules.orders.updateContext(order._id, meta);
+  // Batch update non-provider fields in a single database operation
+  if (meta || billingAddress || contact) {
+    await modules.orders.updateCartFields(order._id, { meta, billingAddress, contact });
   }
 
-  if (billingAddress) {
-    await modules.orders.updateBillingAddress(order._id, billingAddress);
-  }
-
-  if (contact) {
-    await modules.orders.updateContact(order._id, contact);
-  }
-
+  // Provider updates trigger events and need to be handled separately
   if (paymentProviderId) {
     await modules.orders.setPaymentProvider(order._id, paymentProviderId);
   }

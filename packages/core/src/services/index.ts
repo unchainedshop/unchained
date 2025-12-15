@@ -41,6 +41,7 @@ import { loadFiltersService } from './loadFilters.ts';
 import { loadFilterOptionsService } from './loadFilterOptions.ts';
 import { removeFilterService } from './removeFilter.ts';
 import { removeCartDiscountService } from './removeCartDiscount.ts';
+import { addMultipleCartProductsService } from './addMultipleCartProducts.ts';
 import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
@@ -127,6 +128,9 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof resolveOrderItemDispatchesService
       >,
       removeCartDiscount: removeCartDiscountService as Bound<typeof removeCartDiscountService>,
+      addMultipleCartProducts: addMultipleCartProductsService as Bound<
+        typeof addMultipleCartProductsService
+      >,
     },
     products: {
       simulateProductPricing: simulateProductPricingService as Bound<

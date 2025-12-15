@@ -6,7 +6,6 @@ import {
   OrderWrongStatusError,
   OrderNotFoundError,
 } from '../../../errors.ts';
-import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function addMultipleCartProducts(
   root: never,
@@ -20,7 +19,7 @@ export default async function addMultipleCartProducts(
   },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId, user, locale, countryCode } = context;
   const { orderId, items } = params;
 
   log(`mutation addMultipleCartProducts ${JSON.stringify(items)}`, {
@@ -28,55 +27,37 @@ export default async function addMultipleCartProducts(
     orderId,
   });
 
-  /* verify existence of products */
-  const itemsWithProducts = await Promise.all(
-    items.map(async ({ productId, ...item }) => {
-      const originalProduct = await modules.products.findProduct({ productId });
-      if (!originalProduct) throw new ProductNotFoundError({ productId });
-
-      return {
-        ...item,
-        originalProduct,
-      };
-    }),
-  );
+  // Validate all products exist first
+  for (const { productId, quantity } of items) {
+    const product = await modules.products.findProduct({ productId });
+    if (!product) throw new ProductNotFoundError({ productId });
+    if (quantity < 1) throw new OrderQuantityTooLowError({ quantity, productId });
+  }
 
   const order = await services.orders.findOrInitCart({
     orderId,
     user: user!,
-    countryCode: context.countryCode,
+    countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  for (const { originalProduct, quantity, configuration } of itemsWithProducts) {
-    if (quantity < 1)
-      throw new OrderQuantityTooLowError({
-        quantity,
-        productId: originalProduct._id,
-      });
-
-    const product = await modules.products.resolveOrderableProduct(originalProduct, {
-      configuration,
-    });
-
-    await ordersSettings.validateOrderPosition(
-      {
-        order,
-        product,
-        configuration,
-        quantityDiff: quantity,
-      },
-      context,
-    );
-
-    await modules.orders.positions.addProductItem({
-      quantity,
-      configuration,
-      originalProductId: originalProduct._id,
-      productId: product._id,
+  try {
+    await services.orders.addMultipleCartProducts({
       orderId: order._id,
+      items,
+      context: { localeContext: locale, userId, countryCode },
     });
+  } catch (error) {
+    if (error.message?.startsWith('Product not found:')) {
+      const productId = error.message.split(': ')[1];
+      throw new ProductNotFoundError({ productId });
+    }
+    if (error.message?.startsWith('Invalid quantity')) {
+      const productId = error.message.split(': ')[1];
+      throw new OrderQuantityTooLowError({ quantity: 0, productId });
+    }
+    throw error;
   }
 
   return services.orders.updateCalculation(order._id);

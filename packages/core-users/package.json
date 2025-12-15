@@ -42,15 +42,25 @@
     "@unchainedshop/utils": "^4.4.0"
   },
   "peerDependencies": {
-    "fido2-lib": ">= 3.5 < 4"
+    "fido2-lib": ">= 3.5 < 4",
+    "@noble/curves": "^2.0.0",
+    "@noble/hashes": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "fido2-lib": {
+      "optional": true
+    },
+    "@noble/curves": {
+      "optional": true
+    },
+    "@noble/hashes": {
       "optional": true
     }
   },
   "devDependencies": {
     "@types/node": "^25.0.0",
+    "@noble/curves": "^2.0.0",
+    "@noble/hashes": "^2.0.0",
     "fido2-lib": "^3.5.3",
     "typescript": "^5.8.3"
   }

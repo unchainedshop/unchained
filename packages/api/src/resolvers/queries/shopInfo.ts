@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import type { Context } from '../../context.ts';
 import { log } from '@unchainedshop/logger';
+import { getConfiguredTags } from '../../utils/getConfiguredTags.ts';
 
 export default function shopInfo(
   root: never,
@@ -39,45 +40,25 @@ export default function shopInfo(
           return [];
         }
       },
-      productTags: async () => {
-        const existingProductTags = await modules.products.existingTags();
-        const envTags = (process.env.UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS || '')
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
-        const normalizedDefaultTags = envTags?.length
-          ? envTags
-          : (adminUiConfig?.defaultProductTags || []).filter(Boolean);
-        const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingProductTags)));
-        return normalizedTags;
-      },
-      assortmentTags: async () => {
-        const existingAssortmentTags = await modules.assortments.existingTags();
-        const envTags = (process.env.UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS || '')
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
-        const normalizedDefaultTags = envTags?.length
-          ? envTags
-          : (adminUiConfig?.defaultAssortmentTags || []).filter(Boolean);
-        const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingAssortmentTags)));
-        return normalizedTags;
-      },
-      userTags: async () => {
-        const existingUserTags = await modules.users.existingTags();
-        const envTags = (process.env.UNCHAINED_ADMIN_UI_DEFAULT_USER_TAGS || '')
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
-        const normalizedDefaultTags = envTags?.length
-          ? envTags
-          : (adminUiConfig?.defaultUserTags || []).filter(Boolean);
-        const normalizedTags = Array.from(new Set(normalizedDefaultTags.concat(existingUserTags)));
-        return normalizedTags;
-      },
+      productTags: () =>
+        getConfiguredTags(
+          () => modules.products.existingTags(),
+          'UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS',
+          adminUiConfig?.defaultProductTags,
+        ),
+      assortmentTags: () =>
+        getConfiguredTags(
+          () => modules.assortments.existingTags(),
+          'UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS',
+          adminUiConfig?.defaultAssortmentTags,
+        ),
+      userTags: () =>
+        getConfiguredTags(
+          () => modules.users.existingTags(),
+          'UNCHAINED_ADMIN_UI_DEFAULT_USER_TAGS',
+          adminUiConfig?.defaultUserTags,
+        ),
     },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,
   };
 }
-
-//

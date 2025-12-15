@@ -16,13 +16,5 @@ export default async function removeWebAuthnCredentials(
     throw new UserWebAuthnCredentialsNotFoundError({ userId, credentialsId });
   }
 
-  return modules.users.updateUser(
-    { _id: userId },
-    {
-      $pull: {
-        'services.webAuthn': { id: credentialsId },
-      },
-    },
-    {},
-  );
+  return modules.users.removeWebAuthnCredential(userId!, credentialsId);
 }

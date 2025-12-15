@@ -28,6 +28,7 @@ import {
 } from '../users-settings.ts';
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts';
 import * as pbkdf2 from './pbkdf2.ts';
+import { verifyWeb3Signature } from '../utils/web3-verification.ts';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -471,13 +472,57 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return updatedUser;
     },
 
-    async verifyWeb3Address(userId: string, address: string): Promise<User | null> {
-      const user = await Users.findOne(generateDbFilterById(userId), {});
-      if (!user) return null;
+    findWeb3Address(
+      user: User,
+      address: string,
+    ): { address: string; nonce?: string; verified?: boolean } | null {
+      return (
+        user.services?.web3?.find(
+          (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+        ) || null
+      );
+    },
+
+    async addWebAuthnCredential(
+      userId: string,
+      webAuthnService: { id: string; publicKey: string; created: Date },
+    ): Promise<User | null> {
+      const updatedUser = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $push: {
+            'services.webAuthn': webAuthnService,
+          },
+        },
+        { returnDocument: 'after' },
+      );
+      return updatedUser;
+    },
+
+    async removeWebAuthnCredential(userId: string, credentialsId: string): Promise<User | null> {
+      const updatedUser = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $pull: {
+            'services.webAuthn': { id: credentialsId },
+          },
+        },
+        { returnDocument: 'after' },
+      );
+      return updatedUser;
+    },
+
+    async verifyWeb3SignatureAndUpdate(
+      user: User,
+      credentials: { address: string; nonce: string },
+      signature: `0x${string}`,
+    ): Promise<User | null> {
+      const isValid = await verifyWeb3Signature(credentials.nonce, signature, credentials.address);
+      if (!isValid) return null;
 
       const web3Services = user.services?.web3?.map(
         (service: { address: string; nonce?: string; verified?: boolean }) => {
-          if (service.address.toLowerCase() === address.toLowerCase()) {
+          if (service.address.toLowerCase() === credentials.address.toLowerCase()) {
             return {
               ...service,
               nonce: undefined,
@@ -491,7 +536,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       if (!web3Services) return null;
 
       const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(userId),
+        generateDbFilterById(user._id),
         {
           $set: {
             'services.web3': web3Services,
@@ -503,21 +548,10 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       if (!updatedUser) return null;
       await emit('USER_UPDATE_WEB3_ADDRESS', {
         action: 'verify',
-        address,
+        address: credentials.address,
         user: removeConfidentialServiceHashes(updatedUser),
       });
       return updatedUser;
-    },
-
-    findWeb3Address(
-      user: User,
-      address: string,
-    ): { address: string; nonce?: string; verified?: boolean } | null {
-      return (
-        user.services?.web3?.find(
-          (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
-        ) || null
-      );
     },
 
     async sendResetPasswordEmail(userId: string, email: string, isEnrollment?: boolean): Promise<void> {

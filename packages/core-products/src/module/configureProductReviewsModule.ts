@@ -183,6 +183,25 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
       return deletionResult.deletedCount;
     },
 
+    deleteByAuthorId: async (authorId: string): Promise<number> => {
+      const productReviews = await ProductReviews.find(
+        { authorId },
+        { projection: { _id: 1 } },
+      ).toArray();
+
+      const deletionResult = await ProductReviews.deleteMany({ authorId });
+
+      await Promise.all(
+        productReviews.map(async (review) =>
+          emit('PRODUCT_REMOVE_REVIEW', {
+            productReviewId: review._id,
+          }),
+        ),
+      );
+
+      return deletionResult.deletedCount;
+    },
+
     update: async (productReviewId: string, doc: Partial<ProductReview>) => {
       const productReview = await ProductReviews.findOneAndUpdate(
         generateDbFilterById(productReviewId),

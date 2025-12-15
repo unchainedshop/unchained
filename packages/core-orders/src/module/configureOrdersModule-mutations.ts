@@ -172,6 +172,45 @@ export const configureOrderModuleMutations = ({
       await emit('ORDER_UPDATE', { order, field: 'context' });
       return order;
     },
+
+    updateCartFields: async (
+      orderId: string,
+      updates: {
+        meta?: any;
+        billingAddress?: Address;
+        contact?: Contact;
+      },
+    ): Promise<Order | null> => {
+      const $set: Record<string, any> = { updated: new Date() };
+
+      if (updates.billingAddress) {
+        $set.billingAddress = updates.billingAddress;
+      }
+      if (updates.contact) {
+        $set.contact = updates.contact;
+      }
+      if (updates.meta && Object.keys(updates.meta).length > 0) {
+        const contextSetters = Object.fromEntries(
+          Object.entries(updates.meta).map(([key, value]) => [`context.${key}`, value]),
+        );
+        Object.assign($set, contextSetters);
+      }
+
+      if (Object.keys($set).length === 1) {
+        // Only 'updated' field, nothing to update
+        return Orders.findOne(generateDbFilterById(orderId), {});
+      }
+
+      const order = await Orders.findOneAndUpdate(
+        generateDbFilterById(orderId),
+        { $set },
+        { returnDocument: 'after' },
+      );
+
+      if (!order) return null;
+      await emit('ORDER_UPDATE', { order, field: 'cartFields' });
+      return order;
+    },
   };
 };
 

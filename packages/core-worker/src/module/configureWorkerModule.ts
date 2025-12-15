@@ -439,6 +439,23 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       return work;
     },
 
+    async addWorkIfNotExists(
+      workData: Pick<Work, 'type'> & Pick<Partial<Work>, 'scheduled' | 'priority' | 'input' | 'retries'>,
+      existenceCheck: (work: Work) => boolean,
+    ): Promise<Work | null> {
+      const workItems = await WorkQueue.find(
+        buildQuerySelector({
+          types: [workData.type],
+          status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
+        }),
+      ).toArray();
+
+      const existingWork = workItems.find(existenceCheck);
+      if (existingWork) return null;
+
+      return this.addWork(workData);
+    },
+
     rescheduleWork: async (currentWork: Work, scheduled: Date) => {
       const work = await WorkQueue.findOneAndUpdate(
         generateDbFilterById(currentWork._id),

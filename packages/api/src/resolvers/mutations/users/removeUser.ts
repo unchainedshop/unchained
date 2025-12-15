@@ -17,7 +17,7 @@ export default async function removeUser(
     throw new UserNotFoundError({ userId: normalizedUserId });
 
   if (removeUserReviews) {
-    await modules.products.reviews.deleteMany({ authorId: normalizedUserId! });
+    await modules.products.reviews.deleteByAuthorId(normalizedUserId!);
   }
   return services.users.deleteUser({ userId: normalizedUserId! });
 }

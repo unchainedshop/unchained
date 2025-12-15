@@ -3,7 +3,7 @@ import type { Context } from '../../../context.ts';
 import { WebAuthnDisabledError } from '../../../errors.ts';
 
 export default async function addWebAuthnCredentials(
-  root: never,
+  _root: never,
   { credentials }: { credentials: any },
   { modules, userId, user }: Context,
 ) {
@@ -18,13 +18,5 @@ export default async function addWebAuthnCredentials(
 
   if (!webAuthnService) throw new WebAuthnDisabledError();
 
-  return modules.users.updateUser(
-    { _id: userId },
-    {
-      $push: {
-        'services.webAuthn': webAuthnService,
-      },
-    },
-    {},
-  );
+  return modules.users.addWebAuthnCredential(userId!, webAuthnService);
 }
