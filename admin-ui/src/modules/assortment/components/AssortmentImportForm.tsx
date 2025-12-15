@@ -3,26 +3,32 @@ import Button from '../../common/components/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
 import { CSVRow } from '../../common/utils/csvUtils';
+import {
+  AssortmentCSVFileKey,
+  AssortmentImportPayload,
+  FileConfig,
+} from '../types';
+import { ASSORTMENT_CSV_SCHEMA } from '../hooks/useAssortmentExport';
 
-type CSVFileKey =
-  | 'assortmentCSV'
-  | 'assortmentProductsCSV'
-  | 'assortmentChildrenCSV'
-  | 'assortmentFiltersCSV';
-
-interface FileConfig {
-  key: CSVFileKey;
-  label: string;
-  optional?: boolean;
-}
+const REQUIRED_FIELDS: Record<AssortmentCSVFileKey, string[]> = {
+  assortmentCSV: ASSORTMENT_CSV_SCHEMA.base,
+  assortmentChildrenCSV: ASSORTMENT_CSV_SCHEMA.assortmentChildrenFields,
+  assortmentFiltersCSV: ASSORTMENT_CSV_SCHEMA.assortmentFilterFields,
+  assortmentProductsCSV: ASSORTMENT_CSV_SCHEMA.assortmentProductFields,
+};
 
 const AssortmentImportForm = ({
   onImport,
 }: {
-  onImport: (files: Record<CSVFileKey, CSVRow[]>) => Promise<void>;
+  onImport: (files: AssortmentImportPayload) => Promise<void>;
 }) => {
-  const fileRefs = useRef<Partial<Record<CSVFileKey, HTMLInputElement>>>({});
-  const [fileData, setFileData] = useState<Record<CSVFileKey, CSVRow[]>>({
+  const fileRefs = useRef<
+    Partial<Record<AssortmentCSVFileKey, HTMLInputElement>>
+  >({});
+  const [errors, setErrors] = useState<
+    Partial<Record<AssortmentCSVFileKey, string>>
+  >({});
+  const [fileData, setFileData] = useState<AssortmentImportPayload>({
     assortmentCSV: [],
     assortmentProductsCSV: [],
     assortmentChildrenCSV: [],
@@ -74,15 +80,47 @@ const AssortmentImportForm = ({
     return result.data as CSVRow[];
   };
 
-  const handleFileChange = async (key: CSVFileKey, file?: File) => {
+  const validateCSV = (key: AssortmentCSVFileKey, rows: CSVRow[]) => {
+    if (!rows.length) return false;
+
+    const headers = Object.keys(rows[0]);
+    const missing = REQUIRED_FIELDS[key].filter(
+      (field) => !headers.includes(field),
+    );
+
+    if (missing.length) {
+      setErrors((prev) => ({
+        ...prev,
+        [key]: formatMessage(
+          {
+            id: 'csv_missing_fields',
+            defaultMessage: 'Missing required columns: {fields}',
+          },
+          { fields: missing.join(', ') },
+        ),
+      }));
+      return false;
+    }
+
+    setErrors((prev) => ({ ...prev, [key]: undefined }));
+    return true;
+  };
+
+  const handleFileChange = async (key: AssortmentCSVFileKey, file?: File) => {
     if (!file) return;
     const data = await parseFile(file);
-    setFileData((prev) => ({ ...prev, [key]: data }));
+    const isValid = validateCSV(key, data);
+
+    if (isValid) {
+      setFileData((prev) => ({ ...prev, [key]: data }));
+    } else {
+      setFileData((prev) => ({ ...prev, [key]: [] }));
+    }
   };
 
   const handleInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    key: CSVFileKey,
+    key: AssortmentCSVFileKey,
   ) => {
     const file = e.target.files?.[0];
     await handleFileChange(key, file);
@@ -101,6 +139,7 @@ const AssortmentImportForm = ({
   }, [fileData, onImport]);
 
   const isBaseSelected = fileData.assortmentCSV.length > 0;
+  const hasErrors = Object.values(errors).some(Boolean);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4">
@@ -148,6 +187,9 @@ const AssortmentImportForm = ({
             disabled={isImporting || (!isBaseSelected && optional)}
             className="w-full"
           />
+          {errors[key] && (
+            <p className="text-xs text-red-600 mt-1">{errors[key]}</p>
+          )}
         </React.Fragment>
       ))}
 
@@ -158,12 +200,12 @@ const AssortmentImportForm = ({
             : formatMessage({ id: 'import', defaultMessage: 'Import' })
         }
         onClick={handleImport}
-        disabled={isImporting || !isBaseSelected}
+        disabled={isImporting || !isBaseSelected || hasErrors}
         variant="primary"
         className="w-full"
       />
 
-      {isBaseSelected && (
+      {isBaseSelected && !hasErrors && (
         <p className="text-center text-xs text-gray-500">
           {formatMessage(
             {

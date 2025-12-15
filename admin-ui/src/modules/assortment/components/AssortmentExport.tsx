@@ -3,6 +3,7 @@ import Button from '../../common/components/Button';
 import { useIntl } from 'react-intl';
 import useAssortments from '../hooks/useAssortments';
 import { useAssortmentExport } from '../hooks/useAssortmentExport';
+import useApp from '../../common/hooks/useApp';
 
 const AssortmentExport = ({
   includeInactive,
@@ -11,6 +12,7 @@ const AssortmentExport = ({
   tags,
   sort,
 }) => {
+  const { selectedLocale } = useApp();
   const { assortments, loading, client } = useAssortments({
     limit: 0,
     queryString,
@@ -18,6 +20,7 @@ const AssortmentExport = ({
     includeLeaves,
     tags,
     sort,
+    forceLocale: selectedLocale,
   });
 
   const { exportAssortments, isLoading } = useAssortmentExport(

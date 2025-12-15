@@ -15,6 +15,7 @@ import FormErrors from '../../forms/components/FormErrors';
 import useAssortments from '../hooks/useAssortments';
 import useAssortmentPaths from '../hooks/useAssortmentPaths';
 import { ISortDirection } from '../../../gql/types';
+import useApp from '../../common/hooks/useApp';
 
 const normalizeAssortments = (productsList = []) => {
   return productsList?.map(({ _id, status, texts, media }) => ({
@@ -29,7 +30,7 @@ const AssortmentLinkForm = ({ assortmentId }) => {
   const { formatMessage } = useIntl();
   const { addAssortmentLink } = useAddAssortmentLink();
   const { assortmentsPaths } = useAssortmentPaths({ assortmentId });
-
+  const { selectedLocale } = useApp();
   const parentAssortmentIds = assortmentsPaths?.map(
     ({ assortmentId: parentId }) => parentId,
   );
@@ -42,6 +43,7 @@ const AssortmentLinkForm = ({ assortmentId }) => {
     includeLeaves: true,
     limit: 50,
     sort: [{ key: 'created', value: ISortDirection.Desc }],
+    forceLocale: selectedLocale,
   });
 
   const onSubmit: OnSubmitType = async ({ childAssortmentId, tags }) => {

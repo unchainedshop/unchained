@@ -11,6 +11,7 @@ import usePrepareAssortmentImport, {
   validateAssortment,
 } from '../hooks/usePrepareAssortmentImport';
 import AssortmentImportForm from './AssortmentImportForm';
+import { AssortmentImportPayload } from '../types';
 
 const AssortmentImport = () => {
   const { formatMessage } = useIntl();
@@ -18,7 +19,7 @@ const AssortmentImport = () => {
   const { setModal } = useModal();
   const { prepareAssortmentImport } = usePrepareAssortmentImport();
 
-  const { isImporting, importItems } = useCSVImport({
+  const { isImporting, importItems } = useCSVImport<AssortmentImportPayload>({
     validate: validateAssortment,
     process: prepareAssortmentImport,
   });
@@ -26,7 +27,7 @@ const AssortmentImport = () => {
   const handleOpenImport = () => {
     setModal(
       <AssortmentImportForm
-        onImport={async (normalizedProducts: any) => {
+        onImport={async (normalizedProducts: AssortmentImportPayload) => {
           const result = await importItems(normalizedProducts);
           setModal(
             <ImportResultMessage
