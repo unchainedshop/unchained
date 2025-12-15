@@ -144,7 +144,7 @@ const usePrepareAssortmentImport = () => {
     assortmentProductsCSV,
     assortmentChildrenCSV,
     assortmentFiltersCSV,
-  }: AssortmentImportPayload): Promise<any> => {
+  }: AssortmentImportPayload) => {
     return assortmentCSV.map((assortment) => {
       const assortmentProducts = (assortmentProductsCSV || [])?.filter(
         (p) => p.assortmentId === assortment._id,
