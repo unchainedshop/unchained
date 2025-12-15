@@ -6446,58 +6446,7 @@ export type IAddAssortmentLinkMutationVariables = Exact<{
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 }>;
 
-export type IAddAssortmentLinkMutation = {
-  addAssortmentLink: {
-    _id: string;
-    sortKey: number;
-    parent: {
-      _id: string;
-      isActive?: boolean | null;
-      created?: any | null;
-      updated?: any | null;
-      sequence: number;
-      isBase?: boolean | null;
-      isRoot?: boolean | null;
-      tags?: Array<any> | null;
-      childrenCount: number;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
-    };
-    child: {
-      _id: string;
-      isActive?: boolean | null;
-      created?: any | null;
-      updated?: any | null;
-      sequence: number;
-      isBase?: boolean | null;
-      isRoot?: boolean | null;
-      tags?: Array<any> | null;
-      childrenCount: number;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
-    };
-  };
-};
+export type IAddAssortmentLinkMutation = { addAssortmentLink: { _id: string } };
 
 export type IPrepareAssortmentMediaUploadMutationVariables = Exact<{
   mediaName: Scalars['String']['input'];
@@ -6521,6 +6470,7 @@ export type IAddAssortmentProductMutation = {
 export type IAssortmentQueryVariables = Exact<{
   assortmentId?: InputMaybe<Scalars['ID']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IAssortmentQuery = {
@@ -6615,6 +6565,7 @@ export type IAssortmentFiltersQuery = {
 export type IAssortmentLinksQueryVariables = Exact<{
   assortmentId?: InputMaybe<Scalars['ID']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IAssortmentLinksQuery = {
@@ -6873,6 +6824,7 @@ export type IAssortmentsQueryVariables = Exact<{
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   includeLeaves?: InputMaybe<Scalars['Boolean']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 }>;
 
 export type IAssortmentsQuery = {
@@ -6917,31 +6869,7 @@ export type ICreateAssortmentMutationVariables = Exact<{
   texts?: InputMaybe<Array<IAssortmentTextInput>>;
 }>;
 
-export type ICreateAssortmentMutation = {
-  createAssortment: {
-    _id: string;
-    isActive?: boolean | null;
-    created?: any | null;
-    updated?: any | null;
-    sequence: number;
-    isBase?: boolean | null;
-    isRoot?: boolean | null;
-    tags?: Array<any> | null;
-    childrenCount: number;
-    texts?: {
-      _id: string;
-      slug?: string | null;
-      title?: string | null;
-      subtitle?: string | null;
-      description?: string | null;
-    } | null;
-    media: Array<{
-      _id: string;
-      tags?: Array<any> | null;
-      file?: { _id: string; url?: string | null } | null;
-    }>;
-  };
-};
+export type ICreateAssortmentMutation = { createAssortment: { _id: string } };
 
 export type IRemoveAssortmentMutationVariables = Exact<{
   assortmentId: Scalars['ID']['input'];
@@ -6962,56 +6890,7 @@ export type IRemoveAssortmentLinkMutationVariables = Exact<{
 }>;
 
 export type IRemoveAssortmentLinkMutation = {
-  removeAssortmentLink: {
-    _id: string;
-    sortKey: number;
-    parent: {
-      _id: string;
-      isActive?: boolean | null;
-      created?: any | null;
-      updated?: any | null;
-      sequence: number;
-      isBase?: boolean | null;
-      isRoot?: boolean | null;
-      tags?: Array<any> | null;
-      childrenCount: number;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
-    };
-    child: {
-      _id: string;
-      isActive?: boolean | null;
-      created?: any | null;
-      updated?: any | null;
-      sequence: number;
-      isBase?: boolean | null;
-      isRoot?: boolean | null;
-      tags?: Array<any> | null;
-      childrenCount: number;
-      texts?: {
-        _id: string;
-        slug?: string | null;
-        title?: string | null;
-        subtitle?: string | null;
-        description?: string | null;
-      } | null;
-      media: Array<{
-        _id: string;
-        tags?: Array<any> | null;
-        file?: { _id: string; url?: string | null } | null;
-      }>;
-    };
-  };
+  removeAssortmentLink: { _id: string };
 };
 
 export type IRemoveAssortmentMediaMutationVariables = Exact<{
@@ -7103,31 +6982,7 @@ export type IUpdateAssortmentMutationVariables = Exact<{
   assortmentId: Scalars['ID']['input'];
 }>;
 
-export type IUpdateAssortmentMutation = {
-  updateAssortment: {
-    _id: string;
-    isActive?: boolean | null;
-    created?: any | null;
-    updated?: any | null;
-    sequence: number;
-    isBase?: boolean | null;
-    isRoot?: boolean | null;
-    tags?: Array<any> | null;
-    childrenCount: number;
-    texts?: {
-      _id: string;
-      slug?: string | null;
-      title?: string | null;
-      subtitle?: string | null;
-      description?: string | null;
-    } | null;
-    media: Array<{
-      _id: string;
-      tags?: Array<any> | null;
-      file?: { _id: string; url?: string | null } | null;
-    }>;
-  };
-};
+export type IUpdateAssortmentMutation = { updateAssortment: { _id: string } };
 
 export type IUpdateAssortmentMediaTextsMutationVariables = Exact<{
   assortmentMediaId: Scalars['ID']['input'];

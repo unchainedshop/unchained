@@ -3,9 +3,14 @@ import { useQuery } from '@apollo/client/react';
 import { IAssortmentLinksQuery } from '../../../gql/types';
 import { parseUniqueId } from '../../common/utils/getUniqueId';
 import AssortmentFragment from '../fragments/AssortmentFragment';
+import useApp from '../../common/hooks/useApp';
 
 export const AssortmentLinksQuery = gql`
-  query AssortmentLinks($assortmentId: ID, $slug: String) {
+  query AssortmentLinks(
+    $assortmentId: ID
+    $slug: String
+    $forceLocale: Locale
+  ) {
     assortment(assortmentId: $assortmentId, slug: $slug) {
       _id
       linkedAssortments {
@@ -25,12 +30,14 @@ export const AssortmentLinksQuery = gql`
 
 const useAssortmentLinks = ({ assortmentId: id = null, slug = null } = {}) => {
   const parsedId = parseUniqueId(slug);
+  const { selectedLocale } = useApp();
   const { data, loading, error } = useQuery<IAssortmentLinksQuery>(
     AssortmentLinksQuery,
     {
       skip: !id && !parsedId,
       variables: {
         assortmentId: id || parsedId,
+        forceLocale: selectedLocale,
       },
     },
   );

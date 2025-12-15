@@ -40,8 +40,12 @@ const GetCurrentTab = ({ id, selectedView, ...extendedData }) => {
         <AssortmentTextForm assortmentId={id} />
       </LocaleWrapper>
     );
-  if (selectedView === 'links') return <AssortmentLinks assortmentId={id} />;
-
+  if (selectedView === 'links')
+    return (
+      <LocaleWrapper>
+        <AssortmentLinks assortmentId={id} />
+      </LocaleWrapper>
+    );
   if (selectedView === 'media')
     return (
       <ErrorBoundary>
@@ -51,11 +55,23 @@ const GetCurrentTab = ({ id, selectedView, ...extendedData }) => {
       </ErrorBoundary>
     );
   if (selectedView === 'products')
-    return <AssortmentProducts assortmentId={id} />;
+    return (
+      <LocaleWrapper>
+        <AssortmentProducts assortmentId={id} />
+      </LocaleWrapper>
+    );
   if (selectedView === 'filters')
-    return <AssortmentFilters assortmentId={id} />;
+    return (
+      <LocaleWrapper>
+        <AssortmentFilters assortmentId={id} />
+      </LocaleWrapper>
+    );
   if (selectedView === 'extended')
-    return <DisplayExtendedFields data={extendedData} />;
+    return (
+      <LocaleWrapper>
+        <DisplayExtendedFields data={extendedData} />
+      </LocaleWrapper>
+    );
   return (
     <LocaleWrapper>
       <AssortmentTextForm assortmentId={id} />

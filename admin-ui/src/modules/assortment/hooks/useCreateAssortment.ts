@@ -6,7 +6,6 @@ import {
   ICreateAssortmentMutation,
   ICreateAssortmentMutationVariables,
 } from '../../../gql/types';
-import AssortmentFragment from '../fragments/AssortmentFragment';
 
 const CreateAssortmentMutation = gql`
   mutation CreateAssortment(
@@ -14,10 +13,9 @@ const CreateAssortmentMutation = gql`
     $texts: [AssortmentTextInput!]
   ) {
     createAssortment(assortment: $assortment, texts: $texts) {
-      ...AssortmentFragment
+      _id
     }
   }
-  ${AssortmentFragment}
 `;
 
 const useCreateAssortment = () => {

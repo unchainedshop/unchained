@@ -17,6 +17,7 @@ const AssortmentsQuery = gql`
     $includeInactive: Boolean
     $includeLeaves: Boolean
     $sort: [SortOptionInput!]
+    $forceLocale: Locale
   ) {
     assortments(
       queryString: $queryString
@@ -72,6 +73,7 @@ const useAssortments = ({
       sort: (sortOptions as ISortOptionInput[]).length
         ? sortOptions
         : ([{ key: 'sequence', value: 'ASC' }] as ISortOptionInput[]),
+      forceLocale,
     },
     context: {
       headers: { forceLocale },

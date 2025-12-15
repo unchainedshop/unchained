@@ -10,7 +10,7 @@ const AssortmentFragment = gql`
     isBase
     isRoot
     tags
-    texts {
+    texts(forceLocale: $forceLocale) {
       _id
       slug
       title

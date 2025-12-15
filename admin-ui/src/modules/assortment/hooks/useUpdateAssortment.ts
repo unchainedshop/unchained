@@ -4,7 +4,6 @@ import {
   IUpdateAssortmentMutation,
   IUpdateAssortmentMutationVariables,
 } from '../../../gql/types';
-import AssortmentFragment from '../fragments/AssortmentFragment';
 
 const UpdateAssortmentMutation = gql`
   mutation UpdateAssortment(
@@ -12,10 +11,9 @@ const UpdateAssortmentMutation = gql`
     $assortmentId: ID!
   ) {
     updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
-      ...AssortmentFragment
+      _id
     }
   }
-  ${AssortmentFragment}
 `;
 
 const useUpdateAssortment = () => {

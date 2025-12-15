@@ -2,8 +2,6 @@ import { ApolloClient } from '@apollo/client';
 import { TranslatedAssortmentTextsQuery } from '../hooks/useTranslatedAssortmentTexts';
 import {
   IAssortment,
-  IAssortmentChildrenQuery,
-  IAssortmentChildrenQueryVariables,
   IAssortmentFiltersQuery,
   IAssortmentFiltersQueryVariables,
   IAssortmentLinksQuery,
@@ -13,7 +11,6 @@ import {
   ITranslatedAssortmentTextsQuery,
   ITranslatedAssortmentTextsQueryVariables,
 } from '../../../gql/types';
-import { AssortmentChildrenQuery } from '../hooks/useAssortmentChildren';
 import { AssortmentProductsQuery } from '../hooks/useAssortmentProducts';
 import { AssortmentLinksQuery } from '../hooks/useAssortmentLinks';
 import { AssortmentFiltersQuery } from '../hooks/useAssortmentFilters';

@@ -4,7 +4,6 @@ import {
   IAddAssortmentLinkMutation,
   IAddAssortmentLinkMutationVariables,
 } from '../../../gql/types';
-import AssortmentLinkFragment from '../fragments/AssortmentLinkFragment';
 
 const AddAssortmentLinkMutation = gql`
   mutation AddAssortmentLink(
@@ -17,10 +16,9 @@ const AddAssortmentLinkMutation = gql`
       childAssortmentId: $childAssortmentId
       tags: $tags
     ) {
-      ...AssortmentLinkFragment
+      _id
     }
   }
-  ${AssortmentLinkFragment}
 `;
 
 const useAddAssortmentLink = () => {

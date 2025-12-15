@@ -4,15 +4,13 @@ import {
   IRemoveAssortmentLinkMutation,
   IRemoveAssortmentLinkMutationVariables,
 } from '../../../gql/types';
-import AssortmentLinkFragment from '../fragments/AssortmentLinkFragment';
 
 const RemoveAssortmentLinkMutation = gql`
   mutation RemoveAssortmentLink($assortmentLinkId: ID!) {
     removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
-      ...AssortmentLinkFragment
+      _id
     }
   }
-  ${AssortmentLinkFragment}
 `;
 
 const useRemoveAssortmentLink = () => {
