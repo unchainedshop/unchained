@@ -1,19 +1,25 @@
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
+import { Database } from '@unchainedshop/sqlite';
 import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Bulk Importer', () => {
   let db;
+  let sqliteDb;
   let graphqlFetch;
 
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    // Connect to SQLite for assortment queries
+    const sqlitePath = process.env.UNCHAINED_SQLITE_PATH || 'examples/kitchensink/.db/unchained.sqlite';
+    sqliteDb = await Database.create({ path: sqlitePath });
   });
 
   test.after(async () => {
+    sqliteDb?.close();
     await disconnect();
   });
 
@@ -486,31 +492,31 @@ test.describe('Bulk Importer', () => {
 
       assert.ok(addWork);
 
-      const Assortments = db.collection('assortments');
-      const AssortmentMedia = db.collection('assortment_media');
-
+      // Query SQLite for assortment data
       const assortmentHasBaseTag = await intervalUntilTimeout(async () => {
-        const assortment = await Assortments.findOne({ _id: 'Assortment A' });
-
-        return assortment?.tags.includes('base');
+        const result = sqliteDb.queryRaw(`SELECT data FROM assortments WHERE _id = ?`, ['Assortment A']);
+        if (result.length === 0) return false;
+        const assortment = JSON.parse(result[0].data);
+        return assortment?.tags?.includes('base');
       }, 3000);
 
       const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(async () => {
-        const assortmentMedia = await AssortmentMedia.findOne({
-          _id: 'assortment-a-meteor',
-        });
-        return assortmentMedia?.tags.includes('small');
+        const result = sqliteDb.queryRaw(`SELECT data FROM assortment_media WHERE _id = ?`, [
+          'assortment-a-meteor',
+        ]);
+        if (result.length === 0) return false;
+        const assortmentMedia = JSON.parse(result[0].data);
+        return assortmentMedia?.tags?.includes('small');
       }, 3000);
       assert.strictEqual(updatedAssortmentMediaHasSmallTag, true);
       assert.strictEqual(assortmentHasBaseTag, true);
 
-      const AssortmentProducts = db.collection('assortment_products');
-
       const productLinkHasBeenReplaced = await intervalUntilTimeout(async () => {
-        const productLinksCount = await AssortmentProducts.countDocuments({
-          assortmentId: 'Assortment A',
-        });
-        return productLinksCount === 1;
+        const result = sqliteDb.queryRaw(
+          `SELECT COUNT(*) as count FROM assortment_products WHERE assortment_id = ?`,
+          ['Assortment A'],
+        );
+        return result[0]?.count === 1;
       }, 3000);
 
       assert.strictEqual(productLinkHasBeenReplaced, true);

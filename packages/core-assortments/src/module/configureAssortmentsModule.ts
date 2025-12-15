@@ -103,7 +103,7 @@ export const buildFindSelector = ({
       } else if (value !== undefined) {
         const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
         conditions.push(`${snakeKey} = ?`);
-        params.push(value);
+        params.push(typeof value === 'boolean' ? (value ? 1 : 0) : value);
       }
     }
   }
@@ -118,7 +118,8 @@ const buildOrderBy = (sort?: SortOption[]): string => {
   const clauses = sort.map(({ key, value }) => {
     const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
     const direction = value === SortDirection.DESC ? 'DESC' : 'ASC';
-    return `${snakeKey} ${direction}`;
+    // Quote column names to handle SQLite reserved words like 'index'
+    return `"${snakeKey}" ${direction}`;
   });
   return `ORDER BY ${clauses.join(', ')}`;
 };
@@ -562,15 +563,38 @@ export const configureAssortmentsModule = async (
             if (key !== '_id' && value !== undefined) {
               const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
               sql += ` AND ${snakeKey} = ?`;
-              params.push(value);
+              params.push(typeof value === 'boolean' ? (value ? 1 : 0) : value);
             }
           }
         }
 
-        // Order by preserving the assortmentIds order
-        const orderBy = sort ? buildOrderBy(sort) : '';
-        if (orderBy) {
-          sql += ` ${orderBy}`;
+        // Build ORDER BY clause, handling 'index' specially for array position ordering
+        if (sort && sort.length > 0) {
+          const hasIndexSort = sort.some((s) => s.key === 'index');
+          const otherSorts = sort.filter((s) => s.key !== 'index');
+
+          const orderClauses: string[] = [];
+
+          // Handle non-index sorts
+          if (otherSorts.length > 0) {
+            const orderBy = buildOrderBy(otherSorts);
+            if (orderBy) {
+              orderClauses.push(orderBy.replace('ORDER BY ', ''));
+            }
+          }
+
+          // Handle 'index' sort - preserve assortmentIds array order using CASE WHEN
+          if (hasIndexSort) {
+            const indexSort = sort.find((s) => s.key === 'index')!;
+            const caseWhen = assortmentIds.map((_, idx) => `WHEN _id = ? THEN ${idx}`).join(' ');
+            const direction = indexSort.value === SortDirection.DESC ? 'DESC' : 'ASC';
+            orderClauses.push(`(CASE ${caseWhen} END) ${direction}`);
+            params.push(...assortmentIds);
+          }
+
+          if (orderClauses.length > 0) {
+            sql += ` ORDER BY ${orderClauses.join(', ')}`;
+          }
         }
 
         if (limit !== undefined) {
@@ -585,7 +609,7 @@ export const configureAssortmentsModule = async (
         const assortments = db.query<Assortment>(sql, params);
 
         // Preserve order from assortmentIds if no sort specified
-        if (!sort) {
+        if (!sort || sort.length === 0) {
           const assortmentMap = new Map<string, Assortment>();
           assortments.forEach((assortment) => {
             assortmentMap.set(assortment._id, assortment);

@@ -99,12 +99,22 @@ export const configureAssortmentMediaModule = async ({ db }: { db: Database }) =
     },
 
     create: async ({
+      _id,
       sortKey,
       tags = [],
       ...doc
     }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'> &
       Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'>>) => {
       const now = new Date();
+      const assortmentMediaId = _id || generateId();
+
+      // If _id is provided and already exists, throw to trigger update path
+      if (_id) {
+        const existing = db.findById<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, _id);
+        if (existing) {
+          throw new Error(`AssortmentMedia with _id ${_id} already exists`);
+        }
+      }
 
       // Get next sort key if not provided
       let finalSortKey = sortKey;
@@ -118,7 +128,7 @@ export const configureAssortmentMediaModule = async ({ db }: { db: Database }) =
       }
 
       const assortmentMedia = db.insert<AssortmentMediaType>(ASSORTMENT_MEDIA_TABLE, {
-        _id: generateId(),
+        _id: assortmentMediaId,
         assortmentId: doc.assortmentId,
         mediaId: doc.mediaId,
         sortKey: finalSortKey,
