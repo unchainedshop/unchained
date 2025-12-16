@@ -139,43 +139,48 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       );
       if (!request) return null;
 
-      const attestationExpectations = {
-        challenge: request.challenge,
-        origin: request.origin,
-        factor: request.factor,
-      };
+      try {
+        const attestationExpectations = {
+          challenge: request.challenge,
+          origin: request.origin,
+          factor: request.factor,
+        };
 
-      const id = Buffer.from(credentials.id, 'base64');
-      const attestationObject = Buffer.from(credentials.response.attestationObject, 'base64');
-      const clientDataJSON = Buffer.from(credentials.response.clientDataJSON, 'base64');
+        const id = Buffer.from(credentials.id, 'base64');
+        const attestationObject = Buffer.from(credentials.response.attestationObject, 'base64');
+        const clientDataJSON = Buffer.from(credentials.response.clientDataJSON, 'base64');
 
-      const attestationResponse = {
-        id: toArrayBuffer(id),
-        response: {
-          attestationObject: toArrayBuffer(attestationObject),
-          clientDataJSON: toArrayBuffer(clientDataJSON),
-        },
-      };
+        const attestationResponse = {
+          id: toArrayBuffer(id),
+          response: {
+            attestationObject: toArrayBuffer(attestationObject),
+            clientDataJSON: toArrayBuffer(clientDataJSON),
+          },
+        };
 
-      const registrationOptions = await f2l.attestationResult(
-        attestationResponse,
-        attestationExpectations,
-      );
+        const registrationOptions = await f2l.attestationResult(
+          attestationResponse,
+          attestationExpectations,
+        );
 
-      const publicKey = registrationOptions?.authnrData?.get('credentialPublicKeyPem');
-      const aaguidArrayBuffer = registrationOptions?.authnrData?.get('aaguid'); // ArrayBuffer Uint8...
-      const counter = registrationOptions?.authnrData?.get('counter');
+        const publicKey = registrationOptions?.authnrData?.get('credentialPublicKeyPem');
+        const aaguidArrayBuffer = registrationOptions?.authnrData?.get('aaguid'); // ArrayBuffer Uint8...
+        const counter = registrationOptions?.authnrData?.get('counter');
 
-      const aaguidConcatenated = buf2hex(aaguidArrayBuffer);
-      const aaguid = `${aaguidConcatenated.slice(0, 8)}-${aaguidConcatenated.slice(
-        8,
-        12,
-      )}-${aaguidConcatenated.slice(12, 16)}-${aaguidConcatenated.slice(
-        16,
-        20,
-      )}-${aaguidConcatenated.slice(20)}`;
+        const aaguidConcatenated = buf2hex(aaguidArrayBuffer);
+        const aaguid = `${aaguidConcatenated.slice(0, 8)}-${aaguidConcatenated.slice(
+          8,
+          12,
+        )}-${aaguidConcatenated.slice(12, 16)}-${aaguidConcatenated.slice(
+          16,
+          20,
+        )}-${aaguidConcatenated.slice(20)}`;
 
-      return { publicKey, counter, id: credentials.id, aaguid, created: new Date() };
+        return { publicKey, counter, id: credentials.id, aaguid, created: new Date() };
+      } catch (error) {
+        logger.debug('WebAuthn credential creation verification failed', { error: error.message });
+        return null;
+      }
     },
 
     verifyCredentialRequest: async (userPublicKeys: any[], username: string, credentials: any) => {
@@ -189,40 +194,45 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       );
       if (!request) return null;
 
-      const id = Buffer.from(credentials.id, 'base64');
-      const authenticatorData = Buffer.from(credentials.response.authenticatorData, 'base64');
-      const signature = Buffer.from(credentials.response.signature, 'base64');
-      const userHandle = Buffer.from(credentials.response.userHandle, 'base64');
-      const clientDataJSON = Buffer.from(credentials.response.clientDataJSON, 'base64');
+      try {
+        const id = Buffer.from(credentials.id, 'base64');
+        const authenticatorData = Buffer.from(credentials.response.authenticatorData, 'base64');
+        const signature = Buffer.from(credentials.response.signature, 'base64');
+        const userHandle = Buffer.from(credentials.response.userHandle, 'base64');
+        const clientDataJSON = Buffer.from(credentials.response.clientDataJSON, 'base64');
 
-      const { publicKey, counter } =
-        userPublicKeys.find((publicCredentials) => {
-          return credentials.id === publicCredentials.id;
-        }) || {};
+        const { publicKey, counter } =
+          userPublicKeys.find((publicCredentials) => {
+            return credentials.id === publicCredentials.id;
+          }) || {};
 
-      if (!publicKey) return null;
+        if (!publicKey) return null;
 
-      const assertionExpectations = {
-        challenge: request.challenge,
-        origin: request.origin,
-        factor: request.factor,
-        prevCounter: counter,
-        publicKey,
-        userHandle: toArrayBuffer(Buffer.from(username)),
-      };
+        const assertionExpectations = {
+          challenge: request.challenge,
+          origin: request.origin,
+          factor: request.factor,
+          prevCounter: counter,
+          publicKey,
+          userHandle: toArrayBuffer(Buffer.from(username)),
+        };
 
-      const assertionResponse = {
-        id: toArrayBuffer(id),
-        response: {
-          authenticatorData: toArrayBuffer(authenticatorData),
-          clientDataJSON: toArrayBuffer(clientDataJSON),
-          signature: toArrayBuffer(signature),
-          userHandle: toArrayBuffer(userHandle),
-        },
-      };
+        const assertionResponse = {
+          id: toArrayBuffer(id),
+          response: {
+            authenticatorData: toArrayBuffer(authenticatorData),
+            clientDataJSON: toArrayBuffer(clientDataJSON),
+            signature: toArrayBuffer(signature),
+            userHandle: toArrayBuffer(userHandle),
+          },
+        };
 
-      const loginResult = await f2l.assertionResult(assertionResponse, assertionExpectations);
-      return { userHandle: loginResult?.authnrData?.get('userHandle') };
+        const loginResult = await f2l.assertionResult(assertionResponse, assertionExpectations);
+        return { userHandle: loginResult?.authnrData?.get('userHandle') };
+      } catch (error) {
+        logger.debug('WebAuthn credential request verification failed', { error: error.message });
+        return null;
+      }
     },
     deleteUserWebAuthnCredentials: async (username: string) => {
       const { deletedCount } = await WebAuthnCredentialsCreationRequests.deleteMany({

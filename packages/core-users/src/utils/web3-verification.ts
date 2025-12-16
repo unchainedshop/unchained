@@ -108,15 +108,20 @@ export async function verifyWeb3Signature(
     );
   }
 
-  // eslint-disable-next-line
-  // @ts-ignore
-  const messageHash = hashPersonalMessage(hexToBytes(Buffer.from(nonce, 'utf8').toString('hex')));
+  try {
+    // eslint-disable-next-line
+    // @ts-ignore
+    const messageHash = hashPersonalMessage(hexToBytes(Buffer.from(nonce, 'utf8').toString('hex')));
 
-  const sigParams = fromRPCSig(signature);
-  const publicKey = ecrecover(messageHash, sigParams.v, sigParams.r, sigParams.s);
+    const sigParams = fromRPCSig(signature);
+    const publicKey = ecrecover(messageHash, sigParams.v, sigParams.r, sigParams.s);
 
-  const sender = publicToAddress(publicKey);
-  const recoveredAddr = `0x${bytesToHex(sender)}`;
+    const sender = publicToAddress(publicKey);
+    const recoveredAddr = `0x${bytesToHex(sender)}`;
 
-  return recoveredAddr.toLowerCase() === expectedAddress.toLowerCase();
+    return recoveredAddr.toLowerCase() === expectedAddress.toLowerCase();
+  } catch (error) {
+    logger.debug('Web3 signature verification failed', { error: error.message });
+    return false;
+  }
 }

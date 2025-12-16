@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 
 export const createError = (code: string, message: string): any =>
   class extends GraphQLError {
-    constructor({ message: explicitMessage, ...data }) {
+    constructor({ message: explicitMessage, ...data }: { message?: string; [key: string]: any } = {}) {
       super(explicitMessage || message, {
         extensions: {
           code,
