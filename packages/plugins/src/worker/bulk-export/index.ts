@@ -1,4 +1,8 @@
-import { WorkerDirector, WorkerAdapter, type IWorkerAdapter, type UnchainedCore } from '@unchainedshop/core';
+import {
+  WorkerDirector,
+  WorkerAdapter,
+  type IWorkerAdapter,
+} from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import exportProducts from './exportProducts.ts';
 import exportAssortments from './exportAssortments.ts';
