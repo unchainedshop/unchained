@@ -42,25 +42,23 @@ const buildVariationOptionsHeaders = (locales: string[]) => [
   ...locales.flatMap((l) => PRODUCT_CSV_SCHEMA.variationOptionTextFields.map((f) => `texts.${l}.${f}`)),
 ];
 
+const mapTextsToRow = (row: Record<string, any>, texts: any[], locales: string[], fields: string[]) => {
+  locales.forEach((locale) => {
+    const t = texts.find((x) => x.locale === locale) || {};
+    fields.forEach((f) => {
+      row[`texts.${locale}.${f}`] = Array.isArray(t[f]) ? t[f].join(';') : (t[f] ?? '');
+    });
+  });
+};
+
 const buildProductRow = (product: any, locales: string[]) => {
   const row: any = {};
-
-  PRODUCT_CSV_SCHEMA.base.forEach((k) => {
-    row[k] = product[k] ?? '';
-  });
-
+  PRODUCT_CSV_SCHEMA.base.forEach((k) => (row[k] = product[k] ?? ''));
   row['supply.weightInGram'] = product?.dimensions?.weight ?? '';
   row['supply.heightInMillimeters'] = product?.dimensions?.height ?? '';
   row['supply.lengthInMillimeters'] = product?.dimensions?.length ?? '';
   row['supply.widthInMillimeters'] = product?.dimensions?.width ?? '';
-
-  locales.forEach((locale) => {
-    const text = product.texts?.find((t) => t.locale === locale) ?? {};
-    PRODUCT_CSV_SCHEMA.textFields.forEach((f) => {
-      row[`texts.${locale}.${f}`] = Array.isArray(text[f]) ? text[f].join(';') : (text[f] ?? '');
-    });
-  });
-
+  mapTextsToRow(row, product.texts ?? [], locales, PRODUCT_CSV_SCHEMA.textFields);
   return row;
 };
 
@@ -87,103 +85,90 @@ const buildVariationRows = (productId: string, variations = [], locales: string[
   const variationRows: any[] = [];
   const optionRows: any[] = [];
 
-  for (const v of variations as any[]) {
+  variations.forEach((v: any) => {
     const row: any = {
       productId,
       variationId: v._id,
       key: v.key,
       type: v.type,
     };
-
-    locales.forEach((l) => {
-      const texts = v.texts?.[l] ?? {};
-      PRODUCT_CSV_SCHEMA.variationTextFields.forEach((f) => {
-        row[`texts.${l}.${f}`] = texts[f] ?? '';
-      });
-    });
-
+    mapTextsToRow(row, Object.values(v.texts || {}), locales, PRODUCT_CSV_SCHEMA.variationTextFields);
     variationRows.push(row);
 
     const options = v.options?.[v._id] ?? [];
-    for (const o of options) {
+    options.forEach((o: any) => {
       const optRow: any = {
         variationId: v._id,
         value: o.productVariationOption,
       };
-
-      locales.forEach((l) => {
-        const texts = o.texts?.[l] ?? {};
-        PRODUCT_CSV_SCHEMA.variationOptionTextFields.forEach((f) => {
-          optRow[`texts.${l}.${f}`] = texts[f] ?? '';
-        });
-      });
-
+      mapTextsToRow(
+        optRow,
+        Object.values(o.texts || {}),
+        locales,
+        PRODUCT_CSV_SCHEMA.variationOptionTextFields,
+      );
       optionRows.push(optRow);
-    }
-  }
+    });
+  });
 
   return { variationRows, optionRows };
 };
 
-const exportProducts = async (params, locales: string[], unchainedAPI: UnchainedCore) => {
+const exportProducts = async (params: any, locales: string[], unchainedAPI: UnchainedCore) => {
   const { queryString, includeDrafts, tags } = params;
-
   const products = await unchainedAPI.modules.products.findProducts({
     includeDrafts,
     queryString,
     tags,
   });
 
-  const normalized: any = {
-    products: {},
-    prices: {},
-    bundles: {},
-    variations: {},
-  };
+  const normalized: any = { products: {}, prices: {}, bundles: {}, variations: {} };
 
-  for await (const p of products) {
-    const [texts, variations] = await Promise.all([
-      unchainedAPI.modules.products.texts.findTexts({
-        productId: p._id,
-      }),
-      unchainedAPI.modules.products.variations.findProductVariations({ productId: p._id }),
-    ]);
+  await Promise.all(
+    products.map(async (p: any) => {
+      const [texts, variations] = await Promise.all([
+        unchainedAPI.modules.products.texts.findTexts({ productId: p._id }),
+        unchainedAPI.modules.products.variations.findProductVariations({ productId: p._id }),
+      ]);
 
-    const normalizedVariations = await Promise.all(
-      variations.map(async (v: any) => {
-        const variationTexts = await unchainedAPI.modules.products.variations.texts.findVariationTexts({
-          productVariationId: v._id,
-          productVariationOptionValue: null,
-        });
-
-        const options = await Promise.all(
-          v.options.map(async (o: any) => {
-            const optionTexts = await unchainedAPI.modules.products.variations.texts.findVariationTexts({
+      const normalizedVariations = await Promise.all(
+        variations.map(async (v: any) => {
+          const variationTexts = await unchainedAPI.modules.products.variations.texts.findVariationTexts(
+            {
               productVariationId: v._id,
-              productVariationOptionValue: o,
-            });
+              productVariationOptionValue: null,
+            },
+          );
 
-            return {
-              _id: `${v._id}:${o}`,
-              productVariationOption: o,
-              texts: Object.fromEntries(optionTexts.map((t: any) => [t.locale, t])),
-            };
-          }),
-        );
+          const options = await Promise.all(
+            (v.options || []).map(async (o: any) => {
+              const optionTexts =
+                await unchainedAPI.modules.products.variations.texts.findVariationTexts({
+                  productVariationId: v._id,
+                  productVariationOptionValue: o,
+                });
+              return {
+                _id: `${v._id}:${o}`,
+                productVariationOption: o,
+                texts: Object.fromEntries(optionTexts.map((t: any) => [t.locale, t])),
+              };
+            }),
+          );
 
-        return {
-          ...v,
-          texts: Object.fromEntries(variationTexts.map((t: any) => [t.locale, t])),
-          options: { [v._id]: options },
-        };
-      }),
-    );
+          return {
+            ...v,
+            texts: Object.fromEntries(variationTexts.map((t: any) => [t.locale, t])),
+            options: { [v._id]: options },
+          };
+        }),
+      );
 
-    normalized.products[p._id] = { ...p, texts };
-    normalized.prices[p._id] = p.commerce?.pricing ?? [];
-    normalized.bundles[p._id] = p.bundleItems ?? [];
-    normalized.variations[p._id] = normalizedVariations;
-  }
+      normalized.products[p._id] = { ...p, texts };
+      normalized.prices[p._id] = p.commerce?.pricing ?? [];
+      normalized.bundles[p._id] = p.bundleItems ?? [];
+      normalized.variations[p._id] = normalizedVariations;
+    }),
+  );
 
   const productRows: any[] = [];
   const priceRows: any[] = [];
@@ -201,47 +186,54 @@ const exportProducts = async (params, locales: string[], unchainedAPI: Unchained
       normalized.variations[pid],
       locales,
     );
-
     variationRows.push(...vr);
     variationOptionRows.push(...or);
   }
 
-  return {
-    products: await generateCSVFileAndURL({
+  const [productsCSV, pricesCSV, bundlesCSV, variationsCSV, variationOptionsCSV] = await Promise.all([
+    generateCSVFileAndURL({
       headers: buildProductHeaders(locales),
       rows: productRows,
       directoryName: 'exports',
       fileName: 'products_export.csv',
       unchainedAPI,
     }),
-    prices: await generateCSVFileAndURL({
+    generateCSVFileAndURL({
       headers: buildPriceHeaders(),
       rows: priceRows,
       directoryName: 'exports',
       fileName: 'products_prices_export.csv',
       unchainedAPI,
     }),
-    bundles: await generateCSVFileAndURL({
+    generateCSVFileAndURL({
       headers: buildBundleHeaders(),
       rows: bundleRows,
       directoryName: 'exports',
       fileName: 'products_bundle_items_export.csv',
       unchainedAPI,
     }),
-    variations: await generateCSVFileAndURL({
+    generateCSVFileAndURL({
       headers: buildVariationHeaders(locales),
       rows: variationRows,
       directoryName: 'exports',
       fileName: 'products_variations_export.csv',
       unchainedAPI,
     }),
-    variationOptions: await generateCSVFileAndURL({
+    generateCSVFileAndURL({
       headers: buildVariationOptionsHeaders(locales),
       rows: variationOptionRows,
       directoryName: 'exports',
       fileName: 'products_variation_option_export.csv',
       unchainedAPI,
     }),
+  ]);
+
+  return {
+    products: productsCSV,
+    prices: pricesCSV,
+    bundles: bundlesCSV,
+    variations: variationsCSV,
+    variationOptions: variationOptionsCSV,
   };
 };
 
