@@ -68,18 +68,26 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     findProductMedias: async (
       {
         productId,
+        productIds,
         tags,
         offset,
         limit,
       }: {
-        productId?: mongodb.Filter<ProductMedia>['assortmentId'];
+        productId?: string;
+        productIds?: string[];
         limit?: number;
         offset?: number;
         tags?: string[];
       },
       options?: mongodb.FindOptions,
     ): Promise<ProductMedia[]> => {
-      const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
+      const selector: mongodb.Filter<ProductMedia> = {};
+      if (productId) {
+        selector.productId = productId;
+      }
+      if (productIds) {
+        selector.productId = { $in: productIds };
+      }
       if (tags?.length && tags?.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -230,10 +238,17 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     texts: {
       // Queries
       findMediaTexts: async (
-        { productMediaId }: mongodb.Filter<ProductMediaText>,
+        query: { productMediaId?: string; productMediaIds?: string[] },
         options?: mongodb.FindOptions,
       ): Promise<ProductMediaText[]> => {
-        return ProductMediaTexts.find({ productMediaId }, options).toArray();
+        const selector: mongodb.Filter<ProductMediaText> = {};
+        if (query.productMediaId) {
+          selector.productMediaId = query.productMediaId;
+        }
+        if (query.productMediaIds) {
+          selector.productMediaId = { $in: query.productMediaIds };
+        }
+        return ProductMediaTexts.find(selector, options).toArray();
       },
 
       findLocalizedMediaText: async ({

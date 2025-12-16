@@ -16,14 +16,16 @@ export const buildFindSelector = ({
   includeInactive = false,
   contractAddress,
   queryString,
-  ...rest
+  isoCodes,
 }: CurrencyQuery) => {
   const selector: mongodb.Filter<Currency> = {
-    ...rest,
     deleted: null,
   };
   if (!includeInactive) selector.isActive = true;
   if (contractAddress) selector.contractAddress = contractAddress;
+  if (isoCodes) {
+    selector.isoCode = { $in: isoCodes };
+  }
   if (queryString) {
     assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };

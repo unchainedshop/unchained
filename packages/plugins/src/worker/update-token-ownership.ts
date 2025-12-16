@@ -28,8 +28,8 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
   async doWork(input, unchainedAPI) {
     const { modules } = unchainedAPI;
 
-    const tokens = await modules.warehousing.findTokens({ walletAddress: { $exists: true } });
-    const users = await modules.users.findUsers({ includeGuests: true, 'services.web3.verified': true });
+    const tokens = await modules.warehousing.findTokens({ walletAddressExists: true });
+    const users = await modules.users.findUsers({ includeGuests: true, web3Verified: true });
     const accounts = users.flatMap((user) => {
       return user?.services?.web3?.flatMap((service) => {
         if (service.verified) return [service.address];

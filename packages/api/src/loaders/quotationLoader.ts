@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const quotationIds = [...new Set(queries.map((q) => q.quotationId).filter(Boolean))];
 
     const quotations = await unchainedAPI.modules.quotations.findQuotations({
-      _id: { $in: quotationIds },
+      quotationIds,
     });
 
     const quotationMap: Record<string, Quotation> = {};

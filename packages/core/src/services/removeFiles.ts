@@ -8,7 +8,7 @@ export async function removeFilesService(this: Modules, { fileIds }: { fileIds: 
   const fileUploadAdapter = getFileAdapter();
 
   const fileObjects = await this.files.findFiles({
-    _id: { $in: fileIds },
+    fileIds,
   });
 
   try {

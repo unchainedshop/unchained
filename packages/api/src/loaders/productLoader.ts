@@ -8,9 +8,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const products = await unchainedAPI.modules.products.findProducts({
       productIds,
-      productSelector: {
-        status: { $exists: true },
-      },
+      includeDeleted: true,
     });
 
     const productMap = {};

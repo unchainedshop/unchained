@@ -19,7 +19,7 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
 export interface PaymentProviderQuery {
-  _id?: { $in: string[] };
+  paymentProviderIds?: string[];
   type?: PaymentProviderType;
   includeDeleted?: boolean;
   queryString?: string;
@@ -28,12 +28,18 @@ export interface PaymentProviderQuery {
 export const buildFindSelector = ({
   includeDeleted = false,
   queryString,
-  ...rest
+  paymentProviderIds,
+  type,
 }: PaymentProviderQuery = {}): mongodb.Filter<PaymentProvider> => {
-  const selector: mongodb.Filter<PaymentProvider> = {
-    ...(includeDeleted ? {} : { deleted: null }),
-    ...rest,
-  };
+  const selector: mongodb.Filter<PaymentProvider> = includeDeleted ? {} : { deleted: null };
+
+  if (paymentProviderIds) {
+    selector._id = { $in: paymentProviderIds };
+  }
+
+  if (type) {
+    selector.type = type;
+  }
 
   if (queryString) {
     const regex = new RegExp(queryString, 'i');

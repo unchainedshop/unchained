@@ -119,10 +119,20 @@ export const configureAssortmentTextsModule = ({
   return {
     // Queries
     findTexts: async (
-      query: mongodb.Filter<AssortmentText>,
+      query: { assortmentId?: string; assortmentIds?: string[]; queryString?: string },
       options?: mongodb.FindOptions,
     ): Promise<AssortmentText[]> => {
-      const texts = AssortmentTexts.find(query, options);
+      const selector: mongodb.Filter<AssortmentText> = {};
+      if (query.assortmentId) {
+        selector.assortmentId = query.assortmentId;
+      }
+      if (query.assortmentIds) {
+        selector.assortmentId = { $in: query.assortmentIds };
+      }
+      if (query.queryString) {
+        (selector as any).$text = { $search: query.queryString };
+      }
+      const texts = AssortmentTexts.find(selector, options);
 
       return texts.toArray();
     },

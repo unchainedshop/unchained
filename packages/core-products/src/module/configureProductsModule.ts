@@ -28,10 +28,14 @@ import { productsSettings, type ProductsSettingsOptions } from '../products-sett
 export interface ProductQuery {
   queryString?: string;
   includeDrafts?: boolean;
+  includeDeleted?: boolean;
   productIds?: string[];
   productSelector?: mongodb.Filter<Product>;
   slugs?: string[];
   tags?: string[];
+  skus?: string[];
+  bundleItemProductIds?: string[];
+  proxyAssignmentProductIds?: string[];
 }
 
 export interface ProductDiscount {
@@ -64,12 +68,15 @@ export const buildFindSelector = ({
   slugs,
   tags,
   includeDrafts = false,
+  includeDeleted = false,
   productIds,
   productSelector,
   queryString,
-  ...query
+  skus,
+  bundleItemProductIds,
+  proxyAssignmentProductIds,
 }: ProductQuery) => {
-  const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector, ...query } : query;
+  const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector } : {};
 
   if (productIds && !selector._id) {
     selector._id = { $in: productIds };
@@ -87,17 +94,34 @@ export const buildFindSelector = ({
     }
   }
 
+  if (skus) {
+    selector['warehousing.sku'] = { $in: skus };
+  }
+
+  if (bundleItemProductIds || proxyAssignmentProductIds) {
+    const orConditions: mongodb.Filter<Product>[] = [];
+    if (bundleItemProductIds) {
+      orConditions.push({ 'bundleItems.productId': { $in: bundleItemProductIds } } as any);
+    }
+    if (proxyAssignmentProductIds) {
+      orConditions.push({ 'proxy.assignments.productId': { $in: proxyAssignmentProductIds } } as any);
+    }
+    selector.$or = orConditions;
+  }
+
   if (queryString && !selector.$text) {
     assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 
   if (!selector.status) {
-    selector.status = !includeDrafts
-      ? { $eq: ProductStatus.ACTIVE }
-      : {
-          $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
-        };
+    if (includeDeleted) {
+      selector.status = { $exists: true };
+    } else if (includeDrafts) {
+      selector.status = { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] };
+    } else {
+      selector.status = { $eq: ProductStatus.ACTIVE };
+    }
   }
 
   return selector;

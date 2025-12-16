@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))];
 
     const languages = await unchainedAPI.modules.languages.findLanguages({
-      isoCode: { $in: isoCodes },
+      isoCodes,
       includeInactive: true,
     });
 

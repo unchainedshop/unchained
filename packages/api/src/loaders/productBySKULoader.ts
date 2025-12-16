@@ -7,10 +7,8 @@ export default (unchainedAPI: UnchainedCore) =>
     const skus = [...new Set(queries.map((q) => q.sku).filter(Boolean))];
 
     const products = await unchainedAPI.modules.products.findProducts({
-      productSelector: {
-        'warehousing.sku': { $in: skus },
-        status: { $exists: true },
-      },
+      skus,
+      includeDeleted: true,
     });
 
     const productMap = {};

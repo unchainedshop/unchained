@@ -53,9 +53,19 @@ export const configureFilterTextsModule = ({
   return {
     // Queries
     findTexts: async (
-      selector: mongodb.Filter<FilterText>,
+      query: { filterId?: string; filterIds?: string[]; filterOptionValue?: string | null },
       options?: mongodb.FindOptions,
     ): Promise<FilterText[]> => {
+      const selector: mongodb.Filter<FilterText> = {};
+      if (query.filterId) {
+        selector.filterId = query.filterId;
+      }
+      if (query.filterIds) {
+        selector.filterId = { $in: query.filterIds };
+      }
+      if (query.filterOptionValue !== undefined) {
+        selector.filterOptionValue = query.filterOptionValue || { $eq: null };
+      }
       const texts = FilterTexts.find(selector, options);
       return texts.toArray();
     },

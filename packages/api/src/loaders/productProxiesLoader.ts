@@ -8,16 +8,8 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const productProxies = await unchainedAPI.modules.products.findProducts({
       includeDrafts: true,
-      productSelector: {
-        $or: [
-          {
-            'bundleItems.productId': { $in: productIds },
-          },
-          {
-            'proxy.assignments.productId': { $in: productIds },
-          },
-        ],
-      },
+      bundleItemProductIds: productIds,
+      proxyAssignmentProductIds: productIds,
     });
 
     const productProxyMap = {};

@@ -13,11 +13,12 @@ export type Currency = {
   decimals?: number;
 } & TimestampFields;
 
-export type CurrencyQuery = mongodb.Filter<Currency> & {
+export interface CurrencyQuery {
   includeInactive?: boolean;
   contractAddress?: string;
   queryString?: string;
-};
+  isoCodes?: string[];
+}
 
 export const CurrenciesCollection = async (db: mongodb.Db) => {
   const Currencies = db.collection<Currency>('currencies');

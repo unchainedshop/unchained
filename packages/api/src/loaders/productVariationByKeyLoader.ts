@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
 
     const variations = await unchainedAPI.modules.products.variations.findProductVariations({
-      productId: { $in: productIds },
+      productIds,
     });
 
     // Create a map with composite key: productId:key

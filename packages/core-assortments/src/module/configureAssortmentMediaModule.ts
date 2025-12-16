@@ -68,18 +68,26 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     findAssortmentMedias: async (
       {
         assortmentId,
+        assortmentIds,
         tags,
         offset,
         limit,
       }: {
-        assortmentId?: mongodb.Filter<AssortmentMediaType>['assortmentId'];
+        assortmentId?: string;
+        assortmentIds?: string[];
         limit?: number;
         offset?: number;
         tags?: string[];
       },
       options?: mongodb.FindOptions,
     ): Promise<AssortmentMediaType[]> => {
-      const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
+      const selector: mongodb.Filter<AssortmentMediaType> = {};
+      if (assortmentId) {
+        selector.assortmentId = assortmentId;
+      }
+      if (assortmentIds) {
+        selector.assortmentId = { $in: assortmentIds };
+      }
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -225,10 +233,17 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
     texts: {
       // Queries
       findMediaTexts: async (
-        { assortmentMediaId }: mongodb.Filter<AssortmentMediaText>,
+        query: { assortmentMediaId?: string; assortmentMediaIds?: string[] },
         options?: mongodb.FindOptions,
       ): Promise<AssortmentMediaText[]> => {
-        return AssortmentMediaTexts.find({ assortmentMediaId }, options).toArray();
+        const selector: mongodb.Filter<AssortmentMediaText> = {};
+        if (query.assortmentMediaId) {
+          selector.assortmentMediaId = query.assortmentMediaId;
+        }
+        if (query.assortmentMediaIds) {
+          selector.assortmentMediaId = { $in: query.assortmentMediaIds };
+        }
+        return AssortmentMediaTexts.find(selector, options).toArray();
       },
 
       findLocalizedMediaText: async ({

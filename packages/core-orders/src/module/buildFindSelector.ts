@@ -9,12 +9,15 @@ export const buildFindSelector = ({
   paymentIds,
   deliveryIds,
   dateRange,
-  ...rest
+  orderIds,
 }: OrderQuery) => {
-  const selector: mongodb.Filter<Order> = { ...rest };
+  const selector: mongodb.Filter<Order> = {};
 
   if (userId) {
     selector.userId = userId;
+  }
+  if (orderIds) {
+    selector._id = { $in: orderIds };
   }
   if (dateRange) {
     const dateFilter: mongodb.Filter<Order> = {};

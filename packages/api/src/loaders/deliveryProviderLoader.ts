@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const deliveryProviderIds = [...new Set(queries.map((q) => q.deliveryProviderId).filter(Boolean))];
 
     const deliveryProviders = await unchainedAPI.modules.delivery.findProviders({
-      _id: { $in: deliveryProviderIds },
+      deliveryProviderIds,
       includeDeleted: true,
     });
 

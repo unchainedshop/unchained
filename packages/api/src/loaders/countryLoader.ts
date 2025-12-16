@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))];
 
     const countries = await unchainedAPI.modules.countries.findCountries({
-      isoCode: { $in: isoCodes },
+      isoCodes,
       includeInactive: true,
     });
 

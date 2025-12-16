@@ -10,16 +10,20 @@ import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { type Language, LanguagesCollection } from '../db/LanguagesCollection.ts';
 
-export type LanguageQuery = mongodb.Filter<Language> & {
+export interface LanguageQuery {
   includeInactive?: boolean;
   queryString?: string;
-};
+  isoCodes?: string[];
+}
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
-export const buildFindSelector = ({ includeInactive = false, queryString, ...rest }: LanguageQuery) => {
-  const selector: mongodb.Filter<Language> = { deleted: null, ...rest };
+export const buildFindSelector = ({ includeInactive = false, queryString, isoCodes }: LanguageQuery) => {
+  const selector: mongodb.Filter<Language> = { deleted: null };
   if (!includeInactive) selector.isActive = true;
+  if (isoCodes) {
+    selector.isoCode = { $in: isoCodes };
+  }
   if (queryString) {
     assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };

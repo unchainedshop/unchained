@@ -61,11 +61,19 @@ export const buildFindSelector = ({
   emailVerified,
   lastLogin,
   tags,
-  ...rest
+  userIds,
+  username,
+  web3Verified,
 }: UserQuery) => {
-  const selector: mongodb.Filter<User> = { ...rest };
+  const selector: mongodb.Filter<User> = {};
   if (!includeDeleted) selector.deleted = null as any;
   if (!includeGuests) selector.guest = { $ne: true };
+  if (userIds) {
+    selector._id = { $in: userIds };
+  }
+  if (username) {
+    selector.username = insensitiveTrimmedRegexOperator(username);
+  }
   if (emailVerified === true) {
     selector['emails.verified'] = true;
   }
@@ -76,6 +84,9 @@ export const buildFindSelector = ({
     // We need to use $ne here else we'd also find users with many emails where one is
     // unverified
     selector['emails.verified'] = { $ne: true };
+  }
+  if (web3Verified === true) {
+    selector['services.web3.verified'] = true;
   }
   if (lastLogin?.start) {
     selector['lastLogin.timestamp'] = { $exists: true };

@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))];
 
     const currencies = await unchainedAPI.modules.currencies.findCurrencies({
-      isoCode: { $in: isoCodes },
+      isoCodes,
       includeInactive: true,
     });
 

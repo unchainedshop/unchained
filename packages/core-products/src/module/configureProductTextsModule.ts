@@ -123,10 +123,20 @@ export const configureProductTextsModule = ({
   return {
     // Queries
     findTexts: async (
-      query: mongodb.Filter<ProductText>,
+      query: { productId?: string; productIds?: string[]; queryString?: string },
       options?: mongodb.FindOptions,
     ): Promise<ProductText[]> => {
-      const texts = ProductTexts.find(query, options);
+      const selector: mongodb.Filter<ProductText> = {};
+      if (query.productId) {
+        selector.productId = query.productId;
+      }
+      if (query.productIds) {
+        selector.productId = { $in: query.productIds };
+      }
+      if (query.queryString) {
+        (selector as any).$text = { $search: query.queryString };
+      }
+      const texts = ProductTexts.find(selector, options);
 
       return texts.toArray();
     },

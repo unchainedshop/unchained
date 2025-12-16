@@ -58,13 +58,17 @@ export type User = {
   meta?: any;
 } & TimestampFields;
 
-export type UserQuery = mongodb.Filter<User> & {
+export interface UserQuery {
   includeGuests?: boolean;
   includeDeleted?: boolean;
   queryString?: string;
   emailVerified?: boolean;
   lastLogin?: DateFilterInput;
-};
+  tags?: string[];
+  userIds?: string[];
+  username?: string;
+  web3Verified?: boolean;
+}
 
 export const UsersCollection = async (db: mongodb.Db) => {
   const Users = db.collection<User>('users');

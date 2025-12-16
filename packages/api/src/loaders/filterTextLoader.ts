@@ -12,7 +12,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 
     const texts = await unchainedAPI.modules.filters.texts.findTexts(
-      { filterId: { $in: filterIds } },
+      { filterIds },
       {
         sort: {
           filterId: 1,

@@ -39,7 +39,7 @@ export type Order = {
 } & LogFields &
   TimestampFields;
 
-export interface OrderQuery extends mongodb.Filter<Order> {
+export interface OrderQuery {
   includeCarts?: boolean;
   queryString?: string;
   status?: OrderStatus[];
@@ -47,6 +47,10 @@ export interface OrderQuery extends mongodb.Filter<Order> {
   deliveryIds?: string[];
   paymentIds?: string[];
   dateRange?: DateFilterInput;
+  orderIds?: string[];
+  // Used by API layer to filter by provider IDs (resolved to payment/delivery IDs before query)
+  paymentProviderIds?: string[];
+  deliveryProviderIds?: string[];
 }
 
 export const OrdersCollection = async (db: mongodb.Db) => {

@@ -9,7 +9,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
     const texts = await unchainedAPI.modules.assortments.texts.findTexts(
-      { assortmentId: { $in: assortmentIds } },
+      { assortmentIds },
       {
         sort: {
           assortmentId: 1,

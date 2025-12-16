@@ -6,7 +6,7 @@ export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ assortmentId: string }, AssortmentMediaType[]>(async (queries) => {
     const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
     const assortmentMediaItems = await unchainedAPI.modules.assortments.media.findAssortmentMedias({
-      assortmentId: { $in: assortmentIds },
+      assortmentIds,
     });
 
     const assortmentMediaMap = {};

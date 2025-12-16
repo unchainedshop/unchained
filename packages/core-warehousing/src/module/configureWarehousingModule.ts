@@ -18,6 +18,7 @@ import ExpiryMap from 'expiry-map';
 interface TokenQuery {
   queryString?: string;
   userId?: string;
+  walletAddressExists?: boolean;
 }
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
@@ -31,7 +32,7 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
 export interface WarehousingProviderQuery {
-  _id?: { $in: string[] };
+  warehousingProviderIds?: string[];
   type?: WarehousingProviderType;
   includeDeleted?: boolean;
   queryString?: string;
@@ -40,12 +41,18 @@ export interface WarehousingProviderQuery {
 export const buildFindSelector = ({
   includeDeleted = false,
   queryString,
-  ...rest
+  warehousingProviderIds,
+  type,
 }: WarehousingProviderQuery = {}): mongodb.Filter<WarehousingProvider> => {
-  const selector: mongodb.Filter<WarehousingProvider> = {
-    ...(includeDeleted ? {} : { deleted: null }),
-    ...rest,
-  };
+  const selector: mongodb.Filter<WarehousingProvider> = includeDeleted ? {} : { deleted: null };
+
+  if (warehousingProviderIds) {
+    selector._id = { $in: warehousingProviderIds };
+  }
+
+  if (type) {
+    selector.type = type;
+  }
 
   if (queryString) {
     const regex = new RegExp(queryString, 'i');
@@ -54,11 +61,14 @@ export const buildFindSelector = ({
 
   return selector;
 };
-export const buildTokenFindSelector = ({ queryString, ...rest }: TokenQuery) => {
+export const buildTokenFindSelector = ({ queryString, walletAddressExists, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
   if (queryString) {
     assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
+  }
+  if (walletAddressExists !== undefined) {
+    selector.walletAddress = walletAddressExists ? { $exists: true } : { $exists: false };
   }
 
   return selector;

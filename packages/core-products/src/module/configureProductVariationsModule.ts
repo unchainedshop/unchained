@@ -90,19 +90,27 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     },
 
     findProductVariations: async (
-      query: mongodb.Filter<ProductVariation> & {
-        productId?: string | mongodb.Filter<string>;
+      query: {
+        productId?: string;
+        productIds?: string[];
+        productVariationIds?: string[];
         tags?: string[];
         limit?: number;
         offset?: number;
       },
       options?: mongodb.FindOptions,
     ): Promise<ProductVariation[]> => {
-      const { productId, tags, offset, limit, ...rest } = query;
-      const selector: mongodb.Filter<ProductVariation> = { ...rest };
+      const { productId, productIds, productVariationIds, tags, offset, limit } = query;
+      const selector: mongodb.Filter<ProductVariation> = {};
 
       if (productId) {
-        selector.productId = productId as any;
+        selector.productId = productId;
+      }
+      if (productIds) {
+        selector.productId = { $in: productIds };
+      }
+      if (productVariationIds) {
+        selector._id = { $in: productVariationIds };
       }
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
@@ -232,10 +240,24 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     texts: {
       // Queries
       findVariationTexts: async (
-        query: mongodb.Filter<ProductVariationText>,
+        query: {
+          productVariationId?: string;
+          productVariationIds?: string[];
+          productVariationOptionValue?: string | null;
+        },
         options?: mongodb.FindOptions,
       ): Promise<ProductVariationText[]> => {
-        return ProductVariationTexts.find(query, options).toArray();
+        const selector: mongodb.Filter<ProductVariationText> = {};
+        if (query.productVariationId) {
+          selector.productVariationId = query.productVariationId;
+        }
+        if (query.productVariationIds) {
+          selector.productVariationId = { $in: query.productVariationIds };
+        }
+        if (query.productVariationOptionValue !== undefined) {
+          selector.productVariationOptionValue = query.productVariationOptionValue || { $eq: null };
+        }
+        return ProductVariationTexts.find(selector, options).toArray();
       },
 
       findLocalizedVariationText: async ({

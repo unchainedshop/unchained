@@ -12,9 +12,9 @@ export async function updateUserAvatarAfterUploadService(
   const { userId } = file.meta as { userId: string };
 
   const files = await this.files.findFiles({
-    _id: { $ne: file._id },
+    excludeFileId: file._id,
     path: file.path,
-    'meta.userId': userId,
+    meta: { userId },
   });
   const fileIds = files.map((f) => f._id);
 

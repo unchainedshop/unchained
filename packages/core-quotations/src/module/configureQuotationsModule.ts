@@ -14,9 +14,10 @@ import { quotationsSettings, type QuotationsSettingsOptions } from '../quotation
 
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
 
-export interface QuotationQuery extends mongodb.Filter<Quotation> {
+export interface QuotationQuery {
   userId?: string;
   queryString?: string;
+  quotationIds?: string[];
 }
 export interface QuotationData {
   configuration?: { key: string; value: string }[];
@@ -27,11 +28,14 @@ export interface QuotationData {
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
-export const buildFindSelector = ({ userId, queryString, ...rest }: QuotationQuery = {}) => {
-  const selector: mongodb.Filter<Quotation> = { ...rest };
+export const buildFindSelector = ({ userId, queryString, quotationIds }: QuotationQuery = {}) => {
+  const selector: mongodb.Filter<Quotation> = {};
 
   if (userId) {
     selector.userId = userId;
+  }
+  if (quotationIds) {
+    selector._id = { $in: quotationIds };
   }
   if (queryString) {
     assertDocumentDBCompatMode();

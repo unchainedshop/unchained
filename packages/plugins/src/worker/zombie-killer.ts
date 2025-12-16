@@ -73,7 +73,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const allFileIdsLinked = [...productMedia, ...assortmentMedia].map((l) => l?.mediaId);
       const allFileIdsRelevant = (
         await modules.files.findFiles(
-          { path: { $in: ['product-media', 'assortment-media'] } },
+          { paths: ['product-media', 'assortment-media'] },
           { projection: { _id: 1 } },
         )
       ).map((a) => a._id);
@@ -86,7 +86,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
       // Remove bulk import streams older than X days
       const bulkImportMedia = await await modules.files.findFiles({
         path: 'bulk-import-streams',
-        created: { $lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * bulkImportMaxAgeInDays) },
+        createdBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * bulkImportMaxAgeInDays),
       });
       bulkImportMedia.forEach(async (media) => {
         fileIdsToRemove.push(media._id);

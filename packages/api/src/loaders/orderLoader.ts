@@ -10,7 +10,7 @@ export default (unchainedAPI: UnchainedCore) =>
     // because the loader fetches entities by id.
     const orders = await unchainedAPI.modules.orders.findOrders({
       includeCarts: true,
-      _id: { $in: orderIds },
+      orderIds,
     });
 
     const orderMap = {};

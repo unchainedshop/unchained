@@ -9,7 +9,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const productMediaIds = [...new Set(queries.map((q) => q.productMediaId).filter(Boolean))];
 
     const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts(
-      { productMediaId: { $in: productMediaIds } },
+      { productMediaIds },
       {
         sort: {
           productMediaId: 1,

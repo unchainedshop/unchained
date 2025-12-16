@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const fileIds = [...new Set(queries.map((q) => q.fileId).filter(Boolean))];
 
     const files = await unchainedAPI.modules.files.findFiles({
-      _id: { $in: fileIds },
+      fileIds,
     });
 
     const fileMap = {};

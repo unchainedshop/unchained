@@ -11,7 +11,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const users = await unchainedAPI.modules.users.findUsers({
       includeGuests: true,
       includeDeleted: true,
-      _id: { $in: userIds },
+      userIds,
     });
 
     const userMap = {};

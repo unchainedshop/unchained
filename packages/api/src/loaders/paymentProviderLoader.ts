@@ -7,7 +7,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const paymentProviderIds = [...new Set(queries.map((q) => q.paymentProviderId).filter(Boolean))];
 
     const paymentProviders = await unchainedAPI.modules.payment.paymentProviders.findProviders({
-      _id: { $in: paymentProviderIds },
+      paymentProviderIds,
       includeDeleted: true,
     });
 

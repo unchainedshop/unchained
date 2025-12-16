@@ -8,6 +8,15 @@ const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
 const { ROOT_URL = 'http://localhost:4010' } = process.env;
 
+export interface FileQuery {
+  fileIds?: string[];
+  excludeFileId?: string;
+  path?: string;
+  paths?: string[];
+  meta?: Record<string, any>;
+  createdBefore?: Date;
+}
+
 export const configureFilesModule = async ({
   db,
   options: filesOptions = {},
@@ -39,10 +48,28 @@ export const configureFilesModule = async ({
       return Files.findOne(generateDbFilterById(params.fileId), options);
     },
 
-    findFiles: async (
-      selector: mongodb.Filter<File>,
-      options?: mongodb.FindOptions,
-    ): Promise<File[]> => {
+    findFiles: async (query: FileQuery, options?: mongodb.FindOptions): Promise<File[]> => {
+      const selector: mongodb.Filter<File> = {};
+      if (query.fileIds) {
+        selector._id = { $in: query.fileIds };
+      }
+      if (query.excludeFileId) {
+        selector._id = { $ne: query.excludeFileId };
+      }
+      if (query.path) {
+        selector.path = query.path;
+      }
+      if (query.paths) {
+        selector.path = { $in: query.paths };
+      }
+      if (query.meta) {
+        Object.entries(query.meta).forEach(([key, value]) => {
+          selector[`meta.${key}`] = value;
+        });
+      }
+      if (query.createdBefore) {
+        selector.created = { $lt: query.createdBefore };
+      }
       return Files.find(selector, options).toArray();
     },
 

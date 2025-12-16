@@ -13,7 +13,7 @@ export default (unchainedAPI: UnchainedCore) =>
 
     const texts = await unchainedAPI.modules.products.variations.texts.findVariationTexts(
       {
-        productVariationId: { $in: productVariationIds },
+        productVariationIds,
       },
       {
         sort: {

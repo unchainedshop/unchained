@@ -1,6 +1,3 @@
-import { mongodb } from '@unchainedshop/mongodb';
-import { type ProductText } from '@unchainedshop/core-products';
-import { type AssortmentText } from '@unchainedshop/core-assortments';
 import { FilterDirector, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
@@ -25,19 +22,17 @@ const LocalSearch: IFilterAdapter = {
 
         if (!queryString) return productIds;
 
-        const selector: mongodb.Filter<ProductText> = {
-          $text: { $search: queryString },
-        };
-
-        if (productIds) {
-          selector.productId = { $in: [...new Set(productIds)] as any };
-        }
-
-        const products = await params.modules.products.texts.findTexts(selector, {
-          projection: {
-            productId: 1,
+        const products = await params.modules.products.texts.findTexts(
+          {
+            queryString,
+            productIds: productIds ? [...new Set(productIds)] : undefined,
           },
-        });
+          {
+            projection: {
+              productId: 1,
+            },
+          },
+        );
 
         return products.map(({ productId }) => productId);
       },
@@ -49,19 +44,17 @@ const LocalSearch: IFilterAdapter = {
           return assortmentIds;
         }
 
-        const selector: mongodb.Filter<AssortmentText> = {
-          $text: { $search: queryString },
-        };
-
-        if (assortmentIds) {
-          selector.assortmentId = { $in: assortmentIds };
-        }
-
-        const assortments = await params.modules.assortments.texts.findTexts(selector, {
-          projection: {
-            assortmentId: 1,
+        const assortments = await params.modules.assortments.texts.findTexts(
+          {
+            queryString,
+            assortmentIds,
           },
-        });
+          {
+            projection: {
+              assortmentId: 1,
+            },
+          },
+        );
 
         return assortments.map(({ assortmentId }) => assortmentId);
       },

@@ -27,7 +27,7 @@ export interface DeliveryInterface {
 }
 
 export interface DeliveryProviderQuery {
-  _id?: { $in: string[] };
+  deliveryProviderIds?: string[];
   type?: DeliveryProviderType;
   includeDeleted?: boolean;
   queryString?: string;
@@ -36,12 +36,18 @@ export interface DeliveryProviderQuery {
 export const buildFindSelector = ({
   includeDeleted = false,
   queryString,
-  ...rest
+  deliveryProviderIds,
+  type,
 }: DeliveryProviderQuery = {}): mongodb.Filter<DeliveryProvider> => {
-  const selector: mongodb.Filter<DeliveryProvider> = {
-    ...(includeDeleted ? {} : { deleted: null }),
-    ...rest,
-  };
+  const selector: mongodb.Filter<DeliveryProvider> = includeDeleted ? {} : { deleted: null };
+
+  if (deliveryProviderIds) {
+    selector._id = { $in: deliveryProviderIds };
+  }
+
+  if (type) {
+    selector.type = type;
+  }
 
   if (queryString) {
     const regex = new RegExp(queryString, 'i');
