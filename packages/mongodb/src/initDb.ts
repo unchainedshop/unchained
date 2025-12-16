@@ -16,28 +16,31 @@ try {
   /* */
 }
 
-export const startDb = async () => {
+export const startDb = async (options?: { forceInMemory?: boolean }) => {
   const { mkdir } = await import('node:fs/promises');
   const { MongoMemoryServer } = await import('mongodb-memory-server');
-  try {
-    await mkdir(`${process.cwd()}/.db`);
-  } catch {
-    /* */
+  const useInMemory = options?.forceInMemory || process.env.NODE_ENV === 'test';
+
+  if (!useInMemory) {
+    try {
+      await mkdir(`${process.cwd()}/.db`);
+    } catch {
+      /* */
+    }
   }
   try {
     mongod = MongoMemoryServer.create({
-      instance:
-        process.env.NODE_ENV === 'test'
-          ? { dbName: 'test', port: parseInt(PORT, 10) + 1 }
-          : {
-              dbPath: `${process.cwd()}/.db`,
-              storageEngine: 'wiredTiger',
-              port: parseInt(PORT, 10) + 1,
-            },
+      instance: useInMemory
+        ? { dbName: 'test', port: parseInt(PORT, 10) + 1 }
+        : {
+            dbPath: `${process.cwd()}/.db`,
+            storageEngine: 'wiredTiger',
+            port: parseInt(PORT, 10) + 1,
+          },
     });
     const mongoInstance = await mongod;
     if (mongoInstance) {
-      return `${mongoInstance.getUri()}${process.env.NODE_ENV === 'test' ? 'test' : 'unchained'}`;
+      return `${mongoInstance.getUri()}${useInMemory ? 'test' : 'unchained'}`;
     }
   } catch {
     /* */
@@ -57,8 +60,10 @@ export const stopDb = async () => {
   }
 };
 
-const initDb = async (): Promise<Db> => {
-  const url = process.env.MONGO_URL || (await startDb());
+const initDb = async (options?: { forceInMemory?: boolean }): Promise<Db> => {
+  const url = options?.forceInMemory
+    ? await startDb({ forceInMemory: true })
+    : process.env.MONGO_URL || (await startDb());
   mongoClient = new MongoClient(url, {
     compressors: zstdEnabled ? 'zstd' : undefined,
   });
