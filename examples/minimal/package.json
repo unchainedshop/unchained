@@ -38,6 +38,6 @@
     "fastify": "^5.4.0"
   },
   "devDependencies": {
-    "mongodb-memory-server": "^10.1.4"
+    "mongodb-memory-server": "^11.0.0"
   }
 }
