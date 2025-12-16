@@ -125,7 +125,7 @@ const buildVariationRows = (productId: string, variations = [], locales: string[
   return { variationRows, optionRows };
 };
 
-const exportProducts = async (params, unchainedAPI: UnchainedCore) => {
+const exportProducts = async (params, locales: string[], unchainedAPI: UnchainedCore) => {
   const { queryString, includeDrafts, tags } = params;
 
   const products = await unchainedAPI.modules.products.findProducts({
@@ -184,12 +184,6 @@ const exportProducts = async (params, unchainedAPI: UnchainedCore) => {
     normalized.bundles[p._id] = p.bundleItems ?? [];
     normalized.variations[p._id] = normalizedVariations;
   }
-
-  const locales = Array.from(
-    new Set(
-      Object.values(normalized.products).flatMap((p: any) => p.texts?.map((t: any) => t.locale) ?? []),
-    ),
-  );
 
   const productRows: any[] = [];
   const priceRows: any[] = [];
