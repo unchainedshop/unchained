@@ -1,9 +1,7 @@
-import type { UnchainedCore } from "@unchainedshop/core";
+import type { UnchainedCore } from '@unchainedshop/core';
 
 const exportAssortments = async (params, unchainedAPI: UnchainedCore) => {
-    return null
-}
+  return null;
+};
 
-
-
-export default exportAssortments
+export default exportAssortments;
