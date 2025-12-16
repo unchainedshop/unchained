@@ -292,6 +292,10 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         webAuthnPublicKeyCredentials &&
         (await this.webAuthn.verifyCredentialCreation(username, webAuthnPublicKeyCredentials));
 
+      if (webAuthnPublicKeyCredentials && !webAuthnService) {
+        throw new Error('WebAuthn credential verification failed', { cause: 'WEBAUTHN_INVALID' });
+      }
+
       const services: Record<string, any> = {};
 
       if (email) {

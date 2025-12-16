@@ -8,6 +8,7 @@ import {
   UsernameOrEmailRequiredError,
   PasswordOrWebAuthnPublicKeyRequiredError,
   PasswordInvalidError,
+  WebAuthnVerificationFailedError,
 } from '../../../errors.ts';
 
 export default async function createUser(root: never, params: UserRegistrationData, context: Context) {
@@ -55,6 +56,8 @@ export default async function createUser(root: never, params: UserRegistrationDa
       throw new UsernameAlreadyExistsError({ username: params?.username });
     else if (e.cause === 'PASSWORD_INVALID')
       throw new PasswordInvalidError({ username: params?.username });
+    else if (e.cause === 'WEBAUTHN_INVALID')
+      throw new WebAuthnVerificationFailedError({ username: params?.username });
     else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
 }

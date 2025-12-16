@@ -255,7 +255,11 @@ class VirtualAuthenticator {
     } else if (authDataBuffer.length < 256) {
       authDataHeader = Buffer.from([0x58, authDataBuffer.length]);
     } else {
-      authDataHeader = Buffer.from([0x59, (authDataBuffer.length >> 8) & 0xff, authDataBuffer.length & 0xff]);
+      authDataHeader = Buffer.from([
+        0x59,
+        (authDataBuffer.length >> 8) & 0xff,
+        authDataBuffer.length & 0xff,
+      ]);
     }
 
     const attestationObject = Buffer.concat([

@@ -232,12 +232,28 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
         },
         { sort: { _id: -1 } },
       );
-      if (!request) return null;
+      if (!request) {
+        logger.error('WebAuthn: No credential creation request found for username', { username });
+        return null;
+      }
+
+      const expectedOrigin = request.origin || thisOrigin;
+      logger.info('WebAuthn: Verifying credential creation', {
+        username,
+        expectedOrigin,
+        expectedChallenge: request.challenge,
+        credentialId: credentials.id,
+      });
 
       try {
         const registrationInfo = await webauthnServer.verifyRegistration(credentials, {
           challenge: request.challenge,
-          origin: request.origin || thisOrigin,
+          origin: expectedOrigin,
+        });
+
+        logger.info('WebAuthn: Credential creation verified successfully', {
+          username,
+          credentialId: registrationInfo.credential.id,
         });
 
         return {
@@ -249,7 +265,12 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
           created: new Date(),
         };
       } catch (error) {
-        logger.debug('WebAuthn credential creation verification failed', { error: error.message });
+        logger.error('WebAuthn credential creation verification failed', {
+          error: error.message,
+          username,
+          expectedOrigin,
+          expectedChallenge: request.challenge,
+        });
         return null;
       }
     },

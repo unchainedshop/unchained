@@ -266,6 +266,11 @@ export const PasswordOrWebAuthnPublicKeyRequiredError = createError(
   'A password or a WebAuthn public key is required',
 );
 
+export const WebAuthnVerificationFailedError = createError(
+  'WebAuthnVerificationFailedError',
+  'WebAuthn credential verification failed',
+);
+
 export const InvalidCredentialsError = createError('InvalidCredentials', 'Invalid credentials provided');
 
 export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token invalid or expired');
