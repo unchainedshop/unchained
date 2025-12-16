@@ -1,136 +1,231 @@
 import type { ModuleInput } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.ts';
-
+import pMemoize from 'p-memoize';
+import ExpiryMap from 'expiry-map';
+import { server as webauthnServer } from '@passwordless-id/webauthn';
 import type {
-  Fido2Lib as Fido2LibType,
-  PublicKeyCredentialCreationOptions,
-  PublicKeyCredentialRequestOptions,
-} from 'fido2-lib';
+  RegistrationJSON,
+  AuthenticationJSON,
+  CredentialInfo,
+  NamedAlgo,
+  ExtendedAuthenticatorTransport,
+} from '@passwordless-id/webauthn/dist/esm/types.js';
+import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.ts';
 
 const logger = createLogger('unchained:core-users');
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
 const { ROOT_URL = 'http://localhost:4010', EMAIL_WEBSITE_NAME = 'Unchained' } = process.env;
 
-type SerializedOptions<T> = Omit<T, 'challenge' | 'requestId'> & {
-  challenge: string;
-  requestId: number;
+// Re-export types for consumers
+export type {
+  RegistrationJSON,
+  AuthenticationJSON,
+  CredentialInfo,
+  NamedAlgo,
+  ExtendedAuthenticatorTransport,
 };
 
-let Fido2Lib: typeof Fido2LibType;
-try {
-  const fido2LibPackage = await import('fido2-lib');
-  Fido2Lib = fido2LibPackage.Fido2Lib;
-} catch {
-  logger.warn(`optional peer npm package 'fido2-lib' not installed, WebAuthn will not work`);
+// MDS (Metadata Service) types and fetcher
+interface MDSEntry {
+  aaguid?: string;
+  metadataStatement?: {
+    description?: string;
+    icon?: string;
+    authenticatorGetInfo?: {
+      versions?: string[];
+      extensions?: string[];
+      options?: Record<string, boolean>;
+    };
+    [key: string]: unknown;
+  };
 }
 
-let setupMDSPromise;
-const setupMDSCollection = async () => {
+async function fetchMDSEntriesImpl(): Promise<Map<string, MDSEntry>> {
+  const cache = new Map<string, MDSEntry>();
   try {
-    const tocResult = await fetch('https://mds.fidoalliance.org');
-    const tocBase64 = await tocResult.text();
-    const mc = Fido2Lib.createMdsCollection('FIDO MDS v3');
-    // eslint-disable-next-line
-    // @ts-ignore
-    const tocObj = await mc.addToc(tocBase64);
-    return tocObj.entries;
-  } catch (e) {
-    logger.error(e);
-    return [];
+    // Fetch the MDS blob from FIDO Alliance
+    const response = await fetch('https://mds.fidoalliance.org/');
+    if (!response.ok) {
+      logger.warn('Failed to fetch FIDO MDS', { status: response.status });
+      return cache;
+    }
+
+    const jwtBlob = await response.text();
+    // The MDS is a JWT - we just need to decode the payload (middle part)
+    const parts = jwtBlob.split('.');
+    if (parts.length !== 3) {
+      logger.warn('Invalid MDS JWT format');
+      return cache;
+    }
+
+    // Decode base64url payload
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = Buffer.from(payload, 'base64').toString('utf-8');
+    const mdsData = JSON.parse(decoded);
+
+    // Index entries by AAGUID
+    if (Array.isArray(mdsData.entries)) {
+      for (const entry of mdsData.entries) {
+        if (entry.aaguid) {
+          cache.set(entry.aaguid.toLowerCase(), entry);
+        }
+      }
+    }
+
+    logger.debug(`Loaded ${cache.size} MDS entries`);
+  } catch (error) {
+    logger.warn('Error fetching MDS', { error: error.message });
   }
-};
 
-const fetchMDS = async () => {
-  if (setupMDSPromise) return setupMDSPromise;
-  setupMDSPromise = setupMDSCollection();
-  return setupMDSPromise;
-};
-
-export function toArrayBuffer(buffer) {
-  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+  return cache;
 }
 
-export function buf2hex(buffer) {
-  // buffer is an ArrayBuffer
+// Memoize MDS fetch with 24-hour expiration using expiry-map
+const mdsCache = new ExpiryMap(ONE_DAY_MS);
+const fetchMDSEntries = pMemoize(fetchMDSEntriesImpl, { cache: mdsCache });
+
+export function toArrayBuffer(buffer: Buffer): ArrayBuffer {
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+}
+
+export function buf2hex(buffer: ArrayBuffer): string {
   return Array.prototype.map
-    .call(new Uint8Array(buffer), (x) => `00${x.toString(16)}`.slice(-2))
+    .call(new Uint8Array(buffer), (x: number) => `00${x.toString(16)}`.slice(-2))
     .join('');
 }
 
-export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => {
+export interface WebAuthnCredentialCreationOptions {
+  challenge: string;
+  requestId: number;
+  rp: {
+    id: string;
+    name: string;
+  };
+  user: {
+    id: string;
+    name: string;
+    displayName: string;
+  };
+  pubKeyCredParams: { type: 'public-key'; alg: number }[];
+  timeout: number;
+  attestation: 'none' | 'indirect' | 'direct';
+  authenticatorSelection?: {
+    authenticatorAttachment?: 'platform' | 'cross-platform';
+    requireResidentKey?: boolean;
+    userVerification?: 'required' | 'preferred' | 'discouraged';
+  };
+}
+
+export interface WebAuthnCredentialRequestOptions {
+  challenge: string;
+  requestId: number;
+  rpId: string;
+  timeout: number;
+  userVerification?: 'required' | 'preferred' | 'discouraged';
+  allowCredentials?: {
+    id: string;
+    type: 'public-key';
+    transports?: ('usb' | 'nfc' | 'ble' | 'internal')[];
+  }[];
+}
+
+export interface WebAuthnCredential {
+  id: string;
+  publicKey: string;
+  algorithm: NamedAlgo;
+  aaguid: string;
+  counter: number;
+  created: Date;
+}
+
+export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<string, any>>) => {
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
 
   const thisDomain = new URL(ROOT_URL).hostname;
-  const f2l =
-    Fido2Lib &&
-    new Fido2Lib({
-      rpId: thisDomain,
-      rpName: EMAIL_WEBSITE_NAME,
-      rpIcon:
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAARCSURBVHgB7Ve9UxNbFL8fm7yA4ktegHnlMk98dMbOMnR2D6pnGTqtCH+BWFoBpZXQaaelFbGzEztHHF26DKizzijDx+Zef+fu3vXuJgsxztjonQnZOZw993d+5zOM/epHslFO1a/KS/UbuvTnETsKQ/YDh3+XNi72yuVlzVgbL1YhCaOTk2ssDAI24hHDKsrpfxZkufwCj6t0OUAEBMkrlR6wHzjDMVCd872yemeete7gczeKoh2wQTICsyi0DrTWVc55eHqwu8OGPEMCMNSby5hS89H7Nx0Se9NXVvF1J69O7MDwJsKzgfCcmSP9SQhvxcV6S5cnummCHYVH4kJ9DE9NfHx1+HGLxKo0sSOkvIXHSnyz7mjOySufdLmUN3Vp4slZiSoyXk7NrhHVQui1fGzhzTq+QsZ5U07NtowQ3oH2FavDhXjS2389w7W+lrDgI2+2yfaZAEpT/y5LopjztnEkf1F6GXsc38TvWKO9g91NfO3EBGgjpxzooTosCISvXQjAm7zc1Fyvm7IChRHQM+uVcxGBAbstI84bVcqyUE3lAMyVWkrky0UsuGUYRqeni4zQk1cAk15ELxMYy07OqElKqo5ieVWWymsDAbhKGa9Qatag8P5omcQiUEot9nmb1c9cFkm5FJPJWqWp2UYegKkCMf7XHjRaeGwgs+9T1iPTA8ibkM/h5ev4XwVJthEd7D7kF+ozANRI9B9RlpO+lUO/IcZqz0jGPr8PUUFU7k185mwFZUIwBAuGUqWUob8nxCqLQ0H6qbeOnNmQGftOBVHO9QEw+ozZRKLE8y0wxDxFLISIE6n7KsDfjUS8kBoludZbCYBvl8XNaCMPLAOASsde5vYAlFPbeqWV+q/Pq5xR6HRS6zkWzPzIlXdmGKWXFaM/V06zwAGQaVppSJ3yzk7DAqpcb7UQD/q8cuRoxb75dtlxm5Zb3mzALEj7O7I/zWRUBRurHcO7G9Sw5MXJT+rLh+dmRlSqe6iOm1aOC/5nBELr2yTDOw3YO4Z+x3icq7iB01BMXm4j4dbIO+rtVi6nr7xLBg0tIjN20mGGbBPdVs+8J07mvcjzkbnbGf14tNNeYcb4wJVMH358jpo2zSf1lgCM1V4m6CsFXiUG9Iref9txe4kQXgVT9jqXejNZaEKAvFu4D5ikStBjus3bJcPxdjALNE8OduetHep+yIsXGQcZf9wTxyusGwSFS2mCvmaMcn6Lj9d9OV77BGN7iOuCYQFeqcMPT43+peln2IraFH/EdsvuALDTTTthvE0tIRnvsc/x/8/diIq2HnsSFoKEhXUAWM6zYA5VwoDtaLiV7O85XypFy+hVnbRlhCXoo9zZHWkpGWY3/L613D25PZFzeVVxvZqs6ywSYKZ7/ro+2g8TOu6eSBXAGfWIio2z2n871GY8OgN06BcSfitQuZr1CxuQ3Zh/6qkk0/P3GeV8BeBCYUHc/WHIAAAAAElFTkSuQmCC',
-      challengeSize: 128,
-      attestation: 'none',
-    });
+  const thisOrigin = new URL(ROOT_URL).origin;
 
   return {
     findMDSMetadataForAAGUID: async (aaguid: string) => {
-      const mdsCollection = await fetchMDS();
-      const foundEntry = mdsCollection.find((entry) => {
-        return entry.aaguid === aaguid;
-      });
-      return foundEntry?.metadataStatement;
+      const mdsEntries = await fetchMDSEntries();
+      const entry = mdsEntries.get(aaguid.toLowerCase());
+      return entry?.metadataStatement || null;
     },
 
     createCredentialCreationOptions: async (
       origin: string,
       username: string,
-      extensionOptions?: any,
-    ) => {
-      if (!f2l) return null;
-
-      const registrationOptions = await f2l.attestationOptions(extensionOptions);
-      // Convert challenge to base64 without using Buffer
-      const challenge = btoa(String.fromCharCode(...new Uint8Array(registrationOptions.challenge)));
+      extensionOptions?: {
+        timeout?: number;
+        authenticatorSelection?: WebAuthnCredentialCreationOptions['authenticatorSelection'];
+      },
+    ): Promise<WebAuthnCredentialCreationOptions> => {
+      const challenge = webauthnServer.randomChallenge();
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
         _id: new Date().getTime(),
         challenge,
         origin,
-        factor: (registrationOptions as any).factor || 'either',
+        factor: 'either',
         username,
       });
 
       return {
-        ...registrationOptions,
         challenge,
         requestId: insertedId,
-      } as SerializedOptions<PublicKeyCredentialCreationOptions>;
+        rp: {
+          id: thisDomain,
+          name: EMAIL_WEBSITE_NAME,
+        },
+        user: {
+          id: username,
+          name: username,
+          displayName: username,
+        },
+        pubKeyCredParams: [
+          { type: 'public-key', alg: -7 }, // ES256
+          { type: 'public-key', alg: -257 }, // RS256
+        ],
+        timeout: extensionOptions?.timeout || 60000,
+        attestation: 'none',
+        authenticatorSelection: extensionOptions?.authenticatorSelection || {
+          userVerification: 'preferred',
+        },
+      };
     },
 
-    createCredentialRequestOptions: async (origin: string, username: string, extensionOptions?: any) => {
-      if (!f2l) return null;
-
-      const loginOptions = await f2l.assertionOptions(extensionOptions);
-      // Convert challenge to base64 without using Buffer
-      const challenge = btoa(String.fromCharCode(...new Uint8Array(loginOptions.challenge)));
+    createCredentialRequestOptions: async (
+      origin: string,
+      username: string,
+      extensionOptions?: {
+        timeout?: number;
+        userVerification?: 'required' | 'preferred' | 'discouraged';
+        allowCredentials?: WebAuthnCredentialRequestOptions['allowCredentials'];
+      },
+    ): Promise<WebAuthnCredentialRequestOptions> => {
+      const challenge = webauthnServer.randomChallenge();
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
         _id: new Date().getTime(),
         challenge,
         origin,
-        factor: (loginOptions as any).factor || 'either',
+        factor: 'either',
         username,
       });
 
       return {
-        ...loginOptions,
         challenge,
         requestId: insertedId,
-      } as SerializedOptions<PublicKeyCredentialRequestOptions>;
+        rpId: thisDomain,
+        timeout: extensionOptions?.timeout || 60000,
+        userVerification: extensionOptions?.userVerification || 'preferred',
+        allowCredentials: extensionOptions?.allowCredentials,
+      };
     },
 
-    verifyCredentialCreation: async (username: string, credentials: any) => {
-      if (!f2l) return null;
-
+    verifyCredentialCreation: async (
+      username: string,
+      credentials: RegistrationJSON,
+    ): Promise<WebAuthnCredential | null> => {
       const request = await WebAuthnCredentialsCreationRequests.findOne(
         {
           username,
@@ -140,52 +235,36 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       if (!request) return null;
 
       try {
-        const attestationExpectations = {
+        const registrationInfo = await webauthnServer.verifyRegistration(credentials, {
           challenge: request.challenge,
-          origin: request.origin,
-          factor: request.factor,
+          origin: request.origin || thisOrigin,
+        });
+
+        return {
+          id: registrationInfo.credential.id,
+          publicKey: registrationInfo.credential.publicKey,
+          algorithm: registrationInfo.credential.algorithm,
+          aaguid: registrationInfo.authenticator.aaguid,
+          counter: registrationInfo.authenticator.counter,
+          created: new Date(),
         };
-
-        const id = Buffer.from(credentials.id, 'base64');
-        const attestationObject = Buffer.from(credentials.response.attestationObject, 'base64');
-        const clientDataJSON = Buffer.from(credentials.response.clientDataJSON, 'base64');
-
-        const attestationResponse = {
-          id: toArrayBuffer(id),
-          response: {
-            attestationObject: toArrayBuffer(attestationObject),
-            clientDataJSON: toArrayBuffer(clientDataJSON),
-          },
-        };
-
-        const registrationOptions = await f2l.attestationResult(
-          attestationResponse,
-          attestationExpectations,
-        );
-
-        const publicKey = registrationOptions?.authnrData?.get('credentialPublicKeyPem');
-        const aaguidArrayBuffer = registrationOptions?.authnrData?.get('aaguid'); // ArrayBuffer Uint8...
-        const counter = registrationOptions?.authnrData?.get('counter');
-
-        const aaguidConcatenated = buf2hex(aaguidArrayBuffer);
-        const aaguid = `${aaguidConcatenated.slice(0, 8)}-${aaguidConcatenated.slice(
-          8,
-          12,
-        )}-${aaguidConcatenated.slice(12, 16)}-${aaguidConcatenated.slice(
-          16,
-          20,
-        )}-${aaguidConcatenated.slice(20)}`;
-
-        return { publicKey, counter, id: credentials.id, aaguid, created: new Date() };
       } catch (error) {
         logger.debug('WebAuthn credential creation verification failed', { error: error.message });
         return null;
       }
     },
 
-    verifyCredentialRequest: async (userPublicKeys: any[], username: string, credentials: any) => {
-      if (!f2l) return null;
-
+    verifyCredentialRequest: async (
+      userPublicKeys: {
+        id: string;
+        publicKey: string;
+        algorithm?: NamedAlgo;
+        counter?: number;
+        transports?: ExtendedAuthenticatorTransport[];
+      }[],
+      username: string,
+      credentials: AuthenticationJSON & { requestId: number },
+    ): Promise<{ userHandle: string; counter: number } | null> => {
       const request = await WebAuthnCredentialsCreationRequests.findOne(
         {
           _id: credentials.requestId,
@@ -194,46 +273,38 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => 
       );
       if (!request) return null;
 
+      const matchingKey = userPublicKeys.find((key) => key.id === credentials.id);
+      if (!matchingKey) return null;
+
       try {
-        const id = Buffer.from(credentials.id, 'base64');
-        const authenticatorData = Buffer.from(credentials.response.authenticatorData, 'base64');
-        const signature = Buffer.from(credentials.response.signature, 'base64');
-        const userHandle = Buffer.from(credentials.response.userHandle, 'base64');
-        const clientDataJSON = Buffer.from(credentials.response.clientDataJSON, 'base64');
-
-        const { publicKey, counter } =
-          userPublicKeys.find((publicCredentials) => {
-            return credentials.id === publicCredentials.id;
-          }) || {};
-
-        if (!publicKey) return null;
-
-        const assertionExpectations = {
-          challenge: request.challenge,
-          origin: request.origin,
-          factor: request.factor,
-          prevCounter: counter,
-          publicKey,
-          userHandle: toArrayBuffer(Buffer.from(username)),
+        const credentialKey: CredentialInfo = {
+          id: matchingKey.id,
+          publicKey: matchingKey.publicKey,
+          algorithm: matchingKey.algorithm || 'ES256',
+          transports: matchingKey.transports || [],
         };
 
-        const assertionResponse = {
-          id: toArrayBuffer(id),
-          response: {
-            authenticatorData: toArrayBuffer(authenticatorData),
-            clientDataJSON: toArrayBuffer(clientDataJSON),
-            signature: toArrayBuffer(signature),
-            userHandle: toArrayBuffer(userHandle),
+        const authenticationInfo = await webauthnServer.verifyAuthentication(
+          credentials,
+          credentialKey,
+          {
+            challenge: request.challenge,
+            origin: request.origin || thisOrigin,
+            userVerified: false, // Don't require user verification
+            counter: matchingKey.counter,
           },
-        };
+        );
 
-        const loginResult = await f2l.assertionResult(assertionResponse, assertionExpectations);
-        return { userHandle: loginResult?.authnrData?.get('userHandle') };
+        return {
+          userHandle: credentials.response.userHandle || username,
+          counter: authenticationInfo.counter,
+        };
       } catch (error) {
         logger.debug('WebAuthn credential request verification failed', { error: error.message });
         return null;
       }
     },
+
     deleteUserWebAuthnCredentials: async (username: string) => {
       const { deletedCount } = await WebAuthnCredentialsCreationRequests.deleteMany({
         username,

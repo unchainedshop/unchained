@@ -34,23 +34,22 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "@passwordless-id/webauthn": "^2.3.1",
     "@unchainedshop/events": "^4.4.0",
     "@unchainedshop/file-upload": "^4.4.0",
     "@unchainedshop/logger": "^4.4.0",
     "@unchainedshop/mongodb": "^4.4.0",
     "@unchainedshop/roles": "^4.4.0",
-    "@unchainedshop/utils": "^4.4.0"
+    "@unchainedshop/utils": "^4.4.0",
+    "bcryptjs": "^3.0.2",
+    "expiry-map": "^2.0.0",
+    "p-memoize": "^8.0.0"
   },
   "peerDependencies": {
-    "fido2-lib": ">= 3.5 < 4",
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0"
   },
   "peerDependenciesMeta": {
-    "fido2-lib": {
-      "optional": true
-    },
     "@noble/curves": {
       "optional": true
     },
@@ -59,10 +58,9 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^25.0.0",
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
-    "fido2-lib": "^3.5.3",
+    "@types/node": "^25.0.0",
     "typescript": "^5.8.3"
   }
 }

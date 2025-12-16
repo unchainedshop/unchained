@@ -66,8 +66,7 @@ describe('WebAuthn Module', () => {
     it('should convert a 16-byte AAGUID to correct hex format', () => {
       // Typical AAGUID format: 16 bytes
       const aaguidBytes = new Uint8Array([
-        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-        0x10,
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
       ]).buffer;
       const hex = buf2hex(aaguidBytes);
 
@@ -103,7 +102,7 @@ describe('WebAuthn Module', () => {
       assert.ok(typeof webAuthnModule.findMDSMetadataForAAGUID === 'function');
     });
 
-    it('should create credential creation options', async () => {
+    it('should create credential creation options with correct structure', async () => {
       const webAuthnModule = await configureUsersWebAuthnModule({ db });
 
       const options = await webAuthnModule.createCredentialCreationOptions(
@@ -116,9 +115,18 @@ describe('WebAuthn Module', () => {
       assert.ok(typeof options.challenge === 'string');
       assert.ok(options.requestId);
       assert.strictEqual(typeof options.requestId, 'number');
+
+      // Check new structure from @passwordless-id/webauthn
+      assert.ok(options.rp);
+      assert.strictEqual(options.rp.name, 'Unchained');
+      assert.ok(options.user);
+      assert.strictEqual(options.user.name, 'testuser-creation');
+      assert.ok(options.pubKeyCredParams);
+      assert.ok(Array.isArray(options.pubKeyCredParams));
+      assert.strictEqual(options.attestation, 'none');
     });
 
-    it('should create credential request options', async () => {
+    it('should create credential request options with correct structure', async () => {
       const webAuthnModule = await configureUsersWebAuthnModule({ db });
 
       const options = await webAuthnModule.createCredentialRequestOptions(
@@ -131,6 +139,11 @@ describe('WebAuthn Module', () => {
       assert.ok(typeof options.challenge === 'string');
       assert.ok(options.requestId);
       assert.strictEqual(typeof options.requestId, 'number');
+
+      // Check new structure from @passwordless-id/webauthn
+      assert.ok(options.rpId);
+      assert.ok(options.timeout);
+      assert.strictEqual(options.userVerification, 'preferred');
     });
 
     it('should delete user WebAuthn credentials', async () => {
@@ -152,10 +165,14 @@ describe('WebAuthn Module', () => {
 
       const result = await webAuthnModule.verifyCredentialCreation('nonexistent-user', {
         id: 'some-id',
+        rawId: 'some-id',
         response: {
           attestationObject: 'test',
           clientDataJSON: 'test',
         },
+        authenticatorAttachment: 'platform',
+        clientExtensionResults: {},
+        type: 'public-key',
       });
 
       assert.strictEqual(result, null);
@@ -167,12 +184,16 @@ describe('WebAuthn Module', () => {
       const result = await webAuthnModule.verifyCredentialRequest([], 'testuser', {
         requestId: 99999999,
         id: 'some-id',
+        rawId: 'some-id',
         response: {
           authenticatorData: 'test',
           signature: 'test',
           userHandle: 'test',
           clientDataJSON: 'test',
         },
+        authenticatorAttachment: 'platform',
+        clientExtensionResults: {},
+        type: 'public-key',
       });
 
       assert.strictEqual(result, null);
@@ -189,14 +210,18 @@ describe('WebAuthn Module', () => {
 
       // Try to verify with empty public keys array
       const result = await webAuthnModule.verifyCredentialRequest([], 'testuser-no-pubkey', {
-        requestId: options.requestId,
+        requestId: options!.requestId,
         id: 'some-credential-id',
+        rawId: 'some-credential-id',
         response: {
-          authenticatorData: Buffer.from('test').toString('base64'),
-          signature: Buffer.from('test').toString('base64'),
-          userHandle: Buffer.from('test').toString('base64'),
-          clientDataJSON: Buffer.from('test').toString('base64'),
+          authenticatorData: 'dGVzdA',
+          signature: 'dGVzdA',
+          userHandle: 'dGVzdA',
+          clientDataJSON: 'dGVzdA',
         },
+        authenticatorAttachment: 'platform',
+        clientExtensionResults: {},
+        type: 'public-key',
       });
 
       assert.strictEqual(result, null);
@@ -213,11 +238,15 @@ describe('WebAuthn Module', () => {
 
       // Try to verify with invalid credentials (should be caught by try/catch)
       const result = await webAuthnModule.verifyCredentialCreation('testuser-invalid-creation', {
-        id: Buffer.from('invalid-id').toString('base64'),
+        id: 'aW52YWxpZC1pZA',
+        rawId: 'aW52YWxpZC1pZA',
         response: {
-          attestationObject: Buffer.from('invalid-attestation').toString('base64'),
-          clientDataJSON: Buffer.from('invalid-client-data').toString('base64'),
+          attestationObject: 'aW52YWxpZC1hdHRlc3RhdGlvbg',
+          clientDataJSON: 'aW52YWxpZC1jbGllbnQtZGF0YQ',
         },
+        authenticatorAttachment: 'platform',
+        clientExtensionResults: {},
+        type: 'public-key',
       });
 
       // Should return null due to the try/catch handling invalid crypto operations
@@ -233,28 +262,32 @@ describe('WebAuthn Module', () => {
         'testuser-invalid-sig',
       );
 
-      const credentialId = Buffer.from('test-credential-id').toString('base64');
+      const credentialId = 'dGVzdC1jcmVkZW50aWFsLWlk';
 
       // Try to verify with a public key but invalid signature
       const result = await webAuthnModule.verifyCredentialRequest(
         [
           {
             id: credentialId,
-            publicKey:
-              '-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE...\n-----END PUBLIC KEY-----',
+            publicKey: 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEtest',
+            algorithm: 'ES256',
             counter: 0,
           },
         ],
         'testuser-invalid-sig',
         {
-          requestId: options.requestId,
+          requestId: options!.requestId,
           id: credentialId,
+          rawId: credentialId,
           response: {
-            authenticatorData: Buffer.from('invalid-auth-data').toString('base64'),
-            signature: Buffer.from('invalid-signature').toString('base64'),
-            userHandle: Buffer.from('testuser-invalid-sig').toString('base64'),
-            clientDataJSON: Buffer.from('invalid-client-data').toString('base64'),
+            authenticatorData: 'aW52YWxpZC1hdXRoLWRhdGE',
+            signature: 'aW52YWxpZC1zaWduYXR1cmU',
+            userHandle: 'dGVzdHVzZXItaW52YWxpZC1zaWc',
+            clientDataJSON: 'aW52YWxpZC1jbGllbnQtZGF0YQ',
           },
+          authenticatorAttachment: 'platform',
+          clientExtensionResults: {},
+          type: 'public-key',
         },
       );
 
@@ -276,8 +309,8 @@ describe('WebAuthn Module', () => {
         'testuser-multiple',
       );
 
-      assert.ok(options1.requestId !== options2.requestId);
-      assert.ok(options1.challenge !== options2.challenge);
+      assert.ok(options1!.requestId !== options2!.requestId);
+      assert.ok(options1!.challenge !== options2!.challenge);
     });
 
     it('should generate unique challenges for each request', async () => {
@@ -289,7 +322,7 @@ describe('WebAuthn Module', () => {
           'https://example.com',
           `testuser-unique-${i}`,
         );
-        challenges.add(options.challenge);
+        challenges.add(options!.challenge);
         // Small delay to avoid duplicate _id (which uses Date.getTime())
         await new Promise((resolve) => setTimeout(resolve, 2));
       }
@@ -298,17 +331,56 @@ describe('WebAuthn Module', () => {
       assert.strictEqual(challenges.size, 5);
     });
 
-    it('should include factor in stored request', async () => {
+    it('should return null for unknown AAGUID in findMDSMetadataForAAGUID', async () => {
+      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+
+      const result = await webAuthnModule.findMDSMetadataForAAGUID(
+        '00000000-0000-0000-0000-000000000000',
+      );
+
+      // Unknown AAGUID should return null
+      assert.strictEqual(result, null);
+    });
+
+    it('should lookup metadata for known AAGUID (YubiKey 5)', async () => {
+      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+
+      // YubiKey 5 FIPS Series AAGUID
+      const result = await webAuthnModule.findMDSMetadataForAAGUID(
+        'c5ef55ff-ad9a-4b9f-b580-adebafe026d0',
+      );
+
+      // If MDS fetch succeeded, we should get metadata; if network failed, null is acceptable
+      if (result !== null) {
+        assert.ok(result.description);
+        assert.ok(typeof result.description === 'string');
+      }
+    });
+
+    it('should accept custom timeout in credential creation options', async () => {
       const webAuthnModule = await configureUsersWebAuthnModule({ db });
 
       const options = await webAuthnModule.createCredentialCreationOptions(
         'https://example.com',
-        'testuser-factor',
+        'testuser-timeout',
+        { timeout: 120000 },
       );
 
-      // The request should have been stored with a factor
       assert.ok(options);
-      // Factor defaults to 'either' in the implementation
+      assert.strictEqual(options.timeout, 120000);
+    });
+
+    it('should accept custom userVerification in credential request options', async () => {
+      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+
+      const options = await webAuthnModule.createCredentialRequestOptions(
+        'https://example.com',
+        'testuser-verification',
+        { userVerification: 'required' },
+      );
+
+      assert.ok(options);
+      assert.strictEqual(options.userVerification, 'required');
     });
   });
 });
