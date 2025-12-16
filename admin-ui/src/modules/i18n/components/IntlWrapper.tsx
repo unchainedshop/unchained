@@ -1,6 +1,6 @@
-import '@formatjs/intl-pluralrules/polyfill';
+import '@formatjs/intl-pluralrules/polyfill.js';
 
-import '@formatjs/intl-relativetimeformat/polyfill';
+import '@formatjs/intl-relativetimeformat/polyfill.js';
 import { IntlProvider } from 'react-intl';
 import { useState, useEffect } from 'react';
 import getMessages from '../utils/getMessages';

@@ -1,80 +1,87 @@
-import { defineConfig, globalIgnores } from 'eslint/config';
-import cypress from 'eslint-plugin-cypress';
-import formatjs from 'eslint-plugin-formatjs';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
+import eslint from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import reactPlugin from 'eslint-plugin-react';
+import prettierPlugin from 'eslint-plugin-prettier';
+import cypressPlugin from 'eslint-plugin-cypress';
+import formatjsPlugin from 'eslint-plugin-formatjs';
+import nextPlugin from '@next/eslint-plugin-next';
+import globals from 'globals';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-export default defineConfig([
-  globalIgnores([
-    '**/public/',
-    '**/cypress/',
-    '**/node_modules/',
-    '**/.next/',
-    '**/.github/',
-    '**/dist/',
-    '**/.vscode/',
-    '**/coverage/',
-    '**/*.log',
-    '**/*.env*local',
-    '**/*.tsbuildinfo',
-    '**/*.d.ts',
-    '**/*.js',
-    '**/.next/',
-    '**/out/',
-  ]),
+export default [
+  // Global ignores
   {
-    extends: compat.extends(
-      'eslint:recommended',
-      'plugin:react/recommended',
-      'plugin:prettier/recommended',
-      'next',
-      'plugin:@typescript-eslint/recommended',
-    ),
+    ignores: [
+      'public/',
+      'cypress/',
+      'node_modules/',
+      '.next/',
+      '.github/',
+      'dist/',
+      '.vscode/',
+      'coverage/',
+      '*.log',
+      '*.env*local',
+      '*.tsbuildinfo',
+      '*.d.ts',
+      'out/',
+      // Root JS config files
+      '*.config.js',
+      '*.config.mjs',
+      'generate-permissions.js',
+      'custom-formatter.js',
+      'extract-missing-translation-keys.js',
+      'loadPermissionConfig.js',
+      'possibleTypesGenerator.mjs',
+      // JS files in src that should be ignored
+      'src/lib/permissionConfig.js',
+      'src/modules/assortment/utils/contructTangleLayout.js',
+      'src/modules/common/utils/matomo.js',
+    ],
+  },
 
-    plugins: {
-      cypress,
-      formatjs,
-      '@typescript-eslint': typescriptEslint,
-    },
+  // Base config for all files
+  eslint.configs.recommended,
 
+  // TypeScript files
+  {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      ecmaVersion: 2024,
-      sourceType: 'commonjs',
-
+      parser: tsparser,
       parserOptions: {
+        ecmaVersion: 2024,
+        sourceType: 'module',
         ecmaFeatures: {
           jsx: true,
         },
-        ecmaVersion: 12,
-        sourceType: 'module',
-        tsconfigRootDir: __dirname,
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.es2021,
+        React: 'readonly',
       },
     },
-
+    plugins: {
+      '@typescript-eslint': tseslint,
+      react: reactPlugin,
+      prettier: prettierPlugin,
+      cypress: cypressPlugin,
+      formatjs: formatjsPlugin,
+      '@next/next': nextPlugin,
+    },
     settings: {
+      react: {
+        version: 'detect',
+      },
       'import/resolver': {
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       },
-
-      react: {
-        version: 'detect',
-      },
     },
-
     rules: {
+      // Prettier
       'prettier/prettier': [
         'error',
         {
@@ -86,13 +93,25 @@ export default defineConfig([
         },
       ],
 
+      // TypeScript
+      ...tseslint.configs.recommended.rules,
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
       '@typescript-eslint/no-this-alias': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
-      'typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+
+      // React
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+
+      // Next.js
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+      '@next/next/no-img-element': 'warn',
+      '@next/next/no-sync-scripts': 'warn',
     },
   },
-]);
+];

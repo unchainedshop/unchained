@@ -19,7 +19,7 @@
     "esModuleInterop": true,
     "module": "Preserve",
     "resolveJsonModule": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "noImplicitAny": false,
     "isolatedModules": true,
