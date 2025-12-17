@@ -1,11 +1,11 @@
 # Unchained Engine vNEXT
 
-## Major
+## Minor
 
 - `setAccessToken` utility function removed from `@unchainedshop/platform`. Use `modules.users.setAccessToken(username, plainSecret)` from `@unchainedshop/core-users` directly instead. The new method handles SHA-256 hashing internally.
 - Removed `@breejs/later` dependency. The schedule parsing is now handled by a native implementation in `@unchainedshop/core`. If you were using `later.parse.cron()` or `later.parse.text()` directly, import `schedule` from `@unchainedshop/core` instead.
 - MongoDB peer dependency now requires version 7.x. Update `mongodb` to `>= 7 < 8`, `mongodb-memory-server` to `>= 11 < 12`, and `@mongodb-js/zstd` to `>= 7 < 8`.
-- WebAuthn implementation migrated from `fido2-lib` to `@passwordless-id/webauthn`. Custom WebAuthn integrations should be reviewed and tested.
+- WebAuthn implementation migrated from optional peer dependency `fido2-lib` to `@passwordless-id/webauthn` built-in. Custom WebAuthn integrations should be reviewed and tested.
 - Provider module query APIs changed: `findProviders()` and `count()` in delivery, payment, and warehousing modules now accept structured query objects (`DeliveryProviderQuery`, `PaymentProviderQuery`, `WarehousingProviderQuery`) instead of raw MongoDB filters.
 - Multiple functions moved from GraphQL resolvers to core services layer. New services available: `services.files.createFileDownloadURL()`, `services.orders.resolveOrderItemDispatches()`, `services.orders.removeCartDiscount()`, `services.products.findProductSiblings()`, `services.products.simulateConfigurablePriceRange()`, `services.warehousing.resolveTokenStatus()`, `services.warehousing.isTokenInvalidateable()`, `services.filters.removeFilter()`, `services.delivery.simulateDeliveryPricing()`, `services.payment.simulatePaymentPricing()`.
 

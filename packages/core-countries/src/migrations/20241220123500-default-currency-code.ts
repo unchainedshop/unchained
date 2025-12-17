@@ -22,18 +22,15 @@ export default function convertDefaultCurrencyCode(repository: MigrationReposito
       );
 
       for (const country of allCountries) {
-        await Countries.updateOne(
-          { _id: country._id, defaultCurrencyId: { $exists: true } } as any,
-          {
-            $set: {
-              defaultCurrencyCode:
-                currencyMap[(country as Country & { defaultCurrencyId: string }).defaultCurrencyId],
-            },
-            $unset: {
-              defaultCurrencyId: 1,
-            },
+        await Countries.updateOne({ _id: country._id, defaultCurrencyId: { $exists: true } } as any, {
+          $set: {
+            defaultCurrencyCode:
+              currencyMap[(country as Country & { defaultCurrencyId: string }).defaultCurrencyId],
           },
-        );
+          $unset: {
+            defaultCurrencyId: 1,
+          },
+        });
       }
     },
   });
