@@ -451,3 +451,43 @@ Same pattern for: `createProductVariation`, `createProductVariationOption`, `cre
 | `hashPassword is not a function` | Use `modules.users.hashPassword()` |
 | `Property 'currency' does not exist` (v4) | Renamed to `currencyCode` |
 | `ProductType.TokenizedProduct is undefined` (v4) | Use `ProductType.TOKENIZED_PRODUCT` |
+
+---
+
+## v1 → v2
+
+### Node.js Requirements
+
+WHATWG Fetch support required. Update Node to 18+ or enable Experimental Fetch support on Node.js 16+.
+
+### Dependencies
+
+```bash
+npm install graphql@16
+npm uninstall apollo-server-express body-parser graphql-scalars graphql-upload isomorphic-unfetch locale simpl-schema
+```
+
+### Boot File Changes
+
+Remove custom login-with-single-sign-on and all code that involves loading standard plugins and/or gridfs/datatrans webhooks.
+
+`startPlatform` no longer hooks into Express or starts the GraphQL server automatically. This change supports other backend frameworks and Lambda Mode.
+
+```typescript
+import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
+import { connect } from '@unchainedshop/api/express/index.js';
+
+const engine = await startPlatform({ modules: defaultModules, /* ... */ });
+
+await engine.apolloGraphQLServer.start();
+connect(app, engine);
+connectDefaultPluginsToExpress4(app, engine);
+```
+
+### Database Fields
+
+The `userId` parameters used to set internal db fields (`updatedBy` / `createdBy`) have been removed from various functions. This will likely affect seed code. TypeScript will help identify affected locations.
+
+### API Changes
+
+Examine the API Breaking Changes in the Changelog for incompatibilities between 1.2 and 2.0.
