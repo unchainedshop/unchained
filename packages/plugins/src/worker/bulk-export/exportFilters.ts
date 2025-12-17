@@ -1,6 +1,12 @@
 import type { UnchainedCore } from '@unchainedshop/core';
 import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
 
+export interface FilterExportParams {
+  exportFilters?: boolean;
+  exportFilterOptions?: boolean;
+  [key: string]: any;
+}
+
 const FILTER_CSV_SCHEMA = {
   filterFields: ['_id', 'key', 'type', 'isActive'],
   optionFields: ['optionId', 'filterId', 'value'],
@@ -39,7 +45,11 @@ const fetchTexts = async (
   return texts.reduce((acc, t) => ({ ...acc, [t.locale]: t }), {} as Record<string, any>);
 };
 
-const exportFilters = async (params: any, locales: string[], unchainedAPI: UnchainedCore) => {
+const exportFiltersHandler = async (
+  { exportFilterOptions, exportFilters, ...params }: FilterExportParams,
+  locales: string[],
+  unchainedAPI: UnchainedCore,
+) => {
   const { modules } = unchainedAPI;
   const filters = await modules.filters.findFilters({ ...params });
 
@@ -47,49 +57,56 @@ const exportFilters = async (params: any, locales: string[], unchainedAPI: Uncha
   const optionRows: Record<string, any>[] = [];
   await Promise.all(
     filters.map(async (filter) => {
-      const filterTexts = await fetchTexts(modules, filter._id);
-      const row: Record<string, any> = {
-        _id: filter._id,
-        key: filter.key,
-        type: filter.type,
-        isActive: filter.isActive,
-      };
-      mapTextsToRow(row, filterTexts, locales);
-      filterRows.push(row);
-
-      await Promise.all(
-        (filter.options || []).map(async (optionValue) => {
-          const optionTexts = await fetchTexts(modules, filter._id, optionValue);
-          const optionRow: Record<string, any> = {
-            optionId: `${filter._id}:${optionValue}`,
-            filterId: filter._id,
-            value: optionValue,
-          };
-          mapTextsToRow(optionRow, optionTexts, locales);
-          optionRows.push(optionRow);
-        }),
-      );
+      if (exportFilters) {
+        const filterTexts = await fetchTexts(modules, filter._id);
+        const row: Record<string, any> = {
+          _id: filter._id,
+          key: filter.key,
+          type: filter.type,
+          isActive: filter.isActive,
+        };
+        mapTextsToRow(row, filterTexts, locales);
+        filterRows.push(row);
+      }
+      if (exportFilterOptions) {
+        await Promise.all(
+          (filter.options || []).map(async (optionValue) => {
+            const optionTexts = await fetchTexts(modules, filter._id, optionValue);
+            const optionRow: Record<string, any> = {
+              optionId: `${filter._id}:${optionValue}`,
+              filterId: filter._id,
+              value: optionValue,
+            };
+            mapTextsToRow(optionRow, optionTexts, locales);
+            optionRows.push(optionRow);
+          }),
+        );
+      }
     }),
   );
 
   const [filtersCSV, optionsCSV] = await Promise.all([
-    generateCSVFileAndURL({
-      headers: buildFilterHeaders(locales),
-      rows: filterRows,
-      directoryName: 'exports',
-      fileName: 'filters_export.csv',
-      unchainedAPI,
-    }),
-    generateCSVFileAndURL({
-      headers: buildOptionHeaders(locales),
-      rows: optionRows,
-      directoryName: 'exports',
-      fileName: 'filters_options_export.csv',
-      unchainedAPI,
-    }),
+    exportFilters
+      ? generateCSVFileAndURL({
+          headers: buildFilterHeaders(locales),
+          rows: filterRows,
+          directoryName: 'exports',
+          fileName: 'filters_export.csv',
+          unchainedAPI,
+        })
+      : null,
+    exportFilterOptions
+      ? generateCSVFileAndURL({
+          headers: buildOptionHeaders(locales),
+          rows: optionRows,
+          directoryName: 'exports',
+          fileName: 'filters_options_export.csv',
+          unchainedAPI,
+        })
+      : null,
   ]);
 
   return { filters: filtersCSV, filterOptions: optionsCSV };
 };
 
-export default exportFilters;
+export default exportFiltersHandler;
