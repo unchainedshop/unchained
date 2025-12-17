@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/logger",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "main": "lib/logger-index.js",
   "types": "lib/logger-index.d.ts",
   "type": "module",
