@@ -124,26 +124,31 @@ connectChat(expressApp, {
 
 ## Major
 - Bulk Import now validates data against Zod schemas, returning early with an error when the structure is invalid. This allows developer to see errors while streaming, resolving certain import errors later on in the work queue due to wrong data formats.
+- Bulk Import: `BulkImportOperation` type moved from `@unchainedshop/platform` to `@unchainedshop/core` and now requires a generic type parameter.
 - Added `Mutation.updateCartPaymentInvoice`, `Mutation.updateCartPaymentGeneric`, `Mutation.updateCartDeliveryPickUp`, `Mutation.updateCartDeliveryShipping`. Those mutations do not only change the provider's configuration but also set the provider as current provider on the cart/orderId provided. As this new flow is superior to the old one involving calling multiple mutations and holding a deliveryId/paymentId in memory for clients, we deprecated the following mutations: `Mutation.updateOrderDeliveryShipping`, `Mutation.updateOrderDeliveryPickUp`, `Mutation.updateOrderPaymentInvoice`, `Mutation.updateOrderPaymentGeneric`, `Mutation.setOrderPaymentProvider`, `Mutation.setOrderDeliveryProvider`
 - Removed `CARD` type for payments. We never used it and it doesn't make sense to provide card data in plaintext. Removing `Mutation.updateOrderPaymentCard`.
 - Boolean filter types do not support an undefined or null state of values and whenever the key is set in a filter query and it's of type SWITCH (for ex. `[{ key: "meta.feeds.googleAds" }]` it will only show products that have a value of true. You can still do a "NOT" filtering by explicitly providing a value of false or 0: `[{ key: "meta.feeds.googleAds", value: "false" }]`
 - `Query.eventsCount` and `Query.events` now accept a DateFilterInput (start/end range) for the created date.
-- The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system: The type of locale fields in the API are now validated at the GraphQL Server level. This effects a lot of plugins too, please check migration-v4.md.
+- The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system. This affects GraphQL API parameters (e.g., `currency` → `currencyCode` in simulatedPrice, catalogPrice, etc.), the `Price` type (`Price.currency` → `Price.currencyCode`), pricing sheet interfaces, and plugin contexts. Please check MIGRATION-V4.md for the full list of affected fields.
 - Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
 - Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).
+- Twilio SMS worker plugin renamed from `SMS` to `TWILIO`.
+- Payment plugins: `paymentProviderId` removed from adapter context. Access it through the provider object instead.
 
 ## Minor
 - Add Node.js v24 support
-- Bundle Products now support pricing on their own, resulting in an actually usable bundle implementation 😳 By default, the catalog pricing plugin fallbacks to 
+- Bundle Products now support pricing on their own, resulting in an actually usable bundle implementation. By default, the catalog pricing plugin falls back to summing bundled product prices.
 - Add various loaders to optimize db requests and improve the overall performance of the system
 - DocumentDB (FerretDB, Azure, AWS) compatibility mode: Use `UNCHAINED_DOCUMENTDB_COMPAT_MODE` to disable $text indexes and $search queries.
 - Improve docs
-- Add filters to `Query.orders` to filter by payment and delivery providers
-- Allow to call `Query.deliveryInterfaces` without a type
+- Add filters to `Query.orders` and `Query.ordersCount` to filter by payment and delivery providers (`paymentProviderIds`, `deliveryProviderIds`) and date range (`dateRange`)
+- Allow to call `Query.deliveryInterfaces`, `Query.paymentInterfaces`, and `Query.warehousingInterfaces` without a type parameter
 - Add support for SMS providers BudgetSMS and Bulkgate next to Twilio on our privacy-focused mission to always support European alternatives.
 - Add `productTags`, `assortmentTags` & `userTags` field in `shopInfo.adminUiConfig` that will return existing tags used for products, assortments & users and can also be customized to include default tags using `UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS` and/or `UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS` and/or `UNCHAINED_ADMIN_UI_DEFAULT_USER_TAGS`.
 - Add option to configure `adminUiConfig.customProperties` through `UNCHAINED_ADMIN_UI_CUSTOM_PROPERTIES` env in addition to platform configuration option that accepts a json file
 - Add option to configure `adminUiConfig.singleSignOnURL` through `UNCHAINED_ADMIN_UI_SINGLE_SIGN_ON_URL` env in addition to platform configuration option
+- Add `tags` filter option to `Query.users` and `Query.usersCount`
+- MCP and AI server packages (`@modelcontextprotocol/sdk`, `ai`) are now optional peer dependencies
 
 ## Patch
 - Update to ESlint 9
@@ -269,29 +274,64 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - `LoginMethodResponse.token` **removed, use server-side cookies or access-keys**
 - `LoginMethodResponse.id` **removed, uses _id now like all other entities**
 - `UserLoginTracker.locale` type changed to Locale from String
+- `UserLoginTracker.remotePort` type changed from String to Int
 - `ProductVariationTexts.locale` type changed to Locale from String
 - `ProductMediaTexts.locale` type changed to Locale from String
 - `ProductTexts.locale` type changed to Locale from String
 - `ProductMedia.file` optional, required before
+- `Mutation.loginWithPassword` parameters changed: `plainPassword` → `password`, `totpCode` removed, `password` is now required
+- `Mutation.createUser` parameters changed: `plainPassword` → `password`
+- `Mutation.changePassword` parameters changed: `oldPlainPassword` → `oldPassword`, `newPlainPassword` → `newPassword`
+- `Mutation.resetPassword` parameters changed: `newPlainPassword` → `newPassword`
+- `Mutation.enrollUser` parameters changed: `plainPassword` → `password`
+- `Mutation.setPassword` parameters changed: `newPlainPassword` → `newPassword`
+- `Mutation.logout` no longer accepts `token` parameter
+- `Mutation.addMultipleCartProducts` return type changed from `[OrderItem]!` to `Order!`
+- `Mutation.removeUser` new optional parameter `removeUserReviews: Boolean`
+- `Mutation.createProduct` new optional parameter `texts: [ProductTextInput!]`, `CreateProductInput.title` removed
+- `Mutation.createProductVariation` new optional parameter `texts: [ProductVariationTextInput!]`, `CreateProductVariationInput.title` removed
+- `Mutation.createProductVariationOption` parameter changed from `CreateProductVariationOptionInput!` to `option: String!`, new optional parameter `texts: [ProductVariationTextInput!]`
+- `Mutation.createAssortment` new optional parameter `texts: [AssortmentTextInput!]`, `CreateAssortmentInput.title` removed
+- `Mutation.createFilter` new optional parameter `texts: [FilterTextInput!]`, `CreateFilterInput.title` removed
+- `Mutation.createFilterOption` parameter changed from `CreateFilterOptionInput!` to `option: String!`, new optional parameter `texts: [FilterTextInput!]`
+- `Mutation.createWebAuthnCredentialCreationOptions` return type changed from `JSON!` to `JSON` (nullable)
+- `Mutation.createWebAuthnCredentialRequestOptions` return type changed from `JSON!` to `JSON` (nullable)
+- `CreateCountryInput.defaultCurrencyId` deprecated field removed (use `defaultCurrencyCode`)
+- Input types renamed: `UpdateProductTextInput` → `ProductTextInput`, `UpdateProductMediaTextInput` → `ProductMediaTextInput`, `UpdateProductVariationTextInput` → `ProductVariationTextInput`, `UpdateAssortmentTextInput` → `AssortmentTextInput`, `UpdateAssortmentMediaTextInput` → `AssortmentMediaTextInput`, `UpdateFilterTextInput` → `FilterTextInput`
+- All text input types: `locale` field type changed from `String!` to `Locale!`
+- New mutation: `Mutation.removeUserProductReviews(userId: ID!): Boolean!`
+- New query: `Query.tokensCount(queryString: String): Int!`
+- `Query.tokens` new optional parameter `queryString: String`
+- `@cacheControl` directive simplified, removed `inheritMaxAge` option
 
 ## Major
 - Drop support for Node.js <22.x
 - Drop Amazon Document DB compatibility mode because it's not needed anymore with 5.0
 - `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
 - Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
-- Auth: Remove logoutAllSessions and remove support for loging out a specific session
+- Auth: Remove logoutAllSessions and remove support for logging out a specific session
 - Auth: Introduce default password rules (min. 8 chars)
 - Auth: Drop 2FA support (if you need special authentication strategies, use a passport or fastify plugin)
 - Auth: Drop oAuth support (if you need special authentication strategies, use a passport or fastify plugin)
+- Auth: Password parameters renamed from `plainPassword`/`newPlainPassword`/`oldPlainPassword` to `password`/`newPassword`/`oldPassword` in all mutations
+- Core: Removed `@unchainedshop/types` package - types are now in their respective packages (e.g., `import { Order } from '@unchainedshop/core-orders'`)
 - Core: 99% of all Director's and Adapters have a new home in `@unchainedshop/core`, so for ex. `import { IPaymentAdapter } from '@unchainedshop/core-payment';` becomes `import { IPaymentAdapter } from '@unchainedshop/core';`
+- Core: Removed `core-messaging` package - messaging functionality simplified
 - Core: The order module function `initProviders` has been moved to order services renamed as `initCartProviders`
 - Core: The order module function `updateCalculation` has been moved to order services
 - Core: The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
-- Core: We have moved so many module functions to services that we stop here because of lazyness... 😁 Typescript can help you there haha.
+- Core: `modules.orders.pricingSheet`, `modules.orders.positions.pricingSheet`, `modules.orders.delivery.pricingSheet`, `modules.orders.payment.pricingSheet` removed - import PricingSheet functions from `@unchainedshop/core` directly
+- Core: `modules.accounts.*` functions moved to `modules.users.*` (findUserByEmail, setUsername, createUser, etc.)
+- Core: Many module functions moved to new services layer (`context.services`). See MIGRATION-V3.md for full list.
 - API: Add built-in Fastify support
 - API: Add built-in Yoga support (we are going to deprecate Apollo Server starting from 4.x)
-- API: `LoginMethodResponse` has a new breaking GraphQL type
+- API: `LoginMethodResponse` has a new breaking GraphQL type - `token` removed (use cookies/access-keys), `id` renamed to `_id`
+- API: Direct file uploads via GraphQL removed (`addProductMedia`, `addAssortmentMedia`, `updateUserAvatar`) - use PUT uploads instead
+- API: Create mutations now accept separate `texts` parameter instead of `title` in input object
+- API: `startPlatform` options: `accounts` renamed to `users`
+- Platform: Removed `withAccessToken()` context helper - access tokens handled internally
 - Platform: Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
+- Plugins: Plugin presets restructured - use `@unchainedshop/plugins/presets/all.js` for modules and `@unchainedshop/plugins/presets/all-express.js` or `all-fastify.js` for HTTP handlers
 
 
 ## Minor
