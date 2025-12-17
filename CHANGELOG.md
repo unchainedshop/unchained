@@ -15,12 +15,11 @@
 ## Minor
 - Small breaking change for `Mutation.createProduct` and BulkImport Product payloads: type is now an enum of uppercase types. This is needed so users understand how to pass the types. Admin UI changes needed.
 - Improve performance of facet filtering by 2x
-- MCP and AI server packages are now optional peer dependencies. This allows for a better opt-in experience with less dependencies in general.
 - Upgrade to Zod 4
 - Improve Admin UI for ticketing and add a new "Messages" tab to the Work Queue so it's easier to track messaging based work items
 - Support for MongoDB Node.js driver 7.0
 - Inline connect-mongo including copyright due to untrusted downstream dependencies
-- Add more loaders to improve product variation fetching 
+- Add more loaders to improve product variation fetching
 - Adds Node.js 25 support
 
 ## Patch
@@ -75,7 +74,6 @@
 
 ## Minor
 - Add warehousing provider loader and slightly improve performance when warehousing is involved (for ex. delivery estimations on many products)
-- ai and @ai-sdk/mcp are now optional so you don't need to add those heavy dependencies if you don't want to add a chat to your admin ui
 
 ## Patch
 - Fix a case where the expiry of the enrollment was calculated wrongly
@@ -129,7 +127,7 @@ connectChat(expressApp, {
 - Removed `CARD` type for payments. We never used it and it doesn't make sense to provide card data in plaintext. Removing `Mutation.updateOrderPaymentCard`.
 - Boolean filter types do not support an undefined or null state of values and whenever the key is set in a filter query and it's of type SWITCH (for ex. `[{ key: "meta.feeds.googleAds" }]` it will only show products that have a value of true. You can still do a "NOT" filtering by explicitly providing a value of false or 0: `[{ key: "meta.feeds.googleAds", value: "false" }]`
 - `Query.eventsCount` and `Query.events` now accept a DateFilterInput (start/end range) for the created date.
-- The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system. This affects GraphQL API parameters (e.g., `currency` → `currencyCode` in simulatedPrice, catalogPrice, etc.), the `Price` type (`Price.currency` → `Price.currencyCode`), pricing sheet interfaces, and plugin contexts. Please check MIGRATION-V4.md for the full list of affected fields.
+- The Locale Context has been refactored and all API's that had the old chaotic naming: What was once countryContext, currencyContext or localeContext is now countryCode, currencyCode, locale throughout the system. This affects GraphQL API parameters (e.g., `currency` → `currencyCode` in simulatedPrice, catalogPrice, etc.), the `Price` type (`Price.currency` → `Price.currencyCode`), pricing sheet interfaces, and plugin contexts. Please check MIGRATION.md for the full list of affected fields.
 - Platform: Use `transformRetry` instead of `retryInput` to adjust re-scheduling behavior in startPlatform `workQueueOptions`.
 - Platform: New `workQueueOptions` parameter `enabledQueueManagers` can be adjusted to customize the work queue managing plugins (#634).
 - Twilio SMS worker plugin renamed from `SMS` to `TWILIO`.
@@ -206,10 +204,10 @@ When we first started with the module approach, cross-module functions like the 
 We got rid of about 1'000 lines of code doing that and dramatically reduced complexity across the platform. `context.services` now houses all those methods and the core modules are cleanly separated mainly doing DB abstraction work.
 
 ## Bye bye Apollo Server
-We switched over from Apollo Server to GraphQL Yoga. It's just better in all ways possible. Okay, thanks, bye. Checkout the kitchensink or example projects to see how you can switch over or consult the [Migration Guide](./migration-v3.md).
+We switched over from Apollo Server to GraphQL Yoga. It's just better in all ways possible. Okay, thanks, bye. Checkout the kitchensink or example projects to see how you can switch over or consult the [Migration Guide](./MIGRATION.md).
 
 ## Better Typescript Support
-Removed `@unchainedshop/types`. All types needed are now coming directly from the corresponding packages which leads to clearer intents and types beeing more strict and in sync with the actual code. This has a massive impact on custom backend code. Please check the [Migration Guide](./migration-v3.md) for further instructions besides that.
+Removed `@unchainedshop/types`. All types needed are now coming directly from the corresponding packages which leads to clearer intents and types beeing more strict and in sync with the actual code. This has a massive impact on custom backend code. Please check the [Migration Guide](./MIGRATION.md) for further instructions besides that.
 
 ## Massive Performance Improvements & Experimental Fastify Support
 Queries involving catalog and products are now approximately **3 times faster** due to improved usage of caching, dataloader techniques and less db roundtrips in general.
@@ -239,46 +237,6 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - `Mutation.updateUserAvatar` removed, use PUT upload
 - `Mutation.addProductMedia` removed, use PUT upload
 - `Mutation.addAssortmentMedia` removed, use PUT upload
-- `Mutation.loginWithPassword` parameters changed
-- `Mutation.createUser` parameters changed
-- `Mutation.changePassword` parameters changed
-- `Mutation.resetPassword` parameters changed
-- `Mutation.logout` parameters changed
-- `Mutation.enrollUser` parameters changed
-- `Mutation.setPassword` parameters changed
-- `Mutation.addMultipleCartProducts` return type changed
-- `Mutation.createProduct` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
-- `Mutation.updateProductTexts` parameters changed
-- `Mutation.updateProductMediaTexts` parameters changed
-- `Mutation.createProductVariation` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
-- `Mutation.updateProductVariationTexts` parameters changed
-- `Mutation.createProductVariationOption` parameters changed
-- `Mutation.createAssortment` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
-- `Mutation.updateAssortmentTexts` parameters changed
-- `Mutation.updateAssortmentMediaTexts` parameters changed
-- `Mutation.createFilter` parameters changed, general document input parameter can't have any localization data like title, but you can provide that data now with a new second parameter texts
-- `Mutation.updateFilterTexts` parameters changed
-- `Mutation.createFilterOption` parameters changed
-- `Query.impersonator` removed
-- `Query.eventStatistics` parameters changed
-- `Query.orderStatistics` parameters changed
-- `Query.workStatistics` parameters changed
-- `AssortmentmediaTexts.locale` type changed to Locale from String
-- `AssortmentMedia.file` optional, required before
-- `AssortmentTexts.locale` type changed to Locale from String
-- `FilterTexts.locale` type changed to Locale from String
-- `Media.url` optional, required before
-- `Shop.oAuthProviders` removed
-- `User.isTwoFactorEnabled` removed
-- `User.oAuthAccounts` removed
-- `LoginMethodResponse.token` **removed, use server-side cookies or access-keys**
-- `LoginMethodResponse.id` **removed, uses _id now like all other entities**
-- `UserLoginTracker.locale` type changed to Locale from String
-- `UserLoginTracker.remotePort` type changed from String to Int
-- `ProductVariationTexts.locale` type changed to Locale from String
-- `ProductMediaTexts.locale` type changed to Locale from String
-- `ProductTexts.locale` type changed to Locale from String
-- `ProductMedia.file` optional, required before
 - `Mutation.loginWithPassword` parameters changed: `plainPassword` → `password`, `totpCode` removed, `password` is now required
 - `Mutation.createUser` parameters changed: `plainPassword` → `password`
 - `Mutation.changePassword` parameters changed: `oldPlainPassword` → `oldPassword`, `newPlainPassword` → `newPassword`
@@ -288,14 +246,37 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - `Mutation.logout` no longer accepts `token` parameter
 - `Mutation.addMultipleCartProducts` return type changed from `[OrderItem]!` to `Order!`
 - `Mutation.removeUser` new optional parameter `removeUserReviews: Boolean`
-- `Mutation.createProduct` new optional parameter `texts: [ProductTextInput!]`, `CreateProductInput.title` removed
-- `Mutation.createProductVariation` new optional parameter `texts: [ProductVariationTextInput!]`, `CreateProductVariationInput.title` removed
+- `Mutation.createProduct` parameters changed: new optional `texts: [ProductTextInput!]` parameter, `CreateProductInput.title` removed
+- `Mutation.updateProductTexts` parameters changed: uses `ProductTextInput` instead of `UpdateProductTextInput`
+- `Mutation.updateProductMediaTexts` parameters changed: uses `ProductMediaTextInput` instead of `UpdateProductMediaTextInput`
+- `Mutation.createProductVariation` parameters changed: new optional `texts: [ProductVariationTextInput!]` parameter, `CreateProductVariationInput.title` removed
+- `Mutation.updateProductVariationTexts` parameters changed: uses `ProductVariationTextInput` instead of `UpdateProductVariationTextInput`
 - `Mutation.createProductVariationOption` parameter changed from `CreateProductVariationOptionInput!` to `option: String!`, new optional parameter `texts: [ProductVariationTextInput!]`
-- `Mutation.createAssortment` new optional parameter `texts: [AssortmentTextInput!]`, `CreateAssortmentInput.title` removed
-- `Mutation.createFilter` new optional parameter `texts: [FilterTextInput!]`, `CreateFilterInput.title` removed
+- `Mutation.createAssortment` parameters changed: new optional `texts: [AssortmentTextInput!]` parameter, `CreateAssortmentInput.title` removed
+- `Mutation.updateAssortmentTexts` parameters changed: uses `AssortmentTextInput` instead of `UpdateAssortmentTextInput`
+- `Mutation.updateAssortmentMediaTexts` parameters changed: uses `AssortmentMediaTextInput` instead of `UpdateAssortmentMediaTextInput`
+- `Mutation.createFilter` parameters changed: new optional `texts: [FilterTextInput!]` parameter, `CreateFilterInput.title` removed
+- `Mutation.updateFilterTexts` parameters changed: uses `FilterTextInput` instead of `UpdateFilterTextInput`
 - `Mutation.createFilterOption` parameter changed from `CreateFilterOptionInput!` to `option: String!`, new optional parameter `texts: [FilterTextInput!]`
 - `Mutation.createWebAuthnCredentialCreationOptions` return type changed from `JSON!` to `JSON` (nullable)
 - `Mutation.createWebAuthnCredentialRequestOptions` return type changed from `JSON!` to `JSON` (nullable)
+- `Query.impersonator` description changed (returns impersonator of currently logged in user)
+- `LoginMethodResponse.token` **removed, use server-side cookies or access-keys**
+- `LoginMethodResponse.id` **removed, uses _id now like all other entities**
+- `Shop.oAuthProviders` removed
+- `User.isTwoFactorEnabled` removed
+- `User.oAuthAccounts` removed
+- `AssortmentMediaTexts.locale` type changed to Locale from String
+- `AssortmentMedia.file` optional, required before
+- `AssortmentTexts.locale` type changed to Locale from String
+- `FilterTexts.locale` type changed to Locale from String
+- `ProductVariationTexts.locale` type changed to Locale from String
+- `ProductMediaTexts.locale` type changed to Locale from String
+- `ProductTexts.locale` type changed to Locale from String
+- `UserLoginTracker.locale` type changed to Locale from String
+- `UserLoginTracker.remotePort` type changed from String to Int
+- `Media.url` optional, required before
+- `ProductMedia.file` optional, required before
 - `CreateCountryInput.defaultCurrencyId` deprecated field removed (use `defaultCurrencyCode`)
 - Input types renamed: `UpdateProductTextInput` → `ProductTextInput`, `UpdateProductMediaTextInput` → `ProductMediaTextInput`, `UpdateProductVariationTextInput` → `ProductVariationTextInput`, `UpdateAssortmentTextInput` → `AssortmentTextInput`, `UpdateAssortmentMediaTextInput` → `AssortmentMediaTextInput`, `UpdateFilterTextInput` → `FilterTextInput`
 - All text input types: `locale` field type changed from `String!` to `Locale!`
@@ -307,13 +288,10 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 ## Major
 - Drop support for Node.js <22.x
 - Drop Amazon Document DB compatibility mode because it's not needed anymore with 5.0
-- `from` & `to` to `dateRange` of type `DateFilterInput` for consistency.
 - Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
-- Auth: Remove logoutAllSessions and remove support for logging out a specific session
 - Auth: Introduce default password rules (min. 8 chars)
 - Auth: Drop 2FA support (if you need special authentication strategies, use a passport or fastify plugin)
 - Auth: Drop oAuth support (if you need special authentication strategies, use a passport or fastify plugin)
-- Auth: Password parameters renamed from `plainPassword`/`newPlainPassword`/`oldPlainPassword` to `password`/`newPassword`/`oldPassword` in all mutations
 - Core: Removed `@unchainedshop/types` package - types are now in their respective packages (e.g., `import { Order } from '@unchainedshop/core-orders'`)
 - Core: 99% of all Director's and Adapters have a new home in `@unchainedshop/core`, so for ex. `import { IPaymentAdapter } from '@unchainedshop/core-payment';` becomes `import { IPaymentAdapter } from '@unchainedshop/core';`
 - Core: Removed `core-messaging` package - messaging functionality simplified
@@ -322,12 +300,9 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - Core: The order module function `invalidateProviders` has been removed, the caller now uses the new `findCartsToInvalidate` to get the list of carts and then calls the new updateCalculation service
 - Core: `modules.orders.pricingSheet`, `modules.orders.positions.pricingSheet`, `modules.orders.delivery.pricingSheet`, `modules.orders.payment.pricingSheet` removed - import PricingSheet functions from `@unchainedshop/core` directly
 - Core: `modules.accounts.*` functions moved to `modules.users.*` (findUserByEmail, setUsername, createUser, etc.)
-- Core: Many module functions moved to new services layer (`context.services`). See MIGRATION-V3.md for full list.
+- Core: Many module functions moved to new services layer (`context.services`). See MIGRATION.md for full list.
 - API: Add built-in Fastify support
 - API: Add built-in Yoga support (we are going to deprecate Apollo Server starting from 4.x)
-- API: `LoginMethodResponse` has a new breaking GraphQL type - `token` removed (use cookies/access-keys), `id` renamed to `_id`
-- API: Direct file uploads via GraphQL removed (`addProductMedia`, `addAssortmentMedia`, `updateUserAvatar`) - use PUT uploads instead
-- API: Create mutations now accept separate `texts` parameter instead of `title` in input object
 - API: `startPlatform` options: `accounts` renamed to `users`
 - Platform: Removed `withAccessToken()` context helper - access tokens handled internally
 - Platform: Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
@@ -336,9 +311,7 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 
 ## Minor
 - Improved cookie handling
-- API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
-- API: Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from previous 
-- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin` 
+- API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin`
 - Plugins: Add AWS Event Bridge Plugin for Serverless Mode
 - Update Stripe
 
@@ -347,6 +320,7 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 
 ## Minor
 - API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
+- API: Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from `from`/`to` to `dateRange` of type `DateFilterInput`
 - API: `Product.simulatedPrice` now accepts an optional configuration so you can also provide arbitrary configs to simulate prices
 - API: New Queries have been added to gather basic statistical data: `Query.eventStatistics`, `Query.orderStatistics`, `Query.workStatistics`.
 - API: Add `Mutation.invalidateToken` to manually mark a token as invalidated

@@ -5,17 +5,13 @@ sidebar_label: Migrations
 description: Upgrading between major versions of Unchained Engine
 ---
 
-# Migration Guides
+# Migration Guide
 
-When upgrading between major versions of Unchained Engine, consult the appropriate migration guide for breaking changes and upgrade instructions.
+All migration instructions are consolidated in a single file:
 
-## Available Guides
+**[MIGRATION.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION.md)**
 
-| Version | Guide |
-|---------|-------|
-| **v3 → v4** | [MIGRATION-V4.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION-V4.md) |
-| **v2 → v3** | [MIGRATION-V3.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION-V3.md) |
-| **v1 → v2** | [MIGRATION-V2.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION-V2.md) |
+Covers: v2 → v3 and v3 → v4
 
 ## General Upgrade Process
 
@@ -27,8 +23,6 @@ When upgrading between major versions of Unchained Engine, consult the appropria
 
 ## Getting Help
 
-If you encounter issues during migration:
-
-- Check [GitHub Discussions](https://github.com/unchainedshop/unchained/discussions)
-- Review [GitHub Issues](https://github.com/unchainedshop/unchained/issues)
-- Contact [support@unchained.shop](mailto:support@unchained.shop) for enterprise support
+- [GitHub Discussions](https://github.com/unchainedshop/unchained/discussions)
+- [GitHub Issues](https://github.com/unchainedshop/unchained/issues)
+- [support@unchained.shop](mailto:support@unchained.shop) for enterprise support

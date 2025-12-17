@@ -206,11 +206,9 @@ unchained/
 └── tests/              # Integration tests
 ```
 
-## Migration Guides
+## Migration Guide
 
-- [Migration to v4](MIGRATION-V4.md)
-- [Migration to v3](MIGRATION-V3.md)
-- [Migration to v2](MIGRATION-V2.md)
+See [MIGRATION.md](MIGRATION.md) for upgrade instructions between major versions.
 
 ## Resources
 

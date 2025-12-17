@@ -64,7 +64,7 @@ No. Unchained is designed around MongoDB's document model. The flexible schema i
 # Update all packages
 npm update @unchainedshop/platform
 
-# Check for breaking changes in MIGRATION-V*.md files
+# Check for breaking changes in MIGRATION.md
 ```
 
 ## Development
