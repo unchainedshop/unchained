@@ -76,15 +76,13 @@ export const buildVariationOptionsHeaders = (locales) => [
   ),
 ];
 export const useProductExport = () => {
-  const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
   const { exportCSV: exportProductsCSV, isExporting } = useCSVExport((p) => p);
   const exportProducts = useCallback(async (data) => {
-    setIsLoadingTranslations(true);
     exportProductsCSV({ type: 'PRODUCTS', ...data });
   }, []);
 
   return {
     exportProducts,
-    isLoading: isLoadingTranslations || isExporting,
+    isLoading: isExporting,
   };
 };
