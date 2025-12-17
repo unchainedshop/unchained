@@ -29,6 +29,32 @@ Update custom pricing plugins:
 + ProductPricingSheet({ calculation, currencyCode, quantity })
 ```
 
+### Locale Context
+
+When creating locale objects for API calls:
+```diff
+- locale: "de"
++ locale: new Intl.Locale("de")
+```
+
+### TokenSurrogate Property Rename
+
+```diff
+- token.chainTokenId
++ token.tokenSerialNumber
+```
+
+### ProductType Enum Naming Convention
+
+All enum values now use SCREAMING_SNAKE_CASE:
+```diff
+- ProductType.TokenizedProduct
++ ProductType.TOKENIZED_PRODUCT
+
+- type: "simple" / "configurable" / "bundle" / "plan"
++ type: "SIMPLE" / "CONFIGURABLE" / "BUNDLE" / "PLAN"
+```
+
 ### Bulk Import
 
 ```diff
@@ -37,11 +63,14 @@ Update custom pricing plugins:
 + const handler: BulkImportOperation<unknown> = async (
 ```
 
-### Product Types
+### Login Function on Context
 
-```diff
-- type: "simple" / "configurable" / "bundle" / "plan"
-+ type: "SIMPLE" / "CONFIGURABLE" / "BUNDLE" / "PLAN"
+```typescript
+// v4: login() is now available directly on context
+export default async function loginResolver(_, args, context: Context) {
+  const user = await context.modules.users.findUserByEmail(args.email);
+  return context.login(user);
+}
 ```
 
 ### Mutations
@@ -97,22 +126,48 @@ npm install @graphql-yoga/plugin-response-cache graphql-yoga cookie
 npm uninstall @apollo/server-plugin-response-cache @apollo/server apollo-graphiql-playground
 ```
 
-### Boot File Changes
+### Peer Dependencies
+
+Some packages are now peer dependencies that must be installed manually:
+
+```bash
+# Core peer dependencies
+npm install multer passport
+
+# For ticketing/crypto functionality
+npm install @scure/bip32 @scure/btc-signer
+```
+
+### Boot File Changes (Express)
 
 ```diff
 - import { startPlatform, withAccessToken, connectPlatformToExpress4 } from '@unchainedshop/platform';
 - import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
-+ import { startPlatform, setAccessToken } from '@unchainedshop/platform';
-+ import { connect } from '@unchainedshop/api/lib/express/index.js';
++ import { startPlatform } from '@unchainedshop/platform';
++ import { connect } from '@unchainedshop/api/express';
 + import defaultModules from '@unchainedshop/plugins/presets/all.js';
 + import connectDefaultPluginsToExpress from '@unchainedshop/plugins/presets/all-express.js';
 
 - const engine = await startPlatform({ ..., context: withAccessToken() });
 - await engine.apolloGraphQLServer.start();
 - connectPlatformToExpress4(app, engine, { corsOrigins: [] });
-+ const engine = await startPlatform({ options: { users: { ... } } });
-+ connect(app, engine);
-+ connectDefaultPluginsToExpress(app, engine);
++ const engine = await startPlatform({ modules: defaultModules });
++ connect(app, engine, { initPluginMiddlewares: connectDefaultPluginsToExpress });
+```
+
+### Boot File Changes (Fastify)
+
+```typescript
+import Fastify from 'fastify';
+import { startPlatform } from '@unchainedshop/platform';
+import { connect } from '@unchainedshop/api/fastify';
+import defaultModules from '@unchainedshop/plugins/presets/all.js';
+import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
+
+const fastify = Fastify();
+
+const platform = await startPlatform({ modules: defaultModules });
+connect(fastify, platform, { initPluginMiddlewares });
 ```
 
 ### Options Rename
@@ -120,13 +175,152 @@ npm uninstall @apollo/server-plugin-response-cache @apollo/server apollo-graphiq
 ```diff
 - options: { accounts: { ... } }
 + options: { users: { ... } }
+
+// Password validation example:
+- startPlatform({ accounts: { password: { validateUsername: () => true } } });
++ startPlatform({ options: { users: { validateUsername: async () => true } } });
 ```
 
 ### Types Package Removed
 
+The `@unchainedshop/types` package has been removed. Import types from their respective packages:
+
+| Old Import | New Import |
+|------------|------------|
+| `@unchainedshop/types/api.js` → `Context` | `@unchainedshop/api` |
+| `@unchainedshop/types/common.js` → `ModuleInput` | `@unchainedshop/mongodb` |
+| `@unchainedshop/types/common.js` → `TimestampFields` | `@unchainedshop/mongodb` |
+| `@unchainedshop/types/user.js` → `User` | `@unchainedshop/core-users` |
+| `@unchainedshop/types/orders.js` → `Order`, `OrderPosition` | `@unchainedshop/core-orders` |
+| `@unchainedshop/types/products.js` → `Product` | `@unchainedshop/core-products` |
+| `@unchainedshop/types/files.js` → `File` | `@unchainedshop/core-files` |
+| `@unchainedshop/types/worker.js` → `IWorkerAdapter` | `@unchainedshop/core` |
+| `@unchainedshop/types/pricing.js` → pricing types | `@unchainedshop/core` |
+| `@unchainedshop/types/filters.js` → `IFilterAdapter`, `FilterContext` | `@unchainedshop/core` |
+| `@unchainedshop/types/warehousing.js` → `TokenSurrogate` | `@unchainedshop/core-warehousing` |
+| `@unchainedshop/types/events.js` → `OrderStatus` | `@unchainedshop/core-orders` |
+
+**Note:** The `Root` type is no longer exported. Use `unknown` instead in resolver signatures.
+
+### Directors/Adapters Consolidation
+
+All directors and adapters have been moved to `@unchainedshop/core`:
+
 ```diff
-- import { Order } from '@unchainedshop/types';
-+ import { Order } from '@unchainedshop/core-orders';
+- import { WorkerDirector } from "@unchainedshop/core-worker";
+- import { FilterDirector } from "@unchainedshop/core-filters";
+- import { WarehousingDirector } from "@unchainedshop/core-warehousing";
++ import {
++   WorkerDirector,
++   FilterDirector,
++   WarehousingDirector,
++   WarehousingAdapter,
++   IWarehousingAdapter,
++   WarehousingContext,
++   IWorkerAdapter,
++   IFilterAdapter,
++   FilterContext,
++   TemplateResolver,
++   OrderPricingSheet,
++   OrderPricingRowCategory,
++   ProductPricingSheet,
++ } from "@unchainedshop/core";
+```
+
+### ACL and Roles Export Changes
+
+```diff
+- import { checkAction } from "@unchainedshop/api";
+- import { actions } from "@unchainedshop/roles";
++ import { acl, roles } from "@unchainedshop/api";
+// Usage: acl.checkAction(), roles.actions
+```
+
+### Context API Changes
+
+The `req` object has been removed from context. Use the new `getHeader` method:
+
+```diff
+- export default async function myResolver(_, args, context: Context) {
+-   const headerValue = context.req.headers["x-custom-header"];
+- }
++ export default async function myResolver(_, args, context: Context) {
++   const headerValue = context.getHeader("x-custom-header");
++ }
+```
+
+### Accounts Module Merged into Users
+
+```diff
+- const user = await modules.accounts.findUserByEmail(email);
+- const hash = hashPassword(password); // from @unchainedshop/api
++ const user = await modules.users.findUserByEmail(email);
++ const hash = await modules.users.hashPassword(password);
+```
+
+### File URL Method Change
+
+```diff
+- const url = modules.files.getUrl(file, params);
++ const url = file?.url && modules.files.normalizeUrl(file.url, params);
+```
+
+### Messaging Changes
+
+`modules.messaging.renderToText` has been removed. Use a template library directly:
+
+```diff
+- const text = await modules.messaging.renderToText(template, data);
++ // Install mustache: npm install mustache @types/mustache
++ import Mustache from "mustache";
++ const text = Mustache.render(template, data);
+```
+
+### Pricing Sheet API Changes
+
+```diff
+- const pricing = modules.orders.pricingSheet(order);
+- const positionPricing = modules.orders.positions.pricingSheet(orderPosition);
++ import { OrderPricingSheet, ProductPricingSheet } from "@unchainedshop/core";
++
++ const pricing = OrderPricingSheet({
++   calculation: order.calculation,
++   currencyCode: order.currencyCode,
++ });
++
++ const positionPricing = ProductPricingSheet({
++   calculation: orderPosition.calculation,
++   currencyCode: order.currencyCode,
++   quantity: orderPosition.quantity,
++ });
+```
+
+**Note:** `OrderPositionPricingSheet` has been renamed to `ProductPricingSheet`.
+
+### Ticketing Package Changes
+
+```diff
+- import setupTicketing from "@unchainedshop/ticketing";
+- setupTicketing(app, engine.unchainedAPI, { renderOrderPDF, createAppleWalletPass });
++ import setupTicketing, { TicketingAPI, ticketingModules } from "@unchainedshop/ticketing";
++ import connectTicketingToFastify from "@unchainedshop/ticketing/lib/fastify.js";
++ // or for Express:
++ // import connectTicketingToExpress from "@unchainedshop/ticketing/lib/express.js";
++ import ticketingServices from "@unchainedshop/ticketing/lib/services.js";
++
++ const platform = await startPlatform({
++   modules: { ...baseModules, ...ticketingModules },
++   services: { ...ticketingServices },
++ });
++
++ setupTicketing(platform.unchainedAPI as TicketingAPI, {
++   renderOrderPDF,
++   createAppleWalletPass,
++   createGoogleWalletPass,
++ });
++
++ // Connect in your middleware setup
++ connectTicketingToFastify(app);
 ```
 
 ### Authentication Mutations Removed
@@ -179,7 +373,8 @@ Same pattern for: `createProductVariation`, `createProductVariationOption`, `cre
 + services.orders.checkoutOrder(order)
 
 - modules.orders.pricingSheet(order)
-+ import { OrderPricingSheet } from '@unchainedshop/core'; OrderPricingSheet(order)
++ import { OrderPricingSheet } from '@unchainedshop/core';
++ OrderPricingSheet({ calculation: order.calculation, currencyCode: order.currencyCode })
 
 - modules.accounts.findUserByEmail / setUsername / createUser
 + modules.users.findUserByEmail / setUsername / createUser
@@ -201,3 +396,20 @@ Same pattern for: `createProductVariation`, `createProductVariationOption`, `cre
 - Cart totals return `null` when cart is empty
 - Custom login: use `context.login(user)` instead of `registerLoginHandlers`
 - Account events: `USER_UPDATE_PASSWORD`, `USER_ACCOUNT_ACTION`
+
+---
+
+## Common Errors & Solutions
+
+| Error | Solution |
+|-------|----------|
+| `Cannot find module '@unchainedshop/types/*'` | Types moved to respective packages (see table above) |
+| `Property 'req' does not exist on type 'Context'` | Use `context.getHeader()` instead |
+| `Module has no exported member 'checkAction'` | Use `acl.checkAction()` from namespace import |
+| `Property 'accounts' does not exist` | Use `modules.users` instead |
+| `Cannot find module '@unchainedshop/core-worker'` | Import directors from `@unchainedshop/core` |
+| `Cannot find module 'multer'` or `'passport'` | Install peer dependencies: `npm install multer passport` |
+| `Property 'pricingSheet' does not exist on modules.orders` | Import `OrderPricingSheet` from `@unchainedshop/core` |
+| `hashPassword is not a function` | Use `modules.users.hashPassword()` |
+| `Property 'currency' does not exist` (v4) | Renamed to `currencyCode` |
+| `ProductType.TokenizedProduct is undefined` (v4) | Use `ProductType.TOKENIZED_PRODUCT` |
