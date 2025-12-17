@@ -11,7 +11,7 @@ export const PRODUCT_CSV_SCHEMA = {
     'tags',
     'updated',
     'published',
-    '__typename',
+    'type',
   ],
   textFields: [
     'title',
