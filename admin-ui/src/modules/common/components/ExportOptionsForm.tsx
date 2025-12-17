@@ -15,6 +15,7 @@ export default function ExportOptionsForm({
   options,
   onSubmit,
   loading = false,
+  successMessage = '',
 }) {
   const { formatMessage } = useIntl();
   const initialValues = useMemo(
@@ -27,11 +28,17 @@ export default function ExportOptionsForm({
   );
 
   const handleSubmit = async (values) => {
-    const data = await onSubmit(values);
-    return { success: true, data };
+    await onSubmit(values);
+    return { success: true };
   };
 
   const form = useForm({
+    successMessage:
+      successMessage ??
+      formatMessage({
+        id: 'export_completed',
+        defaultMessage: 'Data exported successfully',
+      }),
     submit: handleSubmit,
     enableReinitialize: true,
     initialValues,
