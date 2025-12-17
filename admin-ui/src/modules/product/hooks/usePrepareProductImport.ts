@@ -46,7 +46,7 @@ export const productMapper = (row: ProductCSVRow): ProductCSVRow => {
         ? parseInt(row['sequence'] || '0', 10)
         : row['sequence'] || 0,
     status: row['status'] || null,
-    type: row['__typename'],
+    type: row['type'],
     tags: row['tags'] ? (row['tags'] as string).split(';') : [],
     updated: row['updated'] || undefined,
     published: row['published'] || undefined,
