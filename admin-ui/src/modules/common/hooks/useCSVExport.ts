@@ -5,57 +5,37 @@ import {
   downloadCSV,
   RowExtractor,
 } from '../utils/csvUtils';
+import useAddWork from '../../work/hooks/useAddWork';
+import { IWorkType } from '../../../gql/types';
 
 interface UseCSVExportOptions<T> {
   headers?: string[];
   onError?: (error: unknown) => void;
 }
 
-export function useCSVExport<T>(
-  data: T[],
-  extractRow: RowExtractor<T>,
-  options?: UseCSVExportOptions<T>,
-) {
-  const { headers: explicitHeaders, onError } = options || {};
+export function useCSVExport<T>(onError) {
   const [isExporting, setIsExporting] = useState(false);
-
+  const { addWork } = useAddWork();
   const exportCSV = useCallback(
-    (filenamePrefix = 'export', overrideData) => {
-      const normalizedData = overrideData || data || [];
-      if (!normalizedData?.length) return;
-
+    async ({ type, ...params }) => {
       setIsExporting(true);
-
       try {
-        const rows: CSVRow[] =
-          overrideData === undefined
-            ? normalizedData.map(extractRow)
-            : normalizedData;
-
-        const headers: string[] =
-          explicitHeaders ??
-          (() => {
-            const keySet = rows.reduce<Set<string>>((acc, row) => {
-              Object.keys(row).forEach((key) => acc.add(key));
-              return acc;
-            }, new Set<string>());
-            return Array.from(keySet);
-          })();
-
-        const csvContent = convertObjectsToCSV(headers, rows);
-
-        const timestamp = new Date().toISOString().split('T')[0];
-        const filename = `${filenamePrefix}_${timestamp}.csv`;
-
-        downloadCSV(csvContent, filename);
+        const worker = await addWork({
+          type: IWorkType.BulkExport,
+          input: {
+            ...params,
+          },
+        });
+        return worker?.data?.addWork?._id;
       } catch (error) {
         console.error('Export failed:', error);
         if (onError) onError(error);
+        return null;
       } finally {
         setIsExporting(false);
       }
     },
-    [data, extractRow, explicitHeaders, onError],
+    [onError],
   );
 
   return { isExporting, exportCSV };
