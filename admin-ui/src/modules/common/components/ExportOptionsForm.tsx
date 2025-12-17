@@ -34,7 +34,7 @@ export default function ExportOptionsForm({
 
   const form = useForm({
     successMessage:
-      successMessage ??
+      successMessage ||
       formatMessage({
         id: 'export_completed',
         defaultMessage: 'Data exported successfully',

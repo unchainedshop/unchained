@@ -11,7 +11,7 @@ export interface ProductExportParams {
 }
 
 const PRODUCT_CSV_SCHEMA = {
-  base: ['_id', 'sku', 'baseUnit', 'sequence', 'status', 'tags', 'updated', 'published', '__typename'],
+  base: ['_id', 'sku', 'baseUnit', 'sequence', 'status', 'tags', 'updated', 'published', 'type'],
   textFields: ['title', 'subtitle', 'description', 'vendor', 'brand', 'labels', 'slug'],
   priceFields: [
     'productId',
@@ -85,7 +85,7 @@ const buildPriceRows = (productId: string, prices = []) =>
 const buildBundleRows = (productId: string, bundles = []) =>
   bundles.map((b: any) => ({
     productId,
-    bundleItemProductId: b.product?._id,
+    bundleItemProductId: b.productId,
     quantity: b.quantity ?? 1,
     configuration: (b.configuration || []).map((c: any) => Object.values(c).join(':')).join(';'),
   }));
@@ -163,9 +163,9 @@ const exportProductsHandler = async (
           variations.map(async (v: any) => {
             const variationTexts = exportVariations
               ? await unchainedAPI.modules.products.variations.texts.findVariationTexts({
-                  productVariationId: v._id,
-                  productVariationOptionValue: null,
-                })
+                productVariationId: v._id,
+                productVariationOptionValue: null,
+              })
               : [];
 
             let options: any[] = [];
@@ -234,48 +234,48 @@ const exportProductsHandler = async (
   const [productsCSV, pricesCSV, bundlesCSV, variationsCSV, variationOptionsCSV] = await Promise.all([
     exportProducts
       ? generateCSVFileAndURL({
-          headers: buildProductHeaders(locales),
-          rows: productRows,
-          directoryName: 'exports',
-          fileName: 'products_export.csv',
-          unchainedAPI,
-        })
+        headers: buildProductHeaders(locales),
+        rows: productRows,
+        directoryName: 'exports',
+        fileName: 'products_export.csv',
+        unchainedAPI,
+      })
       : null,
     exportPrices
       ? generateCSVFileAndURL({
-          headers: buildPriceHeaders(),
-          rows: priceRows,
-          directoryName: 'exports',
-          fileName: 'products_prices_export.csv',
-          unchainedAPI,
-        })
+        headers: buildPriceHeaders(),
+        rows: priceRows,
+        directoryName: 'exports',
+        fileName: 'products_prices_export.csv',
+        unchainedAPI,
+      })
       : null,
     exportBundleItems
       ? generateCSVFileAndURL({
-          headers: buildBundleHeaders(),
-          rows: bundleRows,
-          directoryName: 'exports',
-          fileName: 'products_bundle_items_export.csv',
-          unchainedAPI,
-        })
+        headers: buildBundleHeaders(),
+        rows: bundleRows,
+        directoryName: 'exports',
+        fileName: 'products_bundle_items_export.csv',
+        unchainedAPI,
+      })
       : null,
     exportVariations
       ? generateCSVFileAndURL({
-          headers: buildVariationHeaders(locales),
-          rows: variationRows,
-          directoryName: 'exports',
-          fileName: 'products_variations_export.csv',
-          unchainedAPI,
-        })
+        headers: buildVariationHeaders(locales),
+        rows: variationRows,
+        directoryName: 'exports',
+        fileName: 'products_variations_export.csv',
+        unchainedAPI,
+      })
       : null,
     exportVariationOptions
       ? generateCSVFileAndURL({
-          headers: buildVariationOptionsHeaders(locales),
-          rows: variationOptionRows,
-          directoryName: 'exports',
-          fileName: 'products_variation_option_export.csv',
-          unchainedAPI,
-        })
+        headers: buildVariationOptionsHeaders(locales),
+        rows: variationOptionRows,
+        directoryName: 'exports',
+        fileName: 'products_variation_option_export.csv',
+        unchainedAPI,
+      })
       : null,
   ]);
 
