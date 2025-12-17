@@ -7,13 +7,13 @@ description: Guides upgrading Unchained Engine to a new major version. Use when 
 
 ## Instructions
 
-1. Get available versions with `npm view @unchainedshop/platform versions --json`
-2. Show the user which versions they can upgrade to
-3. Once a target version is selected (e.g., `4.5.0`), fetch these resources:
+1. Enter planning mode to create an upgrade plan
+2. Get available versions with `npm view @unchainedshop/platform versions --json`
+3. Show the user which versions they can upgrade to
+4. Once a target version is selected (e.g., `4.5.0`), fetch these resources:
    - Migration guide: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/MIGRATION.md`
    - Changelog: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/CHANGELOG.md`
    - README: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/heads/master/README.md`
-4. Enter planning mode to create an upgrade plan
 5. Execute the upgrade by:
    - Updating npm dependencies
    - Removing deprecated dependencies

@@ -9,6 +9,44 @@
 ### Environment Variables
 
 - Add `UNCHAINED_DOCUMENTDB_COMPAT_MODE` for FerretDB/AWS/Azure DocumentDB compatibility
+- **Breaking:** `UNCHAINED_TOKEN_SECRET` now requires a minimum of 32 characters. Update your secret if it was shorter in previous versions
+
+### Peer Dependencies
+
+When using the Express adapter (`@unchainedshop/api/express`), ensure you have the correct peer dependency versions:
+
+```bash
+npm install multer@">=2 <3" passport@">=0.7 <1" passport-strategy
+```
+
+For ticketing/crypto functionality:
+
+```bash
+npm install @scure/bip32@">=2" @scure/btc-signer@">=2"
+```
+
+### Custom Migrations
+
+Migration IDs must now be between `19700000000000` and `99999999999999` (14 digits max). If you have existing migrations with 15-digit IDs (e.g., `202409302329000`), you'll need to update them.
+
+**Recommended format:** `YYYYMMDDHHmmss` (e.g., `20240930232900`)
+
+### MongoDB Driver Changes
+
+The MongoDB driver now throws errors instead of returning error objects for certain operations:
+
+```diff
+// Collection.dropIndex() now throws when index doesn't exist
+- const result = collection.dropIndex('my_index');
+- if (result.errmsg) { /* handle error */ }
++ try {
++   await collection.dropIndex('my_index');
++ } catch (error) {
++   // Handle missing index error
++ }
+```
+
+**Note:** Ensure you `await` async operations to properly catch errors.
 
 ### Currency & Country Renames
 
@@ -71,6 +109,16 @@ export default async function loginResolver(_, args, context: Context) {
   const user = await context.modules.users.findUserByEmail(args.email);
   return context.login(user);
 }
+```
+
+### User Creation
+
+`modules.users.createUser` now accepts a plain password instead of a pre-hashed password:
+
+```diff
+- const hashedPassword = await modules.users.hashPassword(plainPassword);
+- const user = await modules.users.createUser({ email, password: hashedPassword });
++ const user = await modules.users.createUser({ email, password: plainPassword });
 ```
 
 ### Mutations
@@ -165,8 +213,8 @@ npm uninstall @apollo/server-plugin-response-cache @apollo/server apollo-graphiq
 Some packages are now peer dependencies that must be installed manually:
 
 ```bash
-# Core peer dependencies
-npm install multer passport
+# Required when using Express adapter (@unchainedshop/api/express)
+npm install multer passport passport-strategy
 
 # For ticketing/crypto functionality
 npm install @scure/bip32 @scure/btc-signer
@@ -446,11 +494,15 @@ Same pattern for: `createProductVariation`, `createProductVariationOption`, `cre
 | `Module has no exported member 'checkAction'` | Use `acl.checkAction()` from namespace import |
 | `Property 'accounts' does not exist` | Use `modules.users` instead |
 | `Cannot find module '@unchainedshop/core-worker'` | Import directors from `@unchainedshop/core` |
-| `Cannot find module 'multer'` or `'passport'` | Install peer dependencies: `npm install multer passport` |
+| `Cannot find module 'multer'` or `'passport'` | Install peer dependencies: `npm install multer@">=2 <3" passport@">=0.7 <1"` |
 | `Property 'pricingSheet' does not exist on modules.orders` | Import `OrderPricingSheet` from `@unchainedshop/core` |
 | `hashPassword is not a function` | Use `modules.users.hashPassword()` |
 | `Property 'currency' does not exist` (v4) | Renamed to `currencyCode` |
 | `ProductType.TokenizedProduct is undefined` (v4) | Use `ProductType.TOKENIZED_PRODUCT` |
+| `PASSWORD_INVALID` when using `createUser` (v4) | Pass plaintext password, not pre-hashed. The module hashes internally now |
+| `UNCHAINED_TOKEN_SECRET` validation error (v4) | Secret must be at least 32 characters |
+| Migration ID validation error (v4) | Use 14-digit IDs max (format: `YYYYMMDDHHmmss`) |
+| `dropIndex` not catching errors | Use `await` and try/catch - MongoDB driver now throws instead of returning error objects |
 
 ---
 

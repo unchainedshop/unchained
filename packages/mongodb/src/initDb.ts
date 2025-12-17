@@ -42,8 +42,16 @@ export const startDb = async (options?: { forceInMemory?: boolean }) => {
     if (mongoInstance) {
       return `${mongoInstance.getUri()}${useInMemory ? 'test' : 'unchained'}`;
     }
-  } catch {
-    /* */
+  } catch (e: unknown) {
+    const error = e as Error;
+    if (error.message?.includes('code "62"')) {
+      throw new Error(
+        `MongoDB database files in .db are incompatible with the current MongoDB version. ` +
+          `This usually happens after a MongoDB upgrade. ` +
+          `To fix this, remove the .db directory: rm -rf ${process.cwd()}/.db`,
+      );
+    }
+    throw error;
   }
 
   throw new Error(
