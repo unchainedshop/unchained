@@ -111,6 +111,40 @@ New filters: `Query.orders` accepts `paymentProviderIds`, `deliveryProviderIds`,
 - Payment plugins: `paymentProviderId` removed from adapter context
 - MCP/AI packages now optional peer dependencies
 
+### Plugin Middlewares
+
+Plugin middlewares must now be wrapped in `initPluginMiddlewares`. When combining multiple plugin sets (e.g., base plugins with ticketing), wrap them together:
+
+```diff
+- connectBasePluginsToFastify(app);
+- connectTicketingToFastify(app);
++ connect(fastify, platform, {
++   initPluginMiddlewares: (app) => {
++     connectBasePluginsToFastify(app);
++     connectTicketingToFastify(app);
++   }
++ });
+```
+
+See working example: [ticketing/boot.ts](https://github.com/unchainedshop/unchained/blob/e513c5835da37a01bbd576adcd205a643e841165/examples/ticketing/boot.ts)
+
+### Admin UI
+
+The Admin UI is now packaged and served automatically when installed. Simply install the package and enable it:
+
+```bash
+npm install @unchainedshop/admin-ui
+```
+
+```typescript
+connect(fastify, platform, {
+  adminUI: true,
+  // ... other options
+});
+```
+
+See working example: [kitchensink/src/boot.ts](https://github.com/unchainedshop/unchained/blob/e513c5835da37a01bbd576adcd205a643e841165/examples/kitchensink/src/boot.ts)
+
 ---
 
 ## v2 → v3
@@ -154,6 +188,8 @@ npm install @scure/bip32 @scure/btc-signer
 + const engine = await startPlatform({ modules: defaultModules });
 + connect(app, engine, { initPluginMiddlewares: connectDefaultPluginsToExpress });
 ```
+
+See working example: [kitchensink/src/boot.ts](https://github.com/unchainedshop/unchained/blob/e513c5835da37a01bbd576adcd205a643e841165/examples/kitchensink/src/boot.ts)
 
 ### Boot File Changes (Fastify)
 
@@ -322,6 +358,8 @@ The `req` object has been removed from context. Use the new `getHeader` method:
 + // Connect in your middleware setup
 + connectTicketingToFastify(app);
 ```
+
+See working example: [ticketing/boot.ts](https://github.com/unchainedshop/unchained/blob/e513c5835da37a01bbd576adcd205a643e841165/examples/ticketing/boot.ts)
 
 ### Authentication Mutations Removed
 
