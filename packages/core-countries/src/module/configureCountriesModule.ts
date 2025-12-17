@@ -9,6 +9,7 @@ import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unc
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.ts';
+import convertDefaultCurrencyCode from '../migrations/20241220123500-default-currency-code.ts';
 
 export type Country = {
   _id: string;
@@ -42,7 +43,13 @@ export const buildFindSelector = ({
   return selector;
 };
 
-export const configureCountriesModule = async ({ db }: ModuleInput<Record<string, never>>) => {
+export const configureCountriesModule = async ({
+  db,
+  migrationRepository,
+}: ModuleInput<Record<string, never>>) => {
+  // Migration v3 -> v4
+  convertDefaultCurrencyCode(migrationRepository);
+
   registerEvents(COUNTRY_EVENTS);
 
   const Countries = await CountriesCollection(db);

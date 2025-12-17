@@ -29,6 +29,7 @@ import {
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts';
 import * as pbkdf2 from './pbkdf2.ts';
 import { verifyWeb3Signature } from '../utils/web3-verification.ts';
+import convertUserLocale from '../migrations/20241218092300-convert-locale.ts';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -105,7 +106,11 @@ export const buildFindSelector = ({
 };
 
 export const configureUsersModule = async (moduleInput: ModuleInput<UserSettingsOptions>) => {
-  const { db, options } = moduleInput;
+  const { db, options, migrationRepository } = moduleInput;
+
+  // Migration v3 -> v4
+  convertUserLocale(migrationRepository);
+
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
