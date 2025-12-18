@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import Button from '../../common/components/Button';
 import { useIntl } from 'react-intl';
 import { useProductExport } from '../hooks/useProductExport';
@@ -6,7 +6,7 @@ import useProductsCount from '../hooks/useProductsCount';
 import useModal from '../../modal/hooks/useModal';
 import ExportOptionsForm from '../../common/components/ExportOptionsForm';
 
-const ProductExport = ({ queryString, includeDrafts, tags, sort }) => {
+const ProductExport = ({ queryString, includeDrafts, tags }) => {
   const { setModal } = useModal();
   const { productsCount, loading } = useProductsCount({
     queryString,

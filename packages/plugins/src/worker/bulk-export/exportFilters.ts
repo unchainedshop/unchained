@@ -55,56 +55,52 @@ const exportFiltersHandler = async (
 
   const filterRows: Record<string, any>[] = [];
   const optionRows: Record<string, any>[] = [];
-  await Promise.all(
-    filters.map(async (filter) => {
-      if (exportFilters) {
-        const filterTexts = await fetchTexts(modules, filter._id);
-        const row: Record<string, any> = {
-          _id: filter._id,
-          key: filter.key,
-          type: filter.type,
-          isActive: filter.isActive,
-        };
-        mapTextsToRow(row, filterTexts, locales);
-        filterRows.push(row);
-      }
-      if (exportFilterOptions) {
-        await Promise.all(
-          (filter.options || []).map(async (optionValue) => {
-            const optionTexts = await fetchTexts(modules, filter._id, optionValue);
-            const optionRow: Record<string, any> = {
-              optionId: `${filter._id}:${optionValue}`,
-              filterId: filter._id,
-              value: optionValue,
-            };
-            mapTextsToRow(optionRow, optionTexts, locales);
-            optionRows.push(optionRow);
-          }),
-        );
-      }
-    }),
-  );
 
-  const [filtersCSV, optionsCSV] = await Promise.all([
-    exportFilters
-      ? generateCSVFileAndURL({
-          headers: buildFilterHeaders(locales),
-          rows: filterRows,
-          directoryName: 'exports',
-          fileName: 'filters_export.csv',
-          unchainedAPI,
-        })
-      : null,
-    exportFilterOptions
-      ? generateCSVFileAndURL({
-          headers: buildOptionHeaders(locales),
-          rows: optionRows,
-          directoryName: 'exports',
-          fileName: 'filters_options_export.csv',
-          unchainedAPI,
-        })
-      : null,
-  ]);
+  for await (let filter of filters) {
+    if (exportFilters) {
+      const filterTexts = await fetchTexts(modules, filter._id);
+      const row: Record<string, any> = {
+        _id: filter._id,
+        key: filter.key,
+        type: filter.type,
+        isActive: filter.isActive,
+      };
+      mapTextsToRow(row, filterTexts, locales);
+      filterRows.push(row);
+    }
+    if (exportFilterOptions) {
+
+      for await (let optionValue of filter.options) {
+        const optionTexts = await fetchTexts(modules, filter._id, optionValue);
+        const optionRow: Record<string, any> = {
+          optionId: `${filter._id}:${optionValue}`,
+          filterId: filter._id,
+          value: optionValue,
+        };
+        mapTextsToRow(optionRow, optionTexts, locales);
+        optionRows.push(optionRow);
+      };
+    }
+  }
+
+  const filtersCSV = exportFilters
+    ? await generateCSVFileAndURL({
+      headers: buildFilterHeaders(locales),
+      rows: filterRows,
+      directoryName: 'exports',
+      fileName: 'filters_export.csv',
+      unchainedAPI,
+    })
+    : null
+  const optionsCSV = exportFilterOptions
+    ? await generateCSVFileAndURL({
+      headers: buildOptionHeaders(locales),
+      rows: optionRows,
+      directoryName: 'exports',
+      fileName: 'filters_options_export.csv',
+      unchainedAPI,
+    })
+    : null
 
   return { filters: filtersCSV, filterOptions: optionsCSV };
 };
