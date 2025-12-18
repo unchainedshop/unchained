@@ -50,8 +50,8 @@ export const BulkExportWorker: IWorkerAdapter<any, any> = {
   doWork: async ({ type, ...params }, unchainedAPI) => {
     try {
       const { modules } = unchainedAPI;
-      const languages = await modules.languages.findLanguages({ isActive: true });
-      const countries = await modules.countries.findCountries({ isActive: true });
+      const languages = await modules.languages.findLanguages({ includeInactive: false });
+      const countries = await modules.countries.findCountries({ includeInactive: false });
       const locales = createLanguageDialectList(languages, countries);
       const handler = handlers[type];
       if (!handler) throw new Error(`Unsupported export type: ${type}`);

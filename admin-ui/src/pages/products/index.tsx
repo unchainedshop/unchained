@@ -97,7 +97,6 @@ const Products = () => {
           <ProductExport
             includeDrafts={includeDrafts}
             queryString={queryString}
-            sort={sortKeys}
             tags={tags}
           />
           <ProductImport />
