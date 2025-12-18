@@ -59,17 +59,19 @@ export const configurePaymentCredentialsModule = (
         paymentCredentialsId,
         userId,
         paymentProviderId,
+        isPreferred,
       }: {
         paymentCredentialsId?: string;
         userId?: string;
         paymentProviderId?: string;
+        isPreferred?: boolean;
       },
       options?: mongodb.FindOptions,
     ) => {
       return PaymentCredentials.findOne(
         paymentCredentialsId
-          ? generateDbFilterById(paymentCredentialsId)
-          : { userId, paymentProviderId },
+          ? generateDbFilterById(paymentCredentialsId, isPreferred ? { isPreferred: true } : {})
+          : { userId, paymentProviderId, ...(isPreferred ? { isPreferred: true } : {}) },
         options,
       );
     },
@@ -88,8 +90,12 @@ export const configurePaymentCredentialsModule = (
       _id,
       token,
       ...meta
-    }: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> &
-      Record<string, any>) => {
+    }: Partial<PaymentCredentialsType> & {
+      userId: PaymentCredentialsType['userId'];
+      paymentProviderId: PaymentCredentialsType['paymentProviderId'];
+      _id?: PaymentCredentialsType['_id'];
+      token?: PaymentCredentialsType['token'];
+    } & Record<string, any>) => {
       const insertedId = _id || generateDbObjectId();
       await PaymentCredentials.findOneAndUpdate(
         _id

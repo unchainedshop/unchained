@@ -29,12 +29,6 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
             })}
           </Table.Cell>
 
-          <Table.Cell sortKey="isBase">
-            {formatMessage({
-              id: 'base',
-              defaultMessage: 'Base',
-            })}
-          </Table.Cell>
           <Table.Cell sortKey="sequence" defaultSortDirection="ASC">
             {formatMessage({
               id: 'sequence',

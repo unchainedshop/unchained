@@ -27,7 +27,6 @@ export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
         ? parseInt(row['sequence'] || '0', 10)
         : row['sequence'] || 0,
     isActive: row['isActive'] === 'true',
-    isBase: row['isBase'] === 'true',
     isRoot: row['isRoot'] === 'true',
     tags: row['tags'] ? (row['tags'] as string).split(';') : ([] as any),
     content,

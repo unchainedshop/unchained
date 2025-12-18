@@ -628,12 +628,6 @@ export default [
       updateAssortment(assortment: UpdateAssortmentInput!, assortmentId: ID!): Assortment!
 
       """
-      Makes the assortment provided as the base assortment and make
-      any other existing base assortment regular assortments.
-      """
-      setBaseAssortment(assortmentId: ID!): Assortment!
-
-      """
       Removes assortment with the provided ID
       """
       removeAssortment(assortmentId: ID!): Assortment!

@@ -98,7 +98,6 @@ import updateFilterTexts from './filters/updateFilterTexts.ts';
 import removeFilterOption from './filters/removeFilterOption.ts';
 import createAssortment from './assortments/createAssortment.ts';
 import updateAssortment from './assortments/updateAssortment.ts';
-import setBaseAssortment from './assortments/setBaseAssortment.ts';
 import removeAssortment from './assortments/removeAssortment.ts';
 import updateAssortmentTexts from './assortments/updateAssortmentTexts.ts';
 import addAssortmentProduct from './assortments/addAssortmentProduct.ts';
@@ -286,7 +285,6 @@ export default {
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   prepareAssortmentMediaUpload: acl(actions.manageAssortments)(prepareAssortmentMediaUpload),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
-  setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
   reorderAssortmentMedia: acl(actions.manageAssortments)(reorderAssortmentMedia),
   removeAssortmentMedia: acl(actions.manageAssortments)(removeAssortmentMedia),

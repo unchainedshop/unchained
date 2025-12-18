@@ -61,7 +61,6 @@ test.describe('Assortments', () => {
               created
               updated
               isActive
-              isBase
               isRoot
               sequence
               tags
@@ -324,7 +323,6 @@ test.describe('Assortments', () => {
               created
               updated
               isActive
-              isBase
               isRoot
               sequence
               tags
@@ -561,7 +559,6 @@ test.describe('Assortments', () => {
               created
               updated
               isActive
-              isBase
               isRoot
               sequence
               tags
@@ -657,7 +654,6 @@ test.describe('Assortments', () => {
               created
               updated
               isActive
-              isBase
               isRoot
               sequence
               tags
@@ -781,120 +777,6 @@ test.describe('Assortments', () => {
     });
   });
 
-  test.describe('mutation.setBaseAssortment for admin user should', () => {
-    test('change isBase property to true when passed valid assortment Id', async () => {
-      const {
-        data: { setBaseAssortment },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation SetBaseAssortment($assortmentId: ID!) {
-            setBaseAssortment(assortmentId: $assortmentId) {
-              _id
-              created
-              updated
-              isActive
-              isBase
-              isRoot
-              sequence
-              tags
-              texts {
-                _id
-                locale
-                slug
-                subtitle
-                description
-              }
-              productAssignments {
-                _id
-                sortKey
-                tags
-                assortment {
-                  _id
-                }
-                product {
-                  _id
-                }
-              }
-              filterAssignments {
-                _id
-              }
-              linkedAssortments {
-                _id
-              }
-              assortmentPaths {
-                links {
-                  assortmentId
-                }
-              }
-              children {
-                _id
-              }
-              searchProducts {
-                productsCount
-              }
-            }
-          }
-        `,
-        variables: {
-          assortmentId: SimpleAssortment[1]._id,
-        },
-      });
-      assert.strictEqual(setBaseAssortment.isBase, true);
-    });
-
-    test('return not found error when passed none existing assortment Id', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation SetBaseAssortment($assortmentId: ID!) {
-            setBaseAssortment(assortmentId: $assortmentId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          assortmentId: 'non-existing-id',
-        },
-      });
-      assert.strictEqual(errors[0]?.extensions?.code, 'AssortmentNotFoundError');
-    });
-
-    test('return error when passed invalid assortment Id', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation SetBaseAssortment($assortmentId: ID!) {
-            setBaseAssortment(assortmentId: $assortmentId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          assortmentId: '',
-        },
-      });
-      assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
-    });
-  });
-
-  test.describe('mutation.setBaseAssortment for anonymous user should', () => {
-    test('Return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
-      const { errors } = await graphqlAnonymousFetch({
-        query: /* GraphQL */ `
-          mutation SetBaseAssortment($assortmentId: ID!) {
-            setBaseAssortment(assortmentId: $assortmentId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          assortmentId: SimpleAssortment[1]._id,
-        },
-      });
-
-      assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
-    });
-  });
-
   test.describe('mutation.removeAssortment for admin user should', () => {
     test('Remove assortment successfuly when passed valid assortment Id', async () => {
       await graphqlFetch({
@@ -906,7 +788,6 @@ test.describe('Assortments', () => {
               updated
               deleted
               isActive
-              isBase
               isRoot
               sequence
               tags

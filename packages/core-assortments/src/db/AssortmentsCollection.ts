@@ -50,7 +50,6 @@ export type AssortmentFilter = {
 export type Assortment = {
   _id: string;
   isActive: boolean;
-  isBase: boolean;
   isRoot: boolean;
   meta?: any;
   sequence: number;

@@ -23,7 +23,6 @@ import removeAssortmentLink from './removeAssortmentLink.ts';
 import getAssortmentLinks from './getAssortmentLinks.ts';
 import reorderAssortmentLinks from './reorderAssortmentLinks.ts';
 import getAssortmentChildren from './getAssortmentChildren.ts';
-import setAssortmentBase from './setAssortmentBase.ts';
 import searchAssortmentProducts from './searchAssortmentProducts.ts';
 import getAssortmentTexts from './getAssortmentTexts.ts';
 import getAssortmentMediaTexts from './getAssortmentMediaTexts.ts';
@@ -54,7 +53,6 @@ export default {
   GET_LINKS: getAssortmentLinks,
   REORDER_LINKS: reorderAssortmentLinks,
   GET_CHILDREN: getAssortmentChildren,
-  SET_BASE: setAssortmentBase,
   SEARCH_PRODUCTS: searchAssortmentProducts,
   GET_TEXTS: getAssortmentTexts,
   GET_MEDIA_TEXTS: getAssortmentMediaTexts,

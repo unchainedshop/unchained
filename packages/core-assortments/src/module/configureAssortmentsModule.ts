@@ -38,12 +38,7 @@ export type BreadcrumbAssortmentProductFunction = (productId: string) => Promise
 
 const logger = createLogger('unchained:core');
 
-const ASSORTMENT_EVENTS = [
-  'ASSORTMENT_CREATE',
-  'ASSORTMENT_REMOVE',
-  'ASSORTMENT_SET_BASE',
-  'ASSORTMENT_UPDATE',
-];
+const ASSORTMENT_EVENTS = ['ASSORTMENT_CREATE', 'ASSORTMENT_REMOVE', 'ASSORTMENT_UPDATE'];
 
 export const buildFindSelector = ({
   assortmentIds,
@@ -382,7 +377,6 @@ export const configureAssortmentsModule = async (
     create: async ({
       _id,
       isActive = true,
-      isBase = false,
       isRoot = false,
       meta = {},
       sequence,
@@ -393,7 +387,6 @@ export const configureAssortmentsModule = async (
         _id: _id || generateDbObjectId(),
         created: new Date(),
         sequence: sequence || (await Assortments.countDocuments({})) + 10,
-        isBase,
         isActive,
         isRoot,
         meta,
@@ -463,25 +456,6 @@ export const configureAssortmentsModule = async (
     },
 
     invalidateCache,
-    setBase: async (assortmentId: string): Promise<void> => {
-      await Assortments.updateMany(
-        { isBase: true },
-        {
-          $set: {
-            isBase: false,
-            updated: new Date(),
-          },
-        },
-      );
-
-      await Assortments.updateOne(generateDbFilterById(assortmentId), {
-        $set: {
-          isBase: true,
-          updated: new Date(),
-        },
-      });
-      await emit('ASSORTMENT_SET_BASE', { assortmentId });
-    },
 
     search: {
       findFilteredAssortments: async ({

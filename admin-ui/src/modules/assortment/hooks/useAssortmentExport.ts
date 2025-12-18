@@ -10,7 +10,7 @@ import {
 } from '../../../gql/types';
 
 export const ASSORTMENT_CSV_SCHEMA = {
-  base: ['_id', 'isActive', 'isBase', 'isRoot', 'sequence', 'tags'],
+  base: ['_id', 'isActive', 'isRoot', 'sequence', 'tags'],
   textFields: ['title', 'subtitle', 'description', 'slug'],
   assortmentFilterFields: [
     '_id',

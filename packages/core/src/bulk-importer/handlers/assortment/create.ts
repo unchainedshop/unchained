@@ -11,7 +11,6 @@ export const AssortmentCreatePayloadSchema = z.object({
   _id: z.string(),
   specification: z.object({
     isActive: z.boolean(),
-    isBase: z.boolean().optional(),
     isRoot: z.boolean().optional(),
     sequence: z.number(),
     tags: z.array(z.string()).optional(),

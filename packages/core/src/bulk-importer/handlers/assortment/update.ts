@@ -13,7 +13,6 @@ export const AssortmentUpdatePayloadSchema = z.object({
   specification: z
     .object({
       isActive: z.boolean().optional(),
-      isBase: z.boolean().optional(),
       isRoot: z.boolean().optional(),
       sequence: z.number().optional(),
       tags: z.array(z.string()).optional(),

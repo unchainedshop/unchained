@@ -110,19 +110,6 @@ const AssortmentListItem = ({ assortment, showAvatar }) => {
         </div>
       </Table.Cell>
 
-      <Table.Cell className="whitespace-nowrap">
-        <div className="flex items-center text-sm text-slate-900">
-          {assortment.isBase && (
-            <Badge
-              text={formatMessage({
-                id: 'assortment_base',
-                defaultMessage: 'Base',
-              })}
-              color="sky"
-            />
-          )}
-        </div>
-      </Table.Cell>
       <Table.Cell>
         <input
           type="number"

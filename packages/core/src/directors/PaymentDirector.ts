@@ -298,7 +298,7 @@ export const PaymentDirector: IPaymentDirector = {
         transactionId,
         status: OrderPaymentStatus.PAID,
         info: JSON.stringify(info),
-      });
+      }) as Promise<OrderPayment>;
     }
 
     return orderPayment;

@@ -12,12 +12,10 @@ import useFormatDateTime from '../../modules/common/utils/useFormatDateTime';
 import SelectOptions from '../../modules/common/components/SelectOptions';
 import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
 import useUpdateAssortment from '../../modules/assortment/hooks/useUpdateAssortment';
-import useSetBaseAssortment from '../../modules/assortment/hooks/useSetBaseAssortment';
 import useRemoveAssortment from '../../modules/assortment/hooks/useRemoveAssortment';
 import useAuth from '../../modules/Auth/useAuth';
 import useModal from '../../modules/modal/hooks/useModal';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
-import AlertMessage from '../../modules/modal/components/AlertMessage';
 import AssortmentImageGallery from '../../modules/assortment/components/AssortmentImageGallery';
 
 const AssortmentDetailPage = ({ assortmentSlug }) => {
@@ -25,7 +23,6 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const { updateAssortment } = useUpdateAssortment();
-  const { setBaseAssortment } = useSetBaseAssortment();
   const { removeAssortment } = useRemoveAssortment();
   const { setModal } = useModal();
   const router = useRouter();
@@ -34,7 +31,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
     slug: assortmentSlug,
   });
 
-  const { isActive, isBase, isRoot } = assortment || {};
+  const { isActive, isRoot } = assortment || {};
 
   const updateAssortmentSequence = async (e) => {
     if (e.target.value) {
@@ -45,36 +42,6 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
         },
       });
     }
-  };
-
-  const setAsBase = async () => {
-    await setModal(
-      <AlertMessage
-        buttonText={formatMessage({
-          id: 'mark_as_base',
-          defaultMessage: 'Mark as Base',
-        })}
-        headerText={formatMessage({
-          id: 'header_title',
-          defaultMessage: 'Assortment base change.',
-        })}
-        message={formatMessage({
-          id: 'header_conformation',
-          defaultMessage:
-            'This action is nonreversible, are you sure you want to change it to base?',
-        })}
-        onOkClick={async () => {
-          setModal('');
-          await setBaseAssortment({ assortmentId: assortment?._id });
-          toast.success(
-            formatMessage({
-              id: 'assortment_made_base',
-              defaultMessage: 'Assortment changed to base',
-            }),
-          );
-        }}
-      />,
-    );
   };
 
   const setIsRoot = async (isRoot) => {
@@ -284,34 +251,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
               />
             </div>
             {hasRole(IRoleAction.ManageAssortments) && (
-              <>
-                <div>
-                  {isBase ? (
-                    <span
-                      id="is_base"
-                      className="py-2.5 px-8 text-sm font-medium text-white bg-sky-500 white inline-flex items-center shadow-md rounded-md h-[38px]"
-                    >
-                      {formatMessage({
-                        id: 'base',
-                        defaultMessage: 'Base',
-                      })}
-                    </span>
-                  ) : (
-                    <button
-                      id="not_base"
-                      type="button"
-                      onClick={setAsBase}
-                      className="inline-flex items-center gap-2 justify-center rounded-md border border-slate-600 dark:border-slate-600 px-4 py-2 text-sm font-medium leading-5 text-slate-700 dark:text-slate-200 shadow-md hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 h-[38px]"
-                    >
-                      {formatMessage({
-                        id: 'not_base',
-                        defaultMessage: 'Mark as Base',
-                      })}
-                    </button>
-                  )}
-                </div>
-                <HeaderDeleteButton onClick={handleDeleteAssortment} />
-              </>
+              <HeaderDeleteButton onClick={handleDeleteAssortment} />
             )}
           </div>
         </div>

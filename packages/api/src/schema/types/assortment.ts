@@ -24,7 +24,6 @@ export default [
       updated: DateTime
       deleted: DateTime
       isActive: Boolean
-      isBase: Boolean
       isRoot: Boolean
       sequence: Int!
       tags: [LowerCaseString!]

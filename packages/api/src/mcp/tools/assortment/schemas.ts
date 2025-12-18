@@ -203,10 +203,6 @@ export const actionValidators = {
     includeInactive: z.boolean().optional().describe('Include inactive children'),
   }),
 
-  SET_BASE: z.object({
-    assortmentId: z.string().min(1).describe('Assortment ID to set as base'),
-  }),
-
   SEARCH_PRODUCTS: z.object({
     assortmentId: z.string().min(1).describe('Assortment ID'),
     ...PaginationSchema,
@@ -250,7 +246,6 @@ export const AssortmentManagementSchema = {
       'GET_LINKS',
       'REORDER_LINKS',
       'GET_CHILDREN',
-      'SET_BASE',
       'SEARCH_PRODUCTS',
       'GET_TEXTS',
       'GET_MEDIA_TEXTS',

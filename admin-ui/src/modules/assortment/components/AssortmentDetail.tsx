@@ -26,10 +26,8 @@ import AssortmentFilters from './AssortmentFilters';
 import useUpdateAssortment from '../hooks/useUpdateAssortment';
 import Tab from '../../common/components/Tab';
 import TagList from '../../common/components/TagList';
-import useSetBaseAssortment from '../hooks/useSetBaseAssortment';
 import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
-import AlertMessage from '../../modal/components/AlertMessage';
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import useApp from '../../common/hooks/useApp';
 
@@ -83,12 +81,11 @@ const AssortmentDetail = ({
   extendedData,
   hideControls = false,
 }) => {
-  const { isActive, isBase, isRoot } = assortment || {};
+  const { isActive, isRoot } = assortment || {};
   const { hasRole } = useAuth();
   const { shopInfo } = useApp();
   const { formatMessage } = useIntl();
   const { updateAssortment } = useUpdateAssortment();
-  const { setBaseAssortment } = useSetBaseAssortment();
   const { removeAssortment } = useRemoveAssortment();
   const { setModal } = useModal();
   const router = useRouter();
@@ -103,36 +100,6 @@ const AssortmentDetail = ({
       });
     }
   };
-  const setAsBase = async () => {
-    await setModal(
-      <AlertMessage
-        buttonText={formatMessage({
-          id: 'mark_as_base',
-          defaultMessage: 'Mark as Base',
-        })}
-        headerText={formatMessage({
-          id: 'header_title',
-          defaultMessage: 'Assortment base change.',
-        })}
-        message={formatMessage({
-          id: 'header_conformation',
-          defaultMessage:
-            'This action is nonreversible, are you sure you want to change it to base?',
-        })}
-        onOkClick={async () => {
-          setModal('');
-          await setBaseAssortment({ assortmentId: assortment?._id });
-          toast.success(
-            formatMessage({
-              id: 'assortment_made_base',
-              defaultMessage: 'Assortment changed to base',
-            }),
-          );
-        }}
-      />,
-    );
-  };
-
   const assortmentOptions = [
     {
       id: 'texts',
@@ -378,31 +345,6 @@ const AssortmentDetail = ({
                 defaultValue={assortment?.sequence}
                 onBlur={updateAssortmentSequence}
               />
-            </div>
-            <div>
-              {isBase ? (
-                <span
-                  id="is_base"
-                  className="py-2.5 px-8 text-sm font-medium text-white bg-sky-500 white inline-flex items-center shadow-md rounded-md h-[38px]"
-                >
-                  {formatMessage({
-                    id: 'base',
-                    defaultMessage: 'Base',
-                  })}
-                </span>
-              ) : (
-                <button
-                  id="not_base"
-                  type="button"
-                  onClick={setAsBase}
-                  className="inline-flex items-center gap-2 justify-center rounded-md border border-slate-600 dark:border-slate-600 px-4 py-2 text-sm font-medium leading-5 text-slate-700 dark:text-slate-200 shadow-md hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 h-[38px]"
-                >
-                  {formatMessage({
-                    id: 'not_base',
-                    defaultMessage: 'Mark as Base',
-                  })}
-                </button>
-              )}
             </div>
             <SelectOptions
               options={rootOptions}

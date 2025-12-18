@@ -368,7 +368,6 @@ test.describe('Bulk Importer', () => {
                   specification: {
                     sequence: 2,
                     isActive: true,
-                    isBase: false,
                     isRoot: false,
                     content: {
                       de: {
@@ -389,7 +388,6 @@ test.describe('Bulk Importer', () => {
                   specification: {
                     sequence: 1,
                     isActive: true,
-                    isBase: true,
                     isRoot: true,
                     tags: ['food'],
                     meta: {},

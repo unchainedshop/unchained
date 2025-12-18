@@ -24,7 +24,6 @@ export type AssortmentFilterCSVRow = {
 export type AssortmentCSVRow = {
   _id: string;
   isActive: string | boolean;
-  isBase?: string | boolean;
   isRoot?: string | boolean;
   sequence: string | number;
   tags?: string;
@@ -41,7 +40,6 @@ export interface AssortmentImportPayload {
 export interface AssortmentPayload {
   _id: string;
   isActive: string | boolean;
-  isBase?: string | boolean;
   isRoot?: string | boolean;
   sequence: string | number;
   tags?: string;
