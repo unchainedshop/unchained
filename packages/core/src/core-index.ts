@@ -22,6 +22,10 @@ import {
   WarehousingDirector,
 } from './directors/index.ts';
 import type { IBaseAdapter } from '@unchainedshop/utils';
+import createBulkExporterFactory, {
+  type BulkExporter,
+  type BulkExportHandler,
+} from './bulk-exporter/index.ts';
 
 export * from './bulk-importer/index.ts';
 export * from './services/index.ts';
@@ -34,6 +38,9 @@ export interface UnchainedCoreOptions {
   migrationRepository: MigrationRepository<UnchainedCore>;
   bulkImporter?: {
     handlers?: Record<string, BulkImportHandler<UnchainedCore>>;
+  };
+  bulkExporter?: {
+    handlers?: Record<string, BulkExportHandler<UnchainedCore>>;
   };
   modules?: Record<
     string,
@@ -50,6 +57,7 @@ export interface UnchainedCore {
   services: Services;
   bulkImporter: BulkImporter;
   options: ModuleOptions;
+  bulkExporter: BulkExporter;
 }
 
 export const initCore = async ({
@@ -59,10 +67,12 @@ export const initCore = async ({
   modules: customModules = {},
   services: customServices = {},
   options = {},
+  bulkExporter: bulkExporterOptions = {},
 }: UnchainedCoreOptions): Promise<UnchainedCore> => {
   // Configure custom modules
 
   const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions);
+  const bulkExporter = createBulkExporterFactory(bulkExporterOptions);
   const modules = await initModules({ db, migrationRepository, options }, customModules);
   const services = initServices(modules, customServices);
 
@@ -71,6 +81,7 @@ export const initCore = async ({
     services,
     bulkImporter,
     options,
+    bulkExporter,
   };
 };
 

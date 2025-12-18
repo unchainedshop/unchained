@@ -1,5 +1,17 @@
-import type { UnchainedCore } from '@unchainedshop/core';
-import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
+import type { UnchainedCore } from '../../core-index.ts';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.js';
+import { z } from 'zod';
+
+export const AssortmentExportPayloadSchema = z.object({
+  exportAssortments: z.boolean().optional(),
+  exportLinks: z.boolean().optional(),
+  exportProducts: z.boolean().optional(),
+  exportFilters: z.boolean().optional(),
+  queryString: z.string().optional(),
+  includeInactive: z.boolean().optional(),
+  includeLeaves: z.boolean().optional(),
+  tags: z.array(z.string()).optional(),
+});
 
 export interface AssortmentExportParams {
   exportAssortments?: boolean;
@@ -151,3 +163,5 @@ const exportAssortmentsHandler = async (
 };
 
 export default exportAssortmentsHandler;
+
+exportAssortmentsHandler.payloadSchema = AssortmentExportPayloadSchema;
