@@ -5,7 +5,6 @@ import {
   AssortmentListResponse,
   AssortmentOperation,
   assortmentequestVariables,
-  SetBaseassortmentesponse,
   Singleassortmentesponse,
   TranslatedAssortmentTextsResponse,
   Updateassortmentesponse,
@@ -41,10 +40,6 @@ describe('Assortment Detail Texts', () => {
       if (hasOperationName(req, AssortmentOperation.UpdateAssortment)) {
         aliasMutation(req, AssortmentOperation.UpdateAssortment);
         req.reply(Updateassortmentesponse);
-      }
-      if (hasOperationName(req, AssortmentOperation.SetBaseAssortment)) {
-        aliasMutation(req, AssortmentOperation.SetBaseAssortment);
-        req.reply(SetBaseassortmentesponse);
       }
       if (hasOperationName(req, AssortmentOperation.UpdateAssortmentTexts)) {
         aliasMutation(req, AssortmentOperation.UpdateAssortmentTexts);
@@ -400,16 +395,6 @@ describe('Assortment Detail Texts', () => {
 
       cy.get('button#not_base').contains(localizations.en.not_base).click();
       cy.get('button#alert_ok').contains(localizations.en.mark_as_base).click();
-
-      cy.wait(
-        fullAliasMutationName(AssortmentOperation.SetBaseAssortment),
-      ).then((currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          assortmentId: assortment._id,
-        });
-        expect(response.body).to.deep.eq(SetBaseassortmentesponse);
-      });
 
       cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
         (currentSubject) => {
