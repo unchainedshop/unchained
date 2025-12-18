@@ -161,20 +161,19 @@ const exportProductsHandler = async (
       for await (const v of variations) {
         const variationTexts = exportVariations
           ? await unchainedAPI.modules.products.variations.texts.findVariationTexts({
-            productVariationId: v._id,
-            productVariationOptionValue: null,
-          })
+              productVariationId: v._id,
+              productVariationOptionValue: null,
+            })
           : [];
 
-        let options: any[] = [];
+        const options: any[] = [];
 
         if (exportVariationOptions) {
           for await (const o of v.options || []) {
-            const optionTexts =
-              await unchainedAPI.modules.products.variations.texts.findVariationTexts({
-                productVariationId: v._id,
-                productVariationOptionValue: o,
-              });
+            const optionTexts = await unchainedAPI.modules.products.variations.texts.findVariationTexts({
+              productVariationId: v._id,
+              productVariationOptionValue: o,
+            });
 
             options.push({
               _id: `${v._id}:${o}`,
@@ -194,12 +193,11 @@ const exportProductsHandler = async (
       }
     }
 
-
     normalized.products[productId] = exportProducts ? { ...p, texts: productTexts } : p;
     normalized.prices[productId] = exportPrices ? (p.commerce?.pricing ?? []) : [];
     normalized.bundles[productId] = exportBundleItems ? (p.bundleItems ?? []) : [];
     normalized.variations[productId] = normalizedVariations;
-  };
+  }
 
   const productRows: any[] = [];
   const priceRows: any[] = [];
@@ -227,47 +225,48 @@ const exportProductsHandler = async (
   }
   const productsCSV = exportProducts
     ? await generateCSVFileAndURL({
-      headers: buildProductHeaders(locales),
-      rows: productRows,
-      directoryName: 'exports',
-      fileName: 'products_export.csv',
-      unchainedAPI,
-    })
+        headers: buildProductHeaders(locales),
+        rows: productRows,
+        directoryName: 'exports',
+        fileName: 'products_export.csv',
+        unchainedAPI,
+      })
     : null;
-  const pricesCSV = await exportPrices
+  const pricesCSV = (await exportPrices)
     ? generateCSVFileAndURL({
-      headers: buildPriceHeaders(),
-      rows: priceRows,
-      directoryName: 'exports',
-      fileName: 'products_prices_export.csv',
-      unchainedAPI,
-    })
+        headers: buildPriceHeaders(),
+        rows: priceRows,
+        directoryName: 'exports',
+        fileName: 'products_prices_export.csv',
+        unchainedAPI,
+      })
     : null;
-  const bundlesCSV = exportBundleItems ? await generateCSVFileAndURL({
-    headers: buildBundleHeaders(),
-    rows: bundleRows,
-    directoryName: 'exports',
-    fileName: 'products_bundle_items_export.csv',
-    unchainedAPI,
-  })
+  const bundlesCSV = exportBundleItems
+    ? await generateCSVFileAndURL({
+        headers: buildBundleHeaders(),
+        rows: bundleRows,
+        directoryName: 'exports',
+        fileName: 'products_bundle_items_export.csv',
+        unchainedAPI,
+      })
     : null;
   const variationsCSV = exportVariations
     ? await generateCSVFileAndURL({
-      headers: buildVariationHeaders(locales),
-      rows: variationRows,
-      directoryName: 'exports',
-      fileName: 'products_variations_export.csv',
-      unchainedAPI,
-    })
+        headers: buildVariationHeaders(locales),
+        rows: variationRows,
+        directoryName: 'exports',
+        fileName: 'products_variations_export.csv',
+        unchainedAPI,
+      })
     : null;
   const variationOptionsCSV = exportVariationOptions
     ? await generateCSVFileAndURL({
-      headers: buildVariationOptionsHeaders(locales),
-      rows: variationOptionRows,
-      directoryName: 'exports',
-      fileName: 'products_variation_option_export.csv',
-      unchainedAPI,
-    })
+        headers: buildVariationOptionsHeaders(locales),
+        rows: variationOptionRows,
+        directoryName: 'exports',
+        fileName: 'products_variation_option_export.csv',
+        unchainedAPI,
+      })
     : null;
 
   return {

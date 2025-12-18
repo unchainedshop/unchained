@@ -56,7 +56,7 @@ const exportFiltersHandler = async (
   const filterRows: Record<string, any>[] = [];
   const optionRows: Record<string, any>[] = [];
 
-  for await (let filter of filters) {
+  for await (const filter of filters) {
     if (exportFilters) {
       const filterTexts = await fetchTexts(modules, filter._id);
       const row: Record<string, any> = {
@@ -69,8 +69,7 @@ const exportFiltersHandler = async (
       filterRows.push(row);
     }
     if (exportFilterOptions) {
-
-      for await (let optionValue of filter.options) {
+      for await (const optionValue of filter.options) {
         const optionTexts = await fetchTexts(modules, filter._id, optionValue);
         const optionRow: Record<string, any> = {
           optionId: `${filter._id}:${optionValue}`,
@@ -79,28 +78,28 @@ const exportFiltersHandler = async (
         };
         mapTextsToRow(optionRow, optionTexts, locales);
         optionRows.push(optionRow);
-      };
+      }
     }
   }
 
   const filtersCSV = exportFilters
     ? await generateCSVFileAndURL({
-      headers: buildFilterHeaders(locales),
-      rows: filterRows,
-      directoryName: 'exports',
-      fileName: 'filters_export.csv',
-      unchainedAPI,
-    })
-    : null
+        headers: buildFilterHeaders(locales),
+        rows: filterRows,
+        directoryName: 'exports',
+        fileName: 'filters_export.csv',
+        unchainedAPI,
+      })
+    : null;
   const optionsCSV = exportFilterOptions
     ? await generateCSVFileAndURL({
-      headers: buildOptionHeaders(locales),
-      rows: optionRows,
-      directoryName: 'exports',
-      fileName: 'filters_options_export.csv',
-      unchainedAPI,
-    })
-    : null
+        headers: buildOptionHeaders(locales),
+        rows: optionRows,
+        directoryName: 'exports',
+        fileName: 'filters_options_export.csv',
+        unchainedAPI,
+      })
+    : null;
 
   return { filters: filtersCSV, filterOptions: optionsCSV };
 };

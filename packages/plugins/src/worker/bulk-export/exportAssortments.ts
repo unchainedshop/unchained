@@ -46,8 +46,7 @@ const exportAssortmentsHandler = async (
   const productRows: Record<string, any>[] = [];
   const childrenRows: Record<string, any>[] = [];
 
-
-  for await (let assortment of assortments) {
+  for await (const assortment of assortments) {
     if (exportAssortments) {
       const texts = await fetchAssortmentTexts(modules, assortment._id);
 
@@ -108,40 +107,40 @@ const exportAssortmentsHandler = async (
   }
   const assortmentsCSV = exportAssortments
     ? await generateCSVFileAndURL({
-      headers: buildAssortmentHeaders(locales),
-      rows: assortmentRows,
-      directoryName: 'exports',
-      fileName: 'assortments_export.csv',
-      unchainedAPI,
-    })
-    : null
+        headers: buildAssortmentHeaders(locales),
+        rows: assortmentRows,
+        directoryName: 'exports',
+        fileName: 'assortments_export.csv',
+        unchainedAPI,
+      })
+    : null;
   const filtersCSV = exportFilters
     ? await generateCSVFileAndURL({
-      headers: buildFilterHeaders(),
-      rows: filterRows,
-      directoryName: 'exports',
-      fileName: 'assortment_filters_export.csv',
-      unchainedAPI,
-    })
-    : null
+        headers: buildFilterHeaders(),
+        rows: filterRows,
+        directoryName: 'exports',
+        fileName: 'assortment_filters_export.csv',
+        unchainedAPI,
+      })
+    : null;
   const productsCSV = exportProducts
     ? await generateCSVFileAndURL({
-      headers: buildProductHeaders(),
-      rows: productRows,
-      directoryName: 'exports',
-      fileName: 'assortment_products_export.csv',
-      unchainedAPI,
-    })
-    : null
+        headers: buildProductHeaders(),
+        rows: productRows,
+        directoryName: 'exports',
+        fileName: 'assortment_products_export.csv',
+        unchainedAPI,
+      })
+    : null;
   const childrenCSV = exportLinks
     ? await generateCSVFileAndURL({
-      headers: buildChildrenHeaders(),
-      rows: childrenRows,
-      directoryName: 'exports',
-      fileName: 'assortment_children_export.csv',
-      unchainedAPI,
-    })
-    : null
+        headers: buildChildrenHeaders(),
+        rows: childrenRows,
+        directoryName: 'exports',
+        fileName: 'assortment_children_export.csv',
+        unchainedAPI,
+      })
+    : null;
 
   return {
     assortments: assortmentsCSV,
