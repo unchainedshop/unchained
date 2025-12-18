@@ -1,5 +1,5 @@
-import type { UnchainedCore } from '@unchainedshop/core';
-import toCSV from './toCSV.ts';
+import type { UnchainedCore } from '../../core-index.ts';
+import toCSV from './toCSV.js';
 
 const generateCSVFileAndURL = async ({
   rows,

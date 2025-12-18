@@ -3,6 +3,7 @@ import type { WorkResult } from '@unchainedshop/core-worker';
 import type { ModuleOptions, Modules } from '../modules.ts';
 import type { Services } from '../services/index.ts';
 import type { BulkImporter } from '../bulk-importer/index.ts';
+import type { BulkExporter } from '../bulk-exporter/index.ts';
 
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
@@ -16,6 +17,7 @@ export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
       services: Services;
       bulkImporter: BulkImporter;
       options: ModuleOptions;
+      bulkExporter: BulkExporter;
     },
     workId: string,
   ) => Promise<WorkResult<Output>>;

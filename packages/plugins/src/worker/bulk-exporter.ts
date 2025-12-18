@@ -1,8 +1,5 @@
 import { WorkerDirector, WorkerAdapter, type IWorkerAdapter } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import exportProducts from './exportProducts.ts';
-import exportAssortments from './exportAssortments.ts';
-import exportFilters from './exportFilters.ts';
 import type { Language } from '@unchainedshop/core-languages';
 import type { Country } from '@unchainedshop/core-countries';
 
@@ -17,8 +14,8 @@ const isSupportedLocale = (locale) => {
   }
 };
 
-const createLanguageDialectList = (languages: Language[], countries: Country[]) => {
-  const result = new Set();
+const createLanguageDialectList = (languages: Language[], countries: Country[]): string[] => {
+  const result = new Set<string>();
   (languages || []).forEach(({ isoCode: baseIsoCode }) => {
     result.add(baseIsoCode);
     (countries || []).forEach(({ isoCode: countryIsoCode }) => {
@@ -32,12 +29,6 @@ const createLanguageDialectList = (languages: Language[], countries: Country[]) 
 
 const logger = createLogger('unchained:bulk-export');
 
-const handlers = {
-  ASSORTMENTS: exportAssortments,
-  FILTERS: exportFilters,
-  PRODUCTS: exportProducts,
-};
-
 export const BulkExportWorker: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,
 
@@ -47,17 +38,28 @@ export const BulkExportWorker: IWorkerAdapter<any, any> = {
   type: 'BULK_EXPORT',
   maxParallelAllocations: 1,
 
-  doWork: async ({ type, ...params }, unchainedAPI) => {
+  doWork: async (payload, unchainedAPI) => {
     try {
       const { modules } = unchainedAPI;
       const languages = await modules.languages.findLanguages({ includeInactive: false });
       const countries = await modules.countries.findCountries({ includeInactive: false });
-      const locales = createLanguageDialectList(languages, countries);
-      const handler = handlers[type];
-      if (!handler) throw new Error(`Unsupported export type: ${type}`);
+      const bulkExporter = unchainedAPI.bulkExporter.createBulkExporter({ entity: payload.type });
 
-      const files = await handler(params, locales, unchainedAPI);
-      return { success: true, result: { files } };
+      await bulkExporter.validate(payload);
+      const locales = createLanguageDialectList(languages, countries);
+      const [result, error] = await bulkExporter.execute(payload, locales, unchainedAPI);
+
+      if (error) {
+        return {
+          success: false,
+          result: result!,
+          error,
+        };
+      }
+      return {
+        success: true,
+        result: result!,
+      };
     } catch (err: any) {
       logger.error(err);
       return {

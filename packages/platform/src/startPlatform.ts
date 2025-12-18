@@ -51,6 +51,7 @@ export const startPlatform = async ({
   options,
   rolesOptions,
   bulkImporter,
+  bulkExporter,
   workQueueOptions,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
@@ -79,8 +80,8 @@ export const startPlatform = async ({
     modules,
     services,
     options,
+    bulkExporter,
   });
-
   // Setup Accounts specific extensions and event handlers
   setupAccounts(unchainedAPI);
 

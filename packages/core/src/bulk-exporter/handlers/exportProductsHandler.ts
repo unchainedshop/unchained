@@ -1,5 +1,17 @@
-import type { UnchainedCore } from '@unchainedshop/core';
-import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
+import type { UnchainedCore } from '../../core-index.ts';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.js';
+import z from 'zod';
+
+export const ProductExportPayloadSchema = z.object({
+  exportProducts: z.boolean().optional(),
+  exportBundleItems: z.boolean().optional(),
+  exportPrices: z.boolean().optional(),
+  exportVariations: z.boolean().optional(),
+  exportVariationOptions: z.boolean().optional(),
+  queryString: z.string().optional(),
+  includeDrafts: z.boolean().optional(),
+  tags: z.array(z.string()).optional(),
+});
 
 export interface ProductExportParams {
   exportProducts?: boolean;
@@ -279,3 +291,5 @@ const exportProductsHandler = async (
 };
 
 export default exportProductsHandler;
+
+exportProductsHandler.payloadSchema = ProductExportPayloadSchema;
