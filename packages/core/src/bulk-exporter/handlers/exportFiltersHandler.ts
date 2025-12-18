@@ -1,5 +1,13 @@
-import type { UnchainedCore } from '@unchainedshop/core';
-import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
+import type { UnchainedCore } from '../../core-index.ts';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.js';
+import z from 'zod';
+
+export const FilterExportPayloadSchema = z.object({
+  exportFilters: z.boolean().optional(),
+  exportFilterOptions: z.boolean().optional(),
+  queryString: z.string().optional(),
+  includeInactive: z.boolean().optional(),
+});
 
 export interface FilterExportParams {
   exportFilters?: boolean;
@@ -105,3 +113,5 @@ const exportFiltersHandler = async (
 };
 
 export default exportFiltersHandler;
+
+exportFiltersHandler.payloadSchema = FilterExportPayloadSchema;
