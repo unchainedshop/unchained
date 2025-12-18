@@ -31,6 +31,8 @@ export * from './bulk-importer/index.ts';
 export * from './services/index.ts';
 export * from './directors/index.ts';
 export * from './factory/index.ts';
+export * from './bulk-exporter/index.ts';
+
 export { default as schedule, type ScheduleData } from './utils/schedule.ts';
 
 export interface UnchainedCoreOptions {

@@ -44,7 +44,6 @@ export const BulkExportWorker: IWorkerAdapter<any, any> = {
       const languages = await modules.languages.findLanguages({ includeInactive: false });
       const countries = await modules.countries.findCountries({ includeInactive: false });
       const bulkExporter = unchainedAPI.bulkExporter.createBulkExporter({ entity: payload.type });
-
       await bulkExporter.validate(payload);
       const locales = createLanguageDialectList(languages, countries);
       const [result, error] = await bulkExporter.execute(payload, locales, unchainedAPI);

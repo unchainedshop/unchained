@@ -30,24 +30,27 @@ export default function createBulkExporterFactory(bulkExporterOptions: any) {
   };
 
   const createBulkExporter = ({ entity }: { entity: string }) => {
+    const type = entity.toUpperCase();
+    const exportHandler = bulkOperationHandlers?.[type];
+
+    if (!exportHandler) {
+      throw new Error(`Export entity (${entity}) no supported`);
+    }
+
     return {
       validate: async (payload) => {
-        const entity = payload.type.toUpperCase();
-
-        logger.debug(`🩺 ${entity} * `);
+        logger.debug(`🩺 ${type} * `);
         try {
-          const fn = bulkOperationHandlers[entity];
-          if (fn.payloadSchema) {
-            fn.payloadSchema.parse(payload);
+          if (exportHandler?.payloadSchema) {
+            exportHandler.payloadSchema.parse(payload);
           }
         } catch (e) {
-          throw new Error(`${entity} (${e.message})`);
+          throw new Error(`${type} (${e.message})`);
         }
       },
 
       execute: async (payload, locales: string[], unchainedApi) => {
-        const handler = bulkOperationHandlers[entity];
-        const result = await handler(payload, locales, unchainedApi);
+        const result = await exportHandler(payload, locales, unchainedApi);
         return [result, null];
       },
     };

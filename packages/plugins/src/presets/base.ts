@@ -35,7 +35,7 @@ import '../worker/http-request.ts';
 import '../worker/heartbeat.ts';
 import '../worker/email.ts';
 import '../worker/error-notifications.ts';
-import '../worker/bulk-export/index.ts';
+import '../worker/bulk-export.ts';
 
 // Asset Management
 import gridfsModules from '../files/gridfs/index.ts';
