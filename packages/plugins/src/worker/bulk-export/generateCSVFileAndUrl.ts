@@ -20,7 +20,10 @@ const generateCSVFileAndURL = async ({
     rawFile: { filename: fileName, buffer: Buffer.from(csvString).toString('base64') },
   });
 
-  const url = await unchainedAPI.services.files.createFileDownloadURL({ file: uploaded });
+  const url = await unchainedAPI.services.files.createFileDownloadURL({
+    file: uploaded,
+    expires: 3600000,
+  });
   return url;
 };
 
