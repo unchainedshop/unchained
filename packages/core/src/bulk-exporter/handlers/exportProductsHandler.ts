@@ -249,8 +249,8 @@ const exportProductsHandler = async (
         unchainedAPI,
       })
     : null;
-  const pricesCSV = (await exportPrices)
-    ? generateCSVFileAndURL({
+  const pricesCSV = exportPrices
+    ? await generateCSVFileAndURL({
         headers: buildPriceHeaders(),
         rows: priceRows,
         directoryName: 'exports',
