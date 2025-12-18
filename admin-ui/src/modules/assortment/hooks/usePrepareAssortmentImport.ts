@@ -28,6 +28,7 @@ export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
         : row['sequence'] || 0,
     isActive: row['isActive'] === 'true',
     isRoot: row['isRoot'] === 'true',
+    meta: typeof row['meta'] === 'object' ? JSON.parse(row['meta'] || '{}') : row['meta'],
     tags: row['tags'] ? (row['tags'] as string).split(';') : ([] as any),
     content,
   };

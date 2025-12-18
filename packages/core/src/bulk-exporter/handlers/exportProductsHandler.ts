@@ -48,6 +48,7 @@ const buildProductHeaders = (locales: string[]) => [
   'supply.heightInMillimeters',
   'supply.lengthInMillimeters',
   'supply.widthInMillimeters',
+  'meta',
 ];
 
 const buildPriceHeaders = () => PRODUCT_CSV_SCHEMA.priceFields;
@@ -79,6 +80,10 @@ const buildProductRow = (product: any, locales: string[]) => {
   row['supply.heightInMillimeters'] = product?.dimensions?.height ?? '';
   row['supply.lengthInMillimeters'] = product?.dimensions?.length ?? '';
   row['supply.widthInMillimeters'] = product?.dimensions?.width ?? '';
+  row['meta'] =
+    typeof product?.meta === 'object'
+      ? JSON.stringify(product?.meta, Object.keys(product?.meta).sort())
+      : product?.meta;
   mapTextsToRow(row, product.texts ?? [], locales, PRODUCT_CSV_SCHEMA.textFields);
   return row;
 };

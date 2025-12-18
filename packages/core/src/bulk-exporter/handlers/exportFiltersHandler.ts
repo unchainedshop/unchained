@@ -26,6 +26,7 @@ const buildFilterHeaders = (locales: string[]) => [
   ...locales.flatMap((locale) =>
     FILTER_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
+  'meta',
 ];
 
 const buildOptionHeaders = (locales: string[]) => [
@@ -72,7 +73,9 @@ const exportFiltersHandler = async (
         key: filter.key,
         type: filter.type,
         isActive: filter.isActive,
+        meta: typeof filter?.meta === 'object' ? JSON.stringify(filter.meta) : '',
       };
+
       mapTextsToRow(row, filterTexts, locales);
       filterRows.push(row);
     }

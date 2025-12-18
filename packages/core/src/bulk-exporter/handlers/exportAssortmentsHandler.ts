@@ -34,6 +34,7 @@ const buildAssortmentHeaders = (locales: string[]) => [
   ...locales.flatMap((locale) =>
     ASSORTMENT_CSV_SCHEMA.textFields.map((field) => `texts.${locale}.${field}`),
   ),
+  'meta',
 ];
 
 const buildFilterHeaders = () => ASSORTMENT_CSV_SCHEMA.filterFields;
@@ -71,6 +72,7 @@ const exportAssortmentsHandler = async (
           row[`texts.${locale}.${field}`] = value ?? '';
         });
       });
+      row['meta'] = typeof assortment?.meta === 'object' ? JSON.stringify(assortment.meta) : '';
       assortmentRows.push(row);
     }
     if (exportFilters) {

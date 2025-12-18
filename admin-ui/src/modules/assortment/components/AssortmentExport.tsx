@@ -33,7 +33,7 @@ const AssortmentExport = ({
       defaultChecked: true,
     },
     {
-      key: 'exportAssortmentProducts',
+      key: 'exportProducts',
       label: formatMessage({
         id: 'assortment_products',
         defaultMessage: 'Assortment products',
@@ -41,20 +41,20 @@ const AssortmentExport = ({
       defaultChecked: true,
     },
     {
-      key: 'exportAssortmentChildren',
+      key: 'exportLinks',
       label: formatMessage({
         id: 'assortment_links',
         defaultMessage: 'Assortment links',
       }),
-      defaultChecked: false,
+      defaultChecked: true,
     },
     {
-      key: 'exportAssortmentFilters',
+      key: 'exportFilters',
       label: formatMessage({
         id: 'assortment_filters',
         defaultMessage: 'Assortment filters',
       }),
-      defaultChecked: false,
+      defaultChecked: true,
     },
   ];
   const handleSubmit = useCallback(

@@ -37,9 +37,9 @@ export const productMapper = (row: ProductCSVRow): ProductCSVRow => {
     _id: row['_id'] || undefined,
     warehousing: hasWarehousing
       ? {
-          sku: row['sku'] || undefined,
-          baseUnit: row['baseUnit'] || undefined,
-        }
+        sku: row['sku'] || undefined,
+        baseUnit: row['baseUnit'] || undefined,
+      }
       : undefined,
     sequence:
       typeof row['sequence'] === 'string'
@@ -53,23 +53,24 @@ export const productMapper = (row: ProductCSVRow): ProductCSVRow => {
     content,
     supply: hasSupply
       ? {
-          weightInGram: row['supply.weightInGram']
-            ? (parseFloat(row['supply.weightInGram'] as string) ?? undefined)
-            : undefined,
-          heightInMillimeters: row['supply.heightInMillimeters']
-            ? (parseFloat(row['supply.heightInMillimeters'] as string) ??
-              undefined)
-            : undefined,
-          lengthInMillimeters: row['supply.lengthInMillimeters']
-            ? (parseFloat(row['supply.lengthInMillimeters'] as string) ??
-              undefined)
-            : undefined,
-          widthInMillimeters: row['supply.widthInMillimeters']
-            ? (parseFloat(row['supply.widthInMillimeters'] as string) ??
-              undefined)
-            : undefined,
-        }
+        weightInGram: row['supply.weightInGram']
+          ? (parseFloat(row['supply.weightInGram'] as string) ?? undefined)
+          : undefined,
+        heightInMillimeters: row['supply.heightInMillimeters']
+          ? (parseFloat(row['supply.heightInMillimeters'] as string) ??
+            undefined)
+          : undefined,
+        lengthInMillimeters: row['supply.lengthInMillimeters']
+          ? (parseFloat(row['supply.lengthInMillimeters'] as string) ??
+            undefined)
+          : undefined,
+        widthInMillimeters: row['supply.widthInMillimeters']
+          ? (parseFloat(row['supply.widthInMillimeters'] as string) ??
+            undefined)
+          : undefined,
+      }
       : undefined,
+    meta: row['meta'] ? JSON.parse(row['meta'] || '{}') : undefined
   };
 
   return mapped;
