@@ -116,7 +116,10 @@ const buildFilterEvents = (filter: BuildFilterEventsParam) => ({
       isActive: filter['isActive'] === 'true',
       content: normalizeContent(filter),
       options: (filter?.options ?? []).map(normalizeOptions),
-      meta: typeof filter['meta'] === 'object' ? JSON.parse(filter['meta'] || '{}') : filter['meta'],
+      meta:
+        typeof filter['meta'] === 'object'
+          ? JSON.parse(filter['meta'] || '{}')
+          : filter['meta'],
     },
   },
 });
