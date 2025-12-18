@@ -8,6 +8,7 @@ import type { OrderPosition } from '@unchainedshop/core-orders';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { Enrollment } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
+import type { Modules } from '../modules.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -24,7 +25,10 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
       Pick<Partial<Enrollment>, '_id' | 'created'>
   >;
 
-  actions: (enrollmentContext: EnrollmentContext, unchainedAPI) => Promise<EnrollmentAdapterActions>;
+  actions: (
+    enrollmentContext: EnrollmentContext,
+    unchainedAPI: { modules: Modules },
+  ) => Promise<EnrollmentAdapterActions>;
 };
 
 const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {

@@ -8,24 +8,6 @@ const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYM
 export const buildFindOrderPaymentByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;
 
-export const buildFindByContextDataSelector = (context: any) => {
-  const contextKeys = Object.keys(context);
-
-  if (contextKeys.length === 0) return null;
-
-  const selector: mongodb.Filter<OrderPayment> = contextKeys.reduce(
-    (currentSelector, key) =>
-      context[key] !== undefined
-        ? {
-            ...currentSelector,
-            [`context.${key}`]: context[key],
-          }
-        : currentSelector,
-    {},
-  );
-  return selector;
-};
-
 export const configureOrderPaymentsModule = ({
   OrderPayments,
 }: {
@@ -97,29 +79,8 @@ export const configureOrderPaymentsModule = ({
       if (!paymentProviderIds?.length) return [];
       return OrderPayments.find({ paymentProviderId: { $in: paymentProviderIds } }, options).toArray();
     },
-    findOrderPaymentByContextData: async (
-      {
-        context,
-      }: {
-        context: any;
-      },
-      options?: mongodb.FindOptions,
-    ) => {
-      const selector = buildFindByContextDataSelector(context);
-      if (!selector) return null;
-      return OrderPayments.findOne(selector, options);
-    },
-    countOrderPaymentsByContextData: async (
-      {
-        context,
-      }: {
-        context: any;
-      },
-      options?: mongodb.FindOptions,
-    ) => {
-      const selector = buildFindByContextDataSelector(context);
-      if (!selector) return 0;
-      return OrderPayments.countDocuments(selector, options);
+    findOrderPaymentByTransactionId: async (transactionId: string) => {
+      return OrderPayments.findOne({ transactionId });
     },
 
     normalizedStatus,

@@ -146,7 +146,7 @@ const AppleIAP: IPaymentAdapter = {
         });
 
         return {
-          transactionIdentifier,
+          transactionId: transactionIdentifier,
         };
       },
     };

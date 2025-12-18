@@ -30,11 +30,9 @@ export const appleIAPHandler = async (req, res) => {
 
       if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
         // Find the cart to checkout
-        const orderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-          context: {
-            'meta.transactionIdentifier': latestTransaction.transaction_id,
-          },
-        });
+        const orderPayment = await modules.orders.payments.findOrderPaymentByTransactionId(
+          latestTransaction.transaction_id,
+        );
 
         if (!orderPayment) throw new Error('Could not find any matching order payment');
 
@@ -69,11 +67,9 @@ export const appleIAPHandler = async (req, res) => {
       } else {
         // Just store payment credentials, use the enrollments paymentProvider reference and
         // let the job do the rest
-        const originalOrderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-          context: {
-            'meta.transactionIdentifier': latestTransaction.original_transaction_id,
-          },
-        });
+        const originalOrderPayment = await modules.orders.payments.findOrderPaymentByTransactionId(
+          latestTransaction.original_transaction_id,
+        );
         if (!originalOrderPayment) throw new Error('Could not find any matching order payment');
         const originalOrder = await modules.orders.findOrder({
           orderId: originalOrderPayment.orderId,

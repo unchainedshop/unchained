@@ -8,6 +8,7 @@ import {
 } from './PaymentAdapter.ts';
 import type { PaymentProvider } from '@unchainedshop/core-payment';
 import { type Order, type OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 
 const buildPaymentProviderActionsContext = (
   orderPayment: OrderPayment,
@@ -233,7 +234,7 @@ export const PaymentDirector: IPaymentDirector = {
       transactionContext: any;
       userId: string;
     },
-    unchainedAPI,
+    unchainedAPI: { modules: Modules },
   ): Promise<OrderPayment> => {
     const { modules } = unchainedAPI;
 
@@ -260,6 +261,9 @@ export const PaymentDirector: IPaymentDirector = {
     const paymentProvider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: orderPayment.paymentProviderId,
     });
+
+    if (!paymentProvider)
+      throw new Error('Payment provider not found: ' + orderPayment.paymentProviderId);
 
     const actions = await PaymentDirector.actions(
       paymentProvider,
