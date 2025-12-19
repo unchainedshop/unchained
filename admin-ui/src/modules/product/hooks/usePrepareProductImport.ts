@@ -1,5 +1,6 @@
 import { IProductStatus, IProductVariationType } from '../../../gql/types';
 import { CSVRow } from '../../common/utils/csvUtils';
+import parseMeta from '../../common/utils/parseMeta';
 import { PRODUCT_TYPES } from '../ProductTypes';
 import {
   BuildProductEventsParam,
@@ -33,6 +34,7 @@ export const productMapper = (row: ProductCSVRow): ProductCSVRow => {
     row['supply.widthInMillimeters'];
   const hasWarehousing = row['sku'] || row['baseUnit'];
   const content = normalizeContent(row);
+  const meta = parseMeta(row['meta']);
   const mapped = {
     _id: row['_id'] || undefined,
     warehousing: hasWarehousing
@@ -70,7 +72,7 @@ export const productMapper = (row: ProductCSVRow): ProductCSVRow => {
             : undefined,
         }
       : undefined,
-    meta: row['meta'] ? JSON.parse(row['meta'] || '{}') : undefined,
+    meta,
   };
 
   return mapped;
@@ -88,7 +90,7 @@ export const validateProduct = (
 ): string[] => {
   const errors: string[] = [];
   for (const product of productsCSV) {
-    if (!Object.values(PRODUCT_TYPES).includes(product?.__typename)) {
+    if (!Object.values(PRODUCT_TYPES).includes(product?.type)) {
       errors.push(
         intl.formatMessage(
           {
@@ -107,14 +109,7 @@ export const validateProduct = (
         }),
       );
     }
-    if (!product.status) {
-      errors.push(
-        intl.formatMessage({
-          id: 'product_import_status_required',
-          defaultMessage: 'Required field status missing',
-        }),
-      );
-    }
+
     if (
       product.status &&
       ![
@@ -127,7 +122,7 @@ export const validateProduct = (
         intl.formatMessage(
           {
             id: 'product_import_status_invalid',
-            defaultMessage: 'Invalid status value given {{}}',
+            defaultMessage: 'Invalid status value given {{status}}',
           },
           { status: product.status },
         ),
