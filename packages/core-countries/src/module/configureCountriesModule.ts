@@ -1,160 +1,309 @@
-import {
-  mongodb,
-  type TimestampFields,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
-import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
-import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import { systemLocale } from '@unchainedshop/utils';
-import { CountriesCollection } from '../db/CountriesCollection.ts';
-import convertDefaultCurrencyCode from '../migrations/20241220123500-default-currency-code.ts';
+/**
+ * Isomorphic Countries Module
+ *
+ * This module works in both browser and Node.js environments.
+ * It uses the @unchainedshop/store abstraction for storage.
+ */
 
-export type Country = {
+import { emit, registerEvents } from '@unchainedshop/events';
+import { systemLocale } from '@unchainedshop/utils';
+import type {
+  Entity,
+  TimestampFields,
+  SortDirection,
+  SortOption,
+  IStore,
+  FilterQuery,
+  FindOptions,
+  TableSchema,
+  SearchConfig,
+} from '@unchainedshop/store';
+
+/**
+ * Countries table schema for Turso/SQLite.
+ * Used for server-side storage with FTS5 full-text search.
+ */
+export const countriesSchema: TableSchema = {
+  columns: [
+    { name: '_id', type: 'TEXT', primaryKey: true },
+    { name: 'isoCode', type: 'TEXT', notNull: true, unique: true },
+    { name: 'isActive', type: 'INTEGER' },
+    { name: 'defaultCurrencyCode', type: 'TEXT' },
+    { name: 'created', type: 'INTEGER', notNull: true },
+    { name: 'updated', type: 'INTEGER' },
+    { name: 'deleted', type: 'INTEGER' },
+  ],
+  indexes: [
+    { name: 'idx_countries_isoCode', columns: ['isoCode'], unique: true },
+    { name: 'idx_countries_deleted', columns: ['deleted'] },
+    { name: 'idx_countries_isActive', columns: ['isActive'] },
+  ],
+  fts: {
+    columns: ['isoCode', 'defaultCurrencyCode'],
+    tokenizer: 'unicode61',
+  },
+};
+
+/**
+ * Countries search config for TinyBase/browser.
+ * Used for client-side fuzzy search with Fuse.js.
+ */
+export const countriesSearchConfig: SearchConfig = {
+  keys: ['isoCode', 'defaultCurrencyCode'],
+  threshold: 0.3,
+};
+
+/**
+ * Country entity representing a country in the system.
+ */
+export interface Country extends Entity, TimestampFields {
   _id: string;
   isoCode: string;
   isActive?: boolean;
   defaultCurrencyCode?: string;
-} & TimestampFields;
+}
 
+/**
+ * Query parameters for finding countries.
+ */
 export interface CountryQuery {
   includeInactive?: boolean;
   queryString?: string;
   isoCodes?: string[];
+  limit?: number;
+  offset?: number;
+  sort?: SortOption[];
 }
 
-const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
+/**
+ * Input for creating a new country.
+ */
+export type CreateCountryInput = Omit<Country, '_id' | 'created' | 'updated' | 'deleted'> & {
+  _id?: string;
+  created?: Date;
+};
 
-export const buildFindSelector = ({
+/**
+ * Input for updating a country.
+ */
+export type UpdateCountryInput = Partial<Omit<Country, '_id' | 'created'>>;
+
+/**
+ * Events emitted by the countries module.
+ */
+export const COUNTRY_EVENTS = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'] as const;
+export type CountryEventType = (typeof COUNTRY_EVENTS)[number];
+
+/**
+ * Module input configuration.
+ */
+export interface CountriesModuleInput {
+  store: IStore;
+}
+
+/**
+ * Get the system region from systemLocale.
+ */
+const getSystemRegion = (): string => {
+  return systemLocale.region || 'CH';
+};
+
+/**
+ * Generate a unique ID.
+ */
+function generateId(): string {
+  const timestamp = Math.floor(Date.now() / 1000).toString(16);
+  const randomPart = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join(
+    '',
+  );
+  return timestamp + randomPart;
+}
+
+/**
+ * Build filter selector from query parameters.
+ */
+export function buildFindSelector({
   includeInactive = false,
   queryString = '',
   isoCodes,
-}: CountryQuery) => {
-  const selector: mongodb.Filter<Country> = { deleted: null };
-  if (!includeInactive) selector.isActive = true;
-  if (isoCodes) {
+}: CountryQuery): FilterQuery<Country> {
+  const selector: FilterQuery<Country> = { deleted: null };
+
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
+
+  if (isoCodes && isoCodes.length > 0) {
     selector.isoCode = { $in: isoCodes };
   }
+
   if (queryString) {
-    assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
+
   return selector;
-};
+}
 
-export const configureCountriesModule = async ({
-  db,
-  migrationRepository,
-}: ModuleInput<Record<string, never>>) => {
-  // Migration v3 -> v4
-  convertDefaultCurrencyCode(migrationRepository);
+/**
+ * Configure the countries module.
+ * This function works in both browser and Node.js.
+ */
+export async function configureCountriesModule({ store }: CountriesModuleInput) {
+  // Register events for this module
+  registerEvents([...COUNTRY_EVENTS]);
 
-  registerEvents(COUNTRY_EVENTS);
-
-  const Countries = await CountriesCollection(db);
+  const Countries = store.table<Country>('countries');
 
   return {
+    /**
+     * Count countries matching the query.
+     */
     count: async (query: CountryQuery): Promise<number> => {
-      const countryCount = await Countries.countDocuments(buildFindSelector(query));
-      return countryCount;
+      return Countries.countDocuments(buildFindSelector(query));
     },
 
-    findCountry: async (params: { countryId: string } | { isoCode: string }) => {
+    /**
+     * Find a single country by ID or ISO code.
+     */
+    findCountry: async (
+      params: { countryId: string } | { isoCode: string },
+    ): Promise<Country | null> => {
       if ('countryId' in params) {
-        return Countries.findOne(generateDbFilterById(params.countryId));
-      } else {
-        return Countries.findOne({ isoCode: params.isoCode });
+        return Countries.findOne({ _id: params.countryId });
       }
+      return Countries.findOne({ isoCode: params.isoCode });
     },
 
-    findCountries: async (
-      {
+    /**
+     * Find countries matching the query.
+     */
+    findCountries: async (query: CountryQuery): Promise<Country[]> => {
+      const { limit, offset, sort, ...filterQuery } = query;
+      const defaultSort: SortOption[] = [{ key: 'created', value: 'ASC' as SortDirection }];
+
+      const options: FindOptions = {
         limit,
         offset,
-        sort,
-        ...query
-      }: CountryQuery & {
-        limit?: number;
-        offset?: number;
-        sort?: SortOption[];
-      },
-      options?: mongodb.FindOptions,
-    ): Promise<Country[]> => {
-      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
-      const countries = Countries.find(buildFindSelector(query), {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(sort || defaultSort),
-        ...options,
-      });
-      return countries.toArray();
+        sort: sort || defaultSort,
+      };
+
+      return Countries.find(buildFindSelector(filterQuery), options);
     },
 
+    /**
+     * Check if a country exists.
+     */
     countryExists: async ({ countryId }: { countryId: string }): Promise<boolean> => {
-      const countryCount = await Countries.countDocuments(
-        generateDbFilterById(countryId, { deleted: null }),
-        {
-          limit: 1,
-        },
+      const count = await Countries.countDocuments({ _id: countryId, deleted: null });
+      return count > 0;
+    },
+
+    /**
+     * Get the display name of a country.
+     */
+    name(country: Country, locale: Intl.Locale): string {
+      return (
+        new Intl.DisplayNames([locale], { type: 'region', fallback: 'code' }).of(country.isoCode) ||
+        country.isoCode
       );
-      return !!countryCount;
     },
 
-    name(country: Country, locale: Intl.Locale) {
-      return new Intl.DisplayNames([locale], { type: 'region', fallback: 'code' }).of(country.isoCode);
-    },
-
-    flagEmoji(country: Country) {
+    /**
+     * Get the flag emoji for a country.
+     */
+    flagEmoji(country: Country): string {
       const letterToLetterEmoji = (letter: string): string => {
         return String.fromCodePoint(letter.toLowerCase().charCodeAt(0) + 127365);
       };
       return Array.from(country.isoCode.toUpperCase()).map(letterToLetterEmoji).join('');
     },
 
-    isBase(country: Country) {
-      return country.isoCode === systemLocale.region;
+    /**
+     * Check if a country is the base/system country.
+     */
+    isBase(country: Country): boolean {
+      return country.isoCode === getSystemRegion();
     },
 
-    create: async (
-      doc: Omit<Country, '_id' | 'created'> & Pick<Partial<Country>, '_id' | 'created'>,
-    ) => {
+    /**
+     * Create a new country.
+     */
+    create: async (doc: CreateCountryInput): Promise<string> => {
+      // Delete any previously soft-deleted country with same ISO code
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
-      const { insertedId: countryId } = await Countries.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
+
+      const countryId = doc._id || generateId();
+      await Countries.insertOne({
+        _id: countryId,
+        created: doc.created || new Date(),
         isoCode: doc.isoCode.toUpperCase(),
-        isActive: true,
+        isActive: doc.isActive ?? true,
+        defaultCurrencyCode: doc.defaultCurrencyCode,
+        deleted: null,
       });
+
       await emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
 
-    update: async (countryId: string, doc: Country) => {
-      await Countries.updateOne(generateDbFilterById(countryId), {
-        $set: {
-          updated: new Date(),
-          ...doc,
+    /**
+     * Update an existing country.
+     */
+    update: async (countryId: string, doc: UpdateCountryInput): Promise<string> => {
+      await Countries.updateOne(
+        { _id: countryId },
+        {
+          $set: {
+            ...doc,
+            updated: new Date(),
+          },
         },
-      });
+      );
+
       await emit('COUNTRY_UPDATE', { countryId });
       return countryId;
     },
 
-    delete: async (countryId: string) => {
-      const { modifiedCount: deletedCount } = await Countries.updateOne(
-        generateDbFilterById(countryId),
+    /**
+     * Soft-delete a country.
+     */
+    delete: async (countryId: string): Promise<number> => {
+      const result = await Countries.updateOne(
+        { _id: countryId },
         {
           $set: {
             deleted: new Date(),
           },
         },
       );
-      await emit('COUNTRY_REMOVE', { countryId });
-      return deletedCount;
-    },
-  };
-};
 
+      await emit('COUNTRY_REMOVE', { countryId });
+      return result.modifiedCount;
+    },
+
+    /**
+     * Subscribe to country changes (reactive updates).
+     * Only available in browser environment with TinyBase.
+     */
+    subscribe: Countries.subscribe
+      ? (query: CountryQuery, callback: (countries: Country[]) => void) => {
+          return Countries.subscribe!(buildFindSelector(query), callback);
+        }
+      : undefined,
+
+    /**
+     * Subscribe to a single country (reactive updates).
+     * Only available in browser environment with TinyBase.
+     */
+    subscribeOne: Countries.subscribeOne
+      ? (params: { countryId: string }, callback: (country: Country | null) => void) => {
+          return Countries.subscribeOne!({ _id: params.countryId }, callback);
+        }
+      : undefined,
+  };
+}
+
+/**
+ * Type of the configured countries module.
+ */
 export type CountriesModule = Awaited<ReturnType<typeof configureCountriesModule>>;

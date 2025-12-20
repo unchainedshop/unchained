@@ -34,9 +34,11 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "@libsql/client": "^0.15.15",
     "@unchainedshop/core-assortments": "^4.5.0",
     "@unchainedshop/core-bookmarks": "^4.5.0",
-    "@unchainedshop/core-countries": "^4.5.0",
+    "@unchainedshop/core-countries": "*",
+    "@unchainedshop/store": "*",
     "@unchainedshop/core-currencies": "^4.5.0",
     "@unchainedshop/core-delivery": "^4.5.0",
     "@unchainedshop/core-enrollments": "^4.5.0",

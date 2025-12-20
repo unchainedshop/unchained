@@ -4,8 +4,13 @@ import {
   configureAssortmentsModule,
 } from '@unchainedshop/core-assortments';
 import { type BookmarksModule, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
-import { configureCountriesModule, type CountriesModule } from '@unchainedshop/core-countries';
+import {
+  configureCountriesModule,
+  type CountriesModule,
+  countriesSchema,
+} from '@unchainedshop/core-countries';
 import { configureCurrenciesModule, type CurrenciesModule } from '@unchainedshop/core-currencies';
+import { createTursoStore } from '@unchainedshop/store';
 import {
   configureDeliveryModule,
   type DeliveryModule,
@@ -121,9 +126,19 @@ export default async function initModules(
     db,
     migrationRepository,
   });
+  // Countries module uses the new IStore interface with Turso/SQLite
+  // For now, use file-based SQLite. In production, use Turso cloud URL.
+  const countriesStore = await createTursoStore({
+    url: process.env.COUNTRIES_DB_URL || 'file:countries.db',
+    authToken: process.env.COUNTRIES_DB_TOKEN,
+    environment: 'server',
+    schemas: {
+      countries: countriesSchema,
+    },
+  });
+  await countriesStore.initialize();
   const countries = await configureCountriesModule({
-    db,
-    migrationRepository,
+    store: countriesStore,
   });
   const currencies = await configureCurrenciesModule({
     db,

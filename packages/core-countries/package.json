@@ -1,10 +1,16 @@
 {
   "name": "@unchainedshop/core-countries",
-  "version": "4.5.0",
+  "version": "5.0.0-alpha.0",
   "main": "lib/countries-index.js",
   "types": "lib/countries-index.d.ts",
   "type": "module",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./lib/countries-index.d.ts",
+      "import": "./lib/countries-index.js"
+    }
+  },
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",
@@ -20,7 +26,9 @@
   "keywords": [
     "unchained",
     "ecommerce",
-    "core"
+    "core",
+    "countries",
+    "local-first"
   ],
   "authors": [
     "Pascal Kaufmann",
@@ -35,6 +43,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/events": "^4.5.0",
+    "@unchainedshop/store": "*",
     "@unchainedshop/utils": "^4.5.0"
   },
   "devDependencies": {

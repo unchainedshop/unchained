@@ -1,0 +1,82 @@
+{
+  "name": "@unchainedshop/store",
+  "version": "5.0.0-alpha.0",
+  "description": "Storage abstraction layer for Unchained Engine - supports memory, Turso, and TinyBase adapters",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js"
+    },
+    "./memory": {
+      "types": "./lib/adapters/memory.d.ts",
+      "import": "./lib/adapters/memory.js"
+    },
+    "./turso": {
+      "types": "./lib/adapters/turso.d.ts",
+      "import": "./lib/adapters/turso.js"
+    },
+    "./tinybase": {
+      "types": "./lib/adapters/tinybase.d.ts",
+      "import": "./lib/adapters/tinybase.js"
+    }
+  },
+  "scripts": {
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "prepublishOnly": "npm run clean && npm run build",
+    "watch": "tsc -w",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce",
+    "store",
+    "local-first",
+    "tinybase",
+    "turso",
+    "sqlite"
+  ],
+  "authors": [
+    "Pascal Kaufmann",
+    "Mikael Araya",
+    "Vedran Rudelj",
+    "Joel Meiller"
+  ],
+  "license": "EUPL-1.2",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "peerDependencies": {
+    "@libsql/client": ">=0.14.0",
+    "fuse.js": ">=7.0.0",
+    "tinybase": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@libsql/client": {
+      "optional": true
+    },
+    "fuse.js": {
+      "optional": true
+    },
+    "tinybase": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@libsql/client": "^0.15.15",
+    "@types/node": "^25.0.0",
+    "fuse.js": "^7.1.0",
+    "tinybase": "^7.3.0",
+    "typescript": "^5.8.3"
+  }
+}
