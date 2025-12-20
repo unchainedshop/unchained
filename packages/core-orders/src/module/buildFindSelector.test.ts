@@ -3,10 +3,7 @@ import assert from 'node:assert';
 import { OrderStatus } from '../db/OrdersCollection.ts';
 import { buildFindByIdSelector as buildFindByIdSelectorForDelivery } from './configureOrderDeliveriesModule.ts';
 import { buildFindOrderDiscountByIdSelector } from './configureOrderDiscountsModule.ts';
-import {
-  buildFindOrderPaymentByIdSelector,
-  buildFindByContextDataSelector,
-} from './configureOrderPaymentsModule.ts';
+import { buildFindOrderPaymentByIdSelector } from './configureOrderPaymentsModule.ts';
 import { buildFindOrderPositionByIdSelector } from './configureOrderPositionsModule.ts';
 import buildFindSelectorForOrder from './buildFindSelector.ts';
 
@@ -94,18 +91,6 @@ describe('OrderPayment', () => {
       assert.deepStrictEqual(buildFindOrderPaymentByIdSelector('order-payment-id'), {
         _id: 'order-payment-id',
       });
-    });
-  });
-
-  describe('buildFindByContextDataSelector', () => {
-    it('Return correct db context field selector object', () => {
-      assert.deepStrictEqual(
-        buildFindByContextDataSelector({ first: 'first value', second: 'second value' }),
-        {
-          'context.first': 'first value',
-          'context.second': 'second value',
-        },
-      );
     });
   });
 });
