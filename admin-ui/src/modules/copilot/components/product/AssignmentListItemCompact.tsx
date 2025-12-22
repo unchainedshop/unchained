@@ -59,7 +59,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
 
         {sku && (
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {formatMessage({ id: 'assignment.sku', defaultMessage: 'SKU' })}:{' '}
+            {formatMessage({ id: 'assignment_sku', defaultMessage: 'SKU' })}:{' '}
             {sku}
           </p>
         )}

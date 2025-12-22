@@ -162,14 +162,14 @@
   "assigned_products": {
     "defaultMessage": "Assigned Products"
   },
-  "assignment.sku": {
-    "defaultMessage": "SKU"
-  },
   "assignment.title": {
     "defaultMessage": "Product Assignment"
   },
   "assignment_matrix_help": {
     "defaultMessage": "Each row represents a unique combination of your product variations. Assign a specific product to each combination to create a complete product catalog."
+  },
+  "assignment_sku": {
+    "defaultMessage": "SKU"
   },
   "assignments": {
     "defaultMessage": "Assignments"
@@ -182,9 +182,6 @@
   },
   "assortment_added": {
     "defaultMessage": "Assortment added successfully!"
-  },
-  "assortment_base": {
-    "defaultMessage": "Base"
   },
   "assortment_changed_to_leaf": {
     "defaultMessage": "Assortment changed to leaf"
@@ -264,9 +261,6 @@
   "assortment_links_header": {
     "defaultMessage": "Assortment links"
   },
-  "assortment_made_base": {
-    "defaultMessage": "Assortment changed to base"
-  },
   "assortment_management_tool_definition": {
     "defaultMessage": "\"Manage product categories\""
   },
@@ -332,9 +326,6 @@
   },
   "back_to_home": {
     "defaultMessage": "Back to Home"
-  },
-  "base": {
-    "defaultMessage": "Base"
   },
   "baseUnit": {
     "defaultMessage": "Base Unit"
@@ -452,6 +443,9 @@
   },
   "city": {
     "defaultMessage": "City"
+  },
+  "clear_filter": {
+    "defaultMessage": "Clear filter"
   },
   "clear_history": {
     "defaultMessage": "Clear History"
@@ -1218,6 +1212,9 @@
   "exporting": {
     "defaultMessage": "Exporting..."
   },
+  "exporting_message": {
+    "defaultMessage": "Generating your export files. This may take a moment..."
+  },
   "extended-fields": {
     "defaultMessage": "Extended"
   },
@@ -1242,26 +1239,17 @@
   "filer_options": {
     "defaultMessage": "Filter options"
   },
+  "files": {
+    "defaultMessage": "Files"
+  },
   "filter": {
     "defaultMessage": "Filter"
-  },
-  "filter.active": {
-    "defaultMessage": "Active"
-  },
-  "filter.created": {
-    "defaultMessage": "Created"
-  },
-  "filter.inactive": {
-    "defaultMessage": "Inactive"
   },
   "filter.options": {
     "defaultMessage": "Options"
   },
   "filter.sortKey": {
     "defaultMessage": "Sort"
-  },
-  "filter.updated": {
-    "defaultMessage": "Updated"
   },
   "filter_activated": {
     "defaultMessage": "Filter activated!",
@@ -1415,12 +1403,6 @@
   },
   "guest": {
     "defaultMessage": "Guest"
-  },
-  "header_conformation": {
-    "defaultMessage": "This action is nonreversible, are you sure you want to change it to base?"
-  },
-  "header_title": {
-    "defaultMessage": "Assortment base change."
   },
   "height": {
     "defaultMessage": "Height (Millimeter)"
@@ -1645,9 +1627,6 @@
   "manage": {
     "defaultMessage": "Manage"
   },
-  "mark_as_base": {
-    "defaultMessage": "Mark as Base"
-  },
   "mark_as_delivered": {
     "defaultMessage": "Mark as delivered"
   },
@@ -1672,9 +1651,6 @@
   "media": {
     "defaultMessage": "Media"
   },
-  "media.created": {
-    "defaultMessage": "Created"
-  },
   "media.id": {
     "defaultMessage": "ID"
   },
@@ -1683,9 +1659,6 @@
   },
   "media.type": {
     "defaultMessage": "Type"
-  },
-  "media.updated": {
-    "defaultMessage": "Updated"
   },
   "media_add_tool_definition": {
     "defaultMessage": "\"Add media files\""
@@ -1842,9 +1815,6 @@
   },
   "not_access_message": {
     "defaultMessage": "Sorry, the page you are trying to access has restricted access."
-  },
-  "not_base": {
-    "defaultMessage": "Mark as Base"
   },
   "not_found_message": {
     "defaultMessage": "Sorry, we couldn't find the page you're looking for."
@@ -2192,7 +2162,7 @@
     "defaultMessage": "Failed to unpublish product"
   },
   "product_untitled": {
-    "defaultMessage": "Untitled Product"
+    "defaultMessage": "Untitled product"
   },
   "product_variation_added": {
     "defaultMessage": "Product variation added successfully"
@@ -2593,6 +2563,9 @@
   "shortcuts": {
     "defaultMessage": "Shortcuts"
   },
+  "show_all_exports": {
+    "defaultMessage": "Show all exports"
+  },
   "show_available_tools": {
     "defaultMessage": "Show Available Tools"
   },
@@ -2836,9 +2809,6 @@
   "untitled_assortment": {
     "defaultMessage": "Untitled Assortment"
   },
-  "untitled_product": {
-    "defaultMessage": "Untitled product"
-  },
   "unverified": {
     "defaultMessage": "Unverified"
   },
@@ -2965,17 +2935,11 @@
   "value": {
     "defaultMessage": "Value"
   },
-  "variation.created": {
-    "defaultMessage": "Created"
-  },
   "variation.id": {
     "defaultMessage": "ID"
   },
   "variation.untitled": {
     "defaultMessage": "Untitled Variation"
-  },
-  "variation.updated": {
-    "defaultMessage": "Updated"
   },
   "variation_id": {
     "defaultMessage": "Variation ID"
