@@ -13,8 +13,9 @@ const generateCSVFileAndURL = async ({
   directoryName: string;
   fileName: string;
   unchainedAPI: UnchainedCore;
-}) => {
+}, expires = 3600000) => {
   const csvString = toCSV(headers, rows);
+  const normalizedExpiryTime = expires || 3600000
   const uploaded = await unchainedAPI.services.files.uploadFileFromStream({
     directoryName,
     rawFile: { filename: fileName, buffer: Buffer.from(csvString).toString('base64') },
@@ -22,9 +23,9 @@ const generateCSVFileAndURL = async ({
 
   const url = await unchainedAPI.services.files.createFileDownloadURL({
     file: uploaded,
-    expires: 3600000,
+    expires: normalizedExpiryTime,
   });
-  return url;
+  return { url, expires: normalizedExpiryTime };
 };
 
 export default generateCSVFileAndURL;

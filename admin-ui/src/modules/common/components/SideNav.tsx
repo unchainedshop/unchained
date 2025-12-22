@@ -1,21 +1,17 @@
 import { Disclosure } from '@headlessui/react';
-import { IRoleAction } from '../../../gql/types';
 
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useIntl } from 'react-intl';
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import useAuth from '../../Auth/useAuth';
-import ThemeToggle from './ThemeToggle';
 
 const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef(null);
-
   // Check if any child is active
   const isChildActive = item.children?.some(
     (child) => router.pathname === child.href,
