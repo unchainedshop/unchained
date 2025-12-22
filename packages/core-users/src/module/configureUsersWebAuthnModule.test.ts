@@ -114,7 +114,7 @@ describe('WebAuthn Module', () => {
       assert.ok(options.challenge);
       assert.ok(typeof options.challenge === 'string');
       assert.ok(options.requestId);
-      assert.strictEqual(typeof options.requestId, 'number');
+      assert.strictEqual(typeof options.requestId, 'string');
 
       // Check new structure from @passwordless-id/webauthn
       assert.ok(options.rp);
@@ -138,7 +138,7 @@ describe('WebAuthn Module', () => {
       assert.ok(options.challenge);
       assert.ok(typeof options.challenge === 'string');
       assert.ok(options.requestId);
-      assert.strictEqual(typeof options.requestId, 'number');
+      assert.strictEqual(typeof options.requestId, 'string');
 
       // Check new structure from @passwordless-id/webauthn
       assert.ok(options.rpId);
@@ -149,9 +149,8 @@ describe('WebAuthn Module', () => {
     it('should delete user WebAuthn credentials', async () => {
       const webAuthnModule = await configureUsersWebAuthnModule({ db });
 
-      // Create some credentials first (with delay to avoid duplicate _id)
+      // Create some credentials first (no delay needed - IDs are now unique)
       await webAuthnModule.createCredentialCreationOptions('https://example.com', 'testuser-delete');
-      await new Promise((resolve) => setTimeout(resolve, 2));
       await webAuthnModule.createCredentialCreationOptions('https://example.com', 'testuser-delete');
 
       // Delete credentials for testuser-delete
@@ -182,7 +181,7 @@ describe('WebAuthn Module', () => {
       const webAuthnModule = await configureUsersWebAuthnModule({ db });
 
       const result = await webAuthnModule.verifyCredentialRequest([], 'testuser', {
-        requestId: 99999999,
+        requestId: 'nonexistent-request-id',
         id: 'some-id',
         rawId: 'some-id',
         response: {

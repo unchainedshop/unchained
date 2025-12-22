@@ -1,4 +1,4 @@
-import type { ModuleInput } from '@unchainedshop/mongodb';
+import { type ModuleInput, generateDbObjectId } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
@@ -98,7 +98,7 @@ export function buf2hex(buffer: ArrayBuffer): string {
 
 export interface WebAuthnCredentialCreationOptions {
   challenge: string;
-  requestId: number;
+  requestId: string;
   rp: {
     id: string;
     name: string;
@@ -120,7 +120,7 @@ export interface WebAuthnCredentialCreationOptions {
 
 export interface WebAuthnCredentialRequestOptions {
   challenge: string;
-  requestId: number;
+  requestId: string;
   rpId: string;
   timeout: number;
   userVerification?: 'required' | 'preferred' | 'discouraged';
@@ -163,7 +163,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
     ): Promise<WebAuthnCredentialCreationOptions> => {
       const challenge = webauthnServer.randomChallenge();
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
-        _id: new Date().getTime(),
+        _id: generateDbObjectId(),
         challenge,
         origin,
         factor: 'either',
@@ -205,7 +205,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
     ): Promise<WebAuthnCredentialRequestOptions> => {
       const challenge = webauthnServer.randomChallenge();
       const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
-        _id: new Date().getTime(),
+        _id: generateDbObjectId(),
         challenge,
         origin,
         factor: 'either',
@@ -284,7 +284,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
         transports?: ExtendedAuthenticatorTransport[];
       }[],
       username: string,
-      credentials: AuthenticationJSON & { requestId: number },
+      credentials: AuthenticationJSON & { requestId: string },
     ): Promise<{ userHandle: string; counter: number } | null> => {
       const request = await WebAuthnCredentialsCreationRequests.findOne(
         {

@@ -7,7 +7,7 @@ export interface WebAuthnCredentialsCreationRequest {
   factor: 'first' | 'second' | 'either';
 }
 
-type Collection = WebAuthnCredentialsCreationRequest & { _id: number };
+type Collection = WebAuthnCredentialsCreationRequest & { _id: string };
 
 export const WebAuthnCredentialsCreationRequestsCollection = async (db: mongodb.Db) => {
   const WebAuthnCredentialsCreationRequests = db.collection<Collection>(
