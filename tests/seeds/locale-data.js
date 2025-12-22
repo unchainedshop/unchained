@@ -28,6 +28,9 @@ export const InactiveCountry = {
   defaultCurrencyCode: 'USD',
 };
 
+// All countries for seeding
+const allCountries = [BaseCountry, GermanyCountry, FranceCountry, InactiveCountry];
+
 export const BaseLanguage = {
   _id: 'de',
   isoCode: 'de',
@@ -91,4 +94,24 @@ export default async function seedOrders(db) {
     .upsert('currencies', UsdCurrency)
     .upsert('currencies', InactiveCurrency)
     .resolve();
+}
+
+/**
+ * Seed countries into the Turso store.
+ * This is needed because the countries module now uses Turso/SQLite instead of MongoDB.
+ */
+export async function seedCountriesToTurso(store) {
+  const Countries = store.table('countries');
+
+  // Clear existing countries
+  await Countries.deleteMany({});
+
+  // Insert all countries
+  for (const country of allCountries) {
+    await Countries.insertOne({
+      ...country,
+      created: new Date(),
+      deleted: null,
+    });
+  }
 }

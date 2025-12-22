@@ -149,8 +149,12 @@ function filterToSQL<T extends Entity>(
             params.push(opValue);
             break;
           case '$ne':
-            conditions.push(`"${key}" != ?`);
-            params.push(opValue);
+            if (opValue === null) {
+              conditions.push(`"${key}" IS NOT NULL`);
+            } else {
+              conditions.push(`"${key}" != ?`);
+              params.push(opValue);
+            }
             break;
           case '$gt':
             conditions.push(`"${key}" > ?`);
@@ -273,6 +277,10 @@ function entityToRow<T extends Entity>(entity: Partial<T>): Record<string, unkno
   const row: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(entity)) {
+    // Skip undefined values - SQLite doesn't accept undefined
+    if (value === undefined) {
+      continue;
+    }
     if (value instanceof Date) {
       row[key] = value.getTime();
     } else if (typeof value === 'boolean') {
