@@ -122,7 +122,7 @@ export const validateProduct = (
         intl.formatMessage(
           {
             id: 'product_import_status_invalid',
-            defaultMessage: 'Invalid status value given {{status}}',
+            defaultMessage: 'Invalid status value given ({status})',
           },
           { status: product.status },
         ),
@@ -220,7 +220,7 @@ export const validateProduct = (
         intl.formatMessage(
           {
             id: 'product_variation_import_invalid_type_required',
-            defaultMessage: 'Invalid variation type given {{}}',
+            defaultMessage: 'Invalid variation type given ({type})',
           },
           { type: variation.type },
         ),

@@ -81,6 +81,9 @@
   "add_language": {
     "defaultMessage": "Add Language"
   },
+  "add_new_tag": {
+    "defaultMessage": "Add \"{inputValue}\""
+  },
   "add_option": {
     "defaultMessage": "Add option"
   },
@@ -95,9 +98,6 @@
   },
   "add_review": {
     "defaultMessage": "Add Review"
-  },
-  "add_tag": {
-    "defaultMessage": "Add tag"
   },
   "add_user": {
     "defaultMessage": "Add User"
@@ -192,14 +192,32 @@
   "assortment_changed_to_root": {
     "defaultMessage": "Assortment changed to root"
   },
+  "assortment_children_CSV_import_assortment_id_missing": {
+    "defaultMessage": "Child csv record missing assortmentId"
+  },
+  "assortment_children_CSV_import_child_id_missing": {
+    "defaultMessage": "Child csv record missing childAssortmentId"
+  },
+  "assortment_children_csv_file": {
+    "defaultMessage": "Assortment children CSV (Optional)"
+  },
   "assortment_config_description": {
     "defaultMessage": "Organize products into categories"
+  },
+  "assortment_csv_file": {
+    "defaultMessage": "Assortments CSV"
   },
   "assortment_deactivated": {
     "defaultMessage": "Assortment deactivated successfully"
   },
   "assortment_deleted_success": {
     "defaultMessage": "Deleted successfully"
+  },
+  "assortment_filter_CSV_import_assortment_id_missing": {
+    "defaultMessage": "Assortment filter csv record missing assortmentId"
+  },
+  "assortment_filter_CSV_import_filter_id_missing": {
+    "defaultMessage": "Assortment filter csv record missing filterId"
   },
   "assortment_filter_deleted": {
     "defaultMessage": "Assortment filter deleted successfully"
@@ -210,11 +228,23 @@
   "assortment_filter_list_description": {
     "defaultMessage": "<ul> <li>All filters that are applied when searching for this assortment </li> <li> Drag and drop list items to sort filters order </li> </ul>"
   },
+  "assortment_filters": {
+    "defaultMessage": "Assortment filters"
+  },
+  "assortment_filters_csv_file": {
+    "defaultMessage": "Assortment filters CSV (Optional)"
+  },
   "assortment_filters_form_header": {
     "defaultMessage": "Filters"
   },
   "assortment_filters_header": {
     "defaultMessage": "Assortment filters"
+  },
+  "assortment_import_description": {
+    "defaultMessage": "Select your assortments CSV and optional related CSV files, then click Import."
+  },
+  "assortment_import_localized_texts_missing": {
+    "defaultMessage": "Title is required"
   },
   "assortment_link": {
     "defaultMessage": "Link deleted successfully"
@@ -227,6 +257,9 @@
   },
   "assortment_link_list_description": {
     "defaultMessage": "<ul> <li>All assortments found on the assortment relation tree</li> <li> Drag and drop list items to sort assortment links </li> <li> Parents are assortments found in the ancestors tree on any level </li> <li> Descendants are assortments found in the children tree on any level </li> </ul>"
+  },
+  "assortment_links": {
+    "defaultMessage": "Assortment links"
   },
   "assortment_links_header": {
     "defaultMessage": "Assortment links"
@@ -246,6 +279,12 @@
   "assortment_media_upload": {
     "defaultMessage": "Media uploaded successfully"
   },
+  "assortment_product_CSV_import_assortment_id_missing": {
+    "defaultMessage": "Product csv record missing assortmentId"
+  },
+  "assortment_product_CSV_import_product_id_missing": {
+    "defaultMessage": "Product csv record missing productId"
+  },
   "assortment_product_form_description": {
     "defaultMessage": "<ul> <li>Products that belong to this assortment </li> </ul>"
   },
@@ -254,6 +293,12 @@
   },
   "assortment_product_list_description": {
     "defaultMessage": "<ul> <li>All products that belong to this assortment</li> <li> Drag and drop list items to sort products order </li> </ul>"
+  },
+  "assortment_products": {
+    "defaultMessage": "Assortment products"
+  },
+  "assortment_products_csv_file": {
+    "defaultMessage": "Assortment products CSV (Optional)"
   },
   "assortment_products_header": {
     "defaultMessage": "Assortment product"
@@ -272,6 +317,9 @@
   },
   "assortments_header": {
     "defaultMessage": "1 Assortment"
+  },
+  "assortments_import_title": {
+    "defaultMessage": "Import Assortments"
   },
   "assortments_page_title": {
     "defaultMessage": "{count, plural, one {# Assortment} other {# Assortments}}"
@@ -318,11 +366,17 @@
   "bundle": {
     "defaultMessage": "Bundle product"
   },
+  "bundle-item-scaffolded-success": {
+    "defaultMessage": "New product scaffolded and added to bundle successfully"
+  },
   "bundle_item_added": {
     "defaultMessage": "Bundle product added successfully"
   },
   "bundle_item_deleted": {
     "defaultMessage": "Bundle item deleted successfully"
+  },
+  "bundle_items": {
+    "defaultMessage": "Bundle items"
   },
   "bundle_product_definition": {
     "defaultMessage": "<h3>Bundle</h3> <p>As the name suggest this product type enables you to create a collection/bundle of products as one and set the price accordingly. This type of product is useful if you have christmas package for example. </p>"
@@ -581,6 +635,9 @@
   },
   "created_colon": {
     "defaultMessage": "Created:"
+  },
+  "csv_missing_fields": {
+    "defaultMessage": "Missing required columns: {fields}"
   },
   "currencies": {
     "defaultMessage": "Currencies"
@@ -861,8 +918,8 @@
   "deliveryProviders_deleted": {
     "defaultMessage": "DeliveryProviders deleted successfully"
   },
-  "delivery_address": {
-    "defaultMessage": "Delivery address"
+  "delivery_details": {
+    "defaultMessage": "Delivery details"
   },
   "delivery_processing": {
     "defaultMessage": "Shipping & Delivery"
@@ -920,6 +977,12 @@
   },
   "dont_have_account": {
     "defaultMessage": "Don't have an account yet?"
+  },
+  "download": {
+    "defaultMessage": "Download"
+  },
+  "download_csv_template": {
+    "defaultMessage": "Download template"
   },
   "draft": {
     "defaultMessage": "Draft"
@@ -1143,6 +1206,15 @@
   "export": {
     "defaultMessage": "Export"
   },
+  "export_completed": {
+    "defaultMessage": "Data exported successfully"
+  },
+  "export_options": {
+    "defaultMessage": "Export options"
+  },
+  "exported": {
+    "defaultMessage": "Exported"
+  },
   "exporting": {
     "defaultMessage": "Exporting..."
   },
@@ -1163,6 +1235,9 @@
   },
   "female": {
     "defaultMessage": "Female"
+  },
+  "file": {
+    "defaultMessage": "File"
   },
   "filer_options": {
     "defaultMessage": "Filter options"
@@ -1204,6 +1279,9 @@
   "filter_created": {
     "defaultMessage": "Filter created successfully!"
   },
+  "filter_csv_invalid_type_set": {
+    "defaultMessage": "invalid filter type {type}"
+  },
   "filter_deactivated": {
     "defaultMessage": "Filter deactivated!",
     "description": "shown on successful toggle of filter status"
@@ -1220,6 +1298,21 @@
   "filter_header": {
     "defaultMessage": "1 Filter"
   },
+  "filter_import.id_missing": {
+    "defaultMessage": "Filter _id is required"
+  },
+  "filter_import.key_missing": {
+    "defaultMessage": "Filter key is required"
+  },
+  "filter_import.type_missing": {
+    "defaultMessage": "Filter type is required"
+  },
+  "filter_import_description": {
+    "defaultMessage": "Select your filters CSV and optional filter options CSV, then click Import."
+  },
+  "filter_import_title": {
+    "defaultMessage": "Import Filters"
+  },
   "filter_key": {
     "defaultMessage": "Key",
     "description": "Filter form key"
@@ -1230,11 +1323,23 @@
   "filter_option_added_success": {
     "defaultMessage": "Filter option added successfully"
   },
+  "filter_option_csv_filterId_missing": {
+    "defaultMessage": "Filter option filterId is required"
+  },
+  "filter_option_csv_value_missing": {
+    "defaultMessage": "Filter options value is required"
+  },
   "filter_option_title": {
     "defaultMessage": "Title"
   },
   "filter_option_value": {
     "defaultMessage": "Value"
+  },
+  "filter_options": {
+    "defaultMessage": "Filter options"
+  },
+  "filter_options_csv_file": {
+    "defaultMessage": "Filter options CSV (Optional)"
   },
   "filter_page_title": {
     "defaultMessage": "{count, plural, one {# Filter} other {# Filters}}"
@@ -1250,6 +1355,9 @@
   },
   "filters": {
     "defaultMessage": "Filters"
+  },
+  "filters_csv_file": {
+    "defaultMessage": "Filters CSV"
   },
   "finished": {
     "defaultMessage": "Finished"
@@ -1421,7 +1529,7 @@
     "defaultMessage": "{count} {entityName} failed to import"
   },
   "items_imported": {
-    "defaultMessage": "{count} {entityName} imported successfully ({created} created, {updated} updated)"
+    "defaultMessage": "{count} {entityName} imported successfully"
   },
   "items_purchased": {
     "defaultMessage": "Items purchased"
@@ -1609,6 +1717,9 @@
   "message_status_sent": {
     "defaultMessage": "Sent"
   },
+  "message_status_skipped": {
+    "defaultMessage": "Skipped"
+  },
   "message_status_undeliverable": {
     "defaultMessage": "Undeliverable"
   },
@@ -1663,6 +1774,9 @@
   "next": {
     "defaultMessage": "Next"
   },
+  "no_active_exports_found": {
+    "defaultMessage": "No active files found or all links have expired."
+  },
   "no_active_types": {
     "defaultMessage": "No active worker types found"
   },
@@ -1680,6 +1794,9 @@
   },
   "no_internet_access": {
     "defaultMessage": "You aren't connected to a working internet connection."
+  },
+  "no_options": {
+    "defaultMessage": "No options found for \"{inputValue}\""
   },
   "no_order_products_description": {
     "defaultMessage": "Once you receive your first orders, your top-selling products will appear here."
@@ -1894,11 +2011,14 @@
   "periods": {
     "defaultMessage": "Periods"
   },
-  "permission_missing": {
-    "defaultMessage": "You don't have the required permission"
-  },
   "photo": {
     "defaultMessage": "Photo"
+  },
+  "pickup_location": {
+    "defaultMessage": "Pickup Location"
+  },
+  "pickup_locations": {
+    "defaultMessage": "Pick-up Locations"
   },
   "plan_product_definition": {
     "defaultMessage": "<h3>Plan</h3> <p>Plan product is use when you have a product that is offered per subscription base. Since for this type of product the payment is usually recurring, you can adjust the interval of payment calculation. </p>"
@@ -1920,6 +2040,9 @@
   },
   "price_range": {
     "defaultMessage": "Price Range"
+  },
+  "prices": {
+    "defaultMessage": "Prices"
   },
   "priority": {
     "defaultMessage": "Priority"
@@ -1945,11 +2068,23 @@
   "product_assignments_explanation_title": {
     "defaultMessage": "About Product Assignments"
   },
+  "product_bundle_import_item_id_required": {
+    "defaultMessage": "Required field bundleItemProductId missing"
+  },
+  "product_bundle_import_product_id_required": {
+    "defaultMessage": "Required field variation productId missing"
+  },
+  "product_bundle_item_csv_file": {
+    "defaultMessage": "Product bundle items CSV (Optional)"
+  },
   "product_commerce_info": {
     "defaultMessage": "One price list should have a max quantity field empty and no price should have the same max quantity along with currency and country specified"
   },
   "product_creation_failed": {
     "defaultMessage": "Product creation failed"
+  },
+  "product_csv_file": {
+    "defaultMessage": "Products CSV"
   },
   "product_delete_blocked_action": {
     "defaultMessage": "Please unlink it before trying to delete it."
@@ -1978,8 +2113,14 @@
   "product_import.validation.invalid_type": {
     "defaultMessage": "Invalid product type: {type}"
   },
-  "product_import.validation.title_required": {
-    "defaultMessage": "Title is required"
+  "product_import_description": {
+    "defaultMessage": "Select your products CSV and optional CSV files, then click Import."
+  },
+  "product_import_sequence_required": {
+    "defaultMessage": "Required field sequence missing"
+  },
+  "product_import_status_invalid": {
+    "defaultMessage": "Invalid status value given ({status})"
   },
   "product_load_error": {
     "defaultMessage": "Failed to load product"
@@ -1998,6 +2139,21 @@
   },
   "product_page_title": {
     "defaultMessage": "{count, plural, one {# Product} other {# Products}}"
+  },
+  "product_price_csv_file": {
+    "defaultMessage": "Product prices CSV (Optional)"
+  },
+  "product_price_import_amount_required": {
+    "defaultMessage": "Required field amount missing"
+  },
+  "product_price_import_countryCode_required": {
+    "defaultMessage": "Required field countryCode missing"
+  },
+  "product_price_import_currencyCode_required": {
+    "defaultMessage": "Required field currencyCode missing"
+  },
+  "product_price_import_product_id_required": {
+    "defaultMessage": "Required field productId missing"
   },
   "product_publish_error": {
     "defaultMessage": "Failed to publish product"
@@ -2044,14 +2200,38 @@
   "product_variation_deleted": {
     "defaultMessage": "Variation deleted successfully"
   },
+  "product_variation_import_invalid_type_required": {
+    "defaultMessage": "Invalid variation type given ({type})"
+  },
+  "product_variation_import_product_id_required": {
+    "defaultMessage": "Required field variation productId missing"
+  },
+  "product_variation_import_type_required": {
+    "defaultMessage": "Required field variation type missing"
+  },
+  "product_variation_import_variation_id_required": {
+    "defaultMessage": "Required field variationId missing"
+  },
   "product_variation_key_help": {
     "defaultMessage": "Unique identifier used internally (e.g., \"color\", \"size\"). Use lowercase without spaces."
   },
   "product_variation_option_deleted": {
     "defaultMessage": "Variation option deleted successfully"
   },
+  "product_variation_option_import_value_required": {
+    "defaultMessage": "Required field variation option value missing"
+  },
+  "product_variation_option_import_variation_id_required": {
+    "defaultMessage": "Required field variation id missing"
+  },
+  "product_variation_options_csv_file": {
+    "defaultMessage": "Product variation options CSV (Optional)"
+  },
   "product_variation_title_help": {
     "defaultMessage": "The display name customers will see (e.g., \"Color\", \"Size\", \"Material\")"
+  },
+  "product_variations_csv_file": {
+    "defaultMessage": "Product variations CSV (Optional)"
   },
   "product_variations_explanation": {
     "defaultMessage": "Variations allow customers to choose different options for your product (like color, size, material). Each variation can have multiple options that customers can select from."
@@ -2079,6 +2259,9 @@
   },
   "products_header": {
     "defaultMessage": "1 Product"
+  },
+  "products_import_title": {
+    "defaultMessage": "Import Products"
   },
   "products_not_found": {
     "defaultMessage": "No {status} products found in these results"
@@ -2146,6 +2329,21 @@
   "quotations": {
     "defaultMessage": "Quotations"
   },
+  "ready_to_import": {
+    "defaultMessage": "Ready to import {products} products{prices}{bundleItems}{variations}{variationOptions}."
+  },
+  "ready_to_import_assortments": {
+    "defaultMessage": "Ready to import {assortments} assortments{products}{children}{filters}."
+  },
+  "ready_to_import_filters": {
+    "defaultMessage": "Ready to import {filters} filters{options}."
+  },
+  "recent_exports": {
+    "defaultMessage": "Recent exports"
+  },
+  "recent_exports_page_title": {
+    "defaultMessage": "{count, plural, one {# Export} other {# Exports}}"
+  },
   "recent_reviews": {
     "defaultMessage": "Recent reviews"
   },
@@ -2193,6 +2391,9 @@
   },
   "requested": {
     "defaultMessage": "Requested"
+  },
+  "requested_by": {
+    "defaultMessage": "Requested by"
   },
   "required-role-not-satisfied": {
     "defaultMessage": "Current account does not have access, please log in with an account that has the required role."
@@ -2245,6 +2446,12 @@
   "retry_remaining": {
     "defaultMessage": "retry"
   },
+  "retry_submit": {
+    "defaultMessage": "Retry"
+  },
+  "retry_work": {
+    "defaultMessage": "Retry Work"
+  },
   "review": {
     "defaultMessage": "Review"
   },
@@ -2296,6 +2503,12 @@
   "say_hi_get_to_know_me": {
     "defaultMessage": "Say Hi and Get To Know Me"
   },
+  "scaffold_and_add": {
+    "defaultMessage": "Scaffold & Add"
+  },
+  "scaffold_bundle_item_title": {
+    "defaultMessage": "Scaffold New Bundle Item"
+  },
   "scaffold_product": {
     "defaultMessage": "Scaffold"
   },
@@ -2325,9 +2538,6 @@
   },
   "select_type": {
     "defaultMessage": "Select type"
-  },
-  "select_valid_csv_error": {
-    "defaultMessage": "Please select a valid CSV file."
   },
   "send__enrollment_email_button": {
     "defaultMessage": "Send enrollment Email"
@@ -2744,7 +2954,7 @@
     "defaultMessage": "Username updated successfully!"
   },
   "users": {
-    "defaultMessage": "users"
+    "defaultMessage": "Users"
   },
   "users_setting_list_header": {
     "defaultMessage": "User settings"
@@ -2760,9 +2970,6 @@
   },
   "variation.id": {
     "defaultMessage": "ID"
-  },
-  "variation.productId": {
-    "defaultMessage": "Product ID"
   },
   "variation.untitled": {
     "defaultMessage": "Untitled Variation"
@@ -2787,6 +2994,9 @@
   },
   "variation_option_value_help": {
     "defaultMessage": "Internal identifier (e.g., \"red\", \"large\", \"cotton\")"
+  },
+  "variation_options": {
+    "defaultMessage": "Variation options"
   },
   "variation_options_explanation": {
     "defaultMessage": "Add individual choices for this variation (e.g., \"Red\", \"Blue\", \"Green\" for a Color variation)"

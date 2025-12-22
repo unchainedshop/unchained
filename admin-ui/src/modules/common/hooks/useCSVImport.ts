@@ -8,7 +8,7 @@ export interface ImportResult {
   failed: number;
   errors: string[];
 }
-const BATCH_SIZE = 200;
+const BATCH_SIZE = 100;
 export interface UseImportOptions<T> {
   validate: (items: T, intl: any) => string[];
   process: (
