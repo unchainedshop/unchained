@@ -50,7 +50,7 @@ export const useAssortmentExport = () => {
   const { exportCSV, isExporting } = useCSVExport((a) => a);
 
   const exportAssortments = useCallback(async (data) => {
-    exportCSV({ type: 'ASSORTMENTS', ...data });
+    await exportCSV({ type: 'ASSORTMENTS', ...data });
   }, []);
 
   return {
