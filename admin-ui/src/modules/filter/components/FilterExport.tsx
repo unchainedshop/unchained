@@ -17,7 +17,7 @@ const FilterExport = ({ queryString, includeInactive }) => {
   });
   const { setModal } = useModal();
 
-  const { exportFilters } = useFilterExport();
+  const { exportFilters, isExporting } = useFilterExport();
 
   const FILTER_EXPORT_OPTIONS: ExportOption[] = [
     {
@@ -35,7 +35,7 @@ const FilterExport = ({ queryString, includeInactive }) => {
 
   const handleSubmit = useCallback(
     async (data) => {
-      exportFilters({ queryString, includeInactive, ...data });
+      await exportFilters({ queryString, includeInactive, ...data });
       setModal(null);
     },
     [queryString, includeInactive],
@@ -49,6 +49,7 @@ const FilterExport = ({ queryString, includeInactive }) => {
           <ExportOptionsForm
             options={FILTER_EXPORT_OPTIONS}
             onSubmit={handleSubmit}
+            loading={isExporting}
           />,
         );
       }}

@@ -59,7 +59,7 @@ const AssortmentExport = ({
   ];
   const handleSubmit = useCallback(
     async (data) => {
-      exportAssortments({
+      await exportAssortments({
         queryString,
         includeInactive,
         includeLeaves,
@@ -79,6 +79,7 @@ const AssortmentExport = ({
           <ExportOptionsForm
             options={assortmentExportOptions}
             onSubmit={handleSubmit}
+            loading={isLoading}
           />,
         );
       }}

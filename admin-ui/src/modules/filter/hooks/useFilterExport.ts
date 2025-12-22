@@ -24,7 +24,7 @@ export const useFilterExport = () => {
   const { exportCSV: exportFilterCSV, isExporting } = useCSVExport((f) => f);
 
   const exportFilters = useCallback(async (params) => {
-    exportFilterCSV({ type: 'FILTERS', ...params });
+    await exportFilterCSV({ type: 'FILTERS', ...params });
   }, []);
   return {
     exportFilters,

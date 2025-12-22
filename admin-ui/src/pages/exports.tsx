@@ -8,6 +8,7 @@ import useFormatDateTime from '../modules/common/utils/useFormatDateTime';
 import { convertSortFieldsToQueryFormat } from '../modules/common/utils/utils';
 import { useRouter } from 'next/router';
 import Accordion from '../modules/common/components/Accordion';
+import Button from '../modules/common/components/Button';
 
 const RecentExports = () => {
   const { formatMessage } = useIntl();
@@ -120,15 +121,12 @@ const RecentExports = () => {
           )}
         />
         {workId && (
-          <button
-            onClick={handleShowAll}
-            className="text-sm font-semibold text-blue-600 hover:text-blue-800 mb-6 px-4 py-2 border rounded-md border-blue-200 bg-blue-50"
-          >
+          <Button onClick={handleShowAll}>
             {formatMessage({
               id: 'show_all_exports',
               defaultMessage: 'Show all exports',
             })}
-          </button>
+          </Button>
         )}
       </div>
 

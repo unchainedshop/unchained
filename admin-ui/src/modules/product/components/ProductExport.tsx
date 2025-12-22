@@ -45,7 +45,7 @@ const ProductExport = ({ queryString, includeDrafts, tags }) => {
   ];
   const handleSubmit = useCallback(
     async (data) => {
-      exportProducts({ queryString, includeDrafts, tags, ...data });
+      await exportProducts({ queryString, includeDrafts, tags, ...data });
       setModal(null);
     },
     [queryString, includeDrafts, tags],
@@ -59,6 +59,7 @@ const ProductExport = ({ queryString, includeDrafts, tags }) => {
           <ExportOptionsForm
             options={PRODUCT_EXPORT_OPTIONS}
             onSubmit={handleSubmit}
+            loading={isLoading}
           />,
         );
       }}

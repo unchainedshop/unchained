@@ -40,7 +40,7 @@ export const useCSVExport = (onError?: (error: any) => void) => {
         const workId = worker?.data?.addWork?._id;
         if (!workId) throw new Error('Failed to create export work');
 
-        return await new Promise<any>((resolve, reject) => {
+        await new Promise<any>((resolve, reject) => {
           const interval = setInterval(async () => {
             try {
               const work = await getWorkStatus(workId);
