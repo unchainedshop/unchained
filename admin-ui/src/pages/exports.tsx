@@ -5,15 +5,22 @@ import { useIntl } from 'react-intl';
 import Table from '../modules/common/components/Table';
 import Link from 'next/link';
 import useFormatDateTime from '../modules/common/utils/useFormatDateTime';
+import { convertSortFieldsToQueryFormat } from '../modules/common/utils/utils';
+import { useRouter } from 'next/router';
+import { ISortOptionInput } from '../gql/types';
 
 const RecentExports = () => {
-  const recentExports = useRecentExports();
   const { formatMessage } = useIntl();
   const timeFormatOptions: Intl.DateTimeFormatOptions = {
     dateStyle: 'short',
     timeStyle: 'short',
   };
   const { formatDateTime } = useFormatDateTime();
+  const { query } = useRouter();
+
+  const sortOptions = convertSortFieldsToQueryFormat(query?.sort);
+
+  const recentExports = useRecentExports({ sortOptions });
   return (
     <>
       <BreadCrumbs
@@ -36,10 +43,10 @@ const RecentExports = () => {
             id: 'recent_exports_page_title',
             defaultMessage: '{count, plural, one {# Export} other {# Exports}}',
           },
-          { count: 10 },
+          { count: recentExports?.count || 0 },
         )}
       />
-      {!recentExports?.files?.length ? (
+      {!recentExports?.count ? (
         <p>
           {formatMessage({
             id: 'no_active_exports_found',
@@ -48,11 +55,11 @@ const RecentExports = () => {
         </p>
       ) : (
         <Table className="min-w-full ">
-          <Table.Row header>
+          <Table.Row header enablesort>
             <Table.Cell>
               {formatMessage({ id: 'file', defaultMessage: 'File' })}{' '}
             </Table.Cell>
-            <Table.Cell>
+            <Table.Cell sortKey="finished" defaultSortDirection="DESC">
               {formatMessage({ id: 'exported', defaultMessage: 'Exported' })}
             </Table.Cell>
             <Table.Cell>
@@ -63,7 +70,9 @@ const RecentExports = () => {
 
           {recentExports.files.map((file) => (
             <Table.Row key={file?.url}>
-              <Table.Cell>{file.name}</Table.Cell>
+              <Table.Cell>
+                {file.name.replaceAll('([A-Z])', ' $1').trim()}
+              </Table.Cell>
               <Table.Cell>
                 {formatDateTime(file.finished, timeFormatOptions)}
               </Table.Cell>
