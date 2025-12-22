@@ -29,20 +29,6 @@ export const useCSVExport = (onError?: (error: any) => void) => {
     [client],
   );
 
-  const downloadFiles = (files: Record<string, { url: string }>) => {
-    Object.values(files)
-      .filter(Boolean)
-      .forEach((file) => {
-        const a = document.createElement('a');
-        a.href = file?.url;
-        a.target = '_blank';
-        a.download = '';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      });
-  };
-
   const exportCSV = useCallback(
     async ({ type, pollInterval = 2000, ...params }: any) => {
       setIsExporting(true);
@@ -67,10 +53,7 @@ export const useCSVExport = (onError?: (error: any) => void) => {
                 clearInterval(interval);
 
                 if (work.status === IWorkStatus.Success && work.success) {
-                  if (work.result?.files) {
-                    downloadFiles(work.result.files);
-                  }
-                  router.push(`/works?workerId=${work?._id}`);
+                  router.push(`/exports?workId=${work?._id}`);
                   resolve(work);
                 } else {
                   reject(work.error || new Error('Export failed'));
