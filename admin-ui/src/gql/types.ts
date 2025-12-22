@@ -2623,7 +2623,7 @@ export type IProductCatalogPrice = {
   currency: ICurrency;
   isNetPrice: Scalars['Boolean']['output'];
   isTaxable: Scalars['Boolean']['output'];
-  maxQuantity?: Maybe<Scalars['Int']['output']>;
+  minQuantity?: Maybe<Scalars['Int']['output']>;
 };
 
 export type IProductConfigurationParameter = {
@@ -3861,7 +3861,7 @@ export type IUpdateProductCommercePricingInput = {
   currencyCode: Scalars['String']['input'];
   isNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
   isTaxable?: InputMaybe<Scalars['Boolean']['input']>;
-  maxQuantity?: InputMaybe<Scalars['Int']['input']>;
+  minQuantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type IUpdateProductInput = {
@@ -11358,7 +11358,7 @@ export type IProductCatalogPriceFragment = {
   isTaxable: boolean;
   isNetPrice: boolean;
   amount: number;
-  maxQuantity?: number | null;
+  minQuantity?: number | null;
   country: {
     _id: string;
     isoCode?: string | null;
@@ -12879,7 +12879,7 @@ export type IProductCatalogPricesQuery = {
     isTaxable: boolean;
     isNetPrice: boolean;
     amount: number;
-    maxQuantity?: number | null;
+    minQuantity?: number | null;
     country: {
       _id: string;
       isoCode?: string | null;
