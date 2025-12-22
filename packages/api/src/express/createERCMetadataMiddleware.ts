@@ -4,8 +4,6 @@ import type { Request, RequestHandler } from 'express';
 
 const logger = createLogger('unchained:erc-metadata');
 
-const { ROOT_URL = 'http://localhost:4010' } = process.env;
-
 const methodWrongHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.status(404).end();
@@ -20,6 +18,7 @@ const ercMetadataMiddleware: RequestHandler = async (
     if (req.method !== 'GET') {
       return methodWrongHandler(res);
     }
+    const { ROOT_URL = 'http://localhost:4010' } = process.env;
 
     const { services, modules, loaders, locale } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);

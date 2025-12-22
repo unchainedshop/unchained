@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import Stripe from 'stripe';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -123,7 +123,7 @@ test.describe('Plugins: Stripe Payments', async () => {
         const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
 
         const confirmedIntent = await stripe.setupIntents.confirm(idAndSecret[0], {
-          return_url: 'http://localhost:4010',
+          return_url: getServerBaseUrl(),
           use_stripe_sdk: true,
           payment_method: 'pm_card_visa',
         });
@@ -268,7 +268,7 @@ test.describe('Plugins: Stripe Payments', async () => {
       test('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
         const confirmedIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
-          return_url: 'http://localhost:4010',
+          return_url: getServerBaseUrl(),
           use_stripe_sdk: true,
           payment_method: 'pm_card_visa',
         });
@@ -323,7 +323,7 @@ test.describe('Plugins: Stripe Payments', async () => {
         const idAndSecret = signPaymentProviderForCheckout.split('_secret_');
 
         const paymentIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
-          return_url: 'http://localhost:4010',
+          return_url: getServerBaseUrl(),
           payment_method: 'pm_card_visa',
         });
 
@@ -345,7 +345,7 @@ test.describe('Plugins: Stripe Payments', async () => {
           timestamp,
         });
 
-        const response = await fetch('http://localhost:4010/payment/stripe', {
+        const response = await fetch(`${getServerBaseUrl()}/payment/stripe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -385,7 +385,7 @@ test.describe('Plugins: Stripe Payments', async () => {
           },
         };
 
-        const response = await fetch('http://localhost:4010/payment/stripe', {
+        const response = await fetch(`${getServerBaseUrl()}/payment/stripe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -408,7 +408,7 @@ test.describe('Plugins: Stripe Payments', async () => {
           },
         };
 
-        const response = await fetch('http://localhost:4010/payment/stripe', {
+        const response = await fetch(`${getServerBaseUrl()}/payment/stripe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -447,7 +447,7 @@ test.describe('Plugins: Stripe Payments', async () => {
           timestamp,
         });
 
-        const response = await fetch('http://localhost:4010/payment/stripe', {
+        const response = await fetch(`${getServerBaseUrl()}/payment/stripe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -487,7 +487,7 @@ test.describe('Plugins: Stripe Payments', async () => {
           timestamp,
         });
 
-        const response = await fetch('http://localhost:4010/payment/stripe', {
+        const response = await fetch(`${getServerBaseUrl()}/payment/stripe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -515,7 +515,7 @@ test.describe('Plugins: Stripe Payments', async () => {
             userId: 'user',
             environment: process.env.STRIPE_WEBHOOK_ENVIRONMENT || '',
           },
-          return_url: 'http://localhost:4010',
+          return_url: getServerBaseUrl(),
           use_stripe_sdk: true,
         });
 
@@ -537,7 +537,7 @@ test.describe('Plugins: Stripe Payments', async () => {
           timestamp,
         });
 
-        const response = await fetch('http://localhost:4010/payment/stripe', {
+        const response = await fetch(`${getServerBaseUrl()}/payment/stripe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

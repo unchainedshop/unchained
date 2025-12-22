@@ -1,4 +1,10 @@
-import { MongoClient, Collection } from 'mongodb';
+import { Collection } from 'mongodb';
+import {
+  initializeTestPlatform,
+  shutdownTestPlatform,
+  getTestPlatform,
+  getServerPort,
+} from './setup.js';
 import seedLocaleData from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
@@ -15,7 +21,6 @@ import seedWorkQueue from './seeds/work.js';
 import seedEvents from './seeds/events.js';
 import seedTokens from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
-import waitOn from 'wait-on';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -28,21 +33,24 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...ar
   }
 };
 
-let connection;
+export const getConnection = () => null;
 
-export const getConnection = () => connection;
+export { getServerPort } from './setup.js';
 
-export const disconnect = async () => {
-  await connection?.close(true);
+export const getServerBaseUrl = () => {
+  const port = getServerPort();
+  return `http://localhost:${port}`;
 };
 
-export const connect = async () => {
-  connection = await MongoClient.connect(process.env.MONGO_URL || 'mongodb://0.0.0.0:4011');
+export const disconnect = async () => {
+  // No-op - cleanup happens in globalTeardown
 };
 
 export const setupDatabase = async () => {
-  await connect();
-  const db = await connection.db('test');
+  // Lazy initialization - ensure platform is running
+  await initializeTestPlatform();
+
+  const { db } = getTestPlatform();
   const collections = await db.collections();
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 
@@ -62,7 +70,7 @@ export const setupDatabase = async () => {
   await seedEvents(db);
   await seedTokens(db);
 
-  return [db, connection];
+  return [db, null];
 };
 
 export const createAnonymousGraphqlFetch = () => {
@@ -70,7 +78,8 @@ export const createAnonymousGraphqlFetch = () => {
 };
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
-  const client = new GraphQLClient('http://localhost:4010/graphql', {
+  const port = getServerPort();
+  const client = new GraphQLClient(`http://localhost:${port}/graphql`, {
     errorPolicy: 'all',
   });
 
@@ -105,16 +114,25 @@ export const putFile = async (file, { url, type }) => {
   if (response.ok) {
     return response.text();
   }
-  return Promise.reject(new Error('error'));
+  const errorText = await response.text().catch(() => 'Could not read error body');
+  return Promise.reject(
+    new Error(`PUT ${url} failed: ${response.status} ${response.statusText} - ${errorText}`),
+  );
 };
 
 export async function globalSetup() {
-  await waitOn({
-    resources: ['tcp:4010'],
-  });
+  await initializeTestPlatform();
   await setupDatabase();
 }
 
 export async function globalTeardown() {
-  await disconnect();
+  await shutdownTestPlatform();
+}
+
+// Node.js test runner global setup:
+// - Default export runs as setup
+// - Return value is the teardown function
+export default async function setup() {
+  await globalSetup();
+  return globalTeardown;
 }

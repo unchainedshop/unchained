@@ -5,16 +5,16 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
-  getConnection,
 } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
+let db;
 
 test.describe('Web3 Authentication', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
   });
@@ -289,8 +289,6 @@ test.describe('Web3 Authentication', () => {
         },
       });
 
-      const connection = getConnection();
-      const db = connection.db('test');
       const Users = db.collection('users');
 
       await Users.updateOne(

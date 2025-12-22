@@ -16,8 +16,6 @@ import { type GridFSFileUploadsModule } from './index.ts';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
-const { ROOT_URL } = process.env;
-
 const bufferToStream = (buffer: any) => {
   const stream = new Readable();
   stream.push(buffer);
@@ -56,7 +54,7 @@ export const GridFSAdapter: IFileAdapter<
       `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(
         fileName,
       )}?e=${expiryDate.getTime()}&s=${signature}`,
-      ROOT_URL,
+      process.env.ROOT_URL,
     ).href;
     const url = `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${hashedFilename}`;
 

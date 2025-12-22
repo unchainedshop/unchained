@@ -625,14 +625,14 @@ test.describe('Currency', () => {
         variables: {
           currencyId: currency._id,
           currency: {
-            isoCode: 'chf',
+            isoCode: 'ars',
             isActive: true,
           },
         },
       });
       assert.strictEqual(errors, undefined);
       assert.partialDeepStrictEqual(updateCurrency, {
-        isoCode: 'CHF',
+        isoCode: 'ARS',
         isActive: true,
       });
     });

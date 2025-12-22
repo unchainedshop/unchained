@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -269,7 +269,7 @@ test.describe('Plugins: Apple IAP', () => {
         },
       });
 
-      const result = await fetch('http://localhost:4010/payment/apple-iap', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/apple-iap`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -283,7 +283,7 @@ test.describe('Plugins: Apple IAP', () => {
     });
 
     test('notification_type = DID_RECOVER should just store the current receipt', async () => {
-      const result = await fetch('http://localhost:4010/payment/apple-iap', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/apple-iap`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -301,7 +301,7 @@ test.describe('Plugins: Apple IAP', () => {
     });
 
     test('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment', async () => {
-      const result = await fetch('http://localhost:4010/payment/apple-iap', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/apple-iap`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -3,6 +3,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  getServerBaseUrl,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -518,7 +519,7 @@ test.describe('WebAuthn Flows', () => {
     let storedCredentialId;
     let storedPrivateKey;
     const testUsername = 'user'; // Use existing seeded user
-    const origin = 'http://localhost:4010';
+    const origin = getServerBaseUrl();
     const rpId = 'localhost';
 
     test('should successfully register a WebAuthn credential', async () => {

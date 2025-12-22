@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -226,7 +226,7 @@ test.describe('Plugins: Cryptopay', () => {
     );
 
     await test('Invalid secret', async () => {
-      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -249,7 +249,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test('Pay too little for product with crypto prices', async () => {
-      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -272,7 +272,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test('Pay product with crypto prices', async () => {
-      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -295,7 +295,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test.skip('Pay too little for converted prices', async () => {
-      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -318,7 +318,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test.skip('Pay product with fiat prices in SHIB', async () => {
-      const result = await fetch('http://localhost:4010/payment/cryptopay', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

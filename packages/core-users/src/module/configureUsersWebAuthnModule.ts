@@ -16,8 +16,6 @@ const logger = createLogger('unchained:core-users');
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-const { ROOT_URL = 'http://localhost:4010', EMAIL_WEBSITE_NAME = 'Unchained' } = process.env;
-
 // Re-export types for consumers
 export type {
   RegistrationJSON,
@@ -141,6 +139,8 @@ export interface WebAuthnCredential {
 }
 
 export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<string, any>>) => {
+  const { ROOT_URL = 'http://localhost:4010', EMAIL_WEBSITE_NAME = 'Unchained' } = process.env;
+
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
 
   const thisDomain = new URL(ROOT_URL).hostname;

@@ -10,17 +10,6 @@ import {
   PaymentError,
 } from '@unchainedshop/core';
 
-const {
-  SAFERPAY_BASE_URL = 'https://test.saferpay.com/api',
-  SAFERPAY_CUSTOMER_ID,
-  SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook',
-  SAFERPAY_RETURN_PATH = '/saferpay/return',
-  ROOT_URL = 'http://localhost:4010',
-  EMAIL_WEBSITE_URL,
-  SAFERPAY_USER,
-  SAFERPAY_PW,
-} = process.env;
-
 const newSaferpayError = ({ code, message }: { code: string; message?: string }) => {
   const error = new Error(message || code);
   error.name = `SAFERPAY_${code}`;
@@ -48,6 +37,17 @@ export const WordlineSaferpay: IPaymentAdapter = {
     const { modules } = context as typeof context & {
       modules: SaferpayTransactionsModule;
     };
+
+    const {
+      SAFERPAY_BASE_URL = 'https://test.saferpay.com/api',
+      SAFERPAY_CUSTOMER_ID,
+      SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook',
+      SAFERPAY_RETURN_PATH = '/saferpay/return',
+      ROOT_URL = 'http://localhost:4010',
+      EMAIL_WEBSITE_URL,
+      SAFERPAY_USER,
+      SAFERPAY_PW,
+    } = process.env;
 
     const createSaferPayClient = () => {
       if (!SAFERPAY_CUSTOMER_ID || !SAFERPAY_USER || !SAFERPAY_PW)

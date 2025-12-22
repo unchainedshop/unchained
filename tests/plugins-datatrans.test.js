@@ -1,4 +1,4 @@
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -136,7 +136,7 @@ test.describe('Plugins: Datatrans', () => {
       const userId = User._id;
       const sign = '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
       const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
-      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -159,7 +159,7 @@ test.describe('Plugins: Datatrans', () => {
       const userId = User._id;
       const sign = '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
       const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
-      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -179,7 +179,7 @@ test.describe('Plugins: Datatrans', () => {
       const sign = '28f99091d4fc5859dabfff335eb07e06e00b0ca53775816d329ba88c17b1a36e';
       const refno = Buffer.from(orderPaymentId, 'hex').toString('base64');
 
-      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -197,7 +197,7 @@ test.describe('Plugins: Datatrans', () => {
       const userId = User._id;
       const sign = 'a146037afae54a78b61865b9c2bb38a60c687692833a1388a03176574cb2a004';
       const refno = Buffer.from(orderPaymentId, 'hex').toString('base64');
-      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -225,7 +225,7 @@ test.describe('Plugins: Datatrans', () => {
       const sign = '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
       const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
 
-      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {

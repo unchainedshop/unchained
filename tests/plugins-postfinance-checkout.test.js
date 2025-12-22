@@ -1,4 +1,4 @@
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -243,7 +243,7 @@ test.describe('Plugins: Postfinance Checkout', () => {
         assert.ok(new RegExp(`^${escapeRegExp(url)}?`).test(location));
 
         // Simulate WebHook call
-        const result = await fetch('http://localhost:4010/payment/postfinance-checkout', {
+        const result = await fetch(`${getServerBaseUrl()}/payment/postfinance-checkout`, {
           method: 'POST',
           duplex: 'half',
           headers: {

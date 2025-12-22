@@ -6,8 +6,6 @@ import { filesSettings, type FilesSettingsOptions } from '../files-settings.ts';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
-const { ROOT_URL = 'http://localhost:4010' } = process.env;
-
 export interface FileQuery {
   fileIds?: string[];
   excludeFileId?: string;
@@ -30,6 +28,8 @@ export const configureFilesModule = async ({
 
   return {
     normalizeUrl: (url: string, params: Record<string, any>): string => {
+      const { ROOT_URL = 'http://localhost:4010' } = process.env;
+
       const transformedURLString = filesSettings.transformUrl(url, params);
       if (URL.canParse(transformedURLString)) {
         const finalURL = new URL(transformedURLString);

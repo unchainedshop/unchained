@@ -6,8 +6,6 @@ let zstdEnabled = false;
 let mongod: Promise<MongoMemoryServer> | null = null;
 let mongoClient: MongoClient | null = null;
 
-const { PORT = '4010' } = process.env;
-
 const CLEANUP_TIMEOUT_MS = 10000;
 
 try {
@@ -19,10 +17,11 @@ try {
   /* */
 }
 
-export const startDb = async (options?: { forceInMemory?: boolean }) => {
+export const startDb = async (options?: { forceInMemory?: boolean; port?: number }) => {
   const { mkdir } = await import('node:fs/promises');
   const { MongoMemoryServer } = await import('mongodb-memory-server');
   const useInMemory = options?.forceInMemory || process.env.NODE_ENV === 'test';
+  const mongoPort = options?.port ?? parseInt(process.env.PORT || '4010', 10) + 1;
 
   if (!useInMemory) {
     try {
@@ -34,11 +33,11 @@ export const startDb = async (options?: { forceInMemory?: boolean }) => {
   try {
     mongod = MongoMemoryServer.create({
       instance: useInMemory
-        ? { dbName: 'test', port: parseInt(PORT, 10) + 1, storageEngine: 'ephemeralForTest' }
+        ? { dbName: 'test', port: mongoPort, storageEngine: 'ephemeralForTest' }
         : {
             dbPath: `${process.cwd()}/.db`,
             storageEngine: 'wiredTiger',
-            port: parseInt(PORT, 10) + 1,
+            port: mongoPort,
           },
     });
     const mongoInstance = await mongod;
@@ -79,7 +78,9 @@ export const stopDb = async () => {
   } catch {
     // Timeout or error - attempt force stop as last resort
     const server = await mongod;
-    await server?.stop({ force: true }).catch(() => {});
+    await server?.stop({ force: true }).catch(() => {
+      /* */
+    });
   } finally {
     mongoClient = null;
     mongod = null;
@@ -104,10 +105,11 @@ export interface DatabaseResource extends AsyncDisposable {
 
 export const createDatabaseResource = async (options?: {
   forceInMemory?: boolean;
+  port?: number;
 }): Promise<DatabaseResource> => {
   const url = options?.forceInMemory
-    ? await startDb({ forceInMemory: true })
-    : process.env.MONGO_URL || (await startDb());
+    ? await startDb({ forceInMemory: true, port: options.port })
+    : process.env.MONGO_URL || (await startDb({ port: options?.port }));
 
   mongoClient = new MongoClient(url, {
     compressors: zstdEnabled ? 'zstd' : undefined,
@@ -122,10 +124,10 @@ export const createDatabaseResource = async (options?: {
   };
 };
 
-const initDb = async (options?: { forceInMemory?: boolean }): Promise<Db> => {
+const initDb = async (options?: { forceInMemory?: boolean; port?: number }): Promise<Db> => {
   const url = options?.forceInMemory
-    ? await startDb({ forceInMemory: true })
-    : process.env.MONGO_URL || (await startDb());
+    ? await startDb({ forceInMemory: true, port: options.port })
+    : process.env.MONGO_URL || (await startDb({ port: options?.port }));
   mongoClient = new MongoClient(url, {
     compressors: zstdEnabled ? 'zstd' : undefined,
   });

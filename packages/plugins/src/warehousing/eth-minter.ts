@@ -13,8 +13,6 @@ import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '@unchainedshop/core-files';
 import { createLogger } from '@unchainedshop/logger';
 
-const { MINTER_TOKEN_OFFSET = '0', ROOT_URL = 'http://localhost:4010' } = process.env;
-
 const logger = createLogger('unchained:eth-minter');
 
 const ETHMinter: IWarehousingAdapter = {
@@ -32,6 +30,8 @@ const ETHMinter: IWarehousingAdapter = {
   },
 
   actions: (configuration, context) => {
+    const { MINTER_TOKEN_OFFSET = '0', ROOT_URL = 'http://localhost:4010' } = process.env;
+
     const { product, orderPosition, token, modules, locale } = context as WarehousingContext &
       UnchainedCore;
     const { contractAddress, contractStandard, tokenId, supply, ercMetadataProperties } =

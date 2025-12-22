@@ -5,8 +5,6 @@ import { ProductContractStandard } from '@unchainedshop/core-products';
 
 const logger = createLogger('unchained:api:erc-metadata');
 
-const { ROOT_URL = 'http://localhost:4010' } = process.env;
-
 const notFoundHandler = (res) => {
   logger.error('Method not supported, return 404');
   res.status(404);
@@ -18,6 +16,8 @@ const ercMetadataHandler: RouteHandlerMethod = async (
   res,
 ) => {
   try {
+    const { ROOT_URL = 'http://localhost:4010' } = process.env;
+
     const { services, modules, locale, loaders } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);
 
