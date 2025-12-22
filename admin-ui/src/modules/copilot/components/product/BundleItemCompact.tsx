@@ -11,7 +11,7 @@ const BundleItemCompact = ({ product, quantity }) => {
   const title =
     product?.texts?.title ??
     formatMessage({
-      id: 'untitled_product',
+      id: 'product_untitled',
       defaultMessage: 'Untitled product',
     });
   const sku = product?.warehousing?.sku;
