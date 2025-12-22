@@ -1,10 +1,5 @@
 import { useMemo } from 'react';
-import {
-  ISortDirection,
-  ISortOptionInput,
-  IWorkStatus,
-  IWorkType,
-} from '../../../gql/types';
+import { ISortOptionInput, IWorkStatus, IWorkType } from '../../../gql/types';
 import useWorkQueue from './useWorkQueue';
 type ExportedWork = {
   input: { type: string };
@@ -15,16 +10,25 @@ type ExportedWork = {
   finished: Date;
 };
 const getActiveFilesAndCount = (workQueue: ExportedWork[]) => {
-  if (!workQueue.length)
+  if (!workQueue?.length)
     return {
       exports: [],
       count: 0,
     };
-  const groupedData = (workQueue || [])
+
+  const now = Date.now();
+
+  const groupedData = workQueue
     .map((work) => {
       const finishedTime = new Date(work.finished).getTime();
+
       const activeFiles = Object.entries(work.result?.files || {})
-        .filter(([_, file]) => file?.url)
+        .filter(([_, file]) => {
+          if (!file?.url) return false;
+          if (!file?.expires) return true;
+          const expiryTimestamp = file.expires;
+          return expiryTimestamp > now;
+        })
         .map(([key, file]) => ({
           name: key.toUpperCase(),
           url: file.url,
@@ -34,7 +38,7 @@ const getActiveFilesAndCount = (workQueue: ExportedWork[]) => {
 
       return {
         id: work._id,
-        type: work?.input.type,
+        type: work?.input?.type,
         finished: new Date(work.finished).toLocaleString(),
         files: activeFiles,
       };
@@ -42,7 +46,7 @@ const getActiveFilesAndCount = (workQueue: ExportedWork[]) => {
     .filter(Boolean);
 
   const totalFiles = groupedData.reduce(
-    (acc, work) => acc + work.files.length,
+    (acc, work) => acc + (work?.files.length || 0),
     0,
   );
   return {
