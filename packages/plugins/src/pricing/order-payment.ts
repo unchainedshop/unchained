@@ -33,7 +33,7 @@ const OrderPayment: IOrderPricingAdapter = {
           currencyCode: order.currencyCode,
         });
         const tax = pricing.taxSum();
-        const paymentFees = pricing.gross();
+        const paymentFees = pricing.net();
 
         pricingAdapter
           .resultSheet()
