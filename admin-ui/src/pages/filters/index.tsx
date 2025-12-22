@@ -123,7 +123,6 @@ const FiltersListView = () => {
           <FilterExport
             queryString={queryString}
             includeInactive={includeInactive}
-            sortKeys={sortKeys}
           />
           <FilterImport />
         </PageHeader>

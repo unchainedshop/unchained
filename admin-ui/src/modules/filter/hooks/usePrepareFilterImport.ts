@@ -1,6 +1,7 @@
 import { CSVRow } from '../../common/utils/csvUtils';
 import { IFilterType } from '../../../gql/types';
 import { BuildFilterEventsParam, FilterImportPayload } from '../types';
+import parseMeta from '../../common/utils/parseMeta';
 
 const normalizeContent = (
   row: CSVRow,
@@ -105,21 +106,24 @@ export const validateFilter = (
   return errors;
 };
 
-const buildFilterEvents = (filter: BuildFilterEventsParam) => ({
-  entity: 'FILTER',
-  operation: 'CREATE',
-  payload: {
-    _id: filter['_id'],
-    specification: {
-      type: filter['type'] as IFilterType,
-      key: filter['key'] || '',
-      isActive: filter['isActive'] === 'true',
-      content: normalizeContent(filter),
-      options: (filter?.options ?? []).map(normalizeOptions),
-      meta: {},
+const buildFilterEvents = (filter: BuildFilterEventsParam) => {
+  const meta = parseMeta(filter['meta']);
+  return {
+    entity: 'FILTER',
+    operation: 'CREATE',
+    payload: {
+      _id: filter['_id'],
+      specification: {
+        type: filter['type'] as IFilterType,
+        key: filter['key'] || '',
+        isActive: filter['isActive'] === 'true',
+        content: normalizeContent(filter),
+        options: (filter?.options ?? []).map(normalizeOptions),
+        meta,
+      },
     },
-  },
-});
+  };
+};
 
 export const usePrepareFilterImport = () => {
   const prepareFilterImport = async ({

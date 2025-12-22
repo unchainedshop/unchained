@@ -1,62 +1,80 @@
 import { useState, useCallback } from 'react';
+import useAddWork from '../../work/hooks/useAddWork';
 import {
-  convertObjectsToCSV,
-  CSVRow,
-  downloadCSV,
-  RowExtractor,
-} from '../utils/csvUtils';
+  IWorkQuery,
+  IWorkQueryVariables,
+  IWorkStatus,
+  IWorkType,
+} from '../../../gql/types';
+import { useApolloClient } from '@apollo/client/react';
+import { GetWorkQuery } from '../../work/hooks/useWork';
+import { useRouter } from 'next/router';
 
-interface UseCSVExportOptions<T> {
-  headers?: string[];
-  onError?: (error: unknown) => void;
-}
-
-export function useCSVExport<T>(
-  data: T[],
-  extractRow: RowExtractor<T>,
-  options?: UseCSVExportOptions<T>,
-) {
-  const { headers: explicitHeaders, onError } = options || {};
+export const useCSVExport = (onError?: (error: any) => void) => {
   const [isExporting, setIsExporting] = useState(false);
+  const client = useApolloClient();
+  const router = useRouter();
+  const { addWork } = useAddWork();
+
+  const getWorkStatus = useCallback(
+    async (workId: string) => {
+      const { data } = await client.query<IWorkQuery, IWorkQueryVariables>({
+        query: GetWorkQuery(),
+        variables: { workId },
+        fetchPolicy: 'network-only',
+      });
+
+      return data?.work ?? null;
+    },
+    [client],
+  );
 
   const exportCSV = useCallback(
-    (filenamePrefix = 'export', overrideData) => {
-      const normalizedData = overrideData || data || [];
-      if (!normalizedData?.length) return;
-
+    async ({ type, pollInterval = 2000, ...params }: any) => {
       setIsExporting(true);
-
       try {
-        const rows: CSVRow[] =
-          overrideData === undefined
-            ? normalizedData.map(extractRow)
-            : normalizedData;
+        const worker = await addWork({
+          type: IWorkType.BulkExport,
+          input: { type, ...params },
+        });
+        const workId = worker?.data?.addWork?._id;
+        if (!workId) throw new Error('Failed to create export work');
 
-        const headers: string[] =
-          explicitHeaders ??
-          (() => {
-            const keySet = rows.reduce<Set<string>>((acc, row) => {
-              Object.keys(row).forEach((key) => acc.add(key));
-              return acc;
-            }, new Set<string>());
-            return Array.from(keySet);
-          })();
+        await new Promise<any>((resolve, reject) => {
+          const interval = setInterval(async () => {
+            try {
+              const work = await getWorkStatus(workId);
+              if (!work) throw new Error('Work not found');
 
-        const csvContent = convertObjectsToCSV(headers, rows);
+              if (
+                work.status === IWorkStatus.Success ||
+                work.status === IWorkStatus.Failed
+              ) {
+                clearInterval(interval);
 
-        const timestamp = new Date().toISOString().split('T')[0];
-        const filename = `${filenamePrefix}_${timestamp}.csv`;
-
-        downloadCSV(csvContent, filename);
+                if (work.status === IWorkStatus.Success && work.success) {
+                  router.push(`/exports?workId=${work?._id}`);
+                  resolve(work);
+                } else {
+                  reject(work.error || new Error('Export failed'));
+                }
+              }
+            } catch (err) {
+              clearInterval(interval);
+              reject(err);
+            }
+          }, pollInterval);
+        });
       } catch (error) {
         console.error('Export failed:', error);
         if (onError) onError(error);
+        return null;
       } finally {
         setIsExporting(false);
       }
     },
-    [data, extractRow, explicitHeaders, onError],
+    [addWork, getWorkStatus, onError],
   );
 
   return { isExporting, exportCSV };
-}
+};

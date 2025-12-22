@@ -55,14 +55,14 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
       <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
         <span>
           {formatMessage({
-            id: 'variation.created',
+            id: 'created',
             defaultMessage: 'Created',
           })}
           : {new Date(variation.created).toLocaleString()}
         </span>
         <span>
           {formatMessage({
-            id: 'variation.updated',
+            id: 'updated',
             defaultMessage: 'Updated',
           })}
           : {new Date(variation.updated).toLocaleString()}
