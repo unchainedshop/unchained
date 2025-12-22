@@ -6,55 +6,69 @@ import {
   IWorkType,
 } from '../../../gql/types';
 import useWorkQueue from './useWorkQueue';
-const getActiveFilesAndCount = (workQueue) => {
-  const now = Date.now();
+type ExportedWork = {
+  input: { type: string };
+  status: IWorkStatus;
+  _id: string;
+  type: IWorkType;
+  result: { files: { [key: string]: { url: string; expires: number } } };
+  finished: Date;
+};
+const getActiveFilesAndCount = (workQueue: ExportedWork[]) => {
   if (!workQueue.length)
     return {
-      files: [],
+      exports: [],
       count: 0,
     };
-  const activeFiles = workQueue.flatMap((work) => {
-    const finishedTime = new Date(work.finished).getTime();
+  const groupedData = (workQueue || [])
+    .map((work) => {
+      const finishedTime = new Date(work.finished).getTime();
+      const activeFiles = Object.entries(work.result?.files || {})
+        .filter(([_, file]) => file?.url)
+        .map(([key, file]) => ({
+          name: key.toUpperCase(),
+          url: file.url,
+          expiresAt: new Date(finishedTime + file.expires).toLocaleString(),
+        }));
+      if (activeFiles.length === 0) return null;
 
-    return Object.entries(
-      (work.result?.files || []) as { url: string; expires: number }[],
-    )
-      .filter(([_, file]) => {
-        return file?.url;
-      })
-      .map(([key, file]) => ({
-        name: key,
-        url: file.url,
-        finished: work.finished,
-        expiresAt: new Date(finishedTime + file.expires).toISOString(),
-      }));
-  });
+      return {
+        id: work._id,
+        type: work?.input.type,
+        finished: new Date(work.finished).toLocaleString(),
+        files: activeFiles,
+      };
+    })
+    .filter(Boolean);
 
+  const totalFiles = groupedData.reduce(
+    (acc, work) => acc + work.files.length,
+    0,
+  );
   return {
-    files: activeFiles,
-    count: activeFiles.length,
+    count: totalFiles,
+    exports: groupedData,
   };
 };
 
 const useRecentExports = ({
+  queryString = null,
   sortOptions,
-}: { sortOptions?: ISortOptionInput[] } = {}) => {
+}: { sortOptions?: ISortOptionInput[]; queryString?: string } = {}) => {
   const twentyFourHoursAgo = useMemo(
     () => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     [],
   );
   const { workQueue } = useWorkQueue({
     types: [IWorkType.BulkExport],
+    queryString,
     created: {
       start: twentyFourHoursAgo,
     },
     status: [IWorkStatus.Success],
     pollInterval: 60000,
-    sort: (sortOptions || []).length
-      ? sortOptions
-      : [{ key: 'finished', value: ISortDirection.Desc }],
   });
-  return getActiveFilesAndCount(workQueue);
+  return getActiveFilesAndCount(workQueue as ExportedWork[]);
 };
 
 export default useRecentExports;
