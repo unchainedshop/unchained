@@ -1,4 +1,8 @@
-import { Disclosure } from '@headlessui/react';
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from '@headlessui/react';
 
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -6,6 +10,7 @@ import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import useAuth from '../../Auth/useAuth';
+import Badge from './Badge';
 
 const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
   const router = useRouter();
@@ -105,7 +110,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
     <Disclosure defaultOpen as="div" key={item.name} className="space-y-1">
       {({ open }) => (
         <>
-          <Disclosure.Button
+          <DisclosureButton
             className={classNames(
               'group flex w-full cursor-pointer hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 dark:text-slate-400 items-center rounded-md py-2 pl-2 pr-4 text-left text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800',
             )}
@@ -130,8 +135,8 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                 open ? 'rotate-180' : 'rotate-0',
               )}
             />
-          </Disclosure.Button>
-          <Disclosure.Panel className="pl-6 space-y-1" onClick={onSelected}>
+          </DisclosureButton>
+          <DisclosurePanel className="pl-6 space-y-1" onClick={onSelected}>
             {item.children
               .filter((f) => !f?.requiredRole || hasRole(f.requiredRole))
               .map((subItem) => (
@@ -149,7 +154,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                   {subItem.name}
                 </Link>
               ))}
-          </Disclosure.Panel>
+          </DisclosurePanel>
         </>
       )}
     </Disclosure>
@@ -184,25 +189,28 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
                 )}
                 title={narrowView ? item.name : undefined}
               >
-                {item?.icon && (
-                  <item.icon
-                    className={classNames('h-6 w-6 shrink-0', {
-                      'text-slate-900 dark:text-slate-100':
-                        router.asPath === item.href ||
-                        router.pathname === item.href,
-                      'text-slate-800 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100':
-                        router.asPath !== item.href &&
-                        router.pathname !== item.href,
-                      'mr-3': !narrowView,
-                    })}
-                    aria-hidden="true"
-                  />
-                )}
-                {!narrowView && (
-                  <span className="flex-1 dark:text-slate-300">
-                    {item.name}
-                  </span>
-                )}
+                <>
+                  {item?.icon && (
+                    <item.icon
+                      className={classNames('h-6 w-6 shrink-0', {
+                        'text-slate-900 dark:text-slate-100':
+                          router.asPath === item.href ||
+                          router.pathname === item.href,
+                        'text-slate-800 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100':
+                          router.asPath !== item.href &&
+                          router.pathname !== item.href,
+                        'mr-3': !narrowView,
+                      })}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {!narrowView && (
+                    <span className="flex-1 dark:text-slate-300">
+                      {item.name}
+                    </span>
+                  )}
+                  {item.count && <Badge text={item.count} dotted />}
+                </>
               </Link>
             </div>
           ) : (

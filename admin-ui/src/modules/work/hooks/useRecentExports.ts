@@ -1,9 +1,18 @@
 import { useMemo } from 'react';
-import { IWorkStatus, IWorkType } from '../../../gql/types';
+import {
+  ISortDirection,
+  ISortOptionInput,
+  IWorkStatus,
+  IWorkType,
+} from '../../../gql/types';
 import useWorkQueue from './useWorkQueue';
 const getActiveFilesAndCount = (workQueue) => {
   const now = Date.now();
-
+  if (!workQueue.length)
+    return {
+      files: [],
+      count: 0,
+    };
   const activeFiles = workQueue.flatMap((work) => {
     const finishedTime = new Date(work.finished).getTime();
 
@@ -11,7 +20,7 @@ const getActiveFilesAndCount = (workQueue) => {
       (work.result?.files || []) as { url: string; expires: number }[],
     )
       .filter(([_, file]) => {
-        return file?.url && finishedTime + file.expires > now;
+        return file?.url;
       })
       .map(([key, file]) => ({
         name: key,
@@ -27,7 +36,9 @@ const getActiveFilesAndCount = (workQueue) => {
   };
 };
 
-const useRecentExports = () => {
+const useRecentExports = ({
+  sortOptions,
+}: { sortOptions?: ISortOptionInput[] } = {}) => {
   const twentyFourHoursAgo = useMemo(
     () => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     [],
@@ -39,6 +50,9 @@ const useRecentExports = () => {
     },
     status: [IWorkStatus.Success],
     pollInterval: 60000,
+    sort: (sortOptions || []).length
+      ? sortOptions
+      : [{ key: 'finished', value: ISortDirection.Desc }],
   });
   return getActiveFilesAndCount(workQueue);
 };

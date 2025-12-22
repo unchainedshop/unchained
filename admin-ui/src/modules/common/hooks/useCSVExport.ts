@@ -29,12 +29,12 @@ export const useCSVExport = (onError?: (error: any) => void) => {
     [client],
   );
 
-  const downloadFiles = (files: Record<string, string>) => {
+  const downloadFiles = (files: Record<string, { url: string }>) => {
     Object.values(files)
       .filter(Boolean)
-      .forEach((url) => {
+      .forEach((file) => {
         const a = document.createElement('a');
-        a.href = url;
+        a.href = file?.url;
         a.target = '_blank';
         a.download = '';
         document.body.appendChild(a);
