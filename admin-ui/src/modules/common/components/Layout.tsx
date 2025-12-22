@@ -60,7 +60,6 @@ const Layout = ({
   const { currentUser } = useCurrentUser();
   const { configuration } = useShopConfiguration();
   const recentExports = useRecentExports();
-  console.log(recentExports);
 
   const { shopInfo } = useShopInfo();
   const [hideNav, setHideNav] = useState(true);
@@ -118,6 +117,7 @@ const Layout = ({
       }),
       icon: FolderArrowDownIcon,
       href: '/exports',
+      count: recentExports?.count,
     },
     isSystemReady && {
       name: formatMessage({
