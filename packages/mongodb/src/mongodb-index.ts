@@ -1,6 +1,7 @@
 import * as mongodb from 'mongodb';
 
-export { initDb, startDb, stopDb } from './initDb.ts';
+export { initDb, startDb, stopDb, createDatabaseResource } from './initDb.ts';
+export type { DatabaseResource } from './initDb.ts';
 
 /*
  * Db utils

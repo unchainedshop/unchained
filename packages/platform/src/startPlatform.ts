@@ -28,6 +28,8 @@ const REQUIRED_ENV_VARIABLES = [
   'UNCHAINED_TOKEN_SECRET',
 ];
 
+const CLEANUP_FORCE_EXIT_TIMEOUT_MS = 15000;
+
 const exitOnMissingEnvironmentVariables = () => {
   const failedEnv = REQUIRED_ENV_VARIABLES.filter((key) => !process.env[key]);
   if (failedEnv.length > 0) {
@@ -108,19 +110,64 @@ export const startPlatform = async ({
 
   defaultLogger.info(`Unchained Engine running`, { version });
 
-  const cleanup = (signal) => async () => {
-    defaultLogger.debug('Stopping Workqueue', { signal });
-    stopWorkqueue();
-    defaultLogger.debug('Stopping GraphQL server', { signal });
-    await graphqlHandler.dispose();
-    defaultLogger.debug('Stopping DB Connection', { signal });
-    await stopDb();
-    defaultLogger.debug(`Unchained Engine exiting`, { signal, version });
-    process.exit(0);
+  let isCleaningUp = false;
+
+  const cleanup = (signal: string) => async () => {
+    // Prevent multiple concurrent cleanup attempts
+    if (isCleaningUp) {
+      defaultLogger.debug('Cleanup already in progress, ignoring signal', { signal });
+      return;
+    }
+    isCleaningUp = true;
+
+    defaultLogger.debug('Starting cleanup', { signal });
+
+    // Force exit if cleanup takes too long
+    const forceExitTimeout = setTimeout(() => {
+      defaultLogger.error('Cleanup timeout exceeded, forcing exit');
+      process.exit(1);
+    }, CLEANUP_FORCE_EXIT_TIMEOUT_MS);
+
+    // Ensure timeout doesn't keep process alive
+    forceExitTimeout.unref();
+
+    try {
+      defaultLogger.debug('Stopping Workqueue', { signal });
+      stopWorkqueue();
+
+      defaultLogger.debug('Stopping GraphQL server', { signal });
+      await graphqlHandler.dispose();
+
+      defaultLogger.debug('Stopping DB Connection', { signal });
+      await stopDb();
+
+      defaultLogger.debug(`Unchained Engine exiting gracefully`, { signal, version });
+      clearTimeout(forceExitTimeout);
+      process.exit(0);
+    } catch (error) {
+      defaultLogger.error('Error during cleanup', { signal, error });
+      clearTimeout(forceExitTimeout);
+      process.exit(1);
+    }
   };
 
+  // Standard termination signals
   process.on('SIGTERM', cleanup('SIGTERM'));
   process.on('SIGINT', cleanup('SIGINT'));
+
+  // Handle uncaught exceptions - attempt graceful shutdown
+  process.on('uncaughtException', async (error) => {
+    defaultLogger.error('Uncaught exception', { error: error.message, stack: error.stack });
+    await cleanup('uncaughtException')();
+  });
+
+  // Handle unhandled promise rejections - attempt graceful shutdown
+  process.on('unhandledRejection', async (reason) => {
+    defaultLogger.error('Unhandled rejection', {
+      reason: reason instanceof Error ? reason.message : String(reason),
+    });
+    await cleanup('unhandledRejection')();
+  });
 
   const end = performance.now();
   defaultLogger.debug(`Unchained Engine started in ${(end - start).toFixed(0)} ms`);
