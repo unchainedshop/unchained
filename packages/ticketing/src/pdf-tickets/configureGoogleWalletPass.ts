@@ -236,14 +236,14 @@ export default function configureGoogleWalletPass(config: GoogleWalletPassConfig
       heroImage:
         isProduction && url
           ? {
-            sourceUri: { uri: url },
-            contentDescription: {
-              defaultValue: {
-                language: normalizedUserLocale || 'de-CH',
-                value: 'Hero image description',
+              sourceUri: { uri: url },
+              contentDescription: {
+                defaultValue: {
+                  language: normalizedUserLocale || 'de-CH',
+                  value: 'Hero image description',
+                },
               },
-            },
-          }
+            }
           : undefined,
     });
 

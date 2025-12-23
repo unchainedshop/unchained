@@ -1,6 +1,4 @@
 import React from 'react';
-import type { Order } from '@unchainedshop/core-orders';
-import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { TicketingAPI } from '../types.js';
 
 let PDFRenderer: any = null;
@@ -18,146 +16,165 @@ try {
   QRCode = null;
 }
 
-export type TicketCustomization = {
-  title?: string;               
-  logoUrl?: string;             
-  labels?: {
-    orderNumber?: string;
-    status?: string;
-    date?: string;
-    billingAddress?: string;
-    contract?: string;
-    standard?: string;
-    productId?: string;
-    quantity?: string;
-  };
-  ticketTitle?: (token: TokenSurrogate) => string;
-  stripText?: (token: TokenSurrogate) => string;
-};
+interface BillingAddress {
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  addressLine?: string;
+  city?: string;
+  regionCode?: string;
+  postalCode?: string;
+  countryCode?: string;
+}
+interface TicketItem {
+  contractStandard?: string;
+  contractAddress?: string;
+  productId?: string;
+  quantity?: number;
+  qrCode?: string;
+  label?: string;
+}
+
+export interface TicketCustomization {
+  title?: string;
+  logoUrl?: string;
+  orderNumber?: string;
+  status?: any;
+  date?: Date;
+  billingAddress?: BillingAddress;
+  confirmed?: any;
+  tickets: TicketItem[];
+}
 
 export type TicketCustomizationRenderer = (
   order: string,
   context: TicketingAPI,
 ) => Promise<TicketCustomization>;
 
-const resolveLabel = (
-  labelKey: keyof NonNullable<TicketCustomization['labels']>,
-  customization?: TicketCustomization,
-  defaultValue?: string
-) => {
-  return customization?.labels?.[labelKey] ?? defaultValue ?? '';
+const defaultRenderer = async (orderId: string, context: TicketingAPI): Promise<TicketCustomization> => {
+  const { modules } = context;
+
+  const [order, positions] = await Promise.all([
+    modules.orders.findOrder({ orderId }),
+    modules.orders.positions.findOrderPositions({ orderId }),
+  ]);
+
+  if (!order) throw new Error(`Order ${orderId} not found`);
+
+  const tokens = await modules.warehousing.findTokens({
+    orderPositionId: { $in: positions.map((p) => p._id) },
+  });
+
+  const tickets = await Promise.all(
+    tokens.map(async (token) => {
+      const hash = await modules.warehousing.buildAccessKeyForToken(token._id as string);
+      const qrCode = QRCode
+        ? await QRCode.toDataURL(`${process.env.ROOT_URL}/download/${token._id}?hash=${hash}`, {
+            errorCorrectionLevel: 'H',
+          })
+        : undefined;
+
+      return {
+        contractAddress: token.contractAddress,
+        contractStandard: token.meta?.contractStandard,
+        productId: token.productId,
+        quantity: token.quantity,
+        qrCode,
+        label: 'Ticket ID:',
+      };
+    }),
+  );
+
+  return {
+    ...order,
+    tickets,
+  };
 };
 
-const resolveTokenTitle = (
-  token: TokenSurrogate,
-  customization?: TicketCustomization
-) => {
-  return customization?.ticketTitle
-    ? customization.ticketTitle(token)
-    : `Token #${token.tokenSerialNumber}`;
-};
-
-const resolveStripText = (
-  token: TokenSurrogate,
-  customization?: TicketCustomization
-) => {
-  return customization?.stripText
-    ? customization.stripText(token)
-    : null;
-};
-
-
-const TicketDocument = ({
-  styles,
-  order,
-  tokens,
-  qrSvgs,
-  customization,
-}: {
-  styles: any;
-  order: Order;
-  tokens: TokenSurrogate[];
-  qrSvgs: (string | null)[];
-  customization?: TicketCustomization;
-}) => {
+const TicketDocument = ({ data, styles }: { data: TicketCustomization; styles: any }) => {
+  if (!PDFRenderer) return null;
   const { Document, Page, Text, View, Image } = PDFRenderer;
-  
 
   return (
-   <Document>
-  <Page style={styles.page}>
-    {customization?.logoUrl && (
-      <Image src={customization.logoUrl} style={styles.logo} />
-    )}
+    <Document>
+      <Page style={styles.page}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+          <View>
+            {data.logoUrl && <Image src={data.logoUrl} style={styles.logo} />}
+            <Text style={styles.header}>{data.title ?? 'Ticket Receipt'}</Text>
+          </View>
+          <View style={{ textAlign: 'right', fontSize: 10 }}>
+            <Text>Order #: {data.orderNumber}</Text>
+            <Text>Status: {data.status}</Text>
+            {data.confirmed && <Text>Date: {new Date(data.confirmed).toLocaleDateString()}</Text>}
+          </View>
+        </View>
 
-    <Text style={styles.header}>
-      {customization?.title ?? 'Ticket Receipt'}
-    </Text>    
-    <View style={styles.section}>
-      <Text>
-        {resolveLabel('orderNumber', customization, 'Order Number')}: {order.orderNumber}
-      </Text>
-      <Text>
-        {resolveLabel('status', customization, 'Status')}: {order.status}
-      </Text>
-      {order.confirmed && (
-        <Text>
-          {resolveLabel('date', customization, 'Date')}: {order.confirmed.toLocaleString()}
-        </Text>
-      )}
-    </View>    
-    {order.billingAddress && (
-      <View style={styles.section}>
-        <Text>{resolveLabel('billingAddress', customization, 'Billing Address')}:</Text>
-        <Text>
-          {order.billingAddress.firstName} {order.billingAddress.lastName}
-        </Text>
-        {order.billingAddress.company && <Text>{order.billingAddress.company}</Text>}
-        <Text>{order.billingAddress.addressLine}</Text>
-        <Text>
-          {order.billingAddress.city}, {order.billingAddress.regionCode}{' '}
-          {order.billingAddress.postalCode}
-        </Text>
-        <Text>{order.billingAddress.countryCode}</Text>
-      </View>
-    )}    
-    {tokens.map((t, idx) => (
-      <View key={idx} style={styles.tokenContainer}>
-        <Text>{resolveTokenTitle(t, customization)}</Text>
-
-        <Text>
-          {resolveLabel('contract', customization, 'Contract')}: {t.contractAddress}
-        </Text>
-        <Text>
-          {resolveLabel('standard', customization, 'Standard')}: {t.meta.contractStandard}
-        </Text>
-        <Text>
-          {resolveLabel('productId', customization, 'Product ID')}: {t.productId}
-        </Text>
-        <Text>
-          {resolveLabel('quantity', customization, 'Quantity')}: {t.quantity}
-        </Text>
-
-        {resolveStripText(t, customization) && (
-          <Text style={styles.strip}>{resolveStripText(t, customization)}</Text>
-        )}
-
-        {qrSvgs[idx] && (
-          <View style={styles.qrContainer}>
-            <Image src={qrSvgs[idx]!} style={{ width: 60, height: 60 }} />
+        {data.billingAddress && (
+          <View style={[styles.section, { borderTop: 1, paddingTop: 10, borderColor: '#eee' }]}>
+            <Text style={{ fontSize: 10, color: '#666', marginBottom: 4 }}>BILLING TO:</Text>
+            <Text style={{ fontWeight: 'bold' }}>
+              {data.billingAddress.firstName} {data.billingAddress.lastName}
+            </Text>
+            {data.billingAddress.company && <Text>{data.billingAddress.company}</Text>}
+            <Text>{data.billingAddress.addressLine}</Text>
+            <Text>
+              {data.billingAddress.city}, {data.billingAddress.regionCode}{' '}
+              {data.billingAddress.postalCode}
+            </Text>
+            <Text>{data.billingAddress.countryCode}</Text>
           </View>
         )}
 
-        {idx < tokens.length - 1 && <View style={styles.separator} />}
-      </View>
-    ))}
-  </Page>
-</Document>
+        <View style={{ marginTop: 20 }}>
+          <Text
+            style={{
+              fontSize: 10,
+              color: '#666',
+              borderBottom: 1,
+              borderColor: '#eee',
+              paddingBottom: 4,
+            }}
+          >
+            YOUR TICKETS
+          </Text>
+          {data.tickets.map((t, idx) => (
+            <View key={idx} style={styles.tokenContainer} wrap={false}>
+              <View style={styles.details}>
+                <Text style={{ fontWeight: 'bold' }}>
+                  {t.label} {t.productId}
+                </Text>
+                <Text style={{ fontSize: 10, color: '#444' }}>Standard: {t.contractStandard}</Text>
+                <Text style={{ fontSize: 9, color: '#888' }}>Contract: {t.contractAddress}</Text>
+                <Text>Quantity: {t.quantity}</Text>
+              </View>
 
+              {t.qrCode && (
+                <View style={styles.qrContainer}>
+                  <Image src={t.qrCode} style={{ width: 65, height: 65 }} />
+                </View>
+              )}
+
+              {idx < data.tickets.length - 1 && <View style={styles.separator} />}
+            </View>
+          ))}
+        </View>
+
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            left: 20,
+            right: 20,
+            borderTop: 1,
+            borderColor: '#eee',
+            paddingTop: 10,
+          }}
+        ></View>
+      </Page>
+    </Document>
   );
 };
-
-
 
 export const createPDFTicketRenderer =
   (customRenderer?: TicketCustomizationRenderer) =>
@@ -166,31 +183,9 @@ export const createPDFTicketRenderer =
       throw new Error('@react-pdf/renderer must be installed');
     }
 
-    const { modules } = context;
-    
-    const order = await modules.orders.findOrder({ orderId });
-    if (!order) throw new Error(`Order ${orderId} not found`);
-
-    const positions = await modules.orders.positions.findOrderPositions({ orderId });
-    const positionIds = positions.map(p => p._id);
-
-    const tokens = await modules.warehousing.findTokens({
-      orderPositionId: { $in: positionIds },
-    });
-    
-    const customization = customRenderer ? await customRenderer(orderId, context) : undefined;
-    
-    let qrSvgs: (string | null)[] = [];
-    if (QRCode) {
-      qrSvgs = await Promise.all(
-        tokens.map(async t => {
-          const hash = await modules.warehousing.buildAccessKeyForToken(t._id as string);
-          return QRCode.toDataURL(`${process.env.ROOT_URL}/download/${t._id}?hash=${hash}`, {
-            errorCorrectionLevel: 'H',
-          });
-        })
-      );
-    }
+    const data = customRenderer
+      ? await customRenderer(orderId, context)
+      : await defaultRenderer(orderId, context);
 
     const { StyleSheet } = PDFRenderer;
     const styles = StyleSheet.create({
@@ -203,17 +198,8 @@ export const createPDFTicketRenderer =
       logo: { width: 120, marginBottom: 12 },
       strip: { marginTop: 6, fontSize: 10, color: '#666' },
     });
-
     return {
       contentType: 'application/pdf',
-      renderer: await PDFRenderer.renderToStream(
-        <TicketDocument
-          order={order}
-          tokens={tokens}
-          qrSvgs={qrSvgs}
-          customization={customization}
-          styles={styles}
-        />
-      ),
+      renderer: await PDFRenderer.renderToStream(<TicketDocument data={data} styles={styles} />),
     };
   };
