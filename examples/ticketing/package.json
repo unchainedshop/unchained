@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.0",
+    "@walletpass/pass-js": "^6.9.1",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3"
