@@ -1,4 +1,3 @@
-
 import { subscribe } from '@unchainedshop/events';
 import type { RawPayloadType } from '@unchainedshop/events';
 import { WorkerEventTypes, type Work } from '@unchainedshop/core-worker';
@@ -14,8 +13,6 @@ import { defaultTicketReceiptRenderer } from './pdf-tickets/defaultTicketReceipt
 export type { TicketingAPI, RendererTypes, TicketingModule, TicketingServices };
 
 export { ticketingServices, ticketingModules };
-
-
 
 export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
