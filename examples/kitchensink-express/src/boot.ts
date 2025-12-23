@@ -13,7 +13,6 @@ import { pluginRegistry } from '@unchainedshop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 import setupTicketing, { type TicketingAPI } from "@unchainedshop/ticketing";
-import rest from "@unchainedshop/ticketing/src/express.js";
 
 const logger = createLogger('express');
 const app = express();
