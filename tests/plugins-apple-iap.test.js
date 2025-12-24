@@ -18,7 +18,8 @@ import didRecover from './seeds/apple-iap-did-recover.js';
 import didChangeRenewalStatus from './seeds/apple-iap-did-change-renewal-status.js';
 import { AllEnrollmentIds } from './seeds/enrollments.js';
 
-test.describe('Plugins: Apple IAP', () => {
+// Skip because Apple IAP credentials needed to run these tests
+test.skip('Plugins: Apple IAP', () => {
   let db;
   let graphqlFetch;
 

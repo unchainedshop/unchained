@@ -429,7 +429,7 @@ test.describe('Bulk Importer', () => {
                     {
                       asset: {
                         fileName: 'logo-light.svg',
-                        url: 'https://sandbox-v3.unchained.shop/logo-light.svg',
+                        url: 'https://docs.unchained.shop/img/unchained-logomark.svg',
                       },
                       tags: ['big'],
                       meta: {},

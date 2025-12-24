@@ -11,7 +11,8 @@ const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
-test.describe('Plugins: Postfinance Checkout', () => {
+// Skip because Postfinance Checkout credentials needed to run these tests
+test.skip('Plugins: Postfinance Checkout', () => {
   const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
   const secretsSet = PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET;
 
