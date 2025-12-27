@@ -1,13 +1,11 @@
 import { MongoClient, Collection } from 'mongodb';
 import { createTursoStore } from '@unchainedshop/store/turso';
-import { Collection } from 'mongodb';
 import {
   initializeTestPlatform,
   shutdownTestPlatform,
   getTestPlatform,
   getServerPort,
 } from './setup.js';
-import seedLocaleData from './seeds/locale-data.js';
 import { countriesSchema } from '@unchainedshop/core-countries';
 import seedLocaleData, { seedCountriesToTurso } from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
@@ -39,7 +37,6 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...ar
 
 let connection;
 let countriesStore;
-export const getConnection = () => null;
 
 export { getServerPort } from './setup.js';
 
@@ -56,15 +53,12 @@ export const disconnect = async () => {
 };
 
 export const connectCountriesStore = async () => {
-  // The server runs from examples/kitchensink/, so the countries-test.db is created there
-  // We need to connect to the same file
+  // Connect to the same database file that the server uses
+  // The server runs from the repo root, so use the same path
   const dbUrl = process.env.COUNTRIES_DB_URL || 'file:countries-test.db';
-  const serverDbPath = dbUrl.startsWith('file:')
-    ? `file:examples/kitchensink/${dbUrl.replace('file:', '')}`
-    : dbUrl;
 
   countriesStore = await createTursoStore({
-    url: serverDbPath,
+    url: dbUrl,
     authToken: process.env.COUNTRIES_DB_TOKEN,
     environment: 'server',
     schemas: {

@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/store",
   "version": "5.0.0-alpha.0",
-  "description": "Storage abstraction layer for Unchained Engine - supports memory, Turso, and TinyBase adapters",
+  "description": "Storage abstraction layer for Unchained Engine - supports memory and Turso adapters",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
@@ -18,10 +18,6 @@
     "./turso": {
       "types": "./lib/adapters/turso.d.ts",
       "import": "./lib/adapters/turso.js"
-    },
-    "./tinybase": {
-      "types": "./lib/adapters/tinybase.d.ts",
-      "import": "./lib/adapters/tinybase.js"
     }
   },
   "scripts": {
@@ -41,7 +37,6 @@
     "ecommerce",
     "store",
     "local-first",
-    "tinybase",
     "turso",
     "sqlite"
   ],
@@ -57,26 +52,16 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@libsql/client": ">=0.14.0",
-    "fuse.js": ">=7.0.0",
-    "tinybase": ">=5.0.0"
+    "@libsql/client": ">=0.14.0"
   },
   "peerDependenciesMeta": {
     "@libsql/client": {
-      "optional": true
-    },
-    "fuse.js": {
-      "optional": true
-    },
-    "tinybase": {
       "optional": true
     }
   },
   "devDependencies": {
     "@libsql/client": "^0.15.15",
     "@types/node": "^25.0.0",
-    "fuse.js": "^7.1.0",
-    "tinybase": "^7.3.0",
     "typescript": "^5.8.3"
   }
 }

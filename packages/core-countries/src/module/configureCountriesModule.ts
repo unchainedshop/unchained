@@ -16,7 +16,6 @@ import type {
   FilterQuery,
   FindOptions,
   TableSchema,
-  SearchConfig,
 } from '@unchainedshop/store';
 
 /**
@@ -42,15 +41,6 @@ export const countriesSchema: TableSchema = {
     columns: ['isoCode', 'defaultCurrencyCode'],
     tokenizer: 'unicode61',
   },
-};
-
-/**
- * Countries search config for TinyBase/browser.
- * Used for client-side fuzzy search with Fuse.js.
- */
-export const countriesSearchConfig: SearchConfig = {
-  keys: ['isoCode', 'defaultCurrencyCode'],
-  threshold: 0.3,
 };
 
 /**
@@ -280,26 +270,6 @@ export async function configureCountriesModule({ store }: CountriesModuleInput) 
       await emit('COUNTRY_REMOVE', { countryId });
       return result.modifiedCount;
     },
-
-    /**
-     * Subscribe to country changes (reactive updates).
-     * Only available in browser environment with TinyBase.
-     */
-    subscribe: Countries.subscribe
-      ? (query: CountryQuery, callback: (countries: Country[]) => void) => {
-          return Countries.subscribe!(buildFindSelector(query), callback);
-        }
-      : undefined,
-
-    /**
-     * Subscribe to a single country (reactive updates).
-     * Only available in browser environment with TinyBase.
-     */
-    subscribeOne: Countries.subscribeOne
-      ? (params: { countryId: string }, callback: (country: Country | null) => void) => {
-          return Countries.subscribeOne!({ _id: params.countryId }, callback);
-        }
-      : undefined,
   };
 }
 

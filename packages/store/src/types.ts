@@ -111,13 +111,8 @@ export interface UpdateQuery<T> {
 }
 
 /**
- * Unsubscribe function returned by subscriptions.
- */
-export type Unsubscribe = () => void;
-
-/**
- * Table interface - works with both TinyBase and SQLite.
- * Provides CRUD operations and reactive subscriptions.
+ * Table interface for storage adapters.
+ * Provides CRUD operations.
  */
 export interface ITable<T extends Entity> {
   /**
@@ -169,18 +164,6 @@ export interface ITable<T extends Entity> {
    * Get distinct values for a field.
    */
   distinct<K extends keyof T>(field: K, filter?: FilterQuery<T>): Promise<T[K][]>;
-
-  /**
-   * Subscribe to documents matching the filter (for reactive UI updates).
-   * Only available in browser environment with TinyBase.
-   */
-  subscribe?(filter: FilterQuery<T>, callback: (docs: T[]) => void): Unsubscribe;
-
-  /**
-   * Subscribe to a single document (for reactive UI updates).
-   * Only available in browser environment with TinyBase.
-   */
-  subscribeOne?(filter: FilterQuery<T>, callback: (doc: T | null) => void): Unsubscribe;
 }
 
 /**

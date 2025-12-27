@@ -7,4 +7,3 @@ export {
   type ColumnDefinition,
   type IndexDefinition,
 } from './turso.js';
-export { createTinyBaseStore, type TinyBaseConfig, type SearchConfig } from './tinybase.js';

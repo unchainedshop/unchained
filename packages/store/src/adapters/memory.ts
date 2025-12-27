@@ -15,7 +15,6 @@ import type {
   DeleteResult,
   UpdateQuery,
   StoreConfig,
-  Unsubscribe,
 } from '../types.js';
 
 /**
@@ -164,27 +163,11 @@ function sortDocuments<T extends Entity>(docs: T[], options?: FindOptions): T[] 
 }
 
 /**
- * Subscriber callback type.
- */
-interface Subscriber<T> {
-  filter: FilterQuery<T>;
-  callback: (docs: T[]) => void;
-}
-
-/**
  * Create a memory table.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
   const documents = new Map<string, T>();
-  const subscribers: Subscriber<T>[] = [];
-
-  const notifySubscribers = () => {
-    for (const { filter, callback } of subscribers) {
-      const matching = Array.from(documents.values()).filter((doc) => matchesFilter(doc, filter));
-      callback(matching);
-    }
-  };
 
   return {
     async findOne(filter: FilterQuery<T>): Promise<T | null> {
@@ -213,7 +196,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
       const id = doc._id || generateId();
       const fullDoc = { ...doc, _id: id } as T;
       documents.set(id, fullDoc);
-      notifySubscribers();
       return { insertedId: id };
     },
 
@@ -225,7 +207,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
         documents.set(id, fullDoc);
         insertedIds.push(id);
       }
-      notifySubscribers();
       return { insertedIds, insertedCount: insertedIds.length };
     },
 
@@ -234,7 +215,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
         if (matchesFilter(doc, filter)) {
           const updated = applyUpdate(doc, update);
           documents.set(id, updated);
-          notifySubscribers();
           return { matchedCount: 1, modifiedCount: 1 };
         }
       }
@@ -250,7 +230,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
           matchedCount++;
         }
       }
-      if (matchedCount > 0) notifySubscribers();
       return { matchedCount, modifiedCount: matchedCount };
     },
 
@@ -258,7 +237,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
       for (const [id, doc] of documents) {
         if (matchesFilter(doc, filter)) {
           documents.delete(id);
-          notifySubscribers();
           return { deletedCount: 1 };
         }
       }
@@ -273,7 +251,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
           deletedCount++;
         }
       }
-      if (deletedCount > 0) notifySubscribers();
       return { deletedCount };
     },
 
@@ -294,26 +271,6 @@ function createMemoryTable<T extends Entity>(_tableName: string): ITable<T> {
         }
       }
       return Array.from(values);
-    },
-
-    subscribe(filter: FilterQuery<T>, callback: (docs: T[]) => void): Unsubscribe {
-      const subscriber = { filter, callback };
-      subscribers.push(subscriber);
-
-      // Immediately call with current matching docs
-      const matching = Array.from(documents.values()).filter((doc) => matchesFilter(doc, filter));
-      callback(matching);
-
-      return () => {
-        const index = subscribers.indexOf(subscriber);
-        if (index > -1) subscribers.splice(index, 1);
-      };
-    },
-
-    subscribeOne(filter: FilterQuery<T>, callback: (doc: T | null) => void): Unsubscribe {
-      return this.subscribe!(filter, (docs) => {
-        callback(docs[0] || null);
-      });
     },
   };
 }
