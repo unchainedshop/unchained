@@ -1,13 +1,12 @@
-import { MongoClient, Collection } from 'mongodb';
-import { createTursoStore } from '@unchainedshop/store/turso';
+import { Collection } from 'mongodb';
 import {
   initializeTestPlatform,
   shutdownTestPlatform,
   getTestPlatform,
   getServerPort,
+  getStore,
 } from './setup.js';
-import { countriesSchema } from '@unchainedshop/core-countries';
-import seedLocaleData, { seedCountriesToTurso } from './seeds/locale-data.js';
+import seedLocaleData, { seedCountriesToStore } from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
 import seedDeliveries from './seeds/deliveries.js';
@@ -36,12 +35,10 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...ar
 };
 
 let connection;
-let countriesStore;
 
-export { getServerPort } from './setup.js';
+export { getServerPort, getStore } from './setup.js';
 
 export const getConnection = () => connection;
-export const getCountriesStore = () => countriesStore;
 export const getServerBaseUrl = () => {
   const port = getServerPort();
   return `http://localhost:${port}`;
@@ -49,24 +46,6 @@ export const getServerBaseUrl = () => {
 
 export const disconnect = async () => {
   // No-op - cleanup happens in globalTeardown
-  await countriesStore?.close();
-};
-
-export const connectCountriesStore = async () => {
-  // Connect to the same database file that the server uses
-  // The server runs from the repo root, so use the same path
-  const dbUrl = process.env.COUNTRIES_DB_URL || 'file:countries-test.db';
-
-  countriesStore = await createTursoStore({
-    url: dbUrl,
-    authToken: process.env.COUNTRIES_DB_TOKEN,
-    environment: 'server',
-    schemas: {
-      countries: countriesSchema,
-    },
-  });
-  await countriesStore.initialize();
-  return countriesStore;
 };
 
 export const setupDatabase = async () => {
@@ -74,11 +53,9 @@ export const setupDatabase = async () => {
   await initializeTestPlatform();
 
   const { db } = getTestPlatform();
+  const store = getStore();
   const collections = await db.collections();
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
-
-  // Setup Turso store for countries
-  await connectCountriesStore();
 
   await seedLocaleData(db);
   await seedUsers(db);
@@ -96,8 +73,8 @@ export const setupDatabase = async () => {
   await seedEvents(db);
   await seedTokens(db);
 
-  // Seed countries into Turso store
-  await seedCountriesToTurso(countriesStore);
+  // Seed countries into the store
+  await seedCountriesToStore(store);
 
   return [db, null];
 };

@@ -97,10 +97,10 @@ export default async function seedOrders(db) {
 }
 
 /**
- * Seed countries into the Turso store.
- * This is needed because the countries module now uses Turso/SQLite instead of MongoDB.
+ * Seed countries into the store.
+ * This is needed because the countries module now uses the IStore interface instead of MongoDB.
  */
-export async function seedCountriesToTurso(store) {
+export async function seedCountriesToStore(store) {
   const Countries = store.table('countries');
 
   // Clear existing countries

@@ -1,4 +1,5 @@
 import { type mongodb, type MigrationRepository, type ModuleInput } from '@unchainedshop/mongodb';
+import type { IStore } from '@unchainedshop/store';
 import initServices, { type CustomServices, type Services } from './services/index.ts';
 import initModules, { type Modules, type ModuleOptions } from './modules.ts';
 import createBulkImporterFactory, {
@@ -32,6 +33,7 @@ export { default as schedule, type ScheduleData } from './utils/schedule.ts';
 export interface UnchainedCoreOptions {
   db: mongodb.Db;
   migrationRepository: MigrationRepository<UnchainedCore>;
+  store?: IStore;
   bulkImporter?: {
     handlers?: Record<string, BulkImportHandler<UnchainedCore>>;
   };
@@ -55,6 +57,7 @@ export interface UnchainedCore {
 export const initCore = async ({
   db,
   migrationRepository,
+  store,
   bulkImporter: bulkImporterOptions = {},
   modules: customModules = {},
   services: customServices = {},
@@ -63,7 +66,7 @@ export const initCore = async ({
   // Configure custom modules
 
   const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions);
-  const modules = await initModules({ db, migrationRepository, options }, customModules);
+  const modules = await initModules({ db, migrationRepository, options, store }, customModules);
   const services = initServices(modules, customServices);
 
   return {

@@ -82,10 +82,12 @@ function matchesFilter<T extends Entity>(doc: T, filter: FilterQuery<T>): boolea
       const conditions = value as FilterQuery<T>[];
       if (!conditions.some((cond) => matchesFilter(doc, cond))) return false;
     } else if (key === '$text') {
-      // Simple text search - search all string fields
+      // Simple text search - search string field values only
       const searchText = ((value as { $search: string }).$search || '').toLowerCase();
-      const docString = JSON.stringify(doc).toLowerCase();
-      if (!docString.includes(searchText)) return false;
+      const stringValues = Object.values(doc)
+        .filter((v): v is string => typeof v === 'string')
+        .map((v) => v.toLowerCase());
+      if (!stringValues.some((v) => v.includes(searchText))) return false;
     } else {
       const docValue = doc[key as keyof T];
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {

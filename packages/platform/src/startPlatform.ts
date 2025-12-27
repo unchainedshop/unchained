@@ -53,6 +53,7 @@ export const startPlatform = async ({
   options,
   rolesOptions,
   bulkImporter,
+  store,
   workQueueOptions,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
@@ -78,6 +79,7 @@ export const startPlatform = async ({
     db,
     migrationRepository,
     bulkImporter,
+    store,
     modules,
     services,
     options,

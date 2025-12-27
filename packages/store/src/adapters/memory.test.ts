@@ -513,10 +513,34 @@ describe('Memory Adapter', () => {
       const Countries = store.table<TestCountry>('countries_distinct');
 
       await Countries.insertMany([
-        { isoCode: 'X1', isActive: true, defaultCurrencyCode: 'USD', created: new Date(), deleted: null },
-        { isoCode: 'X2', isActive: true, defaultCurrencyCode: 'EUR', created: new Date(), deleted: null },
-        { isoCode: 'X3', isActive: false, defaultCurrencyCode: 'USD', created: new Date(), deleted: null },
-        { isoCode: 'X4', isActive: true, defaultCurrencyCode: 'GBP', created: new Date(), deleted: null },
+        {
+          isoCode: 'X1',
+          isActive: true,
+          defaultCurrencyCode: 'USD',
+          created: new Date(),
+          deleted: null,
+        },
+        {
+          isoCode: 'X2',
+          isActive: true,
+          defaultCurrencyCode: 'EUR',
+          created: new Date(),
+          deleted: null,
+        },
+        {
+          isoCode: 'X3',
+          isActive: false,
+          defaultCurrencyCode: 'USD',
+          created: new Date(),
+          deleted: null,
+        },
+        {
+          isoCode: 'X4',
+          isActive: true,
+          defaultCurrencyCode: 'GBP',
+          created: new Date(),
+          deleted: null,
+        },
       ]);
 
       const currencies = await Countries.distinct('defaultCurrencyCode');

@@ -3,7 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
-  getCountriesStore,
+  getStore,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCountry, GermanyCountry, FranceCountry, InactiveCountry } from './seeds/locale-data.js';
@@ -23,8 +23,8 @@ test.describe('Country', () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    // Countries now uses Turso store instead of MongoDB
-    Countries = getCountriesStore().table('countries');
+    // Countries now uses the IStore interface instead of MongoDB
+    Countries = getStore().table('countries');
     Currencies = db.collection('currencies');
   });
 

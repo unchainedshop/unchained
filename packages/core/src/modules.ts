@@ -65,6 +65,7 @@ import {
   type WorkerSettingsOptions,
 } from '@unchainedshop/core-worker';
 import { type MigrationRepository, type ModuleInput, type mongodb } from '@unchainedshop/mongodb';
+import type { IStore } from '@unchainedshop/store';
 
 export interface Modules {
   assortments: AssortmentsModule;
@@ -105,10 +106,12 @@ export default async function initModules(
     db,
     migrationRepository,
     options,
+    store: providedStore,
   }: {
     db: mongodb.Db;
     migrationRepository: MigrationRepository<unknown>;
     options: ModuleOptions;
+    store?: IStore;
   },
   customModules: Record<
     string,
@@ -126,19 +129,23 @@ export default async function initModules(
     db,
     migrationRepository,
   });
-  // Countries module uses the new IStore interface with Turso/SQLite
-  // For now, use file-based SQLite. In production, use Turso cloud URL.
-  const countriesStore = await createTursoStore({
-    url: process.env.COUNTRIES_DB_URL || 'file:countries.db',
-    authToken: process.env.COUNTRIES_DB_TOKEN,
-    environment: 'server',
-    schemas: {
-      countries: countriesSchema,
-    },
-  });
-  await countriesStore.initialize();
+  // Countries module uses the new IStore interface
+  // Use provided store, or create Turso/SQLite store if not provided
+  const store =
+    providedStore ||
+    (await createTursoStore({
+      url: process.env.COUNTRIES_DB_URL || 'file:countries.db',
+      authToken: process.env.COUNTRIES_DB_TOKEN,
+      environment: 'server',
+      schemas: {
+        countries: countriesSchema,
+      },
+    }));
+  if (!providedStore) {
+    await store.initialize();
+  }
   const countries = await configureCountriesModule({
-    store: countriesStore,
+    store,
   });
   const currencies = await configureCurrenciesModule({
     db,
