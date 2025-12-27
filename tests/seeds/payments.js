@@ -46,13 +46,34 @@ export const GenericPaymentCredential = {
   isPreferred: false,
   userId: 'user',
 };
+
+// All payment providers for seeding
+const allPaymentProviders = [SimplePaymentProvider, PrePaidPaymentProvider, GenericPaymentProvider];
+
+// Legacy function - seeds credentials to MongoDB only
 export default async function seedPayments(db) {
   await chainedUpsert(db)
-    .upsert('payment-providers', SimplePaymentProvider)
-    .upsert('payment-providers', PrePaidPaymentProvider)
-    .upsert('payment-providers', GenericPaymentProvider)
     .upsert('payment_credentials', SimplePaymentCredential)
     .upsert('payment_credentials', PrePaidPaymentCredential)
     .upsert('payment_credentials', GenericPaymentCredential)
     .resolve();
+}
+
+/**
+ * Seed payment providers into the store.
+ * Credentials still go to MongoDB via seedPayments.
+ */
+export async function seedPaymentsToStore(store) {
+  const PaymentProviders = store.table('payment-providers');
+
+  // Clear existing providers
+  await PaymentProviders.deleteMany({});
+
+  // Insert all providers
+  for (const provider of allPaymentProviders) {
+    await PaymentProviders.insertOne({
+      ...provider,
+      deleted: null,
+    });
+  }
 }

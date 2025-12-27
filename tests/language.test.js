@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
+  getStore,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseLanguage, ItalianLanguage, InactiveLanguage } from './seeds/locale-data.js';
@@ -10,17 +11,17 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Language', () => {
-  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
   let Languages;
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Languages = db.collection('languages');
+    // Languages are now in the store, not MongoDB
+    Languages = getStore().table('languages');
   });
 
   test.after(async () => {
@@ -743,7 +744,13 @@ test.describe('Language', () => {
     });
 
     test('remove a language', async () => {
-      await Languages.insertOne({ _id: 'am', isoCode: 'AM' });
+      await Languages.insertOne({
+        _id: 'am',
+        isoCode: 'AM',
+        isActive: true,
+        created: new Date(),
+        deleted: null,
+      });
       const { data: { removeLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {

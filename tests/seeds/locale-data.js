@@ -1,5 +1,3 @@
-import chainedUpsert from './utils/chainedUpsert.js';
-
 export const BaseCountry = {
   _id: 'ch',
   isoCode: 'CH',
@@ -27,9 +25,6 @@ export const InactiveCountry = {
   isActive: false,
   defaultCurrencyCode: 'USD',
 };
-
-// All countries for seeding
-const allCountries = [BaseCountry, GermanyCountry, FranceCountry, InactiveCountry];
 
 export const BaseLanguage = {
   _id: 'de',
@@ -79,37 +74,50 @@ export const InactiveCurrency = {
   isActive: false,
 };
 
-export default async function seedOrders(db) {
-  return chainedUpsert(db)
-    .upsert('countries', BaseCountry)
-    .upsert('countries', GermanyCountry)
-    .upsert('countries', FranceCountry)
-    .upsert('countries', InactiveCountry)
-    .upsert('languages', BaseLanguage)
-    .upsert('languages', ItalianLanguage)
-    .upsert('languages', InactiveLanguage)
-    .upsert('languages', EnglishLanguage)
-    .upsert('currencies', BaseCurrency)
-    .upsert('currencies', EuroCurrency)
-    .upsert('currencies', UsdCurrency)
-    .upsert('currencies', InactiveCurrency)
-    .resolve();
-}
+// All countries for seeding
+const allCountries = [BaseCountry, GermanyCountry, FranceCountry, InactiveCountry];
+
+// All languages for seeding
+const allLanguages = [BaseLanguage, ItalianLanguage, InactiveLanguage, EnglishLanguage];
+
+// All currencies for seeding
+const allCurrencies = [BaseCurrency, EuroCurrency, UsdCurrency, InactiveCurrency];
 
 /**
- * Seed countries into the store.
- * This is needed because the countries module now uses the IStore interface instead of MongoDB.
+ * Seed locale data (countries, languages, currencies) into the store.
  */
-export async function seedCountriesToStore(store) {
+export async function seedLocaleDataToStore(store) {
   const Countries = store.table('countries');
+  const Languages = store.table('languages');
+  const Currencies = store.table('currencies');
 
-  // Clear existing countries
+  // Clear existing data
   await Countries.deleteMany({});
+  await Languages.deleteMany({});
+  await Currencies.deleteMany({});
 
   // Insert all countries
   for (const country of allCountries) {
     await Countries.insertOne({
       ...country,
+      created: new Date(),
+      deleted: null,
+    });
+  }
+
+  // Insert all languages
+  for (const language of allLanguages) {
+    await Languages.insertOne({
+      ...language,
+      created: new Date(),
+      deleted: null,
+    });
+  }
+
+  // Insert all currencies
+  for (const currency of allCurrencies) {
+    await Currencies.insertOne({
+      ...currency,
       created: new Date(),
       deleted: null,
     });

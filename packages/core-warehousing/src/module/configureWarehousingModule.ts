@@ -1,19 +1,8 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbFilterById,
-  generateDbObjectId,
-  type mongodb,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
-import {
-  type WarehousingProvider,
-  type WarehousingProviderType,
-  WarehousingProvidersCollection,
-} from '../db/WarehousingProvidersCollection.ts';
+import { generateDbFilterById, type mongodb, assertDocumentDBCompatMode } from '@unchainedshop/mongodb';
+import type { IStore } from '@unchainedshop/store';
 import { type TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.ts';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { configureWarehousingProvidersModule } from './configureWarehousingProvidersModule.ts';
 
 interface TokenQuery {
   queryString?: string;
@@ -21,46 +10,13 @@ interface TokenQuery {
   walletAddressExists?: boolean;
 }
 
-const WAREHOUSING_PROVIDER_EVENTS: string[] = [
-  'WAREHOUSING_PROVIDER_CREATE',
-  'WAREHOUSING_PROVIDER_UPDATE',
-  'WAREHOUSING_PROVIDER_REMOVE',
-  'TOKEN_OWNERSHIP_CHANGED',
-  'TOKEN_INVALIDATED',
-];
+const TOKEN_EVENTS: string[] = ['TOKEN_OWNERSHIP_CHANGED', 'TOKEN_INVALIDATED'];
 
-const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
-
-export interface WarehousingProviderQuery {
-  warehousingProviderIds?: string[];
-  type?: WarehousingProviderType;
-  includeDeleted?: boolean;
-  queryString?: string;
+export interface WarehousingModuleInput {
+  db: mongodb.Db; // For tokens (MongoDB)
+  store: IStore; // For providers (Store)
 }
 
-export const buildFindSelector = ({
-  includeDeleted = false,
-  queryString,
-  warehousingProviderIds,
-  type,
-}: WarehousingProviderQuery = {}): mongodb.Filter<WarehousingProvider> => {
-  const selector: mongodb.Filter<WarehousingProvider> = includeDeleted ? {} : { deleted: null };
-
-  if (warehousingProviderIds) {
-    selector._id = { $in: warehousingProviderIds };
-  }
-
-  if (type) {
-    selector.type = type;
-  }
-
-  if (queryString) {
-    const regex = new RegExp(queryString, 'i');
-    selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
-  }
-
-  return selector;
-};
 export const buildTokenFindSelector = ({ queryString, walletAddressExists, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
   if (queryString) {
@@ -74,28 +30,20 @@ export const buildTokenFindSelector = ({ queryString, walletAddressExists, ...re
   return selector;
 };
 
-export const configureWarehousingModule = async ({ db }: ModuleInput<Record<string, never>>) => {
-  registerEvents(WAREHOUSING_PROVIDER_EVENTS);
+export const configureWarehousingModule = async ({ db, store }: WarehousingModuleInput) => {
+  registerEvents(TOKEN_EVENTS);
 
-  const WarehousingProviders = await WarehousingProvidersCollection(db);
   const TokenSurrogates = await TokenSurrogateCollection(db);
+  const warehousingProviders = configureWarehousingProvidersModule(store);
 
+  // Create a combined module that exposes both provider and token operations
   return {
-    // Queries
-    count: async (query: WarehousingProviderQuery = {}): Promise<number> => {
-      const providerCount = await WarehousingProviders.countDocuments(buildFindSelector(query));
-      return providerCount;
-    },
+    // Provider operations (delegated to store-based module)
+    ...warehousingProviders,
 
+    // Token operations (remain on MongoDB)
     createTokens: async (tokens: TokenSurrogate[]): Promise<void> => {
       await TokenSurrogates.insertMany(tokens);
-    },
-
-    findProvider: async (
-      { warehousingProviderId }: { warehousingProviderId: string },
-      options?: mongodb.FindOptions,
-    ) => {
-      return WarehousingProviders.findOne(generateDbFilterById(warehousingProviderId), options);
     },
 
     findToken: async ({ tokenId }: { tokenId: string }, options?: mongodb.FindOptions) => {
@@ -131,35 +79,6 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
       const userTokens = await TokenSurrogates.find(selector, options).toArray();
       return userTokens;
-    },
-
-    findProviders: async (
-      query: WarehousingProviderQuery = {},
-      options: mongodb.FindOptions = { sort: { created: 1 } },
-    ): Promise<WarehousingProvider[]> => {
-      const providers = WarehousingProviders.find(buildFindSelector(query), options);
-      return providers.toArray();
-    },
-
-    allProviders: pMemoize(
-      async function () {
-        return WarehousingProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-      },
-      {
-        cache: allProvidersCache,
-      },
-    ),
-
-    providerExists: async ({
-      warehousingProviderId,
-    }: {
-      warehousingProviderId: string;
-    }): Promise<boolean> => {
-      const providerCount = await WarehousingProviders.countDocuments(
-        generateDbFilterById(warehousingProviderId, { deleted: null }),
-        { limit: 1 },
-      );
-      return !!providerCount;
     },
 
     updateTokenOwnership: async (
@@ -231,57 +150,6 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
       return hashHex;
-    },
-
-    // Mutations
-    create: async (
-      doc: Omit<WarehousingProvider, '_id' | 'created'> & Pick<Partial<WarehousingProvider>, '_id'>,
-    ) => {
-      const { insertedId: warehousingProviderId } = await WarehousingProviders.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
-      });
-
-      const warehousingProvider = (await WarehousingProviders.findOne({
-        _id: warehousingProviderId,
-      })) as WarehousingProvider;
-      allProvidersCache.clear();
-      await emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
-      return warehousingProvider;
-    },
-
-    update: async (warehousingProviderId: string, doc: Partial<WarehousingProvider>) => {
-      const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
-        { _id: warehousingProviderId },
-        {
-          $set: {
-            updated: new Date(),
-            ...doc,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!warehousingProvider) return null;
-      allProvidersCache.clear();
-      await emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
-      return warehousingProvider;
-    },
-
-    delete: async (providerId: string) => {
-      const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
-        generateDbFilterById(providerId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!warehousingProvider) return null;
-      allProvidersCache.clear();
-      await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
-      return warehousingProvider;
     },
   };
 };

@@ -3,8 +3,8 @@
  * Stores data in memory - useful for testing and development.
  */
 
-import type { Entity } from '../types.js';
 import type {
+  Entity,
   IStore,
   ITable,
   FilterQuery,
@@ -16,17 +16,7 @@ import type {
   UpdateQuery,
   StoreConfig,
 } from '../types.js';
-
-/**
- * Generate a random ID similar to MongoDB ObjectId.
- */
-function generateId(): string {
-  const timestamp = Math.floor(Date.now() / 1000).toString(16);
-  const randomPart = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join(
-    '',
-  );
-  return timestamp + randomPart;
-}
+import { generateId } from '../helpers.js';
 
 /**
  * Check if a value matches a filter operator.
@@ -74,6 +64,9 @@ function matchesOperator<V>(value: V, operator: Record<string, unknown>): boolea
  * Check if a document matches a filter query.
  */
 function matchesFilter<T extends Entity>(doc: T, filter: FilterQuery<T>): boolean {
+  // Handle empty or undefined filter - matches all documents
+  if (!filter || Object.keys(filter).length === 0) return true;
+
   for (const [key, value] of Object.entries(filter)) {
     if (key === '$and') {
       const conditions = value as FilterQuery<T>[];

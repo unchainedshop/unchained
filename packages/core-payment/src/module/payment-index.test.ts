@@ -1,7 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { PaymentProviderType } from '../db/PaymentProvidersCollection.ts';
-import { buildFindSelector } from './configurePaymentProvidersModule.ts';
+import { PaymentProviderType, buildFindSelector } from './configurePaymentProvidersModule.ts';
 
 describe('Payment', () => {
   describe('buildFindSelector', () => {

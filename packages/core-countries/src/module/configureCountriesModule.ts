@@ -7,15 +7,16 @@
 
 import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale } from '@unchainedshop/utils';
-import type {
-  Entity,
-  TimestampFields,
-  SortDirection,
-  SortOption,
-  IStore,
-  FilterQuery,
-  FindOptions,
-  TableSchema,
+import {
+  generateId,
+  type Entity,
+  type TimestampFields,
+  type SortDirection,
+  type SortOption,
+  type IStore,
+  type FilterQuery,
+  type FindOptions,
+  type TableSchema,
 } from '@unchainedshop/store';
 
 /**
@@ -89,24 +90,6 @@ export type CountryEventType = (typeof COUNTRY_EVENTS)[number];
  */
 export interface CountriesModuleInput {
   store: IStore;
-}
-
-/**
- * Get the system region from systemLocale.
- */
-const getSystemRegion = (): string => {
-  return systemLocale.region || 'CH';
-};
-
-/**
- * Generate a unique ID.
- */
-function generateId(): string {
-  const timestamp = Math.floor(Date.now() / 1000).toString(16);
-  const randomPart = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join(
-    '',
-  );
-  return timestamp + randomPart;
 }
 
 /**
@@ -212,7 +195,7 @@ export async function configureCountriesModule({ store }: CountriesModuleInput) 
      * Check if a country is the base/system country.
      */
     isBase(country: Country): boolean {
-      return country.isoCode === getSystemRegion();
+      return country.isoCode === systemLocale.region;
     },
 
     /**

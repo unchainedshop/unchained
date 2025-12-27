@@ -1,5 +1,3 @@
-import chainedUpsert from './utils/chainedUpsert.js';
-
 export const SimpleWarehousingProvider = {
   _id: 'simple-warehousing-provider',
   adapterKey: 'shop.unchained.warehousing.store',
@@ -21,9 +19,23 @@ export const VirtualWarehousingProvider = {
   adapterKey: 'shop.unchained.warehousing.infinite-minter',
 };
 
-export default async function seedWarehousings(db) {
-  await chainedUpsert(db)
-    .upsert('warehousing-providers', SimpleWarehousingProvider)
-    .upsert('warehousing-providers', VirtualWarehousingProvider)
-    .resolve();
+// All warehousing providers for seeding
+const allWarehousingProviders = [SimpleWarehousingProvider, VirtualWarehousingProvider];
+
+/**
+ * Seed warehousing providers into the store.
+ */
+export async function seedWarehousingsToStore(store) {
+  const WarehousingProviders = store.table('warehousing-providers');
+
+  // Clear existing providers
+  await WarehousingProviders.deleteMany({});
+
+  // Insert all providers
+  for (const provider of allWarehousingProviders) {
+    await WarehousingProviders.insertOne({
+      ...provider,
+      deleted: null,
+    });
+  }
 }

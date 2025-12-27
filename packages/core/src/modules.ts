@@ -9,12 +9,17 @@ import {
   type CountriesModule,
   countriesSchema,
 } from '@unchainedshop/core-countries';
-import { configureCurrenciesModule, type CurrenciesModule } from '@unchainedshop/core-currencies';
+import {
+  configureCurrenciesModule,
+  type CurrenciesModule,
+  currenciesSchema,
+} from '@unchainedshop/core-currencies';
 import { createTursoStore } from '@unchainedshop/store';
 import {
   configureDeliveryModule,
   type DeliveryModule,
   type DeliverySettingsOptions,
+  deliveryProvidersSchema,
 } from '@unchainedshop/core-delivery';
 import {
   configureEnrollmentsModule,
@@ -32,7 +37,11 @@ import {
   type FiltersModule,
   type FiltersSettingsOptions,
 } from '@unchainedshop/core-filters';
-import { configureLanguagesModule, type LanguagesModule } from '@unchainedshop/core-languages';
+import {
+  configureLanguagesModule,
+  type LanguagesModule,
+  languagesSchema,
+} from '@unchainedshop/core-languages';
 import {
   configureOrdersModule,
   type OrdersModule,
@@ -42,6 +51,7 @@ import {
   configurePaymentModule,
   type PaymentModule,
   type PaymentSettingsOptions,
+  paymentProvidersSchema,
 } from '@unchainedshop/core-payment';
 import {
   configureProductsModule,
@@ -58,7 +68,11 @@ import {
   type UserSettingsOptions,
   type UsersModule,
 } from '@unchainedshop/core-users';
-import { configureWarehousingModule, type WarehousingModule } from '@unchainedshop/core-warehousing';
+import {
+  configureWarehousingModule,
+  type WarehousingModule,
+  warehousingProvidersSchema,
+} from '@unchainedshop/core-warehousing';
 import {
   configureWorkerModule,
   type WorkerModule,
@@ -129,16 +143,21 @@ export default async function initModules(
     db,
     migrationRepository,
   });
-  // Countries module uses the new IStore interface
+  // Store-based modules use the new IStore interface
   // Use provided store, or create Turso/SQLite store if not provided
   const store =
     providedStore ||
     (await createTursoStore({
-      url: process.env.COUNTRIES_DB_URL || 'file:countries.db',
-      authToken: process.env.COUNTRIES_DB_TOKEN,
+      url: process.env.STORE_DB_URL || 'file:unchained.db',
+      authToken: process.env.STORE_DB_TOKEN,
       environment: 'server',
       schemas: {
         countries: countriesSchema,
+        currencies: currenciesSchema,
+        languages: languagesSchema,
+        'delivery-providers': deliveryProvidersSchema,
+        'payment-providers': paymentProvidersSchema,
+        'warehousing-providers': warehousingProvidersSchema,
       },
     }));
   if (!providedStore) {
@@ -148,13 +167,11 @@ export default async function initModules(
     store,
   });
   const currencies = await configureCurrenciesModule({
-    db,
-    migrationRepository,
+    store,
   });
   const delivery = await configureDeliveryModule({
-    db,
+    store,
     options: options.delivery,
-    migrationRepository,
   });
   const enrollments = await configureEnrollmentsModule({
     db,
@@ -176,8 +193,7 @@ export default async function initModules(
     migrationRepository,
   });
   const languages = await configureLanguagesModule({
-    db,
-    migrationRepository,
+    store,
   });
   const orders = await configureOrdersModule({
     db,
@@ -186,8 +202,8 @@ export default async function initModules(
   });
   const payment = await configurePaymentModule({
     db,
+    store,
     options: options.payment,
-    migrationRepository,
   });
   const products = await configureProductsModule({
     db,
@@ -206,7 +222,7 @@ export default async function initModules(
   });
   const warehousing = await configureWarehousingModule({
     db,
-    migrationRepository,
+    store,
   });
   const worker = await configureWorkerModule({
     db,

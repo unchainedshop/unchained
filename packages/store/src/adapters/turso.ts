@@ -3,8 +3,8 @@
  * Stores data in a distributed SQLite database via Turso.
  */
 
-import type { Entity } from '../types.js';
 import type {
+  Entity,
   IStore,
   ITable,
   FilterQuery,
@@ -16,6 +16,7 @@ import type {
   UpdateQuery,
   StoreConfig,
 } from '../types.js';
+import { generateId } from '../helpers.js';
 
 // Dynamic import to handle optional peer dependency
 let createClient: typeof import('@libsql/client').createClient;
@@ -85,17 +86,6 @@ export interface IndexDefinition {
 type LibSQLClient = Awaited<ReturnType<typeof createClient>>;
 
 /**
- * Generate a random ID similar to MongoDB ObjectId.
- */
-function generateId(): string {
-  const timestamp = Math.floor(Date.now() / 1000).toString(16);
-  const randomPart = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join(
-    '',
-  );
-  return timestamp + randomPart;
-}
-
-/**
  * Convert a filter query to SQL WHERE clause.
  * The ftsTableName parameter is used when $text search is present.
  */
@@ -103,6 +93,11 @@ function filterToSQL<T extends Entity>(
   filter: FilterQuery<T>,
   ftsTableName?: string,
 ): { sql: string; params: unknown[]; usesFts: boolean } {
+  // Handle empty or undefined filter - match all documents
+  if (!filter || Object.keys(filter).length === 0) {
+    return { sql: '1 = 1', params: [], usesFts: false };
+  }
+
   const conditions: string[] = [];
   const params: unknown[] = [];
   let usesFts = false;

@@ -5,8 +5,7 @@
 
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert';
-import { createTursoStore, type TableSchema } from './turso.ts';
-import type { IStore } from '../types.ts';
+import { createTursoStore, type TableSchema, type IStore } from '../../lib/index.js';
 
 interface TestCountry {
   _id: string;
@@ -218,6 +217,26 @@ describe('Turso Adapter', () => {
 
       const notDeleted = await Countries.find({ deleted: null });
       assert.ok(notDeleted.length > 0, 'Should find non-deleted countries');
+    });
+
+    it('should find all documents with undefined filter (findOne)', async () => {
+      const Countries = store.table<TestCountry>('countries');
+
+      const country = await Countries.findOne(undefined as any);
+      assert.ok(country, 'Should return a document when filter is undefined');
+    });
+
+    it('should find all documents with null filter (findOne)', async () => {
+      const Countries = store.table<TestCountry>('countries');
+
+      const country = await Countries.findOne(null as any);
+      assert.ok(country, 'Should return a document when filter is null');
+    });
+
+    it('should find all documents with empty object filter', async () => {
+      const Countries = store.table<TestCountry>('countries');
+      const countries = await Countries.find({});
+      assert.ok(countries.length >= 4, 'Should return all documents with empty filter');
     });
   });
 

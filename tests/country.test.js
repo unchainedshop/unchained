@@ -11,7 +11,6 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Country', () => {
-  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
@@ -19,13 +18,13 @@ test.describe('Country', () => {
   let Currencies;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    // Countries now uses the IStore interface instead of MongoDB
+    // Countries and Currencies now use the IStore interface instead of MongoDB
     Countries = getStore().table('countries');
-    Currencies = db.collection('currencies');
+    Currencies = getStore().table('currencies');
   });
 
   test.after(async () => {

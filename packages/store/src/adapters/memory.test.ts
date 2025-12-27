@@ -4,8 +4,7 @@
 
 import { describe, it, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert';
-import { createMemoryStore } from './memory.ts';
-import type { IStore } from '../types.ts';
+import { createMemoryStore, type IStore } from '../../lib/index.js';
 
 interface TestCountry {
   _id: string;
@@ -404,6 +403,21 @@ describe('Memory Adapter', () => {
 
       const deletedCountry = notDeleted.find((c) => c.isoCode === 'NZ');
       assert.strictEqual(deletedCountry, undefined, 'NZ should not be in non-deleted results');
+    });
+
+    it('should find all documents with undefined filter (findOne)', async () => {
+      const country = await Countries.findOne(undefined as any);
+      assert.ok(country, 'Should return a document when filter is undefined');
+    });
+
+    it('should find all documents with null filter (findOne)', async () => {
+      const country = await Countries.findOne(null as any);
+      assert.ok(country, 'Should return a document when filter is null');
+    });
+
+    it('should find all documents with empty object filter', async () => {
+      const countries = await Countries.find({});
+      assert.ok(countries.length >= 5, 'Should return all documents with empty filter');
     });
   });
 

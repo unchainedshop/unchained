@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getStore,
+  findOrInsertOneInStore,
+} from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -21,14 +28,19 @@ test.describe('Plugins: Cryptopay', () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
+    // Get store tables for migrated collections
+    const Currencies = getStore().table('currencies');
+    const PaymentProviders = getStore().table('payment-providers');
+
     await db.collection('products').findOrInsertOne({
       ...SimpleProduct,
       _id: 'single-item-product-id',
     });
 
-    await db.collection('currencies').findOrInsertOne(BTCCurrency);
-    await db.collection('currencies').findOrInsertOne(ETHCurrency);
-    await db.collection('currencies').findOrInsertOne(SHIBCurrency);
+    // Currencies are now in the store
+    await findOrInsertOneInStore(Currencies, BTCCurrency);
+    await findOrInsertOneInStore(Currencies, ETHCurrency);
+    await findOrInsertOneInStore(Currencies, SHIBCurrency);
 
     await db.collection('product_rates').findOrInsertOne({
       baseCurrency: 'CHF',
@@ -60,7 +72,8 @@ test.describe('Plugins: Cryptopay', () => {
       _id: 'single-btc-item-product-id',
     });
 
-    await db.collection('payment-providers').findOrInsertOne({
+    // Payment providers are now in the store
+    await findOrInsertOneInStore(PaymentProviders, {
       ...SimplePaymentProvider,
       _id: 'cryptopay-payment-provider',
       adapterKey: 'shop.unchained.payment.cryptopay',

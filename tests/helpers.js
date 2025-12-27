@@ -6,12 +6,12 @@ import {
   getServerPort,
   getStore,
 } from './setup.js';
-import seedLocaleData, { seedCountriesToStore } from './seeds/locale-data.js';
+import { seedLocaleDataToStore } from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
-import seedDeliveries from './seeds/deliveries.js';
-import seedPayments from './seeds/payments.js';
-import seedWarehousings from './seeds/warehousings.js';
+import { seedDeliveriesToStore } from './seeds/deliveries.js';
+import seedPayments, { seedPaymentsToStore } from './seeds/payments.js';
+import { seedWarehousingsToStore } from './seeds/warehousings.js';
 import seedOrders from './seeds/orders.js';
 import seedQuotations from './seeds/quotations.js';
 import seedFilters from './seeds/filters.js';
@@ -33,6 +33,17 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...ar
     return this.findOne({ _id: doc._id }, ...args);
   }
 };
+
+/**
+ * Helper to insert a document into a store table if it doesn't exist.
+ * Similar to findOrInsertOne but for the store's ITable interface.
+ */
+export async function findOrInsertOneInStore(table, doc) {
+  const existing = await table.findOne({ _id: doc._id });
+  if (existing) return existing;
+  await table.insertOne({ ...doc, deleted: null });
+  return table.findOne({ _id: doc._id });
+}
 
 let connection;
 
@@ -57,12 +68,9 @@ export const setupDatabase = async () => {
   const collections = await db.collections();
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 
-  await seedLocaleData(db);
   await seedUsers(db);
   await seedProducts(db);
-  await seedDeliveries(db);
   await seedPayments(db);
-  await seedWarehousings(db);
   await seedOrders(db);
   await seedQuotations(db);
   await seedFilters(db);
@@ -73,8 +81,11 @@ export const setupDatabase = async () => {
   await seedEvents(db);
   await seedTokens(db);
 
-  // Seed countries into the store
-  await seedCountriesToStore(store);
+  // Seed store-based modules (countries, currencies, languages, providers)
+  await seedLocaleDataToStore(store);
+  await seedDeliveriesToStore(store);
+  await seedPaymentsToStore(store);
+  await seedWarehousingsToStore(store);
 
   return [db, null];
 };

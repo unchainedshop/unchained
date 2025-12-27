@@ -50,7 +50,7 @@ core         → Business logic coordination, integrates all core-* modules
     ↓
 core-*       → Domain-specific modules (users, products, orders, payments, delivery, etc.)
     ↓
-infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-upload)
+infrastructure → Base utilities (mongodb, store, events, logger, utils, roles, file-upload)
 ```
 
 ### Key Packages
@@ -59,7 +59,48 @@ infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-u
 - **@unchainedshop/core**: Orchestrates all core-* modules and provides cross-module services
 - **@unchainedshop/plugins**: Plugin system with Directors and Adapters for payment, delivery, pricing, and warehousing
 - **@unchainedshop/ticketing**: Event ticketing functionality
-- **Infrastructure packages**: mongodb, events, logger, utils, roles, file-upload - foundational utilities used across all layers
+- **Infrastructure packages**: mongodb, store, events, logger, utils, roles, file-upload - foundational utilities used across all layers
+
+### Storage Layer
+
+The codebase uses a dual-storage approach:
+
+- **@unchainedshop/store**: Database-agnostic abstraction supporting:
+  - Memory adapter (for testing)
+  - Turso/SQLite adapter (for production)
+  - Used by: countries, currencies, languages, delivery providers, payment providers, warehousing providers
+
+- **@unchainedshop/mongodb**: MongoDB driver for complex data
+  - Used by: orders, products, users, assortments, filters, files, events, enrollments, quotations, bookmarks, worker
+  - Also: payment credentials, token surrogates (hybrid modules keep some data in MongoDB)
+
+### Migrated Module Pattern
+
+Modules using store abstraction export a TableSchema and accept IStore:
+
+```typescript
+// Schema definition
+export const moduleSchema: TableSchema = {
+  columns: [
+    { name: '_id', type: 'TEXT', primaryKey: true },
+    { name: 'isoCode', type: 'TEXT', notNull: true },
+    { name: 'isActive', type: 'INTEGER' },
+    { name: 'created', type: 'INTEGER', notNull: true },
+    { name: 'deleted', type: 'INTEGER' },
+  ],
+  indexes: [...],
+  fts: { columns: ['isoCode'], tokenizer: 'unicode61' }, // Optional FTS
+};
+
+// Module configuration
+export interface ModuleInput { store: IStore; }
+export function configureModule({ store }: ModuleInput) {
+  const Table = store.table<Entity>('table-name');
+  // MongoDB-style operations: find, findOne, insertOne, updateOne, deleteOne
+}
+```
+
+Hybrid modules (payment, warehousing) accept both `store` and `db` parameters.
 
 ### Plugin Architecture
 The plugin system uses a Director/Adapter pattern:
@@ -109,5 +150,9 @@ The API package supports multiple server frameworks:
 - Default values in `.env.defaults`
 - Integration tests use `.env.tests` with `.env` as fallback
 - Node.js 22+ required (see .nvmrc)
-- MongoDB required (or use MongoDB Memory Server for testing)
+- Database requirements:
+  - MongoDB required for: products, orders, users, and non-migrated modules
+  - Turso/SQLite (via @unchainedshop/store) for: countries, currencies, languages, providers
+  - Set `STORE_DB_URL` for file-based or remote Turso database (default: `file:unchained.db`)
+  - For testing: memory store adapter requires no configuration
  No newline at end of file

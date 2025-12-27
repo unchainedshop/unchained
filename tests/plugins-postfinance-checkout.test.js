@@ -1,4 +1,11 @@
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getStore,
+  findOrInsertOneInStore,
+} from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -24,8 +31,9 @@ test.skip('Plugins: Postfinance Checkout', () => {
       [db] = await setupDatabase();
       graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-      // Add a postfinance checkout provider
-      await db.collection('payment-providers').findOrInsertOne({
+      // Add a postfinance checkout provider (payment providers are now in the store)
+      const PaymentProviders = getStore().table('payment-providers');
+      await findOrInsertOneInStore(PaymentProviders, {
         ...SimplePaymentProvider,
         _id: 'pfcheckout-payment-provider',
         adapterKey: 'shop.unchained.payment.postfinance-checkout',

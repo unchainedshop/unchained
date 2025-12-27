@@ -38,7 +38,7 @@
     "@unchainedshop/core-assortments": "^4.5.0",
     "@unchainedshop/core-bookmarks": "^4.5.0",
     "@unchainedshop/core-countries": "*",
-    "@unchainedshop/store": "*",
+    "@unchainedshop/store": "^5.0.0-alpha.0",
     "@unchainedshop/core-currencies": "^4.5.0",
     "@unchainedshop/core-delivery": "^4.5.0",
     "@unchainedshop/core-enrollments": "^4.5.0",

@@ -1,4 +1,11 @@
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getStore,
+  findOrInsertOneInStore,
+} from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -17,8 +24,9 @@ test.describe('Plugins: Datatrans', () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-    // Add a datatrans provider
-    await db.collection('payment-providers').findOrInsertOne({
+    // Add a datatrans provider (payment providers are now in the store)
+    const PaymentProviders = getStore().table('payment-providers');
+    await findOrInsertOneInStore(PaymentProviders, {
       ...SimplePaymentProvider,
       _id: 'd4d4d4d4d4',
       adapterKey: 'shop.unchained.datatrans',

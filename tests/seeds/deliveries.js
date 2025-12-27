@@ -1,5 +1,3 @@
-import chainedUpsert from './utils/chainedUpsert.js';
-
 export const SimpleDeliveryProvider = {
   _id: 'simple-delivery-provider',
   adapterKey: 'shop.unchained.post',
@@ -32,10 +30,23 @@ export const PickupDeliveryProvider = {
   updated: new Date('2019-10-11T10:23:37.337+0000'),
 };
 
-export default async function seedPayments(db) {
-  await chainedUpsert(db)
-    .upsert('delivery-providers', SimpleDeliveryProvider)
-    .upsert('delivery-providers', SendMailDeliveryProvider)
-    .upsert('delivery-providers', PickupDeliveryProvider)
-    .resolve();
+// All delivery providers for seeding
+const allDeliveryProviders = [SimpleDeliveryProvider, SendMailDeliveryProvider, PickupDeliveryProvider];
+
+/**
+ * Seed delivery providers into the store.
+ */
+export async function seedDeliveriesToStore(store) {
+  const DeliveryProviders = store.table('delivery-providers');
+
+  // Clear existing providers
+  await DeliveryProviders.deleteMany({});
+
+  // Insert all providers
+  for (const provider of allDeliveryProviders) {
+    await DeliveryProviders.insertOne({
+      ...provider,
+      deleted: null,
+    });
+  }
 }

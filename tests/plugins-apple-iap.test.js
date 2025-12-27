@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getStore,
+  findOrInsertOneInStore,
+} from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -37,8 +44,9 @@ test.skip('Plugins: Apple IAP', () => {
       _id: subscriptionProductId,
     });
 
-    // Add a iap provider
-    await db.collection('payment-providers').findOrInsertOne({
+    // Add a iap provider (payment providers are now in the store)
+    const PaymentProviders = getStore().table('payment-providers');
+    await findOrInsertOneInStore(PaymentProviders, {
       ...SimplePaymentProvider,
       _id: 'iap-payment-provider',
       adapterKey: 'shop.unchained.apple-iap',

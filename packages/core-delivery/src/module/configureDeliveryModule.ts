@@ -1,47 +1,144 @@
+/**
+ * Isomorphic Delivery Providers Module
+ *
+ * This module works in both browser and Node.js environments.
+ * It uses the @unchainedshop/store abstraction for storage.
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
-  mongodb,
-  generateDbFilterById,
-  generateDbObjectId,
-  type ModuleInput,
-} from '@unchainedshop/mongodb';
-import {
-  DeliveryProvidersCollection,
-  type DeliveryProvider,
-  type DeliveryProviderType,
-} from '../db/DeliveryProvidersCollection.ts';
+  generateId,
+  type Entity,
+  type TimestampFields,
+  type SortOption,
+  type IStore,
+  type FilterQuery,
+  type FindOptions,
+  type TableSchema,
+} from '@unchainedshop/store';
 import { deliverySettings, type DeliverySettingsOptions } from '../delivery-settings.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 
-const DELIVERY_PROVIDER_EVENTS: string[] = [
-  'DELIVERY_PROVIDER_CREATE',
-  'DELIVERY_PROVIDER_UPDATE',
-  'DELIVERY_PROVIDER_REMOVE',
-];
+/**
+ * Delivery providers table schema for Turso/SQLite.
+ */
+export const deliveryProvidersSchema: TableSchema = {
+  columns: [
+    { name: '_id', type: 'TEXT', primaryKey: true },
+    { name: 'type', type: 'TEXT', notNull: true },
+    { name: 'adapterKey', type: 'TEXT', notNull: true },
+    { name: 'configuration', type: 'TEXT' }, // JSON stringified
+    { name: 'created', type: 'INTEGER', notNull: true },
+    { name: 'updated', type: 'INTEGER' },
+    { name: 'deleted', type: 'INTEGER' },
+  ],
+  indexes: [
+    { name: 'idx_delivery_type', columns: ['type'] },
+    { name: 'idx_delivery_created', columns: ['created'] },
+    { name: 'idx_delivery_deleted', columns: ['deleted'] },
+  ],
+};
 
+/**
+ * Delivery provider type enum.
+ */
+export const DeliveryProviderType = {
+  SHIPPING: 'SHIPPING',
+  PICKUP: 'PICKUP',
+} as const;
+
+export type DeliveryProviderType = (typeof DeliveryProviderType)[keyof typeof DeliveryProviderType];
+
+/**
+ * Configuration key-value pairs for delivery providers.
+ */
+export type DeliveryConfiguration = {
+  key: string;
+  value: string;
+}[];
+
+/**
+ * Delivery provider entity.
+ */
+export interface DeliveryProvider extends Entity, TimestampFields {
+  _id: string;
+  type: DeliveryProviderType;
+  adapterKey: string;
+  configuration: DeliveryConfiguration;
+}
+
+/**
+ * Delivery location type (for pickup points, etc.).
+ */
+export interface DeliveryLocation {
+  _id: string;
+  name: string;
+  address: {
+    addressLine: string;
+    addressLine2?: string;
+    postalCode: string;
+    countryCode: string;
+    city: string;
+  };
+  geoPoint: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+/**
+ * Delivery interface for adapter registration.
+ */
 export interface DeliveryInterface {
   _id: string;
   label: string;
   version: string;
 }
 
+/**
+ * Query parameters for finding delivery providers.
+ */
 export interface DeliveryProviderQuery {
   deliveryProviderIds?: string[];
   type?: DeliveryProviderType;
   includeDeleted?: boolean;
   queryString?: string;
+  limit?: number;
+  offset?: number;
+  sort?: SortOption[];
 }
 
-export const buildFindSelector = ({
+/**
+ * Events emitted by the delivery module.
+ */
+export const DELIVERY_PROVIDER_EVENTS = [
+  'DELIVERY_PROVIDER_CREATE',
+  'DELIVERY_PROVIDER_UPDATE',
+  'DELIVERY_PROVIDER_REMOVE',
+] as const;
+export type DeliveryProviderEventType = (typeof DELIVERY_PROVIDER_EVENTS)[number];
+
+/**
+ * Module input configuration.
+ */
+export interface DeliveryModuleInput {
+  store: IStore;
+  options?: DeliverySettingsOptions;
+}
+
+/**
+ * Build filter selector from query parameters.
+ */
+export function buildFindSelector({
   includeDeleted = false,
   queryString,
   deliveryProviderIds,
   type,
-}: DeliveryProviderQuery = {}): mongodb.Filter<DeliveryProvider> => {
-  const selector: mongodb.Filter<DeliveryProvider> = includeDeleted ? {} : { deleted: null };
+}: DeliveryProviderQuery = {}): FilterQuery<DeliveryProvider> {
+  const selector: FilterQuery<DeliveryProvider> = includeDeleted ? {} : { deleted: null };
 
-  if (deliveryProviderIds) {
+  if (deliveryProviderIds && deliveryProviderIds.length > 0) {
     selector._id = { $in: deliveryProviderIds };
   }
 
@@ -50,123 +147,161 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
-    const regex = new RegExp(queryString, 'i');
-    selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
+    // Use regex for searching _id and adapterKey
+    selector.$or = [{ _id: { $regex: queryString } }, { adapterKey: { $regex: queryString } }];
   }
 
   return selector;
-};
+}
 
+// Memoization cache for allProviders query
 const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
-export const configureDeliveryModule = async ({
-  db,
+/**
+ * Configure the delivery module.
+ * This function works in both browser and Node.js.
+ */
+export async function configureDeliveryModule({
+  store,
   options: deliveryOptions = {},
-}: ModuleInput<DeliverySettingsOptions>) => {
-  registerEvents(DELIVERY_PROVIDER_EVENTS);
+}: DeliveryModuleInput) {
+  // Register events for this module
+  registerEvents([...DELIVERY_PROVIDER_EVENTS]);
 
+  // Configure settings
   deliverySettings.configureSettings(deliveryOptions);
 
-  const DeliveryProviders = await DeliveryProvidersCollection(db);
+  const DeliveryProviders = store.table<DeliveryProvider>('delivery-providers');
 
   return {
-    // Queries
+    /**
+     * Count delivery providers matching the query.
+     */
     count: async (query: DeliveryProviderQuery = {}): Promise<number> => {
-      const providerCount = await DeliveryProviders.countDocuments(buildFindSelector(query));
-      return providerCount;
+      return DeliveryProviders.countDocuments(buildFindSelector(query));
     },
 
-    findProvider: async (
-      {
-        deliveryProviderId,
-        ...query
-      }: {
-        deliveryProviderId: string;
-      } & mongodb.Filter<DeliveryProvider>,
-      options?: mongodb.FindOptions,
-    ) => {
-      return DeliveryProviders.findOne(
-        deliveryProviderId ? generateDbFilterById(deliveryProviderId) : query,
-        options,
-      );
+    /**
+     * Find a single delivery provider by ID.
+     */
+    findProvider: async ({
+      deliveryProviderId,
+    }: {
+      deliveryProviderId: string;
+    }): Promise<DeliveryProvider | null> => {
+      return DeliveryProviders.findOne({ _id: deliveryProviderId });
     },
 
-    findProviders: async (
-      query: DeliveryProviderQuery = {},
-      options: mongodb.FindOptions = { sort: { created: 1 } },
-    ): Promise<DeliveryProvider[]> => {
-      const providers = DeliveryProviders.find(buildFindSelector(query), options);
-      return providers.toArray();
+    /**
+     * Find delivery providers matching the query.
+     */
+    findProviders: async (query: DeliveryProviderQuery = {}): Promise<DeliveryProvider[]> => {
+      const { limit, offset, sort, ...filterQuery } = query;
+      const defaultSort: SortOption[] = [{ key: 'created', value: 'ASC' }];
+
+      const options: FindOptions = {
+        limit,
+        offset,
+        sort: sort || defaultSort,
+      };
+
+      return DeliveryProviders.find(buildFindSelector(filterQuery), options);
     },
 
+    /**
+     * Get all active delivery providers (cached).
+     */
     allProviders: pMemoize(
-      async function () {
-        return DeliveryProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
+      async function (): Promise<DeliveryProvider[]> {
+        return DeliveryProviders.find({ deleted: null }, { sort: [{ key: 'created', value: 'ASC' }] });
       },
       {
         cache: allProvidersCache,
       },
     ),
 
+    /**
+     * Check if a delivery provider exists.
+     */
     providerExists: async ({ deliveryProviderId }: { deliveryProviderId: string }): Promise<boolean> => {
-      const providerCount = await DeliveryProviders.countDocuments(
-        generateDbFilterById(deliveryProviderId, { deleted: null }),
-        { limit: 1 },
-      );
-      return !!providerCount;
+      const count = await DeliveryProviders.countDocuments({ _id: deliveryProviderId, deleted: null });
+      return count > 0;
     },
 
-    // Mutations
+    /**
+     * Create a new delivery provider.
+     */
     create: async (
-      doc: Omit<DeliveryProvider, '_id' | 'created'> & Pick<Partial<DeliveryProvider>, '_id'>,
-    ) => {
-      const { insertedId: deliveryProviderId } = await DeliveryProviders.insertOne({
-        _id: generateDbObjectId(),
+      doc: Omit<DeliveryProvider, '_id' | 'created' | 'updated' | 'deleted'> & { _id?: string },
+    ): Promise<DeliveryProvider> => {
+      const deliveryProviderId = doc._id || generateId();
+      await DeliveryProviders.insertOne({
+        _id: deliveryProviderId,
         created: new Date(),
-        ...doc,
+        type: doc.type,
+        adapterKey: doc.adapterKey,
+        configuration: doc.configuration,
+        deleted: null,
       });
-      const deliveryProvider = (await DeliveryProviders.findOne(
-        { _id: deliveryProviderId },
-        {},
-      )) as DeliveryProvider;
+
+      const deliveryProvider = (await DeliveryProviders.findOne({
+        _id: deliveryProviderId,
+      })) as DeliveryProvider;
+
       allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
       return deliveryProvider;
     },
 
-    update: async (_id: string, doc: DeliveryProvider) => {
-      const deliveryProvider = await DeliveryProviders.findOneAndUpdate(
-        generateDbFilterById(_id),
+    /**
+     * Update a delivery provider.
+     */
+    update: async (
+      _id: string,
+      doc: Partial<Omit<DeliveryProvider, '_id' | 'created'>>,
+    ): Promise<DeliveryProvider | null> => {
+      await DeliveryProviders.updateOne(
+        { _id },
         {
           $set: {
-            updated: new Date(),
             ...doc,
+            updated: new Date(),
           },
         },
-        { returnDocument: 'after' },
       );
+
+      const deliveryProvider = await DeliveryProviders.findOne({ _id });
       if (!deliveryProvider) return null;
+
       allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
 
-    delete: async (_id: string) => {
-      const deliveryProvider = await DeliveryProviders.findOneAndUpdate(
-        generateDbFilterById(_id),
+    /**
+     * Soft-delete a delivery provider.
+     */
+    delete: async (_id: string): Promise<DeliveryProvider | null> => {
+      await DeliveryProviders.updateOne(
+        { _id },
         {
           $set: {
             deleted: new Date(),
           },
         },
-        { returnDocument: 'after' },
       );
+
+      const deliveryProvider = await DeliveryProviders.findOne({ _id });
       if (!deliveryProvider) return null;
+
       allProvidersCache.clear();
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },
   };
-};
+}
 
+/**
+ * Type of the configured delivery module.
+ */
 export type DeliveryModule = Awaited<ReturnType<typeof configureDeliveryModule>>;

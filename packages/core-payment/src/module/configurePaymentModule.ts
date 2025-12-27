@@ -1,20 +1,26 @@
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.ts';
-import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.ts';
 import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.ts';
 import { configurePaymentProvidersModule } from './configurePaymentProvidersModule.ts';
 import { paymentSettings, type PaymentSettingsOptions } from '../payment-settings.ts';
-import type { ModuleInput } from '@unchainedshop/mongodb';
+import type { mongodb } from '@unchainedshop/mongodb';
+import type { IStore } from '@unchainedshop/store';
+
+export interface PaymentModuleInput {
+  db: mongodb.Db; // For credentials (MongoDB)
+  store: IStore; // For providers (Store)
+  options?: PaymentSettingsOptions;
+}
 
 export const configurePaymentModule = async ({
   db,
+  store,
   options: paymentOptions = {},
-}: ModuleInput<PaymentSettingsOptions>) => {
-  const PaymentProviders = await PaymentProvidersCollection(db);
+}: PaymentModuleInput) => {
   const PaymentCredentials = await PaymentCredentialsCollection(db);
 
   paymentSettings.configureSettings(paymentOptions);
 
-  const paymentProviders = configurePaymentProvidersModule(PaymentProviders);
+  const paymentProviders = configurePaymentProvidersModule(store);
   const paymentCredentials = configurePaymentCredentialsModule(PaymentCredentials);
 
   return {

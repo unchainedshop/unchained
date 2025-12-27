@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
+  getStore,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCurrency, EuroCurrency, UsdCurrency, InactiveCurrency } from './seeds/locale-data.js';
@@ -10,18 +11,18 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Currency', () => {
-  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
   let Currencies;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Currencies = db.collection('currencies');
+    // Currencies are now in the store, not MongoDB
+    Currencies = getStore().table('currencies');
   });
 
   test.after(async () => {
@@ -678,7 +679,13 @@ test.describe('Currency', () => {
     });
 
     test('remove a currency', async () => {
-      await Currencies.insertOne({ _id: 'etb', isoCode: 'ETB' });
+      await Currencies.insertOne({
+        _id: 'etb',
+        isoCode: 'ETB',
+        isActive: true,
+        created: new Date(),
+        deleted: null,
+      });
       const { data: { removeCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
