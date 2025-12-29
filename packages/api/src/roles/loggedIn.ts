@@ -57,11 +57,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   ) => {
     const enrollment = await modules.enrollments.findEnrollment(
       { enrollmentId: params.enrollmentId },
-      {
-        projection: {
-          userId: 1,
-        },
-      },
+      { fields: ['userId'] },
     );
     if (!enrollment) return true;
     return enrollment.userId === userId;
@@ -154,14 +150,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     { quotationId }: { quotationId: string },
     { modules, userId }: Context,
   ) => {
-    const quotation = await modules.quotations.findQuotation(
-      { quotationId },
-      {
-        projection: {
-          userId: 1,
-        },
-      },
-    );
+    const quotation = await modules.quotations.findQuotation({ quotationId }, { fields: ['userId'] });
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!quotation) return true;
@@ -186,14 +175,8 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     { modules, userId }: Context,
   ) => {
     const credentials = await modules.payment.paymentCredentials.findPaymentCredential(
-      {
-        paymentCredentialsId,
-      },
-      {
-        projection: {
-          userId: 1,
-        },
-      },
+      { paymentCredentialsId },
+      { fields: ['userId'] },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception

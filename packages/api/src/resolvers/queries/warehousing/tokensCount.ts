@@ -3,7 +3,7 @@ import type { Context } from '../../../context.ts';
 
 export default async function tokensCount(
   root: never,
-  { queryString = null },
+  { queryString }: { queryString?: string },
   { modules, userId }: Context,
 ) {
   log(`query tokensCount`, { userId });

@@ -1,5 +1,5 @@
-import type { PaymentCredentials } from './db/PaymentCredentialsCollection.ts';
-import type { PaymentProvider } from './db/PaymentProvidersCollection.ts';
+import type { PaymentCredentials } from './module/configurePaymentCredentialsModule.ts';
+import type { PaymentProvider } from './module/configurePaymentProvidersModule.ts';
 
 export type FilterProviders<Order = unknown, UnchainedAPI = unknown> = (
   params: {

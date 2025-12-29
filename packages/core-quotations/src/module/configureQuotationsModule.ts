@@ -1,24 +1,71 @@
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import { type Quotation, QuotationStatus } from '../db/QuotationsCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
-  generateDbFilterById,
-  buildSortOptions,
-  mongodb,
-  generateDbObjectId,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
-import { QuotationsCollection } from '../db/QuotationsCollection.ts';
+  eq,
+  and,
+  or,
+  inArray,
+  sql,
+  asc,
+  desc,
+  generateId,
+  type SQL,
+  type DrizzleDb,
+} from '@unchainedshop/store';
+import { quotations, QuotationStatus, type QuotationRow } from '../db/schema.ts';
+import { searchQuotationsFTS } from '../db/fts.ts';
 import { quotationsSettings, type QuotationsSettingsOptions } from '../quotations-settings.ts';
 
-import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
+export interface QuotationProposal {
+  price?: number;
+  expires?: Date;
+  meta?: any;
+}
+
+export interface QuotationItemConfiguration {
+  quantity?: number;
+  configuration: { key: string; value: string }[];
+}
+
+export interface QuotationLogEntry {
+  date: Date;
+  status: string;
+  info: string;
+}
+
+export interface Quotation {
+  _id: string;
+  configuration?: { key: string; value: string }[];
+  context?: any;
+  countryCode?: string;
+  currencyCode?: string;
+  expires?: Date;
+  fullfilled?: Date;
+  meta?: any;
+  price?: number;
+  productId: string;
+  quotationNumber?: string;
+  rejected?: Date;
+  status: string | null;
+  userId: string;
+  log: QuotationLogEntry[];
+  created: Date;
+  updated?: Date;
+  deleted?: Date | null;
+}
 
 export interface QuotationQuery {
   userId?: string;
   queryString?: string;
   quotationIds?: string[];
 }
+
+export type QuotationFields = keyof Quotation;
+
+export interface QuotationQueryOptions {
+  fields?: QuotationFields[];
+}
+
 export interface QuotationData {
   configuration?: { key: string; value: string }[];
   countryCode?: string;
@@ -28,40 +75,105 @@ export interface QuotationData {
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
-export const buildFindSelector = ({ userId, queryString, quotationIds }: QuotationQuery = {}) => {
-  const selector: mongodb.Filter<Quotation> = {};
+const rowToQuotation = (row: QuotationRow): Quotation => ({
+  _id: row._id,
+  userId: row.userId,
+  productId: row.productId,
+  countryCode: row.countryCode ?? undefined,
+  currencyCode: row.currencyCode ?? undefined,
+  quotationNumber: row.quotationNumber ?? undefined,
+  status: row.status,
+  price: row.price ?? undefined,
+  expires: row.expires ?? undefined,
+  fullfilled: row.fullfilled ?? undefined,
+  rejected: row.rejected ?? undefined,
+  configuration: row.configuration ? JSON.parse(row.configuration) : undefined,
+  context: row.context ? JSON.parse(row.context) : undefined,
+  meta: row.meta ? JSON.parse(row.meta) : undefined,
+  log: row.log ? JSON.parse(row.log) : [],
+  created: row.created,
+  updated: row.updated ?? undefined,
+  deleted: row.deleted ?? null,
+});
 
-  if (userId) {
-    selector.userId = userId;
-  }
-  if (quotationIds) {
-    selector._id = { $in: quotationIds };
-  }
-  if (queryString) {
-    assertDocumentDBCompatMode();
-    (selector as any).$text = { $search: queryString };
-  }
+const COLUMNS = {
+  _id: quotations._id,
+  userId: quotations.userId,
+  productId: quotations.productId,
+  countryCode: quotations.countryCode,
+  currencyCode: quotations.currencyCode,
+  quotationNumber: quotations.quotationNumber,
+  status: quotations.status,
+  price: quotations.price,
+  expires: quotations.expires,
+  fullfilled: quotations.fullfilled,
+  rejected: quotations.rejected,
+  configuration: quotations.configuration,
+  context: quotations.context,
+  meta: quotations.meta,
+  log: quotations.log,
+  created: quotations.created,
+  updated: quotations.updated,
+  deleted: quotations.deleted,
+} as const;
 
-  return selector;
+const buildSelectColumns = (fields?: QuotationFields[]) => {
+  if (!fields?.length) return undefined;
+  return Object.fromEntries(
+    fields.map((field) => [field, COLUMNS[field as keyof typeof COLUMNS]]),
+  ) as Partial<typeof COLUMNS>;
 };
 
 export const configureQuotationsModule = async ({
   db,
-  migrationRepository,
   options: quotationsOptions = {},
-}: ModuleInput<QuotationsSettingsOptions>) => {
-  // Migration v3 -> v4
-  renameCurrencyCode(migrationRepository);
-
+}: {
+  db: DrizzleDb;
+  options?: QuotationsSettingsOptions;
+}) => {
   registerEvents(QUOTATION_EVENTS);
 
   quotationsSettings.configureSettings(quotationsOptions);
 
-  const Quotations = await QuotationsCollection(db);
+  const buildConditions = async (query: QuotationQuery): Promise<SQL[]> => {
+    const conditions: SQL[] = [];
 
-  const findNewQuotationNumber = async (quotation: Quotation, index = 0) => {
+    if (query.userId) {
+      conditions.push(eq(quotations.userId, query.userId));
+    }
+
+    if (query.quotationIds?.length) {
+      conditions.push(inArray(quotations._id, query.quotationIds));
+    }
+
+    if (query.queryString) {
+      const matchingIds = await searchQuotationsFTS(db, query.queryString);
+      if (matchingIds.length === 0) {
+        conditions.push(sql`1 = 0`);
+      } else {
+        conditions.push(inArray(quotations._id, matchingIds));
+      }
+    }
+
+    return conditions;
+  };
+
+  const buildOrderBy = (sort?: SortOption[]) => {
+    if (!sort?.length) return [asc(quotations.created)];
+    return sort.map((s) => {
+      const column = COLUMNS[s.key as keyof typeof COLUMNS] ?? quotations.created;
+      return s.value === SortDirection.DESC ? desc(column) : asc(column);
+    });
+  };
+
+  const findNewQuotationNumber = async (quotation: Quotation, index = 0): Promise<string> => {
     const newHashID = quotationsSettings.quotationNumberHashFn(quotation, index);
-    if ((await Quotations.countDocuments({ quotationNumber: newHashID }, { limit: 1 })) === 0) {
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(quotations)
+      .where(eq(quotations.quotationNumber, newHashID))
+      .limit(1);
+    if ((count ?? 0) === 0) {
       return newHashID;
     }
     return findNewQuotationNumber(quotation, index + 1);
@@ -71,67 +183,88 @@ export const configureQuotationsModule = async ({
     quotationId: string,
     { status, info = '' }: { status: QuotationStatus; info?: string },
   ) => {
-    const selector = generateDbFilterById(quotationId);
-    const quotation = await Quotations.findOne(selector, {});
+    const [row] = await db.select().from(quotations).where(eq(quotations._id, quotationId)).limit(1);
 
-    if (!quotation) return null;
+    if (!row) return null;
+    const quotation = rowToQuotation(row);
 
     if (quotation.status === status) return quotation;
 
     const date = new Date();
-    const $set: Partial<Quotation> = {
+    const updateData: Record<string, any> = {
       status,
-      updated: new Date(),
+      updated: date,
     };
 
     switch (status) {
       // explicitly use fallthrough here!
-      case QuotationStatus.FULFILLED:
-        if (!quotation.fulfilled) {
-          $set.fulfilled = date;
+      case QuotationStatus.FULLFILLED:
+        if (!quotation.fullfilled) {
+          updateData.fullfilled = date;
         }
-        $set.expires = date;
-      case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
+        updateData.expires = date;
+      // eslint-disable-next-line no-fallthrough
+      case QuotationStatus.PROCESSING:
         if (!quotation.quotationNumber) {
-          $set.quotationNumber = await findNewQuotationNumber(quotation);
+          updateData.quotationNumber = await findNewQuotationNumber(quotation);
         }
         break;
       case QuotationStatus.REJECTED:
-        $set.expires = date;
-        $set.rejected = date;
+        updateData.expires = date;
+        updateData.rejected = date;
         break;
       default:
         break;
     }
 
-    const modifier: mongodb.UpdateFilter<Quotation> = {
-      $set,
-      $push: {
-        log: {
-          date,
-          status,
-          info,
-        },
-      },
-    };
+    // Add log entry
+    const newLog = [...quotation.log, { date, status, info }];
+    updateData.log = JSON.stringify(newLog);
 
-    const updatedQuotation = await Quotations.findOneAndUpdate(selector, modifier, {
-      returnDocument: 'after',
-    });
+    await db.update(quotations).set(updateData).where(eq(quotations._id, quotationId));
 
-    await emit('QUOTATION_UPDATE', { quotation, field: 'status' });
+    const [updatedRow] = await db
+      .select()
+      .from(quotations)
+      .where(eq(quotations._id, quotationId))
+      .limit(1);
+
+    const updatedQuotation = rowToQuotation(updatedRow!);
+    await emit('QUOTATION_UPDATE', { quotation: updatedQuotation, field: 'status' });
 
     return updatedQuotation;
   };
 
   const updateQuotationFields = (fieldKeys: string[]) => async (quotationId: string, values: any) => {
-    const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
-      $set: {
-        updated: new Date(),
-        ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
-      },
-    });
-    if (!quotation) return null;
+    const [row] = await db.select().from(quotations).where(eq(quotations._id, quotationId)).limit(1);
+
+    if (!row) return null;
+
+    const updateData: Record<string, any> = {
+      updated: new Date(),
+    };
+
+    for (const key of fieldKeys) {
+      if (values[key] !== undefined) {
+        if (key === 'context' || key === 'meta' || key === 'configuration') {
+          updateData[key] = JSON.stringify(values[key]);
+        } else if (key === 'expires' && values[key] instanceof Date) {
+          updateData[key] = values[key];
+        } else {
+          updateData[key] = values[key];
+        }
+      }
+    }
+
+    await db.update(quotations).set(updateData).where(eq(quotations._id, quotationId));
+
+    const [updatedRow] = await db
+      .select()
+      .from(quotations)
+      .where(eq(quotations._id, quotationId))
+      .limit(1);
+    const quotation = rowToQuotation(updatedRow!);
+
     await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
     return quotation;
   };
@@ -139,42 +272,99 @@ export const configureQuotationsModule = async ({
   return {
     // Queries
     count: async (query: QuotationQuery): Promise<number> => {
-      const quotationCount = await Quotations.countDocuments(buildFindSelector(query));
-      return quotationCount;
-    },
-    openQuotationWithProduct: async ({ productId }: { productId: string }) => {
-      const selector: mongodb.Filter<Quotation> = { productId };
-      selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] };
-      return Quotations.findOne(selector);
+      const conditions = await buildConditions(query);
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(quotations)
+        .where(whereClause);
+      return count ?? 0;
     },
 
-    findQuotation: async ({ quotationId }: { quotationId: string }, options?: mongodb.FindOptions) => {
-      const selector = generateDbFilterById(quotationId);
-      return Quotations.findOne(selector, options);
+    openQuotationWithProduct: async ({ productId }: { productId: string }) => {
+      const [row] = await db
+        .select()
+        .from(quotations)
+        .where(
+          and(
+            eq(quotations.productId, productId),
+            or(
+              eq(quotations.status, QuotationStatus.REQUESTED),
+              eq(quotations.status, QuotationStatus.PROPOSED),
+            ),
+          ),
+        )
+        .limit(1);
+      return row ? rowToQuotation(row) : null;
+    },
+
+    findQuotation: async ({ quotationId }: { quotationId: string }, options?: QuotationQueryOptions) => {
+      const selectColumns = buildSelectColumns(options?.fields);
+
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(quotations)
+        : db.select().from(quotations);
+
+      const [row] = await baseQuery.where(eq(quotations._id, quotationId)).limit(1);
+      return row
+        ? selectColumns
+          ? (row as unknown as Quotation)
+          : rowToQuotation(row as QuotationRow)
+        : null;
     },
 
     findQuotations: async (
-      {
-        limit,
-        offset,
-        sort,
-        ...query
-      }: QuotationQuery & {
+      queryOrParams: QuotationQuery & {
         limit?: number;
         offset?: number;
         sort?: SortOption[];
       },
-      options?: mongodb.FindOptions,
+      options?: {
+        limit?: number;
+        skip?: number;
+        sort?: Record<string, 1 | -1>;
+      },
     ): Promise<Quotation[]> => {
-      const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.ASC }];
-      const quotations = Quotations.find(buildFindSelector(query), {
-        limit,
-        skip: offset,
-        sort: buildSortOptions(sort || defaultSortOption),
-        ...options,
-      });
+      // Support both signature patterns:
+      // 1. Single arg with limit/offset/sort embedded in query
+      // 2. Two args with query and options separately
+      let limit: number | undefined;
+      let offset: number | undefined;
+      let sort: SortOption[] | undefined;
+      let query: QuotationQuery;
 
-      return quotations.toArray();
+      if (options) {
+        // Two-argument pattern
+        query = queryOrParams;
+        limit = options.limit;
+        offset = options.skip;
+        // Convert MongoDB-style sort (1/-1) to SortOption[] (ASC/DESC)
+        sort = options.sort
+          ? Object.entries(options.sort).map(([key, value]) => ({
+              key,
+              value: value === 1 ? SortDirection.ASC : SortDirection.DESC,
+            }))
+          : undefined;
+      } else {
+        // Single-argument pattern
+        const { limit: l, offset: o, sort: s, ...q } = queryOrParams;
+        query = q;
+        limit = l;
+        offset = o;
+        sort = s;
+      }
+
+      const conditions = await buildConditions(query);
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+      const orderBy = buildOrderBy(sort);
+      const results = await db
+        .select()
+        .from(quotations)
+        .where(whereClause)
+        .orderBy(...orderBy)
+        .limit(limit ?? 1000)
+        .offset(offset ?? 0);
+      return results.map(rowToQuotation);
     },
 
     // Transformations
@@ -184,7 +374,7 @@ export const configureQuotationsModule = async ({
         : (quotation.status as QuotationStatus);
     },
 
-    isExpired(quotation: Quotation, { referenceDate }: { referenceDate: Date }) {
+    isExpired(quotation: Quotation, { referenceDate }: { referenceDate?: Date } = {}) {
       const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
       if (!quotation.expires) return false;
       const expiryDate = new Date(quotation.expires);
@@ -202,28 +392,43 @@ export const configureQuotationsModule = async ({
       currencyCode,
       ...quotationData
     }: QuotationData & { currencyCode: string }) => {
-      const { insertedId: quotationId } = await Quotations.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...quotationData,
-        configuration: quotationData.configuration || [],
+      const quotationId = generateId();
+      const now = new Date();
+
+      await db.insert(quotations).values({
+        _id: quotationId,
+        userId: quotationData.userId,
+        productId: quotationData.productId,
+        configuration: quotationData.configuration
+          ? JSON.stringify(quotationData.configuration)
+          : JSON.stringify([]),
         countryCode,
         currencyCode,
-        log: [],
+        log: JSON.stringify([]),
         status: QuotationStatus.REQUESTED,
+        created: now,
+        deleted: null,
       });
 
-      const quotation = (await Quotations.findOne(generateDbFilterById(quotationId), {})) as Quotation;
+      const [row] = await db.select().from(quotations).where(eq(quotations._id, quotationId)).limit(1);
+
+      const quotation = rowToQuotation(row!);
       await emit('QUOTATION_REQUEST_CREATE', { quotation });
       return quotation;
     },
+
     deleteRequestedUserQuotations: async (userId: string) => {
-      const { deletedCount } = await Quotations.deleteMany({
-        userId,
-        status: { $in: [QuotationStatus.REQUESTED, null] },
-      });
-      return deletedCount;
+      const result = await db
+        .delete(quotations)
+        .where(
+          and(
+            eq(quotations.userId, userId),
+            or(eq(quotations.status, QuotationStatus.REQUESTED), sql`${quotations.status} IS NULL`),
+          ),
+        );
+      return result.rowsAffected;
     },
+
     updateContext: updateQuotationFields(['context']),
     updateProposal: updateQuotationFields(['price', 'expires', 'meta']),
 

@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl, getCurrenciesTable } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getCurrenciesTable,
+} from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';

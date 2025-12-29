@@ -74,7 +74,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const allFileIdsRelevant = (
         await modules.files.findFiles(
           { paths: ['product-media', 'assortment-media'] },
-          { projection: { _id: 1 } },
+          { fields: ['_id'] },
         )
       ).map((a) => a._id);
 

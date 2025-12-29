@@ -1,5 +1,5 @@
 import { generateRandomHash } from '@unchainedshop/utils';
-import type { Enrollment } from './db/EnrollmentsCollection.ts';
+import type { Enrollment } from './module/configureEnrollmentsModule.ts';
 
 export interface ScheduleData {
   schedules: {

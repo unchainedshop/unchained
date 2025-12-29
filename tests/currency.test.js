@@ -11,14 +11,13 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Currency', () => {
-  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
   let Currencies;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();

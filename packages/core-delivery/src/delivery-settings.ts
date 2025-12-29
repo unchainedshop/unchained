@@ -1,4 +1,4 @@
-import type { DeliveryProvider } from './db/DeliveryProvidersCollection.ts';
+import type { DeliveryProvider } from './module/configureDeliveryModule.ts';
 
 export type FilterProviders<Order = unknown, UnchainedAPI = unknown> = (
   params: {

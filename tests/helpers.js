@@ -6,7 +6,11 @@ import {
   getServerPort,
   getDrizzleDb,
 } from './setup.js';
-import seedLocaleData, { seedCountriesToDrizzle, seedLanguagesToDrizzle, seedCurrenciesToDrizzle } from './seeds/locale-data.js';
+import seedLocaleData, {
+  seedCountriesToDrizzle,
+  seedLanguagesToDrizzle,
+  seedCurrenciesToDrizzle,
+} from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
 import seedDeliveries from './seeds/deliveries.js';
@@ -350,7 +354,9 @@ export function getBookmarksTable() {
       if (filter._id) {
         query = query.where(eq(bookmarks._id, filter._id));
       } else if (filter.userId && filter.productId) {
-        query = query.where(and(eq(bookmarks.userId, filter.userId), eq(bookmarks.productId, filter.productId)));
+        query = query.where(
+          and(eq(bookmarks.userId, filter.userId), eq(bookmarks.productId, filter.productId)),
+        );
       }
       const results = await query.limit(1);
       return results[0] || null;

@@ -23,17 +23,20 @@ import {
   configureDeliveryModule,
   type DeliveryModule,
   type DeliverySettingsOptions,
+  initializeDeliverySchema,
 } from '@unchainedshop/core-delivery';
 import {
   configureEnrollmentsModule,
   type EnrollmentsModule,
   type EnrollmentsSettingsOptions,
+  initializeEnrollmentsSchema,
 } from '@unchainedshop/core-enrollments';
 import { configureEventsModule, type EventsModule } from '@unchainedshop/core-events';
 import {
   configureFilesModule,
   type FilesModule,
   type FilesSettingsOptions,
+  initializeFilesSchema,
 } from '@unchainedshop/core-files';
 import {
   configureFiltersModule,
@@ -54,6 +57,7 @@ import {
   configurePaymentModule,
   type PaymentModule,
   type PaymentSettingsOptions,
+  initializePaymentSchema,
 } from '@unchainedshop/core-payment';
 import {
   configureProductsModule,
@@ -64,13 +68,18 @@ import {
   configureQuotationsModule,
   type QuotationsModule,
   type QuotationsSettingsOptions,
+  initializeQuotationsSchema,
 } from '@unchainedshop/core-quotations';
 import {
   configureUsersModule,
   type UserSettingsOptions,
   type UsersModule,
 } from '@unchainedshop/core-users';
-import { configureWarehousingModule, type WarehousingModule } from '@unchainedshop/core-warehousing';
+import {
+  configureWarehousingModule,
+  type WarehousingModule,
+  initializeWarehousingSchema,
+} from '@unchainedshop/core-warehousing';
 import {
   configureWorkerModule,
   type WorkerModule,
@@ -147,6 +156,12 @@ export default async function initModules(
     initializeCurrenciesSchema,
     initializeLanguagesSchema,
     initializeBookmarksSchema,
+    initializeWarehousingSchema,
+    initializeDeliverySchema,
+    initializePaymentSchema,
+    initializeQuotationsSchema,
+    initializeEnrollmentsSchema,
+    initializeFilesSchema,
   ]);
 
   const assortments = await configureAssortmentsModule({
@@ -164,23 +179,20 @@ export default async function initModules(
     db: drizzleDb,
   });
   const delivery = await configureDeliveryModule({
-    db,
+    db: drizzleDb,
     options: options.delivery,
-    migrationRepository,
   });
   const enrollments = await configureEnrollmentsModule({
-    db,
+    db: drizzleDb,
     options: options.enrollments,
-    migrationRepository,
   });
   const events = await configureEventsModule({
     db,
     migrationRepository,
   });
   const files = await configureFilesModule({
-    db,
+    db: drizzleDb,
     options: options.files,
-    migrationRepository,
   });
   const filters = await configureFiltersModule({
     db,
@@ -196,9 +208,8 @@ export default async function initModules(
     migrationRepository,
   });
   const payment = await configurePaymentModule({
-    db,
+    db: drizzleDb,
     options: options.payment,
-    migrationRepository,
   });
   const products = await configureProductsModule({
     db,
@@ -206,9 +217,8 @@ export default async function initModules(
     options: options.products,
   });
   const quotations = await configureQuotationsModule({
-    db,
+    db: drizzleDb,
     options: options.quotations,
-    migrationRepository,
   });
   const users = await configureUsersModule({
     db,
@@ -216,8 +226,7 @@ export default async function initModules(
     migrationRepository,
   });
   const warehousing = await configureWarehousingModule({
-    db,
-    migrationRepository,
+    db: drizzleDb,
   });
   const worker = await configureWorkerModule({
     db,
