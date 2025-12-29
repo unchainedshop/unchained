@@ -8,6 +8,8 @@ import type { TicketingAPI } from './types.ts';
 import setupMagicKey from './magic-key.ts';
 import ticketingServices, { type TicketingServices } from './services.ts';
 
+import { defaultTicketReceiptRenderer } from './pdf-tickets/defaultTicketReceiptRenderer.js';
+
 export type { TicketingAPI, RendererTypes, TicketingModule, TicketingServices };
 
 export { ticketingServices, ticketingModules };
@@ -30,14 +32,14 @@ export function setupMobileTickets({
 export default function setupTicketing(
   unchainedAPI: TicketingAPI,
   {
-    renderOrderPDF,
+    renderOrderPDF = defaultTicketReceiptRenderer,
     createAppleWalletPass,
     createGoogleWalletPass,
   }: {
-    renderOrderPDF: any;
-    createAppleWalletPass: any;
-    createGoogleWalletPass: any;
-  },
+    renderOrderPDF?: any;
+    createAppleWalletPass?: any;
+    createGoogleWalletPass?: any;
+  } = {},
 ) {
   setupPDFTickets({
     renderOrderPDF,
