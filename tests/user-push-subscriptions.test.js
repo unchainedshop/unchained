@@ -6,14 +6,16 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { USER_TOKEN } from './seeds/users.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
+let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
 
 test.describe('User Push Subscriptions', () => {
   test.before(async () => {
     await setupDatabase();
+    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
   });
@@ -188,16 +190,94 @@ test.describe('User Push Subscriptions', () => {
       });
       assert.strictEqual(second.pushSubscriptions.length, initialCount);
     });
-    /* 
-    test.todo('should unsubscribe from other users when flag is set', async () => {
-      const subscription = {
-        endpoint: 'https://fcm.googleapis.com/fcm/send/test-endpoint-5',
+    test('should unsubscribe from other users when flag is set', async () => {
+      const sharedSubscription = {
+        endpoint: 'https://fcm.googleapis.com/fcm/send/shared-endpoint',
         keys: {
-          p256dh: 'test-p256dh-key-5',
-          auth: 'test-auth-key-5',
+          p256dh: 'shared-p256dh-key',
+          auth: 'shared-auth-key',
         },
       };
-    }); */
+
+      // First, add the subscription to admin user
+      const {
+        data: { addPushSubscription: adminSubscription },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation AddPushSubscription($subscription: JSON!) {
+            addPushSubscription(subscription: $subscription) {
+              _id
+              pushSubscriptions {
+                endpoint
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          subscription: sharedSubscription,
+        },
+      });
+
+      assert.ok(adminSubscription);
+      const adminHasSubscription = adminSubscription.pushSubscriptions.some(
+        (sub) => sub._id === 'shared-p256dh-key',
+      );
+      assert.ok(adminHasSubscription, 'Admin should have the subscription');
+
+      // Now add the same subscription to user WITH unsubscribeFromOtherUsers: true
+      const {
+        data: { addPushSubscription: userSubscription },
+      } = await graphqlFetchAsUser({
+        query: /* GraphQL */ `
+          mutation AddPushSubscription($subscription: JSON!, $unsubscribeFromOtherUsers: Boolean) {
+            addPushSubscription(subscription: $subscription, unsubscribeFromOtherUsers: $unsubscribeFromOtherUsers) {
+              _id
+              pushSubscriptions {
+                endpoint
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          subscription: sharedSubscription,
+          unsubscribeFromOtherUsers: true,
+        },
+      });
+
+      assert.ok(userSubscription);
+      const userHasSubscription = userSubscription.pushSubscriptions.some(
+        (sub) => sub._id === 'shared-p256dh-key',
+      );
+      assert.ok(userHasSubscription, 'User should have the subscription');
+
+      // Verify admin no longer has the subscription
+      const {
+        data: { me: adminAfter },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query Me {
+            me {
+              _id
+              pushSubscriptions {
+                endpoint
+                _id
+              }
+            }
+          }
+        `,
+      });
+
+      const adminStillHasSubscription = adminAfter.pushSubscriptions?.some(
+        (sub) => sub._id === 'shared-p256dh-key',
+      );
+      assert.strictEqual(
+        adminStillHasSubscription,
+        false,
+        'Admin should no longer have the subscription after user subscribed with unsubscribeFromOtherUsers: true',
+      );
+    });
   });
 
   test.describe('Mutation.addPushSubscription for anonymous user', () => {

@@ -12,10 +12,11 @@ import { SimpleProduct } from './seeds/products.js';
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
+let db;
 
 test.describe('Remove User Product Reviews', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -143,7 +144,141 @@ test.describe('Remove User Product Reviews', () => {
       assert.strictEqual(removeUserProductReviews, true);
     });
 
-    test.todo('should be able to remove another user review even if the user is deleted');
+    test('should be able to remove another user review even if the user is deleted', async () => {
+      const username = 'deletedreviewuser2';
+      const password = 'password123';
+
+      // Create a new user with a review
+      const {
+        data: { createUser },
+      } = await graphqlFetchAsAnonymous({
+        query: /* GraphQL */ `
+          mutation CreateUser($username: String!, $email: String!, $password: String!) {
+            createUser(username: $username, email: $email, password: $password) {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          username,
+          email: 'deletedreviewuser2@example.com',
+          password,
+        },
+      });
+
+      assert.ok(createUser);
+      const userId = createUser.user._id;
+
+      // Set a known token secret for the new user so we can authenticate as them
+      const plainSecret = 'testsecret';
+      const crypto = await import('node:crypto');
+      const hashedSecret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
+      await db.collection('users').updateOne(
+        { _id: userId },
+        { $set: { 'services.token': { secret: hashedSecret } } }
+      );
+      const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
+
+      // Create a product review as the new user
+      const {
+        data: { createProductReview },
+      } = await graphqlFetchAsNewUser({
+        query: /* GraphQL */ `
+          mutation CreateProductReview($productId: ID!, $productReview: ProductReviewInput!) {
+            createProductReview(productId: $productId, productReview: $productReview) {
+              _id
+              author {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          productReview: {
+            rating: 3,
+            title: 'Deleted User Review',
+            review: 'This review was created by a user who will be deleted',
+          },
+        },
+      });
+
+      assert.ok(createProductReview);
+      const reviewId = createProductReview._id;
+
+      // Remove the user WITHOUT removing their reviews
+      const {
+        data: { removeUser },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation RemoveUser($userId: ID!, $removeUserReviews: Boolean) {
+            removeUser(userId: $userId, removeUserReviews: $removeUserReviews) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId,
+          removeUserReviews: false,
+        },
+      });
+
+      assert.ok(removeUser);
+
+      // Verify the review still exists after user deletion
+      const {
+        data: { productReview: reviewBeforeCleanup },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query ProductReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: reviewId,
+        },
+      });
+
+      assert.ok(reviewBeforeCleanup, 'Review should still exist after user deletion with removeUserReviews: false');
+
+      // Now admin should be able to remove the deleted user's reviews
+      const {
+        data: { removeUserProductReviews },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation RemoveUserProductReviews($userId: ID!) {
+            removeUserProductReviews(userId: $userId)
+          }
+        `,
+        variables: {
+          userId,
+        },
+      });
+
+      assert.strictEqual(removeUserProductReviews, true);
+
+      // Verify the review no longer exists
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query ProductReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: reviewId,
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
+    });
 
     test('should allow admin to remove their own reviews', async () => {
       const { data: { createProductReview } = {} } = await graphqlFetchAsAdmin({

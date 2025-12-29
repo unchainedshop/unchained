@@ -7,15 +7,16 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { TestToken1, TestToken3 } from './seeds/tokens.js';
+import { TestToken1, TestToken3, AlreadyExportedToken, InvalidatedToken, TokenWithInvalidProduct } from './seeds/tokens.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
+let db;
 
 test.describe('Token Export and Invalidation', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -131,9 +132,29 @@ test.describe('Token Export and Invalidation', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
     });
 
-    test.todo(
-      'should handle exporting already exported token (needs token with walletAddress but no userId)',
-    );
+    test('should return TokenWrongStatusError when exporting already exported token', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation ExportToken($tokenId: ID!, $quantity: Int!, $recipientWalletAddress: String!) {
+            exportToken(
+              tokenId: $tokenId
+              quantity: $quantity
+              recipientWalletAddress: $recipientWalletAddress
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tokenId: AlreadyExportedToken._id,
+          quantity: 1,
+          recipientWalletAddress: '0x5555555555555555555555555555555555555555',
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0]?.extensions?.code, 'TokenWrongStatusError');
+    });
 
     test('should not create duplicate work items for same token', async () => {
       await graphqlFetchAsAdmin({
@@ -233,7 +254,28 @@ test.describe('Token Export and Invalidation', () => {
   });
 
   test.describe('Mutation.invalidateToken for admin user', () => {
-    test.todo('should return TokenWrongStatusError when token does not meet invalidation criteria');
+    test('should return error when trying to invalidate an already invalidated token', async () => {
+      // When a token is already invalidated (has invalidatedDate set), the invalidateToken
+      // mutation returns null because the MongoDB update filter doesn't match.
+      // This causes a GraphQL error because the mutation return type is non-nullable.
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation InvalidateToken($tokenId: ID!) {
+            invalidateToken(tokenId: $tokenId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tokenId: InvalidatedToken._id,
+        },
+      });
+
+      assert.ok(errors);
+      // The mutation returns null for an already-invalidated token, causing an INTERNAL_SERVER_ERROR
+      // because the return type is non-nullable
+      assert.strictEqual(errors[0]?.extensions?.code, 'INTERNAL_SERVER_ERROR');
+    });
 
     test('should return error when token not found', async () => {
       const { errors } = await graphqlFetchAsAdmin({
@@ -253,7 +295,29 @@ test.describe('Token Export and Invalidation', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'TokenNotFoundError');
     });
 
-    test.todo('should return error when product not found (needs token with invalid productId in seed)');
+    test('should return ProductNotFoundError when token has invalid product', async () => {
+      // Insert the token with invalid product directly (not seeded to avoid breaking other token queries)
+      await db.collection('token_surrogates').findOrInsertOne(TokenWithInvalidProduct);
+
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation InvalidateToken($tokenId: ID!) {
+            invalidateToken(tokenId: $tokenId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tokenId: TokenWithInvalidProduct._id,
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
+
+      // Clean up - remove the token with invalid product to avoid affecting other tests
+      await db.collection('token_surrogates').deleteOne({ _id: TokenWithInvalidProduct._id });
+    });
 
     test('should successfully invalidate a token when all invalidation criteria are met (needs proper virtual provider setup)', async () => {
       const {

@@ -60,9 +60,45 @@ export const InvalidatedToken = {
   meta: {},
 };
 
+// Token with walletAddress but no userId - already exported token
+export const AlreadyExportedToken = {
+  _id: 'test-token-already-exported',
+  userId: null,
+  productId: TokenizedProduct1._id,
+  orderPositionId: 'order-position-5',
+  tokenSerialNumber: 'TOKEN005',
+  quantity: 1,
+  contractAddress: '0x1234567890abcdef',
+  chainId: '1',
+  walletAddress: '0xexportedwallet1234567890',
+  invalidatedDate: null,
+  expiryDate: null,
+  meta: {},
+};
+
+// Token with invalid productId - for testing product not found error
+// NOTE: This token is NOT seeded to the database to avoid breaking token queries
+// It is inserted directly in the test that needs it
+export const TokenWithInvalidProduct = {
+  _id: 'test-token-invalid-product',
+  userId: 'admin',
+  productId: 'non-existent-product-id',
+  orderPositionId: 'order-position-6',
+  tokenSerialNumber: 'TOKEN006',
+  quantity: 1,
+  contractAddress: '0x1234567890abcdef',
+  chainId: '1',
+  walletAddress: '0xabcdef1234567890',
+  invalidatedDate: null,
+  expiryDate: null,
+  meta: {},
+};
+
 export default async function seedTokens(db) {
   await db.collection('token_surrogates').findOrInsertOne(TestToken1);
   await db.collection('token_surrogates').findOrInsertOne(TestToken2);
   await db.collection('token_surrogates').findOrInsertOne(TestToken3);
   await db.collection('token_surrogates').findOrInsertOne(InvalidatedToken);
+  await db.collection('token_surrogates').findOrInsertOne(AlreadyExportedToken);
+  // TokenWithInvalidProduct is NOT seeded here - it's inserted directly in the test
 }

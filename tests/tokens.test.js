@@ -42,7 +42,7 @@ test.describe('Tokens', () => {
         `,
         variables: {},
       });
-      assert.strictEqual(tokens.length, 4);
+      assert.strictEqual(tokens.length, 5);
     });
 
     test('Return tokens with all fields', async () => {
@@ -67,7 +67,7 @@ test.describe('Tokens', () => {
         `,
         variables: {},
       });
-      assert.strictEqual(tokens.length, 4);
+      assert.strictEqual(tokens.length, 5);
       assert.ok(tokens.every((t) => typeof t._id === 'string'));
       assert.ok(tokens.every((t) => typeof t.quantity === 'number'));
       assert.ok(tokens.every((t) => typeof t.status === 'string'));
@@ -108,7 +108,7 @@ test.describe('Tokens', () => {
           offset: 2,
         },
       });
-      assert.strictEqual(tokens.length, 2);
+      assert.strictEqual(tokens.length, 3);
     });
 
     test('Return tokens with limit and offset', async () => {
@@ -327,7 +327,7 @@ test.describe('Tokens', () => {
         `,
         variables: {},
       });
-      assert.strictEqual(tokensCount, 4);
+      assert.strictEqual(tokensCount, 5);
     });
 
     test('Return count of tokens filtered by queryString', async () => {

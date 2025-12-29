@@ -11,10 +11,11 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
+let db;
 
 test.describe('User Removal', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -87,8 +88,214 @@ test.describe('User Removal', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'UserNotFoundError');
     });
 
-    test.todo('Should remove user without removing its review');
-    test.todo('Should remove user and its review');
+    test('Should remove user without removing its review', async () => {
+      const username = 'userkeepreview';
+      const password = 'password123';
+
+      // Create a new user with a review, then remove the user but keep the review
+      const {
+        data: { createUser },
+      } = await graphqlFetchAsAnonymous({
+        query: /* GraphQL */ `
+          mutation CreateUser($username: String!, $email: String!, $password: String!) {
+            createUser(username: $username, email: $email, password: $password) {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          username,
+          email: 'userkeepreview@example.com',
+          password,
+        },
+      });
+
+      assert.ok(createUser);
+      const userId = createUser.user._id;
+
+      // Set a known token secret for the new user so we can authenticate as them
+      // The token format is sha256(username:plainSecret)
+      const plainSecret = 'testsecret';
+      const crypto = await import('node:crypto');
+      const hashedSecret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
+      await db.collection('users').updateOne(
+        { _id: userId },
+        { $set: { 'services.token': { secret: hashedSecret } } }
+      );
+      const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
+
+      // Create a product review as the new user
+      const {
+        data: { createProductReview },
+      } = await graphqlFetchAsNewUser({
+        query: /* GraphQL */ `
+          mutation CreateProductReview($productId: ID!, $productReview: ProductReviewInput!) {
+            createProductReview(productId: $productId, productReview: $productReview) {
+              _id
+              author {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+          productReview: {
+            rating: 5,
+            title: 'Great Product - Keep Review',
+            review: 'This review should remain after user removal',
+          },
+        },
+      });
+
+      assert.ok(createProductReview);
+      const reviewId = createProductReview._id;
+
+      // Remove the user WITHOUT removing their reviews (removeUserReviews: false)
+      const {
+        data: { removeUser },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation RemoveUser($userId: ID!, $removeUserReviews: Boolean) {
+            removeUser(userId: $userId, removeUserReviews: $removeUserReviews) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId,
+          removeUserReviews: false,
+        },
+      });
+
+      assert.ok(removeUser);
+      assert.strictEqual(removeUser._id, userId);
+
+      // Verify the review still exists even after user deletion
+      const {
+        data: { productReview },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query ProductReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: reviewId,
+        },
+      });
+
+      assert.ok(productReview);
+      assert.strictEqual(productReview._id, reviewId);
+    });
+
+    test('Should remove user and its review', async () => {
+      const username = 'userwithreview';
+      const password = 'password123';
+
+      // Create a new user
+      const {
+        data: { createUser },
+      } = await graphqlFetchAsAnonymous({
+        query: /* GraphQL */ `
+          mutation CreateUser($username: String!, $email: String!, $password: String!) {
+            createUser(username: $username, email: $email, password: $password) {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          username,
+          email: 'userwithreview@example.com',
+          password,
+        },
+      });
+
+      assert.ok(createUser);
+      const userId = createUser.user._id;
+
+      // Set a known token secret for the new user so we can authenticate as them
+      const plainSecret = 'testsecret';
+      const crypto = await import('node:crypto');
+      const hashedSecret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
+      await db.collection('users').updateOne(
+        { _id: userId },
+        { $set: { 'services.token': { secret: hashedSecret } } }
+      );
+      const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
+
+      // Create a product review as the new user
+      const {
+        data: { createProductReview },
+      } = await graphqlFetchAsNewUser({
+        query: /* GraphQL */ `
+          mutation CreateProductReview($productId: ID!, $productReview: ProductReviewInput!) {
+            createProductReview(productId: $productId, productReview: $productReview) {
+              _id
+              author {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+          productReview: {
+            rating: 4,
+            title: 'User Review to Remove',
+            review: 'This review should be removed with user',
+          },
+        },
+      });
+
+      assert.ok(createProductReview);
+      const reviewId = createProductReview._id;
+
+      // Remove the user WITH removing their reviews (removeUserReviews: true)
+      const {
+        data: { removeUser },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation RemoveUser($userId: ID!, $removeUserReviews: Boolean) {
+            removeUser(userId: $userId, removeUserReviews: $removeUserReviews) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId,
+          removeUserReviews: true,
+        },
+      });
+
+      assert.ok(removeUser);
+      assert.strictEqual(removeUser._id, userId);
+
+      // Verify the review no longer exists
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query ProductReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: reviewId,
+        },
+      });
+
+      assert.ok(errors);
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
+    });
   });
 
   test.describe('Mutation.removeUser for normal user', () => {
