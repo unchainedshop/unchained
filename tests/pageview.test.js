@@ -3,18 +3,18 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  getEventsTable,
 } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let db;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
 
 test.describe('Mutation.pageView', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
   });
@@ -40,15 +40,12 @@ test.describe('Mutation.pageView', () => {
       assert.ok(data);
       assert.strictEqual(data.pageView, '/products/test-product');
 
-      const Events = db.collection('events');
-      const event = await Events.findOne(
-        {
-          type: 'PAGE_VIEW',
-          'payload.path': '/products/test-product',
-          'payload.referrer': '/home',
-        },
-        { sort: { created: -1 } },
-      );
+      const Events = getEventsTable();
+      const event = await Events.findOne({
+        type: 'PAGE_VIEW',
+        'payload.path': '/products/test-product',
+        'payload.referrer': '/home',
+      });
 
       assert.ok(event, 'Event should be stored in database');
       assert.strictEqual(event.type, 'PAGE_VIEW');
@@ -72,14 +69,11 @@ test.describe('Mutation.pageView', () => {
       assert.ok(data);
       assert.strictEqual(data.pageView, '/checkout');
 
-      const Events = db.collection('events');
-      const event = await Events.findOne(
-        {
-          type: 'PAGE_VIEW',
-          'payload.path': '/checkout',
-        },
-        { sort: { created: -1 } },
-      );
+      const Events = getEventsTable();
+      const event = await Events.findOne({
+        type: 'PAGE_VIEW',
+        'payload.path': '/checkout',
+      });
 
       assert.ok(event, 'Event should be stored in database');
       assert.strictEqual(event.type, 'PAGE_VIEW');
@@ -104,15 +98,12 @@ test.describe('Mutation.pageView', () => {
 
       assert.ok(data);
       assert.strictEqual(data.pageView, '/products/anonymous-view');
-      const Events = db.collection('events');
-      const event = await Events.findOne(
-        {
-          type: 'PAGE_VIEW',
-          'payload.path': '/products/anonymous-view',
-          'payload.referrer': 'https://google.com',
-        },
-        { sort: { created: -1 } },
-      );
+      const Events = getEventsTable();
+      const event = await Events.findOne({
+        type: 'PAGE_VIEW',
+        'payload.path': '/products/anonymous-view',
+        'payload.referrer': 'https://google.com',
+      });
 
       assert.ok(event, 'Event should be stored in database');
       assert.strictEqual(event.type, 'PAGE_VIEW');
@@ -123,7 +114,7 @@ test.describe('Mutation.pageView', () => {
 
     test('should handle various path formats', async () => {
       const testPaths = ['/', '/products', '/cart/checkout', '/user/profile?tab=settings'];
-      const Events = db.collection('events');
+      const Events = getEventsTable();
 
       for (const path of testPaths) {
         const { data } = await graphqlFetchAsAnonymous({
@@ -140,13 +131,10 @@ test.describe('Mutation.pageView', () => {
         assert.ok(data);
         assert.strictEqual(data.pageView, path);
 
-        const event = await Events.findOne(
-          {
-            type: 'PAGE_VIEW',
-            'payload.path': path,
-          },
-          { sort: { created: -1 } },
-        );
+        const event = await Events.findOne({
+          type: 'PAGE_VIEW',
+          'payload.path': path,
+        });
 
         assert.ok(event, `Event should be stored in database for path: ${path}`);
         assert.strictEqual(event.type, 'PAGE_VIEW');

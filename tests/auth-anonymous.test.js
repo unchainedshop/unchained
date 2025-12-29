@@ -3,6 +3,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  getEventsTable,
 } from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -220,7 +221,7 @@ test.describe('Auth for anonymous users', () => {
 
     test('change password with token from forgotPassword call', async () => {
       // Reset the password with that token
-      const Events = db.collection('events');
+      const Events = getEventsTable();
       const event = await Events.findOne({
         'payload.userId': 'userthatforgetspasswords',
         'payload.action': 'reset-password',

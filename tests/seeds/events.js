@@ -45,9 +45,41 @@ export const TestEvent4 = {
   },
 };
 
+const TestEvents = [TestEvent1, TestEvent2, TestEvent3, TestEvent4];
+
 export default async function seedEvents(db) {
   await db.collection('events').findOrInsertOne(TestEvent1);
   await db.collection('events').findOrInsertOne(TestEvent2);
   await db.collection('events').findOrInsertOne(TestEvent3);
   await db.collection('events').findOrInsertOne(TestEvent4);
+}
+
+/**
+ * Seed events into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid side effects.
+ */
+export async function seedEventsToDrizzle(db) {
+  const { events } = await import('@unchainedshop/core-events');
+  const { sql } = await import('drizzle-orm');
+
+  // Delete all existing events directly
+  await db.delete(events);
+
+  // Clear FTS table
+  await db.run(sql`DELETE FROM events_fts`);
+
+  // Insert all events directly (bypassing module)
+  for (const event of TestEvents) {
+    await db.insert(events).values({
+      _id: event._id,
+      type: event.type,
+      context: event.context,
+      payload: event.payload,
+      created: event.created,
+    });
+
+    // Manually insert into FTS table (triggers handle this for normal inserts,
+    // but we want to be explicit here)
+    await db.run(sql`INSERT INTO events_fts(_id, type) VALUES (${event._id}, ${event.type})`);
+  }
 }

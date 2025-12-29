@@ -5,6 +5,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  getEventsTable,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
@@ -68,7 +69,7 @@ test.describe('User Token Validation', () => {
       `,
     });
 
-    const Events = db.collection('events');
+    const Events = getEventsTable();
     const resetEvent = await Events.findOne({
       'payload.userId': 'user-reset-password',
       'payload.action': 'reset-password',
@@ -87,13 +88,10 @@ test.describe('User Token Validation', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const verifyEvent = await Events.findOne(
-      {
-        'payload.userId': 'user-verify-email',
-        'payload.action': 'verify-email',
-      },
-      { sort: { created: -1 } },
-    );
+    const verifyEvent = await Events.findOne({
+      'payload.userId': 'user-verify-email',
+      'payload.action': 'verify-email',
+    });
     verifyEmailToken = verifyEvent?.payload?.token;
 
     if (!resetPasswordToken) {

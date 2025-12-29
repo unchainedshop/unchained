@@ -31,7 +31,11 @@ import {
   type EnrollmentsSettingsOptions,
   initializeEnrollmentsSchema,
 } from '@unchainedshop/core-enrollments';
-import { configureEventsModule, type EventsModule } from '@unchainedshop/core-events';
+import {
+  configureEventsModule,
+  type EventsModule,
+  initializeEventsSchema,
+} from '@unchainedshop/core-events';
 import {
   configureFilesModule,
   type FilesModule,
@@ -162,6 +166,7 @@ export default async function initModules(
     initializeQuotationsSchema,
     initializeEnrollmentsSchema,
     initializeFilesSchema,
+    initializeEventsSchema,
   ]);
 
   const assortments = await configureAssortmentsModule({
@@ -187,8 +192,7 @@ export default async function initModules(
     options: options.enrollments,
   });
   const events = await configureEventsModule({
-    db,
-    migrationRepository,
+    db: drizzleDb,
   });
   const files = await configureFilesModule({
     db: drizzleDb,

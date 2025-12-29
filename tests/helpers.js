@@ -23,7 +23,7 @@ import seedAssortments from './seeds/assortments.js';
 import { seedBookmarksToDrizzle } from './seeds/bookmark.js';
 import { seedEnrollmentsToDrizzle } from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
-import seedEvents from './seeds/events.js';
+import { seedEventsToDrizzle } from './seeds/events.js';
 import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
 // Drizzle imports for table helpers
@@ -31,7 +31,8 @@ import { countries } from '@unchainedshop/core-countries';
 import { currencies } from '@unchainedshop/core-currencies';
 import { languages } from '@unchainedshop/core-languages';
 import { bookmarks } from '@unchainedshop/core-bookmarks';
-import { eq, and, isNull, isNotNull, sql } from 'drizzle-orm';
+import { events } from '@unchainedshop/core-events';
+import { eq, and, isNull, isNotNull, inArray, desc, sql } from 'drizzle-orm';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -88,10 +89,9 @@ export const setupDatabase = async () => {
   await seedQuotationsToDrizzle(drizzleDb);
   await seedMediaObjectsToDrizzle(drizzleDb);
 
-  // Seed events AFTER countries to avoid COUNTRY_CREATE events polluting the test data
-  // Clear events collection first to remove any events emitted during seeding
-  await db.collection('events').deleteMany({});
-  await seedEvents(db);
+  // Seed events AFTER other Drizzle seeds to avoid events polluting the test data
+  // The seedEventsToDrizzle function clears existing events before seeding
+  await seedEventsToDrizzle(drizzleDb);
 
   return [db, null];
 };
@@ -372,6 +372,128 @@ export function getBookmarksTable() {
       }
       const result = await query;
       return result[0]?.count ?? 0;
+    },
+  };
+}
+
+/**
+ * Get a wrapper for the events table with MongoDB-like API for tests.
+ * This allows tests to directly query the events table.
+ */
+export function getEventsTable() {
+  const drizzleDb = getDrizzleDb();
+
+  return {
+    async findOne(filter = {}) {
+      let conditions = [];
+
+      if (filter._id) {
+        conditions.push(eq(events._id, filter._id));
+      }
+      if (filter.type) {
+        conditions.push(eq(events.type, filter.type));
+      }
+
+      // Handle payload filters like 'payload.path' - need to use JSON extraction
+      const payloadFilters = Object.keys(filter).filter((k) => k.startsWith('payload.'));
+      for (const key of payloadFilters) {
+        const field = key.replace('payload.', '');
+        const value = filter[key];
+        conditions.push(sql`json_extract(${events.payload}, '$.' || ${field}) = ${value}`);
+      }
+
+      let query = drizzleDb.select().from(events);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      // Sort by created descending (most recent first)
+      query = query.orderBy(desc(events.created));
+
+      const results = await query.limit(1);
+      if (!results[0]) return null;
+
+      // Convert to MongoDB-like format with payload as object
+      const row = results[0];
+      return {
+        _id: row._id,
+        type: row.type,
+        context: row.context,
+        payload: row.payload,
+        created: row.created,
+      };
+    },
+    async find(filter = {}) {
+      let conditions = [];
+
+      if (filter._id) {
+        conditions.push(eq(events._id, filter._id));
+      }
+      if (filter.type) {
+        if (Array.isArray(filter.type)) {
+          conditions.push(inArray(events.type, filter.type));
+        } else {
+          conditions.push(eq(events.type, filter.type));
+        }
+      }
+
+      let query = drizzleDb.select().from(events);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      query = query.orderBy(desc(events.created));
+
+      const results = await query;
+      return results.map((row) => ({
+        _id: row._id,
+        type: row.type,
+        context: row.context,
+        payload: row.payload,
+        created: row.created,
+      }));
+    },
+    async countDocuments(filter = {}) {
+      let conditions = [];
+
+      if (filter._id) {
+        conditions.push(eq(events._id, filter._id));
+      }
+      if (filter.type) {
+        conditions.push(eq(events.type, filter.type));
+      }
+
+      let query = drizzleDb.select({ count: sql`count(*)` }).from(events);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      const result = await query;
+      return result[0]?.count ?? 0;
+    },
+    async deleteMany(filter = {}) {
+      if (Object.keys(filter).length === 0) {
+        await drizzleDb.delete(events);
+        await drizzleDb.run(sql`DELETE FROM events_fts`);
+        return { deletedCount: 0 };
+      }
+
+      let conditions = [];
+      if (filter._id) {
+        conditions.push(eq(events._id, filter._id));
+      }
+      if (filter.type) {
+        conditions.push(eq(events.type, filter.type));
+      }
+
+      if (conditions.length > 0) {
+        await drizzleDb.delete(events).where(and(...conditions));
+      }
+
+      return { deletedCount: 0 };
     },
   };
 }

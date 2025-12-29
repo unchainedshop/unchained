@@ -1,21 +1,44 @@
-import {
-  mongodb,
-  generateDbFilterById,
-  buildSortOptions,
-  generateDbObjectId,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
+/**
+ * Events Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, type SortOption, type DateFilterInput } from '@unchainedshop/utils';
-import { EventsCollection, type Event } from '../db/EventsCollection.ts';
+import {
+  eq,
+  and,
+  inArray,
+  sql,
+  asc,
+  desc,
+  gte,
+  lte,
+  lt,
+  generateId,
+  type SQL,
+  type DrizzleDb,
+} from '@unchainedshop/store';
+import { events, type EventRow } from '../db/schema.ts';
+import { searchEventsFTS } from '../db/fts.ts';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-events');
+
+const TWO_DAYS_MS = 172800000;
+
+export interface Event {
+  _id: string;
+  type: string;
+  context?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
+  created: Date;
+}
+
 export interface EventReport {
   emitCount: number;
   type: string;
+  detail?: { date: string; count: number }[];
 }
 
 export interface EventQuery {
@@ -24,34 +47,75 @@ export interface EventQuery {
   created?: { end?: Date; start?: Date };
 }
 
-export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
-  const selector: { type?: any; $text?: any; created?: any } = {};
+const rowToEvent = (row: EventRow): Event => ({
+  _id: row._id,
+  type: row.type,
+  context: row.context ?? undefined,
+  payload: row.payload ?? undefined,
+  created: row.created,
+});
 
-  if (types && Array.isArray(types)) selector.type = { $in: types };
-  if (queryString) {
-    assertDocumentDBCompatMode();
-    selector.$text = { $search: queryString };
-  }
-  if (created) {
-    selector.created = created?.end
-      ? { $gte: created.start || new Date(0), $lte: created.end }
-      : { $gte: created.start || new Date(0) };
-  }
-  return selector;
-};
+const COLUMNS = {
+  _id: events._id,
+  type: events.type,
+  context: events.context,
+  payload: events.payload,
+  created: events.created,
+} as const;
 
-export const configureEventsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
-  const Events = await EventsCollection(db);
+export const configureEventsModule = async ({ db }: { db: DrizzleDb }) => {
+  // Build filter conditions from query params
+  const buildConditions = async (query: EventQuery): Promise<SQL[]> => {
+    const conditions: SQL[] = [];
+
+    if (query.types?.length) {
+      conditions.push(inArray(events.type, query.types));
+    }
+
+    if (query.queryString) {
+      const matchingIds = await searchEventsFTS(db, query.queryString);
+      if (matchingIds.length === 0) {
+        // Return impossible condition to yield empty results
+        conditions.push(sql`0 = 1`);
+      } else {
+        conditions.push(inArray(events._id, matchingIds));
+      }
+    }
+
+    if (query.created) {
+      if (query.created.start) {
+        conditions.push(gte(events.created, query.created.start));
+      }
+      if (query.created.end) {
+        conditions.push(lte(events.created, query.created.end));
+      }
+    }
+
+    return conditions;
+  };
+
+  // Build sort expressions from query params
+  const buildOrderBy = (sort?: SortOption[]) => {
+    const defaultSort = [{ key: 'created', value: SortDirection.DESC }] as SortOption[];
+    const effectiveSort = sort?.length ? sort : defaultSort;
+    return effectiveSort.map((s) => {
+      const column = COLUMNS[s.key as keyof typeof COLUMNS] ?? events.created;
+      return s.value === SortDirection.DESC ? desc(column) : asc(column);
+    });
+  };
 
   const create = async (
     doc: Omit<Event, '_id' | 'created'> & Pick<Partial<Event>, '_id' | 'created'>,
-  ) => {
-    const result = await Events.insertOne({
-      _id: generateDbObjectId(),
-      created: new Date(),
-      ...doc,
+  ): Promise<string> => {
+    const eventId = doc._id || generateId();
+    await db.insert(events).values({
+      _id: eventId,
+      type: doc.type,
+      context: doc.context,
+      payload: doc.payload,
+      created: doc.created || new Date(),
     });
-    return result.insertedId;
+    return eventId;
   };
 
   await configureEventHistoryAdapter(create);
@@ -59,12 +123,9 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
   return {
     create,
 
-    findEvent: async (
-      { eventId, ...rest }: mongodb.Filter<Event> & { eventId: string },
-      options?: mongodb.FindOptions,
-    ) => {
-      const selector = eventId ? generateDbFilterById<Event>(eventId) : rest;
-      return Events.findOne(selector, options);
+    findEvent: async ({ eventId }: { eventId: string }): Promise<Event | null> => {
+      const [row] = await db.select().from(events).where(eq(events._id, eventId)).limit(1);
+      return row ? rowToEvent(row) : null;
     },
 
     findEvents: async ({
@@ -77,12 +138,21 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
       offset?: number;
       sort?: SortOption[];
     }): Promise<Event[]> => {
-      const defaultSort = [{ key: 'created', value: SortDirection.DESC }] as SortOption[];
-      return Events.find(buildFindSelector(query), {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(sort || defaultSort),
-      }).toArray();
+      const conditions = await buildConditions(query);
+      const orderBy = buildOrderBy(sort);
+
+      let baseQuery = db.select().from(events);
+
+      if (conditions.length > 0) {
+        baseQuery = baseQuery.where(and(...conditions)) as typeof baseQuery;
+      }
+
+      const results = await baseQuery
+        .orderBy(...orderBy)
+        .limit(limit ?? 1000)
+        .offset(offset ?? 0);
+
+      return results.map(rowToEvent);
     },
 
     type: (event: Event) => {
@@ -92,75 +162,78 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
       return 'UNKNOWN';
     },
 
-    count: async (query: EventQuery) => {
-      const count = await Events.countDocuments(buildFindSelector(query));
-      return count;
+    count: async (query: EventQuery): Promise<number> => {
+      const conditions = await buildConditions(query);
+
+      let countQuery = db.select({ count: sql<number>`count(*)` }).from(events);
+
+      if (conditions.length > 0) {
+        countQuery = countQuery.where(and(...conditions)) as typeof countQuery;
+      }
+
+      const [{ count }] = await countQuery;
+      return count ?? 0;
     },
 
     getReport: async ({
       dateRange,
       types,
     }: { dateRange?: DateFilterInput; types?: string[] } = {}): Promise<EventReport[]> => {
-      const match: any = {};
-
-      if (dateRange?.start || dateRange?.end) {
-        const conditions: any[] = [];
-        if (dateRange.start) {
-          const fromDate = new Date(dateRange.start);
-          conditions.push({ created: { $gte: fromDate } });
-        }
-        if (dateRange.end) {
-          const toDate = new Date(dateRange.end);
-          conditions.push({ created: { $lte: toDate } });
-        }
-        if (conditions.length) {
-          match.$or = conditions;
-        }
-      }
+      const conditions: SQL[] = [];
 
       if (types?.length) {
-        match.type = { $in: types };
+        conditions.push(inArray(events.type, types));
       }
 
-      const pipeline = [
-        Object.keys(match).length ? { $match: match } : null,
-        {
-          $group: {
-            _id: {
-              type: '$type',
-              day: {
-                $dateToString: { format: '%Y-%m-%d', date: '$created' },
-              },
-            },
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $group: {
-            _id: '$_id.type',
-            detail: {
-              $push: {
-                date: '$_id.day',
-                count: '$count',
-              },
-            },
-            emitCount: { $sum: '$count' },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            type: '$_id',
-            emitCount: 1,
-            detail: 1,
-          },
-        },
-        { $sort: { type: 1 } },
-      ].filter(Boolean) as mongodb.BSON.Document[];
+      if (dateRange?.start) {
+        conditions.push(gte(events.created, new Date(dateRange.start)));
+      }
+      if (dateRange?.end) {
+        conditions.push(lte(events.created, new Date(dateRange.end)));
+      }
 
-      const report = await Events.aggregate<EventReport>(pipeline).toArray();
+      // Use raw SQL for the aggregation query with strftime
+      const whereClause = conditions.length > 0 ? sql`WHERE ${and(...conditions)}` : sql``;
+
+      const rows = await db.all<{ type: string; date: string; count: number }>(sql`
+        SELECT
+          type,
+          strftime('%Y-%m-%d', created/1000, 'unixepoch') as date,
+          COUNT(*) as count
+        FROM events
+        ${whereClause}
+        GROUP BY type, date
+        ORDER BY type, date
+      `);
+
+      // Transform to expected format: group by type
+      const reportMap = new Map<
+        string,
+        { type: string; emitCount: number; detail: { date: string; count: number }[] }
+      >();
+
+      for (const row of rows) {
+        if (!reportMap.has(row.type)) {
+          reportMap.set(row.type, { type: row.type, emitCount: 0, detail: [] });
+        }
+        const entry = reportMap.get(row.type)!;
+        entry.emitCount += row.count;
+        entry.detail.push({ date: row.date, count: row.count });
+      }
+
+      const report = Array.from(reportMap.values()).sort((a, b) => a.type.localeCompare(b.type));
       logger.info(report);
-      return report ?? [];
+      return report;
+    },
+
+    /**
+     * Delete events older than maxAgeMs (default 2 days).
+     * This replaces the MongoDB TTL index behavior.
+     */
+    deleteOld: async (maxAgeMs = TWO_DAYS_MS): Promise<number> => {
+      const cutoff = new Date(Date.now() - maxAgeMs);
+      const result = await db.delete(events).where(lt(events.created, cutoff));
+      return result.rowsAffected;
     },
   };
 };

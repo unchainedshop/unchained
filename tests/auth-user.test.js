@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getEventsTable } from './helpers.js';
 import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -167,7 +167,7 @@ test.describe('Auth for logged in users', () => {
 
     test('verifies the e-mail of user', async () => {
       // Reset the password with that token
-      const Events = db.collection('events');
+      const Events = getEventsTable();
       const event = await Events.findOne({
         'payload.userId': 'userthatmustverifyemail',
         'payload.action': 'verify-email',
