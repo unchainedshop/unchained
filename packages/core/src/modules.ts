@@ -4,8 +4,13 @@ import {
   configureAssortmentsModule,
 } from '@unchainedshop/core-assortments';
 import { type BookmarksModule, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
-import { configureCountriesModule, type CountriesModule } from '@unchainedshop/core-countries';
+import {
+  configureCountriesModule,
+  type CountriesModule,
+  initializeCountriesSchema,
+} from '@unchainedshop/core-countries';
 import { configureCurrenciesModule, type CurrenciesModule } from '@unchainedshop/core-currencies';
+import { createDrizzleDb, initializeDrizzleDb, type DrizzleDb } from '@unchainedshop/store';
 import {
   configureDeliveryModule,
   type DeliveryModule,
@@ -100,10 +105,12 @@ export default async function initModules(
     db,
     migrationRepository,
     options,
+    drizzleDb: providedDrizzleDb,
   }: {
     db: mongodb.Db;
     migrationRepository: MigrationRepository<unknown>;
     options: ModuleOptions;
+    drizzleDb?: DrizzleDb;
   },
   customModules: Record<
     string,
@@ -121,9 +128,23 @@ export default async function initModules(
     db,
     migrationRepository,
   });
+  // Drizzle-based modules use a shared SQLite/Turso database
+  // Use provided db, or create new connection if not provided
+  let drizzleDb = providedDrizzleDb;
+  if (!drizzleDb) {
+    const connection = createDrizzleDb({
+      url: process.env.DRIZZLE_DB_URL || 'file:unchained.db',
+      authToken: process.env.DRIZZLE_DB_TOKEN,
+    });
+    drizzleDb = connection.db;
+  }
+  // Initialize all Drizzle-based module schemas (idempotent - uses IF NOT EXISTS)
+  await initializeDrizzleDb(drizzleDb, [
+    initializeCountriesSchema,
+    // Add more module initializers here as they migrate to Drizzle
+  ]);
   const countries = await configureCountriesModule({
-    db,
-    migrationRepository,
+    db: drizzleDb,
   });
   const currencies = await configureCurrenciesModule({
     db,

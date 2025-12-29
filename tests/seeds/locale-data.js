@@ -28,6 +28,9 @@ export const InactiveCountry = {
   defaultCurrencyCode: 'USD',
 };
 
+// All countries for seeding
+const allCountries = [BaseCountry, GermanyCountry, FranceCountry, InactiveCountry];
+
 export const BaseLanguage = {
   _id: 'de',
   isoCode: 'de',
@@ -91,4 +94,37 @@ export default async function seedOrders(db) {
     .upsert('currencies', UsdCurrency)
     .upsert('currencies', InactiveCurrency)
     .resolve();
+}
+
+/**
+ * Seed countries into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ * This is needed because the countries module now uses Drizzle ORM instead of MongoDB.
+ */
+export async function seedCountriesToDrizzle(db) {
+  const { countries } = await import('@unchainedshop/core-countries');
+  const { sql } = await import('drizzle-orm');
+
+  // Delete all existing countries directly
+  await db.delete(countries);
+
+  // Insert all countries directly (bypassing module to avoid emitting events)
+  for (const country of allCountries) {
+    await db.insert(countries).values({
+      _id: country._id,
+      isoCode: country.isoCode,
+      isActive: country.isActive,
+      defaultCurrencyCode: country.defaultCurrencyCode,
+      created: new Date(),
+      deleted: null,
+    });
+  }
+
+  // Also update the FTS index directly
+  await db.run(sql`DELETE FROM countries_fts`);
+  for (const country of allCountries) {
+    await db.run(
+      sql`INSERT INTO countries_fts (_id, isoCode, defaultCurrencyCode) VALUES (${country._id}, ${country.isoCode}, ${country.defaultCurrencyCode})`,
+    );
+  }
 }

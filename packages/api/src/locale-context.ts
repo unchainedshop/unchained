@@ -26,7 +26,7 @@ const uncachedResolveDefaultContext = async (
 
   const countries = await unchainedAPI.modules.countries.findCountries(
     { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } },
+    { fields: ['isoCode', 'defaultCurrencyCode'] },
   );
 
   const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });

@@ -5,6 +5,7 @@
     { "path": "packages/utils", },
     { "path": "packages/mongodb", },
     { "path": "packages/events", },
+    { "path": "packages/store", },
     { "path": "packages/file-upload", },
     { "path": "packages/roles", },
     { "path": "packages/core-countries", },

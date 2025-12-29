@@ -3,6 +3,7 @@ import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
 import { stopDb } from '@unchainedshop/mongodb';
+import { createTestDb } from '@unchainedshop/store';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
 
@@ -13,6 +14,7 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 let fastify = null;
 let platform = null;
 let serverPort = null;
+let drizzleConnection = null;
 
 // Check if a port is available
 async function isPortAvailable(port) {
@@ -62,9 +64,13 @@ export async function initializeTestPlatform() {
   // Set ROOT_URL dynamically so file upload URLs use the correct port
   process.env.ROOT_URL = `http://localhost:${port}`;
 
-  // Start platform with in-memory MongoDB
+  // Create in-memory Drizzle SQLite database for tests
+  drizzleConnection = createTestDb();
+
+  // Start platform with in-memory MongoDB and Drizzle database
   platform = await startPlatform({
     modules: defaultModules,
+    drizzleDb: drizzleConnection.db,
     workQueueOptions: {
       // Workers enabled for work queue tests
       pollInterval: 500, // Process work every 500ms for faster tests
@@ -98,6 +104,10 @@ export async function shutdownTestPlatform() {
     await platform.graphqlHandler.dispose?.();
     platform = null;
   }
+  if (drizzleConnection) {
+    drizzleConnection.close();
+    drizzleConnection = null;
+  }
   // Stop MongoDB memory server to allow process to exit
   await stopDb();
   serverPort = null;
@@ -115,4 +125,11 @@ export function getServerPort() {
     throw new Error('Server not started');
   }
   return serverPort;
+}
+
+export function getDrizzleDb() {
+  if (!drizzleConnection) {
+    throw new Error('Drizzle database not initialized');
+  }
+  return drizzleConnection.db;
 }

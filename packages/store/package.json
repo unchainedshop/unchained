@@ -1,15 +1,15 @@
 {
-  "name": "@unchainedshop/core-countries",
-  "description": "Country management module for the Unchained Engine",
+  "name": "@unchainedshop/store",
   "version": "5.0.0-alpha.0",
-  "main": "lib/countries-index.js",
-  "types": "lib/countries-index.d.ts",
+  "description": "Drizzle ORM storage layer for Unchained Engine - supports SQLite/Turso",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/countries-index.d.ts",
-      "import": "./lib/countries-index.js"
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js"
     }
   },
   "scripts": {
@@ -30,15 +30,16 @@
   "keywords": [
     "unchained",
     "ecommerce",
-    "core",
-    "countries",
-    "local-first"
+    "store",
+    "drizzle",
+    "turso",
+    "sqlite"
   ],
   "authors": [
     "Pascal Kaufmann",
     "Mikael Araya",
     "Vedran Rudelj",
-    "Joël Meiller"
+    "Joel Meiller"
   ],
   "license": "EUPL-1.2",
   "bugs": {
@@ -46,10 +47,15 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.5.0",
-    "@unchainedshop/store": "*",
-    "@unchainedshop/utils": "^4.5.0",
     "drizzle-orm": "^0.38.3"
+  },
+  "peerDependencies": {
+    "@libsql/client": ">=0.14.0"
+  },
+  "peerDependenciesMeta": {
+    "@libsql/client": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@libsql/client": "^0.15.15",

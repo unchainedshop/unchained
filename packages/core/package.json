@@ -37,8 +37,9 @@
   "dependencies": {
     "@unchainedshop/core-assortments": "^4.5.0",
     "@unchainedshop/core-bookmarks": "^4.5.0",
-    "@unchainedshop/core-countries": "^4.5.0",
+    "@unchainedshop/core-countries": "*",
     "@unchainedshop/core-currencies": "^4.5.0",
+    "@unchainedshop/store": "*",
     "@unchainedshop/core-delivery": "^4.5.0",
     "@unchainedshop/core-enrollments": "^4.5.0",
     "@unchainedshop/core-events": "^4.5.0",

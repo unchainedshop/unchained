@@ -53,6 +53,7 @@ export const startPlatform = async ({
   options,
   rolesOptions,
   bulkImporter,
+  drizzleDb,
   workQueueOptions,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
@@ -78,6 +79,7 @@ export const startPlatform = async ({
     db,
     migrationRepository,
     bulkImporter,
+    drizzleDb,
     modules,
     services,
     options,

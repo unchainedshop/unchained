@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
+  getCountriesTable,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCountry, GermanyCountry, FranceCountry, InactiveCountry } from './seeds/locale-data.js';
@@ -22,7 +23,8 @@ test.describe('Country', () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Countries = db.collection('countries');
+    // Countries uses Drizzle instead of MongoDB, so we use a helper wrapper
+    Countries = getCountriesTable();
     Currencies = db.collection('currencies');
   });
 
@@ -603,9 +605,7 @@ test.describe('Country', () => {
 
   test.describe('countries', () => {
     test('add a country', async () => {
-      const {
-        data: { createCountry },
-      } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             createCountry(country: { isoCode: "nl" }) {
@@ -622,6 +622,10 @@ test.describe('Country', () => {
           }
         `,
       });
+      const { data, errors } = result;
+      assert.strictEqual(errors, undefined, `GraphQL errors: ${JSON.stringify(errors)}`);
+      assert.ok(data, `Data is null, result: ${JSON.stringify(result)}`);
+      const { createCountry } = data;
       assert.partialDeepStrictEqual(createCountry, {
         isoCode: 'NL',
         isActive: true,
@@ -632,7 +636,7 @@ test.describe('Country', () => {
     });
 
     test('update a country', async () => {
-      const country = await Countries.findOne();
+      const country = await Countries.findOne({});
       const currency = await Currencies.findOne();
 
       const { data: { updateCountry } = {}, errors } = await graphqlFetch({
@@ -713,7 +717,7 @@ test.describe('Country', () => {
     });
 
     test('remove a country', async () => {
-      await Countries.insertOne({ _id: 'et', isoCode: 'ET' });
+      await Countries.insertOne({ _id: 'et', isoCode: 'ET', created: new Date(), deleted: null });
       const { data: { removeCountry } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -764,11 +768,15 @@ test.describe('Country', () => {
         _id: 'uk',
         isoCode: 'UK',
         isActive: true,
+        created: new Date(),
+        deleted: null,
       });
       await Countries.insertOne({
         _id: 'it',
         isoCode: 'IT',
         isActive: false,
+        created: new Date(),
+        deleted: null,
       });
 
       const { data: { countries } = {}, errors } = await graphqlFetch({
@@ -791,6 +799,8 @@ test.describe('Country', () => {
         _id: 'et',
         isoCode: 'ET',
         isActive: false,
+        created: new Date(),
+        deleted: null,
       });
 
       const { data: { country } = {}, errors } = await graphqlFetch({
