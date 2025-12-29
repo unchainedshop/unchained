@@ -3,7 +3,7 @@
  */
 
 import { emit, registerEvents } from '@unchainedshop/events';
-import { eq, and, inArray, type SQL, type DrizzleDb } from '@unchainedshop/store';
+import { eq, and, inArray, generateId, type SQL, type DrizzleDb } from '@unchainedshop/store';
 import { bookmarks, type BookmarkRow } from '../db/schema.ts';
 
 export interface Bookmark {
@@ -29,11 +29,6 @@ export interface BookmarkQuery {
 }
 
 export const BOOKMARK_EVENTS = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'] as const;
-
-const generateId = (): string => {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-};
 
 const rowToBookmark = (row: BookmarkRow): Bookmark => ({
   _id: row._id,

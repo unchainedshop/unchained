@@ -6,12 +6,6 @@
   "types": "lib/countries-index.d.ts",
   "type": "module",
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./lib/countries-index.d.ts",
-      "import": "./lib/countries-index.js"
-    }
-  },
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

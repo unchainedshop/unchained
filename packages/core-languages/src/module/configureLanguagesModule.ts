@@ -13,6 +13,7 @@ import {
   sql,
   asc,
   desc,
+  generateId,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -53,11 +54,6 @@ export interface CreateLanguageInput {
 export type UpdateLanguageInput = Partial<Omit<Language, '_id' | 'created'>>;
 
 export const LANGUAGE_EVENTS = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'] as const;
-
-const generateId = (): string => {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-};
 
 const rowToLanguage = (row: LanguageRow): Language => ({
   _id: row._id,

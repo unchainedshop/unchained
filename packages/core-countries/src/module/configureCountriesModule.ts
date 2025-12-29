@@ -13,6 +13,7 @@ import {
   sql,
   asc,
   desc,
+  generateId,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -55,11 +56,6 @@ export interface CreateCountryInput {
 export type UpdateCountryInput = Partial<Omit<Country, '_id' | 'created'>>;
 
 export const COUNTRY_EVENTS = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'] as const;
-
-const generateId = (): string => {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-};
 
 const rowToCountry = (row: CountryRow): Country => ({
   _id: row._id,
