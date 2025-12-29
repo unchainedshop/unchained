@@ -85,7 +85,7 @@ export async function seedPaymentsToDrizzle(db) {
       _id: provider._id,
       type: provider.type,
       adapterKey: provider.adapterKey,
-      configuration: provider.configuration ? JSON.stringify(provider.configuration) : null,
+      configuration: provider.configuration || null,
       created: provider.created,
       updated: null,
       deleted: null,
@@ -100,7 +100,7 @@ export async function seedPaymentsToDrizzle(db) {
       userId: credential.userId,
       token: credential.token || null,
       isPreferred: credential.isPreferred ?? false,
-      meta: credential.meta ? JSON.stringify(credential.meta) : null,
+      meta: credential.meta || null,
       created: credential.created,
       updated: null,
     });

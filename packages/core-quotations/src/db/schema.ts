@@ -27,10 +27,12 @@ export const quotations = sqliteTable(
     expires: integer('expires', { mode: 'timestamp_ms' }),
     fulfilled: integer('fulfilled', { mode: 'timestamp_ms' }),
     rejected: integer('rejected', { mode: 'timestamp_ms' }),
-    configuration: text('configuration'), // JSON string
-    context: text('context'), // JSON string
-    meta: text('meta'), // JSON string
-    log: text('log'), // JSON string array
+    configuration: text('configuration', { mode: 'json' }).$type<
+      { key: string; value: string }[] | null
+    >(),
+    context: text('context', { mode: 'json' }).$type<Record<string, unknown> | null>(),
+    meta: text('meta', { mode: 'json' }).$type<Record<string, unknown> | null>(),
+    log: text('log', { mode: 'json' }).$type<{ date: string; status: string; info: string }[] | null>(),
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
     deleted: integer('deleted', { mode: 'timestamp_ms' }),

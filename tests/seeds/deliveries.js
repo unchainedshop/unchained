@@ -59,7 +59,7 @@ export async function seedDeliveryProvidersToDrizzle(db) {
       _id: provider._id,
       type: provider.type,
       adapterKey: provider.adapterKey,
-      configuration: provider.configuration ? JSON.stringify(provider.configuration) : null,
+      configuration: provider.configuration || null,
       created: provider.created,
       updated: provider.updated,
       deleted: null,

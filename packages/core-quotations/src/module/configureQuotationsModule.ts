@@ -88,10 +88,13 @@ const rowToQuotation = (row: QuotationRow): Quotation => ({
   expires: row.expires ?? undefined,
   fulfilled: row.fulfilled ?? undefined,
   rejected: row.rejected ?? undefined,
-  configuration: row.configuration ? JSON.parse(row.configuration) : undefined,
-  context: row.context ? JSON.parse(row.context) : undefined,
-  meta: row.meta ? JSON.parse(row.meta) : undefined,
-  log: row.log ? JSON.parse(row.log) : [],
+  configuration: row.configuration ?? undefined,
+  context: row.context ?? undefined,
+  meta: row.meta ?? undefined,
+  log: (row.log ?? []).map((entry) => ({
+    ...entry,
+    date: new Date(entry.date),
+  })),
   created: row.created,
   updated: row.updated ?? undefined,
   deleted: row.deleted ?? null,
@@ -212,8 +215,8 @@ export const configureQuotationsModule = async ({
     }
 
     // Add log entry
-    const newLog = [...quotation.log, { date, status, info }];
-    updateData.log = JSON.stringify(newLog);
+    const newLog = [...quotation.log, { date: date.toISOString(), status, info }];
+    updateData.log = newLog;
 
     await db.update(quotations).set(updateData).where(eq(quotations._id, quotationId));
 
@@ -240,13 +243,7 @@ export const configureQuotationsModule = async ({
 
     for (const key of fieldKeys) {
       if (values[key] !== undefined) {
-        if (key === 'context' || key === 'meta' || key === 'configuration') {
-          updateData[key] = JSON.stringify(values[key]);
-        } else if (key === 'expires' && values[key] instanceof Date) {
-          updateData[key] = values[key];
-        } else {
-          updateData[key] = values[key];
-        }
+        updateData[key] = values[key];
       }
     }
 
@@ -393,12 +390,10 @@ export const configureQuotationsModule = async ({
         _id: quotationId,
         userId: quotationData.userId,
         productId: quotationData.productId,
-        configuration: quotationData.configuration
-          ? JSON.stringify(quotationData.configuration)
-          : JSON.stringify([]),
+        configuration: quotationData.configuration ?? [],
         countryCode,
         currencyCode,
-        log: JSON.stringify([]),
+        log: [],
         status: QuotationStatus.REQUESTED,
         created: now,
         deleted: null,

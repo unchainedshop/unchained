@@ -130,7 +130,7 @@ export async function seedTokensToDrizzle(db) {
       tokenSerialNumber: token.tokenSerialNumber,
       productId: token.productId,
       orderPositionId: token.orderPositionId,
-      meta: token.meta ? JSON.stringify(token.meta) : null,
+      meta: token.meta || null,
     });
   }
 }

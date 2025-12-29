@@ -47,15 +47,23 @@ export const enrollments = sqliteTable(
     status: text('status'),
     orderIdForFirstPeriod: text('orderIdForFirstPeriod'),
     expires: integer('expires', { mode: 'timestamp_ms' }),
-    configuration: text('configuration'), // JSON string
-    context: text('context'), // JSON string
-    meta: text('meta'), // JSON string
-    billingAddress: text('billingAddress'), // JSON string
-    contact: text('contact'), // JSON string
-    delivery: text('delivery'), // JSON string
-    payment: text('payment'), // JSON string
-    periods: text('periods'), // JSON string array
-    log: text('log'), // JSON string array
+    configuration: text('configuration', { mode: 'json' }).$type<
+      { key: string; value: string }[] | null
+    >(),
+    context: text('context', { mode: 'json' }).$type<Record<string, unknown> | null>(),
+    meta: text('meta', { mode: 'json' }).$type<Record<string, unknown> | null>(),
+    billingAddress: text('billingAddress', { mode: 'json' }).$type<Record<string, unknown> | null>(),
+    contact: text('contact', { mode: 'json' }).$type<Record<string, unknown> | null>(),
+    delivery: text('delivery', { mode: 'json' }).$type<{
+      deliveryProviderId?: string;
+      context?: Record<string, unknown>;
+    } | null>(),
+    payment: text('payment', { mode: 'json' }).$type<{
+      paymentProviderId?: string;
+      context?: Record<string, unknown>;
+    } | null>(),
+    periods: text('periods', { mode: 'json' }).$type<EnrollmentPeriod[] | null>(),
+    log: text('log', { mode: 'json' }).$type<{ date: string; status: string; info: string }[] | null>(),
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
     deleted: integer('deleted', { mode: 'timestamp_ms' }),

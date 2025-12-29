@@ -122,7 +122,7 @@ const rowToWarehousingProvider = (row: WarehousingProviderRow): WarehousingProvi
   _id: row._id,
   type: row.type as WarehousingProviderType,
   adapterKey: row.adapterKey,
-  configuration: row.configuration ? JSON.parse(row.configuration) : [],
+  configuration: row.configuration ?? [],
   created: row.created,
   updated: row.updated ?? undefined,
   deleted: row.deleted ?? null,
@@ -140,7 +140,7 @@ const rowToTokenSurrogate = (row: TokenSurrogateRow): TokenSurrogate => ({
   tokenSerialNumber: row.tokenSerialNumber,
   productId: row.productId,
   orderPositionId: row.orderPositionId,
-  meta: row.meta ? JSON.parse(row.meta) : undefined,
+  meta: row.meta ?? undefined,
 });
 
 export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
@@ -259,7 +259,7 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
           tokenSerialNumber: token.tokenSerialNumber,
           productId: token.productId,
           orderPositionId: token.orderPositionId,
-          meta: token.meta ? JSON.stringify(token.meta) : null,
+          meta: token.meta ?? null,
         })),
       );
     },
@@ -491,7 +491,7 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
         _id: warehousingProviderId,
         type: doc.type,
         adapterKey: doc.adapterKey,
-        configuration: doc.configuration ? JSON.stringify(doc.configuration) : null,
+        configuration: doc.configuration ?? null,
         created: now,
         deleted: null,
       });
@@ -515,7 +515,7 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
 
       if (doc.type !== undefined) updateData.type = doc.type;
       if (doc.adapterKey !== undefined) updateData.adapterKey = doc.adapterKey;
-      if (doc.configuration !== undefined) updateData.configuration = JSON.stringify(doc.configuration);
+      if (doc.configuration !== undefined) updateData.configuration = doc.configuration;
 
       await db
         .update(warehousingProviders)

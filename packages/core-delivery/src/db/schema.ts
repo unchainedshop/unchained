@@ -16,7 +16,9 @@ export const deliveryProviders = sqliteTable(
     _id: text('_id').primaryKey(),
     type: text('type').notNull(),
     adapterKey: text('adapterKey').notNull(),
-    configuration: text('configuration'), // JSON string
+    configuration: text('configuration', { mode: 'json' }).$type<
+      { key: string; value: string }[] | null
+    >(),
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
     deleted: integer('deleted', { mode: 'timestamp_ms' }),

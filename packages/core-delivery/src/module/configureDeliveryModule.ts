@@ -88,7 +88,7 @@ const rowToDeliveryProvider = (row: DeliveryProviderRow): DeliveryProvider => ({
   _id: row._id,
   type: row.type as DeliveryProviderType,
   adapterKey: row.adapterKey,
-  configuration: row.configuration ? JSON.parse(row.configuration) : [],
+  configuration: row.configuration ?? [],
   created: row.created,
   updated: row.updated ?? undefined,
   deleted: row.deleted ?? null,
@@ -218,7 +218,7 @@ export const configureDeliveryModule = async ({
         _id: deliveryProviderId,
         type: doc.type,
         adapterKey: doc.adapterKey,
-        configuration: doc.configuration ? JSON.stringify(doc.configuration) : null,
+        configuration: doc.configuration ?? null,
         created: now,
         deleted: null,
       });
@@ -242,7 +242,7 @@ export const configureDeliveryModule = async ({
 
       if (doc.type !== undefined) updateData.type = doc.type;
       if (doc.adapterKey !== undefined) updateData.adapterKey = doc.adapterKey;
-      if (doc.configuration !== undefined) updateData.configuration = JSON.stringify(doc.configuration);
+      if (doc.configuration !== undefined) updateData.configuration = doc.configuration;
 
       await db.update(deliveryProviders).set(updateData).where(eq(deliveryProviders._id, _id));
 

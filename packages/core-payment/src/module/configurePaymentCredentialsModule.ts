@@ -53,7 +53,7 @@ const rowToPaymentCredentials = (row: PaymentCredentialsRow): PaymentCredentials
   userId: row.userId,
   token: row.token ?? undefined,
   isPreferred: row.isPreferred ?? undefined,
-  meta: row.meta ? JSON.parse(row.meta) : undefined,
+  meta: row.meta ?? undefined,
   created: row.created,
   updated: row.updated ?? undefined,
 });
@@ -234,7 +234,7 @@ export const configurePaymentCredentialsModule = (db: DrizzleDb) => {
           .set({
             updated: now,
             token,
-            meta: Object.keys(meta).length > 0 ? JSON.stringify(meta) : existing.meta,
+            meta: Object.keys(meta).length > 0 ? (meta as Record<string, unknown>) : existing.meta,
           })
           .where(eq(paymentCredentials._id, existing._id));
       } else {
@@ -245,7 +245,7 @@ export const configurePaymentCredentialsModule = (db: DrizzleDb) => {
           paymentProviderId,
           isPreferred: false,
           token,
-          meta: Object.keys(meta).length > 0 ? JSON.stringify(meta) : null,
+          meta: Object.keys(meta).length > 0 ? (meta as Record<string, unknown>) : null,
           created: now,
         });
       }

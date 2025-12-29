@@ -29,7 +29,7 @@ test.describe('Plugins: Payrexx', () => {
       _id: 'payrexx-provider',
       adapterKey: 'shop.unchained.payment.payrexx',
       type: 'GENERIC',
-      configuration: JSON.stringify([{ key: 'instance', value: payrexxInstance }]),
+      configuration: [{ key: 'instance', value: payrexxInstance }],
       created: new Date(),
     });
 

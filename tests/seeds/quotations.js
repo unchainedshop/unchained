@@ -81,6 +81,14 @@ export async function seedQuotationsToDrizzle(db) {
 
   // Insert all quotations directly (FTS is populated by trigger)
   for (const quotation of allQuotations) {
+    // Convert log dates to ISO strings for JSON storage
+    const logWithStringDates = quotation.log
+      ? quotation.log.map((entry) => ({
+          ...entry,
+          date: entry.date instanceof Date ? entry.date.toISOString() : entry.date,
+        }))
+      : null;
+
     await db.insert(quotations).values({
       _id: quotation._id,
       userId: quotation.userId,
@@ -93,10 +101,10 @@ export async function seedQuotationsToDrizzle(db) {
       expires: quotation.expires,
       fulfilled: quotation.fulfilled || null,
       rejected: quotation.rejected || null,
-      configuration: quotation.configuration ? JSON.stringify(quotation.configuration) : null,
-      context: quotation.context ? JSON.stringify(quotation.context) : null,
-      meta: quotation.meta ? JSON.stringify(quotation.meta) : null,
-      log: quotation.log ? JSON.stringify(quotation.log) : null,
+      configuration: quotation.configuration || null,
+      context: quotation.context || null,
+      meta: quotation.meta || null,
+      log: logWithStringDates,
       created: quotation.created,
       updated: quotation.updated,
       deleted: null,

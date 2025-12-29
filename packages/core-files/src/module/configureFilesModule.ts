@@ -69,7 +69,7 @@ const rowToFile = (row: MediaObjectRow): File => ({
   type: row.type ?? undefined,
   url: row.url ?? undefined,
   expires: row.expires ?? null,
-  meta: row.meta ? JSON.parse(row.meta) : undefined,
+  meta: row.meta ?? undefined,
   created: row.created,
   updated: row.updated ?? undefined,
 });
@@ -174,7 +174,7 @@ export const configureFilesModule = async ({
         type: doc.type,
         url: doc.url,
         expires: doc.expires,
-        meta: doc.meta ? JSON.stringify(doc.meta) : null,
+        meta: doc.meta ?? null,
         created: now,
       });
 
@@ -193,7 +193,7 @@ export const configureFilesModule = async ({
       if (doc.type !== undefined) updateData.type = doc.type;
       if (doc.url !== undefined) updateData.url = doc.url;
       if (doc.expires !== undefined) updateData.expires = doc.expires;
-      if (doc.meta !== undefined) updateData.meta = JSON.stringify(doc.meta);
+      if (doc.meta !== undefined) updateData.meta = doc.meta;
 
       await db.update(mediaObjects).set(updateData).where(eq(mediaObjects._id, fileId));
 

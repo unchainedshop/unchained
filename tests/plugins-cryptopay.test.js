@@ -76,7 +76,7 @@ test.describe('Plugins: Cryptopay', () => {
       _id: 'cryptopay-payment-provider',
       adapterKey: 'shop.unchained.payment.cryptopay',
       type: 'GENERIC',
-      configuration: JSON.stringify([]),
+      configuration: [],
       created: new Date(),
     });
 

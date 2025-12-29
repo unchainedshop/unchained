@@ -9,7 +9,7 @@ export const bookmarks = sqliteTable(
     _id: text('_id').primaryKey(),
     userId: text('userId').notNull(),
     productId: text('productId').notNull(),
-    meta: text('meta'), // JSON stored as text
+    meta: text('meta', { mode: 'json' }).$type<Record<string, unknown> | null>(),
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
   },

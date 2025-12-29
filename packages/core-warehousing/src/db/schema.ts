@@ -17,7 +17,9 @@ export const warehousingProviders = sqliteTable(
     _id: text('_id').primaryKey(),
     type: text('type').notNull(),
     adapterKey: text('adapterKey').notNull(),
-    configuration: text('configuration'), // JSON string
+    configuration: text('configuration', { mode: 'json' }).$type<
+      { key: string; value: string }[] | null
+    >(),
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
     deleted: integer('deleted', { mode: 'timestamp_ms' }),
@@ -57,7 +59,7 @@ export const tokenSurrogates = sqliteTable(
     tokenSerialNumber: text('tokenSerialNumber').notNull(),
     productId: text('productId').notNull(),
     orderPositionId: text('orderPositionId').notNull(),
-    meta: text('meta'), // JSON string
+    meta: text('meta', { mode: 'json' }).$type<Record<string, unknown> | null>(),
   },
   (table) => [
     index('idx_token_surrogates_userId').on(table.userId),

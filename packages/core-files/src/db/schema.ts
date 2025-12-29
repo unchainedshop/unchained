@@ -13,7 +13,7 @@ export const mediaObjects = sqliteTable(
     type: text('type'),
     url: text('url'),
     expires: integer('expires', { mode: 'timestamp_ms' }),
-    meta: text('meta'), // JSON string
+    meta: text('meta', { mode: 'json' }).$type<Record<string, unknown> | null>(),
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
   },

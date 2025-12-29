@@ -108,15 +108,18 @@ const rowToEnrollment = (row: EnrollmentRow): Enrollment => ({
   orderIdForFirstPeriod: row.orderIdForFirstPeriod ?? undefined,
   status: row.status as EnrollmentStatus | null,
   expires: row.expires ?? undefined,
-  configuration: row.configuration ? JSON.parse(row.configuration) : null,
-  context: row.context ? JSON.parse(row.context) : undefined,
-  meta: row.meta ? JSON.parse(row.meta) : undefined,
-  billingAddress: row.billingAddress ? JSON.parse(row.billingAddress) : {},
-  contact: row.contact ? JSON.parse(row.contact) : {},
-  delivery: row.delivery ? JSON.parse(row.delivery) : {},
-  payment: row.payment ? JSON.parse(row.payment) : undefined,
-  periods: row.periods ? JSON.parse(row.periods) : [],
-  log: row.log ? JSON.parse(row.log) : [],
+  configuration: row.configuration ?? null,
+  context: row.context ?? undefined,
+  meta: row.meta ?? undefined,
+  billingAddress: (row.billingAddress as Address) ?? {},
+  contact: (row.contact as Contact) ?? {},
+  delivery: (row.delivery as Enrollment['delivery']) ?? {},
+  payment: (row.payment as Enrollment['payment']) ?? undefined,
+  periods: row.periods ?? [],
+  log: (row.log ?? []).map((entry) => ({
+    ...entry,
+    date: new Date(entry.date),
+  })),
   created: row.created,
   updated: row.updated ?? undefined,
   deleted: row.deleted ?? null,
@@ -245,8 +248,8 @@ export const configureEnrollmentsModule = async ({
     }
 
     // Add log entry
-    const newLog = [...enrollment.log, { date, status, info }];
-    updateData.log = JSON.stringify(newLog);
+    const newLog = [...enrollment.log, { date: date.toISOString(), status, info }];
+    updateData.log = newLog;
 
     await db.update(enrollments).set(updateData).where(eq(enrollments._id, enrollmentId));
 
@@ -269,22 +272,7 @@ export const configureEnrollmentsModule = async ({
         updated: new Date(),
       };
 
-      // For JSON fields, stringify the value
-      if (
-        [
-          'billingAddress',
-          'contact',
-          'context',
-          'meta',
-          'delivery',
-          'payment',
-          'configuration',
-        ].includes(fieldKey)
-      ) {
-        updateData[fieldKey] = JSON.stringify(fieldValue);
-      } else {
-        updateData[fieldKey] = fieldValue;
-      }
+      updateData[fieldKey] = fieldValue;
 
       await db.update(enrollments).set(updateData).where(eq(enrollments._id, enrollmentId));
 
@@ -411,7 +399,7 @@ export const configureEnrollmentsModule = async ({
       await db
         .update(enrollments)
         .set({
-          periods: JSON.stringify(newPeriods),
+          periods: newPeriods,
           updated: new Date(),
         })
         .where(eq(enrollments._id, enrollmentId));
@@ -443,21 +431,17 @@ export const configureEnrollmentsModule = async ({
         quantity: enrollmentData.quantity,
         countryCode,
         currencyCode,
-        configuration: enrollmentData.configuration
-          ? JSON.stringify(enrollmentData.configuration)
-          : JSON.stringify([]),
-        context: enrollmentData.context ? JSON.stringify(enrollmentData.context) : null,
-        meta: enrollmentData.meta ? JSON.stringify(enrollmentData.meta) : null,
-        billingAddress: enrollmentData.billingAddress
-          ? JSON.stringify(enrollmentData.billingAddress)
-          : null,
-        contact: enrollmentData.contact ? JSON.stringify(enrollmentData.contact) : null,
-        delivery: enrollmentData.delivery ? JSON.stringify(enrollmentData.delivery) : null,
-        payment: enrollmentData.payment ? JSON.stringify(enrollmentData.payment) : null,
+        configuration: enrollmentData.configuration ?? [],
+        context: (enrollmentData.context as Record<string, unknown>) ?? null,
+        meta: (enrollmentData.meta as Record<string, unknown>) ?? null,
+        billingAddress: (enrollmentData.billingAddress as Record<string, unknown>) ?? null,
+        contact: (enrollmentData.contact as Record<string, unknown>) ?? null,
+        delivery: enrollmentData.delivery ?? null,
+        payment: enrollmentData.payment ?? null,
         orderIdForFirstPeriod: enrollmentData.orderIdForFirstPeriod,
         status: EnrollmentStatus.INITIAL,
-        periods: JSON.stringify([]),
-        log: JSON.stringify([]),
+        periods: [],
+        log: [],
         created: now,
         deleted: null,
       });
@@ -500,7 +484,7 @@ export const configureEnrollmentsModule = async ({
       await db
         .update(enrollments)
         .set({
-          periods: JSON.stringify(newPeriods),
+          periods: newPeriods,
           updated: new Date(),
         })
         .where(eq(enrollments._id, enrollmentId));
@@ -525,7 +509,7 @@ export const configureEnrollmentsModule = async ({
         .set({
           productId: plan.productId,
           quantity: plan.quantity,
-          configuration: plan.configuration ? JSON.stringify(plan.configuration) : null,
+          configuration: plan.configuration ?? null,
           updated: new Date(),
         })
         .where(eq(enrollments._id, enrollmentId));

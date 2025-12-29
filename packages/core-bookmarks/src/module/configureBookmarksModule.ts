@@ -57,7 +57,7 @@ const rowToBookmark = (row: BookmarkRow): Bookmark => ({
   _id: row._id,
   userId: row.userId,
   productId: row.productId,
-  meta: row.meta ? JSON.parse(row.meta) : undefined,
+  meta: row.meta ?? undefined,
   created: row.created,
   updated: row.updated ?? undefined,
 });
@@ -177,7 +177,7 @@ export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
         _id: bookmarkId,
         userId: doc.userId,
         productId: doc.productId,
-        meta: doc.meta ? JSON.stringify(doc.meta) : null,
+        meta: (doc.meta as Record<string, unknown>) ?? null,
         created: doc.created || new Date(),
       });
 
@@ -192,7 +192,7 @@ export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
 
       if (doc.userId !== undefined) updateData.userId = doc.userId;
       if (doc.productId !== undefined) updateData.productId = doc.productId;
-      if (doc.meta !== undefined) updateData.meta = doc.meta ? JSON.stringify(doc.meta) : null;
+      if (doc.meta !== undefined) updateData.meta = (doc.meta as Record<string, unknown>) ?? null;
 
       await db.update(bookmarks).set(updateData).where(eq(bookmarks._id, bookmarkId));
 

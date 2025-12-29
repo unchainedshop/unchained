@@ -130,6 +130,14 @@ export async function seedEnrollmentsToDrizzle(db) {
 
   // Insert all enrollments directly (FTS is populated by trigger)
   for (const enrollment of allEnrollments) {
+    // Convert log dates to ISO strings for JSON storage
+    const logWithStringDates = enrollment.log
+      ? enrollment.log.map((entry) => ({
+          ...entry,
+          date: entry.date instanceof Date ? entry.date.toISOString() : entry.date,
+        }))
+      : null;
+
     await db.insert(enrollments).values({
       _id: enrollment._id,
       userId: enrollment.userId,
@@ -141,15 +149,15 @@ export async function seedEnrollmentsToDrizzle(db) {
       status: enrollment.status,
       orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod || null,
       expires: enrollment.expires ? new Date(enrollment.expires) : null,
-      configuration: enrollment.configuration ? JSON.stringify(enrollment.configuration) : null,
-      context: enrollment.context ? JSON.stringify(enrollment.context) : null,
-      meta: enrollment.meta ? JSON.stringify(enrollment.meta) : null,
-      billingAddress: enrollment.billingAddress ? JSON.stringify(enrollment.billingAddress) : null,
-      contact: enrollment.contact ? JSON.stringify(enrollment.contact) : null,
-      delivery: enrollment.delivery ? JSON.stringify(enrollment.delivery) : null,
-      payment: enrollment.payment ? JSON.stringify(enrollment.payment) : null,
-      periods: enrollment.periods ? JSON.stringify(enrollment.periods) : null,
-      log: enrollment.log ? JSON.stringify(enrollment.log) : null,
+      configuration: enrollment.configuration || null,
+      context: enrollment.context || null,
+      meta: enrollment.meta || null,
+      billingAddress: enrollment.billingAddress || null,
+      contact: enrollment.contact || null,
+      delivery: enrollment.delivery || null,
+      payment: enrollment.payment || null,
+      periods: enrollment.periods || null,
+      log: logWithStringDates,
       created: enrollment.created,
       updated: null,
       deleted: null,

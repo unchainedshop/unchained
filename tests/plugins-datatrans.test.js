@@ -31,7 +31,7 @@ test.describe('Plugins: Datatrans', () => {
       _id: 'd4d4d4d4d4',
       adapterKey: 'shop.unchained.datatrans',
       type: 'GENERIC',
-      configuration: JSON.stringify([{ key: 'merchantId', value: merchantId }]),
+      configuration: [{ key: 'merchantId', value: merchantId }],
       created: new Date(),
     });
 

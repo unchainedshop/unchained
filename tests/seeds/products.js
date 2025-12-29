@@ -670,7 +670,7 @@ export async function seedMediaObjectsToDrizzle(db) {
       type: media.type,
       url: media.url,
       expires: media.expires,
-      meta: media.meta ? JSON.stringify(media.meta) : null,
+      meta: media.meta || null,
       created: media.created,
       updated: media.updated || null,
     });
