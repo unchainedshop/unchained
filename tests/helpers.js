@@ -6,25 +6,25 @@ import {
   getServerPort,
   getDrizzleDb,
 } from './setup.js';
-import seedLocaleData, {
+import {
   seedCountriesToDrizzle,
   seedLanguagesToDrizzle,
   seedCurrenciesToDrizzle,
 } from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
-import seedProducts from './seeds/products.js';
-import seedDeliveries from './seeds/deliveries.js';
-import seedPayments from './seeds/payments.js';
-import seedWarehousings from './seeds/warehousings.js';
+import seedProducts, { seedMediaObjectsToDrizzle } from './seeds/products.js';
+import { seedDeliveryProvidersToDrizzle } from './seeds/deliveries.js';
+import { seedPaymentsToDrizzle } from './seeds/payments.js';
+import { seedWarehousingProvidersToDrizzle } from './seeds/warehousings.js';
 import seedOrders from './seeds/orders.js';
-import seedQuotations from './seeds/quotations.js';
+import { seedQuotationsToDrizzle } from './seeds/quotations.js';
 import seedFilters from './seeds/filters.js';
 import seedAssortments from './seeds/assortments.js';
-import seedBookmarks, { seedBookmarksToDrizzle } from './seeds/bookmark.js';
-import seedEnrollment from './seeds/enrollments.js';
+import { seedBookmarksToDrizzle } from './seeds/bookmark.js';
+import { seedEnrollmentsToDrizzle } from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
 import seedEvents from './seeds/events.js';
-import seedTokens from './seeds/tokens.js';
+import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
 // Drizzle imports for table helpers
 import { countries } from '@unchainedshop/core-countries';
@@ -67,26 +67,26 @@ export const setupDatabase = async () => {
   const collections = await db.collections();
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 
-  await seedLocaleData(db);
+  // Seed MongoDB collections that are not yet migrated to Drizzle
   await seedUsers(db);
   await seedProducts(db);
-  await seedDeliveries(db);
-  await seedPayments(db);
-  await seedWarehousings(db);
   await seedOrders(db);
-  await seedQuotations(db);
   await seedFilters(db);
   await seedAssortments(db);
-  await seedBookmarks(db);
-  await seedEnrollment(db);
   await seedWorkQueue(db);
-  await seedTokens(db);
 
-  // Seed data directly into the Drizzle database (bypasses module to avoid emitting events)
+  // Seed Drizzle tables (bypasses modules to avoid emitting events)
   await seedCountriesToDrizzle(drizzleDb);
   await seedLanguagesToDrizzle(drizzleDb);
   await seedCurrenciesToDrizzle(drizzleDb);
   await seedBookmarksToDrizzle(drizzleDb);
+  await seedDeliveryProvidersToDrizzle(drizzleDb);
+  await seedPaymentsToDrizzle(drizzleDb);
+  await seedWarehousingProvidersToDrizzle(drizzleDb);
+  await seedTokensToDrizzle(drizzleDb);
+  await seedEnrollmentsToDrizzle(drizzleDb);
+  await seedQuotationsToDrizzle(drizzleDb);
+  await seedMediaObjectsToDrizzle(drizzleDb);
 
   // Seed events AFTER countries to avoid COUNTRY_CREATE events polluting the test data
   // Clear events collection first to remove any events emitted during seeding
@@ -170,22 +170,15 @@ export function getCountriesTable() {
         created: doc.created || new Date(),
         deleted: doc.deleted,
       });
-      // Also insert into FTS
-      await drizzleDb.run(
-        sql`INSERT OR REPLACE INTO countries_fts (_id, isoCode, defaultCurrencyCode) VALUES (${doc._id}, ${doc.isoCode}, ${doc.defaultCurrencyCode || ''})`,
-      );
+      // FTS is automatically populated by SQLite trigger
       return { insertedId: doc._id };
     },
     async deleteOne(filter) {
+      // FTS is automatically cleaned by SQLite trigger
       if (filter._id) {
         await drizzleDb.delete(countries).where(eq(countries._id, filter._id));
-        await drizzleDb.run(sql`DELETE FROM countries_fts WHERE _id = ${filter._id}`);
       } else if (filter.isoCode) {
-        const country = await this.findOne(filter);
-        if (country) {
-          await drizzleDb.delete(countries).where(eq(countries.isoCode, filter.isoCode));
-          await drizzleDb.run(sql`DELETE FROM countries_fts WHERE _id = ${country._id}`);
-        }
+        await drizzleDb.delete(countries).where(eq(countries.isoCode, filter.isoCode));
       }
       return { deletedCount: 1 };
     },
@@ -237,22 +230,15 @@ export function getCurrenciesTable() {
         created: doc.created || new Date(),
         deleted: doc.deleted,
       });
-      // Also insert into FTS
-      await drizzleDb.run(
-        sql`INSERT OR REPLACE INTO currencies_fts (_id, isoCode) VALUES (${doc._id}, ${doc.isoCode})`,
-      );
+      // FTS is automatically populated by SQLite trigger
       return { insertedId: doc._id };
     },
     async deleteOne(filter) {
+      // FTS is automatically cleaned by SQLite trigger
       if (filter._id) {
         await drizzleDb.delete(currencies).where(eq(currencies._id, filter._id));
-        await drizzleDb.run(sql`DELETE FROM currencies_fts WHERE _id = ${filter._id}`);
       } else if (filter.isoCode) {
-        const currency = await this.findOne(filter);
-        if (currency) {
-          await drizzleDb.delete(currencies).where(eq(currencies.isoCode, filter.isoCode));
-          await drizzleDb.run(sql`DELETE FROM currencies_fts WHERE _id = ${currency._id}`);
-        }
+        await drizzleDb.delete(currencies).where(eq(currencies.isoCode, filter.isoCode));
       }
       return { deletedCount: 1 };
     },
@@ -302,22 +288,15 @@ export function getLanguagesTable() {
         created: doc.created || new Date(),
         deleted: doc.deleted,
       });
-      // Also insert into FTS
-      await drizzleDb.run(
-        sql`INSERT OR REPLACE INTO languages_fts (_id, isoCode) VALUES (${doc._id}, ${doc.isoCode})`,
-      );
+      // FTS is automatically populated by SQLite trigger
       return { insertedId: doc._id };
     },
     async deleteOne(filter) {
+      // FTS is automatically cleaned by SQLite trigger
       if (filter._id) {
         await drizzleDb.delete(languages).where(eq(languages._id, filter._id));
-        await drizzleDb.run(sql`DELETE FROM languages_fts WHERE _id = ${filter._id}`);
       } else if (filter.isoCode) {
-        const language = await this.findOne(filter);
-        if (language) {
-          await drizzleDb.delete(languages).where(eq(languages.isoCode, filter.isoCode));
-          await drizzleDb.run(sql`DELETE FROM languages_fts WHERE _id = ${language._id}`);
-        }
+        await drizzleDb.delete(languages).where(eq(languages.isoCode, filter.isoCode));
       }
       return { deletedCount: 1 };
     },
@@ -357,6 +336,8 @@ export function getBookmarksTable() {
         query = query.where(
           and(eq(bookmarks.userId, filter.userId), eq(bookmarks.productId, filter.productId)),
         );
+      } else if (filter.userId) {
+        query = query.where(eq(bookmarks.userId, filter.userId));
       }
       const results = await query.limit(1);
       return results[0] || null;

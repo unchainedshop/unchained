@@ -41,14 +41,14 @@
     "@unchainedshop/events": "^4.5.0",
     "@unchainedshop/store": "^5.0.0-alpha.0",
     "@unchainedshop/utils": "^4.5.0",
-    "drizzle-orm": "^0.38.3",
+    "drizzle-orm": "^0.45.1",
     "expiry-map": "^2.0.0",
     "p-memoize": "^8.0.0"
   },
   "devDependencies": {
     "@libsql/client": "^0.15.15",
     "@types/node": "^25.0.0",
-    "drizzle-kit": "^0.30.1",
+    "drizzle-kit": "^0.31.8",
     "typescript": "^5.8.3"
   }
 }

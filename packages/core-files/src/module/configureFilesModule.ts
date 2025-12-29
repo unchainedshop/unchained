@@ -7,6 +7,7 @@ import {
   sql,
   lt,
   generateId,
+  buildSelectColumns,
   type DrizzleDb,
   type SQL,
 } from '@unchainedshop/store';
@@ -59,13 +60,6 @@ const COLUMNS = {
   created: mediaObjects.created,
   updated: mediaObjects.updated,
 } as const;
-
-const buildSelectColumns = (fields?: FileFields[]) => {
-  if (!fields?.length) return undefined;
-  return Object.fromEntries(
-    fields.map((field) => [field, COLUMNS[field as keyof typeof COLUMNS]]),
-  ) as Partial<typeof COLUMNS>;
-};
 
 const rowToFile = (row: MediaObjectRow): File => ({
   _id: row._id,
@@ -152,7 +146,7 @@ export const configureFilesModule = async ({
       }
 
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       const baseQuery = selectColumns
         ? db.select(selectColumns).from(mediaObjects)

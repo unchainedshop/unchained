@@ -1,7 +1,4 @@
 import { createLogger } from '@unchainedshop/logger';
-import { buildDbIndexes, type ModuleInput } from '@unchainedshop/mongodb';
-import { MediaObjectsCollection } from '@unchainedshop/core-files';
-import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing';
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { File } from '@unchainedshop/core-files';
@@ -13,53 +10,53 @@ export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';
 
 const logger = createLogger('unchained:apple-wallet-webservice');
 
-const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
-  const MediaObjects = await MediaObjectsCollection(db);
-  const TokenSurrogates = await TokenSurrogateCollection(db);
+// Module-level reference to unchainedAPI, set during configuration
+let unchainedAPIRef: UnchainedCore | null = null;
 
-  await buildDbIndexes(TokenSurrogates as any, [
-    { index: { 'meta.cancelled': 1 }, options: { sparse: true } },
-  ]);
+export const setUnchainedAPIRef = (api: UnchainedCore) => {
+  unchainedAPIRef = api;
+};
 
-  await buildDbIndexes(MediaObjects as any, [
-    { index: { path: 1, 'meta.passTypeIdentifier': 1, 'meta.serialNumber': 1 } },
-    {
-      index: {
-        path: 1,
-        'meta.passTypeIdentifier': 1,
-        'meta.registrations.deviceLibraryIdentifier': 1,
-      },
-    } as any,
-  ]);
+const getUnchainedAPI = (): UnchainedCore => {
+  if (!unchainedAPIRef) {
+    throw new Error('Ticketing module not configured. Call setupTicketing first.');
+  }
+  return unchainedAPIRef;
+};
 
-  const upsertAppleWalletPass = async (token: TokenSurrogate, unchainedAPI: UnchainedCore) => {
+const configurePasses = async () => {
+  const upsertAppleWalletPass = async (token: TokenSurrogate) => {
+    const api = getUnchainedAPI();
     const createAppleWalletPass = getRenderer(RendererTypes.APPLE_WALLET);
-    const pass = await createAppleWalletPass(token, unchainedAPI);
+    const pass = await createAppleWalletPass(token, api);
     const rawFile = Promise.resolve(
       // wrap in promise to make stream upload work
       await buildPassBinary(token.tokenSerialNumber, pass as any),
     );
 
-    const previousFile = await MediaObjects.findOne({
+    const previousFiles = await api.modules.files.findFiles({
       path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-      'meta.passTypeIdentifier': pass.passTypeIdentifier,
-      'meta.serialNumber': pass.serialNumber,
+      meta: {
+        passTypeIdentifier: (pass as any).passTypeIdentifier,
+        serialNumber: (pass as any).serialNumber,
+      },
     });
+    const previousFile = previousFiles[0];
 
     const registrations: any = previousFile?.meta?.registrations || [];
-    const pkpassFile = await unchainedAPI.services.files.uploadFileFromStream({
+    const pkpassFile = await api.services.files.uploadFileFromStream({
       directoryName: APPLE_WALLET_PASSES_FILE_DIRECTORY,
       rawFile,
       meta: {
         rawData: token,
-        passTypeIdentifier: pass.passTypeIdentifier,
-        serialNumber: pass.serialNumber,
+        passTypeIdentifier: (pass as any).passTypeIdentifier,
+        serialNumber: (pass as any).serialNumber,
         registrations,
       },
     });
 
     if (previousFile) {
-      await unchainedAPI.services.files.removeFiles({
+      await api.services.files.removeFiles({
         fileIds: [previousFile._id],
       });
     }
@@ -67,7 +64,7 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     // Push updates!
     if (registrations?.length) {
       try {
-        const pushTokens = registrations.map(({ pushToken }) => pushToken);
+        const pushTokens = registrations.map(({ pushToken }: { pushToken: string }) => pushToken);
         logger.info(`Send update pass notification to ${pushTokens.join(',')}`);
         await pushToApplePushNotificationService(pushTokens);
       } catch (e) {
@@ -78,109 +75,140 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     return pkpassFile;
   };
 
-  const upsertGoogleWalletPass = async (token: TokenSurrogate, unchainedAPI: UnchainedCore) => {
+  const upsertGoogleWalletPass = async (token: TokenSurrogate) => {
+    const api = getUnchainedAPI();
     const createGoogleWalletPass = getRenderer(RendererTypes.GOOGLE_WALLET);
-    const pass = await createGoogleWalletPass(token, unchainedAPI);
+    const pass = await createGoogleWalletPass(token, api);
     return pass;
   };
 
-  const findAppleWalletPass = async (passTypeIdentifier, serialNumber) => {
-    const mediaObject = await MediaObjects.findOne({
+  const findAppleWalletPass = async (passTypeIdentifier: string, serialNumber: string) => {
+    const api = getUnchainedAPI();
+    const files = await api.modules.files.findFiles({
       path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-      'meta.passTypeIdentifier': passTypeIdentifier,
-      'meta.serialNumber': serialNumber,
+      meta: {
+        passTypeIdentifier,
+        serialNumber,
+      },
     });
-    return mediaObject;
+    return files[0] || null;
   };
 
   const registerDeviceForAppleWalletPass = async (
-    passTypeIdentifier,
-    serialNumber,
-    { deviceLibraryIdentifier, pushToken },
+    passTypeIdentifier: string,
+    serialNumber: string,
+    { deviceLibraryIdentifier, pushToken }: { deviceLibraryIdentifier: string; pushToken: string },
   ) => {
-    const result = await MediaObjects.updateOne(
-      {
-        path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-        'meta.passTypeIdentifier': passTypeIdentifier,
-        'meta.serialNumber': serialNumber,
-        'meta.registrations.deviceLibraryIdentifier': {
-          $ne: deviceLibraryIdentifier,
-        },
+    const api = getUnchainedAPI();
+    const files = await api.modules.files.findFiles({
+      path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
+      meta: {
+        passTypeIdentifier,
+        serialNumber,
       },
-      {
-        $push: {
-          'meta.registrations': {
-            deviceLibraryIdentifier,
-            pushToken,
-          },
-        },
-      },
+    });
+    const file = files[0];
+    if (!file) return false;
+
+    const registrations: any[] = (file.meta as any)?.registrations || [];
+    const alreadyRegistered = registrations.some(
+      (r: any) => r.deviceLibraryIdentifier === deviceLibraryIdentifier,
     );
-    return Boolean(result.modifiedCount);
+
+    if (alreadyRegistered) return false;
+
+    registrations.push({ deviceLibraryIdentifier, pushToken });
+
+    await api.modules.files.update(file._id, {
+      meta: {
+        ...(file.meta as any),
+        registrations,
+      },
+    });
+
+    return true;
   };
 
   const unregisterDeviceForAppleWalletPass = async (
-    passTypeIdentifier,
-    serialNumber,
-    deviceLibraryIdentifier,
+    passTypeIdentifier: string,
+    serialNumber: string,
+    deviceLibraryIdentifier: string,
   ) => {
-    const result = await MediaObjects.updateOne(
-      {
-        path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-        'meta.passTypeIdentifier': passTypeIdentifier,
-        'meta.serialNumber': serialNumber,
-        'meta.registrations.deviceLibraryIdentifier': deviceLibraryIdentifier,
+    const api = getUnchainedAPI();
+    const files = await api.modules.files.findFiles({
+      path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
+      meta: {
+        passTypeIdentifier,
+        serialNumber,
       },
-      {
-        $pull: {
-          'meta.registrations': {
-            deviceLibraryIdentifier,
-          },
-        },
-      },
+    });
+    const file = files[0];
+    if (!file) return false;
+
+    const registrations: any[] = (file.meta as any)?.registrations || [];
+    const newRegistrations = registrations.filter(
+      (r: any) => r.deviceLibraryIdentifier !== deviceLibraryIdentifier,
     );
-    return Boolean(result.modifiedCount);
+
+    if (newRegistrations.length === registrations.length) return false;
+
+    await api.modules.files.update(file._id, {
+      meta: {
+        ...(file.meta as any),
+        registrations: newRegistrations,
+      },
+    });
+
+    return true;
   };
 
   const findUpdatedAppleWalletPasses = async (
-    passTypeIdentifier,
-    deviceLibraryIdentifier,
-    passesUpdatedSince,
+    passTypeIdentifier: string,
+    deviceLibraryIdentifier: string,
+    passesUpdatedSince: Date | null,
   ): Promise<File[]> => {
-    const selector = {
-      $or: [
-        {
-          updated: passesUpdatedSince ? { $gt: passesUpdatedSince } : { $exists: true },
-        },
-        {
-          created: passesUpdatedSince ? { $gt: passesUpdatedSince } : { $exists: true },
-        },
-      ],
-      'meta.registrations.deviceLibraryIdentifier': deviceLibraryIdentifier,
-      'meta.passTypeIdentifier': passTypeIdentifier,
+    const api = getUnchainedAPI();
+    // Get all passes for this device
+    const allPasses = await api.modules.files.findFiles({
       path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-    };
-    const updatedPasses = await MediaObjects.find(selector).toArray();
-    return updatedPasses;
+      meta: {
+        passTypeIdentifier,
+      },
+    });
+
+    // Filter by device registration and update time
+    return allPasses.filter((pass) => {
+      const registrations: any[] = (pass.meta as any)?.registrations || [];
+      const isRegistered = registrations.some(
+        (r: any) => r.deviceLibraryIdentifier === deviceLibraryIdentifier,
+      );
+      if (!isRegistered) return false;
+
+      if (!passesUpdatedSince) return true;
+
+      const updateDate = pass.updated || pass.created;
+      return updateDate > passesUpdatedSince;
+    });
   };
 
-  const invalidateAppleWalletPasses = async (unchainedAPI: UnchainedCore) => {
-    const allPasses = await MediaObjects.find({
+  const invalidateAppleWalletPasses = async () => {
+    const api = getUnchainedAPI();
+    const allPasses = await api.modules.files.findFiles({
       path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
-    }).toArray();
-    const allTokens = await TokenSurrogates.find({}).toArray();
+    });
+    const allTokens = await api.modules.warehousing.findTokens({});
 
     for (const pass of allPasses) {
       // Check if binary is already invalidated, if so, skip
-      const rawData = pass.meta?.rawData as TokenSurrogate;
-      if (rawData.invalidatedDate) continue;
+      const rawData = (pass.meta as any)?.rawData as TokenSurrogate;
+      if (!rawData || rawData.invalidatedDate) continue;
 
       const redeemedToken = allTokens.find((t) => t._id === rawData._id && t.invalidatedDate);
 
       // Find invalidated token for the binary, if found, invalidate binary
       if (redeemedToken) {
         logger.info('Ticket redeemed, void pass', rawData);
-        await upsertAppleWalletPass(redeemedToken, unchainedAPI);
+        await upsertAppleWalletPass(redeemedToken);
       }
     }
   };
@@ -195,17 +223,16 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
   };
 
   const cancelTicket = async (tokenId: string) => {
-    return TokenSurrogates.findOneAndUpdate(
-      { _id: tokenId },
-      { $set: { 'meta.cancelled': true } },
-      {
-        returnDocument: 'after',
-      },
-    );
+    const api = getUnchainedAPI();
+    const token = await api.modules.warehousing.findToken({ tokenId });
+    if (!token) return null;
+
+    // Invalidate the token (marks it as cancelled)
+    return api.modules.warehousing.invalidateToken(tokenId);
   };
 
   const isTicketCancelled = (token: TokenSurrogate) => {
-    return Boolean(token.meta?.cancelled);
+    return Boolean(token.meta?.cancelled || token.invalidatedDate);
   };
 
   const getTicketsCreated = async (
@@ -216,13 +243,15 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     },
     { skipCancelled }: { skipCancelled?: boolean } = {},
   ): Promise<number> => {
-    const selector: any = {
-      productId,
-    };
+    const api = getUnchainedAPI();
     if (skipCancelled) {
-      selector['meta.cancelled'] = null;
+      const tokens = await api.modules.warehousing.findTokens({
+        productId,
+        'meta.cancelled': null,
+      });
+      return tokens.length;
     }
-    return TokenSurrogates.countDocuments(selector);
+    return api.modules.warehousing.tokensCount({ productId });
   };
 
   return {

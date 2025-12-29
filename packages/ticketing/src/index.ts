@@ -2,7 +2,7 @@ import { subscribe } from '@unchainedshop/events';
 import type { RawPayloadType } from '@unchainedshop/events';
 import { WorkerEventTypes, type Work } from '@unchainedshop/core-worker';
 import { RendererTypes, registerRenderer } from './template-registry.ts';
-import ticketingModules, { type TicketingModule } from './module.ts';
+import ticketingModules, { type TicketingModule, setUnchainedAPIRef } from './module.ts';
 
 import type { TicketingAPI } from './types.ts';
 import setupMagicKey from './magic-key.ts';
@@ -54,13 +54,16 @@ export default function setupTicketing(
 
   setupMagicKey();
 
+  // Set the unchainedAPI reference for the passes module
+  setUnchainedAPIRef(unchainedAPI);
+
   subscribe('TOKEN_INVALIDATED', async () => {
-    await unchainedAPI.modules.passes.invalidateAppleWalletPasses(unchainedAPI);
+    await unchainedAPI.modules.passes.invalidateAppleWalletPasses();
   });
 
   subscribe(WorkerEventTypes.FINISHED, async ({ payload: work }: RawPayloadType<Work>) => {
     if ((work.type === 'EXPORT_TOKEN' || work.type === 'UPDATE_TOKEN_OWNERSHIP') && work.success) {
-      await unchainedAPI.modules.passes.invalidateAppleWalletPasses(unchainedAPI);
+      await unchainedAPI.modules.passes.invalidateAppleWalletPasses();
     }
   });
 }

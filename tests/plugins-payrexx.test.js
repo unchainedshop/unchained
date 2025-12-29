@@ -1,35 +1,45 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getDrizzleDb,
+} from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
-import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
+import { paymentProviders } from '@unchainedshop/core-payment';
 import webhookReserved from './seeds/payrexx_webhook_reserved.js';
 
 const payrexxInstance = 'unchained-test';
 
 test.describe('Plugins: Payrexx', () => {
   let db;
+  let drizzleDb;
   let graphqlFetch;
 
   test.before(async () => {
     [db] = await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-    // Add a payrexx provider
-    await db.collection('payment-providers').findOrInsertOne({
-      ...SimplePaymentProvider,
-      _id: 'd4d4d4d4d4',
+    // Add a payrexx provider (payment providers are now in Drizzle/SQLite)
+    await drizzleDb.insert(paymentProviders).values({
+      _id: 'payrexx-provider',
       adapterKey: 'shop.unchained.payment.payrexx',
       type: 'GENERIC',
-      configuration: [{ key: 'instance', value: payrexxInstance }],
+      configuration: JSON.stringify([{ key: 'instance', value: payrexxInstance }]),
+      created: new Date(),
     });
 
     // Add a demo order ready to checkout
+    // NOTE: The order payment ID must be '1111112222' to match the mock in
+    // packages/plugins/tests/mock/payrexx/Gateway/1000001.json which has referenceId: "1111112222"
     await db.collection('order_payments').findOrInsertOne({
       ...SimplePayment,
       _id: '1111112222',
-      paymentProviderId: 'd4d4d4d4d4',
+      paymentProviderId: 'payrexx-provider',
       orderId: 'payrexx-order',
     });
 
@@ -50,7 +60,7 @@ test.describe('Plugins: Payrexx', () => {
     await db.collection('order_payments').findOrInsertOne({
       ...SimplePayment,
       _id: 'payrexx-payment2',
-      paymentProviderId: 'd4d4d4d4d4',
+      paymentProviderId: 'payrexx-provider',
       orderId: 'payrexx-order2',
     });
 

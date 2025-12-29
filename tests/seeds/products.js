@@ -646,3 +646,33 @@ export default async function seedProducts(db) {
   await db.collection('product_variations').insertMany(ProductVariations);
   await db.collection('product_variation_texts').insertMany(ProductVariationTexts);
 }
+
+// All media objects for seeding
+const allMediaObjects = [{ ...JpegMedia, path: JpegMedia.path || 'product-media' }, GridfsMedia];
+
+/**
+ * Seed media objects into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedMediaObjectsToDrizzle(db) {
+  const { mediaObjects } = await import('@unchainedshop/core-files');
+
+  // Delete all existing media objects directly
+  await db.delete(mediaObjects);
+
+  // Insert all media objects directly (bypassing module to avoid emitting events)
+  for (const media of allMediaObjects) {
+    await db.insert(mediaObjects).values({
+      _id: media._id,
+      path: media.path,
+      name: media.name,
+      size: typeof media.size === 'string' ? parseInt(media.size, 10) : media.size,
+      type: media.type,
+      url: media.url,
+      expires: media.expires,
+      meta: media.meta ? JSON.stringify(media.meta) : null,
+      created: media.created,
+      updated: media.updated || null,
+    });
+  }
+}

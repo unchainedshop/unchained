@@ -1,4 +1,15 @@
-import { eq, and, sql, ne, generateId, desc, asc, type DrizzleDb, type SQL } from '@unchainedshop/store';
+import {
+  eq,
+  and,
+  sql,
+  ne,
+  generateId,
+  desc,
+  asc,
+  buildSelectColumns,
+  type DrizzleDb,
+  type SQL,
+} from '@unchainedshop/store';
 import { paymentCredentials, type PaymentCredentialsRow } from '../db/schema.ts';
 
 export interface PaymentCredentials {
@@ -35,13 +46,6 @@ const COLUMNS = {
   created: paymentCredentials.created,
   updated: paymentCredentials.updated,
 } as const;
-
-const buildSelectColumns = (fields?: PaymentCredentialsFields[]) => {
-  if (!fields?.length) return undefined;
-  return Object.fromEntries(
-    fields.map((field) => [field, COLUMNS[field as keyof typeof COLUMNS]]),
-  ) as Partial<typeof COLUMNS>;
-};
 
 const rowToPaymentCredentials = (row: PaymentCredentialsRow): PaymentCredentials => ({
   _id: row._id,
@@ -144,7 +148,7 @@ export const configurePaymentCredentialsModule = (db: DrizzleDb) => {
       }
 
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       const baseQuery = selectColumns
         ? db.select(selectColumns).from(paymentCredentials)

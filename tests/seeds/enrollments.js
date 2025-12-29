@@ -37,8 +37,8 @@ export const InitialEnrollment = {
   ],
   enrollmentNumber: 'enrollment',
   userId: 'admin',
-  countryId: 'ch',
-  currencyId: 'chf',
+  countryCode: 'ch',
+  currencyCode: 'CHF',
   quantity: 1,
   productId: PlanProduct._id,
 };
@@ -58,8 +58,8 @@ export const expiredEnrollment = {
   ],
   enrollmentNumber: 'RANDOME-Initial2',
   userId: 'user',
-  countryId: 'ch',
-  currencyId: 'chf',
+  countryCode: 'ch',
+  currencyCode: 'CHF',
   quantity: 1,
   productId: PlanProduct._id,
 };
@@ -79,8 +79,8 @@ export const InitialEnrollmentWithWrongPlan = {
   ],
   enrollmentNumber: 'RANDOME-wrong',
   userId: 'user',
-  countryId: 'ch',
-  currencyId: 'chf',
+  countryCode: 'ch',
+  currencyCode: 'CHF',
   quantity: 1,
   productId: 'simpleproduct',
 };
@@ -100,10 +100,59 @@ export const AllEnrollmentIds = [
   TerminatedEnrollment._id,
 ];
 
+// All enrollments for seeding
+const allEnrollments = [
+  ActiveEnrollment,
+  InitialEnrollment,
+  expiredEnrollment,
+  InitialEnrollmentWithWrongPlan,
+  TerminatedEnrollment,
+];
+
 export default async function seedEnrollment(db) {
   await db.collection('enrollments').findOrInsertOne(ActiveEnrollment);
   await db.collection('enrollments').findOrInsertOne(InitialEnrollment);
   await db.collection('enrollments').findOrInsertOne(InitialEnrollmentWithWrongPlan);
   await db.collection('enrollments').findOrInsertOne(expiredEnrollment);
   await db.collection('enrollments').findOrInsertOne(TerminatedEnrollment);
+}
+
+/**
+ * Seed enrollments into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ * FTS index is automatically populated by SQLite triggers.
+ */
+export async function seedEnrollmentsToDrizzle(db) {
+  const { enrollments } = await import('@unchainedshop/core-enrollments');
+
+  // Delete all existing enrollments (FTS is cleaned by trigger)
+  await db.delete(enrollments);
+
+  // Insert all enrollments directly (FTS is populated by trigger)
+  for (const enrollment of allEnrollments) {
+    await db.insert(enrollments).values({
+      _id: enrollment._id,
+      userId: enrollment.userId,
+      productId: enrollment.productId,
+      quantity: enrollment.quantity,
+      countryCode: enrollment.countryCode,
+      currencyCode: enrollment.currencyCode,
+      enrollmentNumber: enrollment.enrollmentNumber,
+      status: enrollment.status,
+      orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod || null,
+      expires: enrollment.expires ? new Date(enrollment.expires) : null,
+      configuration: enrollment.configuration ? JSON.stringify(enrollment.configuration) : null,
+      context: enrollment.context ? JSON.stringify(enrollment.context) : null,
+      meta: enrollment.meta ? JSON.stringify(enrollment.meta) : null,
+      billingAddress: enrollment.billingAddress ? JSON.stringify(enrollment.billingAddress) : null,
+      contact: enrollment.contact ? JSON.stringify(enrollment.contact) : null,
+      delivery: enrollment.delivery ? JSON.stringify(enrollment.delivery) : null,
+      payment: enrollment.payment ? JSON.stringify(enrollment.payment) : null,
+      periods: enrollment.periods ? JSON.stringify(enrollment.periods) : null,
+      log: enrollment.log ? JSON.stringify(enrollment.log) : null,
+      created: enrollment.created,
+      updated: null,
+      deleted: null,
+    });
+  }
 }

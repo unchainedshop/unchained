@@ -14,6 +14,7 @@ import {
   asc,
   desc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -76,11 +77,6 @@ const COLUMNS = {
   isActive: countries.isActive,
   defaultCurrencyCode: countries.defaultCurrencyCode,
 } as const;
-
-const buildSelectColumns = (fields?: CountryFields[]) => {
-  if (!fields?.length) return undefined; // undefined means select all
-  return Object.fromEntries(fields.map((field) => [field, COLUMNS[field]])) as Partial<typeof COLUMNS>;
-};
 
 export async function configureCountriesModule({ db }: { db: DrizzleDb }) {
   registerEvents([...COUNTRY_EVENTS]);
@@ -147,7 +143,7 @@ export async function configureCountriesModule({ db }: { db: DrizzleDb }) {
     ): Promise<Country[]> => {
       const conditions = await buildConditions(query);
       const orderBy = buildOrderBy(query.sort);
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       const baseQuery = selectColumns
         ? db.select(selectColumns).from(countries)

@@ -1,7 +1,14 @@
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import {
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+  getServerBaseUrl,
+  getDrizzleDb,
+} from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
-import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
+import { paymentProviders, paymentCredentials } from '@unchainedshop/core-payment';
+import { eq } from 'drizzle-orm';
 import test from 'node:test';
 import assert from 'node:assert';
 
@@ -11,19 +18,21 @@ test.describe('Plugins: Datatrans', () => {
   const currency = 'CHF';
 
   let db;
+  let drizzleDb;
   let graphqlFetch;
 
   test.before(async () => {
     [db] = await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-    // Add a datatrans provider
-    await db.collection('payment-providers').findOrInsertOne({
-      ...SimplePaymentProvider,
+    // Add a datatrans provider (payment providers are now in Drizzle/SQLite)
+    await drizzleDb.insert(paymentProviders).values({
       _id: 'd4d4d4d4d4',
       adapterKey: 'shop.unchained.datatrans',
       type: 'GENERIC',
-      configuration: [{ key: 'merchantId', value: merchantId }],
+      configuration: JSON.stringify([{ key: 'merchantId', value: merchantId }]),
+      created: new Date(),
     });
 
     // Add a demo order ready to checkout
@@ -147,9 +156,12 @@ test.describe('Plugins: Datatrans', () => {
       });
       assert.strictEqual(result.status, 200);
 
-      const paymentCredential = await db
-        .collection('payment_credentials')
-        .findOne({ paymentProviderId });
+      // Payment credentials are now in Drizzle/SQLite
+      const [paymentCredential] = await drizzleDb
+        .select()
+        .from(paymentCredentials)
+        .where(eq(paymentCredentials.paymentProviderId, paymentProviderId))
+        .limit(1);
 
       assert.notStrictEqual(paymentCredential, null);
     });

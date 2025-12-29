@@ -9,6 +9,7 @@ import {
   asc,
   desc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -40,7 +41,7 @@ export interface Quotation {
   countryCode?: string;
   currencyCode?: string;
   expires?: Date;
-  fullfilled?: Date;
+  fulfilled?: Date;
   meta?: any;
   price?: number;
   productId: string;
@@ -85,7 +86,7 @@ const rowToQuotation = (row: QuotationRow): Quotation => ({
   status: row.status,
   price: row.price ?? undefined,
   expires: row.expires ?? undefined,
-  fullfilled: row.fullfilled ?? undefined,
+  fulfilled: row.fulfilled ?? undefined,
   rejected: row.rejected ?? undefined,
   configuration: row.configuration ? JSON.parse(row.configuration) : undefined,
   context: row.context ? JSON.parse(row.context) : undefined,
@@ -106,7 +107,7 @@ const COLUMNS = {
   status: quotations.status,
   price: quotations.price,
   expires: quotations.expires,
-  fullfilled: quotations.fullfilled,
+  fulfilled: quotations.fulfilled,
   rejected: quotations.rejected,
   configuration: quotations.configuration,
   context: quotations.context,
@@ -116,13 +117,6 @@ const COLUMNS = {
   updated: quotations.updated,
   deleted: quotations.deleted,
 } as const;
-
-const buildSelectColumns = (fields?: QuotationFields[]) => {
-  if (!fields?.length) return undefined;
-  return Object.fromEntries(
-    fields.map((field) => [field, COLUMNS[field as keyof typeof COLUMNS]]),
-  ) as Partial<typeof COLUMNS>;
-};
 
 export const configureQuotationsModule = async ({
   db,
@@ -198,9 +192,9 @@ export const configureQuotationsModule = async ({
 
     switch (status) {
       // explicitly use fallthrough here!
-      case QuotationStatus.FULLFILLED:
-        if (!quotation.fullfilled) {
-          updateData.fullfilled = date;
+      case QuotationStatus.FULFILLED:
+        if (!quotation.fulfilled) {
+          updateData.fulfilled = date;
         }
         updateData.expires = date;
       // eslint-disable-next-line no-fallthrough
@@ -299,7 +293,7 @@ export const configureQuotationsModule = async ({
     },
 
     findQuotation: async ({ quotationId }: { quotationId: string }, options?: QuotationQueryOptions) => {
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       const baseQuery = selectColumns
         ? db.select(selectColumns).from(quotations)

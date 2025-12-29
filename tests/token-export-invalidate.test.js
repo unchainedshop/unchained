@@ -5,6 +5,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  getDrizzleDb,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
@@ -14,15 +15,18 @@ import {
   InvalidatedToken,
   TokenWithInvalidProduct,
 } from './seeds/tokens.js';
+import { tokenSurrogates } from '@unchainedshop/core-warehousing';
+import { eq } from 'drizzle-orm';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let db;
+let drizzleDb;
 
 test.describe('Token Export and Invalidation', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -303,7 +307,21 @@ test.describe('Token Export and Invalidation', () => {
 
     test('should return ProductNotFoundError when token has invalid product', async () => {
       // Insert the token with invalid product directly (not seeded to avoid breaking other token queries)
-      await db.collection('token_surrogates').findOrInsertOne(TokenWithInvalidProduct);
+      // Token surrogates are now in Drizzle/SQLite
+      await drizzleDb.insert(tokenSurrogates).values({
+        _id: TokenWithInvalidProduct._id,
+        userId: TokenWithInvalidProduct.userId,
+        walletAddress: TokenWithInvalidProduct.walletAddress,
+        invalidatedDate: TokenWithInvalidProduct.invalidatedDate,
+        expiryDate: TokenWithInvalidProduct.expiryDate,
+        quantity: TokenWithInvalidProduct.quantity,
+        contractAddress: TokenWithInvalidProduct.contractAddress,
+        chainId: TokenWithInvalidProduct.chainId,
+        tokenSerialNumber: TokenWithInvalidProduct.tokenSerialNumber,
+        productId: TokenWithInvalidProduct.productId,
+        orderPositionId: TokenWithInvalidProduct.orderPositionId,
+        meta: TokenWithInvalidProduct.meta ? JSON.stringify(TokenWithInvalidProduct.meta) : null,
+      });
 
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
@@ -322,7 +340,9 @@ test.describe('Token Export and Invalidation', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
 
       // Clean up - remove the token with invalid product to avoid affecting other tests
-      await db.collection('token_surrogates').deleteOne({ _id: TokenWithInvalidProduct._id });
+      await drizzleDb
+        .delete(tokenSurrogates)
+        .where(eq(tokenSurrogates._id, TokenWithInvalidProduct._id));
     });
 
     test('should successfully invalidate a token when all invalidation criteria are met (needs proper virtual provider setup)', async () => {

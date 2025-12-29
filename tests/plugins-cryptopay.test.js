@@ -6,9 +6,9 @@ import {
   setupDatabase,
   getServerBaseUrl,
   getCurrenciesTable,
+  getDrizzleDb,
 } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
-import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SimpleProduct } from './seeds/products.js';
 import {
@@ -18,14 +18,17 @@ import {
   SHIBCurrency,
   ETHCurrency,
 } from './seeds/cryptopay.js';
+import { paymentProviders } from '@unchainedshop/core-payment';
 
 test.describe('Plugins: Cryptopay', () => {
   let db;
+  let drizzleDb;
   let graphqlFetch;
   let Currencies;
 
   test.before(async () => {
     [db] = await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     Currencies = getCurrenciesTable();
 
@@ -68,11 +71,13 @@ test.describe('Plugins: Cryptopay', () => {
       _id: 'single-btc-item-product-id',
     });
 
-    await db.collection('payment-providers').findOrInsertOne({
-      ...SimplePaymentProvider,
+    // Insert payment provider into Drizzle (payment providers are now in SQLite)
+    await drizzleDb.insert(paymentProviders).values({
       _id: 'cryptopay-payment-provider',
       adapterKey: 'shop.unchained.payment.cryptopay',
       type: 'GENERIC',
+      configuration: JSON.stringify([]),
+      created: new Date(),
     });
 
     // Add a demo order ready to checkout

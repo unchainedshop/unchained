@@ -9,6 +9,7 @@ import {
   sql,
   asc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -51,6 +52,22 @@ export interface PaymentProviderQuery {
   includeDeleted?: boolean;
   queryString?: string;
 }
+
+export type PaymentProviderFields = keyof PaymentProvider;
+
+export interface PaymentProviderQueryOptions {
+  fields?: PaymentProviderFields[];
+}
+
+const COLUMNS = {
+  _id: paymentProviders._id,
+  type: paymentProviders.type,
+  adapterKey: paymentProviders.adapterKey,
+  configuration: paymentProviders.configuration,
+  created: paymentProviders.created,
+  updated: paymentProviders.updated,
+  deleted: paymentProviders.deleted,
+} as const;
 
 const rowToPaymentProvider = (row: PaymentProviderRow): PaymentProvider => ({
   _id: row._id,
@@ -105,24 +122,36 @@ export const configurePaymentProvidersModule = (db: DrizzleDb) => {
       return count ?? 0;
     },
 
-    findProvider: async ({ paymentProviderId }: { paymentProviderId: string }) => {
-      const [row] = await db
-        .select()
-        .from(paymentProviders)
-        .where(eq(paymentProviders._id, paymentProviderId))
-        .limit(1);
-      return row ? rowToPaymentProvider(row) : null;
+    findProvider: async (
+      { paymentProviderId }: { paymentProviderId: string },
+      options?: PaymentProviderQueryOptions,
+    ) => {
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(paymentProviders)
+        : db.select().from(paymentProviders);
+      const [row] = await baseQuery.where(eq(paymentProviders._id, paymentProviderId)).limit(1);
+      return row
+        ? selectColumns
+          ? (row as unknown as PaymentProvider)
+          : rowToPaymentProvider(row as PaymentProviderRow)
+        : null;
     },
 
-    findProviders: async (query: PaymentProviderQuery = {}): Promise<PaymentProvider[]> => {
+    findProviders: async (
+      query: PaymentProviderQuery = {},
+      options?: PaymentProviderQueryOptions,
+    ): Promise<PaymentProvider[]> => {
       const conditions = await buildConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-      const results = await db
-        .select()
-        .from(paymentProviders)
-        .where(whereClause)
-        .orderBy(asc(paymentProviders.created));
-      return results.map(rowToPaymentProvider);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(paymentProviders)
+        : db.select().from(paymentProviders);
+      const results = await baseQuery.where(whereClause).orderBy(asc(paymentProviders.created));
+      return selectColumns
+        ? (results as unknown as PaymentProvider[])
+        : results.map((r) => rowToPaymentProvider(r as PaymentProviderRow));
     },
 
     allProviders: pMemoize(

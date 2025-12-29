@@ -4,7 +4,7 @@ export const QuotationStatus = {
   REQUESTED: 'REQUESTED',
   PROCESSING: 'PROCESSING',
   PROPOSED: 'PROPOSED',
-  FULLFILLED: 'FULLFILLED',
+  FULFILLED: 'FULFILLED',
   REJECTED: 'REJECTED',
 } as const;
 
@@ -25,7 +25,7 @@ export const quotations = sqliteTable(
     status: text('status'),
     price: integer('price'),
     expires: integer('expires', { mode: 'timestamp_ms' }),
-    fullfilled: integer('fullfilled', { mode: 'timestamp_ms' }),
+    fulfilled: integer('fulfilled', { mode: 'timestamp_ms' }),
     rejected: integer('rejected', { mode: 'timestamp_ms' }),
     configuration: text('configuration'), // JSON string
     context: text('context'), // JSON string

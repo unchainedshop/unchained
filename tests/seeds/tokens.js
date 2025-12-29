@@ -94,6 +94,9 @@ export const TokenWithInvalidProduct = {
   meta: {},
 };
 
+// All tokens for seeding (excluding TokenWithInvalidProduct)
+const allTokens = [TestToken1, TestToken2, TestToken3, InvalidatedToken, AlreadyExportedToken];
+
 export default async function seedTokens(db) {
   await db.collection('token_surrogates').findOrInsertOne(TestToken1);
   await db.collection('token_surrogates').findOrInsertOne(TestToken2);
@@ -101,4 +104,33 @@ export default async function seedTokens(db) {
   await db.collection('token_surrogates').findOrInsertOne(InvalidatedToken);
   await db.collection('token_surrogates').findOrInsertOne(AlreadyExportedToken);
   // TokenWithInvalidProduct is NOT seeded here - it's inserted directly in the test
+}
+
+/**
+ * Seed token surrogates into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedTokensToDrizzle(db) {
+  const { tokenSurrogates } = await import('@unchainedshop/core-warehousing');
+
+  // Delete all existing token surrogates directly
+  await db.delete(tokenSurrogates);
+
+  // Insert all token surrogates directly (bypassing module to avoid emitting events)
+  for (const token of allTokens) {
+    await db.insert(tokenSurrogates).values({
+      _id: token._id,
+      userId: token.userId,
+      walletAddress: token.walletAddress,
+      invalidatedDate: token.invalidatedDate,
+      expiryDate: token.expiryDate,
+      quantity: token.quantity,
+      contractAddress: token.contractAddress,
+      chainId: token.chainId,
+      tokenSerialNumber: token.tokenSerialNumber,
+      productId: token.productId,
+      orderPositionId: token.orderPositionId,
+      meta: token.meta ? JSON.stringify(token.meta) : null,
+    });
+  }
 }

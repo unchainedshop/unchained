@@ -14,6 +14,7 @@ import {
   asc,
   desc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -72,11 +73,6 @@ const COLUMNS = {
   deleted: languages.deleted,
   isActive: languages.isActive,
 } as const;
-
-const buildSelectColumns = (fields?: LanguageFields[]) => {
-  if (!fields?.length) return undefined; // undefined means select all
-  return Object.fromEntries(fields.map((field) => [field, COLUMNS[field]])) as Partial<typeof COLUMNS>;
-};
 
 export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
   registerEvents([...LANGUAGE_EVENTS]);
@@ -143,7 +139,7 @@ export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
     ): Promise<Language[]> => {
       const conditions = await buildConditions(query);
       const orderBy = buildOrderBy(query.sort);
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       const baseQuery = selectColumns
         ? db.select(selectColumns).from(languages)

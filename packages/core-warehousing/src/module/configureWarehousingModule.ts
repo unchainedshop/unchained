@@ -9,6 +9,7 @@ import {
   sql,
   asc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -78,6 +79,44 @@ export interface WarehousingProviderQuery {
   includeDeleted?: boolean;
   queryString?: string;
 }
+
+export type WarehousingProviderFields = keyof WarehousingProvider;
+export type TokenSurrogateFields = keyof TokenSurrogate;
+
+export interface WarehousingProviderQueryOptions {
+  fields?: WarehousingProviderFields[];
+}
+
+export interface TokenSurrogateQueryOptions {
+  fields?: TokenSurrogateFields[];
+  limit?: number;
+  skip?: number;
+}
+
+const PROVIDER_COLUMNS = {
+  _id: warehousingProviders._id,
+  type: warehousingProviders.type,
+  adapterKey: warehousingProviders.adapterKey,
+  configuration: warehousingProviders.configuration,
+  created: warehousingProviders.created,
+  updated: warehousingProviders.updated,
+  deleted: warehousingProviders.deleted,
+} as const;
+
+const TOKEN_COLUMNS = {
+  _id: tokenSurrogates._id,
+  userId: tokenSurrogates.userId,
+  walletAddress: tokenSurrogates.walletAddress,
+  invalidatedDate: tokenSurrogates.invalidatedDate,
+  expiryDate: tokenSurrogates.expiryDate,
+  quantity: tokenSurrogates.quantity,
+  contractAddress: tokenSurrogates.contractAddress,
+  chainId: tokenSurrogates.chainId,
+  tokenSerialNumber: tokenSurrogates.tokenSerialNumber,
+  productId: tokenSurrogates.productId,
+  orderPositionId: tokenSurrogates.orderPositionId,
+  meta: tokenSurrogates.meta,
+} as const;
 
 const rowToWarehousingProvider = (row: WarehousingProviderRow): WarehousingProvider => ({
   _id: row._id,
@@ -225,31 +264,46 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
       );
     },
 
-    findProvider: async ({ warehousingProviderId }: { warehousingProviderId: string }) => {
-      const [row] = await db
-        .select()
-        .from(warehousingProviders)
-        .where(eq(warehousingProviders._id, warehousingProviderId))
-        .limit(1);
-      return row ? rowToWarehousingProvider(row) : null;
+    findProvider: async (
+      { warehousingProviderId }: { warehousingProviderId: string },
+      options?: WarehousingProviderQueryOptions,
+    ) => {
+      const selectColumns = buildSelectColumns(PROVIDER_COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(warehousingProviders)
+        : db.select().from(warehousingProviders);
+      const [row] = await baseQuery.where(eq(warehousingProviders._id, warehousingProviderId)).limit(1);
+      return row
+        ? selectColumns
+          ? (row as unknown as WarehousingProvider)
+          : rowToWarehousingProvider(row as WarehousingProviderRow)
+        : null;
     },
 
-    findToken: async ({ tokenId }: { tokenId: string }) => {
-      const [row] = await db
-        .select()
-        .from(tokenSurrogates)
-        .where(eq(tokenSurrogates._id, tokenId))
-        .limit(1);
-      return row ? rowToTokenSurrogate(row) : null;
+    findToken: async ({ tokenId }: { tokenId: string }, options?: TokenSurrogateQueryOptions) => {
+      const selectColumns = buildSelectColumns(TOKEN_COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(tokenSurrogates)
+        : db.select().from(tokenSurrogates);
+      const [row] = await baseQuery.where(eq(tokenSurrogates._id, tokenId)).limit(1);
+      return row
+        ? selectColumns
+          ? (row as unknown as TokenSurrogate)
+          : rowToTokenSurrogate(row as TokenSurrogateRow)
+        : null;
     },
 
     findTokens: async (
       selector: TokenQuery = {},
-      options?: { limit?: number; skip?: number },
+      options?: TokenSurrogateQueryOptions,
     ): Promise<TokenSurrogate[]> => {
       const conditions = await buildTokenConditions(selector);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-      let queryBuilder = db.select().from(tokenSurrogates).where(whereClause);
+      const selectColumns = buildSelectColumns(TOKEN_COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(tokenSurrogates)
+        : db.select().from(tokenSurrogates);
+      let queryBuilder = baseQuery.where(whereClause);
       if (options?.limit) {
         queryBuilder = queryBuilder.limit(options.limit) as typeof queryBuilder;
       }
@@ -257,7 +311,9 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
         queryBuilder = queryBuilder.offset(options.skip) as typeof queryBuilder;
       }
       const results = await queryBuilder;
-      return results.map(rowToTokenSurrogate);
+      return selectColumns
+        ? (results as unknown as TokenSurrogate[])
+        : results.map((r) => rowToTokenSurrogate(r as TokenSurrogateRow));
     },
 
     tokensCount: async (selector: TokenQuery = {}): Promise<number> => {
@@ -296,15 +352,20 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
       return results.map(rowToTokenSurrogate);
     },
 
-    findProviders: async (query: WarehousingProviderQuery = {}): Promise<WarehousingProvider[]> => {
+    findProviders: async (
+      query: WarehousingProviderQuery = {},
+      options?: WarehousingProviderQueryOptions,
+    ): Promise<WarehousingProvider[]> => {
       const conditions = await buildProviderConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-      const results = await db
-        .select()
-        .from(warehousingProviders)
-        .where(whereClause)
-        .orderBy(asc(warehousingProviders.created));
-      return results.map(rowToWarehousingProvider);
+      const selectColumns = buildSelectColumns(PROVIDER_COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(warehousingProviders)
+        : db.select().from(warehousingProviders);
+      const results = await baseQuery.where(whereClause).orderBy(asc(warehousingProviders.created));
+      return selectColumns
+        ? (results as unknown as WarehousingProvider[])
+        : results.map((r) => rowToWarehousingProvider(r as WarehousingProviderRow));
     },
 
     allProviders: pMemoize(

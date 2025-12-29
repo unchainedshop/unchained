@@ -55,7 +55,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
         });
       }
 
-      const passFile = await modules.passes.upsertAppleWalletPass(token, resolvedContext);
+      const passFile = await modules.passes.upsertAppleWalletPass(token);
 
       const fileUploadAdapter = getFileAdapter();
       const signedUrl = await fileUploadAdapter.createDownloadURL(passFile);
@@ -135,9 +135,9 @@ const appleWalletHandler: RouteHandlerMethod = async (
       // Get the List of Updatable Passes
       const lastUpdated = new Date();
       const [deviceLibraryIdentifier, , passTypeIdentifier] = pathComponents;
-      const passesUpdatedSince =
-        (req.query as Record<string, string>)?.passesUpdatedSince &&
-        new Date((req.query as Record<string, string>).passesUpdatedSince as string);
+      const passesUpdatedSince = (req.query as Record<string, string>)?.passesUpdatedSince
+        ? new Date((req.query as Record<string, string>).passesUpdatedSince as string)
+        : null;
 
       const passes = await modules.passes.findUpdatedAppleWalletPasses(
         passTypeIdentifier,

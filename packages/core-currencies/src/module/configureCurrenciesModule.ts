@@ -14,6 +14,7 @@ import {
   asc,
   desc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -81,11 +82,6 @@ const COLUMNS = {
   contractAddress: currencies.contractAddress,
   decimals: currencies.decimals,
 } as const;
-
-const buildSelectColumns = (fields?: CurrencyFields[]) => {
-  if (!fields?.length) return undefined; // undefined means select all
-  return Object.fromEntries(fields.map((field) => [field, COLUMNS[field]])) as Partial<typeof COLUMNS>;
-};
 
 export async function configureCurrenciesModule({ db }: { db: DrizzleDb }) {
   registerEvents([...CURRENCY_EVENTS]);
@@ -156,7 +152,7 @@ export async function configureCurrenciesModule({ db }: { db: DrizzleDb }) {
     ): Promise<Currency[]> => {
       const conditions = await buildConditions(query);
       const orderBy = buildOrderBy(query.sort);
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       const baseQuery = selectColumns
         ? db.select(selectColumns).from(currencies)

@@ -3,7 +3,15 @@
  */
 
 import { emit, registerEvents } from '@unchainedshop/events';
-import { eq, and, inArray, generateId, type SQL, type DrizzleDb } from '@unchainedshop/store';
+import {
+  eq,
+  and,
+  inArray,
+  generateId,
+  buildSelectColumns,
+  type SQL,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import { bookmarks, type BookmarkRow } from '../db/schema.ts';
 
 export interface Bookmark {
@@ -28,6 +36,21 @@ export interface BookmarkQuery {
   productId?: string;
 }
 
+export type BookmarkFields = keyof Bookmark;
+
+export interface BookmarkQueryOptions {
+  fields?: BookmarkFields[];
+}
+
+const COLUMNS = {
+  _id: bookmarks._id,
+  userId: bookmarks.userId,
+  productId: bookmarks.productId,
+  meta: bookmarks.meta,
+  created: bookmarks.created,
+  updated: bookmarks.updated,
+} as const;
+
 export const BOOKMARK_EVENTS = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'] as const;
 
 const rowToBookmark = (row: BookmarkRow): Bookmark => ({
@@ -49,12 +72,26 @@ export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
       return results.map(rowToBookmark);
     },
 
-    findBookmarkById: async (bookmarkId: string): Promise<Bookmark | null> => {
-      const [row] = await db.select().from(bookmarks).where(eq(bookmarks._id, bookmarkId)).limit(1);
-      return row ? rowToBookmark(row) : null;
+    findBookmarkById: async (
+      bookmarkId: string,
+      options?: BookmarkQueryOptions,
+    ): Promise<Bookmark | null> => {
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(bookmarks)
+        : db.select().from(bookmarks);
+      const [row] = await baseQuery.where(eq(bookmarks._id, bookmarkId)).limit(1);
+      return row
+        ? selectColumns
+          ? (row as unknown as Bookmark)
+          : rowToBookmark(row as BookmarkRow)
+        : null;
     },
 
-    findBookmarks: async (query: BookmarkQuery = {}): Promise<Bookmark[]> => {
+    findBookmarks: async (
+      query: BookmarkQuery = {},
+      options?: BookmarkQueryOptions,
+    ): Promise<Bookmark[]> => {
       const conditions: SQL[] = [];
 
       if (query.userId) {
@@ -64,15 +101,17 @@ export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
         conditions.push(eq(bookmarks.productId, query.productId));
       }
 
-      const results =
-        conditions.length > 0
-          ? await db
-              .select()
-              .from(bookmarks)
-              .where(and(...conditions))
-          : await db.select().from(bookmarks);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(bookmarks)
+        : db.select().from(bookmarks);
 
-      return results.map(rowToBookmark);
+      const results =
+        conditions.length > 0 ? await baseQuery.where(and(...conditions)) : await baseQuery;
+
+      return selectColumns
+        ? (results as unknown as Bookmark[])
+        : results.map((r) => rowToBookmark(r as BookmarkRow));
     },
 
     // Mutations

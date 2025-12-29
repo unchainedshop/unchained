@@ -9,6 +9,7 @@ import {
   sql,
   asc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -66,6 +67,22 @@ export interface DeliveryProviderQuery {
   includeDeleted?: boolean;
   queryString?: string;
 }
+
+export type DeliveryProviderFields = keyof DeliveryProvider;
+
+export interface DeliveryProviderQueryOptions {
+  fields?: DeliveryProviderFields[];
+}
+
+const COLUMNS = {
+  _id: deliveryProviders._id,
+  type: deliveryProviders.type,
+  adapterKey: deliveryProviders.adapterKey,
+  configuration: deliveryProviders.configuration,
+  created: deliveryProviders.created,
+  updated: deliveryProviders.updated,
+  deleted: deliveryProviders.deleted,
+} as const;
 
 const rowToDeliveryProvider = (row: DeliveryProviderRow): DeliveryProvider => ({
   _id: row._id,
@@ -130,24 +147,36 @@ export const configureDeliveryModule = async ({
       return count ?? 0;
     },
 
-    findProvider: async ({ deliveryProviderId }: { deliveryProviderId: string }) => {
-      const [row] = await db
-        .select()
-        .from(deliveryProviders)
-        .where(eq(deliveryProviders._id, deliveryProviderId))
-        .limit(1);
-      return row ? rowToDeliveryProvider(row) : null;
+    findProvider: async (
+      { deliveryProviderId }: { deliveryProviderId: string },
+      options?: DeliveryProviderQueryOptions,
+    ) => {
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(deliveryProviders)
+        : db.select().from(deliveryProviders);
+      const [row] = await baseQuery.where(eq(deliveryProviders._id, deliveryProviderId)).limit(1);
+      return row
+        ? selectColumns
+          ? (row as unknown as DeliveryProvider)
+          : rowToDeliveryProvider(row as DeliveryProviderRow)
+        : null;
     },
 
-    findProviders: async (query: DeliveryProviderQuery = {}): Promise<DeliveryProvider[]> => {
+    findProviders: async (
+      query: DeliveryProviderQuery = {},
+      options?: DeliveryProviderQueryOptions,
+    ): Promise<DeliveryProvider[]> => {
       const conditions = await buildConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-      const results = await db
-        .select()
-        .from(deliveryProviders)
-        .where(whereClause)
-        .orderBy(asc(deliveryProviders.created));
-      return results.map(rowToDeliveryProvider);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(deliveryProviders)
+        : db.select().from(deliveryProviders);
+      const results = await baseQuery.where(whereClause).orderBy(asc(deliveryProviders.created));
+      return selectColumns
+        ? (results as unknown as DeliveryProvider[])
+        : results.map((r) => rowToDeliveryProvider(r as DeliveryProviderRow));
     },
 
     allProviders: pMemoize(

@@ -20,7 +20,7 @@ export async function initializeQuotationsSchema(db: DrizzleDb): Promise<void> {
       status TEXT,
       price INTEGER,
       expires INTEGER,
-      fullfilled INTEGER,
+      fulfilled INTEGER,
       rejected INTEGER,
       configuration TEXT,
       context TEXT,

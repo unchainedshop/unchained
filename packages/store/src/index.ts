@@ -96,6 +96,31 @@ export function generateId(): string {
 }
 
 /**
+ * Build a partial column selection for Drizzle queries.
+ * Used to avoid over-fetching by selecting only requested fields.
+ *
+ * @param columns - The full COLUMNS map for the table
+ * @param fields - Optional array of field names to select
+ * @returns Partial column map for db.select(), or undefined for full select
+ *
+ * @example
+ * ```typescript
+ * const COLUMNS = { _id: table._id, name: table.name, ... } as const;
+ * const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+ * const query = selectColumns
+ *   ? db.select(selectColumns).from(table)
+ *   : db.select().from(table);
+ * ```
+ */
+export function buildSelectColumns<T extends Record<string, unknown>>(
+  columns: T,
+  fields?: (keyof T)[],
+): Partial<T> | undefined {
+  if (!fields?.length) return undefined;
+  return Object.fromEntries(fields.map((field) => [field, columns[field]])) as Partial<T>;
+}
+
+/**
  * Configuration for creating an FTS5 full-text search table.
  */
 export interface FTSConfig {

@@ -10,6 +10,7 @@ import {
   asc,
   desc,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -146,13 +147,6 @@ const COLUMNS = {
   deleted: enrollments.deleted,
 } as const;
 
-const buildSelectColumns = (fields?: EnrollmentFields[]) => {
-  if (!fields?.length) return undefined;
-  return Object.fromEntries(
-    fields.map((field) => [field, COLUMNS[field as keyof typeof COLUMNS]]),
-  ) as Partial<typeof COLUMNS>;
-};
-
 export const configureEnrollmentsModule = async ({
   db,
   options: enrollmentOptions = {},
@@ -236,10 +230,16 @@ export const configureEnrollmentsModule = async ({
       case EnrollmentStatus.ACTIVE:
         updateData.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
         break;
-      case EnrollmentStatus.TERMINATED:
-        updateData.expires =
-          enrollment.periods?.length > 0 ? enrollment.periods[enrollment.periods.length - 1].end : date;
+      case EnrollmentStatus.TERMINATED: {
+        const lastPeriodEnd = enrollment.periods?.[enrollment.periods.length - 1]?.end;
+        // Convert to Date if it's a number/timestamp
+        updateData.expires = lastPeriodEnd
+          ? lastPeriodEnd instanceof Date
+            ? lastPeriodEnd
+            : new Date(lastPeriodEnd)
+          : date;
         break;
+      }
       default:
         break;
     }
@@ -333,7 +333,7 @@ export const configureEnrollmentsModule = async ({
       params: { enrollmentId: string } | { orderId: string },
       options?: EnrollmentQueryOptions,
     ) => {
-      const selectColumns = buildSelectColumns(options?.fields);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
 
       if ('enrollmentId' in params) {
         const baseQuery = selectColumns

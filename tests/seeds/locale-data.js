@@ -105,16 +105,15 @@ const allCurrencies = [BaseCurrency, EuroCurrency, UsdCurrency, InactiveCurrency
 /**
  * Seed countries into the Drizzle database.
  * This directly inserts into the database WITHOUT using the module to avoid emitting events.
- * This is needed because the countries module now uses Drizzle ORM instead of MongoDB.
+ * FTS index is automatically populated by SQLite triggers.
  */
 export async function seedCountriesToDrizzle(db) {
   const { countries } = await import('@unchainedshop/core-countries');
-  const { sql } = await import('drizzle-orm');
 
-  // Delete all existing countries directly
+  // Delete all existing countries (FTS is cleaned by trigger)
   await db.delete(countries);
 
-  // Insert all countries directly (bypassing module to avoid emitting events)
+  // Insert all countries directly (FTS is populated by trigger)
   for (const country of allCountries) {
     await db.insert(countries).values({
       _id: country._id,
@@ -125,28 +124,20 @@ export async function seedCountriesToDrizzle(db) {
       deleted: null,
     });
   }
-
-  // Also update the FTS index directly
-  await db.run(sql`DELETE FROM countries_fts`);
-  for (const country of allCountries) {
-    await db.run(
-      sql`INSERT INTO countries_fts (_id, isoCode, defaultCurrencyCode) VALUES (${country._id}, ${country.isoCode}, ${country.defaultCurrencyCode})`,
-    );
-  }
 }
 
 /**
  * Seed languages into the Drizzle database.
  * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ * FTS index is automatically populated by SQLite triggers.
  */
 export async function seedLanguagesToDrizzle(db) {
   const { languages } = await import('@unchainedshop/core-languages');
-  const { sql } = await import('drizzle-orm');
 
-  // Delete all existing languages directly
+  // Delete all existing languages (FTS is cleaned by trigger)
   await db.delete(languages);
 
-  // Insert all languages directly (bypassing module to avoid emitting events)
+  // Insert all languages directly (FTS is populated by trigger)
   for (const language of allLanguages) {
     await db.insert(languages).values({
       _id: language._id,
@@ -156,28 +147,20 @@ export async function seedLanguagesToDrizzle(db) {
       deleted: null,
     });
   }
-
-  // Also update the FTS index directly
-  await db.run(sql`DELETE FROM languages_fts`);
-  for (const language of allLanguages) {
-    await db.run(
-      sql`INSERT INTO languages_fts (_id, isoCode) VALUES (${language._id}, ${language.isoCode})`,
-    );
-  }
 }
 
 /**
  * Seed currencies into the Drizzle database.
  * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ * FTS index is automatically populated by SQLite triggers.
  */
 export async function seedCurrenciesToDrizzle(db) {
   const { currencies } = await import('@unchainedshop/core-currencies');
-  const { sql } = await import('drizzle-orm');
 
-  // Delete all existing currencies directly
+  // Delete all existing currencies (FTS is cleaned by trigger)
   await db.delete(currencies);
 
-  // Insert all currencies directly (bypassing module to avoid emitting events)
+  // Insert all currencies directly (FTS is populated by trigger)
   for (const currency of allCurrencies) {
     await db.insert(currencies).values({
       _id: currency._id,
@@ -186,13 +169,5 @@ export async function seedCurrenciesToDrizzle(db) {
       created: new Date(),
       deleted: null,
     });
-  }
-
-  // Also update the FTS index directly
-  await db.run(sql`DELETE FROM currencies_fts`);
-  for (const currency of allCurrencies) {
-    await db.run(
-      sql`INSERT INTO currencies_fts (_id, isoCode) VALUES (${currency._id}, ${currency.isoCode})`,
-    );
   }
 }

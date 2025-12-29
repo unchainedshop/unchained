@@ -21,9 +21,36 @@ export const VirtualWarehousingProvider = {
   adapterKey: 'shop.unchained.warehousing.infinite-minter',
 };
 
+// All warehousing providers for seeding
+const allWarehousingProviders = [SimpleWarehousingProvider, VirtualWarehousingProvider];
+
 export default async function seedWarehousings(db) {
   await chainedUpsert(db)
     .upsert('warehousing-providers', SimpleWarehousingProvider)
     .upsert('warehousing-providers', VirtualWarehousingProvider)
     .resolve();
+}
+
+/**
+ * Seed warehousing providers into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedWarehousingProvidersToDrizzle(db) {
+  const { warehousingProviders } = await import('@unchainedshop/core-warehousing');
+
+  // Delete all existing warehousing providers directly
+  await db.delete(warehousingProviders);
+
+  // Insert all warehousing providers directly (bypassing module to avoid emitting events)
+  for (const provider of allWarehousingProviders) {
+    await db.insert(warehousingProviders).values({
+      _id: provider._id,
+      type: provider.type,
+      adapterKey: provider.adapterKey,
+      configuration: provider.configuration ? JSON.stringify(provider.configuration) : null,
+      created: provider.created,
+      updated: null,
+      deleted: null,
+    });
+  }
 }

@@ -4,6 +4,7 @@ import {
   disconnect,
   createAnonymousGraphqlFetch,
   getCountriesTable,
+  getCurrenciesTable,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCountry, GermanyCountry, FranceCountry, InactiveCountry } from './seeds/locale-data.js';
@@ -11,7 +12,6 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Country', () => {
-  let db;
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
@@ -19,13 +19,13 @@ test.describe('Country', () => {
   let Currencies;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    // Countries uses Drizzle instead of MongoDB, so we use a helper wrapper
+    // Countries and Currencies use Drizzle instead of MongoDB, so we use helper wrappers
     Countries = getCountriesTable();
-    Currencies = db.collection('currencies');
+    Currencies = getCurrenciesTable();
   });
 
   test.after(async () => {
