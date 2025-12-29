@@ -3,20 +3,24 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
-  getEventsTable,
+  getDrizzleDb,
 } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
+import { events } from '@unchainedshop/core-events';
+import { and, eq, desc, sql } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
+let drizzleDb;
 
 test.describe('Mutation.pageView', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
+    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -40,12 +44,18 @@ test.describe('Mutation.pageView', () => {
       assert.ok(data);
       assert.strictEqual(data.pageView, '/products/test-product');
 
-      const Events = getEventsTable();
-      const event = await Events.findOne({
-        type: 'PAGE_VIEW',
-        'payload.path': '/products/test-product',
-        'payload.referrer': '/home',
-      });
+      const [event] = await drizzleDb
+        .select()
+        .from(events)
+        .where(
+          and(
+            eq(events.type, 'PAGE_VIEW'),
+            sql`json_extract(${events.payload}, '$.path') = ${'/products/test-product'}`,
+            sql`json_extract(${events.payload}, '$.referrer') = ${'/home'}`,
+          ),
+        )
+        .orderBy(desc(events.created))
+        .limit(1);
 
       assert.ok(event, 'Event should be stored in database');
       assert.strictEqual(event.type, 'PAGE_VIEW');
@@ -69,11 +79,17 @@ test.describe('Mutation.pageView', () => {
       assert.ok(data);
       assert.strictEqual(data.pageView, '/checkout');
 
-      const Events = getEventsTable();
-      const event = await Events.findOne({
-        type: 'PAGE_VIEW',
-        'payload.path': '/checkout',
-      });
+      const [event] = await drizzleDb
+        .select()
+        .from(events)
+        .where(
+          and(
+            eq(events.type, 'PAGE_VIEW'),
+            sql`json_extract(${events.payload}, '$.path') = ${'/checkout'}`,
+          ),
+        )
+        .orderBy(desc(events.created))
+        .limit(1);
 
       assert.ok(event, 'Event should be stored in database');
       assert.strictEqual(event.type, 'PAGE_VIEW');
@@ -98,12 +114,18 @@ test.describe('Mutation.pageView', () => {
 
       assert.ok(data);
       assert.strictEqual(data.pageView, '/products/anonymous-view');
-      const Events = getEventsTable();
-      const event = await Events.findOne({
-        type: 'PAGE_VIEW',
-        'payload.path': '/products/anonymous-view',
-        'payload.referrer': 'https://google.com',
-      });
+      const [event] = await drizzleDb
+        .select()
+        .from(events)
+        .where(
+          and(
+            eq(events.type, 'PAGE_VIEW'),
+            sql`json_extract(${events.payload}, '$.path') = ${'/products/anonymous-view'}`,
+            sql`json_extract(${events.payload}, '$.referrer') = ${'https://google.com'}`,
+          ),
+        )
+        .orderBy(desc(events.created))
+        .limit(1);
 
       assert.ok(event, 'Event should be stored in database');
       assert.strictEqual(event.type, 'PAGE_VIEW');
@@ -114,7 +136,6 @@ test.describe('Mutation.pageView', () => {
 
     test('should handle various path formats', async () => {
       const testPaths = ['/', '/products', '/cart/checkout', '/user/profile?tab=settings'];
-      const Events = getEventsTable();
 
       for (const path of testPaths) {
         const { data } = await graphqlFetchAsAnonymous({
@@ -131,10 +152,14 @@ test.describe('Mutation.pageView', () => {
         assert.ok(data);
         assert.strictEqual(data.pageView, path);
 
-        const event = await Events.findOne({
-          type: 'PAGE_VIEW',
-          'payload.path': path,
-        });
+        const [event] = await drizzleDb
+          .select()
+          .from(events)
+          .where(
+            and(eq(events.type, 'PAGE_VIEW'), sql`json_extract(${events.payload}, '$.path') = ${path}`),
+          )
+          .orderBy(desc(events.created))
+          .limit(1);
 
         assert.ok(event, `Event should be stored in database for path: ${path}`);
         assert.strictEqual(event.type, 'PAGE_VIEW');

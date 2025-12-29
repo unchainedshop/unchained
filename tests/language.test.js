@@ -3,10 +3,12 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
-  getLanguagesTable,
+  getDrizzleDb,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseLanguage, ItalianLanguage, InactiveLanguage } from './seeds/locale-data.js';
+import { languages } from '@unchainedshop/core-languages';
+import { eq, sql, isNull, and } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -14,13 +16,13 @@ test.describe('Language', () => {
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
-  let Languages;
+  let drizzleDb;
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Languages = getLanguagesTable();
+    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -671,11 +673,11 @@ test.describe('Language', () => {
         isBase: false,
         name: 'am',
       });
-      await Languages.deleteOne({ isoCode: 'am' });
+      await drizzleDb.delete(languages).where(eq(languages.isoCode, 'am'));
     });
 
     test('update a language', async () => {
-      const language = await Languages.findOne();
+      const [language] = await drizzleDb.select().from(languages).limit(1);
 
       const { data: { updateLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -743,7 +745,7 @@ test.describe('Language', () => {
     });
 
     test('remove a language', async () => {
-      await Languages.insertOne({ _id: 'am', isoCode: 'AM' });
+      await drizzleDb.insert(languages).values({ _id: 'am', isoCode: 'AM', created: new Date() });
       const { data: { removeLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -758,9 +760,17 @@ test.describe('Language', () => {
       assert.partialDeepStrictEqual(removeLanguage, {
         isoCode: 'AM',
       });
-      assert.strictEqual(await Languages.countDocuments({ _id: 'am', deleted: null }), 0);
-      assert.strictEqual(await Languages.countDocuments({ _id: 'am' }), 1);
-      await Languages.deleteOne({ _id: 'am' });
+      const [notDeletedCount] = await drizzleDb
+        .select({ count: sql`count(*)` })
+        .from(languages)
+        .where(and(eq(languages._id, 'am'), isNull(languages.deleted)));
+      assert.strictEqual(Number(notDeletedCount.count), 0);
+      const [totalCount] = await drizzleDb
+        .select({ count: sql`count(*)` })
+        .from(languages)
+        .where(eq(languages._id, 'am'));
+      assert.strictEqual(Number(totalCount.count), 1);
+      await drizzleDb.delete(languages).where(eq(languages._id, 'am'));
     });
 
     test('return not found error when passed non existing languageId', async () => {
@@ -792,18 +802,20 @@ test.describe('Language', () => {
     });
 
     test('query active languages', async () => {
-      await Languages.insertOne({
+      await drizzleDb.insert(languages).values({
         _id: 'es',
         isoCode: 'es',
         isActive: true,
+        created: new Date(),
       });
-      await Languages.insertOne({
+      await drizzleDb.insert(languages).values({
         _id: 'ru',
         isoCode: 'ru',
         isActive: false,
+        created: new Date(),
       });
 
-      const { data: { languages } = {}, errors } = await graphqlFetch({
+      const { data: { languages: languagesData } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             languages {
@@ -813,16 +825,17 @@ test.describe('Language', () => {
         `,
       });
       assert.strictEqual(errors, undefined);
-      assert.ok(languages.length >= 2);
-      await Languages.deleteOne({ _id: 'es' });
-      await Languages.deleteOne({ _id: 'ru' });
+      assert.ok(languagesData.length >= 2);
+      await drizzleDb.delete(languages).where(eq(languages._id, 'es'));
+      await drizzleDb.delete(languages).where(eq(languages._id, 'ru'));
     });
 
     test('query inactive single language', async () => {
-      await Languages.insertOne({
+      await drizzleDb.insert(languages).values({
         _id: 'pl',
         isoCode: 'pl',
         isActive: false,
+        created: new Date(),
       });
 
       const { data: { language } = {}, errors } = await graphqlFetch({
@@ -838,7 +851,7 @@ test.describe('Language', () => {
       assert.deepStrictEqual(language, {
         isoCode: 'pl',
       });
-      await Languages.deleteOne({ _id: 'pl' });
+      await drizzleDb.delete(languages).where(eq(languages._id, 'pl'));
     });
 
     test('query.language return error when passed invalid languageId', async () => {

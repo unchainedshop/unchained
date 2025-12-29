@@ -5,9 +5,11 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
-  getEventsTable,
+  getDrizzleDb,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
+import { events } from '@unchainedshop/core-events';
+import { and, desc, sql } from 'drizzle-orm';
 
 let db;
 let graphqlFetchAsAnonymousUser;
@@ -69,11 +71,18 @@ test.describe('User Token Validation', () => {
       `,
     });
 
-    const Events = getEventsTable();
-    const resetEvent = await Events.findOne({
-      'payload.userId': 'user-reset-password',
-      'payload.action': 'reset-password',
-    });
+    const drizzleDb = getDrizzleDb();
+    const [resetEvent] = await drizzleDb
+      .select()
+      .from(events)
+      .where(
+        and(
+          sql`json_extract(${events.payload}, '$.userId') = ${'user-reset-password'}`,
+          sql`json_extract(${events.payload}, '$.action') = ${'reset-password'}`,
+        ),
+      )
+      .orderBy(desc(events.created))
+      .limit(1);
     resetPasswordToken = resetEvent?.payload?.token;
 
     await graphqlFetchAsAdminUser({
@@ -88,10 +97,17 @@ test.describe('User Token Validation', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const verifyEvent = await Events.findOne({
-      'payload.userId': 'user-verify-email',
-      'payload.action': 'verify-email',
-    });
+    const [verifyEvent] = await drizzleDb
+      .select()
+      .from(events)
+      .where(
+        and(
+          sql`json_extract(${events.payload}, '$.userId') = ${'user-verify-email'}`,
+          sql`json_extract(${events.payload}, '$.action') = ${'verify-email'}`,
+        ),
+      )
+      .orderBy(desc(events.created))
+      .limit(1);
     verifyEmailToken = verifyEvent?.payload?.token;
 
     if (!resetPasswordToken) {

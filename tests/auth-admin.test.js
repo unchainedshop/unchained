@@ -3,8 +3,10 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
-  getWorkQueueTable,
+  getDrizzleDb,
 } from './helpers.js';
+import { workQueue } from '@unchainedshop/core-worker';
+import { eq, and, sql } from 'drizzle-orm';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
 import assert from 'node:assert';
@@ -409,10 +411,18 @@ test.describe('Auth for admin users', () => {
         },
       });
 
-      const workQueueTable = getWorkQueueTable();
+      const drizzleDb = getDrizzleDb();
       const work = await intervalUntilTimeout(async () => {
-        const w2 = await workQueueTable.find({ type: 'EMAIL', 'input.to': email, retries: 20 });
-        const rows = w2.toArray();
+        const rows = await drizzleDb
+          .select()
+          .from(workQueue)
+          .where(
+            and(
+              eq(workQueue.type, 'EMAIL'),
+              eq(workQueue.retries, 20),
+              sql`json_extract(${workQueue.input}, '$.to') = ${email}`,
+            ),
+          );
         if (rows?.length) return rows;
         return false;
       }, 5000);
@@ -441,10 +451,18 @@ test.describe('Auth for admin users', () => {
         success: true,
       });
 
-      const workQueueTable = getWorkQueueTable();
+      const drizzleDb = getDrizzleDb();
       const work = await intervalUntilTimeout(async () => {
-        const w2 = await workQueueTable.find({ type: 'EMAIL', 'input.to': email, retries: 20 });
-        const rows = w2.toArray();
+        const rows = await drizzleDb
+          .select()
+          .from(workQueue)
+          .where(
+            and(
+              eq(workQueue.type, 'EMAIL'),
+              eq(workQueue.retries, 20),
+              sql`json_extract(${workQueue.input}, '$.to') = ${email}`,
+            ),
+          );
         if (rows?.length) return rows;
         return false;
       }, 5000);

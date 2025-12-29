@@ -1,5 +1,7 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getEventsTable } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
 import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import { events } from '@unchainedshop/core-events';
+import { and, desc, sql } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -167,11 +169,18 @@ test.describe('Auth for logged in users', () => {
 
     test('verifies the e-mail of user', async () => {
       // Reset the password with that token
-      const Events = getEventsTable();
-      const event = await Events.findOne({
-        'payload.userId': 'userthatmustverifyemail',
-        'payload.action': 'verify-email',
-      });
+      const drizzleDb = getDrizzleDb();
+      const [event] = await drizzleDb
+        .select()
+        .from(events)
+        .where(
+          and(
+            sql`json_extract(${events.payload}, '$.userId') = ${'userthatmustverifyemail'}`,
+            sql`json_extract(${events.payload}, '$.action') = ${'verify-email'}`,
+          ),
+        )
+        .orderBy(desc(events.created))
+        .limit(1);
 
       const token = event.payload.token;
 

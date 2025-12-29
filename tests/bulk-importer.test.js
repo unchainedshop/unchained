@@ -1,6 +1,8 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getFiltersTable } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
+import { filters } from '@unchainedshop/core-filters';
+import { eq } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -336,11 +338,15 @@ test.describe('Bulk Importer', () => {
 
       assert.ok(addWork);
 
-      const Filters = getFiltersTable();
+      const drizzleDb = getDrizzleDb();
 
       const result = await intervalUntilTimeout(async () => {
-        const filter = await Filters.findOne({ _id: 'Filter A' });
-        return filter.isActive === false;
+        const [filter] = await drizzleDb
+          .select()
+          .from(filters)
+          .where(eq(filters._id, 'Filter A'))
+          .limit(1);
+        return filter?.isActive === false;
       }, 3000);
 
       assert.strictEqual(result, true);

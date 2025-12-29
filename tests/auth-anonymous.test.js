@@ -3,9 +3,11 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
-  getEventsTable,
+  getDrizzleDb,
 } from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
+import { events } from '@unchainedshop/core-events';
+import { and, desc, sql } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -221,11 +223,18 @@ test.describe('Auth for anonymous users', () => {
 
     test('change password with token from forgotPassword call', async () => {
       // Reset the password with that token
-      const Events = getEventsTable();
-      const event = await Events.findOne({
-        'payload.userId': 'userthatforgetspasswords',
-        'payload.action': 'reset-password',
-      });
+      const drizzleDb = getDrizzleDb();
+      const [event] = await drizzleDb
+        .select()
+        .from(events)
+        .where(
+          and(
+            sql`json_extract(${events.payload}, '$.userId') = ${'userthatforgetspasswords'}`,
+            sql`json_extract(${events.payload}, '$.action') = ${'reset-password'}`,
+          ),
+        )
+        .orderBy(desc(events.created))
+        .limit(1);
 
       const token = event.payload.token;
 

@@ -5,7 +5,6 @@ import {
   disconnect,
   setupDatabase,
   getServerBaseUrl,
-  getCurrenciesTable,
   getDrizzleDb,
 } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
@@ -19,27 +18,26 @@ import {
   ETHCurrency,
 } from './seeds/cryptopay.js';
 import { paymentProviders } from '@unchainedshop/core-payment';
+import { currencies } from '@unchainedshop/core-currencies';
 
 test.describe('Plugins: Cryptopay', () => {
   let db;
   let drizzleDb;
   let graphqlFetch;
-  let Currencies;
 
   test.before(async () => {
     [db] = await setupDatabase();
     drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-    Currencies = getCurrenciesTable();
 
     await db.collection('products').findOrInsertOne({
       ...SimpleProduct,
       _id: 'single-item-product-id',
     });
 
-    await Currencies.insertOne(BTCCurrency);
-    await Currencies.insertOne(ETHCurrency);
-    await Currencies.insertOne(SHIBCurrency);
+    await drizzleDb.insert(currencies).values({ ...BTCCurrency, created: new Date() });
+    await drizzleDb.insert(currencies).values({ ...ETHCurrency, created: new Date() });
+    await drizzleDb.insert(currencies).values({ ...SHIBCurrency, created: new Date() });
 
     await db.collection('product_rates').findOrInsertOne({
       baseCurrency: 'CHF',
