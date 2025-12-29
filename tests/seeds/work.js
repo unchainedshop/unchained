@@ -20,3 +20,50 @@ export default async function seedWorkQueue(db) {
   await db.collection('work_queue').findOrInsertOne(NewWork);
   await db.collection('work_queue').findOrInsertOne(AllocatedWork);
 }
+
+/**
+ * Seed work queue into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid side effects.
+ */
+export async function seedWorkQueueToDrizzle(db) {
+  const { workQueue } = await import('@unchainedshop/core-worker');
+  const { sql } = await import('drizzle-orm');
+
+  // Delete all existing work queue entries directly
+  await db.delete(workQueue);
+
+  // Clear FTS table
+  await db.run(sql`DELETE FROM work_queue_fts`);
+
+  // Insert NewWork (NEW status - no started/finished)
+  await db.insert(workQueue).values({
+    _id: NewWork._id,
+    type: NewWork.type,
+    created: NewWork.created,
+    scheduled: NewWork.scheduled,
+    priority: NewWork.priority,
+    retries: NewWork.retries,
+    worker: NewWork.worker,
+    input: {},
+  });
+
+  // Insert AllocatedWork (ALLOCATED status - started but no finished)
+  await db.insert(workQueue).values({
+    _id: AllocatedWork._id,
+    type: AllocatedWork.type,
+    created: AllocatedWork.created || new Date(),
+    scheduled: AllocatedWork.scheduled,
+    priority: AllocatedWork.priority,
+    retries: AllocatedWork.retries,
+    worker: AllocatedWork.worker,
+    started: new Date(), // Mark as allocated (started)
+    input: {},
+  });
+
+  // Manually insert into FTS table
+  for (const work of [NewWork, AllocatedWork]) {
+    await db.run(
+      sql`INSERT INTO work_queue_fts(_id, originalWorkId, type, worker, input) VALUES (${work._id}, ${null}, ${work.type}, ${work.worker}, ${JSON.stringify({})})`,
+    );
+  }
+}

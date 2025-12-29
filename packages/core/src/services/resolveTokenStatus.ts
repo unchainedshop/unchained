@@ -20,7 +20,7 @@ export async function resolveTokenStatusService(
     status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
   });
 
-  if (workItems.find((item) => item.input?.token?._id === token._id)) {
+  if (workItems.find((item) => (item.input as { token?: { _id?: string } })?.token?._id === token._id)) {
     return TokenStatus.EXPORTING;
   }
 

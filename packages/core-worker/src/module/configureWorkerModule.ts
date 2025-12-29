@@ -1,13 +1,5 @@
 import os from 'node:os';
 import { createLogger } from '@unchainedshop/logger';
-import {
-  generateDbFilterById,
-  buildSortOptions,
-  type mongodb,
-  generateDbObjectId,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   buildObfuscatedFieldsFilter,
@@ -15,7 +7,24 @@ import {
   SortDirection,
   type SortOption,
 } from '@unchainedshop/utils';
-import { type Work, WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.ts';
+import {
+  generateId,
+  eq,
+  and,
+  or,
+  inArray,
+  isNull,
+  isNotNull,
+  gte,
+  lte,
+  asc,
+  desc,
+  sql,
+  type DrizzleDb,
+  type SQL,
+} from '@unchainedshop/store';
+import { workQueue, WorkStatus, type Work } from '../db/index.ts';
+import { searchWorkQueueFTS } from '../db/fts.ts';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -32,7 +41,7 @@ export type WorkData = Pick<
 export interface WorkResult<Result = unknown> {
   success: boolean;
   result?: Result;
-  error?: any;
+  error?: Record<string, unknown> | null;
 }
 
 export const WorkerEventTypes = {
@@ -66,95 +75,24 @@ export interface WorkQueueQuery {
   scheduled?: { end?: Date; start?: Date };
 }
 
-const WORK_STATUS_FILTER_MAP = {
-  [WorkStatus.DELETED]: { deleted: { $exists: true } },
-  [WorkStatus.NEW]: {
-    started: { $exists: false },
-    deleted: { $exists: false },
-  },
-  [WorkStatus.ALLOCATED]: {
-    started: { $exists: true },
-    finished: { $exists: false },
-    deleted: { $exists: false },
-  },
-  [WorkStatus.SUCCESS]: {
-    finished: { $exists: true },
-    success: true,
-    deleted: { $exists: false },
-  },
-  [WorkStatus.FAILED]: {
-    finished: { $exists: true },
-    success: false,
-    deleted: { $exists: false },
-  },
-};
+// Sortable columns mapping
+const SORTABLE_COLUMNS = {
+  _id: workQueue._id,
+  priority: workQueue.priority,
+  scheduled: workQueue.scheduled,
+  type: workQueue.type,
+  started: workQueue.started,
+  finished: workQueue.finished,
+  originalWorkId: workQueue.originalWorkId,
+  created: workQueue.created,
+  updated: workQueue.updated,
+} as const;
 
-export const buildQuerySelector = ({
-  created,
-  scheduled,
-  types,
-  status,
-  workId,
-  queryString,
-  ...rest
-}: mongodb.Filter<Work> & {
-  created?: { end?: Date; start?: Date };
-  scheduled?: { end?: Date; start?: Date };
-  status?: WorkStatus[];
-  workId?: string;
-  queryString?: string;
-  types?: string[];
-}) => {
-  const statusQuery = {
-    $or: Object.entries(WORK_STATUS_FILTER_MAP).reduce(
-      (acc, [key, filter]) => (status?.includes(key as WorkStatus) ? [...acc, filter] : acc),
-      [],
-    ),
-  };
-
-  let query: mongodb.Filter<Work> =
-    statusQuery.$or.length > 0 ? statusQuery : { deleted: { $exists: false } };
-
-  if (created) {
-    query.created = created?.end
-      ? { $gte: created.start || new Date(0), $lte: created.end }
-      : { $gte: created.start || new Date(0) };
-  }
-  if (scheduled) {
-    query.scheduled = scheduled?.end
-      ? { $gte: scheduled.start || new Date(0), $lte: scheduled.end }
-      : { $gte: scheduled.start || new Date(0) };
-  }
-  if (types && Array.isArray(types)) {
-    query.type = { $in: types };
-  }
-
-  if (workId) {
-    query = generateDbFilterById(workId, query);
-  }
-  if (queryString) {
-    assertDocumentDBCompatMode();
-    (query as any).$text = { $search: queryString };
-  }
-
-  return { ...query, ...rest };
-};
-
-const convertFilterMapToPipelineBranches = () => {
-  return Object.entries(WORK_STATUS_FILTER_MAP).map(([status, conditions]) => {
-    const caseConditions = Object.entries(conditions).map(([field, condition]) => {
-      if (typeof condition === 'object' && '$exists' in condition) {
-        return condition.$exists
-          ? { $ne: [{ $type: `$${field}` }, 'missing'] }
-          : { $eq: [{ $type: `$${field}` }, 'missing'] };
-      }
-      return { $eq: [`$${field}`, condition] };
-    });
-
-    return {
-      case: caseConditions.length > 1 ? { $and: caseConditions } : caseConditions[0],
-      then: status,
-    };
+const buildSortOptions = (sort: SortOption[] = []) => {
+  return sort.map((option) => {
+    const column = SORTABLE_COLUMNS[option.key as keyof typeof SORTABLE_COLUMNS];
+    if (!column) return asc(workQueue.created);
+    return option.value === SortDirection.DESC ? desc(column) : asc(column);
   });
 };
 
@@ -165,8 +103,172 @@ const defaultSort: { key: string; value: SortDirection }[] = [
   { key: 'created', value: SortDirection.ASC },
 ];
 
-const normalizeWorkQueueAggregateResult = (data: mongodb.Document[] = []): WorkerReport[] => {
-  const statusToFieldMap = {
+// Build status conditions for Drizzle
+const buildStatusCondition = (status: WorkStatus): SQL => {
+  switch (status) {
+    case WorkStatus.DELETED:
+      return isNotNull(workQueue.deleted);
+    case WorkStatus.NEW:
+      return and(isNull(workQueue.started), isNull(workQueue.deleted))!;
+    case WorkStatus.ALLOCATED:
+      return and(isNotNull(workQueue.started), isNull(workQueue.finished), isNull(workQueue.deleted))!;
+    case WorkStatus.SUCCESS:
+      return and(
+        isNotNull(workQueue.finished),
+        eq(workQueue.success, true),
+        isNull(workQueue.deleted),
+      )!;
+    case WorkStatus.FAILED:
+      return and(
+        isNotNull(workQueue.finished),
+        eq(workQueue.success, false),
+        isNull(workQueue.deleted),
+      )!;
+    default:
+      return isNull(workQueue.deleted);
+  }
+};
+
+interface QuerySelectorOptions {
+  created?: { end?: Date; start?: Date };
+  scheduled?: { end?: Date; start?: Date };
+  status?: WorkStatus[];
+  workId?: string;
+  queryString?: string;
+  types?: string[];
+  worker?: string | null | string[];
+  type?: string;
+  priority?: number;
+  autoscheduled?: boolean;
+  scheduleId?: string | null;
+  started?: Date | { $lte: Date };
+}
+
+const buildQueryConditions = async (
+  db: DrizzleDb,
+  {
+    created,
+    scheduled,
+    types,
+    status,
+    workId,
+    queryString,
+    worker,
+    type,
+    priority,
+    autoscheduled,
+    scheduleId,
+    started,
+  }: QuerySelectorOptions,
+): Promise<SQL[]> => {
+  const conditions: SQL[] = [];
+
+  // Status conditions
+  if (status?.length) {
+    const statusConditions = status.map(buildStatusCondition);
+    if (statusConditions.length === 1) {
+      conditions.push(statusConditions[0]);
+    } else {
+      conditions.push(or(...statusConditions)!);
+    }
+  } else {
+    // Default: exclude deleted
+    conditions.push(isNull(workQueue.deleted));
+  }
+
+  // Date range filters
+  if (created) {
+    if (created.start) {
+      conditions.push(gte(workQueue.created, created.start));
+    }
+    if (created.end) {
+      conditions.push(lte(workQueue.created, created.end));
+    }
+  }
+
+  if (scheduled) {
+    if (scheduled.start) {
+      conditions.push(gte(workQueue.scheduled, scheduled.start));
+    }
+    if (scheduled.end) {
+      conditions.push(lte(workQueue.scheduled, scheduled.end));
+    }
+  }
+
+  // Type filters
+  if (types?.length) {
+    conditions.push(inArray(workQueue.type, types));
+  }
+  if (type) {
+    conditions.push(eq(workQueue.type, type));
+  }
+
+  // Work ID filter
+  if (workId) {
+    conditions.push(eq(workQueue._id, workId));
+  }
+
+  // Worker filter (can be null, empty string, or specific value)
+  if (worker !== undefined) {
+    if (Array.isArray(worker)) {
+      // Handle $in style: worker can be null, '', or specific value
+      const workerConditions: SQL[] = [];
+      if (worker.includes(null as unknown as string) || worker.includes('')) {
+        workerConditions.push(or(isNull(workQueue.worker), eq(workQueue.worker, ''))!);
+      }
+      const specificWorkers = worker.filter((w) => w !== null && w !== '');
+      if (specificWorkers.length > 0) {
+        workerConditions.push(inArray(workQueue.worker, specificWorkers));
+      }
+      if (workerConditions.length > 0) {
+        conditions.push(or(...workerConditions)!);
+      }
+    } else if (worker === null) {
+      conditions.push(isNull(workQueue.worker));
+    } else {
+      conditions.push(eq(workQueue.worker, worker));
+    }
+  }
+
+  // Priority filter
+  if (priority !== undefined) {
+    conditions.push(eq(workQueue.priority, priority));
+  }
+
+  // Autoscheduled filter
+  if (autoscheduled !== undefined) {
+    conditions.push(eq(workQueue.autoscheduled, autoscheduled));
+  }
+
+  // Schedule ID filter
+  if (scheduleId) {
+    conditions.push(eq(workQueue.scheduleId, scheduleId));
+  }
+
+  // Started filter (for markOldWorkAsFailed)
+  if (started) {
+    if (started instanceof Date) {
+      conditions.push(lte(workQueue.started, started));
+    } else if ('$lte' in started) {
+      conditions.push(lte(workQueue.started, started.$lte));
+    }
+  }
+
+  // Full-text search
+  if (queryString) {
+    const matchingIds = await searchWorkQueueFTS(db, queryString);
+    if (matchingIds.length === 0) {
+      conditions.push(eq(workQueue._id, '__no_match__'));
+    } else {
+      conditions.push(inArray(workQueue._id, matchingIds));
+    }
+  }
+
+  return conditions;
+};
+
+const normalizeWorkQueueAggregateResult = (data: Array<{ type: string; status: string; count: number }> = []): WorkerReport[] => {
+  const statusToFieldMap: Record<string, keyof Omit<WorkerReport, 'type'>> = {
     NEW: 'newCount',
     ALLOCATED: 'startCount',
     FAILED: 'errorCount',
@@ -174,30 +276,44 @@ const normalizeWorkQueueAggregateResult = (data: mongodb.Document[] = []): Worke
     DELETED: 'deleteCount',
   };
 
-  return data.map((item) => {
-    const workStatistics: WorkerReport = {
-      type: item.type,
-      ...(Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as any),
-    };
+  // Group by type
+  const byType = new Map<string, WorkerReport>();
 
-    item.statuses.forEach(({ status, count }) => {
-      if (statusToFieldMap[status]) {
-        workStatistics[statusToFieldMap[status]] = count;
-      }
-    });
-    const { errorCount, successCount, deleteCount } = workStatistics;
+  for (const row of data) {
+    if (!byType.has(row.type)) {
+      byType.set(row.type, {
+        type: row.type,
+        newCount: 0,
+        errorCount: 0,
+        successCount: 0,
+        startCount: 0,
+        deleteCount: 0,
+      });
+    }
+    const report = byType.get(row.type)!;
+    const field = statusToFieldMap[row.status];
+    if (field) {
+      report[field] = row.count;
+    }
+  }
 
-    workStatistics.startCount += errorCount + successCount + deleteCount;
-    workStatistics.newCount += workStatistics.startCount;
-
-    return workStatistics;
-  }) as unknown as WorkerReport[];
+  // Normalize counts (cumulative)
+  return Array.from(byType.values()).map((report) => {
+    const { errorCount, successCount, deleteCount } = report;
+    report.startCount += errorCount + successCount + deleteCount;
+    report.newCount += report.startCount;
+    return report;
+  });
 };
 
-export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerSettingsOptions>) => {
+export const configureWorkerModule = async ({
+  db,
+  options,
+}: {
+  db: DrizzleDb;
+  options?: WorkerSettingsOptions;
+}) => {
   registerEvents(Object.values(WorkerEventTypes));
-
-  const WorkQueue = await WorkQueueCollection(db);
 
   const removePrivateFields = buildObfuscatedFieldsFilter(options?.blacklistedVariables);
 
@@ -208,27 +324,48 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
     types: string[];
     worker: string;
   }) => {
-    // Find a work item that is scheduled for now and is not started.
-    // Also:
-    // - Restrict by types and worker if provided
-    // - Sort by default queue order
-    const query = buildQuerySelector({
+    // If types is explicitly an empty array, no work can match
+    if (types && types.length === 0) {
+      return null;
+    }
+
+    // Find a work item that is scheduled for now and is not started
+    const conditions = await buildQueryConditions(db, {
       status: [WorkStatus.NEW],
       scheduled: { end: new Date() },
-      worker: { $in: [null, '', worker] },
-      ...(types ? { type: { $in: types } } : {}),
+      worker: [null as unknown as string, '', worker],
+      ...(types?.length ? { types } : {}),
     });
-    const result = await WorkQueue.findOneAndUpdate(
-      query,
-      {
-        $set: { started: new Date(), worker },
-      },
-      { sort: buildSortOptions(defaultSort), returnDocument: 'after' },
-    );
 
-    if (!result) return null;
-    emit(WorkerEventTypes.ALLOCATED, removePrivateFields(result));
-    return result;
+    const sortOptions = buildSortOptions(defaultSort);
+
+    // Find one matching work
+    let queryBuilder = db.select().from(workQueue);
+    if (conditions.length > 0) {
+      queryBuilder = queryBuilder.where(and(...conditions)) as typeof queryBuilder;
+    }
+    queryBuilder = queryBuilder.orderBy(...sortOptions).limit(1) as typeof queryBuilder;
+
+    const [work] = await queryBuilder;
+    if (!work) return null;
+
+    // Update it to mark as started
+    const now = new Date();
+    await db
+      .update(workQueue)
+      .set({
+        started: now,
+        worker,
+        updated: now,
+      })
+      .where(eq(workQueue._id, work._id));
+
+    // Fetch updated work
+    const [updatedWork] = await db.select().from(workQueue).where(eq(workQueue._id, work._id)).limit(1);
+
+    if (!updatedWork) return null;
+    emit(WorkerEventTypes.ALLOCATED, removePrivateFields(updatedWork));
+    return updatedWork;
   };
 
   const finishWork = async (
@@ -237,36 +374,44 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       error,
       finished = new Date(),
       result,
-      started = new Date(),
+      started,
       success,
       worker = UNCHAINED_WORKER_ID,
-    }: WorkResult<any> & {
+    }: WorkResult<unknown> & {
       finished?: Date;
-      started?: Date;
+      started?: Date | null;
       worker?: string;
     },
   ) => {
-    const workBeforeUpdate = await WorkQueue.findOne(
-      buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] }),
-    );
+    // Find existing work that's allocated
+    const conditions = await buildQueryConditions(db, {
+      workId,
+      status: [WorkStatus.ALLOCATED],
+    });
+
+    const [workBeforeUpdate] = await db
+      .select()
+      .from(workQueue)
+      .where(and(...conditions))
+      .limit(1);
 
     if (!workBeforeUpdate) return null;
 
-    const work = await WorkQueue.findOneAndUpdate(
-      generateDbFilterById(workId),
-      {
-        $set: {
-          updated: new Date(),
-          finished,
-          success,
-          error,
-          result,
-          ...(!workBeforeUpdate.started ? { started } : {}),
-          worker,
-        },
-      },
-      { returnDocument: 'after' },
-    );
+    const now = new Date();
+    await db
+      .update(workQueue)
+      .set({
+        updated: now,
+        finished,
+        success,
+        error,
+        result,
+        ...(!workBeforeUpdate.started ? { started } : {}),
+        worker,
+      })
+      .where(eq(workQueue._id, workId));
+
+    const [work] = await db.select().from(workQueue).where(eq(workQueue._id, workId)).limit(1);
 
     if (!work) return null;
 
@@ -294,8 +439,10 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
     workerId: UNCHAINED_WORKER_ID,
 
     activeWorkTypes: async (): Promise<string[]> => {
-      const typeList = await WorkQueue.aggregate([{ $group: { _id: '$type' } }]).toArray();
-      return typeList.map((t) => t._id as string);
+      const typeList = await db
+        .selectDistinct({ type: workQueue.type })
+        .from(workQueue);
+      return typeList.map((t) => t.type);
     },
 
     findWork: async (
@@ -308,9 +455,19 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
           },
     ) => {
       if ('workId' in params) {
-        return WorkQueue.findOne(generateDbFilterById(params.workId), {});
+        const [work] = await db
+          .select()
+          .from(workQueue)
+          .where(eq(workQueue._id, params.workId))
+          .limit(1);
+        return work || null;
       }
-      return WorkQueue.findOne({ originalWorkId: params.originalWorkId }, {});
+      const [work] = await db
+        .select()
+        .from(workQueue)
+        .where(eq(workQueue.originalWorkId, params.originalWorkId))
+        .limit(1);
+      return work || null;
     },
 
     findWorkQueue: async ({
@@ -323,49 +480,58 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       limit?: number;
       skip?: number;
     }): Promise<Work[]> => {
-      const selector = buildQuerySelector(selectorOptions);
-      return WorkQueue.find(selector, {
-        skip,
-        limit,
-        sort: buildSortOptions(sort || defaultSort),
-      }).toArray();
+      const conditions = await buildQueryConditions(db, selectorOptions);
+      const sortOptions = buildSortOptions(sort || defaultSort);
+
+      let queryBuilder = db.select().from(workQueue);
+
+      if (conditions.length > 0) {
+        queryBuilder = queryBuilder.where(and(...conditions)) as typeof queryBuilder;
+      }
+
+      if (sortOptions.length > 0) {
+        queryBuilder = queryBuilder.orderBy(...sortOptions) as typeof queryBuilder;
+      }
+
+      if (skip !== undefined && skip > 0) {
+        queryBuilder = queryBuilder.offset(skip) as typeof queryBuilder;
+      }
+
+      if (limit !== undefined && limit > 0) {
+        queryBuilder = queryBuilder.limit(limit) as typeof queryBuilder;
+      }
+
+      return queryBuilder;
     },
 
     count: async (query: WorkQueueQuery) => {
-      return WorkQueue.countDocuments(buildQuerySelector(query));
+      const conditions = await buildQueryConditions(db, query);
+
+      let queryBuilder = db.select().from(workQueue);
+
+      if (conditions.length > 0) {
+        queryBuilder = queryBuilder.where(and(...conditions)) as typeof queryBuilder;
+      }
+
+      const result = await queryBuilder;
+      return result.length;
     },
 
     allocationMap: async (): Promise<Record<string, number>> => {
-      const alreadyAllocatedWork = await WorkQueue.aggregate(
-        [
-          {
-            $match: {
-              started: {
-                $exists: true,
-              },
-              finished: {
-                $exists: false,
-              },
-              deleted: {
-                $exists: false,
-              },
-            },
-          },
-          {
-            $group: {
-              _id: '$type',
-              count: {
-                $sum: 1,
-              },
-            },
-          },
-        ],
-        {
-          allowDiskUse: false,
-        },
-      ).toArray();
+      // Find allocated (started but not finished, not deleted) work grouped by type
+      const results = await db.all<{ type: string; count: number }>(sql`
+        SELECT type, COUNT(*) as count
+        FROM work_queue
+        WHERE started IS NOT NULL
+          AND finished IS NULL
+          AND deleted IS NULL
+        GROUP BY type
+      `);
 
-      const allocationMap = Object.fromEntries(alreadyAllocatedWork.map((w) => [w._id, w.count]));
+      const allocationMap: Record<string, number> = {};
+      for (const row of results) {
+        allocationMap[row.type] = row.count;
+      }
       return allocationMap;
     },
 
@@ -376,11 +542,17 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       workId?: string;
       originalWorkId?: string;
     }): Promise<boolean> => {
-      const queueCount = await WorkQueue.countDocuments(
-        workId ? generateDbFilterById(workId) : { originalWorkId },
-        { limit: 1 },
-      );
-      return !!queueCount;
+      let condition: SQL;
+      if (workId) {
+        condition = eq(workQueue._id, workId);
+      } else if (originalWorkId) {
+        condition = eq(workQueue.originalWorkId, originalWorkId);
+      } else {
+        return false;
+      }
+
+      const [result] = await db.select().from(workQueue).where(condition).limit(1);
+      return !!result;
     },
 
     status: (work: Work): WorkStatus => {
@@ -414,11 +586,13 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       originalWorkId,
       worker = null,
       retries = 20,
-    }: Pick<Work, 'type' | 'originalWorkId' | 'worker'> &
-      Pick<Partial<Work>, 'scheduled' | 'priority' | 'input' | 'retries'>): Promise<Work> {
+    }: Pick<Work, 'type'> &
+      Pick<Partial<Work>, 'scheduled' | 'priority' | 'input' | 'retries' | 'originalWorkId' | 'worker'>): Promise<Work> {
       const created = new Date();
-      const { insertedId: workId } = await WorkQueue.insertOne({
-        _id: generateDbObjectId(),
+      const workId = generateId();
+
+      await db.insert(workQueue).values({
+        _id: workId,
         created,
         type,
         input: input || {},
@@ -433,7 +607,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         workId,
       });
 
-      const work = (await WorkQueue.findOne(generateDbFilterById(workId), {})) as Work;
+      const [work] = await db.select().from(workQueue).where(eq(workQueue._id, workId)).limit(1);
       emit(WorkerEventTypes.ADDED, removePrivateFields(work));
 
       return work;
@@ -443,12 +617,15 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       workData: Pick<Work, 'type'> & Pick<Partial<Work>, 'scheduled' | 'priority' | 'input' | 'retries'>,
       existenceCheck: (work: Work) => boolean,
     ): Promise<Work | null> {
-      const workItems = await WorkQueue.find(
-        buildQuerySelector({
-          types: [workData.type],
-          status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
-        }),
-      ).toArray();
+      const conditions = await buildQueryConditions(db, {
+        types: [workData.type],
+        status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
+      });
+
+      const workItems = await db
+        .select()
+        .from(workQueue)
+        .where(and(...conditions));
 
       const existingWork = workItems.find(existenceCheck);
       if (existingWork) return null;
@@ -457,16 +634,20 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
     },
 
     rescheduleWork: async (currentWork: Work, scheduled: Date) => {
-      const work = await WorkQueue.findOneAndUpdate(
-        generateDbFilterById(currentWork._id),
-        {
-          $set: {
-            updated: new Date(),
-            scheduled,
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      const now = new Date();
+      await db
+        .update(workQueue)
+        .set({
+          updated: now,
+          scheduled,
+        })
+        .where(eq(workQueue._id, currentWork._id));
+
+      const [work] = await db
+        .select()
+        .from(workQueue)
+        .where(eq(workQueue._id, currentWork._id))
+        .limit(1);
 
       if (!work) return null;
       emit(WorkerEventTypes.RESCHEDULED, {
@@ -488,7 +669,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       type: string;
       scheduleId: string;
     }): Promise<void> => {
-      const query = buildQuerySelector({
+      const conditions = await buildQueryConditions(db, {
         type,
         status: [WorkStatus.NEW],
         priority,
@@ -496,11 +677,12 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         scheduleId,
       });
 
-      await WorkQueue.updateMany(query, {
-        $set: {
+      await db
+        .update(workQueue)
+        .set({
           deleted: new Date(),
-        },
-      });
+        })
+        .where(and(...conditions));
     },
 
     ensureOneWork: async ({
@@ -514,63 +696,76 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       scheduleId,
     }: WorkData) => {
       const workId = `${scheduleId}:${scheduled.getTime()}`;
-
       const created = new Date();
-      const query = buildQuerySelector({
+
+      // Try to find existing NEW work with same type, priority, scheduleId
+      const conditions = await buildQueryConditions(db, {
         type,
         status: [WorkStatus.NEW],
         priority,
         autoscheduled: true,
         scheduleId,
       });
-      try {
-        const result = await WorkQueue.findOneAndUpdate(
-          query,
-          {
-            $set: {
-              input,
-              worker: null,
-              updated: created,
-              retries,
-              timeout,
-              originalWorkId,
-            },
-            $unset: {
-              deleted: 1,
-            },
-            $setOnInsert: {
-              _id: workId,
-              scheduleId,
-              scheduled,
-              type,
-              created,
-              autoscheduled: true,
-              priority,
-            },
-          },
-          {
-            sort: buildSortOptions(defaultSort),
-            returnDocument: 'after',
-            includeResultMetadata: true,
-            upsert: true,
-          },
-        );
 
-        if (!result.lastErrorObject) {
-          logger.debug(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
-            workId,
-          });
-          emit(WorkerEventTypes.ADDED, removePrivateFields(result.value));
-        }
-        return result.value;
+      const sortOptions = buildSortOptions(defaultSort);
+
+      const [existingWork] = await db
+        .select()
+        .from(workQueue)
+        .where(and(...conditions))
+        .orderBy(...sortOptions)
+        .limit(1);
+
+      if (existingWork) {
+        // Update existing work
+        await db
+          .update(workQueue)
+          .set({
+            input,
+            worker: null,
+            updated: created,
+            retries,
+            timeout,
+            originalWorkId,
+            deleted: null, // Unset deleted
+          })
+          .where(eq(workQueue._id, existingWork._id));
+
+        const [updatedWork] = await db
+          .select()
+          .from(workQueue)
+          .where(eq(workQueue._id, existingWork._id))
+          .limit(1);
+
+        return updatedWork;
+      }
+
+      // Try to insert new work
+      try {
+        await db.insert(workQueue).values({
+          _id: workId,
+          scheduleId,
+          scheduled,
+          type,
+          created,
+          autoscheduled: true,
+          priority,
+          input,
+          worker: null,
+          retries,
+          timeout,
+          originalWorkId,
+        });
+
+        logger.debug(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
+          workId,
+        });
+
+        const [newWork] = await db.select().from(workQueue).where(eq(workQueue._id, workId)).limit(1);
+        emit(WorkerEventTypes.ADDED, removePrivateFields(newWork));
+        return newWork;
       } catch {
-        /* Conflicting deleted work problem:
-        If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
-        we should NOT permanently remove the conflicting deleted work 
-        and retry the findOneAndUpdate call.
-        If we did remove the deleted work, deleted jobs would "re-appear" as NEW with same schedule and _id.
-        So we just return null here and let the scheduler try again in the next cycle.
-        */
+        // Conflicting work problem - return null and let scheduler retry
         return null;
       }
     },
@@ -578,23 +773,27 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
     finishWork,
 
     deleteWork: async (workId: string) => {
-      const workBeforeRemoval = await WorkQueue.findOne(
-        buildQuerySelector({
-          workId,
-          status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
-        }),
-      );
+      const conditions = await buildQueryConditions(db, {
+        workId,
+        status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
+      });
+
+      const [workBeforeRemoval] = await db
+        .select()
+        .from(workQueue)
+        .where(and(...conditions))
+        .limit(1);
+
       if (!workBeforeRemoval) return null;
 
-      const work = await WorkQueue.findOneAndUpdate(
-        generateDbFilterById(workId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      await db
+        .update(workQueue)
+        .set({
+          deleted: new Date(),
+        })
+        .where(eq(workQueue._id, workId));
+
+      const [work] = await db.select().from(workQueue).where(eq(workQueue._id, workId)).limit(1);
 
       if (!work) return null;
       emit(WorkerEventTypes.DELETED, removePrivateFields(work));
@@ -610,33 +809,36 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       worker: string;
       referenceDate: Date;
     }): Promise<Work[]> => {
-      const workQueue = await WorkQueue.find(
-        buildQuerySelector({
-          status: [WorkStatus.ALLOCATED],
-          started: { $lte: referenceDate },
-          worker: { $in: [worker, '', null] }, // Don't mark work failed of other workers!
-          type: { $in: types },
-        }),
-        { projection: { _id: true }, sort: { test: 1 } },
-      ).toArray();
+      // Find allocated work started before referenceDate for this worker
+      const conditions = await buildQueryConditions(db, {
+        status: [WorkStatus.ALLOCATED],
+        started: { $lte: referenceDate },
+        worker: [worker, '', null as unknown as string],
+        types,
+      });
 
-      return (
-        await Promise.all(
-          workQueue.map(({ _id }) =>
-            finishWork(_id as string, {
-              finished: new Date(),
-              result: null,
-              success: false,
-              error: {
-                name: DIRECTOR_MARKED_FAILED_ERROR,
-                message:
-                  'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
-              },
-              worker,
-            }),
-          ),
-        )
-      ).filter(Boolean) as Work[];
+      const workItems = await db
+        .select({ _id: workQueue._id })
+        .from(workQueue)
+        .where(and(...conditions));
+
+      const results = await Promise.all(
+        workItems.map(({ _id }) =>
+          finishWork(_id, {
+            finished: new Date(),
+            result: undefined,
+            success: false,
+            error: {
+              name: DIRECTOR_MARKED_FAILED_ERROR,
+              message:
+                'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
+            },
+            worker,
+          }),
+        ),
+      );
+
+      return results.filter(Boolean) as Work[];
     },
 
     getReport: async ({
@@ -646,82 +848,43 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
       types?: string[];
       dateRange?: DateFilterInput;
     }): Promise<WorkerReport[]> => {
-      const pipeline: mongodb.BSON.Document[] = [];
-      const matchConditions: any[] = [];
-      // build date filter based on provided values it can be a range if both to and from is supplied
-      // a upper or lowe limit if either from or to is provided
-      // or all if none is provided
-      if (dateRange?.start || dateRange?.end) {
-        const dateConditions: any[] = [];
-        if (dateRange?.start) {
-          const fromDate = new Date(dateRange?.start);
-          dateConditions.push({
-            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
-          });
-        }
-        if (dateRange?.end) {
-          const toDate = new Date(dateRange?.end);
-          dateConditions.push({
-            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
-          });
-        }
-        if (dateConditions.length > 0) {
-          matchConditions.push({ $and: dateConditions });
-        }
-      }
-      // build types filter if type is provided or ignore types if it is not provided
-      if (types && Array.isArray(types) && types.length) {
-        matchConditions.push({ type: { $in: types } });
-      }
-      if (matchConditions.length > 0) {
-        pipeline.push({
-          $match: {
-            $and: matchConditions,
-          },
-        });
-      }
-      pipeline.push(
-        {
-          $addFields: {
-            status: {
-              $switch: {
-                branches: convertFilterMapToPipelineBranches(),
-                default: 'UNKNOWN',
-              },
-            },
-          },
-        },
-        {
-          $group: {
-            _id: {
-              type: '$type',
-              status: '$status',
-            },
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $group: {
-            _id: '$_id.type',
-            statuses: {
-              $push: {
-                status: '$_id.status',
-                count: '$count',
-              },
-            },
-          },
-        },
+      // Build WHERE conditions using drizzle's sql template
+      const conditions: SQL[] = [];
 
-        {
-          $project: {
-            _id: 0,
-            type: '$_id',
-            statuses: 1,
-          },
-        },
-      );
+      if (dateRange?.start) {
+        const fromTime = new Date(dateRange.start).getTime();
+        conditions.push(sql`(created >= ${fromTime} OR updated >= ${fromTime})`);
+      }
+      if (dateRange?.end) {
+        const toTime = new Date(dateRange.end).getTime();
+        conditions.push(sql`(created <= ${toTime} OR updated <= ${toTime})`);
+      }
 
-      return normalizeWorkQueueAggregateResult(await WorkQueue.aggregate(pipeline).toArray()) as any;
+      if (types?.length) {
+        conditions.push(inArray(workQueue.type, types));
+      }
+
+      const whereClause = conditions.length > 0 ? sql`WHERE ${and(...conditions)}` : sql``;
+
+      // Calculate status using CASE WHEN
+      const results = await db.all<{ type: string; status: string; count: number }>(sql`
+        SELECT
+          type,
+          CASE
+            WHEN deleted IS NOT NULL THEN 'DELETED'
+            WHEN started IS NULL AND deleted IS NULL THEN 'NEW'
+            WHEN started IS NOT NULL AND finished IS NULL AND deleted IS NULL THEN 'ALLOCATED'
+            WHEN finished IS NOT NULL AND success = 1 AND deleted IS NULL THEN 'SUCCESS'
+            WHEN finished IS NOT NULL AND success = 0 AND deleted IS NULL THEN 'FAILED'
+            ELSE 'UNKNOWN'
+          END as status,
+          COUNT(*) as count
+        FROM work_queue
+        ${whereClause}
+        GROUP BY type, status
+      `);
+
+      return normalizeWorkQueueAggregateResult(results);
     },
   };
 };

@@ -35,7 +35,7 @@ export default async function exportToken(
         recipientWalletAddress,
       },
     },
-    (item) => item.input?.token?._id === token._id,
+    (item) => (item.input as { token?: { _id?: string } })?.token?._id === token._id,
   );
 
   return modules.warehousing.findToken({ tokenId });

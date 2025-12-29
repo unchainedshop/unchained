@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  getWorkQueueTable,
 } from './helpers.js';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
@@ -408,16 +409,15 @@ test.describe('Auth for admin users', () => {
         },
       });
 
+      const workQueueTable = getWorkQueueTable();
       const work = await intervalUntilTimeout(async () => {
-        const w2 = await db
-          .collection('work_queue')
-          .find({ type: 'EMAIL', 'input.to': email, retries: 20 })
-          .toArray();
-        if (w2?.length) return w2;
+        const w2 = await workQueueTable.find({ type: 'EMAIL', 'input.to': email, retries: 20 });
+        const rows = w2.toArray();
+        if (rows?.length) return rows;
         return false;
       }, 5000);
 
-      // length of two means only the enrollment got triggered
+      // length of one means only the enrollment got triggered
       assert.strictEqual(work.length, 1);
     }, 10000);
 
@@ -441,12 +441,11 @@ test.describe('Auth for admin users', () => {
         success: true,
       });
 
+      const workQueueTable = getWorkQueueTable();
       const work = await intervalUntilTimeout(async () => {
-        const w2 = await db
-          .collection('work_queue')
-          .find({ type: 'EMAIL', 'input.to': email, retries: 20 })
-          .toArray();
-        if (w2?.length) return w2;
+        const w2 = await workQueueTable.find({ type: 'EMAIL', 'input.to': email, retries: 20 });
+        const rows = w2.toArray();
+        if (rows?.length) return rows;
         return false;
       }, 5000);
       // length of two means only the enrollment got triggered

@@ -33,7 +33,8 @@ import { languages } from '@unchainedshop/core-languages';
 import { bookmarks } from '@unchainedshop/core-bookmarks';
 import { events } from '@unchainedshop/core-events';
 import { filters } from '@unchainedshop/core-filters';
-import { eq, and, isNull, isNotNull, inArray, desc, sql } from 'drizzle-orm';
+import { workQueue } from '@unchainedshop/core-worker';
+import { eq, and, isNull, isNotNull, inArray, desc, sql, like } from 'drizzle-orm';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -556,6 +557,55 @@ export function getFiltersTable() {
 
       const result = await query;
       return result[0]?.count ?? 0;
+    },
+  };
+}
+
+/**
+ * Get a wrapper for the work_queue table with MongoDB-like API for tests.
+ * This allows tests to directly query the work_queue table.
+ */
+export function getWorkQueueTable() {
+  const drizzleDb = getDrizzleDb();
+
+  return {
+    async find(filter = {}) {
+      let conditions = [];
+
+      if (filter._id) {
+        conditions.push(eq(workQueue._id, filter._id));
+      }
+      if (filter.type) {
+        conditions.push(eq(workQueue.type, filter.type));
+      }
+      if (filter.retries !== undefined) {
+        conditions.push(eq(workQueue.retries, filter.retries));
+      }
+      // Handle nested JSON queries like 'input.to': email
+      if (filter['input.to']) {
+        // Use JSON extraction for SQLite
+        conditions.push(
+          sql`json_extract(${workQueue.input}, '$.to') = ${filter['input.to']}`,
+        );
+      }
+
+      let query = drizzleDb.select().from(workQueue);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      const rows = await query;
+
+      // Return MongoDB-like toArray method
+      return {
+        toArray: () => rows,
+      };
+    },
+    async findOne(filter = {}) {
+      const result = await this.find(filter);
+      const rows = result.toArray();
+      return rows[0] || null;
     },
   };
 }
