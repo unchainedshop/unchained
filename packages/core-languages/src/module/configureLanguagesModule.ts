@@ -1,133 +1,223 @@
-import { assertDocumentDBCompatMode, type ModuleInput } from '@unchainedshop/mongodb';
+/**
+ * Languages Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
+import { systemLocale, SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
-  generateDbFilterById,
-  buildSortOptions,
-  mongodb,
-  generateDbObjectId,
-} from '@unchainedshop/mongodb';
-import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import { systemLocale } from '@unchainedshop/utils';
-import { type Language, LanguagesCollection } from '../db/LanguagesCollection.ts';
+  eq,
+  and,
+  isNull,
+  isNotNull,
+  inArray,
+  sql,
+  asc,
+  desc,
+  type SQL,
+  type DrizzleDb,
+} from '@unchainedshop/store';
+import { languages, type LanguageRow } from '../db/schema.ts';
+import { searchLanguagesFTS } from '../db/fts.ts';
+
+export interface Language {
+  _id: string;
+  isoCode: string;
+  isActive?: boolean;
+  created: Date;
+  updated?: Date;
+  deleted?: Date | null;
+}
+
+export type LanguageFields = keyof Language;
 
 export interface LanguageQuery {
   includeInactive?: boolean;
   queryString?: string;
   isoCodes?: string[];
+  limit?: number;
+  offset?: number;
+  sort?: SortOption[];
 }
 
-const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
+export interface LanguageQueryOptions {
+  fields?: LanguageFields[];
+}
 
-export const buildFindSelector = ({ includeInactive = false, queryString, isoCodes }: LanguageQuery) => {
-  const selector: mongodb.Filter<Language> = { deleted: null };
-  if (!includeInactive) selector.isActive = true;
-  if (isoCodes) {
-    selector.isoCode = { $in: isoCodes };
-  }
-  if (queryString) {
-    assertDocumentDBCompatMode();
-    selector.$text = { $search: queryString };
-  }
-  return selector;
+export interface CreateLanguageInput {
+  _id?: string;
+  isoCode: string;
+  isActive?: boolean;
+  created?: Date;
+}
+
+export type UpdateLanguageInput = Partial<Omit<Language, '_id' | 'created'>>;
+
+export const LANGUAGE_EVENTS = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'] as const;
+
+const generateId = (): string => {
+  const bytes = crypto.getRandomValues(new Uint8Array(12));
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 };
 
-export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string, never>>) => {
-  registerEvents(LANGUAGE_EVENTS);
+const rowToLanguage = (row: LanguageRow): Language => ({
+  _id: row._id,
+  isoCode: row.isoCode,
+  isActive: row.isActive ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+  deleted: row.deleted ?? null,
+});
 
-  const Languages = await LanguagesCollection(db);
+const COLUMNS = {
+  _id: languages._id,
+  isoCode: languages.isoCode,
+  created: languages.created,
+  updated: languages.updated,
+  deleted: languages.deleted,
+  isActive: languages.isActive,
+} as const;
+
+const buildSelectColumns = (fields?: LanguageFields[]) => {
+  if (!fields?.length) return undefined; // undefined means select all
+  return Object.fromEntries(fields.map((field) => [field, COLUMNS[field]])) as Partial<typeof COLUMNS>;
+};
+
+export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
+  registerEvents([...LANGUAGE_EVENTS]);
+
+  // Build filter conditions from query params
+  const buildConditions = async (query: LanguageQuery): Promise<SQL[]> => {
+    const conditions: SQL[] = [isNull(languages.deleted)];
+
+    if (!query.includeInactive) {
+      conditions.push(eq(languages.isActive, true));
+    }
+
+    if (query.isoCodes?.length) {
+      conditions.push(inArray(languages.isoCode, query.isoCodes));
+    }
+
+    if (query.queryString) {
+      const matchingIds = await searchLanguagesFTS(db, query.queryString);
+      if (matchingIds.length === 0) {
+        // Return impossible condition to yield empty results
+        conditions.push(sql`0 = 1`);
+      } else {
+        conditions.push(inArray(languages._id, matchingIds));
+      }
+    }
+
+    return conditions;
+  };
+
+  // Build sort expressions from query params
+  const buildOrderBy = (sort?: SortOption[]) => {
+    if (!sort?.length) return [asc(languages.created)];
+    return sort.map((s) => {
+      const column = COLUMNS[s.key as keyof typeof COLUMNS] ?? languages.created;
+      return s.value === SortDirection.DESC ? desc(column) : asc(column);
+    });
+  };
 
   return {
-    findLanguage: async (params: { languageId: string } | { isoCode: string }) => {
-      if ('languageId' in params) {
-        return Languages.findOne(generateDbFilterById(params.languageId), {});
-      }
-      return Languages.findOne({ isoCode: params.isoCode }, {});
+    count: async (query: LanguageQuery = {}): Promise<number> => {
+      const conditions = await buildConditions(query);
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(languages)
+        .where(and(...conditions));
+      return count ?? 0;
+    },
+
+    findLanguage: async (
+      params: { languageId: string } | { isoCode: string },
+    ): Promise<Language | null> => {
+      const condition =
+        'languageId' in params
+          ? eq(languages._id, params.languageId)
+          : eq(languages.isoCode, params.isoCode);
+
+      const [row] = await db.select().from(languages).where(condition).limit(1);
+      return row ? rowToLanguage(row) : null;
     },
 
     findLanguages: async (
-      {
-        limit,
-        offset,
-        sort,
-        ...query
-      }: LanguageQuery & {
-        limit?: number;
-        offset?: number;
-        sort?: SortOption[];
-      },
-      options?: mongodb.FindOptions,
+      query: LanguageQuery = {},
+      options?: LanguageQueryOptions,
     ): Promise<Language[]> => {
-      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
-      return Languages.find(buildFindSelector(query), {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(sort || defaultSort),
-        ...options,
-      }).toArray();
-    },
+      const conditions = await buildConditions(query);
+      const orderBy = buildOrderBy(query.sort);
+      const selectColumns = buildSelectColumns(options?.fields);
 
-    count: async (query: LanguageQuery): Promise<number> => {
-      const count = await Languages.countDocuments(buildFindSelector(query));
-      return count;
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(languages)
+        : db.select().from(languages);
+
+      const results = await baseQuery
+        .where(and(...conditions))
+        .orderBy(...orderBy)
+        .limit(query.limit ?? 1000)
+        .offset(query.offset ?? 0);
+
+      return selectColumns ? (results as Language[]) : results.map(rowToLanguage);
     },
 
     languageExists: async ({ languageId }: { languageId: string }): Promise<boolean> => {
-      const languageCount = await Languages.countDocuments(
-        generateDbFilterById(languageId, { deleted: null }),
-        {
-          limit: 1,
-        },
-      );
-      return !!languageCount;
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(languages)
+        .where(and(eq(languages._id, languageId), isNull(languages.deleted)));
+      return (count ?? 0) > 0;
     },
 
     isBase(language: Language): boolean {
       return language.isoCode === systemLocale.language;
     },
 
-    create: async (
-      doc: Omit<Language, '_id' | 'created'> & Pick<Partial<Language>, '_id' | 'created'>,
-    ) => {
-      await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
-      const { insertedId: languageId } = await Languages.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
+    create: async (doc: CreateLanguageInput): Promise<string> => {
+      // Remove any soft-deleted language with same ISO code
+      await db
+        .delete(languages)
+        .where(and(eq(languages.isoCode, doc.isoCode.toLowerCase()), isNotNull(languages.deleted)));
+
+      const languageId = doc._id || generateId();
+      await db.insert(languages).values({
+        _id: languageId,
         isoCode: doc.isoCode.toLowerCase(),
-        isActive: true,
+        isActive: doc.isActive ?? true,
+        created: doc.created || new Date(),
+        deleted: null,
       });
+
       await emit('LANGUAGE_CREATE', { languageId });
       return languageId;
     },
 
-    update: async (languageId: string, doc: mongodb.UpdateFilter<Language>['$set']) => {
-      const modifier = { ...doc };
-      if (modifier?.isoCode) {
-        modifier.isoCode = modifier.isoCode.toLowerCase();
+    update: async (languageId: string, doc: UpdateLanguageInput): Promise<string> => {
+      const updateDoc = { ...doc };
+      if (updateDoc.isoCode) {
+        updateDoc.isoCode = updateDoc.isoCode.toLowerCase();
       }
-      await Languages.updateOne(generateDbFilterById(languageId), {
-        $set: {
-          updated: new Date(),
-          ...modifier,
-        },
-      });
+
+      await db
+        .update(languages)
+        .set({ ...updateDoc, updated: new Date() })
+        .where(eq(languages._id, languageId));
+
       await emit('LANGUAGE_UPDATE', { languageId });
       return languageId;
     },
 
-    delete: async (languageId: string) => {
-      const { modifiedCount: deletedCount } = await Languages.updateOne(
-        generateDbFilterById(languageId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
-        },
-      );
+    delete: async (languageId: string): Promise<number> => {
+      const result = await db
+        .update(languages)
+        .set({ deleted: new Date() })
+        .where(eq(languages._id, languageId));
+
       await emit('LANGUAGE_REMOVE', { languageId });
-      return deletedCount;
+      return result.rowsAffected;
     },
   };
-};
+}
 
 export type LanguagesModule = Awaited<ReturnType<typeof configureLanguagesModule>>;

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl, getCurrenciesTable } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -16,19 +16,21 @@ import {
 test.describe('Plugins: Cryptopay', () => {
   let db;
   let graphqlFetch;
+  let Currencies;
 
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    Currencies = getCurrenciesTable();
 
     await db.collection('products').findOrInsertOne({
       ...SimpleProduct,
       _id: 'single-item-product-id',
     });
 
-    await db.collection('currencies').findOrInsertOne(BTCCurrency);
-    await db.collection('currencies').findOrInsertOne(ETHCurrency);
-    await db.collection('currencies').findOrInsertOne(SHIBCurrency);
+    await Currencies.insertOne(BTCCurrency);
+    await Currencies.insertOne(ETHCurrency);
+    await Currencies.insertOne(SHIBCurrency);
 
     await db.collection('product_rates').findOrInsertOne({
       baseCurrency: 'CHF',

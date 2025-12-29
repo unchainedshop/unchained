@@ -15,6 +15,7 @@ export default async function bookmark(
   log('mutation bookmark', { productId, userId });
 
   if (!productId) throw new InvalidIdError({ productId });
+  if (!userId) throw new InvalidIdError({ userId });
 
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });

@@ -21,7 +21,7 @@ const uncachedResolveDefaultContext = async (
 ) => {
   const languages = await unchainedAPI.modules.languages.findLanguages(
     { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } },
+    { fields: ['isoCode', 'isActive'] },
   );
 
   const countries = await unchainedAPI.modules.countries.findCountries(

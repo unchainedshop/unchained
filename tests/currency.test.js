@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
+  getCurrenciesTable,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCurrency, EuroCurrency, UsdCurrency, InactiveCurrency } from './seeds/locale-data.js';
@@ -21,7 +22,7 @@ test.describe('Currency', () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Currencies = db.collection('currencies');
+    Currencies = getCurrenciesTable();
   });
 
   test.after(async () => {

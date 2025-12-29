@@ -18,7 +18,6 @@ export default async function createBookmark(
   const [bookmark] = await modules.bookmarks.findBookmarks({
     productId,
     userId,
-    meta,
   });
 
   if (bookmark) throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });

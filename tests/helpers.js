@@ -6,7 +6,7 @@ import {
   getServerPort,
   getDrizzleDb,
 } from './setup.js';
-import seedLocaleData, { seedCountriesToDrizzle } from './seeds/locale-data.js';
+import seedLocaleData, { seedCountriesToDrizzle, seedLanguagesToDrizzle, seedCurrenciesToDrizzle } from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
 import seedDeliveries from './seeds/deliveries.js';
@@ -16,14 +16,17 @@ import seedOrders from './seeds/orders.js';
 import seedQuotations from './seeds/quotations.js';
 import seedFilters from './seeds/filters.js';
 import seedAssortments from './seeds/assortments.js';
-import seedBookmarks from './seeds/bookmark.js';
+import seedBookmarks, { seedBookmarksToDrizzle } from './seeds/bookmark.js';
 import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
 import seedEvents from './seeds/events.js';
 import seedTokens from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
-// Drizzle imports for getCountriesTable
+// Drizzle imports for table helpers
 import { countries } from '@unchainedshop/core-countries';
+import { currencies } from '@unchainedshop/core-currencies';
+import { languages } from '@unchainedshop/core-languages';
+import { bookmarks } from '@unchainedshop/core-bookmarks';
 import { eq, and, isNull, isNotNull, sql } from 'drizzle-orm';
 
 // eslint-disable-next-line
@@ -75,8 +78,11 @@ export const setupDatabase = async () => {
   await seedWorkQueue(db);
   await seedTokens(db);
 
-  // Seed countries directly into the Drizzle database (bypasses module to avoid emitting events)
+  // Seed data directly into the Drizzle database (bypasses module to avoid emitting events)
   await seedCountriesToDrizzle(drizzleDb);
+  await seedLanguagesToDrizzle(drizzleDb);
+  await seedCurrenciesToDrizzle(drizzleDb);
+  await seedBookmarksToDrizzle(drizzleDb);
 
   // Seed events AFTER countries to avoid COUNTRY_CREATE events polluting the test data
   // Clear events collection first to remove any events emitted during seeding
@@ -189,6 +195,190 @@ export function getCountriesTable() {
         conditions.push(isNull(countries.deleted));
       } else if (filter.deleted !== undefined) {
         conditions.push(isNotNull(countries.deleted));
+      }
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      const result = await query;
+      return result[0]?.count ?? 0;
+    },
+  };
+}
+
+/**
+ * Get a wrapper for the currencies table with MongoDB-like API for tests.
+ * This allows tests to directly manipulate the currencies table.
+ */
+export function getCurrenciesTable() {
+  const drizzleDb = getDrizzleDb();
+
+  return {
+    async findOne(filter = {}) {
+      let query = drizzleDb.select().from(currencies);
+      if (filter._id) {
+        query = query.where(eq(currencies._id, filter._id));
+      } else if (filter.isoCode) {
+        query = query.where(eq(currencies.isoCode, filter.isoCode));
+      }
+      const results = await query.limit(1);
+      return results[0] || null;
+    },
+    async insertOne(doc) {
+      await drizzleDb.insert(currencies).values({
+        _id: doc._id,
+        isoCode: doc.isoCode,
+        isActive: doc.isActive ?? true,
+        contractAddress: doc.contractAddress,
+        decimals: doc.decimals,
+        created: doc.created || new Date(),
+        deleted: doc.deleted,
+      });
+      // Also insert into FTS
+      await drizzleDb.run(
+        sql`INSERT OR REPLACE INTO currencies_fts (_id, isoCode) VALUES (${doc._id}, ${doc.isoCode})`,
+      );
+      return { insertedId: doc._id };
+    },
+    async deleteOne(filter) {
+      if (filter._id) {
+        await drizzleDb.delete(currencies).where(eq(currencies._id, filter._id));
+        await drizzleDb.run(sql`DELETE FROM currencies_fts WHERE _id = ${filter._id}`);
+      } else if (filter.isoCode) {
+        const currency = await this.findOne(filter);
+        if (currency) {
+          await drizzleDb.delete(currencies).where(eq(currencies.isoCode, filter.isoCode));
+          await drizzleDb.run(sql`DELETE FROM currencies_fts WHERE _id = ${currency._id}`);
+        }
+      }
+      return { deletedCount: 1 };
+    },
+    async countDocuments(filter = {}) {
+      let query = drizzleDb.select({ count: sql`count(*)` }).from(currencies);
+      const conditions = [];
+      if (filter._id) {
+        conditions.push(eq(currencies._id, filter._id));
+      }
+      if (filter.deleted === null) {
+        conditions.push(isNull(currencies.deleted));
+      } else if (filter.deleted !== undefined) {
+        conditions.push(isNotNull(currencies.deleted));
+      }
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      const result = await query;
+      return result[0]?.count ?? 0;
+    },
+  };
+}
+
+/**
+ * Get a wrapper for the languages table with MongoDB-like API for tests.
+ * This allows tests to directly manipulate the languages table.
+ */
+export function getLanguagesTable() {
+  const drizzleDb = getDrizzleDb();
+
+  return {
+    async findOne(filter = {}) {
+      let query = drizzleDb.select().from(languages);
+      if (filter._id) {
+        query = query.where(eq(languages._id, filter._id));
+      } else if (filter.isoCode) {
+        query = query.where(eq(languages.isoCode, filter.isoCode));
+      }
+      const results = await query.limit(1);
+      return results[0] || null;
+    },
+    async insertOne(doc) {
+      await drizzleDb.insert(languages).values({
+        _id: doc._id,
+        isoCode: doc.isoCode,
+        isActive: doc.isActive ?? true,
+        created: doc.created || new Date(),
+        deleted: doc.deleted,
+      });
+      // Also insert into FTS
+      await drizzleDb.run(
+        sql`INSERT OR REPLACE INTO languages_fts (_id, isoCode) VALUES (${doc._id}, ${doc.isoCode})`,
+      );
+      return { insertedId: doc._id };
+    },
+    async deleteOne(filter) {
+      if (filter._id) {
+        await drizzleDb.delete(languages).where(eq(languages._id, filter._id));
+        await drizzleDb.run(sql`DELETE FROM languages_fts WHERE _id = ${filter._id}`);
+      } else if (filter.isoCode) {
+        const language = await this.findOne(filter);
+        if (language) {
+          await drizzleDb.delete(languages).where(eq(languages.isoCode, filter.isoCode));
+          await drizzleDb.run(sql`DELETE FROM languages_fts WHERE _id = ${language._id}`);
+        }
+      }
+      return { deletedCount: 1 };
+    },
+    async countDocuments(filter = {}) {
+      let query = drizzleDb.select({ count: sql`count(*)` }).from(languages);
+      const conditions = [];
+      if (filter._id) {
+        conditions.push(eq(languages._id, filter._id));
+      }
+      if (filter.deleted === null) {
+        conditions.push(isNull(languages.deleted));
+      } else if (filter.deleted !== undefined) {
+        conditions.push(isNotNull(languages.deleted));
+      }
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      const result = await query;
+      return result[0]?.count ?? 0;
+    },
+  };
+}
+
+/**
+ * Get a wrapper for the bookmarks table with MongoDB-like API for tests.
+ * This allows tests to directly manipulate the bookmarks table.
+ */
+export function getBookmarksTable() {
+  const drizzleDb = getDrizzleDb();
+
+  return {
+    async findOne(filter = {}) {
+      let query = drizzleDb.select().from(bookmarks);
+      if (filter._id) {
+        query = query.where(eq(bookmarks._id, filter._id));
+      } else if (filter.userId && filter.productId) {
+        query = query.where(and(eq(bookmarks.userId, filter.userId), eq(bookmarks.productId, filter.productId)));
+      }
+      const results = await query.limit(1);
+      return results[0] || null;
+    },
+    async insertOne(doc) {
+      await drizzleDb.insert(bookmarks).values({
+        _id: doc._id,
+        userId: doc.userId,
+        productId: doc.productId,
+        meta: doc.meta ? JSON.stringify(doc.meta) : null,
+        created: doc.created ? new Date(doc.created) : new Date(),
+      });
+      return { insertedId: doc._id };
+    },
+    async deleteOne(filter) {
+      if (filter._id) {
+        await drizzleDb.delete(bookmarks).where(eq(bookmarks._id, filter._id));
+      }
+      return { deletedCount: 1 };
+    },
+    async countDocuments(filter = {}) {
+      let query = drizzleDb.select({ count: sql`count(*)` }).from(bookmarks);
+      const conditions = [];
+      if (filter._id) {
+        conditions.push(eq(bookmarks._id, filter._id));
+      }
+      if (filter.userId) {
+        conditions.push(eq(bookmarks.userId, filter.userId));
       }
       if (conditions.length > 0) {
         query = query.where(and(...conditions));

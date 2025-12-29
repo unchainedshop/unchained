@@ -28,3 +28,24 @@ export const SimpleBookmarks = [
 export default async function seedBookmarks(db) {
   await db.collection('bookmarks').insertMany(SimpleBookmarks);
 }
+
+/**
+ * Seed bookmarks into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedBookmarksToDrizzle(db) {
+  const { bookmarks } = await import('@unchainedshop/core-bookmarks');
+
+  // Delete all existing bookmarks directly
+  await db.delete(bookmarks);
+
+  // Insert all bookmarks directly (bypassing module to avoid emitting events)
+  for (const bookmark of SimpleBookmarks) {
+    await db.insert(bookmarks).values({
+      _id: bookmark._id,
+      userId: bookmark.userId,
+      productId: bookmark.productId,
+      created: new Date(bookmark.created),
+    });
+  }
+}

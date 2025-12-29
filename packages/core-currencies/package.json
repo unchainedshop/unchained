@@ -1,7 +1,6 @@
 {
   "name": "@unchainedshop/core-currencies",
-  "description": "Currency management module for the Unchained Engine",
-  "version": "4.5.0",
+  "version": "5.0.0-alpha.0",
   "main": "lib/currencies-index.js",
   "types": "lib/currencies-index.d.ts",
   "type": "module",
@@ -12,7 +11,10 @@
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "node --test",
-    "test:watch": "node --test --watch"
+    "test:watch": "node --test --watch",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "repository": {
     "type": "git",
@@ -21,7 +23,9 @@
   "keywords": [
     "unchained",
     "ecommerce",
-    "core"
+    "core",
+    "currencies",
+    "local-first"
   ],
   "authors": [
     "Pascal Kaufmann",
@@ -36,10 +40,14 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/events": "^4.5.0",
-    "@unchainedshop/utils": "^4.5.0"
+    "@unchainedshop/store": "^5.0.0-alpha.0",
+    "@unchainedshop/utils": "^4.5.0",
+    "drizzle-orm": "^0.38.3"
   },
   "devDependencies": {
+    "@libsql/client": "^0.15.15",
     "@types/node": "^25.0.0",
+    "drizzle-kit": "^0.30.1",
     "typescript": "^5.8.3"
   }
 }

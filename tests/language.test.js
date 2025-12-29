@@ -3,6 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   disconnect,
   createAnonymousGraphqlFetch,
+  getLanguagesTable,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseLanguage, ItalianLanguage, InactiveLanguage } from './seeds/locale-data.js';
@@ -20,7 +21,7 @@ test.describe('Language', () => {
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Languages = db.collection('languages');
+    Languages = getLanguagesTable();
   });
 
   test.after(async () => {

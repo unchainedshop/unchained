@@ -3,13 +3,21 @@ import {
   type AssortmentsSettingsOptions,
   configureAssortmentsModule,
 } from '@unchainedshop/core-assortments';
-import { type BookmarksModule, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
+import {
+  type BookmarksModule,
+  configureBookmarksModule,
+  initializeBookmarksSchema,
+} from '@unchainedshop/core-bookmarks';
 import {
   configureCountriesModule,
   type CountriesModule,
   initializeCountriesSchema,
 } from '@unchainedshop/core-countries';
-import { configureCurrenciesModule, type CurrenciesModule } from '@unchainedshop/core-currencies';
+import {
+  configureCurrenciesModule,
+  type CurrenciesModule,
+  initializeCurrenciesSchema,
+} from '@unchainedshop/core-currencies';
 import { createDrizzleDb, initializeDrizzleDb, type DrizzleDb } from '@unchainedshop/store';
 import {
   configureDeliveryModule,
@@ -32,7 +40,11 @@ import {
   type FiltersModule,
   type FiltersSettingsOptions,
 } from '@unchainedshop/core-filters';
-import { configureLanguagesModule, type LanguagesModule } from '@unchainedshop/core-languages';
+import {
+  configureLanguagesModule,
+  type LanguagesModule,
+  initializeLanguagesSchema,
+} from '@unchainedshop/core-languages';
 import {
   configureOrdersModule,
   type OrdersModule,
@@ -119,15 +131,6 @@ export default async function initModules(
     }
   >,
 ): Promise<Modules> {
-  const assortments = await configureAssortmentsModule({
-    db,
-    options: options.assortments,
-    migrationRepository,
-  });
-  const bookmarks = await configureBookmarksModule({
-    db,
-    migrationRepository,
-  });
   // Drizzle-based modules use a shared SQLite/Turso database
   // Use provided db, or create new connection if not provided
   let drizzleDb = providedDrizzleDb;
@@ -141,14 +144,24 @@ export default async function initModules(
   // Initialize all Drizzle-based module schemas (idempotent - uses IF NOT EXISTS)
   await initializeDrizzleDb(drizzleDb, [
     initializeCountriesSchema,
-    // Add more module initializers here as they migrate to Drizzle
+    initializeCurrenciesSchema,
+    initializeLanguagesSchema,
+    initializeBookmarksSchema,
   ]);
+
+  const assortments = await configureAssortmentsModule({
+    db,
+    options: options.assortments,
+    migrationRepository,
+  });
+  const bookmarks = await configureBookmarksModule({
+    db: drizzleDb,
+  });
   const countries = await configureCountriesModule({
     db: drizzleDb,
   });
   const currencies = await configureCurrenciesModule({
-    db,
-    migrationRepository,
+    db: drizzleDb,
   });
   const delivery = await configureDeliveryModule({
     db,
@@ -175,8 +188,7 @@ export default async function initModules(
     migrationRepository,
   });
   const languages = await configureLanguagesModule({
-    db,
-    migrationRepository,
+    db: drizzleDb,
   });
   const orders = await configureOrdersModule({
     db,

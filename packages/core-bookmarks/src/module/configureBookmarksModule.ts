@@ -1,37 +1,84 @@
+/**
+ * Bookmarks Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-  type TimestampFields,
-  type ModuleInput,
-} from '@unchainedshop/mongodb';
-import { BookmarksCollection } from '../db/BookmarksCollection.ts';
+import { eq, and, inArray, type SQL, type DrizzleDb } from '@unchainedshop/store';
+import { bookmarks, type BookmarkRow } from '../db/schema.ts';
 
-const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
-
-export type Bookmark = {
+export interface Bookmark {
   _id: string;
   userId: string;
   productId: string;
-  meta?: any;
-} & TimestampFields;
+  meta?: unknown;
+  created: Date;
+  updated?: Date;
+}
 
-export const configureBookmarksModule = async ({ db }: ModuleInput<Record<string, never>>) => {
-  registerEvents(BOOKMARK_EVENTS);
+export interface CreateBookmarkInput {
+  _id?: string;
+  userId: string;
+  productId: string;
+  meta?: unknown;
+  created?: Date;
+}
 
-  const Bookmarks = await BookmarksCollection(db);
+export interface BookmarkQuery {
+  userId?: string;
+  productId?: string;
+}
+
+export const BOOKMARK_EVENTS = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'] as const;
+
+const generateId = (): string => {
+  const bytes = crypto.getRandomValues(new Uint8Array(12));
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+};
+
+const rowToBookmark = (row: BookmarkRow): Bookmark => ({
+  _id: row._id,
+  userId: row.userId,
+  productId: row.productId,
+  meta: row.meta ? JSON.parse(row.meta) : undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+});
+
+export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
+  registerEvents([...BOOKMARK_EVENTS]);
 
   return {
     // Queries
-    findBookmarksByUserId: async (userId: string): Promise<Bookmark[]> =>
-      Bookmarks.find({ userId }).toArray(),
-    findBookmarkById: async (bookmarkId: string) => {
-      const filter = generateDbFilterById(bookmarkId);
-      return Bookmarks.findOne(filter, {});
+    findBookmarksByUserId: async (userId: string): Promise<Bookmark[]> => {
+      const results = await db.select().from(bookmarks).where(eq(bookmarks.userId, userId));
+      return results.map(rowToBookmark);
     },
-    findBookmarks: async (query: mongodb.Filter<Bookmark>): Promise<Bookmark[]> =>
-      Bookmarks.find(query).toArray(),
+
+    findBookmarkById: async (bookmarkId: string): Promise<Bookmark | null> => {
+      const [row] = await db.select().from(bookmarks).where(eq(bookmarks._id, bookmarkId)).limit(1);
+      return row ? rowToBookmark(row) : null;
+    },
+
+    findBookmarks: async (query: BookmarkQuery = {}): Promise<Bookmark[]> => {
+      const conditions: SQL[] = [];
+
+      if (query.userId) {
+        conditions.push(eq(bookmarks.userId, query.userId));
+      }
+      if (query.productId) {
+        conditions.push(eq(bookmarks.productId, query.productId));
+      }
+
+      const results =
+        conditions.length > 0
+          ? await db
+              .select()
+              .from(bookmarks)
+              .where(and(...conditions))
+          : await db.select().from(bookmarks);
+
+      return results.map(rowToBookmark);
+    },
 
     // Mutations
     replaceUserId: async (
@@ -39,58 +86,92 @@ export const configureBookmarksModule = async ({ db }: ModuleInput<Record<string
       toUserId: string,
       bookmarkIds?: string[],
     ): Promise<number> => {
-      const selector: mongodb.Filter<Bookmark> = { userId: fromUserId };
-      if (bookmarkIds) {
-        selector._id = { $in: bookmarkIds };
+      const conditions = [eq(bookmarks.userId, fromUserId)];
+      if (bookmarkIds?.length) {
+        conditions.push(inArray(bookmarks._id, bookmarkIds));
       }
-      const result = await Bookmarks.updateMany(selector, {
-        $set: {
+
+      const result = await db
+        .update(bookmarks)
+        .set({
           userId: toUserId,
           updated: new Date(),
-        },
+        })
+        .where(and(...conditions));
+
+      return result.rowsAffected;
+    },
+
+    deleteByUserId: async (userId: string): Promise<number> => {
+      // Get bookmark IDs for event emission
+      const bookmarksToDelete = await db
+        .select({ _id: bookmarks._id })
+        .from(bookmarks)
+        .where(eq(bookmarks.userId, userId));
+
+      const result = await db.delete(bookmarks).where(eq(bookmarks.userId, userId));
+
+      // Emit events for each deleted bookmark
+      await Promise.all(
+        bookmarksToDelete.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })),
+      );
+
+      return result.rowsAffected;
+    },
+
+    deleteByProductId: async (productId: string): Promise<number> => {
+      // Get bookmark IDs for event emission
+      const bookmarksToDelete = await db
+        .select({ _id: bookmarks._id })
+        .from(bookmarks)
+        .where(eq(bookmarks.productId, productId));
+
+      const result = await db.delete(bookmarks).where(eq(bookmarks.productId, productId));
+
+      // Emit events for each deleted bookmark
+      await Promise.all(
+        bookmarksToDelete.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })),
+      );
+
+      return result.rowsAffected;
+    },
+
+    create: async (doc: CreateBookmarkInput): Promise<string> => {
+      const bookmarkId = doc._id || generateId();
+
+      await db.insert(bookmarks).values({
+        _id: bookmarkId,
+        userId: doc.userId,
+        productId: doc.productId,
+        meta: doc.meta ? JSON.stringify(doc.meta) : null,
+        created: doc.created || new Date(),
       });
-      return result.upsertedCount;
-    },
-    deleteByUserId: async (userId: string) => {
-      const bookmarks = await Bookmarks.find({ userId }, { projection: { _id: true } }).toArray();
-      const result = await Bookmarks.deleteMany({ userId });
-      await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
-      return result.deletedCount;
-    },
-    deleteByProductId: async (productId: string) => {
-      const bookmarks = await Bookmarks.find({ productId }, { projection: { _id: true } }).toArray();
-      const result = await Bookmarks.deleteMany({ productId });
-      await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
-      return result.deletedCount;
-    },
-    create: async (doc) => {
-      const { insertedId: bookmarkId } = await Bookmarks.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
-      });
+
       await emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
-    update: async (bookmarkId: string, doc: Partial<Bookmark>) => {
-      await Bookmarks.updateOne(
-        { _id: bookmarkId },
-        {
-          $set: {
-            updated: new Date(),
-            ...doc,
-          },
-        },
-      );
+
+    update: async (bookmarkId: string, doc: Partial<Bookmark>): Promise<string> => {
+      const updateData: Record<string, unknown> = {
+        updated: new Date(),
+      };
+
+      if (doc.userId !== undefined) updateData.userId = doc.userId;
+      if (doc.productId !== undefined) updateData.productId = doc.productId;
+      if (doc.meta !== undefined) updateData.meta = doc.meta ? JSON.stringify(doc.meta) : null;
+
+      await db.update(bookmarks).set(updateData).where(eq(bookmarks._id, bookmarkId));
+
       await emit('BOOKMARK_UPDATE', { bookmarkId });
       return bookmarkId;
     },
-    delete: async (bookmarkId: string) => {
-      const { deletedCount } = await Bookmarks.deleteOne({ _id: bookmarkId });
+
+    delete: async (bookmarkId: string): Promise<number> => {
+      const result = await db.delete(bookmarks).where(eq(bookmarks._id, bookmarkId));
       await emit('BOOKMARK_REMOVE', { bookmarkId });
-      return deletedCount;
+      return result.rowsAffected;
     },
   };
-};
+}
 
 export type BookmarksModule = Awaited<ReturnType<typeof configureBookmarksModule>>;

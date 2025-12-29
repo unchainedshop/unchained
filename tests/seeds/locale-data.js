@@ -96,6 +96,12 @@ export default async function seedOrders(db) {
     .resolve();
 }
 
+// All languages for seeding
+const allLanguages = [BaseLanguage, ItalianLanguage, InactiveLanguage, EnglishLanguage];
+
+// All currencies for seeding
+const allCurrencies = [BaseCurrency, EuroCurrency, UsdCurrency, InactiveCurrency];
+
 /**
  * Seed countries into the Drizzle database.
  * This directly inserts into the database WITHOUT using the module to avoid emitting events.
@@ -125,6 +131,68 @@ export async function seedCountriesToDrizzle(db) {
   for (const country of allCountries) {
     await db.run(
       sql`INSERT INTO countries_fts (_id, isoCode, defaultCurrencyCode) VALUES (${country._id}, ${country.isoCode}, ${country.defaultCurrencyCode})`,
+    );
+  }
+}
+
+/**
+ * Seed languages into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedLanguagesToDrizzle(db) {
+  const { languages } = await import('@unchainedshop/core-languages');
+  const { sql } = await import('drizzle-orm');
+
+  // Delete all existing languages directly
+  await db.delete(languages);
+
+  // Insert all languages directly (bypassing module to avoid emitting events)
+  for (const language of allLanguages) {
+    await db.insert(languages).values({
+      _id: language._id,
+      isoCode: language.isoCode,
+      isActive: language.isActive,
+      created: new Date(),
+      deleted: null,
+    });
+  }
+
+  // Also update the FTS index directly
+  await db.run(sql`DELETE FROM languages_fts`);
+  for (const language of allLanguages) {
+    await db.run(
+      sql`INSERT INTO languages_fts (_id, isoCode) VALUES (${language._id}, ${language.isoCode})`,
+    );
+  }
+}
+
+/**
+ * Seed currencies into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedCurrenciesToDrizzle(db) {
+  const { currencies } = await import('@unchainedshop/core-currencies');
+  const { sql } = await import('drizzle-orm');
+
+  // Delete all existing currencies directly
+  await db.delete(currencies);
+
+  // Insert all currencies directly (bypassing module to avoid emitting events)
+  for (const currency of allCurrencies) {
+    await db.insert(currencies).values({
+      _id: currency._id,
+      isoCode: currency.isoCode,
+      isActive: currency.isActive,
+      created: new Date(),
+      deleted: null,
+    });
+  }
+
+  // Also update the FTS index directly
+  await db.run(sql`DELETE FROM currencies_fts`);
+  for (const currency of allCurrencies) {
+    await db.run(
+      sql`INSERT INTO currencies_fts (_id, isoCode) VALUES (${currency._id}, ${currency.isoCode})`,
     );
   }
 }
