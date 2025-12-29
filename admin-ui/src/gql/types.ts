@@ -780,7 +780,7 @@ export enum IEventType {
   OrderCreateDiscount = 'ORDER_CREATE_DISCOUNT',
   OrderDeliver = 'ORDER_DELIVER',
   OrderEmptyCart = 'ORDER_EMPTY_CART',
-  OrderFullfilled = 'ORDER_FULLFILLED',
+  OrderFulfilled = 'ORDER_FULFILLED',
   OrderPay = 'ORDER_PAY',
   OrderRejected = 'ORDER_REJECTED',
   OrderRemove = 'ORDER_REMOVE',
@@ -1150,7 +1150,7 @@ export type IMutation = {
   registerPaymentCredentials?: Maybe<IPaymentCredentials>;
   /** Manually reject an order which is in progress */
   rejectOrder: IOrder;
-  /** Reject an RFP, this is possible as long as a quotation is not fullfilled */
+  /** Reject an RFP, this is possible as long as a quotation is not fulfilled */
   rejectQuotation: IQuotation;
   /** Removes assortment with the provided ID */
   removeAssortment: IAssortment;
@@ -2148,7 +2148,7 @@ export type IOrder = {
   delivery?: Maybe<IOrderDelivery>;
   discounts?: Maybe<Array<IOrderDiscount>>;
   enrollment?: Maybe<IEnrollment>;
-  fullfilled?: Maybe<Scalars['DateTimeISO']['output']>;
+  fulfilled?: Maybe<Scalars['DateTimeISO']['output']>;
   items?: Maybe<Array<IOrderItem>>;
   orderNumber?: Maybe<Scalars['String']['output']>;
   ordered?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -2383,7 +2383,7 @@ export enum IOrderStatus {
   /** Order has been confirmed */
   Confirmed = 'CONFIRMED',
   /** Order has been fulfilled completely (all positions in delivery) */
-  Fullfilled = 'FULLFILLED',
+  Fulfilled = 'FULFILLED',
   /** Open Order / Cart */
   Open = 'OPEN',
   /** Order has been sent but confirmation awaiting */
@@ -3384,7 +3384,7 @@ export type IQuotation = {
   created: Scalars['DateTimeISO']['output'];
   currency?: Maybe<ICurrency>;
   expires?: Maybe<Scalars['DateTimeISO']['output']>;
-  fullfilled?: Maybe<Scalars['DateTimeISO']['output']>;
+  fulfilled?: Maybe<Scalars['DateTimeISO']['output']>;
   isExpired?: Maybe<Scalars['Boolean']['output']>;
   product: IProduct;
   quotationNumber?: Maybe<Scalars['String']['output']>;
@@ -3408,7 +3408,7 @@ export enum IQuotationDocumentType {
 
 export enum IQuotationStatus {
   /** Quotation has been used to order the product */
-  Fullfilled = 'FULLFILLED',
+  Fulfilled = 'FULFILLED',
   /** Awaiting Offer */
   Processing = 'PROCESSING',
   /** Proposal ready */
@@ -7047,7 +7047,7 @@ export type IOrdersWithItemsQuery = {
     updated?: any | null;
     ordered?: any | null;
     confirmed?: any | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     totalTax?: { amount: number; currencyCode: string } | null;
     itemsTotal?: { amount: number; currencyCode: string } | null;
     totalDiscount?: { amount: number; currencyCode: string } | null;
@@ -8875,7 +8875,7 @@ export type IOrderDetailFragment = {
   updated?: any | null;
   ordered?: any | null;
   confirmed?: any | null;
-  fullfilled?: any | null;
+  fulfilled?: any | null;
   totalTax?: { amount: number; currencyCode: string } | null;
   itemsTotal?: { amount: number; currencyCode: string } | null;
   totalDiscount?: { amount: number; currencyCode: string } | null;
@@ -9459,7 +9459,7 @@ export type IOrderFragment = {
   ordered?: any | null;
   orderNumber?: string | null;
   confirmed?: any | null;
-  fullfilled?: any | null;
+  fulfilled?: any | null;
   contact?: { telNumber?: string | null; emailAddress?: string | null } | null;
   total?: {
     isTaxable: boolean;
@@ -9506,7 +9506,7 @@ export type IOrderQuery = {
     updated?: any | null;
     ordered?: any | null;
     confirmed?: any | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     totalTax?: { amount: number; currencyCode: string } | null;
     itemsTotal?: { amount: number; currencyCode: string } | null;
     totalDiscount?: { amount: number; currencyCode: string } | null;
@@ -10121,7 +10121,7 @@ export type IOrdersQuery = {
     ordered?: any | null;
     orderNumber?: string | null;
     confirmed?: any | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     contact?: {
       telNumber?: string | null;
       emailAddress?: string | null;
@@ -10183,7 +10183,7 @@ export type IUserOrderQuery = {
       ordered?: any | null;
       orderNumber?: string | null;
       confirmed?: any | null;
-      fullfilled?: any | null;
+      fulfilled?: any | null;
       contact?: {
         telNumber?: string | null;
         emailAddress?: string | null;
@@ -14955,7 +14955,7 @@ export type IQuotationDetailFragment = {
   updated?: any | null;
   isExpired?: boolean | null;
   quotationNumber?: string | null;
-  fullfilled?: any | null;
+  fulfilled?: any | null;
   rejected?: any | null;
   user: {
     _id: string;
@@ -15055,7 +15055,7 @@ export type IQuotationFragment = {
   updated?: any | null;
   isExpired?: boolean | null;
   quotationNumber?: string | null;
-  fullfilled?: any | null;
+  fulfilled?: any | null;
   rejected?: any | null;
   user: {
     _id: string;
@@ -15159,7 +15159,7 @@ export type IMakeQuotationProposalMutation = {
     updated?: any | null;
     isExpired?: boolean | null;
     quotationNumber?: string | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     rejected?: any | null;
     user: {
       _id: string;
@@ -15268,7 +15268,7 @@ export type IQuotationQuery = {
     updated?: any | null;
     isExpired?: boolean | null;
     quotationNumber?: string | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     rejected?: any | null;
     user: {
       _id: string;
@@ -15388,7 +15388,7 @@ export type IQuotationsQuery = {
     updated?: any | null;
     isExpired?: boolean | null;
     quotationNumber?: string | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     rejected?: any | null;
     user: {
       _id: string;
@@ -15491,7 +15491,7 @@ export type IRejectQuotationMutation = {
     updated?: any | null;
     isExpired?: boolean | null;
     quotationNumber?: string | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     rejected?: any | null;
     user: {
       _id: string;
@@ -15602,7 +15602,7 @@ export type IUserQuotationsQuery = {
       updated?: any | null;
       isExpired?: boolean | null;
       quotationNumber?: string | null;
-      fullfilled?: any | null;
+      fulfilled?: any | null;
       rejected?: any | null;
       user: {
         _id: string;
@@ -15706,7 +15706,7 @@ export type IVerifyQuotationMutation = {
     updated?: any | null;
     isExpired?: boolean | null;
     quotationNumber?: string | null;
-    fullfilled?: any | null;
+    fulfilled?: any | null;
     rejected?: any | null;
     user: {
       _id: string;

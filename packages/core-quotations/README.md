@@ -70,7 +70,7 @@ const quotations = await quotationsModule.findQuotations({
 
 | Export | Description |
 |--------|-------------|
-| `QuotationStatus` | Status values (REQUESTED, PROCESSING, PROPOSED, FULLFILLED, REJECTED) |
+| `QuotationStatus` | Status values (REQUESTED, PROCESSING, PROPOSED, FULFILLED, REJECTED) |
 
 ### Settings
 

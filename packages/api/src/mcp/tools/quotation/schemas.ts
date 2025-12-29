@@ -10,7 +10,7 @@ export const QuotationStatusEnum = z.enum([
   'REQUESTED',
   'PROCESSING',
   'PROPOSED',
-  'FULLFILLED',
+  'FULFILLED',
   'REJECTED',
 ]);
 
@@ -88,7 +88,7 @@ export const actionValidators = {
       quotationId: z
         .string()
         .min(1, 'quotationId is required')
-        .describe('Quotation ID to reject. Cannot be FULLFILLED.'),
+        .describe('Quotation ID to reject. Cannot be FULFILLED.'),
       quotationContext: z
         .record(z.any(), z.any())
         .optional()
@@ -97,7 +97,7 @@ export const actionValidators = {
         ),
     })
     .describe(
-      'Rejects a quotation and transitions it to REJECTED status. Requirements: quotation must exist AND current status must NOT be FULLFILLED (cannot reject completed quotations). Sets rejected timestamp.',
+      'Rejects a quotation and transitions it to REJECTED status. Requirements: quotation must exist AND current status must NOT be FULFILLED (cannot reject completed quotations). Sets rejected timestamp.',
     ),
 } as const;
 

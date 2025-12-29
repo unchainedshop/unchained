@@ -22,6 +22,29 @@ export interface CryptoOptions {
   at_size?: number;
 }
 
+/**
+ * Serialized session data - can be the raw SessionData object or a JSON string
+ */
+type SerializedSession = session.SessionData | string;
+
+/**
+ * Function to serialize session data for storage.
+ * Can return either the session object or a JSON string.
+ */
+type SerializeFunction = (session: session.SessionData) => SerializedSession;
+
+/**
+ * Function to deserialize session data from storage.
+ * Takes either a session object or JSON string and returns SessionData.
+ */
+
+type UnserializeFunction = (data: any) => session.SessionData;
+
+/**
+ * Function to transform session ID before storage (e.g., for hashing)
+ */
+type TransformIdFunction = (sessionId: string) => string;
+
 export interface ConnectMongoOptions {
   mongoUrl?: string;
   clientPromise?: Promise<MongoClient>;
@@ -35,11 +58,10 @@ export interface ConnectMongoOptions {
   createAutoRemoveIdx?: boolean;
   autoRemove?: 'native' | 'interval' | 'disabled';
   autoRemoveInterval?: number;
-  // FIXME: remove those any
-  serialize?: (a: any) => any;
-  unserialize?: (a: any) => any;
+  serialize?: SerializeFunction;
+  unserialize?: UnserializeFunction;
   writeOperationOptions?: WriteConcernSettings;
-  transformId?: (a: any) => any;
+  transformId?: TransformIdFunction;
 }
 
 type ConcretCryptoOptions = Required<CryptoOptions>;
@@ -57,18 +79,16 @@ interface ConcretConnectMongoOptions {
   autoRemoveInterval: number;
   touchAfter: number;
   stringify: boolean;
-  // FIXME: remove those any
-  serialize?: (a: any) => any;
-  unserialize?: (a: any) => any;
+  serialize?: SerializeFunction;
+  unserialize?: UnserializeFunction;
   writeOperationOptions?: WriteConcernSettings;
-  transformId?: (a: any) => any;
-  // FIXME: remove above any
+  transformId?: TransformIdFunction;
   crypto: ConcretCryptoOptions;
 }
 
 interface InternalSessionType {
   _id: string;
-  session: any;
+  session: SerializedSession;
   expires?: Date;
   lastModified?: Date;
 }
@@ -77,36 +97,38 @@ interface InternalSessionType {
 const noop = () => {};
 const unit: <T>(a: T) => T = (a) => a;
 
-function defaultSerializeFunction(session: session.SessionData): session.SessionData {
+function defaultSerializeFunction(sessionData: session.SessionData): session.SessionData {
   // Copy each property of the session to a new object
-  const obj = {};
-  let prop;
-  for (prop in session) {
+  const obj: Record<string, unknown> = {};
+  for (const prop in sessionData) {
     if (prop === 'cookie') {
       // Convert the cookie instance to an object, if possible
       // This gets rid of the duplicate object under session.cookie.data property
-      // @ts-expect-error FIXME:
-      obj.cookie = session.cookie.toJSON ? session.cookie.toJSON() : session.cookie;
+      const cookie = sessionData.cookie as session.Cookie & { toJSON?: () => session.Cookie };
+      obj.cookie = cookie.toJSON ? cookie.toJSON() : sessionData.cookie;
     } else {
-      obj[prop] = session[prop];
+      obj[prop] = (sessionData as unknown as Record<string, unknown>)[prop];
     }
   }
 
-  return obj as session.SessionData;
+  return obj as unknown as session.SessionData;
 }
 
-function computeTransformFunctions(options: ConcretConnectMongoOptions) {
+function computeTransformFunctions(options: ConcretConnectMongoOptions): {
+  serialize: SerializeFunction;
+  unserialize: UnserializeFunction;
+} {
   if (options.serialize || options.unserialize) {
     return {
       serialize: options.serialize || defaultSerializeFunction,
-      unserialize: options.unserialize || unit,
+      unserialize: options.unserialize || (unit as UnserializeFunction),
     };
   }
 
   if (options.stringify === false) {
     return {
       serialize: defaultSerializeFunction,
-      unserialize: unit,
+      unserialize: unit as UnserializeFunction,
     };
   }
   // Default case
@@ -116,16 +138,27 @@ function computeTransformFunctions(options: ConcretConnectMongoOptions) {
   };
 }
 
+/**
+ * Interface for optional crypto module (e.g., kruptein) for session encryption
+ */
+interface CryptoModule {
+  get: (secret: string, data: string, callback: (err: Error | null, plaintext?: string) => void) => void;
+  set: (
+    secret: string,
+    data: string,
+    callback: (err: Error | null, ciphertext?: string) => void,
+  ) => void;
+}
+
 export default class MongoStore extends session.Store {
   private clientP: Promise<MongoClient>;
-  private crypto: any = null;
+  private crypto: CryptoModule | null = null;
   private timer?: NodeJS.Timeout;
   collectionP: Promise<Collection<InternalSessionType>>;
   private options: ConcretConnectMongoOptions;
-  // FIXME: remvoe any
   private transformFunctions: {
-    serialize: (a: any) => any;
-    unserialize: (a: any) => any;
+    serialize: SerializeFunction;
+    unserialize: UnserializeFunction;
   };
 
   constructor({
@@ -253,17 +286,20 @@ export default class MongoStore extends session.Store {
 
   /**
    * Decrypt given session data
-   * @param session session data to be decrypt. Mutate the input session.
+   * @param internalSession Internal session document to decrypt. Mutates the input.
    */
-  private async decryptSession(session: session.SessionData | undefined | null) {
-    if (this.crypto && session) {
-      const plaintext = await this.cryptoGet(
-        this.options.crypto.secret as string,
-        (session as any).session,
-      ).catch((err: any) => {
-        throw new Error(err);
-      });
-      (session as any).session = JSON.parse(plaintext);
+  private async decryptSession(internalSession: InternalSessionType) {
+    if (this.crypto && internalSession) {
+      const encryptedData =
+        typeof internalSession.session === 'string'
+          ? internalSession.session
+          : JSON.stringify(internalSession.session);
+      const plaintext = await this.cryptoGet(this.options.crypto.secret as string, encryptedData).catch(
+        (err: Error) => {
+          throw new Error(err.message);
+        },
+      );
+      internalSession.session = JSON.parse(plaintext as string);
     }
   }
 
@@ -276,18 +312,17 @@ export default class MongoStore extends session.Store {
       try {
         logger.debug(`MongoStore#get=${sid}`);
         const collection = await this.collectionP;
-        const session = await collection.findOne({
+        const internalSession = await collection.findOne({
           _id: this.computeStorageId(sid),
           $or: [{ expires: { $exists: false } }, { expires: { $gt: new Date() } }],
         });
-        if (this.crypto && session) {
-          await this.decryptSession(session as unknown as session.SessionData).catch((err) =>
-            callback(err),
-          );
+        if (this.crypto && internalSession) {
+          await this.decryptSession(internalSession).catch((err) => callback(err));
         }
-        const s = session && this.transformFunctions.unserialize(session.session);
-        if (this.options.touchAfter > 0 && session?.lastModified) {
-          s.lastModified = session.lastModified;
+        const s = internalSession && this.transformFunctions.unserialize(internalSession.session);
+        if (this.options.touchAfter > 0 && internalSession?.lastModified) {
+          (s as session.SessionData & { lastModified?: Date }).lastModified =
+            internalSession.lastModified;
         }
         this.emit('get', sid);
         callback(null, s === undefined ? null : s);
@@ -307,10 +342,10 @@ export default class MongoStore extends session.Store {
       try {
         logger.debug(`MongoStore#set=${sid}`);
         // Removing the lastModified prop from the session object before update
-        // @ts-expect-error Session not typed
-        if (this.options.touchAfter > 0 && session?.lastModified) {
-          // @ts-expect-error Session not typed
-          delete session.lastModified;
+        // lastModified is added by this store but not part of standard SessionData
+        const sessionWithMeta = session as session.SessionData & { lastModified?: Date };
+        if (this.options.touchAfter > 0 && sessionWithMeta.lastModified) {
+          delete sessionWithMeta.lastModified;
         }
         const s: InternalSessionType = {
           _id: this.computeStorageId(sid),
@@ -335,12 +370,14 @@ export default class MongoStore extends session.Store {
         }
         if (this.crypto) {
           const cryptoSet = util.promisify(this.crypto.set).bind(this.crypto);
-          const data = await cryptoSet(this.options.crypto.secret as string, s.session).catch(
-            (err: any) => {
-              throw new Error(err);
+          // Crypto expects string data - serialize if needed
+          const sessionString = typeof s.session === 'string' ? s.session : JSON.stringify(s.session);
+          const data = await cryptoSet(this.options.crypto.secret as string, sessionString).catch(
+            (err: Error) => {
+              throw new Error(err.message);
             },
           );
-          s.session = data as unknown as session.SessionData;
+          s.session = data as string;
         }
         const collection = await this.collectionP;
         const rawResp = await collection.updateOne(
@@ -429,15 +466,15 @@ export default class MongoStore extends session.Store {
       try {
         logger.debug('MongoStore#all()');
         const collection = await this.collectionP;
-        const sessions = collection.find({
+        const internalSessions = collection.find({
           $or: [{ expires: { $exists: false } }, { expires: { $gt: new Date() } }],
         });
         const results: session.SessionData[] = [];
-        for await (const session of sessions) {
-          if (this.crypto && session) {
-            await this.decryptSession(session as unknown as session.SessionData);
+        for await (const internalSession of internalSessions) {
+          if (this.crypto && internalSession) {
+            await this.decryptSession(internalSession);
           }
-          results.push(this.transformFunctions.unserialize(session.session));
+          results.push(this.transformFunctions.unserialize(internalSession.session));
         }
         this.emit('all', results);
         callback(null, results);
@@ -470,12 +507,11 @@ export default class MongoStore extends session.Store {
   /**
    * Get the count of all sessions in the store
    */
-  length(callback: (err: any, length: number) => void): void {
+  length(callback: (err: any, length?: number) => void): void {
     logger.debug('MongoStore#length()');
     this.collectionP
       .then((collection) => collection.countDocuments())
       .then((c) => callback(null, c))
-      // @ts-expect-error Callback wrong type
       .catch((err) => callback(err));
   }
 

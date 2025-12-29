@@ -18,7 +18,7 @@ export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId,
   const text = `
 I'm sorry we can't confirm your order.
 
-This can happen when the payment was not successful or the order was manually canceled because of product availability or fullfillment issues.
+This can happen when the payment was not successful or the order was manually canceled because of product availability or fulfillment issues.
 
 The order in question is:
 

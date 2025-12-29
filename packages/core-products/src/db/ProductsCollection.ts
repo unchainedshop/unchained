@@ -166,6 +166,7 @@ export const ProductsCollection = async (db: mongodb.Db) => {
 
   // Product Indexes
   await buildDbIndexes(Products, [
+    { index: { deleted: 1 } },
     { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { status: 1 } },

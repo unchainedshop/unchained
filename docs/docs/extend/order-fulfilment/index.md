@@ -78,7 +78,7 @@ If cancel throws, order will stay in status `PENDING` and the process is interru
 Else, the order will be persisted in final status `REJECTED`.
 
 
- ### `CONFIRMED` => `FULLFILLED` (Fullfilment)
+ ### `CONFIRMED` => `FULFILLED` (Fulfillment)
 
 The system now proceeds with delivery. It first hands this over to the `DeliveryDirector` which tries to initiate and complete delivery.
 
@@ -90,9 +90,9 @@ No matter if the delivery is successful or not, next, Unchained will also iterat
 
 - `WarehousingDirector` digitally instantiates (`tokenize`) order positions for TokenizedProduct.
 - `EnrollmentDirector` creates enrollments (`transformOrderItemToEnrollment`) for PlanProducts.
-- `QuotationDirector` marks linked quotations as fullfilled because the offer has been accepted through order fullfilment. 
+- `QuotationDirector` marks linked quotations as fulfilled because the offer has been accepted through order fulfillment.
 
-After that Unchained checks if order delivery is `DELIVERED` and order payment is `PAID`. If that is the case, the order is persisted with the final status `FULLFILLED`, else it will stay `CONFIRMED`.
+After that Unchained checks if order delivery is `DELIVERED` and order payment is `PAID`. If that is the case, the order is persisted with the final status `FULFILLED`, else it will stay `CONFIRMED`.
 
 :::danger It's discouraged to write plugins that throw
 If any of the above actions throw because of your own code in for ex. a `WarehousingAdapter`, the process gets interrupted in an unsupported state. Resolving that state needs custom code and deep knowledge about the inner workings! There is no standard API to retry those actions, triggering the Order Processor will not retry those actions either.

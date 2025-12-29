@@ -1,3 +1,8 @@
+// TODO: Document collection naming conventions across the codebase:
+// - Some use singular (e.g., 'products'), some use underscores (e.g., 'product_texts')
+// - Consider standardizing in a major version
+// TODO: Consider adding sparse index usage documentation
+// TODO: Add DocumentDB compatibility checks documentation
 import type { Collection, Document, CreateIndexesOptions, IndexSpecification } from 'mongodb';
 import { createLogger } from '@unchainedshop/logger';
 

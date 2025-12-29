@@ -6,11 +6,14 @@ import {
   isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 
+// NOTE: Renamed from FULLFILLED to FULFILLED in v5.0.0
+// Migration for status: db.quotations.updateMany({ status: 'FULLFILLED' }, { $set: { status: 'FULFILLED' } })
+// Migration for field: db.quotations.updateMany({ fullfilled: { $exists: true } }, { $rename: { fullfilled: 'fulfilled' } })
 export const QuotationStatus = {
   REQUESTED: 'REQUESTED',
   PROCESSING: 'PROCESSING',
   PROPOSED: 'PROPOSED',
-  FULLFILLED: 'FULLFILLED',
+  FULFILLED: 'FULFILLED',
   REJECTED: 'REJECTED',
 } as const;
 
@@ -34,7 +37,7 @@ export type Quotation = {
   countryCode?: string;
   currencyCode?: string;
   expires?: Date;
-  fullfilled?: Date;
+  fulfilled?: Date;
   meta?: any;
   price?: number;
   productId: string;
@@ -56,16 +59,12 @@ export const QuotationsCollection = async (db: mongodb.Db) => {
           userId: 'text',
           quotationNumber: 'text',
           status: 'text',
-          'contact.telNumber': 'text',
-          'contact.emailAddress': 'text',
         } as any,
         options: {
           weights: {
             _id: 8,
             userId: 3,
             quotationNumber: 6,
-            'contact.telNumber': 5,
-            'contact.emailAddress': 4,
             status: 1,
           },
           name: 'quotation_fulltext_search',

@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
+  "description": "Product filtering and search module for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/filters-index.js",
   "types": "lib/filters-index.d.ts",

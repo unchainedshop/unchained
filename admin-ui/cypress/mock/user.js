@@ -1144,7 +1144,7 @@ export const UserOrderListResponse = {
           ordered: '2022-04-21T14:42:31.368Z',
           orderNumber: '20220421-11',
           confirmed: '2022-04-25T20:00:30.870Z',
-          fullfilled: null,
+          fulfilled: null,
           contact: {
             telNumber: '+41763106487',
             emailAddress: null,
@@ -1282,7 +1282,7 @@ export const SingleOrderResponse = {
       updated: '2022-05-24T18:05:30.003Z',
       ordered: '2022-04-28T12:48:47.490Z',
       confirmed: '2022-05-24T18:05:30.003Z',
-      fullfilled: null,
+      fulfilled: null,
       contact: {
         telNumber: '+41782057916',
         emailAddress: null,
@@ -1395,7 +1395,7 @@ export const OrderStatusResponse = {
           __typename: '__EnumValue',
         },
         {
-          value: 'FULLFILLED',
+          value: 'FULFILLED',
           label:
             'Order has been fulfilled completely (all positions in delivery)',
           __typename: '__EnumValue',
@@ -1445,7 +1445,7 @@ const QuotationList = [
     expires: '2022-07-05T07:14:50.211Z',
     status: 'REQUESTED',
     isExpired: false,
-    fullfilled: '2022-07-05T07:14:50.211Z',
+    fulfilled: '2022-07-05T07:14:50.211Z',
     rejected: '2022-07-05T07:14:50.211Z',
     updated: '2022-07-05T07:14:50.211Z',
     __typename: 'Quotation',
@@ -1851,7 +1851,7 @@ export const GetSingleOrderResponse = {
       updated: '2022-05-24T18:05:30.003Z',
       ordered: '2022-04-28T12:48:47.490Z',
       confirmed: '2022-05-24T18:05:30.003Z',
-      fullfilled: null,
+      fulfilled: null,
       contact: {
         telNumber: '+41782057916',
         emailAddress: null,

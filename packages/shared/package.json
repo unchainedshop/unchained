@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/shared",
+  "description": "Shared TypeScript configuration for the Unchained Engine monorepo",
   "private": true,
   "version": "4.5.0",
   "scripts": {

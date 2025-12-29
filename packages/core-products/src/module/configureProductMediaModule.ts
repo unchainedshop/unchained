@@ -288,3 +288,5 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     },
   };
 };
+
+export type ProductMediaModule = Awaited<ReturnType<typeof configureProductMediaModule>>;

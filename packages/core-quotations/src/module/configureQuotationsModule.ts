@@ -86,9 +86,9 @@ export const configureQuotationsModule = async ({
 
     switch (status) {
       // explicitly use fallthrough here!
-      case QuotationStatus.FULLFILLED:
-        if (!quotation.fullfilled) {
-          $set.fullfilled = date;
+      case QuotationStatus.FULFILLED:
+        if (!quotation.fulfilled) {
+          $set.fulfilled = date;
         }
         $set.expires = date;
       case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough

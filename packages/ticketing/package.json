@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
+  "description": "Event ticketing extension for the Unchained Engine with PDF and wallet pass support",
   "version": "4.5.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

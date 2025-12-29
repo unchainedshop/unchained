@@ -9,7 +9,7 @@ const OrderFragment = gql`
     ordered
     orderNumber
     confirmed
-    fullfilled
+    fulfilled
     contact {
       telNumber
       emailAddress

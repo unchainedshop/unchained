@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/roles",
   "version": "4.5.0",
-  "description": "Roles package for unchained engine",
+  "description": "Role-based access control system for the Unchained Engine",
   "main": "lib/roles-index.js",
   "types": "lib/roles-index.d.ts",
   "type": "module",

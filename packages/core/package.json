@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core",
+  "description": "Core orchestration package for the Unchained Engine with business services and directors",
   "version": "4.5.0",
   "main": "lib/core-index.js",
   "types": "lib/core-index.d.ts",

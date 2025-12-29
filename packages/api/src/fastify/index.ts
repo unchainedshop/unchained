@@ -1,3 +1,6 @@
+// TODO: Consider creating shared handler abstractions with express adapter
+// to reduce code duplication for bulk import, file upload, webhooks, and chat handlers.
+// See packages/api/src/express/index.ts for the parallel implementation.
 import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
 import bulkImportHandler from './bulkImportHandler.ts';
 import ercMetadataHandler from './ercMetadataHandler.ts';

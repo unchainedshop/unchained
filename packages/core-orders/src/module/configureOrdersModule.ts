@@ -20,11 +20,13 @@ import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
 const require = createRequire(import.meta.url);
 const { Locker, MongoAdapter } = require('@kontsedal/locco');
 
+// NOTE: Renamed from ORDER_FULLFILLED to ORDER_FULFILLED in v5.0.0
+// This is a breaking change for event subscribers
 const ORDER_EVENTS: string[] = [
   'ORDER_CHECKOUT',
   'ORDER_CONFIRMED',
   'ORDER_REJECTED',
-  'ORDER_FULLFILLED',
+  'ORDER_FULFILLED',
 ];
 
 export const configureOrdersModule = async ({
@@ -113,8 +115,8 @@ export const configureOrdersModule = async ({
       };
       switch (status) {
         // explicitly use fallthrough here!
-        case OrderStatus.FULLFILLED:
-          $set.fullfilled = order.fullfilled || date;
+        case OrderStatus.FULFILLED:
+          $set.fulfilled = order.fulfilled || date;
         case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
         case OrderStatus.CONFIRMED:
           if (status === OrderStatus.REJECTED) {
@@ -159,8 +161,8 @@ export const configureOrdersModule = async ({
           await emit('ORDER_CHECKOUT', { order: modificationResult.value, oldStatus: order.status });
         }
         switch (status) {
-          case OrderStatus.FULLFILLED:
-            await emit('ORDER_FULLFILLED', { order: modificationResult.value, oldStatus: order.status });
+          case OrderStatus.FULFILLED:
+            await emit('ORDER_FULFILLED', { order: modificationResult.value, oldStatus: order.status });
             break;
           case OrderStatus.REJECTED:
             await emit('ORDER_REJECTED', { order: modificationResult.value, oldStatus: order.status });

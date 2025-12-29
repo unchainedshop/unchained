@@ -8,7 +8,7 @@ import { normalizeQuery } from '../../common/utils/utils';
 import DateRangeFilterInput from '../../common/components/DateRangeFilterInput';
 import { useMemo } from 'react';
 
-const ORDER_STATUSES = ['PENDING', 'REJECTED', 'CONFIRMED', 'FULLFILLED'];
+const ORDER_STATUSES = ['PENDING', 'REJECTED', 'CONFIRMED', 'FULFILLED'];
 
 const OrderFilters = ({ paymentProviders = [], deliveryProviders = [] }) => {
   const router = useRouter();

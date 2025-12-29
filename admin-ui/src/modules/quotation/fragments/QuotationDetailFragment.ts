@@ -55,7 +55,7 @@ const QuotationDetailFragment = gql`
     updated
     isExpired
     quotationNumber
-    fullfilled
+    fulfilled
     rejected
   }
 `;

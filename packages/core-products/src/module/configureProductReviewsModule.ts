@@ -306,3 +306,5 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
     },
   };
 };
+
+export type ProductReviewsModule = Awaited<ReturnType<typeof configureProductReviewsModule>>;

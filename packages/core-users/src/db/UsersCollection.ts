@@ -41,7 +41,7 @@ export interface Email {
 
 export type User = {
   _id: string;
-  deleted?: Date;
+  deleted?: Date | null;
   avatarId?: string;
   emails: Email[];
   guest: boolean;

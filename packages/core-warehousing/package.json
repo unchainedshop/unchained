@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core-warehousing",
+  "description": "Inventory and stock management module for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/warehousing-index.js",
   "types": "lib/warehousing-index.d.ts",

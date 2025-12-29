@@ -78,13 +78,13 @@ const CopilotOrderItemWrapper = ({ order, children = null }) => {
               {formatMessage({ id: 'confirmed', defaultMessage: 'Confirmed' })}:{' '}
               <strong>{formatDateTime(order?.confirmed)}</strong>
             </span>
-            {order?.fullfilled && (
+            {order?.fulfilled && (
               <span>
                 {formatMessage({
                   id: 'fulfilled',
                   defaultMessage: 'Fulfilled',
                 })}
-                : <strong>{formatDateTime(order?.fullfilled)}</strong>
+                : <strong>{formatDateTime(order?.fulfilled)}</strong>
               </span>
             )}
             {order?.delivery?.delivered && (

@@ -24,7 +24,7 @@ export default [
       """
       Quotation has been used to order the product
       """
-      FULLFILLED
+      FULFILLED
     }
 
     enum QuotationDocumentType {
@@ -52,7 +52,7 @@ export default [
       updated: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       quotationNumber: String
-      fullfilled: DateTime
+      fulfilled: DateTime
       rejected: DateTime
       country: Country
       currency: Currency

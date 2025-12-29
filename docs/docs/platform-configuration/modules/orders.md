@@ -76,7 +76,7 @@ const options = {
 | `ORDER_REMOVE` | `{ orderId }` | Emitted when an order is removed |
 | `ORDER_CHECKOUT` | `{ order, oldStatus }` | Emitted when checkout is initiated |
 | `ORDER_CONFIRMED` | `{ order, oldStatus }` | Emitted when an order is confirmed |
-| `ORDER_FULLFILLED` | `{ order, oldStatus }` | Emitted when an order is fulfilled |
+| `ORDER_FULFILLED` | `{ order, oldStatus }` | Emitted when an order is fulfilled |
 | `ORDER_REJECTED` | `{ order, oldStatus }` | Emitted when an order is rejected |
 | `ORDER_ADD_PRODUCT` | `{ orderPosition }` | Emitted when a product is added to cart |
 | `ORDER_UPDATE_CART_ITEM` | `{ orderPosition }` | Emitted when a cart item is updated |

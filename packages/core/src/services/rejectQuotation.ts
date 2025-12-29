@@ -7,7 +7,7 @@ export async function rejectQuotationService(
   quotation: Quotation,
   { quotationContext }: { quotationContext?: any },
 ) {
-  if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
+  if (quotation.status === QuotationStatus.FULFILLED) return quotation;
 
   const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {
     status: QuotationStatus.REJECTED,

@@ -99,6 +99,7 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
   }
 
   await buildDbIndexes(Assortments, [
+    { index: { deleted: 1 } },
     { index: { isActive: 1 } },
     { index: { isRoot: 1 } },
     { index: { sequence: 1 } },

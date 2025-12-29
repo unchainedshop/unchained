@@ -300,3 +300,5 @@ export const configureProductPricesModule = ({
     },
   };
 };
+
+export type ProductPricesModule = ReturnType<typeof configureProductPricesModule>;

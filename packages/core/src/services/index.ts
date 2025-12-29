@@ -32,7 +32,7 @@ import { initializeEnrollmentService } from './initializeEnrollment.ts';
 import { activateEnrollmentService } from './activateEnrollment.ts';
 import { terminateEnrollmentService } from './terminateEnrollment.ts';
 import { invalidateFilterCacheService } from './invalidateFilterCache.ts';
-import { fullfillQuotationService } from './fullfillQuotation.ts';
+import { fulfillQuotationService } from './fulfillQuotation.ts';
 import { processQuotationService } from './processQuotation.ts';
 import { proposeQuotationService } from './proposeQuotation.ts';
 import { rejectQuotationService } from './rejectQuotation.ts';
@@ -168,7 +168,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       terminateEnrollment: terminateEnrollmentService as Bound<typeof terminateEnrollmentService>,
     },
     quotations: {
-      fullfillQuotation: fullfillQuotationService as Bound<typeof fullfillQuotationService>,
+      fulfillQuotation: fulfillQuotationService as Bound<typeof fulfillQuotationService>,
       processQuotation: processQuotationService as Bound<typeof processQuotationService>,
       proposeQuotation: proposeQuotationService as Bound<typeof proposeQuotationService>,
       rejectQuotation: rejectQuotationService as Bound<typeof rejectQuotationService>,

@@ -42,7 +42,7 @@ test.describe('Quotation: Workflow', () => {
               updated
               isExpired
               quotationNumber
-              fullfilled
+              fulfilled
               rejected
               country {
                 isoCode
@@ -73,7 +73,7 @@ test.describe('Quotation: Workflow', () => {
         updated: null,
         isExpired: false,
         quotationNumber: null,
-        fullfilled: null,
+        fulfilled: null,
         rejected: null,
         country: {},
         currency: {},
@@ -151,7 +151,7 @@ test.describe('Quotation: Workflow', () => {
               updated
               isExpired
               quotationNumber
-              fullfilled
+              fulfilled
               rejected
             }
           }
@@ -164,7 +164,7 @@ test.describe('Quotation: Workflow', () => {
       assert.partialDeepStrictEqual(verifyQuotation, {
         status: 'PROCESSING',
         isExpired: false,
-        fullfilled: null,
+        fulfilled: null,
         rejected: null,
       });
     });
@@ -216,7 +216,7 @@ test.describe('Quotation: Workflow', () => {
               updated
               isExpired
               quotationNumber
-              fullfilled
+              fulfilled
               rejected
             }
           }
@@ -230,7 +230,7 @@ test.describe('Quotation: Workflow', () => {
       assert.partialDeepStrictEqual(rejectQuotation, {
         status: 'REJECTED',
         isExpired: true,
-        fullfilled: null,
+        fulfilled: null,
       });
     });
 
@@ -281,7 +281,7 @@ test.describe('Quotation: Workflow', () => {
               updated
               isExpired
               quotationNumber
-              fullfilled
+              fulfilled
               rejected
             }
           }
@@ -294,7 +294,7 @@ test.describe('Quotation: Workflow', () => {
       assert.partialDeepStrictEqual(makeQuotationProposal, {
         status: 'PROPOSED',
         isExpired: false,
-        fullfilled: null,
+        fulfilled: null,
         rejected: null,
       });
     });

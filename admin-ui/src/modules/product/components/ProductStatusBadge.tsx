@@ -20,7 +20,7 @@ export const ProductStatusBadge: React.FC<ProductStatusBadgeProps> = ({
     PENDING: formatMessage({ id: 'pending', defaultMessage: 'PENDING' }),
     CONFIRMED: formatMessage({ id: 'confirmed', defaultMessage: 'CONFIRMED' }),
     OPEN: formatMessage({ id: 'open', defaultMessage: 'OPEN' }),
-    FULLFILLED: formatMessage({ id: 'fulfilled', defaultMessage: 'FULFILLED' }),
+    FULFILLED: formatMessage({ id: 'fulfilled', defaultMessage: 'FULFILLED' }),
     REJECTED: formatMessage({ id: 'rejected', defaultMessage: 'REJECTED' }),
   };
 

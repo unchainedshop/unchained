@@ -5,6 +5,21 @@ import { validateOrderService } from './validateOrder.ts';
 import { processOrderService } from './processOrder.ts';
 import type { User } from '@unchainedshop/core-users';
 
+/**
+ * Service function to checkout an order.
+ *
+ * Note: This function uses `this: Modules` binding pattern for dependency injection.
+ * When calling this service, use `.bind(modules)` or `.call(modules, ...)` to provide
+ * the modules context. This pattern allows services to access all modules without
+ * explicit parameter passing, improving code readability and reducing coupling.
+ *
+ * @example
+ * ```typescript
+ * const result = await checkoutOrderService.bind(modules)(orderId, transactionContext);
+ * // or
+ * const result = await checkoutOrderService.call(modules, orderId, transactionContext);
+ * ```
+ */
 export async function checkoutOrderService(
   this: Modules,
   orderId: string,

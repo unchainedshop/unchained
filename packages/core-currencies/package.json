@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core-currencies",
+  "description": "Currency management module for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/currencies-index.js",
   "types": "lib/currencies-index.d.ts",

@@ -2,12 +2,14 @@ import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { UserNotFoundError } from '../../../errors.ts';
 
+// Note: This resolver is protected by the 'updateUser' ACL action (see mutations/index.ts)
+// Logged-in users can only remove themselves (isMyself check in loggedIn.ts)
+// Admin users can remove any user
 export default async function removeUser(
   root: never,
   params: { userId: string; removeUserReviews?: boolean },
-  unchainedAPI: Context,
+  { modules, services, userId: currentUserId }: Context,
 ) {
-  const { modules, services, userId: currentUserId } = unchainedAPI;
   const { userId: paramUserId, removeUserReviews = false } = params;
   const normalizedUserId = paramUserId || currentUserId;
 

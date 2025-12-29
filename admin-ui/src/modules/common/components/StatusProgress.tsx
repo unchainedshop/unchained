@@ -133,7 +133,7 @@ const StatusProgress = ({ data, statusTypes, timeline }) => {
                                 id: 'open',
                                 defaultMessage: 'OPEN',
                               })
-                            : value === 'FULLFILLED'
+                            : value === 'FULFILLED'
                               ? formatMessage({
                                   id: 'fulfilled',
                                   defaultMessage: 'FULFILLED',

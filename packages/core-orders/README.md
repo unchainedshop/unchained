@@ -103,7 +103,7 @@ await ordersModule.checkout(orderId, { paymentContext: {} });
 
 | Export | Description |
 |--------|-------------|
-| `OrderStatus` | Order status values (OPEN, PENDING, CONFIRMED, FULLFILLED, REJECTED) |
+| `OrderStatus` | Order status values (OPEN, PENDING, CONFIRMED, FULFILLED, REJECTED) |
 
 ### Settings
 
@@ -132,7 +132,7 @@ await ordersModule.checkout(orderId, { paymentContext: {} });
 | `ORDER_CHECKOUT` | Order checked out |
 | `ORDER_CONFIRMED` | Order confirmed |
 | `ORDER_REJECTED` | Order rejected |
-| `ORDER_FULLFILLED` | Order fulfilled |
+| `ORDER_FULFILLED` | Order fulfilled |
 
 ## License
 

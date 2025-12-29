@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/file-upload",
+  "description": "File upload abstraction layer for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/file-upload-index.js",
   "types": "lib/file-upload-index.d.ts",

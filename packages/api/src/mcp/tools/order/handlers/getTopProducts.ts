@@ -12,7 +12,7 @@ export default async function getTopProducts(context: Context, params: Params<'T
 
   const orders = await modules.orders.findOrders(
     {
-      status: [OrderStatus.CONFIRMED, OrderStatus.FULLFILLED],
+      status: [OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
       dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
     },
     {

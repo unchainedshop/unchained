@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/utils",
+  "description": "Common utility functions and base classes for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/utils-index.js",
   "types": "lib/utils-index.d.ts",

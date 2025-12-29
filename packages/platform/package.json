@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/platform",
+  "description": "Complete e-commerce platform bundle for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",

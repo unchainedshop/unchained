@@ -7,7 +7,7 @@ type OrderStatus =
   | 'PENDING'
   | 'CONFIRMED'
   | 'OPEN'
-  | 'FULLFILLED'
+  | 'FULFILLED'
   | 'REJECTED'
   | string;
 
@@ -19,7 +19,7 @@ const statusColors: Record<string, string> = {
   PENDING: 'bg-yellow-100 text-yellow-800',
   CONFIRMED: 'bg-blue-100 text-blue-800',
   OPEN: 'bg-gray-100 text-gray-800',
-  FULLFILLED: 'bg-green-100 text-green-800',
+  FULFILLED: 'bg-green-100 text-green-800',
   REJECTED: 'bg-red-100 text-red-800',
 };
 export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
@@ -32,7 +32,7 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
     PENDING: formatMessage({ id: 'pending', defaultMessage: 'PENDING' }),
     CONFIRMED: formatMessage({ id: 'confirmed', defaultMessage: 'CONFIRMED' }),
     OPEN: formatMessage({ id: 'open', defaultMessage: 'OPEN' }),
-    FULLFILLED: formatMessage({ id: 'fulfilled', defaultMessage: 'FULFILLED' }),
+    FULFILLED: formatMessage({ id: 'fulfilled', defaultMessage: 'FULFILLED' }),
     REJECTED: formatMessage({ id: 'rejected', defaultMessage: 'REJECTED' }),
   };
 

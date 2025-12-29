@@ -84,6 +84,107 @@ await stopDb(db);
 |----------|-------------|
 | `UNCHAINED_DOCUMENTDB_COMPAT_MODE` | Enable AWS DocumentDB compatibility mode |
 
+## Best Practices
+
+### Collection Naming Conventions
+
+Unchained uses the following collection naming patterns:
+
+| Pattern | Example | Usage |
+|---------|---------|-------|
+| Plural lowercase | `products`, `orders`, `users` | Main entity collections |
+| Underscore-separated | `product_texts`, `product_media` | Related sub-collections |
+
+**Note:** Some legacy collections may use different patterns. When creating new collections, prefer the underscore-separated pattern for sub-collections.
+
+### Index Guidelines
+
+#### Using `buildDbIndexes`
+
+Always use the `buildDbIndexes` helper to create indexes:
+
+```typescript
+import { buildDbIndexes } from '@unchainedshop/mongodb';
+
+await buildDbIndexes<Product>(Products, [
+  { index: { deleted: 1 } },           // Soft delete support
+  { index: { status: 1 } },            // Query by status
+  { index: { slugs: 1 } },             // URL slug lookups
+  { index: { tags: 1 } },              // Tag filtering
+]);
+```
+
+#### Soft Delete Pattern
+
+Collections using soft delete should always include a `deleted` index:
+
+```typescript
+{ index: { deleted: 1 } }
+```
+
+Queries should filter by `deleted: null` to exclude soft-deleted documents.
+
+#### Sparse Indexes
+
+Use sparse indexes when the indexed field may be null/undefined for most documents:
+
+```typescript
+{
+  index: { optionalField: 1 },
+  options: { sparse: true }
+}
+```
+
+Sparse indexes are smaller and more efficient when the field is rarely present.
+
+#### Text Indexes
+
+For full-text search, create compound text indexes:
+
+```typescript
+{
+  index: {
+    _id: 'text',
+    name: 'text',
+    description: 'text',
+  } as any,
+  options: {
+    weights: {
+      _id: 10,
+      name: 5,
+      description: 1,
+    },
+    name: 'fulltext_search',
+  },
+}
+```
+
+**Important:** Text indexes are not supported in DocumentDB compatibility mode. Use `isDocumentDBCompatModeEnabled()` to conditionally create them.
+
+### DocumentDB Compatibility
+
+When running on AWS DocumentDB, some MongoDB features are not supported:
+
+| Feature | Alternative |
+|---------|-------------|
+| Text indexes | Use application-level search or external search service |
+| `$text` queries | Use regex queries (less performant) |
+| Some aggregation operators | Check DocumentDB documentation |
+
+Use the compatibility helpers:
+
+```typescript
+import { isDocumentDBCompatModeEnabled, assertDocumentDBCompatMode } from '@unchainedshop/mongodb';
+
+// Check before using unsupported features
+if (!isDocumentDBCompatModeEnabled()) {
+  // Create text index
+}
+
+// Throw error if DocumentDB mode is enabled
+assertDocumentDBCompatMode(); // Throws if in compat mode
+```
+
 ## License
 
 EUPL-1.2

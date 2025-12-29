@@ -873,7 +873,7 @@ export const ORDER_STATUSES = {
   OPEN: 'purple',
   PENDING: 'sky',
   CONFIRMED: 'lime',
-  FULLFILLED: 'emerald',
+  FULFILLED: 'emerald',
   REJECTED: 'rose',
 };
 
@@ -900,5 +900,5 @@ export const QUOTATION_STATUS = {
   PROCESSING: 'yellow',
   PROPOSED: 'cyan',
   REJECTED: 'red',
-  FULLFILLED: 'emerald',
+  FULFILLED: 'emerald',
 };

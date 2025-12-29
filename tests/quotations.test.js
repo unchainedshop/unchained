@@ -45,7 +45,7 @@ test.describe('Quotations', async () => {
               updated
               isExpired
               quotationNumber
-              fullfilled
+              fulfilled
               rejected
               country {
                 _id
@@ -171,7 +171,7 @@ test.describe('Quotations', async () => {
               updated
               isExpired
               quotationNumber
-              fullfilled
+              fulfilled
               rejected
               country {
                 _id

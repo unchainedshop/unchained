@@ -1,3 +1,6 @@
+// TODO: Consider implementing explicit plugin registration instead of auto-registration on import
+// Current approach: Plugins self-register when imported, which can lead to side-effects
+// Alternative: Require explicit registration calls (e.g., PaymentDirector.registerAdapter(StripeAdapter))
 export * from './BasePricingAdapter.ts';
 export * from './BasePricingDirector.ts';
 export * from './BasePricingSheet.ts';

@@ -187,3 +187,5 @@ export const configureProductTextsModule = ({
     },
   };
 };
+
+export type ProductTextsModule = ReturnType<typeof configureProductTextsModule>;

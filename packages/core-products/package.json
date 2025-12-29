@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core-products",
+  "description": "Product catalog management module for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/products-index.js",
   "types": "lib/products-index.d.ts",

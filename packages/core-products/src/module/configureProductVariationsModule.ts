@@ -307,3 +307,5 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     },
   };
 };
+
+export type ProductVariationsModule = Awaited<ReturnType<typeof configureProductVariationsModule>>;

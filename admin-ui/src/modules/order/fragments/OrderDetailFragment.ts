@@ -102,7 +102,7 @@ const OrderDetailFragment = gql`
     ordered
 
     confirmed
-    fullfilled
+    fulfilled
     contact {
       telNumber
       emailAddress

@@ -144,9 +144,9 @@ const OrderDetail = ({ order }) => {
       content: 'confirmed',
       visible: order?.status !== 'REJECTED',
     },
-    FULLFILLED: {
+    FULFILLED: {
       id: 5,
-      content: 'fullfilled',
+      content: 'fulfilled',
       visible: order?.status !== 'REJECTED',
     },
   };

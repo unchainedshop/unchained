@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core-files",
+  "description": "File management module for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/files-index.js",
   "types": "lib/files-index.d.ts",

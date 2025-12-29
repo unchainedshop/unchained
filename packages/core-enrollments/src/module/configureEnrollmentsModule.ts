@@ -152,10 +152,7 @@ export const configureEnrollmentsModule = async ({
       if ('enrollmentId' in params) {
         return Enrollments.findOne(generateDbFilterById(params.enrollmentId), options);
       }
-      return Enrollments.findOne(
-        { 'periods.orderId': params.orderId, deleted: { $exists: false } },
-        options,
-      );
+      return Enrollments.findOne({ 'periods.orderId': params.orderId, deleted: null }, options);
     },
 
     findEnrollments: async ({

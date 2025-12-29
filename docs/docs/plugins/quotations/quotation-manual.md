@@ -106,7 +106,7 @@ mutation AcceptQuotation {
 | `REQUESTED` | Customer has requested a quotation |
 | `PROCESSING` | Quotation is being processed |
 | `PROPOSED` | A price has been proposed |
-| `FULLFILLED` | Quotation has been accepted and used |
+| `FULFILLED` | Quotation has been accepted and used |
 | `REJECTED` | Quotation was rejected or expired |
 
 ## Extending the Adapter

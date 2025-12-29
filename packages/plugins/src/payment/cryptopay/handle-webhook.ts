@@ -65,14 +65,29 @@ export default async function handleWebhook(
       }));
 
     if (orderPayment) {
-      // Try to process order to next status
-      // TODO: Not sure if it's correct to use processOrder here if status is PENDING!
       const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
-      if (order!.status === null) {
-        await services.orders.checkoutOrder(order!._id, {});
-      } else if (order!.status === OrderStatus.PENDING) {
-        await services.orders.processOrder(order!, {});
+      if (!order) {
+        logger.error('Order not found for payment', { orderPaymentId, orderId: orderPayment.orderId });
+        throw new Error('Order not found');
+      }
+
+      // Process order based on current status:
+      // - null status: Initial checkout (new order)
+      // - PENDING: Payment received, try to advance to CONFIRMED
+      // - Other statuses: Already processed, reject duplicate webhook
+      if (order.status === null) {
+        logger.info('Initiating checkout for new order', { orderId: order._id });
+        await services.orders.checkoutOrder(order._id, {});
+      } else if (order.status === OrderStatus.PENDING) {
+        // PENDING orders can advance to CONFIRMED when payment is received
+        // processOrder will check if auto-confirmation conditions are met
+        logger.info('Processing pending order after payment update', { orderId: order._id });
+        await services.orders.processOrder(order, {});
       } else {
+        logger.warn('Order already processed, ignoring webhook', {
+          orderId: order._id,
+          status: order.status,
+        });
         throw new Error('Already processed');
       }
     }

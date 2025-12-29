@@ -334,3 +334,5 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
     },
   };
 };
+
+export type UsersWebAuthnModule = Awaited<ReturnType<typeof configureUsersWebAuthnModule>>;

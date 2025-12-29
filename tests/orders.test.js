@@ -84,7 +84,7 @@ test.describe('Order: Lists', () => {
               ordered
               orderNumber
               confirmed
-              fullfilled
+              fulfilled
               contact {
                 telNumber
                 emailAddress
@@ -151,7 +151,7 @@ test.describe('Order: Lists', () => {
             ordered
             orderNumber
             confirmed
-            fullfilled
+            fulfilled
             contact {
               telNumber
               emailAddress

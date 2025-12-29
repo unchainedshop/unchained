@@ -263,10 +263,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {
-      const userCount = await Users.countDocuments(
-        { _id: userId, deleted: { $exists: false } },
-        { limit: 1 },
-      );
+      const userCount = await Users.countDocuments({ _id: userId, deleted: null as any }, { limit: 1 });
       return userCount === 1;
     },
 
@@ -1028,7 +1025,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     existingTags: async (): Promise<string[]> => {
       const tags = (await Users.distinct('tags', {
         tags: { $exists: true },
-        deleted: { $exists: false },
+        deleted: null as any,
       })) as string[];
       return tags.filter(Boolean).toSorted();
     },

@@ -3,13 +3,13 @@ export const OrderListResponse = {
     orders: [
       {
         _id: '9fe0b596d998a414da282b47',
-        status: 'FULLFILLED',
+        status: 'FULFILLED',
         created: '2022-07-05T07:13:43.270Z',
         updated: '2022-07-05T07:53:37.432Z',
         ordered: '2022-07-05T07:14:50.211Z',
         orderNumber: '20220705-2',
         confirmed: '2022-07-05T07:48:17.664Z',
-        fullfilled: '2022-07-05T07:53:37.432Z',
+        fulfilled: '2022-07-05T07:53:37.432Z',
         contact: {
           telNumber: '+41454456656',
           emailAddress: null,
@@ -40,7 +40,7 @@ export const OrderListResponse = {
         ordered: '2022-07-05T07:13:43.213Z',
         orderNumber: '20220705-1',
         confirmed: '2022-07-05T16:30:28.653Z',
-        fullfilled: null,
+        fulfilled: null,
         contact: {
           telNumber: '+41454456656',
           emailAddress: null,
@@ -71,7 +71,7 @@ export const OrderListResponse = {
         ordered: '2022-06-30T13:22:37.899Z',
         orderNumber: '20220630-1',
         confirmed: '2022-06-30T23:16:06.120Z',
-        fullfilled: null,
+        fulfilled: null,
         contact: {
           telNumber: '+41456456456',
           emailAddress: null,
@@ -102,7 +102,7 @@ export const OrderListResponse = {
         ordered: '2022-06-27T13:55:22.397Z',
         orderNumber: '20220627-6',
         confirmed: '2022-06-27T13:55:40.400Z',
-        fullfilled: null,
+        fulfilled: null,
         contact: {
           telNumber: '+41456456456',
           emailAddress: null,
@@ -133,7 +133,7 @@ export const OrderListResponse = {
         ordered: '2022-06-27T13:52:57.993Z',
         orderNumber: '20220627-5',
         confirmed: '2022-06-27T13:53:14.310Z',
-        fullfilled: null,
+        fulfilled: null,
         contact: {
           telNumber: '+41456456456',
           emailAddress: null,
@@ -272,7 +272,7 @@ export const SingleOrderResponse = {
       updated: '2022-05-24T18:05:30.003Z',
       ordered: '2022-04-28T12:48:47.490Z',
       confirmed: '2022-05-24T18:05:30.003Z',
-      fullfilled: null,
+      fulfilled: null,
       contact: {
         telNumber: '+41782057916',
         emailAddress: null,
@@ -470,7 +470,7 @@ export const SingleOrderOpenResponse = {
       updated: '2022-05-24T18:05:30.003Z',
       ordered: '2022-04-28T12:48:47.490Z',
       confirmed: '2022-05-24T18:05:30.003Z',
-      fullfilled: null,
+      fulfilled: null,
       contact: {
         telNumber: '+41782057916',
         emailAddress: null,
@@ -582,7 +582,7 @@ export const OrderStatusResponse = {
           __typename: '__EnumValue',
         },
         {
-          value: 'FULLFILLED',
+          value: 'FULFILLED',
           label:
             'Order has been fulfilled completely (all positions in delivery)',
           __typename: '__EnumValue',

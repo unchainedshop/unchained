@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/api",
+  "description": "GraphQL API layer for the Unchained Engine with Express/Fastify adapters and MCP server",
   "version": "4.5.0",
   "main": "lib/api-index.js",
   "types": "lib/api-index.d.ts",

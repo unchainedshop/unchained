@@ -2,6 +2,8 @@ import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, UserNotFoundError } from '../../../errors.ts';
 
+// Note: This resolver is protected by the 'manageUsers' ACL action (see mutations/index.ts)
+// Only users with the 'admin' role have the 'manageUsers' permission by default
 export default async function setRoles(
   root: never,
   params: { roles: string[]; userId: string },

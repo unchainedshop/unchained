@@ -11,7 +11,7 @@ export interface AssortmentsSettings {
   configureSettings: (options: AssortmentsSettingsOptions, db: mongodb.Db) => void;
 }
 
-export type AssortmentsSettingsOptions = Partial<Omit<AssortmentsSettings, 'configureSettings'>>;
+export type AssortmentsSettingsOptions = Omit<Partial<AssortmentsSettings>, 'configureSettings'>;
 
 export const assortmentsSettings: AssortmentsSettings = {
   setCachedProductIds: () => Promise.resolve(0),

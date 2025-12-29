@@ -9,10 +9,13 @@ import {
 } from '@unchainedshop/mongodb';
 import type { DateFilterInput } from '@unchainedshop/utils';
 
+// NOTE: Renamed from FULLFILLED to FULFILLED in v5.0.0
+// Migration for status: db.orders.updateMany({ status: 'FULLFILLED' }, { $set: { status: 'FULFILLED' } })
+// Migration for field: db.orders.updateMany({ fullfilled: { $exists: true } }, { $rename: { fullfilled: 'fulfilled' } })
 export const OrderStatus = {
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',
-  FULLFILLED: 'FULLFILLED',
+  FULFILLED: 'FULFILLED',
   REJECTED: 'REJECTED',
 } as const;
 
@@ -29,7 +32,7 @@ export type Order = {
   countryCode: string;
   currencyCode: string;
   deliveryId?: string;
-  fullfilled?: Date;
+  fulfilled?: Date;
   ordered?: Date;
   orderNumber?: string;
   originEnrollmentId?: string;
@@ -84,6 +87,7 @@ export const OrdersCollection = async (db: mongodb.Db) => {
 
   // Order Indexes
   await buildDbIndexes<Order>(Orders, [
+    { index: { deleted: 1 } },
     { index: { userId: 1 } },
     { index: { status: 1 } },
     { index: { orderNumber: 1 } },

@@ -1,3 +1,6 @@
+// TODO: Consider creating shared handler abstractions with fastify adapter
+// to reduce code duplication for bulk import, file upload, webhooks, and chat handlers.
+// See packages/api/src/fastify/index.ts for the parallel implementation.
 import e from 'express';
 import session from 'express-session';
 import multer from 'multer';
@@ -105,26 +108,41 @@ const addContext = async function middlewareWithContext(
     };
 
     const logout: LogoutFn = async (sessionId) => {
-      // TODO: this should only logout an explicitly provided session if sessionID
-      // has been provided
-      // express-session destroy
       const { user } = req as any;
       if (!user) return false;
 
+      const currentSessionId = (req as any).sessionID;
+      const targetSessionId = sessionId || currentSessionId;
+
       const tokenObject = {
-        _id: sessionId || (req as any).sessionID,
+        _id: targetSessionId,
         userId: user._id,
       };
 
-      await new Promise((resolve, reject) => {
-        (req as any).logout((error, result) => {
-          if (error) {
-            return reject(error);
-          }
-          (req as any).session.impersonatorId = null;
-          return resolve(result);
+      // If a specific sessionId is provided and it's different from current session,
+      // destroy only that session from the store without affecting current session
+      if (sessionId && sessionId !== currentSessionId) {
+        // Destroy the specific session from the store
+        await new Promise<void>((resolve, reject) => {
+          (req as any).sessionStore.destroy(sessionId, (error: Error | null) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve();
+          });
         });
-      });
+      } else {
+        // Logout current session (passport logout + clear impersonator)
+        await new Promise((resolve, reject) => {
+          (req as any).logout((error: Error | null, result: any) => {
+            if (error) {
+              return reject(error);
+            }
+            (req as any).session.impersonatorId = null;
+            return resolve(result);
+          });
+        });
+      }
 
       await emit(API_EVENTS.API_LOGOUT, tokenObject);
       return true;

@@ -33,7 +33,7 @@ export interface DateRange {
   end?: string;
 }
 
-export type StatisticsDateField = 'created' | 'ordered' | 'rejected' | 'confirmed' | 'fullfilled';
+export type StatisticsDateField = 'created' | 'ordered' | 'rejected' | 'confirmed' | 'fulfilled';
 
 function buildDateMatch(dateField: string, dateRange?: DateRange) {
   if (!dateRange?.start && !dateRange?.end) return { [dateField]: { $exists: true } };

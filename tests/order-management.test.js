@@ -241,7 +241,7 @@ test.describe('Order: Transaction / Management', () => {
     assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
   });
 
-  test('deliver a confirmed order -> leads to fullfilled', async () => {
+  test('deliver a confirmed order -> leads to fulfilled', async () => {
     const { data: { deliverOrder } = {} } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation deliverOrder($orderId: ID!) {
@@ -257,7 +257,7 @@ test.describe('Order: Transaction / Management', () => {
     });
     assert.deepStrictEqual(deliverOrder, {
       _id: ConfirmedOrder._id,
-      status: 'FULLFILLED',
+      status: 'FULFILLED',
     });
   });
 

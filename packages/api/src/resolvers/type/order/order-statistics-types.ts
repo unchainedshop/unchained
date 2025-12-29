@@ -14,7 +14,7 @@ export const OrderStatistics = {
     modules.orders.statistics.countByDateField('confirmed', dateRange),
 
   fulfillCount: async ({ dateRange }, _p, { modules }: Context) =>
-    modules.orders.statistics.countByDateField('fullfilled', dateRange),
+    modules.orders.statistics.countByDateField('fulfilled', dateRange),
 
   newRecords: async ({ dateRange }, _p, { modules }: Context) =>
     modules.orders.statistics.aggregateByDateField('created', dateRange, { includeCarts: true }),
@@ -29,5 +29,5 @@ export const OrderStatistics = {
     modules.orders.statistics.aggregateByDateField('confirmed', dateRange),
 
   fulfilledRecords: async ({ dateRange }, _p, { modules }: Context) =>
-    modules.orders.statistics.aggregateByDateField('fullfilled', dateRange),
+    modules.orders.statistics.aggregateByDateField('fulfilled', dateRange),
 };

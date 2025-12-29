@@ -11,7 +11,7 @@ export default async function rejectQuotation(context: Context, params: Params<'
   const quotation = await modules.quotations.findQuotation({ quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
 
-  if (quotation.status === QuotationStatus.FULLFILLED) {
+  if (quotation.status === QuotationStatus.FULFILLED) {
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 

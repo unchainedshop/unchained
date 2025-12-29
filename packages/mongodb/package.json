@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/mongodb",
   "version": "4.5.0",
-  "description": "MongoDB provider for unchained platform",
+  "description": "MongoDB database abstraction layer for the Unchained Engine",
   "main": "lib/mongodb-index.js",
   "types": "lib/mongodb-index.d.ts",
   "type": "module",

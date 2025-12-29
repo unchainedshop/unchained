@@ -24,7 +24,7 @@ export default [
       """
       Order has been fulfilled completely (all positions in delivery)
       """
-      FULLFILLED
+      FULFILLED
     }
 
     enum OrderPriceCategory {
@@ -69,7 +69,7 @@ export default [
       delivery: OrderDelivery
       discounts: [OrderDiscount!]
       enrollment: Enrollment
-      fullfilled: DateTime
+      fulfilled: DateTime
       items: [OrderItem!]
       ordered: DateTime
       orderNumber: String

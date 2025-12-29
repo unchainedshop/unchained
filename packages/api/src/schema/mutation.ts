@@ -783,7 +783,7 @@ export default [
       verifyQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
 
       """
-      Reject an RFP, this is possible as long as a quotation is not fullfilled
+      Reject an RFP, this is possible as long as a quotation is not fulfilled
       """
       rejectQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
 

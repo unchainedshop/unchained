@@ -1,5 +1,6 @@
 {
   "name": "@unchainedshop/core-bookmarks",
+  "description": "User bookmark and wishlist module for the Unchained Engine",
   "version": "4.5.0",
   "main": "lib/bookmarks-index.js",
   "types": "lib/bookmarks-index.d.ts",

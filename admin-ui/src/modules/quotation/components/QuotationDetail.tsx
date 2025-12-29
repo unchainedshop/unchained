@@ -158,8 +158,8 @@ const QuotationDetail = ({ quotation }) => {
     REJECTED: {
       id: 4,
       content: 'rejected',
-      visible: quotation?.status !== 'FULLFILLED',
-      Component: quotation?.status !== 'FULLFILLED' &&
+      visible: quotation?.status !== 'FULFILLED',
+      Component: quotation?.status !== 'FULFILLED' &&
         quotation?.status !== 'REJECTED' && (
           <Button
             text="Reject"
@@ -168,9 +168,9 @@ const QuotationDetail = ({ quotation }) => {
           />
         ),
     },
-    FULLFILLED: {
+    FULFILLED: {
       id: 5,
-      content: 'fullfilled',
+      content: 'fulfilled',
       visible: true,
     },
   };

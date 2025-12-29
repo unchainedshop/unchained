@@ -23,7 +23,7 @@ export interface EnrollmentSettings {
   configureSettings: (options?: EnrollmentsSettingsOptions) => void;
 }
 
-export type EnrollmentsSettingsOptions = Omit<Partial<typeof enrollmentsSettings>, 'configureSettings'>;
+export type EnrollmentsSettingsOptions = Omit<Partial<EnrollmentSettings>, 'configureSettings'>;
 
 export const enrollmentsSettings: EnrollmentSettings = {
   autoSchedulingSchedule: everyHourSchedule,

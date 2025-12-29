@@ -12,8 +12,14 @@ import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheck
 import { type Product, ProductType } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.ts';
-import { fullfillQuotationService } from './fullfillQuotation.ts';
+import { fulfillQuotationService } from './fulfillQuotation.ts';
+import { createLogger } from '@unchainedshop/logger';
 
+const logger = createLogger('unchained:core:processOrder');
+
+/**
+ * Checks if auto-confirmation is enabled for the order based on payment and delivery settings.
+ */
 const isAutoConfirmationEnabled = async (
   {
     orderPayment,
@@ -29,7 +35,7 @@ const isAutoConfirmationEnabled = async (
       paymentProviderId: orderPayment.paymentProviderId,
     });
     if (!paymentProvider)
-      throw new Error('Payment provider not found: ' + orderPayment.paymentProviderId);
+      throw new Error(`Payment provider not found: ${orderPayment.paymentProviderId}`);
     const actions = await PaymentDirector.actions(paymentProvider, {}, { modules });
     if (!actions.isPayLaterAllowed()) return false;
   }
@@ -39,7 +45,7 @@ const isAutoConfirmationEnabled = async (
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
     if (!deliveryProvider)
-      throw new Error('Delivery provider not found: ' + orderDelivery.deliveryProviderId);
+      throw new Error(`Delivery provider not found: ${orderDelivery.deliveryProviderId}`);
     const director = await DeliveryDirector.actions(deliveryProvider, {}, { modules });
     if (!director.isAutoReleaseAllowed()) return false;
   }
@@ -56,7 +62,7 @@ const findNextStatus = async (
     return OrderStatus.PENDING;
   }
 
-  if (status === OrderStatus.FULLFILLED || status === OrderStatus.REJECTED) {
+  if (status === OrderStatus.FULFILLED || status === OrderStatus.REJECTED) {
     // Final!
     return status;
   }
@@ -83,17 +89,30 @@ const findNextStatus = async (
     }
   }
   if (status === OrderStatus.CONFIRMED) {
-    const readyForFullfillment =
+    const readyForFulfillment =
       orderDelivery.status === OrderDeliveryStatus.DELIVERED &&
       orderPayment.status === OrderPaymentStatus.PAID;
-    if (readyForFullfillment) {
-      return OrderStatus.FULLFILLED;
+    if (readyForFulfillment) {
+      return OrderStatus.FULFILLED;
     }
   }
 
   return status;
 };
 
+/**
+ * Service function to process an order through its lifecycle.
+ *
+ * Note: This function uses `this: Modules` binding pattern for dependency injection.
+ * When calling this service, use `.bind(modules)` or `.call(modules, ...)` to provide
+ * the modules context. This pattern allows services to access all modules without
+ * explicit parameter passing, improving code readability and reducing coupling.
+ *
+ * @example
+ * ```typescript
+ * const result = await processOrderService.bind(modules)(order, transactionContext);
+ * ```
+ */
 export async function processOrderService(
   this: Modules,
   initialOrder: Order,
@@ -178,9 +197,9 @@ export async function processOrderService(
           ({ type }) => type === WarehousingProviderType.VIRTUAL,
         );
 
-        // It's very important to do this in a series and not in Promise.all
-        // TODO: Actually, only createTokens should decide on the unique tokenSerialNumber
-        // and the tokens should be created with a distributed Lock to not assign the same id multiple times!
+        // IMPORTANT: Token creation must be sequential (not Promise.all) to prevent race conditions.
+        // Current limitation: tokenSerialNumber uniqueness relies on sequential processing.
+        // For high-concurrency scenarios, consider implementing distributed locking in createTokens.
         for (const { orderPosition, product } of tokenizedItems) {
           for (const virtualProvider of virtualProviders) {
             const adapterActions = await WarehousingDirector.actions(
@@ -217,7 +236,7 @@ export async function processOrderService(
         });
       }
 
-      // Quotations: If we came here, the checkout succeeded, so we can fullfill underlying quotations
+      // Quotations: If we came here, the checkout succeeded, so we can fulfill underlying quotations
       const quotationItems = mappedProductOrderPositions.filter(
         (item) => item.orderPosition.quotationId,
       ) as { orderPosition: OrderPosition & { quotationId: string }; product: Product }[];
@@ -227,8 +246,17 @@ export async function processOrderService(
           const quotation = await this.quotations.findQuotation({
             quotationId: orderPosition.quotationId,
           });
-          if (!quotation) return; // TODO: What happens then?
-          await fullfillQuotationService.bind(this)(quotation, {
+          if (!quotation) {
+            // Quotation may have been deleted or the reference is stale
+            // Log warning but continue processing other quotations
+            logger.warn('Quotation not found during order fulfillment', {
+              orderId,
+              orderPositionId: orderPosition._id,
+              quotationId: orderPosition.quotationId,
+            });
+            return;
+          }
+          await fulfillQuotationService.bind(this)(quotation, {
             orderId,
             orderPositionId: orderPosition._id,
           });

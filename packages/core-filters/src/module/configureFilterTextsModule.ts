@@ -127,3 +127,5 @@ export const configureFilterTextsModule = ({
     },
   };
 };
+
+export type FilterTextsModule = ReturnType<typeof configureFilterTextsModule>;

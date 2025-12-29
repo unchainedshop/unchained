@@ -137,6 +137,11 @@ export const resetLoggerInitialization = (): void => {
  * Creates a logger instance for the specified module name.
  * The logger respects DEBUG, LOG_LEVEL, and UNCHAINED_LOG_FORMAT environment variables.
  *
+ * Module naming convention:
+ * - Use the pattern 'unchained:${package-name}' for consistency (e.g., 'unchained:core-users')
+ * - Sub-modules can use 'unchained:${package-name}:${sub-module}' (e.g., 'unchained:api:mcp')
+ * - Plugin loggers use 'unchained:${plugin-name}' (e.g., 'unchained:stripe')
+ *
  * Performance optimizations:
  * - Returns no-op functions for disabled log levels (zero-cost logging)
  * - Caches regex patterns and debug results for fast pattern matching
