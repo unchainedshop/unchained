@@ -120,11 +120,13 @@ test.describe('User Removal', () => {
       // The token format is sha256(username:plainSecret)
       const plainSecret = 'testsecret';
       const crypto = await import('node:crypto');
-      const hashedSecret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
-      await db.collection('users').updateOne(
-        { _id: userId },
-        { $set: { 'services.token': { secret: hashedSecret } } }
-      );
+      const hashedSecret = crypto
+        .createHash('sha256')
+        .update(`${username}:${plainSecret}`)
+        .digest('hex');
+      await db
+        .collection('users')
+        .updateOne({ _id: userId }, { $set: { 'services.token': { secret: hashedSecret } } });
       const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
 
       // Create a product review as the new user
@@ -225,11 +227,13 @@ test.describe('User Removal', () => {
       // Set a known token secret for the new user so we can authenticate as them
       const plainSecret = 'testsecret';
       const crypto = await import('node:crypto');
-      const hashedSecret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
-      await db.collection('users').updateOne(
-        { _id: userId },
-        { $set: { 'services.token': { secret: hashedSecret } } }
-      );
+      const hashedSecret = crypto
+        .createHash('sha256')
+        .update(`${username}:${plainSecret}`)
+        .digest('hex');
+      await db
+        .collection('users')
+        .updateOne({ _id: userId }, { $set: { 'services.token': { secret: hashedSecret } } });
       const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
 
       // Create a product review as the new user

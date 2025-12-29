@@ -5,7 +5,7 @@ import {
   ProductPricingSheet,
 } from '@unchainedshop/core';
 
-const OrderItems: IOrderPricingAdapter = {
+export const OrderItems: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-items',

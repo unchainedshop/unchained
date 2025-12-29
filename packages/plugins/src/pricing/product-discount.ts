@@ -8,7 +8,7 @@ import {
   type Discount,
 } from '@unchainedshop/core';
 
-const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
+export const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-discount',

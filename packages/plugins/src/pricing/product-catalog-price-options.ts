@@ -4,7 +4,7 @@ import {
   type IProductPricingAdapter,
 } from '@unchainedshop/core';
 
-const ProductPrice: IProductPricingAdapter = {
+export const ProductPriceOptions: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-price-options',
@@ -35,7 +35,7 @@ const ProductPrice: IProductPricingAdapter = {
             amount: itemTotal,
             isTaxable: Boolean(price.isTaxable),
             isNetPrice: Boolean(price.isNetPrice),
-            meta: { adapter: ProductPrice.key },
+            meta: { adapter: ProductPriceOptions.key },
           });
         }
       },
@@ -64,4 +64,4 @@ const ProductPrice: IProductPricingAdapter = {
   },
 };
 
-ProductPricingDirector.registerAdapter(ProductPrice);
+ProductPricingDirector.registerAdapter(ProductPriceOptions);

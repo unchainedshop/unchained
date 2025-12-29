@@ -175,11 +175,13 @@ test.describe('Remove User Product Reviews', () => {
       // Set a known token secret for the new user so we can authenticate as them
       const plainSecret = 'testsecret';
       const crypto = await import('node:crypto');
-      const hashedSecret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
-      await db.collection('users').updateOne(
-        { _id: userId },
-        { $set: { 'services.token': { secret: hashedSecret } } }
-      );
+      const hashedSecret = crypto
+        .createHash('sha256')
+        .update(`${username}:${plainSecret}`)
+        .digest('hex');
+      await db
+        .collection('users')
+        .updateOne({ _id: userId }, { $set: { 'services.token': { secret: hashedSecret } } });
       const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
 
       // Create a product review as the new user
@@ -244,7 +246,10 @@ test.describe('Remove User Product Reviews', () => {
         },
       });
 
-      assert.ok(reviewBeforeCleanup, 'Review should still exist after user deletion with removeUserReviews: false');
+      assert.ok(
+        reviewBeforeCleanup,
+        'Review should still exist after user deletion with removeUserReviews: false',
+      );
 
       // Now admin should be able to remove the deleted user's reviews
       const {

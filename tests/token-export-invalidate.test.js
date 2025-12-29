@@ -7,7 +7,13 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { TestToken1, TestToken3, AlreadyExportedToken, InvalidatedToken, TokenWithInvalidProduct } from './seeds/tokens.js';
+import {
+  TestToken1,
+  TestToken3,
+  AlreadyExportedToken,
+  InvalidatedToken,
+  TokenWithInvalidProduct,
+} from './seeds/tokens.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;

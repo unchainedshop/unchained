@@ -5,7 +5,7 @@ import {
   PaymentPricingSheet,
 } from '@unchainedshop/core';
 
-const OrderPayment: IOrderPricingAdapter = {
+export const OrderPayment: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-payment',

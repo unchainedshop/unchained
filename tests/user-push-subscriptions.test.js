@@ -231,7 +231,10 @@ test.describe('User Push Subscriptions', () => {
       } = await graphqlFetchAsUser({
         query: /* GraphQL */ `
           mutation AddPushSubscription($subscription: JSON!, $unsubscribeFromOtherUsers: Boolean) {
-            addPushSubscription(subscription: $subscription, unsubscribeFromOtherUsers: $unsubscribeFromOtherUsers) {
+            addPushSubscription(
+              subscription: $subscription
+              unsubscribeFromOtherUsers: $unsubscribeFromOtherUsers
+            ) {
               _id
               pushSubscriptions {
                 endpoint
