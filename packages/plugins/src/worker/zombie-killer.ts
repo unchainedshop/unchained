@@ -26,10 +26,9 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const error = false;
 
       // Remove unreferenced filter entities
-      const filters = await modules.filters.findFilters(
-        { includeInactive: true },
-        { projection: { _id: 1 } },
-      );
+      const filters = await modules.filters.findFilters({
+        includeInactive: true,
+      });
       const filterIds = filters.map((a) => a._id);
       const deletedFilterTextsCount = await modules.filters.texts.deleteMany({
         excludedFilterIds: filterIds,

@@ -10,7 +10,23 @@ import { createClient, type Client } from '@libsql/client';
 import { sql } from 'drizzle-orm';
 
 // Re-export Drizzle types that modules need
-export { sql, eq, and, or, ne, lt, gt, lte, gte, isNull, isNotNull, inArray, asc, desc } from 'drizzle-orm';
+export {
+  sql,
+  eq,
+  and,
+  or,
+  ne,
+  lt,
+  gt,
+  lte,
+  gte,
+  isNull,
+  isNotNull,
+  inArray,
+  notInArray,
+  asc,
+  desc,
+} from 'drizzle-orm';
 export type { SQL } from 'drizzle-orm';
 export type { LibSQLDatabase } from 'drizzle-orm/libsql';
 

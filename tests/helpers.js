@@ -18,11 +18,11 @@ import { seedPaymentsToDrizzle } from './seeds/payments.js';
 import { seedWarehousingProvidersToDrizzle } from './seeds/warehousings.js';
 import seedOrders from './seeds/orders.js';
 import { seedQuotationsToDrizzle } from './seeds/quotations.js';
-import seedFilters from './seeds/filters.js';
+import seedFilters, { seedFiltersToDrizzle } from './seeds/filters.js';
 import seedAssortments from './seeds/assortments.js';
 import { seedBookmarksToDrizzle } from './seeds/bookmark.js';
 import { seedEnrollmentsToDrizzle } from './seeds/enrollments.js';
-import seedWorkQueue from './seeds/work.js';
+import seedWorkQueue, { seedWorkQueueToDrizzle } from './seeds/work.js';
 import { seedEventsToDrizzle } from './seeds/events.js';
 import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
@@ -32,6 +32,7 @@ import { currencies } from '@unchainedshop/core-currencies';
 import { languages } from '@unchainedshop/core-languages';
 import { bookmarks } from '@unchainedshop/core-bookmarks';
 import { events } from '@unchainedshop/core-events';
+import { filters } from '@unchainedshop/core-filters';
 import { eq, and, isNull, isNotNull, inArray, desc, sql } from 'drizzle-orm';
 
 // eslint-disable-next-line
@@ -72,9 +73,7 @@ export const setupDatabase = async () => {
   await seedUsers(db);
   await seedProducts(db);
   await seedOrders(db);
-  await seedFilters(db);
   await seedAssortments(db);
-  await seedWorkQueue(db);
 
   // Seed Drizzle tables (bypasses modules to avoid emitting events)
   await seedCountriesToDrizzle(drizzleDb);
@@ -88,6 +87,8 @@ export const setupDatabase = async () => {
   await seedEnrollmentsToDrizzle(drizzleDb);
   await seedQuotationsToDrizzle(drizzleDb);
   await seedMediaObjectsToDrizzle(drizzleDb);
+  await seedFiltersToDrizzle(drizzleDb);
+  await seedWorkQueueToDrizzle(drizzleDb);
 
   // Seed events AFTER other Drizzle seeds to avoid events polluting the test data
   // The seedEventsToDrizzle function clears existing events before seeding
@@ -494,6 +495,67 @@ export function getEventsTable() {
       }
 
       return { deletedCount: 0 };
+    },
+  };
+}
+
+/**
+ * Get a wrapper for the filters table with MongoDB-like API for tests.
+ * This allows tests to directly query the filters table.
+ */
+export function getFiltersTable() {
+  const drizzleDb = getDrizzleDb();
+
+  return {
+    async findOne(filter = {}) {
+      let conditions = [];
+
+      if (filter._id) {
+        conditions.push(eq(filters._id, filter._id));
+      }
+      if (filter.key) {
+        conditions.push(eq(filters.key, filter.key));
+      }
+
+      let query = drizzleDb.select().from(filters);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      const results = await query.limit(1);
+      if (!results[0]) return null;
+
+      const row = results[0];
+      return {
+        _id: row._id,
+        key: row.key,
+        type: row.type,
+        isActive: row.isActive,
+        options: row.options,
+        meta: row.meta,
+        created: row.created,
+        updated: row.updated,
+      };
+    },
+    async countDocuments(filter = {}) {
+      let conditions = [];
+
+      if (filter._id) {
+        conditions.push(eq(filters._id, filter._id));
+      }
+      if (filter.key) {
+        conditions.push(eq(filters.key, filter.key));
+      }
+
+      let query = drizzleDb.select({ count: sql`count(*)` }).from(filters);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      const result = await query;
+      return result[0]?.count ?? 0;
     },
   };
 }

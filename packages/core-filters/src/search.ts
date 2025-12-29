@@ -1,5 +1,4 @@
-import { mongodb } from '@unchainedshop/mongodb';
-import type { Filter } from './db/FiltersCollection.ts';
+import type { Filter } from './db/schema.ts';
 
 const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
@@ -16,10 +15,16 @@ export interface SearchQuery {
   productIds?: string[];
   queryString?: string;
 }
+
+// Sort type compatible with MongoDB's Sort without importing MongoDB
+// This is intentionally permissive to work with MongoDB types in downstream code
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SortStage = any;
+
 export interface SearchConfiguration {
   searchQuery?: SearchQuery;
-  filterSelector: mongodb.Filter<Filter>;
-  sortStage: mongodb.FindOptions['sort'];
+  filterSelector: Record<string, unknown>;
+  sortStage: SortStage;
   forceLiveCollection: boolean;
   locale: Intl.Locale;
   userId?: string;
@@ -31,7 +36,7 @@ export interface FilterQuery {
   includeInactive?: boolean;
 }
 
-const normalizeDirection = (textualInput) => {
+const normalizeDirection = (textualInput: string | undefined) => {
   if (textualInput === DIRECTION_ASCENDING) {
     return 1;
   }
@@ -41,16 +46,22 @@ const normalizeDirection = (textualInput) => {
   return null;
 };
 
-export const defaultProductSelector = ({ includeInactive }: SearchQuery, { modules }) => {
+export const defaultProductSelector = ({ includeInactive }: SearchQuery, { modules }: any) => {
   const selector = !includeInactive
     ? modules.products.search.buildActiveStatusFilter()
     : modules.products.search.buildActiveDraftStatusFilter();
   return selector;
 };
 
-export const defaultFilterSelector = (searchQuery: SearchQuery) => {
+export interface FilterSelector {
+  _id?: string | { $in: string[] };
+  key?: string | { $in: string[] };
+  isActive?: boolean;
+}
+
+export const defaultFilterSelector = (searchQuery: SearchQuery): FilterSelector => {
   const { filterIds, filterQuery, includeInactive } = searchQuery;
-  const selector: mongodb.Filter<Filter> = {};
+  const selector: FilterSelector = {};
   const keys = (filterQuery || []).map((filter) => filter.key);
 
   if (filterIds) {
@@ -69,7 +80,7 @@ export const defaultFilterSelector = (searchQuery: SearchQuery) => {
   return selector;
 };
 
-export const defaultSortStage = ({ orderBy }: { orderBy?: string }): mongodb.FindOptions['sort'] => {
+export const defaultSortStage = ({ orderBy }: { orderBy?: string }): SortStage => {
   if (!orderBy || orderBy === ORDER_BY_INDEX) {
     return {
       index: 1,

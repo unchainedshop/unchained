@@ -46,6 +46,7 @@ import {
   configureFiltersModule,
   type FiltersModule,
   type FiltersSettingsOptions,
+  initializeFiltersSchema,
 } from '@unchainedshop/core-filters';
 import {
   configureLanguagesModule,
@@ -88,6 +89,7 @@ import {
   configureWorkerModule,
   type WorkerModule,
   type WorkerSettingsOptions,
+  initializeWorkQueueSchema,
 } from '@unchainedshop/core-worker';
 import { type MigrationRepository, type ModuleInput, type mongodb } from '@unchainedshop/mongodb';
 
@@ -167,6 +169,8 @@ export default async function initModules(
     initializeEnrollmentsSchema,
     initializeFilesSchema,
     initializeEventsSchema,
+    initializeFiltersSchema,
+    initializeWorkQueueSchema,
   ]);
 
   const assortments = await configureAssortmentsModule({
@@ -199,9 +203,8 @@ export default async function initModules(
     options: options.files,
   });
   const filters = await configureFiltersModule({
-    db,
+    db: drizzleDb,
     options: options.filters,
-    migrationRepository,
   });
   const languages = await configureLanguagesModule({
     db: drizzleDb,
@@ -233,9 +236,8 @@ export default async function initModules(
     db: drizzleDb,
   });
   const worker = await configureWorkerModule({
-    db,
+    db: drizzleDb,
     options: options.worker,
-    migrationRepository,
   });
 
   const modules = {

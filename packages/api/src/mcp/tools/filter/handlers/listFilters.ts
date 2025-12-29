@@ -8,17 +8,13 @@ export default async function listFilters(context: Context, params: Params<'LIST
 
   const sortOptions = sort?.map((s) => ({ key: s.key, value: s.value as any })) || undefined;
 
-  const filters = await modules.filters.findFilters(
-    {
-      includeInactive,
-      queryString,
-    },
-    {
-      limit,
-      skip: offset,
-      sort: sortOptions as any,
-    },
-  );
+  const filters = await modules.filters.findFilters({
+    includeInactive,
+    queryString,
+    limit,
+    offset,
+    sort: sortOptions as any,
+  });
 
   return {
     filters: await Promise.all(

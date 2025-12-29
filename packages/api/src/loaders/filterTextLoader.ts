@@ -11,14 +11,7 @@ export default (unchainedAPI: UnchainedCore) =>
   >(async (queries) => {
     const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 
-    const texts = await unchainedAPI.modules.filters.texts.findTexts(
-      { filterIds },
-      {
-        sort: {
-          filterId: 1,
-        },
-      },
-    );
+    const texts = await unchainedAPI.modules.filters.texts.findTexts({ filterIds });
 
     const localeMap = buildLocaleMap(queries, texts);
     const textsMap = buildTextMap(localeMap, texts, (text) => text.filterId + text.filterOptionValue);

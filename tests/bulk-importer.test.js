@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getFiltersTable } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
 import assert from 'node:assert';
@@ -336,7 +336,7 @@ test.describe('Bulk Importer', () => {
 
       assert.ok(addWork);
 
-      const Filters = db.collection('filters');
+      const Filters = getFiltersTable();
 
       const result = await intervalUntilTimeout(async () => {
         const filter = await Filters.findOne({ _id: 'Filter A' });
