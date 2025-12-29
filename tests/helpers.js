@@ -18,11 +18,11 @@ import { seedPaymentsToDrizzle } from './seeds/payments.js';
 import { seedWarehousingProvidersToDrizzle } from './seeds/warehousings.js';
 import seedOrders from './seeds/orders.js';
 import { seedQuotationsToDrizzle } from './seeds/quotations.js';
-import seedFilters, { seedFiltersToDrizzle } from './seeds/filters.js';
+import { seedFiltersToDrizzle } from './seeds/filters.js';
 import seedAssortments from './seeds/assortments.js';
 import { seedBookmarksToDrizzle } from './seeds/bookmark.js';
 import { seedEnrollmentsToDrizzle } from './seeds/enrollments.js';
-import seedWorkQueue, { seedWorkQueueToDrizzle } from './seeds/work.js';
+import { seedWorkQueueToDrizzle } from './seeds/work.js';
 import { seedEventsToDrizzle } from './seeds/events.js';
 import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
@@ -34,7 +34,7 @@ import { bookmarks } from '@unchainedshop/core-bookmarks';
 import { events } from '@unchainedshop/core-events';
 import { filters } from '@unchainedshop/core-filters';
 import { workQueue } from '@unchainedshop/core-worker';
-import { eq, and, isNull, isNotNull, inArray, desc, sql, like } from 'drizzle-orm';
+import { eq, and, isNull, isNotNull, inArray, desc, sql } from 'drizzle-orm';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -584,9 +584,7 @@ export function getWorkQueueTable() {
       // Handle nested JSON queries like 'input.to': email
       if (filter['input.to']) {
         // Use JSON extraction for SQLite
-        conditions.push(
-          sql`json_extract(${workQueue.input}, '$.to') = ${filter['input.to']}`,
-        );
+        conditions.push(sql`json_extract(${workQueue.input}, '$.to') = ${filter['input.to']}`);
       }
 
       let query = drizzleDb.select().from(workQueue);

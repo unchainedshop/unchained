@@ -1,16 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import {
-  generateId,
-  eq,
-  and,
-  inArray,
-  asc,
-  desc,
-  type DrizzleDb,
-  type SQL,
-} from '@unchainedshop/store';
-import { filters, filterTexts, FilterType, type Filter } from '../db/schema.ts';
+import { generateId, eq, and, inArray, asc, desc, type DrizzleDb, type SQL } from '@unchainedshop/store';
+import { filters, FilterType, type Filter } from '../db/schema.ts';
 import { configureFilterTextsModule } from './configureFilterTextsModule.ts';
 import createFilterValueParser from '../filter-value-parsers/index.ts';
 import { filtersSettings, type FiltersSettingsOptions } from '../filters-settings.ts';
@@ -47,10 +38,7 @@ interface ExtendedFilterQuery extends FilterQuery {
   isActive?: boolean;
 }
 
-export const buildFindSelector = async (
-  db: DrizzleDb,
-  query: ExtendedFilterQuery,
-): Promise<SQL[]> => {
+export const buildFindSelector = async (db: DrizzleDb, query: ExtendedFilterQuery): Promise<SQL[]> => {
   const { includeInactive = false, queryString, filterIds, _id, key, isActive, ...rest } = query;
   void rest;
   void isActive; // MongoDB-style selector property, ignored when includeInactive is set
@@ -223,11 +211,7 @@ export const configureFiltersModule = async ({
     },
 
     createFilterOption: async (filterId: string, { value }: { value: string }) => {
-      const [existingFilter] = await db
-        .select()
-        .from(filters)
-        .where(eq(filters._id, filterId))
-        .limit(1);
+      const [existingFilter] = await db.select().from(filters).where(eq(filters._id, filterId)).limit(1);
 
       if (!existingFilter) return null;
 
@@ -275,11 +259,7 @@ export const configureFiltersModule = async ({
       filterId: string;
       filterOptionValue?: string;
     }) => {
-      const [existingFilter] = await db
-        .select()
-        .from(filters)
-        .where(eq(filters._id, filterId))
-        .limit(1);
+      const [existingFilter] = await db.select().from(filters).where(eq(filters._id, filterId)).limit(1);
 
       if (!existingFilter) return null;
 

@@ -37,7 +37,7 @@
   "dependencies": {
     "@unchainedshop/events": "^4.5.0",
     "@unchainedshop/logger": "^4.5.0",
-    "@unchainedshop/store": "^3.0.0-alpha.0",
+    "@unchainedshop/store": "^5.0.0-alpha.0",
     "@unchainedshop/utils": "^4.5.0"
   },
   "devDependencies": {

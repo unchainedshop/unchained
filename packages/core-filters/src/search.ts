@@ -1,5 +1,3 @@
-import type { Filter } from './db/schema.ts';
-
 const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
 const DIRECTION_ASCENDING = 'ASC';
@@ -18,7 +16,7 @@ export interface SearchQuery {
 
 // Sort type compatible with MongoDB's Sort without importing MongoDB
 // This is intentionally permissive to work with MongoDB types in downstream code
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export type SortStage = any;
 
 export interface SearchConfiguration {

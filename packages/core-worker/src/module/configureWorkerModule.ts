@@ -113,11 +113,7 @@ const buildStatusCondition = (status: WorkStatus): SQL => {
     case WorkStatus.ALLOCATED:
       return and(isNotNull(workQueue.started), isNull(workQueue.finished), isNull(workQueue.deleted))!;
     case WorkStatus.SUCCESS:
-      return and(
-        isNotNull(workQueue.finished),
-        eq(workQueue.success, true),
-        isNull(workQueue.deleted),
-      )!;
+      return and(isNotNull(workQueue.finished), eq(workQueue.success, true), isNull(workQueue.deleted))!;
     case WorkStatus.FAILED:
       return and(
         isNotNull(workQueue.finished),
@@ -267,7 +263,9 @@ const buildQueryConditions = async (
   return conditions;
 };
 
-const normalizeWorkQueueAggregateResult = (data: Array<{ type: string; status: string; count: number }> = []): WorkerReport[] => {
+const normalizeWorkQueueAggregateResult = (
+  data: { type: string; status: string; count: number }[] = [],
+): WorkerReport[] => {
   const statusToFieldMap: Record<string, keyof Omit<WorkerReport, 'type'>> = {
     NEW: 'newCount',
     ALLOCATED: 'startCount',
@@ -439,9 +437,7 @@ export const configureWorkerModule = async ({
     workerId: UNCHAINED_WORKER_ID,
 
     activeWorkTypes: async (): Promise<string[]> => {
-      const typeList = await db
-        .selectDistinct({ type: workQueue.type })
-        .from(workQueue);
+      const typeList = await db.selectDistinct({ type: workQueue.type }).from(workQueue);
       return typeList.map((t) => t.type);
     },
 
@@ -587,7 +583,10 @@ export const configureWorkerModule = async ({
       worker = null,
       retries = 20,
     }: Pick<Work, 'type'> &
-      Pick<Partial<Work>, 'scheduled' | 'priority' | 'input' | 'retries' | 'originalWorkId' | 'worker'>): Promise<Work> {
+      Pick<
+        Partial<Work>,
+        'scheduled' | 'priority' | 'input' | 'retries' | 'originalWorkId' | 'worker'
+      >): Promise<Work> {
       const created = new Date();
       const workId = generateId();
 

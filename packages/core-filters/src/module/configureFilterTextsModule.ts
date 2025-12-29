@@ -16,7 +16,10 @@ export const configureFilterTextsModule = ({ db }: { db: DrizzleDb }) => {
     const localeString = locale.baseName;
 
     // Find existing text
-    const existingConditions = [eq(filterTexts.filterId, filterId), eq(filterTexts.locale, localeString)];
+    const existingConditions = [
+      eq(filterTexts.filterId, filterId),
+      eq(filterTexts.locale, localeString),
+    ];
 
     if (filterOptionValue) {
       existingConditions.push(eq(filterTexts.filterOptionValue, filterOptionValue));
@@ -43,7 +46,11 @@ export const configureFilterTextsModule = ({ db }: { db: DrizzleDb }) => {
         })
         .where(eq(filterTexts._id, existing._id));
 
-      [filterText] = await db.select().from(filterTexts).where(eq(filterTexts._id, existing._id)).limit(1);
+      [filterText] = await db
+        .select()
+        .from(filterTexts)
+        .where(eq(filterTexts._id, existing._id))
+        .limit(1);
     } else {
       // Insert new
       const textId = generateId();
@@ -161,7 +168,9 @@ export const configureFilterTextsModule = ({ db }: { db: DrizzleDb }) => {
       } & Omit<Partial<FilterText>, 'filterId' | 'filterOptionValue' | 'locale'>)[],
     ) => {
       const updatedTexts = await Promise.all(
-        texts.map(async ({ locale, ...text }) => upsertLocalizedText(params, new Intl.Locale(locale), text)),
+        texts.map(async ({ locale, ...text }) =>
+          upsertLocalizedText(params, new Intl.Locale(locale), text),
+        ),
       );
 
       return updatedTexts.filter(Boolean) as FilterText[];

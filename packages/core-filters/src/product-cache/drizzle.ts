@@ -1,5 +1,5 @@
 import { sha256 } from '@unchainedshop/utils';
-import { eq, and, ne, isNull, type DrizzleDb } from '@unchainedshop/store';
+import { eq, and, isNull, type DrizzleDb } from '@unchainedshop/store';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 import { filterProductIdCache } from '../db/schema.ts';
@@ -67,8 +67,7 @@ export default function drizzleCache(db: DrizzleDb) {
 
       if (!records.length) return null;
 
-      const allProductIds =
-        records.find((cache) => cache.filterOptionValue === null)?.productIds || [];
+      const allProductIds = records.find((cache) => cache.filterOptionValue === null)?.productIds || [];
       const productIdsMap = Object.fromEntries(
         records
           .filter((cache) => cache.filterOptionValue !== null)

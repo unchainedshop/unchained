@@ -36,7 +36,9 @@ export async function initializeWorkQueueSchema(db: DrizzleDb): Promise<void> {
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_work_queue_created ON work_queue(created)`);
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_work_queue_started ON work_queue(started)`);
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_work_queue_finished ON work_queue(finished)`);
-  await db.run(sql`CREATE INDEX IF NOT EXISTS idx_work_queue_originalWorkId ON work_queue(originalWorkId)`);
+  await db.run(
+    sql`CREATE INDEX IF NOT EXISTS idx_work_queue_originalWorkId ON work_queue(originalWorkId)`,
+  );
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_work_queue_deleted ON work_queue(deleted)`);
 
   // Setup FTS
