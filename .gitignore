@@ -16,3 +16,4 @@ fly.toml
 /typedocs
 .env.local.tests
 .db
+*.db

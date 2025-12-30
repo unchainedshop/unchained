@@ -33,13 +33,13 @@ Create HTTP request work:
 
 ```graphql
 mutation CreateWebhook {
-  createWork(
-    type: "HTTP_REQUEST"
+  addWork(
+    type: HTTP_REQUEST
     input: {
       url: "https://api.example.com/webhook"
       method: "POST"
-      headers: { "Authorization": "Bearer token" }
-      data: { "event": "order.created", "orderId": "123" }
+      headers: { Authorization: "Bearer token" }
+      data: { event: "order.created", orderId: "123" }
     }
   ) {
     _id

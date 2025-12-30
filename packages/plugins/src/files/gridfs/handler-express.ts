@@ -7,6 +7,7 @@ import { type GridFSFileUploadsModule } from './module.ts';
 import { type Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core-files';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
 
 const { ROOT_URL, GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
@@ -42,7 +43,9 @@ const gridfsHandler = async (
       const { s: signature, e: expiryTimestamp } = req.query;
       const expiryDate = new Date(parseInt(expiryTimestamp as string, 10));
       const fileId = await buildHashedFilename(directoryName, fileName, expiryDate);
-      if ((await sign(directoryName, fileId, expiryDate.getTime())) === signature) {
+      const expectedSignature = await sign(directoryName, fileId, expiryDate.getTime());
+      // Use timing-safe comparison to prevent signature timing attacks
+      if (await timingSafeStringEqual(expectedSignature, signature as string)) {
         const file = await modules.files.findFile({ fileId });
 
         if (!file) {
@@ -102,8 +105,14 @@ const gridfsHandler = async (
 
         const fileUploadAdapter = getFileAdapter();
         const signedUrl = await fileUploadAdapter.createDownloadURL(fileDocument, expiry);
+        const expectedSignature = signedUrl ? new URL(signedUrl, 'file://').searchParams.get('s') : null;
 
-        if (!signedUrl || new URL(signedUrl, 'file://').searchParams.get('s') !== signature) {
+        // Use timing-safe comparison to prevent signature timing attacks
+        if (
+          !signedUrl ||
+          !expectedSignature ||
+          !(await timingSafeStringEqual(expectedSignature, signature as string))
+        ) {
           res.status(403).send('Access restricted: Invalid signature.');
           return;
         }

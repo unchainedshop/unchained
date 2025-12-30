@@ -11,24 +11,32 @@ Use this checklist to ensure your Unchained Engine deployment is production-read
 
 ## Security
 
+For comprehensive security documentation, see the [Security Guide](./security).
+
 ### Authentication & Secrets
 
 - [ ] **Token secret configured** - `UNCHAINED_TOKEN_SECRET` is set to a strong, unique value (minimum 32 characters)
-- [ ] **Encryption secret set** - `UNCHAINED_SECRET` is configured for sensitive data
 - [ ] **Admin credentials secure** - Default admin password changed
 - [ ] **API tokens rotated** - Any development tokens have been replaced
 
 ```bash
 # Generate secure secrets
 openssl rand -base64 32  # For UNCHAINED_TOKEN_SECRET
-openssl rand -base64 32  # For UNCHAINED_SECRET
 ```
+
+### Cryptographic Standards
+
+Unchained uses industry-standard cryptography:
+
+- **Password hashing**: PBKDF2-SHA512 with 300,000 iterations
+- **Token storage**: SHA-256 hashed before database storage
+- **Session encryption**: AES-256-GCM (optional)
 
 ### Network Security
 
 - [ ] **HTTPS enforced** - All traffic uses TLS/SSL
 - [ ] **CORS configured** - Only allowed origins can access the API
-- [ ] **Rate limiting enabled** - Protection against abuse
+- [ ] **Rate limiting enabled** - Protection against abuse (implement at reverse proxy)
 - [ ] **Firewall rules** - Only necessary ports are open
 
 ```typescript
@@ -41,6 +49,23 @@ await startPlatform({
     },
   },
 });
+```
+
+### Audit Logging
+
+- [ ] **Audit logging enabled** - OCSF-compliant audit logging configured
+- [ ] **Log storage configured** - Audit logs persisted to file or SIEM
+- [ ] **Integrity verification** - Hash chain verification scheduled
+
+```typescript
+import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+
+const auditLog = createAuditLog({
+  directory: process.env.UNCHAINED_AUDIT_DIR || './audit-logs',
+  collectorUrl: process.env.UNCHAINED_AUDIT_COLLECTOR_URL,
+});
+
+configureAuditIntegration(auditLog);
 ```
 
 ### Database Security
@@ -277,5 +302,7 @@ curl https://api.myshop.com/graphql \
 
 ## Related Documentation
 
+- [Security Guide](./security) - Security features and compliance
 - [Environment Variables](../platform-configuration/environment-variables) - Full configuration reference
 - [Docker Deployment](./docker) - Container deployment
+- [Audit Logging](../extend/events#audit-logging-ocsf) - OCSF audit logging

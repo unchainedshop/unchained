@@ -145,7 +145,10 @@ export const startPlatform = async ({
       clearTimeout(forceExitTimeout);
       process.exit(0);
     } catch (error) {
-      defaultLogger.error('Error during cleanup', { signal, error });
+      defaultLogger.error('Error during cleanup', {
+        signal,
+        error: error instanceof Error ? error.message : String(error),
+      });
       clearTimeout(forceExitTimeout);
       process.exit(1);
     }

@@ -21,15 +21,17 @@ You can send SMS with arbitrary providers through Unchained's work system. To ad
 
 ```graphql
 mutation SendSMS {
-  addWork(type: "TWILIO", input: {
-    to: "+1234567890",
-    text: "Your order has shipped!",
-    from: "+0987654321"  # Optional, defaults to TWILIO_SMS_FROM env var
+  addWork(type: TWILIO, input: {
+    to: "+1234567890"
+    text: "Your order has shipped!"
+    from: "+0987654321"
   }) {
     _id
   }
 }
 ```
+
+Note: The `from` parameter is optional and defaults to `TWILIO_SMS_FROM` env var.
 
 The Twilio worker plugin automatically picks up any work items with type `TWILIO` and sends them for you.
 

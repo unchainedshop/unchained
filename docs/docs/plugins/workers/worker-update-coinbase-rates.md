@@ -34,7 +34,7 @@ You can also trigger an update manually:
 
 ```graphql
 mutation UpdateRates {
-  createWork(type: "UPDATE_COINBASE_RATES") {
+  addWork(type: UPDATE_COINBASE_RATES) {
     _id
     status
   }

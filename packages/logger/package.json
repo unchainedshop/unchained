@@ -12,6 +12,7 @@
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "node --test",
+    "test:run:unit": "node --test",
     "test:watch": "node --test --watch",
     "benchmark": "node benchmarks/benchmark.ts"
   },

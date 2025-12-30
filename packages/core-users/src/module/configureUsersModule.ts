@@ -437,7 +437,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
 
       if (existingEntry) return user;
 
-      const nonce = Math.floor(Math.random() * 1000000).toString();
+      const nonce = crypto.randomUUID();
       const updatedUser = await Users.findOneAndUpdate(
         generateDbFilterById(userId),
         {

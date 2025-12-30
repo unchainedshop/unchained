@@ -28,8 +28,8 @@ import '@unchainedshop/plugins/worker/bulkgate';
 
 ```graphql
 mutation SendTransactionalSMS {
-  createWork(
-    type: "BULKGATE"
+  addWork(
+    type: BULKGATE
     input: {
       to: "+1234567890"
       text: "Your order #123 has shipped!"
@@ -46,10 +46,10 @@ mutation SendTransactionalSMS {
 
 ```graphql
 mutation SendPromotionalSMS {
-  createWork(
-    type: "BULKGATE"
+  addWork(
+    type: BULKGATE
     input: {
-      to: "+1234567890;+0987654321"  # Semicolon-separated for multiple recipients
+      to: "+1234567890;+0987654321"
       text: "Special offer: 20% off!"
       promotional: true
     }
@@ -59,6 +59,8 @@ mutation SendPromotionalSMS {
   }
 }
 ```
+
+Note: Use semicolon-separated numbers for multiple recipients with `promotional: true`.
 
 ## Input Parameters
 

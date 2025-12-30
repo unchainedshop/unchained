@@ -57,6 +57,16 @@ mutation CreateDatatransProvider {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.payment.datatrans"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigureDatatransProvider {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "merchantId", value: "your-merchant-id" }
       ]

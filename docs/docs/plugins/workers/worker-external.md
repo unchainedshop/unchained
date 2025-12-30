@@ -38,8 +38,8 @@ Create external work:
 
 ```graphql
 mutation CreateExternalWork {
-  createWork(
-    type: "EXTERNAL"
+  addWork(
+    type: EXTERNAL
     input: { customData: "any-payload-for-external-system" }
   ) {
     _id

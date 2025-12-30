@@ -51,15 +51,17 @@ mutation UpdatePlanData {
     productId: "product-id"
     plan: {
       usageCalculationType: LICENSED
-      billingInterval: MONTH
+      billingInterval: MONTHS
       billingIntervalCount: 1
       trialIntervalCount: 0
     }
   ) {
     _id
-    plan {
-      usageCalculationType
-      billingInterval
+    ... on PlanProduct {
+      plan {
+        usageCalculationType
+        billingInterval
+      }
     }
   }
 }
@@ -122,7 +124,7 @@ configurationForOrder: async ({ period }) => {
 ```graphql
 mutation CreateEnrollment {
   createEnrollment(
-    enrollment: {
+    plan: {
       productId: "plan-product-id"
       quantity: 1
     }
@@ -141,8 +143,10 @@ query MyEnrollments {
     enrollments {
       _id
       status
-      product {
-        texts { title }
+      plan {
+        product {
+          texts { title }
+        }
       }
       periods {
         start
@@ -164,8 +168,8 @@ query MyEnrollments {
 query CheckAccess {
   enrollment(enrollmentId: "enrollment-id") {
     _id
-    isValidForActivation
     status
+    isExpired
   }
 }
 ```

@@ -220,8 +220,49 @@ claude skill install https://docs.unchained.shop/skills/upgrade-unchained
 
 This skill guides Claude through fetching the correct migration guide, changelog, and examples for your target version.
 
+## Security & Compliance
+
+Unchained Engine is designed for deployment in security-sensitive environments including banking, government, and enterprise contexts.
+
+### Compliance
+
+| Standard | Status | Notes |
+|----------|--------|-------|
+| **PCI DSS SAQ-A** | Eligible | Payment tokenization, no card data storage |
+| **ISO 27001** | Aligned | Comprehensive security controls |
+| **FIPS 140-3** | Supported | Deploy with FIPS-enabled Node.js |
+| **FINMA/NIS2** | Aligned | Banking and EU requirements |
+
+### Cryptographic Standards
+
+- **Password Hashing**: PBKDF2-SHA512 with 300,000 iterations
+- **Token Security**: SHA-256 hashing, cryptographically random generation
+- **Session Encryption**: AES-256-GCM (optional)
+- **Payment Signatures**: HMAC-SHA-256/512
+
+### FIPS 140-3 Mode
+
+For US federal government and regulated environments, run Unchained with FIPS-validated cryptography:
+
+```dockerfile
+# Use Chainguard FIPS image
+FROM cgr.dev/chainguard/node-fips:latest
+WORKDIR /app
+COPY . .
+CMD ["node", "index.js"]
+```
+
+Or enable FIPS mode manually:
+
+```bash
+node --enable-fips your-app.js
+```
+
+See [SECURITY.md](SECURITY.md) for complete security documentation, compliance details, and deployment recommendations.
+
 ## Resources
 
+- [Security Documentation](SECURITY.md)
 - [Changelog](CHANGELOG.md)
 - [Benchmarks](BENCHMARKS.md)
 

@@ -33,14 +33,14 @@ The `BUDGETSMS_USERID` must contain only numbers. You can find it in your Budget
 
 ```graphql
 mutation SendSMS {
-  createWork(
-    type: "BUDGETSMS"
+  addWork(
+    type: BUDGETSMS
     input: {
       to: "+41791234567"
       text: "Your verification code is 123456"
       from: "YourCompany"
-      price: true   # Include price info in response
-      credit: true  # Include remaining credit in response
+      price: true
+      credit: true
     }
   ) {
     _id
@@ -49,12 +49,14 @@ mutation SendSMS {
 }
 ```
 
+Note: `price: true` includes price info in response, `credit: true` includes remaining credit.
+
 ### Test Mode (No Credit Deducted)
 
 ```graphql
 mutation TestSMS {
-  createWork(
-    type: "BUDGETSMS"
+  addWork(
+    type: BUDGETSMS
     input: {
       to: "+41791234567"
       text: "Test message"

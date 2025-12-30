@@ -59,32 +59,26 @@ External worker placeholder for the actual ownership verification process.
 
 ### Refresh All Tokens
 
-```graphql
-mutation RefreshAllTokens {
-  createWork(type: "REFRESH_TOKENS") {
-    _id
-    status
-  }
-}
+```typescript
+// Trigger via API
+await unchainedAPI.modules.worker.addWork({
+  type: 'REFRESH_TOKENS',
+});
 ```
 
 ### Update Specific Tokens (External)
 
-```graphql
-mutation UpdateOwnership {
-  createWork(
-    type: "UPDATE_TOKEN_OWNERSHIP"
-    input: {
-      filter: {
-        tokens: [{ _id: "token-1" }, { _id: "token-2" }],
-        accounts: ["0xAddress1", "0xAddress2"]
-      }
-    }
-  ) {
-    _id
-    status
-  }
-}
+```typescript
+// Trigger via API
+await unchainedAPI.modules.worker.addWork({
+  type: 'UPDATE_TOKEN_OWNERSHIP',
+  input: {
+    filter: {
+      tokens: [{ _id: 'token-1' }, { _id: 'token-2' }],
+      accounts: ['0xAddress1', '0xAddress2'],
+    },
+  },
+});
 ```
 
 ## Result

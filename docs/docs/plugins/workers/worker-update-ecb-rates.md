@@ -41,7 +41,7 @@ You can also trigger an update manually:
 
 ```graphql
 mutation UpdateRates {
-  createWork(type: "UPDATE_ECB_RATES") {
+  addWork(type: UPDATE_ECB_RATES) {
     _id
     status
   }

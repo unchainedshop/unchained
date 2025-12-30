@@ -33,11 +33,11 @@ Create a heartbeat work item:
 
 ```graphql
 mutation TestWorker {
-  createWork(
-    type: "HEARTBEAT"
+  addWork(
+    type: HEARTBEAT
     input: {
-      wait: 1000,   # Optional: milliseconds to wait before completing
-      fails: false  # Optional: set to true to simulate a failure
+      wait: 1000
+      fails: false
     }
   ) {
     _id
@@ -45,6 +45,8 @@ mutation TestWorker {
   }
 }
 ```
+
+Note: `wait` is milliseconds to wait before completing, `fails: true` simulates a failure.
 
 ## Input Parameters
 

@@ -47,6 +47,16 @@ mutation CreatePostFinanceProvider {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.payment.postfinance-checkout"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigurePostFinanceProvider {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "completionMode", value: "Immediate" }
       ]

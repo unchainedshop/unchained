@@ -576,6 +576,80 @@ describe('createLogger', () => {
   });
 
   describe('Security', () => {
+    it('should be immune to ReDoS attacks via DEBUG pattern', () => {
+      // This pattern would cause catastrophic backtracking in a vulnerable regex:
+      // (a+)+ with input 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!'
+      // A vulnerable implementation would hang for seconds/minutes
+      const maliciousPatterns = [
+        '(a+)+', // Nested quantifiers
+        '(a|a)+', // Alternation with overlap
+        '(a|aa)+', // Alternation with overlap
+        '([a-zA-Z]+)*', // Nested quantifiers with character class
+        '(.*a){10}', // Greedy with repetition
+        '(?:a+)+', // Non-capturing nested quantifiers
+      ];
+
+      const startTime = Date.now();
+
+      for (const pattern of maliciousPatterns) {
+        process.env.DEBUG = pattern;
+        resetLoggerInitialization();
+
+        // This input would cause exponential backtracking in vulnerable patterns
+        const maliciousInput = 'a'.repeat(30) + '!';
+
+        // Creating the logger should not hang
+        const logger = createLogger(maliciousInput);
+
+        // Should complete almost instantly (< 100ms per pattern)
+        // A vulnerable implementation would take seconds or minutes
+        assert(logger);
+      }
+
+      const elapsed = Date.now() - startTime;
+      // All patterns should complete in under 1 second total
+      // A vulnerable implementation would take much longer
+      assert(elapsed < 1000, `ReDoS protection failed: took ${elapsed}ms`);
+    });
+
+    it('should still match valid patterns after escaping', () => {
+      // Ensure escaping doesn't break legitimate patterns
+      process.env.DEBUG = 'unchained:*';
+      resetLoggerInitialization();
+
+      const logger1 = createLogger('unchained:core');
+      const logger2 = createLogger('unchained:api:graphql');
+      const logger3 = createLogger('other-module');
+
+      consoleOutput = [];
+      logger1.debug('should appear');
+      logger2.debug('should also appear');
+      logger3.debug('should not appear');
+
+      assert(consoleOutput.some((output) => output.includes('should appear')));
+      assert(consoleOutput.some((output) => output.includes('should also appear')));
+      assert(!consoleOutput.some((output) => output.includes('should not appear')));
+    });
+
+    it('should handle special regex characters in DEBUG pattern safely', () => {
+      // These characters should be escaped and treated literally
+      process.env.DEBUG = 'module.name+test';
+      resetLoggerInitialization();
+
+      const logger1 = createLogger('module.name+test');
+      const logger2 = createLogger('modulexname+test'); // . should not match any char
+      const logger3 = createLogger('module.nametest'); // + should not mean "one or more"
+
+      consoleOutput = [];
+      logger1.debug('exact match');
+      logger2.debug('dot as wildcard');
+      logger3.debug('plus as quantifier');
+
+      assert(consoleOutput.some((output) => output.includes('exact match')));
+      assert(!consoleOutput.some((output) => output.includes('dot as wildcard')));
+      assert(!consoleOutput.some((output) => output.includes('plus as quantifier')));
+    });
+
     it('should guard against prototype pollution via __proto__', () => {
       process.env.UNCHAINED_LOG_FORMAT = 'json';
       const logger = createLogger('prototype-pollution-test');

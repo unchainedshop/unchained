@@ -1,3 +1,5 @@
+import { timingSafeStringEqual } from '@unchainedshop/utils';
+
 // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2
 const PBKDF2_ITERATIONS = 300000; // Iterations, > 210'000
 const PBKDF2_KEY_LENGTH = 256; // Bytes
@@ -42,5 +44,7 @@ export async function getDerivedKey(
 
 export async function compare(password: string, hash: string, salt: string) {
   const comparableHash = await getDerivedKey(salt, password);
-  return comparableHash === hash;
+  // Use timing-safe comparison to prevent timing attacks
+  // that could reveal information about the stored hash
+  return timingSafeStringEqual(comparableHash, hash);
 }

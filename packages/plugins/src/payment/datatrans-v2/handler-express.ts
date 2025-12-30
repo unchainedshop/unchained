@@ -33,7 +33,7 @@ export const datatransHandler = async (req, res) => {
     })(timestamp, req.body);
 
     if (hash !== comparableSignature) {
-      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body);
+      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`);
       res.status(403).send('Hash mismatch');
       return;
     }
@@ -81,7 +81,7 @@ export const datatransHandler = async (req, res) => {
           return;
         }
       } catch (e) {
-        logger.error(`rejected to checkout with message`, e);
+        logger.error(`rejected to checkout: ${e.name} - ${e.message}`);
         res.status(500).send({ name: e.name, code: e.code, message: e.message });
         return;
       }

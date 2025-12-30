@@ -1,12 +1,16 @@
 import { createLogger } from '@unchainedshop/logger';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
 
 const logger = createLogger('unchained:minio');
 
 const { MINIO_WEBHOOK_AUTH_TOKEN } = process.env;
 
-const isAuthorized = ({ authorization = '' }) => {
+const isAuthorized = async ({ authorization = '' }): Promise<boolean> => {
+  if (!MINIO_WEBHOOK_AUTH_TOKEN) return false;
   const [type, token] = authorization.split(' ');
-  return type === 'Bearer' && token === MINIO_WEBHOOK_AUTH_TOKEN;
+  if (type !== 'Bearer' || !token) return false;
+  // Use timing-safe comparison to prevent timing attacks
+  return timingSafeStringEqual(token, MINIO_WEBHOOK_AUTH_TOKEN);
 };
 
 const minioHandler = async (req, res) => {
@@ -14,7 +18,7 @@ const minioHandler = async (req, res) => {
     if (req.method === 'POST' && req.body) {
       const { headers } = req;
       const { Records = [], EventName } = req.body;
-      if (EventName === 's3:ObjectCreated:Put' && isAuthorized(headers)) {
+      if (EventName === 's3:ObjectCreated:Put' && (await isAuthorized(headers))) {
         const [{ s3 }] = Records;
         const { object } = s3;
         const { size, contentType: type } = object;

@@ -15,9 +15,24 @@ const regexCache = new Map<string, RegExp>();
 const debugPatternCache = new Map<string, boolean>();
 
 /**
+ * Escapes all regex special characters except asterisk (*) which is used for wildcards.
+ * This prevents ReDoS attacks from malicious DEBUG patterns.
+ */
+const escapeRegexForDebug = (pattern: string): string => {
+  // Escape all regex special characters except * (which we convert to .*)
+  // Special chars: . + ? ^ $ { } ( ) | [ ] \
+  // We also escape - but allow it as literal
+  return pattern
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // Escape special chars
+    .replace(/\*/g, '.*'); // Convert * to .*
+};
+
+/**
  * Checks if a module name matches the DEBUG environment variable pattern.
  * Supports wildcards (*), exclusions (-pattern), and comma-separated lists.
  * Results are cached for performance.
+ *
+ * Security: Patterns are escaped to prevent ReDoS attacks.
  */
 const debugStringContainsModule = (debugString: string, moduleName: string): boolean => {
   if (!debugString) return false;
@@ -30,17 +45,35 @@ const debugStringContainsModule = (debugString: string, moduleName: string): boo
   const loggingMatched = debugString.split(',').reduce((accumulator: any, name: string) => {
     if (accumulator === false) return accumulator;
 
+    const trimmedName = name.trim();
+    if (!trimmedName) return accumulator;
+
     // Get or create cached regex pattern
-    let regExp = regexCache.get(name);
+    let regExp = regexCache.get(trimmedName);
     if (!regExp) {
-      const nameRegex = name.replace(/-/i, '\\-?').replace(/:\*/i, '\\:?*').replace(/\*/i, '.*');
-      regExp = new RegExp(`^${nameRegex}$`, 'm');
-      regexCache.set(name, regExp);
+      // Check for exclusion pattern (starts with -)
+      const isExclusion = trimmedName.startsWith('-');
+      const patternToMatch = isExclusion ? trimmedName.slice(1) : trimmedName;
+
+      // Escape the pattern to prevent ReDoS, then convert * to .*
+      const safePattern = escapeRegexForDebug(patternToMatch);
+      regExp = new RegExp(`^${safePattern}$`);
+      regexCache.set(trimmedName, regExp);
     }
 
-    if (regExp.test(moduleName)) {
-      // Exclusion pattern (starts with -)
-      if (name.slice(0, 1) === '-') {
+    // Check for exclusion pattern (starts with -)
+    const isExclusion = trimmedName.startsWith('-');
+    const patternToMatch = isExclusion ? trimmedName.slice(1) : trimmedName;
+
+    // Test against the module name (need to get the regex for the actual pattern)
+    let testRegExp = regexCache.get(isExclusion ? `-${patternToMatch}` : patternToMatch);
+    if (!testRegExp) {
+      const safePattern = escapeRegexForDebug(patternToMatch);
+      testRegExp = new RegExp(`^${safePattern}$`);
+    }
+
+    if (testRegExp.test(moduleName)) {
+      if (isExclusion) {
         return false;
       }
       return true;

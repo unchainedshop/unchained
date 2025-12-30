@@ -53,6 +53,16 @@ mutation CreateDeliveryProvider {
     deliveryProvider: {
       type: SHIPPING
       adapterKey: "shop.unchained.post"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigureDeliveryProvider {
+  updateDeliveryProvider(
+    deliveryProviderId: "provider-id"
+    deliveryProvider: {
       configuration: [
         { key: "swiss-tax-category", value: "reduced" }
       ]

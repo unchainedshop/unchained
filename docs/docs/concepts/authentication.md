@@ -419,6 +419,19 @@ await modules.users.updateRoles(userId, ['support']);
 
 ## Security Best Practices
 
+For comprehensive security documentation, see the [Security Guide](../deployment/security).
+
+### Cryptographic Standards
+
+Unchained uses industry-standard cryptography for authentication:
+
+| Operation | Algorithm | Details |
+|-----------|-----------|---------|
+| Password Hashing | PBKDF2-SHA512 | 300,000 iterations, 16-byte salt |
+| Token Storage | SHA-256 | Tokens hashed before database storage |
+| Token Generation | CSPRNG | `crypto.randomUUID()` |
+| Session Encryption | AES-256-GCM | Optional, via kruptein |
+
 ### 1. Token Secret
 
 Use a strong, unique secret:
@@ -481,5 +494,6 @@ await startPlatform({
 
 ## Related
 
+- [Security Guide](../deployment/security) - Security features and compliance
 - [Users Module](../platform-configuration/modules/users.md) - User configuration options
 - [Admin UI](../admin-ui/overview.md) - Admin UI overview

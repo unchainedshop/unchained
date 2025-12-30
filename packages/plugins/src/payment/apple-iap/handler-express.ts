@@ -125,7 +125,7 @@ export const appleIAPHandler = async (req, res) => {
       res.status(200).end();
       return;
     } catch (e) {
-      logger.warn(`Apple IAP Webhook: ${e.message}`, e);
+      logger.warn(`Apple IAP Webhook: ${e.name} - ${e.message}`);
       res.status(503).send({ name: e.name, code: e.code, message: e.message });
       return;
     }

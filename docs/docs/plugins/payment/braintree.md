@@ -37,6 +37,16 @@ mutation CreateBraintreeProvider {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.braintree-direct"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigureBraintreeProvider {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "publicKey", value: "your-public-key" }
         { key: "merchantId", value: "your-merchant-id" }

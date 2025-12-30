@@ -2,6 +2,7 @@ import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { buildSignature } from './buildSignature.ts';
 import type { SaferpayTransactionsModule } from './module.ts';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
 
 const logger = createLogger('unchained:saferpay:handler');
 
@@ -37,7 +38,8 @@ export const saferpayHandler = async (request, response) => {
 
     const correctSignature = await buildSignature(transactionId, orderPaymentId);
 
-    if (correctSignature !== signature) {
+    // Use timing-safe comparison to prevent signature timing attacks
+    if (!(await timingSafeStringEqual(correctSignature, signature))) {
       throw new Error('Invalid signature');
     }
 

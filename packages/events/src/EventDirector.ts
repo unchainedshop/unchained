@@ -57,7 +57,8 @@ export const EventDirector = {
       payload,
     });
 
-    logger.debug(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
+    // Only log event name, not payload (may contain sensitive data)
+    logger.debug(`EventDirector -> Emitted ${eventName}`);
   },
 
   subscribe: <T extends Record<string, any>>(

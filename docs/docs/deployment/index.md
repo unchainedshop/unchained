@@ -103,4 +103,5 @@ flowchart TD
 - [Railway Deployment](../quick-start/run-railway) - Deploy with Railway
 - [Docker Deployment](./docker) - Container deployment
 - [Production Checklist](./production-checklist) - Pre-launch checklist
+- [Security](./security) - Security features and compliance
 - [Environment Variables](../platform-configuration/environment-variables) - Configuration reference

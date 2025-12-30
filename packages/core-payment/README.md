@@ -94,6 +94,37 @@ const providers = await paymentModule.findSupported({
 | `PAYMENT_PROVIDER_UPDATE` | Provider updated |
 | `PAYMENT_PROVIDER_REMOVE` | Provider deleted |
 
+## Security (PCI DSS)
+
+This module is designed for **PCI DSS SAQ-A eligibility**:
+
+### Tokenization
+
+- **No card data storage**: Credit card numbers (PAN) and CVV are never stored
+- **Provider tokens only**: Only payment provider-issued tokens are stored
+- **Secure credentials**: Payment credentials contain references, not card data
+
+```typescript
+// PaymentCredentials structure - tokens only, no card data
+type PaymentCredentials = {
+  paymentProviderId: string;
+  userId: string;
+  token?: string;        // Provider-issued token (NOT card number)
+  isPreferred?: boolean;
+  meta: any;             // Provider-specific metadata
+};
+```
+
+### Payment Flow
+
+All payment integrations use tokenization patterns:
+1. Card data collected by payment provider (Stripe, Datatrans, etc.)
+2. Provider returns secure token
+3. Unchained stores only the token reference
+4. Subsequent charges use the token
+
+See [SECURITY.md](../../SECURITY.md) for complete PCI DSS compliance documentation.
+
 ## License
 
 EUPL-1.2

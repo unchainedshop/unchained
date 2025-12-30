@@ -71,13 +71,13 @@ query MyQuotations {
 }
 ```
 
-### Admin: Update Quotation
+### Admin: Make Quotation Proposal
 
 ```graphql
-mutation UpdateQuotation {
-  updateQuotation(
+mutation MakeProposal {
+  makeQuotationProposal(
     quotationId: "quotation-id"
-    quotation: {
+    quotationContext: {
       price: 8999
       currency: "CHF"
     }

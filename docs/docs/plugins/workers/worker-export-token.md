@@ -48,14 +48,14 @@ configureExportToken(unchainedAPI);
 
 ```graphql
 mutation CreateExportWork {
-  createWork(
-    type: "EXPORT_TOKEN"
+  addWork(
+    type: EXPORT_TOKEN
     input: {
       token: {
-        _id: "token-id",
-        contractAddress: "0x...",
+        _id: "token-id"
+        contractAddress: "0x..."
         tokenId: "123"
-      },
+      }
       recipientWalletAddress: "0xRecipientAddress..."
     }
   ) {

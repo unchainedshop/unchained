@@ -42,8 +42,8 @@ npx web-push generate-vapid-keys
 
 ```graphql
 mutation SendPush {
-  createWork(
-    type: "PUSH"
+  addWork(
+    type: PUSH
     input: {
       subscription: {
         endpoint: "https://fcm.googleapis.com/..."
@@ -103,12 +103,20 @@ query GetShopInfo {
 
 ### Manage User Subscriptions
 
+Add subscription:
+
 ```graphql
-# Add subscription
 mutation AddPushSubscription {
   addPushSubscription(
-    subscription: { ... }
-    unsubscribeFromOtherUsers: true  # Remove this subscription from other users
+    subscription: {
+      endpoint: "https://fcm.googleapis.com/..."
+      expirationTime: null
+      keys: {
+        auth: "auth-key"
+        p256dh: "p256dh-key"
+      }
+    }
+    unsubscribeFromOtherUsers: true
   ) {
     _id
     pushSubscriptions {
@@ -118,14 +126,19 @@ mutation AddPushSubscription {
     }
   }
 }
+```
 
-# Remove subscription
+Remove subscription:
+
+```graphql
 mutation RemovePushSubscription {
   removePushSubscription(p256dh: "subscription-p256dh-key") {
     _id
   }
 }
 ```
+
+Note: `unsubscribeFromOtherUsers: true` removes this subscription from other users.
 
 ### Query User Subscriptions
 

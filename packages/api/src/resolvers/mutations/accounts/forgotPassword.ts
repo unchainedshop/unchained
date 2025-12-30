@@ -1,5 +1,4 @@
 import { log } from '@unchainedshop/logger';
-import { UserNotFoundError } from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
 
 export default async function forgotPassword(
@@ -7,10 +6,16 @@ export default async function forgotPassword(
   { email }: { email: string },
   { modules, userId }: Context,
 ) {
-  log('mutation forgotPassword', { email, userId });
+  // Don't log email to avoid PII in logs
+  log('mutation forgotPassword', { userId });
 
   const user = await modules.users.findUserByEmail(email);
-  if (!user) throw new UserNotFoundError({ email });
+
+  // Always return success to prevent user enumeration attacks
+  // If user doesn't exist, we silently succeed without sending email
+  if (!user) {
+    return { success: true };
+  }
 
   try {
     await modules.users.sendResetPasswordEmail(user._id, email);

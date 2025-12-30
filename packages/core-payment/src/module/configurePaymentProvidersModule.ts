@@ -1,5 +1,10 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import {
+  generateDbFilterById,
+  generateDbObjectId,
+  mongodb,
+  escapeRegexString,
+} from '@unchainedshop/mongodb';
 import type { PaymentProvider, PaymentProviderType } from '../db/PaymentProvidersCollection.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
@@ -42,7 +47,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
-    const regex = new RegExp(queryString, 'i');
+    const regex = new RegExp(escapeRegexString(queryString), 'i');
     selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
   }
 

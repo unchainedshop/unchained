@@ -58,7 +58,7 @@ export const createMigrationRunner = ({
 
       return [mostRecentId, migrations.length];
     } catch (e) {
-      logger.error(e.name, e);
+      logger.error(`Migration failed: ${e.name} - ${e.message}`);
       return [e.migrationId, null];
     }
   },

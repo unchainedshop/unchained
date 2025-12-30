@@ -64,6 +64,16 @@ mutation CreateStripeProvider {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.payment.stripe"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigureStripeProvider {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "descriptorPrefix", value: "MYSHOP" }
       ]

@@ -38,10 +38,10 @@ You can also trigger a report manually:
 
 ```graphql
 mutation SendErrorReport {
-  createWork(
-    type: "ERROR_NOTIFICATIONS"
+  addWork(
+    type: ERROR_NOTIFICATIONS
     input: {
-      secondsPassed: 86400  # Look back 24 hours (optional)
+      secondsPassed: 86400
     }
   ) {
     _id
@@ -49,6 +49,8 @@ mutation SendErrorReport {
   }
 }
 ```
+
+Note: `secondsPassed` is optional and defaults to 24 hours (86400 seconds).
 
 ## Input Parameters
 

@@ -206,6 +206,10 @@ subscribe('ORDER_ADD_PRODUCT', async ({ payload, context }) => {
 
 ### Audit Logging
 
+Unchained provides built-in OCSF-compliant audit logging. See the [dedicated Audit Logging section](#audit-logging-ocsf) below for the recommended approach.
+
+For simple custom audit logging:
+
 ```typescript
 const auditEvents = [
   'ORDER_CHECKOUT',
@@ -238,7 +242,190 @@ query {
 }
 ```
 
+## Audit Logging (OCSF)
+
+Unchained provides enterprise-grade audit logging based on the **OCSF (Open Cybersecurity Schema Framework)** - an industry-standard schema supported by AWS Security Lake, Datadog, Splunk, Google Chronicle, and other SIEM systems.
+
+### Features
+
+- **OCSF v1.4.0 compliant** - Industry-standard event schema
+- **Tamper-evident** - SHA-256 hash chain for integrity verification
+- **Append-only** - No update or delete operations
+- **JSON Lines format** - Easy parsing and integration
+- **SIEM-ready** - Direct ingestion into security monitoring tools
+- **HTTP push** - Optional push to OpenTelemetry Collector, Fluentd, or Vector
+
+### Quick Start
+
+```typescript
+import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+
+// Create audit log instance
+const auditLog = createAuditLog('./audit-logs');
+
+// Enable automatic event capture for all security-relevant events
+configureAuditIntegration(auditLog);
+
+// Events automatically captured:
+// - API_LOGIN_TOKEN_CREATED → Authentication (LOGON)
+// - API_LOGOUT → Authentication (LOGOFF)
+// - USER_CREATE → Account Change (CREATE)
+// - USER_REMOVE → Account Change (DELETE)
+// - USER_UPDATE_PASSWORD → Account Change (PASSWORD_CHANGE)
+// - USER_ADD_ROLES → Account Change (ATTACH_POLICY)
+// - ORDER_CREATE → API Activity (CREATE)
+// - ORDER_CHECKOUT → API Activity (CHECKOUT)
+// - ORDER_PAY → API Activity (PAYMENT)
+// - And more...
+```
+
+### Manual Logging
+
+For custom audit events:
+
+```typescript
+import {
+  createAuditLog,
+  OCSF_AUTH_ACTIVITY,
+  OCSF_ACCOUNT_ACTIVITY,
+  OCSF_API_ACTIVITY,
+} from '@unchainedshop/events';
+
+const auditLog = createAuditLog('./audit-logs');
+
+// Log authentication event
+await auditLog.logAuthentication({
+  activity: OCSF_AUTH_ACTIVITY.LOGON,
+  userId: user._id,
+  userName: user.email,
+  success: true,
+  remoteAddress: req.ip,
+  sessionId: req.sessionID,
+  isMfa: true,
+});
+
+// Log failed login attempt
+await auditLog.logAuthentication({
+  activity: OCSF_AUTH_ACTIVITY.LOGON,
+  success: false,
+  remoteAddress: req.ip,
+  message: 'Invalid password',
+});
+
+// Log account change (role assignment)
+await auditLog.logAccountChange({
+  activity: OCSF_ACCOUNT_ACTIVITY.ATTACH_POLICY,
+  userId: targetUser._id,
+  actorUserId: adminUser._id,
+  success: true,
+  message: 'Admin role assigned',
+});
+
+// Log API activity (payment)
+await auditLog.logApiActivity({
+  activity: OCSF_API_ACTIVITY.PAYMENT,
+  userId: user._id,
+  operation: 'processPayment',
+  success: true,
+  message: 'Payment completed',
+});
+
+// Log access denied
+await auditLog.logApiActivity({
+  activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
+  userId: user._id,
+  success: false,
+  message: 'Insufficient permissions',
+});
+```
+
+### HTTP Collector Push
+
+Push audit logs to OpenTelemetry Collector, Fluentd, or Vector:
+
+```typescript
+const auditLog = createAuditLog({
+  directory: './audit-logs',
+  collectorUrl: 'http://otel-collector:4318/v1/logs',
+  collectorHeaders: {
+    'Authorization': 'Bearer <token>',
+  },
+  batchSize: 10,
+  flushIntervalMs: 5000,
+});
+```
+
+### Querying Audit Logs
+
+```typescript
+import { OCSF_CLASS } from '@unchainedshop/events';
+
+// Find failed login attempts
+const failedLogins = await auditLog.find({
+  classUids: [OCSF_CLASS.AUTHENTICATION],
+  success: false,
+  startTime: new Date('2024-01-01'),
+  limit: 100,
+});
+
+// Get failed login count for rate limiting
+const attempts = await auditLog.getFailedLogins({
+  remoteAddress: '192.168.1.1',
+  since: new Date(Date.now() - 15 * 60 * 1000), // Last 15 minutes
+});
+
+// Verify integrity of audit log chain
+const result = await auditLog.verify();
+if (!result.valid) {
+  console.error('Audit log tampering detected:', result.error);
+}
+```
+
+### OCSF Event Classes
+
+| Class | UID | Use Cases |
+|-------|-----|-----------|
+| **Authentication** | 3002 | Login, logout, failed login, MFA |
+| **Account Change** | 3001 | User CRUD, password changes, role changes |
+| **API Activity** | 6003 | API access, payments, orders, access denied |
+
+### SIEM Integration
+
+Audit log files (`audit-YYYY-MM-DD.jsonl`) can be directly ingested by SIEM systems:
+
+**Filebeat (Elastic):**
+```yaml
+filebeat.inputs:
+  - type: log
+    paths:
+      - /path/to/audit-logs/*.jsonl
+    json.keys_under_root: true
+```
+
+**Promtail (Loki/Grafana):**
+```yaml
+scrape_configs:
+  - job_name: unchained-audit
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: audit
+          __path__: /path/to/audit-logs/*.jsonl
+```
+
+### Shutdown
+
+Always close the audit log on shutdown to flush pending events:
+
+```typescript
+process.on('SIGTERM', async () => {
+  await auditLog.close();
+  process.exit(0);
+});
+```
+
 ## Related
 
+- [Security](../deployment/security) - Security features and compliance
 - [Events Module](../platform-configuration/modules/events) - Module configuration
 - [Worker](./worker) - Background job processing

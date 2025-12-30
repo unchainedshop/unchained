@@ -27,11 +27,9 @@ Users must have the `half-price` tag:
 
 ```graphql
 mutation TagUser {
-  updateUser(
+  setUserTags(
     userId: "user-id"
-    user: {
-      tags: ["half-price"]
-    }
+    tags: ["half-price"]
   ) {
     _id
     tags

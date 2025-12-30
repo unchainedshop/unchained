@@ -96,7 +96,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
                   return `${resource.name}:\n${(content.contents[0] as any).text}`;
                 }
               } catch (e) {
-                logger.error(`Failed to read resource ${resource.uri}:`, e);
+                logger.error(`Failed to read resource ${resource.uri}: ${e.message}`);
               }
               return null;
             }),
@@ -105,7 +105,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
             '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
         }
       } catch (e) {
-        logger.error('Failed to fetch MCP resources:', e);
+        logger.error(`Failed to fetch MCP resources: ${e.message}`);
       }
 
       const tools: aiTypes.ToolSet = {

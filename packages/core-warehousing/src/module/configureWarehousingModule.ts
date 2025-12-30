@@ -2,6 +2,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbObjectId,
+  escapeRegexString,
   type mongodb,
   type ModuleInput,
   assertDocumentDBCompatMode,
@@ -55,7 +56,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
-    const regex = new RegExp(queryString, 'i');
+    const regex = new RegExp(escapeRegexString(queryString), 'i');
     selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
   }
 

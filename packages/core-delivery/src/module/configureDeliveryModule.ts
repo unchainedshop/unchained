@@ -3,6 +3,7 @@ import {
   mongodb,
   generateDbFilterById,
   generateDbObjectId,
+  escapeRegexString,
   type ModuleInput,
 } from '@unchainedshop/mongodb';
 import {
@@ -50,7 +51,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
-    const regex = new RegExp(queryString, 'i');
+    const regex = new RegExp(escapeRegexString(queryString), 'i');
     selector.$or = [{ _id: regex }, { adapterKey: regex }] as any;
   }
 

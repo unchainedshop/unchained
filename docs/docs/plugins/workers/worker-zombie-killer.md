@@ -38,10 +38,10 @@ Trigger a cleanup:
 
 ```graphql
 mutation CleanupZombies {
-  createWork(
-    type: "ZOMBIE_KILLER"
+  addWork(
+    type: ZOMBIE_KILLER
     input: {
-      bulkImportMaxAgeInDays: 5  # Optional, defaults to 5
+      bulkImportMaxAgeInDays: 5
     }
   ) {
     _id
@@ -49,6 +49,8 @@ mutation CleanupZombies {
   }
 }
 ```
+
+Note: `bulkImportMaxAgeInDays` is optional and defaults to 5.
 
 ## Input Parameters
 

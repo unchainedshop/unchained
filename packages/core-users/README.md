@@ -120,6 +120,37 @@ await usersModule.updateProfile(userId, {
 | `USER_UPDATE_ROLES` | Roles changed |
 | `USER_ACCOUNT_ACTION` | Account action triggered |
 
+## Security
+
+This module implements security best practices for user authentication and data protection.
+
+### Password Security
+
+- **Algorithm**: PBKDF2 with SHA-512
+- **Iterations**: 300,000 (exceeds OWASP recommendation)
+- **Salt**: 16 bytes, cryptographically random per password
+- **Key Length**: 256 bytes
+- **FIPS 140-3**: Compatible when running on FIPS-enabled Node.js
+
+### Token Security
+
+- **Generation**: `crypto.randomUUID()` (CSPRNG-based)
+- **Storage**: SHA-256 hashed before database storage
+- **Expiration**: Time-limited (configurable, default 1 hour)
+- **Single-use**: Tokens invalidated after verification
+
+### WebAuthn/FIDO2
+
+Full support for passwordless authentication via hardware security keys and platform authenticators, providing phishing-resistant authentication.
+
+### Data Protection
+
+- Sensitive data (password hashes, tokens) stripped from event emissions via `removeConfidentialServiceHashes()`
+- Soft delete preserves audit trail while removing PII
+- Email addresses and profile data access-controlled via RBAC
+
+See [SECURITY.md](../../SECURITY.md) for complete security documentation.
+
 ## License
 
 EUPL-1.2

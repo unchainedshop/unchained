@@ -64,6 +64,16 @@ mutation CreateSaferpayProvider {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.payment.saferpay"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigureSaferpayProvider {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "terminalId", value: "your-terminal-id" }
       ]
@@ -203,6 +213,16 @@ mutation CreateCHFTerminal {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.payment.saferpay"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigureCHFTerminal {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "terminalId", value: "chf-terminal-id" }
       ]

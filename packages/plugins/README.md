@@ -123,6 +123,32 @@ const platform = await startPlatform({
 });
 ```
 
+## Security
+
+### Payment Plugin Security
+
+All payment plugins implement secure tokenization patterns for PCI DSS SAQ-A eligibility:
+
+| Plugin | Security Method |
+|--------|-----------------|
+| Stripe | PaymentIntent/SetupIntent tokenization |
+| Datatrans | Secure Fields with HMAC-SHA-256 signatures |
+| Saferpay | Redirect with SHA-256 transaction signatures |
+| PayPal | Order ID references |
+| Braintree | Client SDK tokenization |
+| Cryptopay | BIP-32 HD wallet address derivation |
+
+**Signature Algorithms:**
+- HMAC-SHA-256: Datatrans, Payrexx, GridFS file uploads
+- HMAC-SHA-512: PostFinance Checkout
+- SHA-256: Saferpay
+
+### FIPS 140-3 Compatibility
+
+All cryptographic operations use FIPS-approved algorithms. When deployed on FIPS-enabled Node.js (e.g., Chainguard node-fips), plugins operate in FIPS-compliant mode.
+
+See [SECURITY.md](../../SECURITY.md) for complete security documentation.
+
 ## Notes
 
 ### Postfinance Checkout Plugin

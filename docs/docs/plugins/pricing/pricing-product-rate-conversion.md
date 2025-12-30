@@ -29,16 +29,22 @@ import '@unchainedshop/plugins/pricing/product-price-rateconversion';
 
 ## Setting Exchange Rates
 
-Use the `updateProductPriceRate` mutation:
+Exchange rates are managed through the `products.prices.updateRates` module method. Use one of the built-in worker plugins to update rates automatically:
 
-```graphql
-mutation SetExchangeRate {
-  updateProductPriceRate(
-    fromCurrencyCode: "CHF"
-    toCurrencyCode: "EUR"
-    rate: 0.95
-  )
-}
+- [Update ECB Rates](../workers/worker-update-ecb-rates.md) - European Central Bank rates
+- [Update Coinbase Rates](../workers/worker-update-coinbase-rates.md) - Cryptocurrency rates
+
+Or update rates programmatically:
+
+```typescript
+await unchainedAPI.modules.products.prices.updateRates([
+  {
+    baseCurrency: 'CHF',
+    quoteCurrency: 'EUR',
+    rate: 0.95,
+    timestamp: new Date(),
+  },
+]);
 ```
 
 ## Adapter Details

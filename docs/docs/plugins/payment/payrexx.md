@@ -46,6 +46,16 @@ mutation CreatePayrexxProvider {
     paymentProvider: {
       type: GENERIC
       adapterKey: "shop.unchained.payment.payrexx"
+    }
+  ) {
+    _id
+  }
+}
+
+mutation ConfigurePayrexxProvider {
+  updatePaymentProvider(
+    paymentProviderId: "provider-id"
+    paymentProvider: {
       configuration: [
         { key: "instance", value: "your-instance-name" }
       ]

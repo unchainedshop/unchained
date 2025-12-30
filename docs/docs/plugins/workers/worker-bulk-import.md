@@ -67,8 +67,8 @@ Upload a JSON file with import events:
 
 ```graphql
 mutation CreateBulkImportWork {
-  createWork(
-    type: "BULK_IMPORT"
+  addWork(
+    type: BULK_IMPORT
     input: {
       payloadId: "uploaded-file-id"
       createShouldUpsertIfIDExists: false
@@ -84,20 +84,16 @@ mutation CreateBulkImportWork {
 
 ### From Direct Events
 
-```graphql
-mutation CreateBulkImportWork {
-  createWork(
-    type: "BULK_IMPORT"
-    input: {
-      events: [
-        { "type": "PRODUCT", "operation": "CREATE", "payload": { "sku": "PRODUCT-001" } }
-      ]
-    }
-  ) {
-    _id
-    status
+```typescript
+// Direct events must be passed programmatically
+await unchainedAPI.modules.worker.addWork({
+  type: 'BULK_IMPORT',
+  input: {
+    events: [
+      { type: 'PRODUCT', operation: 'CREATE', payload: { sku: 'PRODUCT-001' } }
+    ]
   }
-}
+});
 ```
 
 ## Input Parameters

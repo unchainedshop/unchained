@@ -32,13 +32,12 @@ The Message Worker is the central routing hub for all notifications in Unchained
 
 ```graphql
 mutation SendWelcomeMessage {
-  createWork(
-    type: "MESSAGE"
+  addWork(
+    type: MESSAGE
     input: {
       template: "ACCOUNT_ACTION"
       userId: "user-id"
       action: "verify-email"
-      # ... any additional payload for the template
     }
   ) {
     _id
@@ -46,6 +45,8 @@ mutation SendWelcomeMessage {
   }
 }
 ```
+
+Note: Any additional payload for the template can be added to the `input` object.
 
 ## Input Parameters
 

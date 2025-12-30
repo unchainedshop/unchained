@@ -46,7 +46,7 @@ You can also trigger order generation manually:
 
 ```graphql
 mutation GenerateEnrollmentOrders {
-  createWork(type: "ENROLLMENT_ORDER_GENERATOR") {
+  addWork(type: ENROLLMENT_ORDER_GENERATOR) {
     _id
     status
   }
