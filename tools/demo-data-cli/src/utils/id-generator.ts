@@ -9,9 +9,7 @@ export function generateProductId(category: string, brand: string, index: number
 
 export function generateAssortmentId(path: string | string[]): string {
   const pathArray = Array.isArray(path) ? path : [path];
-  const cleanPath = pathArray
-    .map((p) => p.toLowerCase().replace(/[^a-z0-9-]/g, '-'))
-    .join('-');
+  const cleanPath = pathArray.map((p) => p.toLowerCase().replace(/[^a-z0-9-]/g, '-')).join('-');
   return `assortment-${cleanPath}`;
 }
 

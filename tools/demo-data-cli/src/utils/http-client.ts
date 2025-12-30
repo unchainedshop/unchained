@@ -24,7 +24,7 @@ async function sleep(ms: number): Promise<void> {
 
 export async function sendBulkImport(
   payload: BulkImportPayload,
-  config: HttpClientConfig
+  config: HttpClientConfig,
 ): Promise<ImportResult> {
   const url = `${config.endpoint}?createShouldUpsertIfIDExists=true`;
 

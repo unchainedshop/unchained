@@ -20,8 +20,8 @@ export const ProductUpdateSpecificationSchema = z.object({
           maxQuantity: z.number().optional(),
           isTaxable: z.boolean().optional(),
           isNetPrice: z.boolean().optional(),
-          currencyCode: z.string(),
-          countryCode: z.string(),
+          currencyCode: z.string().min(1, 'currencyCode is required'),
+          countryCode: z.string().min(1, 'countryCode is required'),
         }),
       ),
     })

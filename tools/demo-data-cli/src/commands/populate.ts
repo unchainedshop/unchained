@@ -2,7 +2,7 @@
 
 import * as fs from 'fs';
 import type { CLIOptions, BulkImportEvent, BulkImportPayload } from '../types/bulk-import.js';
-import { generateFilters, generateProducts, generateAssortments, getAssortmentCount } from '../generators/index.js';
+import { generateFilters, generateProducts, generateAssortments } from '../generators/index.js';
 import { sendBulkImport, type HttpClientConfig } from '../utils/http-client.js';
 import {
   ProgressReporter,

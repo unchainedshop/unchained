@@ -42,11 +42,14 @@ try {
     initPluginMiddlewares,
   });
 
-  // Seed Database and Set a super insecure Access Token for admin
+  // Seed Database
   await seed(engine.unchainedAPI);
 
-  // Warning: Do not use this in production
-  await engine.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
+  // Warning: Do not use this in production - creates access token for bulk import API
+  const result = await engine.unchainedAPI.modules.users.createAccessToken('admin');
+  if (result) {
+    logger.info(`Access token for admin: ${result.token}`);
+  }
 
   await httpServer.listen({ port: process.env.PORT || 3000 });
   logger.info(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);

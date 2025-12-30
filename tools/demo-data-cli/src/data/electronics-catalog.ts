@@ -28,7 +28,7 @@ export function generateDescription(
   template: ProductTemplate,
   brand: string,
   specs: Record<string, string | number | boolean>,
-  locale: 'en' | 'de' | 'fr'
+  locale: 'en' | 'de' | 'fr',
 ): string {
   const descriptions: Record<string, Record<'en' | 'de' | 'fr', string>> = {
     laptops: {
@@ -238,7 +238,10 @@ export const productTemplates: ProductTemplate[] = [
     variations: [
       { key: 'screenSize', values: [15, 16, 17, 18] },
       { key: 'memory', values: [16, 32, 64] },
-      { key: 'processor', values: ['i7-13700H', 'i9-13900H', 'i7-14700H', 'i9-14900H', 'Ryzen7-7840HS', 'Ryzen9-7945HX'] },
+      {
+        key: 'processor',
+        values: ['i7-13700H', 'i9-13900H', 'i7-14700H', 'i9-14900H', 'Ryzen7-7840HS', 'Ryzen9-7945HX'],
+      },
       { key: 'gpu', values: ['RTX4060', 'RTX4070', 'RTX4080', 'RTX4090'] },
       { key: 'storage', values: [512, 1000, 2000] },
     ],
@@ -279,7 +282,10 @@ export const productTemplates: ProductTemplate[] = [
     variations: [
       { key: 'screenSize', values: [13, 14, 15] },
       { key: 'memory', values: [8, 16, 24, 32] },
-      { key: 'processor', values: ['i5-1340P', 'i7-1360P', 'M2-Air', 'M3-Air', 'Ryzen5-7640U', 'Ryzen7-7840U'] },
+      {
+        key: 'processor',
+        values: ['i5-1340P', 'i7-1360P', 'M2-Air', 'M3-Air', 'Ryzen5-7640U', 'Ryzen7-7840U'],
+      },
       { key: 'storage', values: [256, 512, 1000] },
       { key: 'color', values: ['silver', 'gold', 'black', 'blue'] },
     ],
@@ -382,7 +388,10 @@ export const productTemplates: ProductTemplate[] = [
     variations: [
       { key: 'storage', values: [128, 256, 512, 1000] },
       { key: 'color', values: ['black', 'white', 'blue', 'gold', 'pink', 'purple', 'green', 'yellow'] },
-      { key: 'model', values: ['15', '15 Plus', '15 Pro', '15 Pro Max', '16', '16 Plus', '16 Pro', '16 Pro Max'] },
+      {
+        key: 'model',
+        values: ['15', '15 Plus', '15 Pro', '15 Pro Max', '16', '16 Plus', '16 Pro', '16 Pro Max'],
+      },
     ],
     tags: ['smartphone', 'iphone', 'ios', '5g'],
     screenSizes: ['6-10'],
@@ -1315,7 +1324,10 @@ export const productTemplates: ProductTemplate[] = [
     priceRange: { min: 9900, max: 39900 },
     weightRange: { min: 200, max: 2000 },
     variations: [
-      { key: 'type', values: ['capture-card', 'stream-deck', 'key-light', 'microphone', 'green-screen'] },
+      {
+        key: 'type',
+        values: ['capture-card', 'stream-deck', 'key-light', 'microphone', 'green-screen'],
+      },
       { key: 'level', values: ['starter', 'pro'] },
     ],
     tags: ['streaming', 'content-creation', 'twitch', 'youtube'],

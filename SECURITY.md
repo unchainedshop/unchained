@@ -46,10 +46,21 @@ const PBKDF2_SALT_LENGTH = 16;
 
 ### Token Security
 
-- **Token Generation**: `crypto.randomUUID()` (CSPRNG-based)
+- **Token Generation**: `crypto.randomUUID()` (CSPRNG-based, 128 bits of entropy)
 - **Token Storage**: SHA-256 hashed before database storage
 - **Token Expiration**: Time-limited (1 hour for verification tokens)
 - **Single Use**: Tokens are invalidated after use
+
+**Why SHA-256 for Tokens (not PBKDF2)?**
+
+Per [OWASP guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), slow hashing algorithms (bcrypt, PBKDF2, Argon2) are designed for low-entropy user passwords. API access tokens generated with CSPRNG have high entropy (128+ bits), making brute-force computationally infeasible regardless of hash speed. Using SHA-256 for high-entropy tokens is both secure and performant for stateless API authentication where every request must be verified.
+
+```typescript
+// packages/core-users/src/module/configureUsersModule.ts
+// Preferred: Server generates high-entropy token
+const result = await modules.users.createAccessToken('admin');
+console.log(result.token); // e.g., "550e8400-e29b-41d4-a716-446655440000"
+```
 
 ### Random Number Generation
 

@@ -8,7 +8,11 @@ export interface Brand {
 
 export const brands: Brand[] = [
   // Computer/Laptop brands
-  { id: 'apple', name: 'Apple', categories: ['laptops', 'tablets', 'smartphones', 'smartwatches', 'headphones'] },
+  {
+    id: 'apple',
+    name: 'Apple',
+    categories: ['laptops', 'tablets', 'smartphones', 'smartwatches', 'headphones'],
+  },
   { id: 'dell', name: 'Dell', categories: ['laptops', 'desktops', 'monitors'] },
   { id: 'hp', name: 'HP', categories: ['laptops', 'desktops', 'printers', 'monitors'] },
   { id: 'lenovo', name: 'Lenovo', categories: ['laptops', 'desktops', 'tablets'] },
@@ -17,7 +21,11 @@ export const brands: Brand[] = [
   { id: 'msi', name: 'MSI', categories: ['laptops', 'desktops', 'monitors', 'gaming-accessories'] },
 
   // Smartphone brands
-  { id: 'samsung', name: 'Samsung', categories: ['smartphones', 'tablets', 'smartwatches', 'monitors', 'storage'] },
+  {
+    id: 'samsung',
+    name: 'Samsung',
+    categories: ['smartphones', 'tablets', 'smartwatches', 'monitors', 'storage'],
+  },
   { id: 'google', name: 'Google', categories: ['smartphones'] },
   { id: 'oneplus', name: 'OnePlus', categories: ['smartphones'] },
   { id: 'xiaomi', name: 'Xiaomi', categories: ['smartphones', 'fitness-trackers'] },
@@ -30,10 +38,22 @@ export const brands: Brand[] = [
   { id: 'audio-technica', name: 'Audio-Technica', categories: ['headphones'] },
 
   // Accessory brands
-  { id: 'logitech', name: 'Logitech', categories: ['keyboards', 'mice', 'webcams', 'headphones', 'speakers'] },
+  {
+    id: 'logitech',
+    name: 'Logitech',
+    categories: ['keyboards', 'mice', 'webcams', 'headphones', 'speakers'],
+  },
   { id: 'razer', name: 'Razer', categories: ['keyboards', 'mice', 'headphones', 'gaming-accessories'] },
-  { id: 'corsair', name: 'Corsair', categories: ['keyboards', 'mice', 'headphones', 'gaming-accessories'] },
-  { id: 'steelseries', name: 'SteelSeries', categories: ['keyboards', 'mice', 'headphones', 'gaming-accessories'] },
+  {
+    id: 'corsair',
+    name: 'Corsair',
+    categories: ['keyboards', 'mice', 'headphones', 'gaming-accessories'],
+  },
+  {
+    id: 'steelseries',
+    name: 'SteelSeries',
+    categories: ['keyboards', 'mice', 'headphones', 'gaming-accessories'],
+  },
 
   // Wearable brands
   { id: 'garmin', name: 'Garmin', categories: ['smartwatches', 'fitness-trackers'] },
@@ -47,7 +67,11 @@ export const brands: Brand[] = [
 
   // Gaming brands
   { id: 'nintendo', name: 'Nintendo', categories: ['consoles', 'gaming-accessories'] },
-  { id: 'microsoft', name: 'Microsoft', categories: ['consoles', 'gaming-accessories', 'keyboards', 'mice'] },
+  {
+    id: 'microsoft',
+    name: 'Microsoft',
+    categories: ['consoles', 'gaming-accessories', 'keyboards', 'mice'],
+  },
 
   // Networking/Home Office
   { id: 'netgear', name: 'Netgear', categories: ['routers'] },

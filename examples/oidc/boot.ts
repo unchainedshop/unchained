@@ -44,8 +44,11 @@ try {
 
   await seed(platform.unchainedAPI);
 
-  // Warning: Do not use this in production
-  await platform.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
+  // Warning: Do not use this in production - creates access token for bulk import API
+  const result = await platform.unchainedAPI.modules.users.createAccessToken('admin');
+  if (result) {
+    fastify.log.info(`Access token for admin: ${result.token}`);
+  }
 
   await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
 } catch (err) {

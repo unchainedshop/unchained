@@ -529,8 +529,31 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return updatedUser;
     },
 
+    async createAccessToken(username: string): Promise<{ user: User; token: string } | null> {
+      // Generate high-entropy token using CSPRNG (128 bits of entropy)
+      const plainToken = crypto.randomUUID();
+      // SHA-256 is appropriate for high-entropy tokens (OWASP recommendation)
+      const secret = await sha256(plainToken);
+      const updatedUser = await Users.findOneAndUpdate(
+        { username: insensitiveTrimmedRegexOperator(username) },
+        {
+          $set: {
+            'services.token': { secret },
+          },
+        },
+        { returnDocument: 'after' },
+      );
+      if (!updatedUser) return null;
+      // Return plain token to caller - this is the only time it's available
+      return { user: updatedUser, token: plainToken };
+    },
+
+    /**
+     * @deprecated Use createAccessToken() instead which generates secure tokens.
+     * This method accepts user-provided secrets which may have insufficient entropy.
+     */
     async setAccessToken(username: string, plainSecret: string): Promise<User | null> {
-      const secret = await sha256(`${username}:${plainSecret}`);
+      const secret = await sha256(plainSecret);
       const updatedUser = await Users.findOneAndUpdate(
         { username: insensitiveTrimmedRegexOperator(username) },
         {

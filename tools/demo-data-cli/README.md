@@ -24,18 +24,21 @@ npm run build
 ### Basic Usage
 
 ```bash
-# With authentication token
+# With authentication token (the plainSecret passed to setAccessToken)
 node dist/index.js populateDemoData --token YOUR_AUTH_TOKEN
 
 # Using environment variable
 UNCHAINED_TOKEN=YOUR_AUTH_TOKEN node dist/index.js populateDemoData
+
+# Example: If your server calls setAccessToken('admin', 'secret'), use:
+node dist/index.js populateDemoData --token secret
 ```
 
 ### Options
 
 | Option | Short | Default | Description |
 |--------|-------|---------|-------------|
-| `--endpoint <url>` | `-e` | `http://localhost:3000/bulk-import` | API endpoint URL |
+| `--endpoint <url>` | `-e` | `http://localhost:4010/bulk-import` | API endpoint URL |
 | `--token <token>` | `-t` | - | Bearer authentication token (required unless --dry-run) |
 | `--products <number>` | `-p` | `1000` | Number of products to generate |
 | `--chunk-size <number>` | `-c` | `500` | Events per API request |

@@ -32,13 +32,13 @@ export function generatePrice(config: PriceConfig, seed: number): GeneratedPrice
   };
 }
 
-export function formatPricingArray(prices: GeneratedPrices): Array<{
+export function formatPricingArray(prices: GeneratedPrices): {
   amount: number;
   currencyCode: string;
   countryCode: string;
   isTaxable: boolean;
   isNetPrice: boolean;
-}> {
+}[] {
   return [
     {
       amount: prices.chf,

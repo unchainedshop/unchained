@@ -1,6 +1,8 @@
-export const ADMIN_TOKEN = 'Bearer admin:secret';
-export const USER_TOKEN = 'Bearer user:secret';
-export const GUEST_TOKEN = 'Bearer guest:secret';
+// Access tokens: sha256 hash of the plain token
+// Each user has a unique token for proper permission testing
+export const ADMIN_TOKEN = 'Bearer admin-secret';
+export const USER_TOKEN = 'Bearer user-secret';
+export const GUEST_TOKEN = 'Bearer guest-secret';
 
 export const Admin = {
   _id: 'admin',
@@ -20,7 +22,8 @@ export const Admin = {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     token: {
-      secret: '901b281c4e0c4007e8526ef27153b79330811e733976d5e65c8343a39e54ec81',
+      // sha256("admin-secret")
+      secret: '16175223c8ddce5ace0493c948569c211b03c4c6bb3d3e484434999448cffe01',
     },
   },
 };
@@ -46,7 +49,8 @@ export const User = {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     token: {
-      secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913',
+      // sha256("user-secret")
+      secret: 'fa32968772a8ee3fbd6f842644e210e8d27d27ac97742fe7f1910778fc3fa21d',
     },
   },
 };
@@ -72,7 +76,8 @@ export const UnverifiedUser = {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     token: {
-      secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913',
+      // sha256("user-secret") - same as User
+      secret: 'fa32968772a8ee3fbd6f842644e210e8d27d27ac97742fe7f1910778fc3fa21d',
     },
   },
 };
@@ -95,7 +100,8 @@ export const Guest = {
   roles: [],
   services: {
     token: {
-      secret: 'fd3d2dcf2d30d944076c0c26d195c0919e98cdb9aa08aa539a930f27743a8d9c',
+      // sha256("guest-secret")
+      secret: 'c14d572fd83485db6ea9a8c149030c662c061d413d4bc23b895b6619ea06e02a',
     },
   },
 };

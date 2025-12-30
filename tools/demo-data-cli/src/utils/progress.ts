@@ -24,7 +24,7 @@ export class ProgressReporter {
     const bar = this.createBar(percent);
 
     process.stdout.write(
-      `\r${this.label}: ${bar} ${percent}% (${current}/${this.total}) ${elapsed}s${message ? ` - ${message}` : ''}`
+      `\r${this.label}: ${bar} ${percent}% (${current}/${this.total}) ${elapsed}s${message ? ` - ${message}` : ''}`,
     );
   }
 
@@ -34,7 +34,9 @@ export class ProgressReporter {
 
   complete(): void {
     const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(1);
-    process.stdout.write(`\r${this.label}: ${this.createBar(100)} 100% (${this.total}/${this.total}) ${elapsed}s\n`);
+    process.stdout.write(
+      `\r${this.label}: ${this.createBar(100)} 100% (${this.total}/${this.total}) ${elapsed}s\n`,
+    );
   }
 
   private createBar(percent: number): string {

@@ -83,8 +83,8 @@ export async function initializeTestPlatform() {
   // Start listening on the pre-checked port
   await fastify.listen({ port, host: '127.0.0.1' });
 
-  // Set admin access token for testing (same as kitchensink)
-  await platform.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
+  // Access tokens are pre-configured in test seeds (tests/seeds/users.js)
+  // No need to call setAccessToken - users are seeded with SHA-256 hashed tokens
 
   return platform;
 }

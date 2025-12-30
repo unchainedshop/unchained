@@ -62,7 +62,10 @@ const filterDefinitions: FilterDefinition[] = [
   },
 ];
 
-function getOptionTranslation(filterKey: string, optionValue: string): Record<string, { title: string }> {
+function getOptionTranslation(
+  filterKey: string,
+  optionValue: string,
+): Record<string, { title: string }> {
   const translations = filterOptionTranslations[filterKey]?.[optionValue];
 
   if (translations) {

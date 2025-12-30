@@ -13,7 +13,7 @@ program
 program
   .command('populateDemoData')
   .description('Populate the database with demo electronics store data')
-  .option('-e, --endpoint <url>', 'Bulk import API endpoint', 'http://localhost:3000/bulk-import')
+  .option('-e, --endpoint <url>', 'Bulk import API endpoint', 'http://localhost:4010/bulk-import')
   .option('-t, --token <token>', 'Authentication token (required unless --dry-run)')
   .option('-p, --products <number>', 'Number of products to generate', '1000')
   .option('-c, --chunk-size <number>', 'Events per API request', '500')
@@ -36,7 +36,7 @@ program
     // Validate token unless dry-run
     if (!config.dryRun && !config.token) {
       console.error(
-        'Error: Authentication token is required. Use --token or set UNCHAINED_TOKEN environment variable.'
+        'Error: Authentication token is required. Use --token or set UNCHAINED_TOKEN environment variable.',
       );
       process.exit(1);
     }

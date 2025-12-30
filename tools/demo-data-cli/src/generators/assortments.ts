@@ -190,7 +190,13 @@ const categoryHierarchy: AssortmentNode[] = [
   {
     id: 'speakers',
     translationKey: 'speakers',
-    children: ['bluetooth-speakers', 'smart-speakers', 'soundbars', 'portable-speakers', 'party-speakers'],
+    children: [
+      'bluetooth-speakers',
+      'smart-speakers',
+      'soundbars',
+      'portable-speakers',
+      'party-speakers',
+    ],
     filters: getFilterIds(),
   },
   { id: 'bluetooth-speakers', translationKey: 'bluetooth-speakers', filters: getFilterIds() },
@@ -328,7 +334,13 @@ const categoryHierarchy: AssortmentNode[] = [
   {
     id: 'smart-home',
     translationKey: 'smart-home',
-    children: ['smart-lighting', 'smart-security', 'smart-thermostats', 'smart-plugs', 'voice-assistants'],
+    children: [
+      'smart-lighting',
+      'smart-security',
+      'smart-thermostats',
+      'smart-plugs',
+      'voice-assistants',
+    ],
     filters: getFilterIds(),
   },
   { id: 'smart-lighting', translationKey: 'smart-lighting', filters: getFilterIds() },
@@ -425,13 +437,12 @@ function sortByHierarchyDepth(nodes: AssortmentNode[]): AssortmentNode[] {
     getDepth(node.id);
   }
 
-  // Sort by depth (ascending - roots first)
-  return [...nodes].sort((a, b) => (depths.get(a.id) ?? 0) - (depths.get(b.id) ?? 0));
+  // Sort by depth (descending - leaves first, roots last)
+  // This ensures child assortments are created before their parents
+  return [...nodes].sort((a, b) => (depths.get(b.id) ?? 0) - (depths.get(a.id) ?? 0));
 }
 
-export function generateAssortments(
-  products: GeneratedProduct[]
-): BulkImportEvent<AssortmentPayload>[] {
+export function generateAssortments(products: GeneratedProduct[]): BulkImportEvent<AssortmentPayload>[] {
   const events: BulkImportEvent<AssortmentPayload>[] = [];
   const productMap = buildProductAssortmentMap(products);
 

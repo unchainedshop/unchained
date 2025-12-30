@@ -46,26 +46,39 @@ export default async (unchainedAPI: UnchainedCore) => {
       }),
     );
 
+    // Seed currencies - always include CHF and USD for demo data compatibility
+    const currencyConfigs = [
+      { isoCode: 'CHF', isActive: true },
+      { isoCode: 'USD', isActive: true },
+    ];
+    if (UNCHAINED_CURRENCY && !['CHF', 'USD'].includes(UNCHAINED_CURRENCY.toUpperCase())) {
+      currencyConfigs.push({ isoCode: UNCHAINED_CURRENCY.toUpperCase(), isActive: true });
+    }
+
     const currencies = await Promise.all(
-      [UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'CHF'].map(async (code) => {
-        const currencyId = await modules.currencies.create({
-          isoCode: code,
-          isActive: true,
-        });
-        const currency = await modules.currencies.findCurrency({
-          currencyId,
-        });
+      currencyConfigs.map(async (config) => {
+        const currencyId = await modules.currencies.create(config);
+        const currency = await modules.currencies.findCurrency({ currencyId });
         return currency.isoCode;
       }),
     );
 
+    // Seed countries - always include CH and US for demo data compatibility
+    const countryConfigs = [
+      { isoCode: 'CH', isActive: true, defaultCurrencyCode: 'CHF' },
+      { isoCode: 'US', isActive: true, defaultCurrencyCode: 'USD' },
+    ];
+    if (UNCHAINED_COUNTRY && !['CH', 'US'].includes(UNCHAINED_COUNTRY.toUpperCase())) {
+      countryConfigs.push({
+        isoCode: UNCHAINED_COUNTRY.toUpperCase(),
+        isActive: true,
+        defaultCurrencyCode: UNCHAINED_CURRENCY?.toUpperCase() || 'CHF',
+      });
+    }
+
     const countries = await Promise.all(
-      [UNCHAINED_COUNTRY ? UNCHAINED_COUNTRY.toUpperCase() : 'CH'].map(async (code, key) => {
-        const countryId = await modules.countries.create({
-          isoCode: code,
-          isActive: true,
-          defaultCurrencyCode: currencies[key],
-        });
+      countryConfigs.map(async (config) => {
+        const countryId = await modules.countries.create(config);
         const country = await modules.countries.findCountry({ countryId });
         return country.isoCode;
       }),
