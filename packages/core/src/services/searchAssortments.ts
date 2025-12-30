@@ -42,16 +42,16 @@ export async function searchAssortmentsService(
 
     assortmentsCount: async () =>
       this.assortments.count({
-        assortmentSelector,
         assortmentIds: totalAssortmentIds,
+        includeInactive: searchQuery.includeInactive,
       }),
     assortments: async ({ offset, limit }) =>
       this.assortments.search.findFilteredAssortments({
         limit,
         offset,
         assortmentIds: totalAssortmentIds,
-        assortmentSelector,
         sort: sortStage,
+        includeInactive: searchQuery.includeInactive,
       }),
   };
 }

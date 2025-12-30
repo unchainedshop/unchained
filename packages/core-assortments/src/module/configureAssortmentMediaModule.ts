@@ -1,16 +1,21 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
-  findLocalizedText,
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-  type ModuleInput,
-} from '@unchainedshop/mongodb';
+  generateId,
+  eq,
+  and,
+  inArray,
+  notInArray,
+  asc,
+  desc,
+  sql,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import {
-  AssortmentMediaCollection,
-  type AssortmentMediaText,
+  assortmentMedia,
+  assortmentMediaTexts,
   type AssortmentMediaType,
-} from '../db/AssortmentMediaCollection.ts';
+  type AssortmentMediaText,
+} from '../db/schema.ts';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
@@ -19,50 +24,80 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
 
-export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
+export const configureAssortmentMediaModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
-
-  const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
 
   const upsertLocalizedText = async (
     assortmentMediaId: string,
     locale: Intl.Locale,
     text: Omit<Partial<AssortmentMediaText>, 'assortmentMediaId' | 'locale'>,
   ) => {
-    const assortmentMediaText = (await AssortmentMediaTexts.findOneAndUpdate(
-      {
-        assortmentMediaId,
-        locale: locale.baseName,
-      },
-      {
-        $set: {
-          updated: new Date(),
+    const localeString = locale.baseName;
+    const now = new Date();
+
+    // Check if exists
+    const [existing] = await db
+      .select()
+      .from(assortmentMediaTexts)
+      .where(
+        and(
+          eq(assortmentMediaTexts.assortmentMediaId, assortmentMediaId),
+          eq(assortmentMediaTexts.locale, localeString),
+        ),
+      )
+      .limit(1);
+
+    let assortmentMediaText: AssortmentMediaText;
+
+    if (existing) {
+      await db
+        .update(assortmentMediaTexts)
+        .set({
           title: text.title,
           subtitle: text.subtitle,
-        },
-        $setOnInsert: {
-          _id: generateDbObjectId(),
-          created: new Date(),
-          assortmentMediaId,
-          locale: locale.baseName,
-        },
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    )) as AssortmentMediaText;
+          updated: now,
+        })
+        .where(eq(assortmentMediaTexts._id, existing._id));
+
+      [assortmentMediaText] = await db
+        .select()
+        .from(assortmentMediaTexts)
+        .where(eq(assortmentMediaTexts._id, existing._id))
+        .limit(1);
+    } else {
+      const textId = generateId();
+      await db.insert(assortmentMediaTexts).values({
+        _id: textId,
+        assortmentMediaId,
+        locale: localeString,
+        title: text.title,
+        subtitle: text.subtitle,
+        created: now,
+      });
+
+      [assortmentMediaText] = await db
+        .select()
+        .from(assortmentMediaTexts)
+        .where(eq(assortmentMediaTexts._id, textId))
+        .limit(1);
+    }
+
     await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
       assortmentMediaId,
       text: assortmentMediaText,
     });
+
     return assortmentMediaText;
   };
 
   return {
-    // Queries
     findAssortmentMedia: async ({ assortmentMediaId }: { assortmentMediaId: string }) => {
-      return AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
+      const [result] = await db
+        .select()
+        .from(assortmentMedia)
+        .where(eq(assortmentMedia._id, assortmentMediaId))
+        .limit(1);
+      return result || null;
     },
 
     findAssortmentMedias: async (
@@ -79,74 +114,100 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
         offset?: number;
         tags?: string[];
       },
-      options?: mongodb.FindOptions,
+      options?: { limit?: number; offset?: number },
     ): Promise<AssortmentMediaType[]> => {
-      const selector: mongodb.Filter<AssortmentMediaType> = {};
+      void options;
+      const conditions: ReturnType<typeof eq>[] = [];
+
       if (assortmentId) {
-        selector.assortmentId = assortmentId;
+        conditions.push(eq(assortmentMedia.assortmentId, assortmentId));
       }
-      if (assortmentIds) {
-        selector.assortmentId = { $in: assortmentIds };
+      if (assortmentIds?.length) {
+        conditions.push(inArray(assortmentMedia.assortmentId, assortmentIds));
       }
-      if (tags && tags.length > 0) {
-        selector.tags = { $all: tags };
+      if (tags?.length) {
+        // All tags must match
+        for (const tag of tags) {
+          conditions.push(
+            sql`EXISTS (SELECT 1 FROM json_each(${assortmentMedia.tags}) WHERE value = ${tag})` as ReturnType<
+              typeof eq
+            >,
+          );
+        }
       }
 
-      const mediaList = AssortmentMedia.find(selector, {
-        skip: offset,
-        limit,
-        sort: { sortKey: 1 },
-        ...options,
-      });
+      let queryBuilder = db.select().from(assortmentMedia);
 
-      return mediaList.toArray();
+      if (conditions.length > 0) {
+        queryBuilder = queryBuilder.where(and(...conditions)) as typeof queryBuilder;
+      }
+
+      queryBuilder = queryBuilder.orderBy(asc(assortmentMedia.sortKey)) as typeof queryBuilder;
+
+      if (offset !== undefined) {
+        queryBuilder = queryBuilder.offset(offset) as typeof queryBuilder;
+      }
+
+      if (limit !== undefined && limit > 0) {
+        queryBuilder = queryBuilder.limit(limit) as typeof queryBuilder;
+      }
+
+      return queryBuilder;
     },
 
     create: async ({
       sortKey,
       tags = [],
       ...doc
-    }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'> &
-      Partial<Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created'>>) => {
-      if (sortKey === undefined || sortKey === null) {
-        // Get next sort key
-        const lastAssortmentMedia = (await AssortmentMedia.findOne(
-          {
-            assortmentId: doc.assortmentId,
-          },
-          {
-            sort: { sortKey: -1 },
-          },
-        )) || { sortKey: 0 };
-        sortKey = lastAssortmentMedia.sortKey + 1;
+    }: Omit<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created' | 'meta' | 'updated'> &
+      Partial<
+        Pick<AssortmentMediaType, 'sortKey' | 'tags' | '_id' | 'created' | 'meta' | 'updated'>
+      >) => {
+      const now = new Date();
+
+      // Get next sort key if not provided
+      let newSortKey = sortKey;
+      if (newSortKey === undefined || newSortKey === null) {
+        const [lastMedia] = await db
+          .select({ sortKey: assortmentMedia.sortKey })
+          .from(assortmentMedia)
+          .where(eq(assortmentMedia.assortmentId, doc.assortmentId))
+          .orderBy(desc(assortmentMedia.sortKey))
+          .limit(1);
+        newSortKey = (lastMedia?.sortKey || 0) + 1;
       }
 
-      const { insertedId: assortmentMediaId } = await AssortmentMedia.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
+      const mediaId = generateId();
+      await db.insert(assortmentMedia).values({
+        _id: mediaId,
+        created: now,
         tags,
+        sortKey: newSortKey,
         ...doc,
-        sortKey,
       });
 
-      const assortmentMedia = await AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
+      const [media] = await db
+        .select()
+        .from(assortmentMedia)
+        .where(eq(assortmentMedia._id, mediaId))
+        .limit(1);
 
-      await emit('ASSORTMENT_ADD_MEDIA', {
-        assortmentMedia,
-      });
+      await emit('ASSORTMENT_ADD_MEDIA', { assortmentMedia: media });
 
-      return assortmentMedia;
+      return media;
     },
 
     delete: async (assortmentMediaId: string): Promise<number> => {
-      const selector = generateDbFilterById(assortmentMediaId);
-      await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
-      const deletedResult = await AssortmentMedia.deleteOne(selector);
-      await emit('ASSORTMENT_REMOVE_MEDIA', {
-        assortmentMediaId,
-      });
+      // Delete associated texts
+      await db
+        .delete(assortmentMediaTexts)
+        .where(eq(assortmentMediaTexts.assortmentMediaId, assortmentMediaId));
 
-      return deletedResult.deletedCount;
+      const result = await db.delete(assortmentMedia).where(eq(assortmentMedia._id, assortmentMediaId));
+
+      await emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId });
+
+      return result.rowsAffected || 0;
     },
 
     deleteMediaFiles: async ({
@@ -158,42 +219,63 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       excludedAssortmentIds?: string[];
       excludedAssortmentMediaIds?: string[];
     }): Promise<number> => {
-      const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
+      const conditions: ReturnType<typeof eq>[] = [];
 
-      if (!assortmentId && excludedAssortmentIds) {
-        selector.assortmentId = { $nin: excludedAssortmentIds };
+      if (assortmentId) {
+        conditions.push(eq(assortmentMedia.assortmentId, assortmentId));
+      } else if (excludedAssortmentIds?.length) {
+        conditions.push(notInArray(assortmentMedia.assortmentId, excludedAssortmentIds));
       }
 
-      if (excludedAssortmentMediaIds) {
-        selector._id = { $nin: excludedAssortmentMediaIds };
+      if (excludedAssortmentMediaIds?.length) {
+        conditions.push(notInArray(assortmentMedia._id, excludedAssortmentMediaIds));
       }
 
-      const ids = await AssortmentMedia.find(selector, { projection: { _id: true } })
-        .map((m) => m._id)
-        .toArray();
+      // Get IDs first for events and text deletion
+      let mediaToDelete: { _id: string }[] = [];
+      if (conditions.length > 0) {
+        mediaToDelete = await db
+          .select({ _id: assortmentMedia._id })
+          .from(assortmentMedia)
+          .where(and(...conditions));
+      } else {
+        mediaToDelete = await db.select({ _id: assortmentMedia._id }).from(assortmentMedia);
+      }
 
-      await AssortmentMediaTexts.deleteMany({ assortmentMediaId: { $in: ids } });
+      if (mediaToDelete.length === 0) return 0;
 
-      const deletedResult = await AssortmentMedia.deleteMany(selector);
+      const mediaIds = mediaToDelete.map((m) => m._id);
+
+      // Delete associated texts
+      await db
+        .delete(assortmentMediaTexts)
+        .where(inArray(assortmentMediaTexts.assortmentMediaId, mediaIds));
+
+      // Delete media
+      const result = await db.delete(assortmentMedia).where(inArray(assortmentMedia._id, mediaIds));
 
       await Promise.all(
-        ids.map(async (assortmentMediaId) =>
-          emit('ASSORTMENT_REMOVE_MEDIA', {
-            assortmentMediaId,
-          }),
-        ),
+        mediaIds.map(async (id) => emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId: id })),
       );
 
-      return deletedResult.deletedCount;
+      return result.rowsAffected || 0;
     },
 
-    // This action is specifically used for the bulk migration scripts in the platform package
     update: async (assortmentMediaId: string, doc: Partial<AssortmentMediaType>) => {
-      const selector = generateDbFilterById(assortmentMediaId);
-      const modifier = { $set: doc };
-      return AssortmentMedia.findOneAndUpdate(selector, modifier, {
-        returnDocument: 'after',
-      });
+      const now = new Date();
+
+      await db
+        .update(assortmentMedia)
+        .set({ ...doc, updated: now })
+        .where(eq(assortmentMedia._id, assortmentMediaId));
+
+      const [result] = await db
+        .select()
+        .from(assortmentMedia)
+        .where(eq(assortmentMedia._id, assortmentMediaId))
+        .limit(1);
+
+      return result || null;
     },
 
     updateManualOrder: async ({
@@ -204,46 +286,53 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
         sortKey: number;
       }[];
     }): Promise<AssortmentMediaType[]> => {
+      const now = new Date();
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
-          await AssortmentMedia.updateOne(generateDbFilterById(assortmentMediaId), {
-            $set: {
+          await db
+            .update(assortmentMedia)
+            .set({
               sortKey: sortKey + 1,
-              updated: new Date(),
-            },
-          });
-
+              updated: now,
+            })
+            .where(eq(assortmentMedia._id, assortmentMediaId));
           return assortmentMediaId;
         }),
       );
 
-      const assortmentMedias = await AssortmentMedia.find({
-        _id: { $in: changedAssortmentMediaIds },
-      }).toArray();
+      const updatedMedias = await db
+        .select()
+        .from(assortmentMedia)
+        .where(inArray(assortmentMedia._id, changedAssortmentMediaIds));
 
-      await emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias });
+      await emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias: updatedMedias });
 
-      return assortmentMedias;
+      return updatedMedias;
     },
 
-    /*
-     * Assortment Media Texts
-     */
-
     texts: {
-      // Queries
       findMediaTexts: async (
         query: { assortmentMediaId?: string; assortmentMediaIds?: string[] },
-        options?: mongodb.FindOptions,
+        options?: { limit?: number; offset?: number; sort?: Record<string, number> },
       ): Promise<AssortmentMediaText[]> => {
-        const selector: mongodb.Filter<AssortmentMediaText> = {};
+        void options;
+        const conditions: ReturnType<typeof eq>[] = [];
+
         if (query.assortmentMediaId) {
-          selector.assortmentMediaId = query.assortmentMediaId;
+          conditions.push(eq(assortmentMediaTexts.assortmentMediaId, query.assortmentMediaId));
         }
-        if (query.assortmentMediaIds) {
-          selector.assortmentMediaId = { $in: query.assortmentMediaIds };
+        if (query.assortmentMediaIds?.length) {
+          conditions.push(inArray(assortmentMediaTexts.assortmentMediaId, query.assortmentMediaIds));
         }
-        return AssortmentMediaTexts.find(selector, options).toArray();
+
+        if (conditions.length === 0) {
+          return db.select().from(assortmentMediaTexts);
+        }
+
+        return db
+          .select()
+          .from(assortmentMediaTexts)
+          .where(and(...conditions));
       },
 
       findLocalizedMediaText: async ({
@@ -252,14 +341,48 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       }: {
         assortmentMediaId: string;
         locale: Intl.Locale;
-      }): Promise<AssortmentMediaText> => {
-        const text = await findLocalizedText<AssortmentMediaText>(
-          AssortmentMediaTexts,
-          { assortmentMediaId },
-          locale,
-        );
+      }): Promise<AssortmentMediaText | null> => {
+        const localeString = locale.baseName;
+        const languageCode = locale.language;
 
-        return text;
+        // Try exact locale match first
+        let [text] = await db
+          .select()
+          .from(assortmentMediaTexts)
+          .where(
+            and(
+              eq(assortmentMediaTexts.assortmentMediaId, assortmentMediaId),
+              eq(assortmentMediaTexts.locale, localeString),
+            ),
+          )
+          .limit(1);
+
+        if (text) return text;
+
+        // Try language code only
+        if (localeString !== languageCode) {
+          [text] = await db
+            .select()
+            .from(assortmentMediaTexts)
+            .where(
+              and(
+                eq(assortmentMediaTexts.assortmentMediaId, assortmentMediaId),
+                eq(assortmentMediaTexts.locale, languageCode),
+              ),
+            )
+            .limit(1);
+
+          if (text) return text;
+        }
+
+        // Fallback to any available text
+        [text] = await db
+          .select()
+          .from(assortmentMediaTexts)
+          .where(eq(assortmentMediaTexts.assortmentMediaId, assortmentMediaId))
+          .limit(1);
+
+        return text || null;
       },
 
       updateMediaTexts: async (
@@ -281,4 +404,4 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
   };
 };
 
-export type AssortmentMediaModule = Awaited<ReturnType<typeof configureAssortmentMediaModule>>;
+export type AssortmentMediaModule = ReturnType<typeof configureAssortmentMediaModule>;

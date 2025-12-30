@@ -166,7 +166,10 @@ describe('schedule.schedule().next()', () => {
 
     // Should be 15:00 local time on the next day
     assert.strictEqual(nextDate.getHours(), 15);
-    assert.strictEqual(nextDate.getDate(), referenceDate.getDate() + 1);
+    // Calculate expected next day accounting for month boundaries
+    const expectedNextDay = new Date(referenceDate);
+    expectedNextDay.setDate(expectedNextDay.getDate() + 1);
+    assert.strictEqual(nextDate.getDate(), expectedNextDay.getDate());
   });
 
   it('should work with scheduleToInterval pattern', () => {

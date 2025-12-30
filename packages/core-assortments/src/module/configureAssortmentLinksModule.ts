@@ -1,7 +1,18 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import {
+  generateId,
+  eq,
+  and,
+  or,
+  inArray,
+  notInArray,
+  asc,
+  desc,
+  type DrizzleDb,
+} from '@unchainedshop/store';
+import { assortmentLinks, type AssortmentLink } from '../db/schema.ts';
 import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.ts';
-import { type AssortmentLink, type InvalidateCacheFn } from '../db/AssortmentsCollection.ts';
+import { type InvalidateCacheFn } from './configureAssortmentsModule.ts';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -10,16 +21,15 @@ const ASSORTMENT_LINK_EVENTS = [
 ];
 
 export const configureAssortmentLinksModule = ({
-  AssortmentLinks,
+  db,
   invalidateCache,
 }: {
-  AssortmentLinks: mongodb.Collection<AssortmentLink>;
+  db: DrizzleDb;
   invalidateCache: InvalidateCacheFn;
 }) => {
   registerEvents(ASSORTMENT_LINK_EVENTS);
 
   return {
-    // Queries
     findLink: async ({
       assortmentLinkId,
       parentAssortmentId,
@@ -29,12 +39,30 @@ export const configureAssortmentLinksModule = ({
       parentAssortmentId?: string;
       childAssortmentId?: string;
     }) => {
-      return AssortmentLinks.findOne(
-        assortmentLinkId
-          ? generateDbFilterById(assortmentLinkId)
-          : { parentAssortmentId, childAssortmentId },
-        {},
-      );
+      if (assortmentLinkId) {
+        const [result] = await db
+          .select()
+          .from(assortmentLinks)
+          .where(eq(assortmentLinks._id, assortmentLinkId))
+          .limit(1);
+        return result || null;
+      }
+
+      if (parentAssortmentId && childAssortmentId) {
+        const [result] = await db
+          .select()
+          .from(assortmentLinks)
+          .where(
+            and(
+              eq(assortmentLinks.parentAssortmentId, parentAssortmentId),
+              eq(assortmentLinks.childAssortmentId, childAssortmentId),
+            ),
+          )
+          .limit(1);
+        return result || null;
+      }
+
+      return null;
     },
 
     findLinks: async (
@@ -49,50 +77,85 @@ export const configureAssortmentLinksModule = ({
         parentAssortmentId?: string;
         parentAssortmentIds?: string[];
       },
-      options?: mongodb.FindOptions,
+      options?: { limit?: number; offset?: number },
     ): Promise<AssortmentLink[]> => {
-      const selector =
-        parentAssortmentId || parentAssortmentIds
-          ? {
-              parentAssortmentId: parentAssortmentId || { $in: parentAssortmentIds },
-            }
-          : {
-              $or: [
-                { parentAssortmentId: assortmentId || { $in: assortmentIds } },
-                { childAssortmentId: assortmentId || { $in: assortmentIds } },
-              ],
-            };
+      void options;
 
-      const links = AssortmentLinks.find(
-        selector,
-        options || {
-          sort: { sortKey: 1 },
-        },
-      );
+      if (parentAssortmentId) {
+        return db
+          .select()
+          .from(assortmentLinks)
+          .where(eq(assortmentLinks.parentAssortmentId, parentAssortmentId))
+          .orderBy(asc(assortmentLinks.sortKey));
+      }
 
-      return links.toArray();
+      if (parentAssortmentIds?.length) {
+        return db
+          .select()
+          .from(assortmentLinks)
+          .where(inArray(assortmentLinks.parentAssortmentId, parentAssortmentIds))
+          .orderBy(asc(assortmentLinks.sortKey));
+      }
+
+      if (assortmentId) {
+        return db
+          .select()
+          .from(assortmentLinks)
+          .where(
+            or(
+              eq(assortmentLinks.parentAssortmentId, assortmentId),
+              eq(assortmentLinks.childAssortmentId, assortmentId),
+            ),
+          )
+          .orderBy(asc(assortmentLinks.sortKey));
+      }
+
+      if (assortmentIds?.length) {
+        return db
+          .select()
+          .from(assortmentLinks)
+          .where(
+            or(
+              inArray(assortmentLinks.parentAssortmentId, assortmentIds),
+              inArray(assortmentLinks.childAssortmentId, assortmentIds),
+            ),
+          )
+          .orderBy(asc(assortmentLinks.sortKey));
+      }
+
+      return db.select().from(assortmentLinks).orderBy(asc(assortmentLinks.sortKey));
     },
 
-    // Mutations
     create: async (
-      doc: Omit<AssortmentLink, '_id' | 'created' | 'sortKey'> &
-        Pick<Partial<AssortmentLink>, '_id' | 'created' | 'sortKey'>,
+      doc: Omit<AssortmentLink, '_id' | 'created' | 'sortKey' | 'meta' | 'updated'> &
+        Partial<Pick<AssortmentLink, '_id' | 'created' | 'sortKey' | 'meta' | 'updated'>>,
       options?: { skipInvalidation?: boolean },
     ) => {
-      const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
+      const {
+        _id: assortmentLinkId,
+        parentAssortmentId,
+        childAssortmentId,
+        sortKey,
+        tags = [],
+        ...rest
+      } = doc;
 
+      // Check for cycles
       const assortmentLinksPath = await walkUpFromAssortment({
         resolveAssortmentLinks: async (id: string) => {
-          return AssortmentLinks.find(
-            { childAssortmentId: id },
-            {
-              projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
-              sort: { sortKey: 1, parentAssortmentId: 1 },
-            },
-          ).toArray();
+          return db
+            .select({
+              _id: assortmentLinks._id,
+              childAssortmentId: assortmentLinks.childAssortmentId,
+              parentAssortmentId: assortmentLinks.parentAssortmentId,
+            })
+            .from(assortmentLinks)
+            .where(eq(assortmentLinks.childAssortmentId, id))
+            .orderBy(asc(assortmentLinks.sortKey), asc(assortmentLinks.parentAssortmentId));
         },
         assortmentId: parentAssortmentId,
       });
+
       const assortmentIdAlreadyPartOfGraphParents = assortmentLinksPath.some((path) =>
         path.links?.some(
           (l) => l.parentAssortmentId === childAssortmentId || l.childAssortmentId === childAssortmentId,
@@ -100,43 +163,76 @@ export const configureAssortmentLinksModule = ({
       );
       if (assortmentIdAlreadyPartOfGraphParents) throw Error('CyclicGraphNotSupported');
 
-      const $set: mongodb.UpdateFilter<AssortmentLink> = {
-        updated: new Date(),
-        ...rest,
-      };
-      const $setOnInsert: mongodb.UpdateFilter<AssortmentLink> = {
-        _id: assortmentLinkId || generateDbObjectId(),
-        parentAssortmentId,
-        childAssortmentId,
-        created: new Date(),
-      };
+      const now = new Date();
 
-      if (sortKey === undefined || sortKey === null) {
-        // Get next sort key
-        const lastAssortmentLink = (await AssortmentLinks.findOne(
-          { parentAssortmentId },
-          { sort: { sortKey: -1 } },
-        )) || { sortKey: 0 };
-        $setOnInsert.sortKey = lastAssortmentLink.sortKey + 1;
-      } else {
-        $set.sortKey = sortKey;
+      // Check if link already exists
+      const [existing] = await db
+        .select()
+        .from(assortmentLinks)
+        .where(
+          and(
+            eq(assortmentLinks.parentAssortmentId, parentAssortmentId),
+            eq(assortmentLinks.childAssortmentId, childAssortmentId),
+          ),
+        )
+        .limit(1);
+
+      if (existing) {
+        // Update existing
+        const updateData: Partial<AssortmentLink> = {
+          ...rest,
+          tags,
+          updated: now,
+        };
+        if (sortKey !== undefined && sortKey !== null) {
+          updateData.sortKey = sortKey;
+        }
+
+        await db.update(assortmentLinks).set(updateData).where(eq(assortmentLinks._id, existing._id));
+
+        const [updated] = await db
+          .select()
+          .from(assortmentLinks)
+          .where(eq(assortmentLinks._id, existing._id))
+          .limit(1);
+
+        await emit('ASSORTMENT_ADD_LINK', { assortmentLink: updated });
+
+        if (!options?.skipInvalidation) {
+          await invalidateCache({ assortmentIds: [parentAssortmentId] });
+        }
+
+        return updated;
       }
 
-      const assortmentLink = await AssortmentLinks.findOneAndUpdate(
-        {
-          ...(assortmentLinkId ? generateDbFilterById(assortmentLinkId) : {}),
-          parentAssortmentId,
-          childAssortmentId,
-        },
-        {
-          $set,
-          $setOnInsert,
-        },
-        {
-          upsert: true,
-          returnDocument: 'after',
-        },
-      );
+      // Get next sort key if not provided
+      let newSortKey = sortKey;
+      if (newSortKey === undefined || newSortKey === null) {
+        const [lastLink] = await db
+          .select({ sortKey: assortmentLinks.sortKey })
+          .from(assortmentLinks)
+          .where(eq(assortmentLinks.parentAssortmentId, parentAssortmentId))
+          .orderBy(desc(assortmentLinks.sortKey))
+          .limit(1);
+        newSortKey = (lastLink?.sortKey || 0) + 1;
+      }
+
+      const linkId = assortmentLinkId || generateId();
+      await db.insert(assortmentLinks).values({
+        _id: linkId,
+        parentAssortmentId,
+        childAssortmentId,
+        sortKey: newSortKey,
+        tags,
+        created: now,
+        ...rest,
+      });
+
+      const [assortmentLink] = await db
+        .select()
+        .from(assortmentLinks)
+        .where(eq(assortmentLinks._id, linkId))
+        .limit(1);
 
       await emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
@@ -147,75 +243,109 @@ export const configureAssortmentLinksModule = ({
       return assortmentLink;
     },
 
-    // This action is specifically used for the bulk migration scripts in the platform package
     update: async (
       assortmentLinkId: string,
       doc: Partial<AssortmentLink>,
       options?: { skipInvalidation?: boolean },
     ) => {
-      const selector = generateDbFilterById(assortmentLinkId);
-      const modifier = {
-        $set: {
-          ...doc,
-          updated: new Date(),
-        },
-      };
-      const assortmentLink = await AssortmentLinks.findOneAndUpdate(selector, modifier, {
-        returnDocument: 'after',
-      });
+      const now = new Date();
+
+      await db
+        .update(assortmentLinks)
+        .set({ ...doc, updated: now })
+        .where(eq(assortmentLinks._id, assortmentLinkId));
+
+      const [assortmentLink] = await db
+        .select()
+        .from(assortmentLinks)
+        .where(eq(assortmentLinks._id, assortmentLinkId))
+        .limit(1);
 
       if (!options?.skipInvalidation && assortmentLink) {
         await invalidateCache({ assortmentIds: [assortmentLink.childAssortmentId] });
       }
-      return assortmentLink;
+
+      return assortmentLink || null;
     },
 
     delete: async (assortmentLinkId: string, options?: { skipInvalidation?: boolean }) => {
-      const selector = generateDbFilterById(assortmentLinkId);
-      const assortmentLink = await AssortmentLinks.findOneAndDelete(selector);
+      const [assortmentLink] = await db
+        .select()
+        .from(assortmentLinks)
+        .where(eq(assortmentLinks._id, assortmentLinkId))
+        .limit(1);
+
       if (!assortmentLink) return null;
+
+      await db.delete(assortmentLinks).where(eq(assortmentLinks._id, assortmentLinkId));
+
       await emit('ASSORTMENT_REMOVE_LINK', {
         assortmentLinkId: assortmentLink._id,
       });
+
       if (!options?.skipInvalidation) {
         await invalidateCache({
           assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
         });
       }
+
       return assortmentLink;
     },
 
     deleteMany: async (
-      selector: mongodb.Filter<AssortmentLink>,
+      selector: {
+        parentAssortmentId?: string;
+        childAssortmentId?: string;
+        excludeIds?: string[];
+      },
       options?: { skipInvalidation?: boolean },
-    ) => {
-      const assortmentLinks = await AssortmentLinks.find(selector, {
-        projection: {
-          _id: 1,
-          childAssortmentId: 1,
-          parentAssortmentId: 1,
-        },
-      }).toArray();
+    ): Promise<number> => {
+      const conditions: ReturnType<typeof eq>[] = [];
 
-      const deletionResult = await AssortmentLinks.deleteMany(selector);
+      if (selector.parentAssortmentId) {
+        conditions.push(eq(assortmentLinks.parentAssortmentId, selector.parentAssortmentId));
+      }
+      if (selector.childAssortmentId) {
+        conditions.push(eq(assortmentLinks.childAssortmentId, selector.childAssortmentId));
+      }
+      if (selector.excludeIds?.length) {
+        conditions.push(notInArray(assortmentLinks._id, selector.excludeIds));
+      }
+
+      if (conditions.length === 0) return 0;
+
+      // Get links before deleting for events and cache invalidation
+      const linksToDelete = await db
+        .select({
+          _id: assortmentLinks._id,
+          childAssortmentId: assortmentLinks.childAssortmentId,
+          parentAssortmentId: assortmentLinks.parentAssortmentId,
+        })
+        .from(assortmentLinks)
+        .where(and(...conditions));
+
+      if (linksToDelete.length === 0) return 0;
+
+      const result = await db.delete(assortmentLinks).where(and(...conditions));
+
       await Promise.all(
-        assortmentLinks.map(async (assortmentLink) =>
+        linksToDelete.map(async (link) =>
           emit('ASSORTMENT_REMOVE_LINK', {
-            assortmentLinkId: assortmentLink._id,
+            assortmentLinkId: link._id,
           }),
         ),
       );
 
-      if (!options?.skipInvalidation && assortmentLinks.length) {
+      if (!options?.skipInvalidation && linksToDelete.length) {
         await invalidateCache({
-          assortmentIds: assortmentLinks.flatMap((link) => [
+          assortmentIds: linksToDelete.flatMap((link) => [
             link.childAssortmentId,
             link.parentAssortmentId,
           ]),
         });
       }
 
-      return deletionResult.deletedCount;
+      return result.rowsAffected || 0;
     },
 
     updateManualOrder: async (
@@ -229,30 +359,34 @@ export const configureAssortmentLinksModule = ({
       },
       options?: { skipInvalidation?: boolean },
     ): Promise<AssortmentLink[]> => {
+      const now = new Date();
       const changedAssortmentLinkIds = await Promise.all(
         sortKeys.map(async ({ assortmentLinkId, sortKey }) => {
-          await AssortmentLinks.updateOne(generateDbFilterById(assortmentLinkId), {
-            $set: {
+          await db
+            .update(assortmentLinks)
+            .set({
               sortKey: sortKey + 1,
-              updated: new Date(),
-            },
-          });
-
+              updated: now,
+            })
+            .where(eq(assortmentLinks._id, assortmentLinkId));
           return assortmentLinkId;
         }),
       );
 
-      const assortmentLinks = await AssortmentLinks.find({
-        _id: { $in: changedAssortmentLinkIds },
-      }).toArray();
+      const updatedLinks = await db
+        .select()
+        .from(assortmentLinks)
+        .where(inArray(assortmentLinks._id, changedAssortmentLinkIds));
 
-      if (!options?.skipInvalidation && assortmentLinks.length) {
-        await invalidateCache({ assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) });
+      if (!options?.skipInvalidation && updatedLinks.length) {
+        await invalidateCache({
+          assortmentIds: updatedLinks.map((link) => link.childAssortmentId),
+        });
       }
 
-      await emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
+      await emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks: updatedLinks });
 
-      return assortmentLinks;
+      return updatedLinks;
     },
   };
 };

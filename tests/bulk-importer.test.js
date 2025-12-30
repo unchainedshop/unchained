@@ -3,16 +3,16 @@ import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
 import { filters } from '@unchainedshop/core-filters';
 import { products } from '@unchainedshop/core-products';
+import { assortments, assortmentMedia, assortmentProducts } from '@unchainedshop/core-assortments';
 import { eq, sql } from '@unchainedshop/store';
 import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Bulk Importer', () => {
-  let db;
   let graphqlFetch;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
@@ -495,31 +495,34 @@ test.describe('Bulk Importer', () => {
 
       assert.ok(addWork);
 
-      const Assortments = db.collection('assortments');
-      const AssortmentMedia = db.collection('assortment_media');
+      const drizzleDb = getDrizzleDb();
 
       const assortmentHasBaseTag = await intervalUntilTimeout(async () => {
-        const assortment = await Assortments.findOne({ _id: 'Assortment A' });
-
-        return assortment?.tags.includes('base');
+        const [assortment] = await drizzleDb
+          .select()
+          .from(assortments)
+          .where(eq(assortments._id, 'Assortment A'))
+          .limit(1);
+        return assortment?.tags?.includes('base');
       }, 3000);
 
       const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(async () => {
-        const assortmentMedia = await AssortmentMedia.findOne({
-          _id: 'assortment-a-meteor',
-        });
-        return assortmentMedia?.tags.includes('small');
+        const [media] = await drizzleDb
+          .select()
+          .from(assortmentMedia)
+          .where(eq(assortmentMedia._id, 'assortment-a-meteor'))
+          .limit(1);
+        return media?.tags?.includes('small');
       }, 3000);
       assert.strictEqual(updatedAssortmentMediaHasSmallTag, true);
       assert.strictEqual(assortmentHasBaseTag, true);
 
-      const AssortmentProducts = db.collection('assortment_products');
-
       const productLinkHasBeenReplaced = await intervalUntilTimeout(async () => {
-        const productLinksCount = await AssortmentProducts.countDocuments({
-          assortmentId: 'Assortment A',
-        });
-        return productLinksCount === 1;
+        const [result] = await drizzleDb
+          .select({ count: sql`count(*)` })
+          .from(assortmentProducts)
+          .where(eq(assortmentProducts.assortmentId, 'Assortment A'));
+        return result?.count === 1;
       }, 3000);
 
       assert.strictEqual(productLinkHasBeenReplaced, true);

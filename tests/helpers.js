@@ -19,7 +19,7 @@ import { seedWarehousingProvidersToDrizzle } from './seeds/warehousings.js';
 import { seedOrdersToDrizzle } from './seeds/orders.js';
 import { seedQuotationsToDrizzle } from './seeds/quotations.js';
 import { seedFiltersToDrizzle } from './seeds/filters.js';
-import seedAssortments from './seeds/assortments.js';
+import { seedAssortmentsToDrizzle } from './seeds/assortments.js';
 import { seedBookmarksToDrizzle } from './seeds/bookmark.js';
 import { seedEnrollmentsToDrizzle } from './seeds/enrollments.js';
 import { seedWorkQueueToDrizzle } from './seeds/work.js';
@@ -61,9 +61,6 @@ export const setupDatabase = async () => {
   const collections = await db.collections();
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 
-  // Seed MongoDB collections that are not yet migrated to Drizzle
-  await seedAssortments(db);
-
   // Seed Drizzle tables (bypasses modules to avoid emitting events)
   await seedUsersToDrizzle(drizzleDb);
   await seedProductsToDrizzle(drizzleDb);
@@ -79,6 +76,7 @@ export const setupDatabase = async () => {
   await seedQuotationsToDrizzle(drizzleDb);
   await seedMediaObjectsToDrizzle(drizzleDb);
   await seedFiltersToDrizzle(drizzleDb);
+  await seedAssortmentsToDrizzle(drizzleDb);
   await seedWorkQueueToDrizzle(drizzleDb);
   await seedOrdersToDrizzle(drizzleDb);
 

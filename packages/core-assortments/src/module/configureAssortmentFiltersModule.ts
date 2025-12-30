@@ -1,6 +1,15 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { type AssortmentFilter } from '../db/AssortmentsCollection.ts';
+import {
+  generateId,
+  eq,
+  and,
+  inArray,
+  notInArray,
+  asc,
+  desc,
+  type DrizzleDb,
+} from '@unchainedshop/store';
+import { assortmentFilters, type AssortmentFilter } from '../db/schema.ts';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',
@@ -8,94 +17,129 @@ const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_REORDER_FILTERS',
 ];
 
-export const configureAssortmentFiltersModule = ({
-  AssortmentFilters,
-}: {
-  AssortmentFilters: mongodb.Collection<AssortmentFilter>;
-}) => {
+export const configureAssortmentFiltersModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ASSORTMENT_FILTER_EVENTS);
 
   return {
     findFilter: async ({ assortmentFilterId }: { assortmentFilterId: string }) => {
-      return AssortmentFilters.findOne(generateDbFilterById(assortmentFilterId), {});
+      const [result] = await db
+        .select()
+        .from(assortmentFilters)
+        .where(eq(assortmentFilters._id, assortmentFilterId))
+        .limit(1);
+      return result || null;
     },
 
     findFilters: async (
-      {
-        assortmentId,
-      }: {
-        assortmentId: string;
-      },
-      options?: mongodb.FindOptions,
+      { assortmentId }: { assortmentId: string },
+      options?: { limit?: number; offset?: number; sort?: Record<string, number> },
     ): Promise<AssortmentFilter[]> => {
-      const filters = AssortmentFilters.find({ assortmentId }, options);
-      return filters.toArray();
+      void options;
+      return db
+        .select()
+        .from(assortmentFilters)
+        .where(eq(assortmentFilters.assortmentId, assortmentId))
+        .orderBy(asc(assortmentFilters.sortKey));
     },
 
     findFilterIds: async ({ assortmentId }: { assortmentId: string }): Promise<string[]> => {
-      const filters = AssortmentFilters.find(
-        { assortmentId },
-        {
-          sort: { sortKey: 1 },
-          projection: { filterId: 1 },
-        },
-      ).map((filter) => filter.filterId);
+      const results = await db
+        .select({ filterId: assortmentFilters.filterId })
+        .from(assortmentFilters)
+        .where(eq(assortmentFilters.assortmentId, assortmentId))
+        .orderBy(asc(assortmentFilters.sortKey));
 
-      return filters.toArray();
+      return results.map((r) => r.filterId);
     },
+
     create: async (
-      doc: Omit<AssortmentFilter, '_id' | 'created' | 'sortKey'> &
-        Pick<Partial<AssortmentFilter>, '_id' | 'created' | 'sortKey'>,
+      doc: Omit<AssortmentFilter, '_id' | 'created' | 'sortKey' | 'meta' | 'updated'> &
+        Partial<Pick<AssortmentFilter, '_id' | 'created' | 'sortKey' | 'meta' | 'updated'>>,
     ) => {
-      const { _id, assortmentId, filterId, sortKey, ...rest } = doc;
+      const { _id, assortmentId, filterId, sortKey, tags = [], ...rest } = doc;
+      const now = new Date();
 
-      const selector = {
-        ...(_id ? generateDbFilterById(_id) : {}),
-        filterId,
-        assortmentId,
-      };
+      // Check if already exists
+      const [existing] = await db
+        .select()
+        .from(assortmentFilters)
+        .where(
+          and(
+            eq(assortmentFilters.assortmentId, assortmentId),
+            eq(assortmentFilters.filterId, filterId),
+          ),
+        )
+        .limit(1);
 
-      const $set: any = {
-        updated: new Date(),
-        ...rest,
-      };
-      const $setOnInsert: any = {
-        _id: _id || generateDbObjectId(),
-        filterId,
-        assortmentId,
-        created: new Date(),
-      };
+      if (existing) {
+        // Update existing
+        const updateData: Partial<AssortmentFilter> = {
+          ...rest,
+          tags,
+          updated: now,
+        };
+        if (sortKey !== undefined && sortKey !== null) {
+          updateData.sortKey = sortKey;
+        }
 
-      if (sortKey === undefined || sortKey === null) {
-        // Get next sort key
-        const lastAssortmentFilter = (await AssortmentFilters.findOne(
-          { assortmentId },
-          { sort: { sortKey: -1 } },
-        )) || { sortKey: 0 };
-        $setOnInsert.sortKey = lastAssortmentFilter.sortKey + 1;
-      } else {
-        $set.sortKey = sortKey;
+        await db
+          .update(assortmentFilters)
+          .set(updateData)
+          .where(eq(assortmentFilters._id, existing._id));
+
+        const [updated] = await db
+          .select()
+          .from(assortmentFilters)
+          .where(eq(assortmentFilters._id, existing._id))
+          .limit(1);
+
+        await emit('ASSORTMENT_ADD_FILTER', { assortmentFilter: updated });
+        return updated;
       }
 
-      const assortmentFilter = await AssortmentFilters.findOneAndUpdate(
-        selector,
-        {
-          $set,
-          $setOnInsert,
-        },
-        { upsert: true, returnDocument: 'after' },
-      );
+      // Get next sort key if not provided
+      let newSortKey = sortKey;
+      if (newSortKey === undefined || newSortKey === null) {
+        const [lastFilter] = await db
+          .select({ sortKey: assortmentFilters.sortKey })
+          .from(assortmentFilters)
+          .where(eq(assortmentFilters.assortmentId, assortmentId))
+          .orderBy(desc(assortmentFilters.sortKey))
+          .limit(1);
+        newSortKey = (lastFilter?.sortKey || 0) + 1;
+      }
+
+      const assortmentFilterId = _id || generateId();
+      await db.insert(assortmentFilters).values({
+        _id: assortmentFilterId,
+        assortmentId,
+        filterId,
+        sortKey: newSortKey,
+        tags,
+        created: now,
+        ...rest,
+      });
+
+      const [assortmentFilter] = await db
+        .select()
+        .from(assortmentFilters)
+        .where(eq(assortmentFilters._id, assortmentFilterId))
+        .limit(1);
 
       await emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
-
       return assortmentFilter;
     },
 
     delete: async (assortmentFilterId: string) => {
-      const selector: mongodb.Filter<AssortmentFilter> = generateDbFilterById(assortmentFilterId);
+      const [assortmentFilter] = await db
+        .select()
+        .from(assortmentFilters)
+        .where(eq(assortmentFilters._id, assortmentFilterId))
+        .limit(1);
 
-      const assortmentFilter = await AssortmentFilters.findOneAndDelete(selector);
       if (!assortmentFilter) return null;
+
+      await db.delete(assortmentFilters).where(eq(assortmentFilters._id, assortmentFilterId));
 
       await emit('ASSORTMENT_REMOVE_FILTER', {
         assortmentFilterId: assortmentFilter._id,
@@ -104,32 +148,61 @@ export const configureAssortmentFiltersModule = ({
       return assortmentFilter;
     },
 
-    deleteMany: async (selector: mongodb.Filter<AssortmentFilter>): Promise<number> => {
-      const assortmentFilters = await AssortmentFilters.find(selector, {
-        projection: { _id: 1 },
-      }).toArray();
+    deleteMany: async (selector: {
+      assortmentId?: string;
+      filterId?: string;
+      excludeIds?: string[];
+    }): Promise<number> => {
+      const conditions: ReturnType<typeof eq>[] = [];
 
-      const deletionResult = await AssortmentFilters.deleteMany(selector);
+      if (selector.assortmentId) {
+        conditions.push(eq(assortmentFilters.assortmentId, selector.assortmentId));
+      }
+      if (selector.filterId) {
+        conditions.push(eq(assortmentFilters.filterId, selector.filterId));
+      }
+      if (selector.excludeIds?.length) {
+        conditions.push(notInArray(assortmentFilters._id, selector.excludeIds));
+      }
+
+      if (conditions.length === 0) return 0;
+
+      // Get filters before deleting for events
+      const filtersToDelete = await db
+        .select({ _id: assortmentFilters._id })
+        .from(assortmentFilters)
+        .where(and(...conditions));
+
+      if (filtersToDelete.length === 0) return 0;
+
+      const result = await db.delete(assortmentFilters).where(and(...conditions));
 
       await Promise.all(
-        assortmentFilters.map(async (assortmentFilter) =>
+        filtersToDelete.map(async (f) =>
           emit('ASSORTMENT_REMOVE_FILTER', {
-            assortmentFilterId: assortmentFilter._id,
+            assortmentFilterId: f._id,
           }),
         ),
       );
 
-      return deletionResult.deletedCount;
+      return result.rowsAffected || 0;
     },
 
-    // This action is specifically used for the bulk migration scripts in the platform package
     update: async (assortmentFilterId: string, doc: Partial<AssortmentFilter>) => {
-      const selector = generateDbFilterById(assortmentFilterId);
-      const modifier = { $set: doc };
+      const now = new Date();
 
-      return AssortmentFilters.findOneAndUpdate(selector, modifier, {
-        returnDocument: 'after',
-      });
+      await db
+        .update(assortmentFilters)
+        .set({ ...doc, updated: now })
+        .where(eq(assortmentFilters._id, assortmentFilterId));
+
+      const [result] = await db
+        .select()
+        .from(assortmentFilters)
+        .where(eq(assortmentFilters._id, assortmentFilterId))
+        .limit(1);
+
+      return result || null;
     },
 
     updateManualOrder: async ({
@@ -140,26 +213,28 @@ export const configureAssortmentFiltersModule = ({
         sortKey: number;
       }[];
     }): Promise<AssortmentFilter[]> => {
+      const now = new Date();
       const changedAssortmentFilterIds = await Promise.all(
         sortKeys.map(async ({ assortmentFilterId, sortKey }) => {
-          await AssortmentFilters.updateOne(generateDbFilterById(assortmentFilterId), {
-            $set: {
+          await db
+            .update(assortmentFilters)
+            .set({
               sortKey: sortKey + 1,
-              updated: new Date(),
-            },
-          });
-
+              updated: now,
+            })
+            .where(eq(assortmentFilters._id, assortmentFilterId));
           return assortmentFilterId;
         }),
       );
 
-      const assortmentFilters = await AssortmentFilters.find({
-        _id: { $in: changedAssortmentFilterIds },
-      }).toArray();
+      const updatedFilters = await db
+        .select()
+        .from(assortmentFilters)
+        .where(inArray(assortmentFilters._id, changedAssortmentFilterIds));
 
-      await emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters });
+      await emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters: updatedFilters });
 
-      return assortmentFilters;
+      return updatedFilters;
     },
   };
 };

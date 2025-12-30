@@ -69,7 +69,7 @@ export default async (
   );
   await modules.assortments.links.deleteMany(
     {
-      _id: { $nin: assortmentLinkIds },
+      excludeIds: assortmentLinkIds,
       parentAssortmentId,
     },
     { skipInvalidation: true },

@@ -1,5 +1,5 @@
-export * from './db/AssortmentMediaCollection.ts';
-export * from './db/AssortmentsCollection.ts';
+export * from './db/index.ts';
+export * from './db/schema.ts';
 
 export * from './module/configureAssortmentsModule.ts';
 export * from './module/configureAssortmentFiltersModule.ts';

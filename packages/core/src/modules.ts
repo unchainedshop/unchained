@@ -2,6 +2,7 @@ import {
   type AssortmentsModule,
   type AssortmentsSettingsOptions,
   configureAssortmentsModule,
+  initializeAssortmentsSchema,
 } from '@unchainedshop/core-assortments';
 import {
   type BookmarksModule,
@@ -161,6 +162,7 @@ export default async function initModules(
   }
   // Initialize all Drizzle-based module schemas (idempotent - uses IF NOT EXISTS)
   await initializeDrizzleDb(drizzleDb, [
+    initializeAssortmentsSchema,
     initializeCountriesSchema,
     initializeCurrenciesSchema,
     initializeLanguagesSchema,
@@ -180,9 +182,8 @@ export default async function initModules(
   ]);
 
   const assortments = await configureAssortmentsModule({
-    db,
+    db: drizzleDb,
     options: options.assortments,
-    migrationRepository,
   });
   const bookmarks = await configureBookmarksModule({
     db: drizzleDb,

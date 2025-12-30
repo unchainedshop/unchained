@@ -64,7 +64,7 @@ export default async (
   );
 
   await modules.assortments.filters.deleteMany({
-    _id: { $nin: assortmentFilterIds },
+    excludeIds: assortmentFilterIds,
     assortmentId,
   });
 };

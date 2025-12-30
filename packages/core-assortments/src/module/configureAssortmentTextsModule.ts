@@ -1,18 +1,13 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { generateId, eq, and, inArray, notInArray, sql, type DrizzleDb } from '@unchainedshop/store';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.ts';
-import { type Assortment, type AssortmentText } from '../db/AssortmentsCollection.ts';
+import { assortments, assortmentTexts, type AssortmentText } from '../db/schema.ts';
+import { searchAssortmentTextsFTS } from '../db/fts.ts';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
-export const configureAssortmentTextsModule = ({
-  Assortments,
-  AssortmentTexts,
-}: {
-  Assortments: mongodb.Collection<Assortment>;
-  AssortmentTexts: mongodb.Collection<AssortmentText>;
-}) => {
+export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
   const makeSlug = async ({
@@ -25,15 +20,17 @@ export const configureAssortmentTextsModule = ({
     assortmentId: string;
   }): Promise<string> => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
-      return (
-        (await AssortmentTexts.countDocuments(
-          {
-            assortmentId: { $ne: assortmentId },
-            slug: newPotentialSlug,
-          },
-          { limit: 1 },
-        )) === 0
-      );
+      const [existing] = await db
+        .select({ _id: assortmentTexts._id })
+        .from(assortmentTexts)
+        .where(
+          and(
+            sql`${assortmentTexts.assortmentId} != ${assortmentId}`,
+            eq(assortmentTexts.slug, newPotentialSlug),
+          ),
+        )
+        .limit(1);
+      return !existing;
     };
 
     const findSlug = findUnusedSlug(checkSlugIsUnique, { slugify: assortmentsSettings.slugify });
@@ -50,64 +47,120 @@ export const configureAssortmentTextsModule = ({
   ) => {
     const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
-      slug: textSlug,
-      title: text.title,
+      slug: textSlug ?? undefined,
+      title: text.title ?? undefined,
       assortmentId,
     });
 
-    const modifier: any = {
-      $set: {
-        updated: new Date(),
-        ...textFields,
-      },
-      $setOnInsert: {
-        _id: generateDbObjectId(),
-        created: new Date(),
-        locale: locale.baseName,
-      },
-    };
+    const localeString = locale.baseName;
+    const now = new Date();
 
-    if (text.slug) {
-      modifier.$set.slug = slug;
+    // Find existing
+    const [existing] = await db
+      .select()
+      .from(assortmentTexts)
+      .where(
+        and(eq(assortmentTexts.assortmentId, assortmentId), eq(assortmentTexts.locale, localeString)),
+      )
+      .limit(1);
+
+    let assortmentText: AssortmentText;
+
+    if (existing) {
+      // Update existing
+      const updateData: Partial<AssortmentText> = {
+        ...textFields,
+        updated: now,
+      };
+      if (text.slug) {
+        updateData.slug = slug;
+      }
+
+      await db.update(assortmentTexts).set(updateData).where(eq(assortmentTexts._id, existing._id));
+
+      [assortmentText] = await db
+        .select()
+        .from(assortmentTexts)
+        .where(eq(assortmentTexts._id, existing._id))
+        .limit(1);
     } else {
-      modifier.$setOnInsert.slug = slug;
+      // Insert new
+      const textId = generateId();
+      await db.insert(assortmentTexts).values({
+        _id: textId,
+        assortmentId,
+        locale: localeString,
+        slug,
+        created: now,
+        ...textFields,
+      });
+
+      [assortmentText] = await db
+        .select()
+        .from(assortmentTexts)
+        .where(eq(assortmentTexts._id, textId))
+        .limit(1);
     }
 
-    const assortmentText = (await AssortmentTexts.findOneAndUpdate(
-      { assortmentId, locale: locale.baseName },
-      modifier,
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    )) as AssortmentText;
+    // Note: assortment_texts_fts is synced automatically via triggers from createFTS
 
-    await Assortments.updateOne(
-      { _id: assortmentId },
-      {
-        $set: {
-          updated: new Date(),
-        },
-        $addToSet: {
-          slugs: slug,
-        },
-      },
-    );
+    // Update the assortment's slugs array
+    const [currentAssortment] = await db
+      .select()
+      .from(assortments)
+      .where(eq(assortments._id, assortmentId))
+      .limit(1);
 
-    await Assortments.updateMany(
-      {
-        _id: { $ne: assortmentId },
-        slugs: slug,
-      },
-      {
-        $set: {
-          updated: new Date(),
-        },
-        $pull: {
-          slugs: slug,
-        },
-      },
-    );
+    if (currentAssortment) {
+      const currentSlugs = currentAssortment.slugs || [];
+      if (!currentSlugs.includes(slug)) {
+        await db
+          .update(assortments)
+          .set({
+            slugs: [...currentSlugs, slug],
+            updated: now,
+          })
+          .where(eq(assortments._id, assortmentId));
+
+        // Update assortments FTS
+        const newSlugs = [...currentSlugs, slug];
+        const newSlugsText = newSlugs.join(' ');
+        await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${assortmentId}`);
+        await db.run(
+          sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${assortmentId}, ${newSlugsText})`,
+        );
+      }
+    }
+
+    // Remove slug from other assortments
+    const otherAssortmentsWithSlug = await db
+      .select()
+      .from(assortments)
+      .where(
+        and(
+          sql`${assortments._id} != ${assortmentId}`,
+          sql`EXISTS (SELECT 1 FROM json_each(${assortments.slugs}) WHERE value = ${slug})`,
+        ),
+      );
+
+    for (const otherAssortment of otherAssortmentsWithSlug) {
+      const filteredSlugs = (otherAssortment.slugs || []).filter((s) => s !== slug);
+      await db
+        .update(assortments)
+        .set({
+          slugs: filteredSlugs,
+          updated: now,
+        })
+        .where(eq(assortments._id, otherAssortment._id));
+
+      // Update FTS
+      const filteredSlugsText = filteredSlugs.join(' ');
+      await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${otherAssortment._id}`);
+      await db.run(
+        sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${otherAssortment._id}, ${filteredSlugsText})`,
+      );
+    }
+
     await emit('ASSORTMENT_UPDATE_TEXT', {
       assortmentId,
       text: assortmentText,
@@ -117,24 +170,41 @@ export const configureAssortmentTextsModule = ({
   };
 
   return {
-    // Queries
     findTexts: async (
       query: { assortmentId?: string; assortmentIds?: string[]; queryString?: string },
-      options?: mongodb.FindOptions,
+      options?: {
+        limit?: number;
+        offset?: number;
+        sort?: Record<string, number>;
+        projection?: Record<string, number>;
+      },
     ): Promise<AssortmentText[]> => {
-      const selector: mongodb.Filter<AssortmentText> = {};
-      if (query.assortmentId) {
-        selector.assortmentId = query.assortmentId;
-      }
-      if (query.assortmentIds) {
-        selector.assortmentId = { $in: query.assortmentIds };
-      }
-      if (query.queryString) {
-        (selector as any).$text = { $search: query.queryString };
-      }
-      const texts = AssortmentTexts.find(selector, options);
+      void options;
+      const conditions: ReturnType<typeof eq>[] = [];
 
-      return texts.toArray();
+      if (query.assortmentId) {
+        conditions.push(eq(assortmentTexts.assortmentId, query.assortmentId));
+      }
+      if (query.assortmentIds?.length) {
+        conditions.push(inArray(assortmentTexts.assortmentId, query.assortmentIds));
+      }
+
+      if (query.queryString) {
+        const matchingIds = await searchAssortmentTextsFTS(db, query.queryString);
+        if (matchingIds.length === 0) {
+          return [];
+        }
+        conditions.push(inArray(assortmentTexts._id, matchingIds));
+      }
+
+      if (conditions.length === 0) {
+        return db.select().from(assortmentTexts);
+      }
+
+      return db
+        .select()
+        .from(assortmentTexts)
+        .where(and(...conditions));
     },
 
     findLocalizedText: async ({
@@ -143,26 +213,59 @@ export const configureAssortmentTextsModule = ({
     }: {
       assortmentId: string;
       locale: Intl.Locale;
-    }): Promise<AssortmentText> => {
-      const text = await findLocalizedText<AssortmentText>(AssortmentTexts, { assortmentId }, locale);
-      return text;
+    }): Promise<AssortmentText | null> => {
+      const localeString = locale.baseName;
+      const languageCode = locale.language;
+
+      // Try exact locale match first
+      let [text] = await db
+        .select()
+        .from(assortmentTexts)
+        .where(
+          and(eq(assortmentTexts.assortmentId, assortmentId), eq(assortmentTexts.locale, localeString)),
+        )
+        .limit(1);
+
+      if (text) return text;
+
+      // Try language code only
+      if (localeString !== languageCode) {
+        [text] = await db
+          .select()
+          .from(assortmentTexts)
+          .where(
+            and(
+              eq(assortmentTexts.assortmentId, assortmentId),
+              eq(assortmentTexts.locale, languageCode),
+            ),
+          )
+          .limit(1);
+
+        if (text) return text;
+      }
+
+      // Fallback to any available text
+      [text] = await db
+        .select()
+        .from(assortmentTexts)
+        .where(eq(assortmentTexts.assortmentId, assortmentId))
+        .limit(1);
+
+      return text || null;
     },
 
-    // Mutations
     updateTexts: async (
       assortmentId: string,
       texts: ({
         locale: AssortmentText['locale'];
       } & Omit<Partial<AssortmentText>, 'assortmentId' | 'locale'>)[],
     ): Promise<AssortmentText[]> => {
-      const assortmentTexts = (
-        await Promise.all(
-          texts.map(async ({ locale, ...text }) =>
-            upsertLocalizedText(assortmentId, new Intl.Locale(locale), text),
-          ),
-        )
-      ).filter(Boolean) as AssortmentText[];
-      return assortmentTexts;
+      const assortmentTextResults = await Promise.all(
+        texts.map(async ({ locale, ...text }) =>
+          upsertLocalizedText(assortmentId, new Intl.Locale(locale), text),
+        ),
+      );
+      return assortmentTextResults.filter(Boolean) as AssortmentText[];
     },
 
     makeSlug,
@@ -174,15 +277,19 @@ export const configureAssortmentTextsModule = ({
       assortmentId?: string;
       excludedAssortmentIds?: string[];
     }): Promise<number> => {
-      const selector: mongodb.Filter<AssortmentText> = {};
+      // Note: assortment_texts_fts is synced automatically via triggers from createFTS
+      let result;
       if (assortmentId) {
-        selector.assortmentId = assortmentId;
-      } else if (excludedAssortmentIds) {
-        selector.assortmentId = { $nin: excludedAssortmentIds };
+        result = await db.delete(assortmentTexts).where(eq(assortmentTexts.assortmentId, assortmentId));
+      } else if (excludedAssortmentIds?.length) {
+        result = await db
+          .delete(assortmentTexts)
+          .where(notInArray(assortmentTexts.assortmentId, excludedAssortmentIds));
+      } else {
+        result = await db.delete(assortmentTexts);
       }
-      const deletedResult = await AssortmentTexts.deleteMany(selector);
 
-      return deletedResult.deletedCount;
+      return result.rowsAffected || 0;
     },
   };
 };

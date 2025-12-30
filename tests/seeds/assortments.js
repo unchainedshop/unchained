@@ -256,3 +256,130 @@ export default async function seedAssortments(db) {
 
   await db.collection('media_objects').findOrInsertOne(PngMedia);
 }
+
+/**
+ * Seed assortments into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid side effects.
+ */
+export async function seedAssortmentsToDrizzle(db) {
+  const {
+    assortments,
+    assortmentTexts,
+    assortmentProducts,
+    assortmentLinks,
+    assortmentFilters,
+    assortmentMedia,
+    assortmentMediaTexts,
+  } = await import('@unchainedshop/core-assortments');
+  const { sql } = await import('drizzle-orm');
+
+  // Delete all existing data
+  await db.delete(assortmentMediaTexts);
+  await db.delete(assortmentMedia);
+  await db.delete(assortmentFilters);
+  await db.delete(assortmentProducts);
+  await db.delete(assortmentLinks);
+  await db.delete(assortmentTexts);
+  await db.delete(assortments);
+
+  // Clear FTS tables
+  await db.run(sql`DELETE FROM assortments_fts`);
+  // Note: assortment_texts_fts is synced automatically via triggers from createFTS
+
+  // Insert assortments
+  for (const assortment of SimpleAssortment) {
+    await db.insert(assortments).values({
+      _id: assortment._id,
+      isActive: assortment.isActive ?? false,
+      isRoot: assortment.isRoot ?? false,
+      sequence: assortment.sequence ?? 0,
+      slugs: assortment.slugs || [],
+      tags: assortment.tags || [],
+      created: assortment.created,
+      updated: assortment.updated,
+    });
+
+    // Insert into FTS
+    const slugsText = (assortment.slugs || []).join(' ');
+    await db.run(
+      sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${assortment._id}, ${slugsText})`,
+    );
+  }
+
+  // Insert assortment texts
+  const textRecords = [GermanAssortmentText, FrenchAssortmentText];
+  for (const text of textRecords) {
+    await db.insert(assortmentTexts).values({
+      _id: text._id,
+      assortmentId: text.assortmentId,
+      locale: text.locale,
+      slug: text.slug,
+      title: text.title,
+      subtitle: text.subtitle,
+      description: text.description,
+      created: new Date(),
+      updated: text.updated,
+    });
+
+    // Note: assortment_texts_fts is synced automatically via triggers from createFTS
+  }
+
+  // Insert assortment products
+  await db.insert(assortmentProducts).values({
+    _id: AssortmentProduct._id,
+    assortmentId: AssortmentProduct.assortmentId,
+    productId: AssortmentProduct.productId,
+    sortKey: AssortmentProduct.sortKey,
+    tags: AssortmentProduct.tags || [],
+    created: new Date(),
+  });
+
+  // Insert assortment links
+  for (const link of AssortmentLinks) {
+    await db.insert(assortmentLinks).values({
+      _id: link._id,
+      parentAssortmentId: link.parentAssortmentId,
+      childAssortmentId: link.childAssortmentId,
+      sortKey: link.sortKey,
+      tags: link.tags || [],
+      meta: link.meta,
+      created: new Date(),
+    });
+  }
+
+  // Insert assortment filters
+  for (const filter of AssortmentFilters) {
+    await db.insert(assortmentFilters).values({
+      _id: filter._id,
+      assortmentId: filter.assortmentId,
+      filterId: filter.filterId,
+      sortKey: filter.sortKey,
+      tags: filter.tags || [],
+      created: new Date(),
+    });
+  }
+
+  // Insert assortment media
+  await db.insert(assortmentMedia).values({
+    _id: PngAssortmentMedia._id,
+    assortmentId: PngAssortmentMedia.assortmentId,
+    mediaId: PngAssortmentMedia.mediaId,
+    sortKey: PngAssortmentMedia.sortKey,
+    tags: PngAssortmentMedia.tags || [],
+    created: PngAssortmentMedia.created,
+  });
+
+  // Insert assortment media texts
+  const mediaTextRecords = [GermanPngAssortmentMediaText, FrenchPngAssortmentMediaText];
+  for (const text of mediaTextRecords) {
+    await db.insert(assortmentMediaTexts).values({
+      _id: text._id,
+      assortmentMediaId: text.assortmentMediaId,
+      locale: text.locale,
+      title: text.title,
+      subtitle: text.subtitle,
+      created: new Date(),
+      updated: text.updated,
+    });
+  }
+}
