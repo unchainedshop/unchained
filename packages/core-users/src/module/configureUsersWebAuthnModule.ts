@@ -1,4 +1,4 @@
-import { type ModuleInput, generateDbObjectId } from '@unchainedshop/mongodb';
+import { generateId, type DrizzleDb } from '@unchainedshop/store';
 import { createLogger } from '@unchainedshop/logger';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
@@ -10,7 +10,8 @@ import type {
   NamedAlgo,
   ExtendedAuthenticatorTransport,
 } from '@passwordless-id/webauthn/dist/esm/types.js';
-import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.ts';
+import { webauthnCredentialsRequests, type NewWebAuthnRequestRow } from '../db/schema.ts';
+import { eq, desc } from 'drizzle-orm';
 
 const logger = createLogger('unchained:core-users');
 
@@ -138,10 +139,8 @@ export interface WebAuthnCredential {
   created: Date;
 }
 
-export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<string, any>>) => {
+export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) => {
   const { ROOT_URL = 'http://localhost:4010', EMAIL_WEBSITE_NAME = 'Unchained' } = process.env;
-
-  const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
 
   const thisDomain = new URL(ROOT_URL).hostname;
   const thisOrigin = new URL(ROOT_URL).origin;
@@ -162,17 +161,22 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
       },
     ): Promise<WebAuthnCredentialCreationOptions> => {
       const challenge = webauthnServer.randomChallenge();
-      const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
-        _id: generateDbObjectId(),
+      const requestId = generateId();
+
+      const newRequest: NewWebAuthnRequestRow = {
+        _id: requestId,
         challenge,
         origin,
         factor: 'either',
         username,
-      });
+        created: new Date(),
+      };
+
+      await db.insert(webauthnCredentialsRequests).values(newRequest);
 
       return {
         challenge,
-        requestId: insertedId,
+        requestId,
         rp: {
           id: thisDomain,
           name: EMAIL_WEBSITE_NAME,
@@ -204,17 +208,22 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
       },
     ): Promise<WebAuthnCredentialRequestOptions> => {
       const challenge = webauthnServer.randomChallenge();
-      const { insertedId } = await WebAuthnCredentialsCreationRequests.insertOne({
-        _id: generateDbObjectId(),
+      const requestId = generateId();
+
+      const newRequest: NewWebAuthnRequestRow = {
+        _id: requestId,
         challenge,
         origin,
         factor: 'either',
         username,
-      });
+        created: new Date(),
+      };
+
+      await db.insert(webauthnCredentialsRequests).values(newRequest);
 
       return {
         challenge,
-        requestId: insertedId,
+        requestId,
         rpId: thisDomain,
         timeout: extensionOptions?.timeout || 60000,
         userVerification: extensionOptions?.userVerification || 'preferred',
@@ -226,12 +235,14 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
       username: string,
       credentials: RegistrationJSON,
     ): Promise<WebAuthnCredential | null> => {
-      const request = await WebAuthnCredentialsCreationRequests.findOne(
-        {
-          username,
-        },
-        { sort: { _id: -1 } },
-      );
+      // Find the latest request for this username
+      const [request] = await db
+        .select()
+        .from(webauthnCredentialsRequests)
+        .where(eq(webauthnCredentialsRequests.username, username))
+        .orderBy(desc(webauthnCredentialsRequests._id))
+        .limit(1);
+
       if (!request) {
         logger.error('WebAuthn: No credential creation request found for username', { username });
         return null;
@@ -286,12 +297,13 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
       username: string,
       credentials: AuthenticationJSON & { requestId: string },
     ): Promise<{ userHandle: string; counter: number } | null> => {
-      const request = await WebAuthnCredentialsCreationRequests.findOne(
-        {
-          _id: credentials.requestId,
-        },
-        { sort: { _id: -1 } },
-      );
+      const [request] = await db
+        .select()
+        .from(webauthnCredentialsRequests)
+        .where(eq(webauthnCredentialsRequests._id, credentials.requestId))
+        .orderBy(desc(webauthnCredentialsRequests._id))
+        .limit(1);
+
       if (!request) return null;
 
       const matchingKey = userPublicKeys.find((key) => key.id === credentials.id);
@@ -327,10 +339,10 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
     },
 
     deleteUserWebAuthnCredentials: async (username: string) => {
-      const { deletedCount } = await WebAuthnCredentialsCreationRequests.deleteMany({
-        username,
-      });
-      return deletedCount;
+      const result = await db
+        .delete(webauthnCredentialsRequests)
+        .where(eq(webauthnCredentialsRequests.username, username));
+      return result.rowsAffected || 0;
     },
   };
 };

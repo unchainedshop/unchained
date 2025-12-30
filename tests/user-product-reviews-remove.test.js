@@ -5,18 +5,22 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  getDrizzleDb,
 } from './helpers.js';
+import { users } from '@unchainedshop/core-users';
+import { eq } from 'drizzle-orm';
 import { ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let db;
+let drizzleDb;
 
 test.describe('Remove User Product Reviews', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -179,9 +183,15 @@ test.describe('Remove User Product Reviews', () => {
         .createHash('sha256')
         .update(`${username}:${plainSecret}`)
         .digest('hex');
-      await db
-        .collection('users')
-        .updateOne({ _id: userId }, { $set: { 'services.token': { secret: hashedSecret } } });
+      // Get current user to preserve services
+      const [currentUser] = await drizzleDb.select().from(users).where(eq(users._id, userId)).limit(1);
+      await drizzleDb
+        .update(users)
+        .set({
+          services: { ...currentUser.services, token: { secret: hashedSecret } },
+          updated: new Date(),
+        })
+        .where(eq(users._id, userId));
       const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
 
       // Create a product review as the new user

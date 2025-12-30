@@ -1,17 +1,19 @@
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
-import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import { User, Admin, USER_TOKEN, ADMIN_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
-import { and, desc, sql } from 'drizzle-orm';
+import { users } from '@unchainedshop/core-users';
+import { and, desc, sql, eq } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let db;
+let drizzleDb;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 test.describe('Auth for logged in users', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -127,29 +129,17 @@ test.describe('Auth for logged in users', () => {
 
   test.describe('Mutation.verifyEmail', () => {
     test.before(async () => {
-      const Users = db.collection('users');
-      const userCopy = {
+      await findOrInsertUserToDrizzle(drizzleDb, {
         ...User,
-        username: `${User.username}${Math.random()}`,
-      };
-      delete userCopy._id;
-      await Users.findOneAndUpdate(
-        { _id: 'userthatmustverifyemail' },
-        {
-          $setOnInsert: {
-            ...userCopy,
-            emails: [
-              {
-                address: 'userthatmustverifyemail@unchained.local',
-                verified: false,
-              },
-            ],
+        _id: 'userthatmustverifyemail',
+        username: `userthatmustverifyemail-${Date.now()}`,
+        emails: [
+          {
+            address: 'userthatmustverifyemail@unchained.local',
+            verified: false,
           },
-        },
-        {
-          upsert: true,
-        },
-      );
+        ],
+      });
     });
 
     test('create a verification token', async () => {
@@ -207,12 +197,11 @@ test.describe('Auth for logged in users', () => {
     });
 
     test('e-mail is tagged as verified', async () => {
-      // Reset the password with that token
-      const Users = db.collection('users');
-      const user = await Users.findOne({
-        _id: 'userthatmustverifyemail',
-      });
-
+      const [user] = await drizzleDb
+        .select()
+        .from(users)
+        .where(eq(users._id, 'userthatmustverifyemail'))
+        .limit(1);
       assert.strictEqual(user.emails[0].verified, true);
     });
   });
@@ -238,8 +227,7 @@ test.describe('Auth for logged in users', () => {
 
   test.describe('Mutation.logout', () => {
     test('log out userthatlogsout', async () => {
-      const Users = db.collection('users');
-      await Users.findOrInsertOne({
+      await findOrInsertUserToDrizzle(drizzleDb, {
         ...User,
         _id: 'userthatlogsout',
         username: 'userthatlogsout',
@@ -273,9 +261,11 @@ test.describe('Auth for logged in users', () => {
       assert.deepStrictEqual(logout, {
         success: true,
       });
-      const user = await Users.findOne({
-        _id: 'userthatlogsout',
-      });
+      const [user] = await drizzleDb
+        .select()
+        .from(users)
+        .where(eq(users._id, 'userthatlogsout'))
+        .limit(1);
       const {
         services: {
           resume: { loginTokens },
@@ -285,8 +275,7 @@ test.describe('Auth for logged in users', () => {
     });
 
     test('log out userthatlogsout without explicit token', async () => {
-      const Users = db.collection('users');
-      await Users.findOrInsertOne({
+      await findOrInsertUserToDrizzle(drizzleDb, {
         ...User,
         _id: 'userthatlogsout',
         username: 'userthatlogsout',
@@ -323,9 +312,11 @@ test.describe('Auth for logged in users', () => {
       assert.deepStrictEqual(logout, {
         success: true,
       });
-      const user = await Users.findOne({
-        _id: 'userthatlogsout',
-      });
+      const [user] = await drizzleDb
+        .select()
+        .from(users)
+        .where(eq(users._id, 'userthatlogsout'))
+        .limit(1);
       const {
         services: {
           resume: { loginTokens },

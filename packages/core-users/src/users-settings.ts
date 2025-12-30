@@ -1,5 +1,7 @@
-import { insensitiveTrimmedRegexOperator, type mongodb } from '@unchainedshop/mongodb';
-import type { User } from './db/UsersCollection.ts';
+import type { DrizzleDb } from '@unchainedshop/store';
+import { sql } from 'drizzle-orm';
+import type { User } from './module/configureUsersModule.ts';
+
 export interface UserRegistrationData extends Partial<User> {
   email?: string;
   password: string | null;
@@ -15,6 +17,7 @@ export const UserAccountAction = {
 } as const;
 
 export type UserAccountAction = (typeof UserAccountAction)[keyof typeof UserAccountAction];
+
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
@@ -25,7 +28,7 @@ export interface UserSettings {
   validateUsername: (username: string) => Promise<boolean>;
   validateNewUser: (user: UserRegistrationData) => Promise<UserRegistrationData>;
   validatePassword: (password: string) => Promise<boolean>;
-  configureSettings: (options: UserSettingsOptions, db: mongodb.Db) => void;
+  configureSettings: (options: UserSettingsOptions, db?: DrizzleDb) => void;
 }
 
 export type UserSettingsOptions = Omit<Partial<UserSettings>, 'configureSettings'>;
@@ -70,22 +73,34 @@ export const userSettings: UserSettings = {
       validateNewUser,
       validatePassword,
     },
-    db: mongodb.Db,
+    db?: DrizzleDb,
   ) => {
     const defaultValidateEmail = async (rawEmail: string) => {
       if (!rawEmail?.includes?.('@')) return false;
-      const emailAlreadyExists = await db
-        .collection('users')
-        .countDocuments({ 'emails.address': insensitiveTrimmedRegexOperator(rawEmail) }, { limit: 1 });
-      if (emailAlreadyExists) return false;
+      if (!db) return true;
+      // Check if email already exists (case-insensitive)
+      const [existing] = await db.all(sql`
+        SELECT 1 FROM users
+        WHERE EXISTS (
+          SELECT 1 FROM json_each(emails)
+          WHERE lower(json_extract(value, '$.address')) = lower(${rawEmail.trim()})
+        )
+        LIMIT 1
+      `);
+      if (existing) return false;
       return true;
     };
+
     const defaultValidateUsername = async (rawUsername: string) => {
       if (rawUsername?.length < 3) return false;
-      const usernameAlreadyExists = await db
-        .collection('users')
-        .countDocuments({ username: insensitiveTrimmedRegexOperator(rawUsername) }, { limit: 1 });
-      if (usernameAlreadyExists) return false;
+      if (!db) return true;
+      // Check if username already exists (case-insensitive)
+      const [existing] = await db.all(sql`
+        SELECT 1 FROM users
+        WHERE lower(username) = lower(${rawUsername.trim()})
+        LIMIT 1
+      `);
+      if (existing) return false;
       return true;
     };
 

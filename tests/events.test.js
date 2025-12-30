@@ -25,21 +25,26 @@ test.describe('Events', () => {
     await disconnect();
   });
 
+  // Define the seed event types to filter against worker events
+  const SEED_EVENT_TYPES = ['USER_CREATE', 'ORDER_CREATE', 'PRODUCT_CREATE'];
+
   test.describe('Query.events for admin user should', () => {
-    test('Return all events when no arguments passed', async () => {
+    test('Return all seed events when filtered by type', async () => {
       const {
         data: { events },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Events {
-            events {
+          query Events($types: [String!]) {
+            events(types: $types) {
               _id
               type
               created
             }
           }
         `,
-        variables: {},
+        variables: {
+          types: SEED_EVENT_TYPES,
+        },
       });
       assert.strictEqual(events.length, 4);
     });
@@ -49,8 +54,8 @@ test.describe('Events', () => {
         data: { events },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Events {
-            events {
+          query Events($types: [String!]) {
+            events(types: $types) {
               _id
               type
               created
@@ -58,7 +63,9 @@ test.describe('Events', () => {
             }
           }
         `,
-        variables: {},
+        variables: {
+          types: SEED_EVENT_TYPES,
+        },
       });
       assert.strictEqual(events.length, 4);
       assert.strictEqual(events[0]._id, TestEvent4._id);
@@ -173,8 +180,8 @@ test.describe('Events', () => {
         data: { events },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Events($created: DateFilterInput) {
-            events(created: $created) {
+          query Events($types: [String!], $created: DateFilterInput) {
+            events(types: $types, created: $created) {
               _id
               type
               created
@@ -182,6 +189,8 @@ test.describe('Events', () => {
           }
         `,
         variables: {
+          // Filter to seed event types only to avoid counting worker events
+          types: ['USER_CREATE', 'ORDER_CREATE', 'PRODUCT_CREATE'],
           created: {
             start: threeHoursAgo.toISOString(),
             end: thirtyMinutesAgo.toISOString(),
@@ -196,8 +205,8 @@ test.describe('Events', () => {
         data: { events },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Events($sort: [SortOptionInput!]) {
-            events(sort: $sort) {
+          query Events($types: [String!], $sort: [SortOptionInput!]) {
+            events(types: $types, sort: $sort) {
               _id
               type
               created
@@ -205,6 +214,7 @@ test.describe('Events', () => {
           }
         `,
         variables: {
+          types: SEED_EVENT_TYPES,
           sort: [{ key: 'created', value: 'ASC' }],
         },
       });
@@ -235,16 +245,18 @@ test.describe('Events', () => {
   });
 
   test.describe('Query.eventsCount for admin user should', () => {
-    test('Return total count of all events when no arguments passed', async () => {
+    test('Return total count of seed events when filtered by type', async () => {
       const {
         data: { eventsCount },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query {
-            eventsCount
+          query EventsCount($types: [String!]) {
+            eventsCount(types: $types)
           }
         `,
-        variables: {},
+        variables: {
+          types: SEED_EVENT_TYPES,
+        },
       });
       assert.strictEqual(eventsCount, 4);
     });
@@ -290,11 +302,13 @@ test.describe('Events', () => {
         data: { eventsCount },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query EventsCount($created: DateFilterInput) {
-            eventsCount(created: $created)
+          query EventsCount($types: [String!], $created: DateFilterInput) {
+            eventsCount(types: $types, created: $created)
           }
         `,
         variables: {
+          // Filter to seed event types only to avoid counting worker events
+          types: ['USER_CREATE', 'ORDER_CREATE', 'PRODUCT_CREATE'],
           created: {
             start: threeHoursAgo.toISOString(),
             end: thirtyMinutesAgo.toISOString(),
@@ -493,13 +507,13 @@ test.describe('Events', () => {
   });
 
   test.describe('Query.eventStatistics for admin user should', () => {
-    test('Return statistics for all events', async () => {
+    test('Return statistics for all seed events', async () => {
       const {
         data: { eventStatistics },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query EventStatistics {
-            eventStatistics {
+          query EventStatistics($types: [String!]) {
+            eventStatistics(types: $types) {
               type
               emitCount
               detail {
@@ -509,7 +523,9 @@ test.describe('Events', () => {
             }
           }
         `,
-        variables: {},
+        variables: {
+          types: SEED_EVENT_TYPES,
+        },
       });
       assert.strictEqual(eventStatistics.length, 3);
 
@@ -576,14 +592,15 @@ test.describe('Events', () => {
         data: { eventStatistics },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query EventStatistics($dateRange: DateFilterInput) {
-            eventStatistics(dateRange: $dateRange) {
+          query EventStatistics($types: [String!], $dateRange: DateFilterInput) {
+            eventStatistics(types: $types, dateRange: $dateRange) {
               type
               emitCount
             }
           }
         `,
         variables: {
+          types: SEED_EVENT_TYPES,
           dateRange: {
             start: fourHoursAgo.toISOString(),
             end: thirtyMinutesInFuture.toISOString(),

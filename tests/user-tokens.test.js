@@ -9,9 +9,9 @@ import {
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
-import { and, desc, sql } from 'drizzle-orm';
+import { users } from '@unchainedshop/core-users';
+import { and, desc, sql, eq } from 'drizzle-orm';
 
-let db;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsAdminUser;
 let resetPasswordToken;
@@ -19,48 +19,66 @@ let verifyEmailToken;
 
 test.describe('User Token Validation', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    const Users = db.collection('users');
-    await Users.findOneAndUpdate(
-      { _id: 'user-reset-password' },
-      {
-        $setOnInsert: {
-          username: `resetuser${Math.random()}`,
-          emails: [
-            {
-              address: 'resettest@unchained.local',
-              verified: false,
-            },
-          ],
-          created: new Date(),
-        },
-      },
-      {
-        returnDocument: 'after',
-        upsert: true,
-      },
-    );
-    await Users.findOneAndUpdate(
-      { _id: 'user-verify-email' },
-      {
-        $setOnInsert: {
-          username: `verifyuser${Math.random()}`,
-          emails: [
-            {
-              address: 'verifytest@unchained.local',
-              verified: false,
-            },
-          ],
-          created: new Date(),
-        },
-      },
-      {
-        returnDocument: 'after',
-        upsert: true,
-      },
-    );
+    const drizzleDb = getDrizzleDb();
+
+    // Create test users in Drizzle
+    const [existingResetUser] = await drizzleDb
+      .select()
+      .from(users)
+      .where(eq(users._id, 'user-reset-password'))
+      .limit(1);
+
+    if (!existingResetUser) {
+      await drizzleDb.insert(users).values({
+        _id: 'user-reset-password',
+        username: `resetuser${Math.random()}`,
+        emails: [
+          {
+            address: 'resettest@unchained.local',
+            verified: false,
+          },
+        ],
+        guest: false,
+        roles: [],
+        pushSubscriptions: [],
+        created: new Date(),
+      });
+      // Insert into FTS
+      await drizzleDb.run(
+        sql`INSERT INTO users_fts(_id, username) VALUES ('user-reset-password', ${`resetuser${Math.random()}`})`,
+      );
+    }
+
+    const [existingVerifyUser] = await drizzleDb
+      .select()
+      .from(users)
+      .where(eq(users._id, 'user-verify-email'))
+      .limit(1);
+
+    if (!existingVerifyUser) {
+      await drizzleDb.insert(users).values({
+        _id: 'user-verify-email',
+        username: `verifyuser${Math.random()}`,
+        emails: [
+          {
+            address: 'verifytest@unchained.local',
+            verified: false,
+          },
+        ],
+        guest: false,
+        roles: [],
+        pushSubscriptions: [],
+        created: new Date(),
+      });
+      // Insert into FTS
+      await drizzleDb.run(
+        sql`INSERT INTO users_fts(_id, username) VALUES ('user-verify-email', ${`verifyuser${Math.random()}`})`,
+      );
+    }
+
     await graphqlFetchAsAnonymousUser({
       query: /* GraphQL */ `
         mutation {
@@ -71,7 +89,6 @@ test.describe('User Token Validation', () => {
       `,
     });
 
-    const drizzleDb = getDrizzleDb();
     const [resetEvent] = await drizzleDb
       .select()
       .from(events)
@@ -139,7 +156,7 @@ test.describe('User Token Validation', () => {
       assert.strictEqual(validateResetPasswordToken, true);
     });
 
-    test('Return false for invalid reset password token', async () => {
+    test('Return false for invalid token', async () => {
       const {
         data: { validateResetPasswordToken },
       } = await graphqlFetchAsAnonymousUser({
@@ -149,7 +166,7 @@ test.describe('User Token Validation', () => {
           }
         `,
         variables: {
-          token: 'invalid-token-12345',
+          token: 'invalid-token',
         },
       });
       assert.strictEqual(validateResetPasswordToken, false);
@@ -171,18 +188,18 @@ test.describe('User Token Validation', () => {
       assert.strictEqual(validateResetPasswordToken, false);
     });
 
-    test('Return false after token is used', async () => {
+    test('Return false after password is reset', async () => {
       await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          mutation ResetPassword($newPassword: String!, $token: String!) {
-            resetPassword(newPassword: $newPassword, token: $token) {
+          mutation ResetPassword($token: String!, $newPassword: String!) {
+            resetPassword(token: $token, newPassword: $newPassword) {
               _id
             }
           }
         `,
         variables: {
-          newPassword: 'newpassword123',
           token: resetPasswordToken,
+          newPassword: 'newSecurePassword123!',
         },
       });
 
@@ -229,7 +246,7 @@ test.describe('User Token Validation', () => {
           }
         `,
         variables: {
-          token: 'invalid-token-67890',
+          token: 'invalid-token',
         },
       });
       assert.strictEqual(validateVerifyEmailToken, false);

@@ -1,25 +1,33 @@
-import * as bcrypt from 'bcryptjs';
+/**
+ * Users Module - Drizzle ORM with SQLite/Turso
+ */
+
 import {
-  type ModuleInput,
-  type Address,
-  type Contact,
-  generateDbFilterById,
-  buildSortOptions,
-  type mongodb,
-  generateDbObjectId,
-  insensitiveTrimmedRegexOperator,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
+  eq,
+  and,
+  inArray,
+  sql,
+  asc,
+  desc,
+  isNull,
+  generateId,
+  type SQL,
+  type DrizzleDb,
+} from '@unchainedshop/store';
+import type { Address, Contact } from '@unchainedshop/mongodb';
 import {
-  type User,
-  type UserQuery,
+  users,
+  type UserRow,
   type Email,
   type UserLastLogin,
   type UserProfile,
-  UsersCollection,
-} from '../db/UsersCollection.ts';
+  type UserServices,
+  type PushSubscriptionObject,
+} from '../db/schema.ts';
+import { searchUsersFTS } from '../db/fts.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, type SortOption, sha256 } from '@unchainedshop/utils';
+import type { DateFilterInput } from '@unchainedshop/utils';
 import {
   UserAccountAction,
   type UserRegistrationData,
@@ -29,7 +37,6 @@ import {
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts';
 import * as pbkdf2 from './pbkdf2.ts';
 import { verifyWeb3Signature } from '../utils/web3-verification.ts';
-import convertUserLocale from '../migrations/20241218092300-convert-locale.ts';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -49,94 +56,238 @@ const USER_EVENTS = [
   'USER_UPDATE_WEB3_ADDRESS',
   'USER_REMOVE',
 ];
+
+export interface User {
+  _id: string;
+  deleted?: Date | null;
+  avatarId?: string;
+  emails: Email[];
+  guest: boolean;
+  initialPassword: boolean;
+  lastBillingAddress?: Address;
+  lastContact?: Contact;
+  lastLogin?: UserLastLogin;
+  profile?: UserProfile;
+  roles: string[];
+  services: any; // Keep as `any` for backward compatibility with API resolvers
+  tags?: string[];
+  pushSubscriptions: PushSubscriptionObject[];
+  username?: string;
+  meta?: any;
+  created: Date;
+  updated?: Date;
+}
+
+export interface UserQuery {
+  includeGuests?: boolean;
+  includeDeleted?: boolean;
+  queryString?: string;
+  emailVerified?: boolean;
+  lastLogin?: DateFilterInput;
+  tags?: string[];
+  userIds?: string[];
+  username?: string;
+  web3Verified?: boolean;
+}
+
+const rowToUser = (row: UserRow): User => ({
+  _id: row._id,
+  username: row.username ?? undefined,
+  guest: row.guest,
+  initialPassword: row.initialPassword,
+  avatarId: row.avatarId ?? undefined,
+  roles: row.roles,
+  tags: row.tags ?? undefined,
+  meta: row.meta ?? undefined,
+  emails: row.emails,
+  services: row.services ?? undefined,
+  profile: row.profile ?? undefined,
+  lastLogin: row.lastLogin ?? undefined,
+  lastBillingAddress: row.lastBillingAddress ?? undefined,
+  lastContact: row.lastContact ?? undefined,
+  pushSubscriptions: row.pushSubscriptions,
+  created: row.created,
+  updated: row.updated ?? undefined,
+  deleted: row.deleted ?? undefined,
+});
+
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = { ...rawUser };
   delete user?.services;
   return user;
 };
 
-export const buildFindSelector = ({
-  includeGuests,
-  includeDeleted,
-  queryString,
-  emailVerified,
-  lastLogin,
-  tags,
-  userIds,
-  username,
-  web3Verified,
-}: UserQuery) => {
-  const selector: mongodb.Filter<User> = {};
-  if (!includeDeleted) selector.deleted = null as any;
-  if (!includeGuests) selector.guest = { $ne: true };
-  if (userIds) {
-    selector._id = { $in: userIds };
-  }
-  if (username) {
-    selector.username = insensitiveTrimmedRegexOperator(username);
-  }
-  if (emailVerified === true) {
-    selector['emails.verified'] = true;
-  }
-  if (Array.isArray(tags) && tags?.length) {
-    selector.tags = { $in: tags };
-  }
-  if (emailVerified === false) {
-    // We need to use $ne here else we'd also find users with many emails where one is
-    // unverified
-    selector['emails.verified'] = { $ne: true };
-  }
-  if (web3Verified === true) {
-    selector['services.web3.verified'] = true;
-  }
-  if (lastLogin?.start) {
-    selector['lastLogin.timestamp'] = { $exists: true };
-  }
-  if (lastLogin?.end) {
-    selector['lastLogin.timestamp'].$lte = new Date(lastLogin.end);
-  }
-  if (lastLogin?.start) {
-    selector['lastLogin.timestamp'].$gte = new Date(lastLogin.start);
-  }
-  if (queryString) {
-    assertDocumentDBCompatMode();
-    (selector as any).$text = { $search: queryString };
-  }
-  return selector;
-};
-
-export const configureUsersModule = async (moduleInput: ModuleInput<UserSettingsOptions>) => {
-  const { db, options, migrationRepository } = moduleInput;
-
-  // Migration v3 -> v4
-  convertUserLocale(migrationRepository);
-
+export const configureUsersModule = async ({
+  db,
+  options,
+}: {
+  db: DrizzleDb;
+  options?: UserSettingsOptions;
+}) => {
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
-  const Users = await UsersCollection(db);
-  const webAuthn = await configureUsersWebAuthnModule(moduleInput);
+  const webAuthn = await configureUsersWebAuthnModule({ db });
+
+  // Build filter conditions from query params
+  const buildConditions = async (query: UserQuery): Promise<SQL[]> => {
+    const conditions: SQL[] = [];
+
+    if (!query.includeDeleted) {
+      conditions.push(isNull(users.deleted));
+    }
+
+    if (!query.includeGuests) {
+      conditions.push(eq(users.guest, false));
+    }
+
+    if (query.userIds?.length) {
+      conditions.push(inArray(users._id, query.userIds));
+    }
+
+    if (query.username) {
+      // Case-insensitive username search
+      conditions.push(sql`lower(${users.username}) = lower(${query.username.trim()})`);
+    }
+
+    if (query.emailVerified === true) {
+      // Check if any email is verified in the JSON array
+      conditions.push(sql`EXISTS (
+        SELECT 1 FROM json_each(${users.emails})
+        WHERE json_extract(value, '$.verified') = 1
+      )`);
+    }
+
+    if (query.emailVerified === false) {
+      // All emails are unverified
+      conditions.push(sql`NOT EXISTS (
+        SELECT 1 FROM json_each(${users.emails})
+        WHERE json_extract(value, '$.verified') = 1
+      )`);
+    }
+
+    if (Array.isArray(query.tags) && query.tags.length) {
+      // Check if any of the query tags exist in user's tags array
+      conditions.push(sql`EXISTS (
+        SELECT 1 FROM json_each(${users.tags})
+        WHERE value IN (${sql.join(
+          query.tags.map((t) => sql`${t}`),
+          sql`,`,
+        )})
+      )`);
+    }
+
+    if (query.web3Verified === true) {
+      conditions.push(sql`EXISTS (
+        SELECT 1 FROM json_each(json_extract(${users.services}, '$.web3'))
+        WHERE json_extract(value, '$.verified') = 1
+      )`);
+    }
+
+    if (query.lastLogin?.start) {
+      conditions.push(
+        sql`json_extract(${users.lastLogin}, '$.timestamp') >= ${new Date(query.lastLogin.start).getTime()}`,
+      );
+    }
+
+    if (query.lastLogin?.end) {
+      conditions.push(
+        sql`json_extract(${users.lastLogin}, '$.timestamp') <= ${new Date(query.lastLogin.end).getTime()}`,
+      );
+    }
+
+    if (query.queryString) {
+      const matchingIds = await searchUsersFTS(db, query.queryString);
+      if (matchingIds.length === 0) {
+        conditions.push(sql`0 = 1`);
+      } else {
+        conditions.push(inArray(users._id, matchingIds));
+      }
+    }
+
+    return conditions;
+  };
+
+  // Build sort expressions from query params
+  const buildOrderBy = (sort?: SortOption[]) => {
+    const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
+    const effectiveSort = sort?.length ? sort : defaultSort;
+    return effectiveSort.map((s) => {
+      if (s.key === 'created') {
+        return s.value === SortDirection.DESC ? desc(users.created) : asc(users.created);
+      }
+      if (s.key === 'username') {
+        return s.value === SortDirection.DESC ? desc(users.username) : asc(users.username);
+      }
+      return s.value === SortDirection.DESC ? desc(users.created) : asc(users.created);
+    });
+  };
+
+  // Helper to find user by ID
+  const findUserById = async (userId: string): Promise<User | null> => {
+    if (!userId) return null;
+    const [row] = await db.select().from(users).where(eq(users._id, userId)).limit(1);
+    return row ? rowToUser(row) : null;
+  };
+
+  // Helper to update user and emit event
+  const updateAndEmit = async (
+    userId: string,
+    updates: Partial<UserRow>,
+    eventType?: string,
+  ): Promise<User | null> => {
+    await db
+      .update(users)
+      .set({ ...updates, updated: new Date() })
+      .where(eq(users._id, userId));
+
+    const user = await findUserById(userId);
+    if (user && eventType) {
+      await emit(eventType, {
+        user: removeConfidentialServiceHashes(user),
+      });
+    }
+    return user;
+  };
 
   return {
     // Queries
     webAuthn,
+
     async count(query: UserQuery): Promise<number> {
-      const userCount = await Users.countDocuments(buildFindSelector(query));
-      return userCount;
+      const conditions = await buildConditions(query);
+      let countQuery = db.select({ count: sql<number>`count(*)` }).from(users);
+      if (conditions.length > 0) {
+        countQuery = countQuery.where(and(...conditions)) as typeof countQuery;
+      }
+      const [{ count }] = await countQuery;
+      return count ?? 0;
     },
 
-    async findUserById(userId: string) {
-      if (!userId) return null;
-      return Users.findOne(generateDbFilterById(userId), {});
-    },
+    findUserById,
 
-    async findUserByUsername(username: string) {
+    async findUserByUsername(username: string): Promise<User | null> {
       if (!username) return null;
-      return Users.findOne({ username: insensitiveTrimmedRegexOperator(username) }, {});
+      const [row] = await db
+        .select()
+        .from(users)
+        .where(sql`lower(${users.username}) = lower(${username.trim()})`)
+        .limit(1);
+      return row ? rowToUser(row) : null;
     },
 
-    async findUserByEmail(email: string) {
+    async findUserByEmail(email: string): Promise<User | null> {
       if (!email) return null;
-      return Users.findOne({ 'emails.address': insensitiveTrimmedRegexOperator(email) }, {});
+      const [row] = await db
+        .select()
+        .from(users)
+        .where(
+          sql`EXISTS (
+          SELECT 1 FROM json_each(${users.emails})
+          WHERE lower(json_extract(value, '$.address')) = lower(${email.trim()})
+        )`,
+        )
+        .limit(1);
+      return row ? rowToUser(row) : null;
     },
 
     async findUnverifiedEmailToken(plainToken: string): Promise<{
@@ -146,125 +297,148 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     } | null> {
       if (!plainToken) return null;
       const token = await sha256(plainToken);
-      const user = await Users.findOne(
-        {
-          'services.email.verificationTokens': {
-            $elemMatch: {
-              token,
-              when: { $gt: userSettings.earliestValidTokenDate(UserAccountAction.VERIFY_EMAIL) },
-            },
-          },
-        },
-        {},
-      );
-      if (!user) return null;
-      const verificationToken = user.services.email.verificationTokens.find((v) => v.token === token);
-      return {
-        userId: user._id,
-        ...verificationToken,
-      };
+      const earliestValid = userSettings.earliestValidTokenDate(UserAccountAction.VERIFY_EMAIL);
+
+      // Find user with matching token
+      const rows = await db.select().from(users).where(sql`EXISTS (
+          SELECT 1 FROM json_each(json_extract(${users.services}, '$.email.verificationTokens'))
+          WHERE json_extract(value, '$.token') = ${token}
+        )`);
+
+      for (const row of rows) {
+        const user = rowToUser(row);
+        const tokens = user.services?.email?.verificationTokens || [];
+        const verificationToken = tokens.find(
+          (v) => v.token === token && new Date(v.when) > earliestValid,
+        );
+        if (verificationToken) {
+          return {
+            userId: user._id,
+            address: verificationToken.address,
+            when: new Date(verificationToken.when),
+          };
+        }
+      }
+      return null;
     },
 
     async verifyEmail(userId: string, address: string): Promise<void> {
-      const updated = await Users.updateOne(
-        {
-          _id: userId,
-          emails: { $elemMatch: { address: insensitiveTrimmedRegexOperator(address), verified: false } },
-        },
-        {
-          $set: {
-            'emails.$.verified': true,
-          },
-          $pull: {
-            'services.email.verificationTokens': {
-              address: insensitiveTrimmedRegexOperator(address),
-            },
-          },
-        },
-      );
+      const user = await findUserById(userId);
+      if (!user) return;
 
-      if (updated.modifiedCount > 0) {
-        await emit('USER_ACCOUNT_ACTION', {
-          action: UserAccountAction.EMAIL_VERIFIED,
-          address,
-          userId,
-        });
+      // Update the email to verified
+      const updatedEmails = user.emails.map((e) => {
+        if (e.address.toLowerCase() === address.toLowerCase()) {
+          return { ...e, verified: true };
+        }
+        return e;
+      });
+
+      // Remove verification tokens for this address
+      const services = user.services || {};
+      if (services.email?.verificationTokens) {
+        services.email.verificationTokens = services.email.verificationTokens.filter(
+          (t) => t.address.toLowerCase() !== address.toLowerCase(),
+        );
       }
+
+      await db
+        .update(users)
+        .set({ emails: updatedEmails, services, updated: new Date() })
+        .where(eq(users._id, userId));
+
+      await emit('USER_ACCOUNT_ACTION', {
+        action: UserAccountAction.EMAIL_VERIFIED,
+        address,
+        userId,
+      });
     },
 
     async findResetToken(plainToken: string): Promise<{
       userId: string;
       address: string;
       when: Date;
+      token: string;
     } | null> {
       const token = await sha256(plainToken);
-      const user = await Users.findOne(
-        {
-          'services.password.reset': {
-            $elemMatch: {
-              token,
-              when: { $gt: userSettings.earliestValidTokenDate(UserAccountAction.RESET_PASSWORD) },
-            },
-          },
-        },
-        {},
-      );
-      if (!user) return null;
-      const resetToken = user.services.password.reset.find((v) => v.token === token);
-      return {
-        userId: user._id,
-        ...resetToken,
-      };
-    },
+      const earliestValid = userSettings.earliestValidTokenDate(UserAccountAction.RESET_PASSWORD);
 
-    async findUserByToken(plainToken: string) {
-      const token = await sha256(plainToken);
+      const rows = await db.select().from(users).where(sql`EXISTS (
+          SELECT 1 FROM json_each(json_extract(${users.services}, '$.password.reset'))
+          WHERE json_extract(value, '$.token') = ${token}
+        )`);
 
-      if (token) {
-        return Users.findOne({
-          'services.token.secret': token,
-        });
+      for (const row of rows) {
+        const user = rowToUser(row);
+        const resets = user.services?.password?.reset || [];
+        const resetToken = resets.find((v) => v.token === token && new Date(v.when) > earliestValid);
+        if (resetToken) {
+          return {
+            userId: user._id,
+            address: resetToken.address,
+            when: new Date(resetToken.when),
+            token: resetToken.token,
+          };
+        }
       }
-
       return null;
     },
 
-    async findUser(query: UserQuery & { sort?: SortOption[] }, findOptions?: mongodb.FindOptions) {
-      const selector = buildFindSelector(query);
-      return Users.findOne(selector, findOptions);
+    async findUserByToken(plainToken: string): Promise<User | null> {
+      const token = await sha256(plainToken);
+      if (!token) return null;
+
+      const [row] = await db
+        .select()
+        .from(users)
+        .where(sql`json_extract(${users.services}, '$.token.secret') = ${token}`)
+        .limit(1);
+
+      return row ? rowToUser(row) : null;
+    },
+
+    async findUser(query: UserQuery & { sort?: SortOption[] }): Promise<User | null> {
+      const conditions = await buildConditions(query);
+      let baseQuery = db.select().from(users);
+      if (conditions.length > 0) {
+        baseQuery = baseQuery.where(and(...conditions)) as typeof baseQuery;
+      }
+      const [row] = await baseQuery.limit(1);
+      return row ? rowToUser(row) : null;
     },
 
     async findUsers({
       limit,
       offset,
+      sort,
       ...query
     }: UserQuery & {
       sort?: SortOption[];
       limit?: number;
       offset?: number;
     }): Promise<User[]> {
-      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
-      const selector = buildFindSelector({ ...query });
+      const conditions = await buildConditions(query);
+      const orderBy = buildOrderBy(sort);
 
-      if (query.queryString) {
-        return Users.find(selector, {
-          skip: offset,
-          limit,
-          projection: { score: { $meta: 'textScore' } },
-          sort: { score: { $meta: 'textScore' } },
-        }).toArray();
+      let baseQuery = db.select().from(users);
+      if (conditions.length > 0) {
+        baseQuery = baseQuery.where(and(...conditions)) as typeof baseQuery;
       }
 
-      return Users.find(selector, {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(query.sort || defaultSort),
-      }).toArray();
+      const results = await baseQuery
+        .orderBy(...orderBy)
+        .limit(limit ?? 1000)
+        .offset(offset ?? 0);
+
+      return results.map(rowToUser);
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {
-      const userCount = await Users.countDocuments({ _id: userId, deleted: null as any }, { limit: 1 });
-      return userCount === 1;
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(users)
+        .where(and(eq(users._id, userId), isNull(users.deleted)));
+      return count === 1;
     },
 
     // Transformations
@@ -291,25 +465,22 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         skipPasswordEnrollment,
       }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
     ): Promise<string> {
-      const {
-        password,
-        email,
-        username,
-        initialPassword,
-        roles,
-        webAuthnPublicKeyCredentials,
-        ...userData
-      } = await userSettings.validateNewUser(rawUserData);
+      const validatedData = await userSettings.validateNewUser(rawUserData);
+      const { password, email, webAuthnPublicKeyCredentials } = validatedData;
+      // Extract User properties from validated data
+      const username = validatedData.username;
+      const initialPassword = validatedData.initialPassword;
+      const roles = validatedData.roles;
 
       const webAuthnService =
         webAuthnPublicKeyCredentials &&
-        (await this.webAuthn.verifyCredentialCreation(username, webAuthnPublicKeyCredentials));
+        (await this.webAuthn.verifyCredentialCreation(username || '', webAuthnPublicKeyCredentials));
 
       if (webAuthnPublicKeyCredentials && !webAuthnService) {
         throw new Error('WebAuthn credential verification failed', { cause: 'WEBAUTHN_INVALID' });
       }
 
-      const services: Record<string, any> = {};
+      const services: UserServices = {};
 
       if (email) {
         if (!(await userSettings.validateEmail(email))) {
@@ -328,26 +499,28 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         services.webAuthn = [webAuthnService];
       }
 
-      const doc: User = {
-        ...userData,
-        _id: userData._id || generateDbObjectId(),
-        roles: roles || [],
-        initialPassword: Boolean(initialPassword),
-        services,
-        guest: Boolean(userData.guest),
-        pushSubscriptions: userData.pushSubscriptions || [],
-        emails: email ? [{ address: email, verified: false }] : [],
-        created: new Date(),
-      };
+      const userId = validatedData._id || generateId();
 
       if (username) {
         if (!(await userSettings.validateUsername(username))) {
           throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
         }
-        doc.username = username;
       }
 
-      const { insertedId: userId } = await Users.insertOne(doc);
+      await db.insert(users).values({
+        _id: userId,
+        username: username || null,
+        roles: roles || [],
+        initialPassword: Boolean(initialPassword),
+        services,
+        guest: Boolean(validatedData.guest),
+        pushSubscriptions: validatedData.pushSubscriptions || [],
+        emails: email ? [{ address: email, verified: false }] : [],
+        profile: validatedData.profile,
+        meta: validatedData.meta,
+        tags: validatedData.tags,
+        created: new Date(),
+      });
 
       try {
         const autoMessagingEnabled = skipMessaging
@@ -367,10 +540,12 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         /* */
       }
 
-      const user = (await Users.findOne({ _id: userId }, {})) as User;
-      await emit('USER_CREATE', {
-        user: removeConfidentialServiceHashes(user),
-      });
+      const user = await findUserById(userId);
+      if (user) {
+        await emit('USER_CREATE', {
+          user: removeConfidentialServiceHashes(user),
+        });
+      }
 
       return userId;
     },
@@ -384,13 +559,9 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async verifyPassword(
-      { bcrypt: bcryptHash, pbkdf2: pbkdf2SaltAndHash }: { bcrypt?: string; pbkdf2?: string },
+      { pbkdf2: pbkdf2SaltAndHash }: { pbkdf2?: string },
       plainPassword: string,
     ): Promise<boolean> {
-      if (bcryptHash) {
-        const password = await sha256(plainPassword);
-        return bcrypt.compare(password, bcryptHash);
-      }
       if (pbkdf2SaltAndHash) {
         const [pbkdf2Salt, pbkdf2Hash] = pbkdf2SaltAndHash.split(':');
         return pbkdf2.compare(plainPassword, pbkdf2Hash, pbkdf2Salt);
@@ -402,90 +573,66 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       if (!(await userSettings.validateEmail(address))) {
         throw new Error(`E-Mail address ${address} is invalid`, { cause: 'EMAIL_INVALID' });
       }
-      await this.updateUser(
-        { _id: userId, 'emails.address': { $not: insensitiveTrimmedRegexOperator(address) } },
-        {
-          $push: {
-            emails: {
-              address: address.trim(),
-              verified: false,
-            },
-          },
-        },
-      );
+      const user = await findUserById(userId);
+      if (!user) return;
+
+      // Check if email already exists
+      const exists = user.emails.some((e) => e.address.toLowerCase() === address.toLowerCase());
+      if (exists) return;
+
+      const updatedEmails = [...user.emails, { address: address.trim(), verified: false }];
+      await db
+        .update(users)
+        .set({ emails: updatedEmails, updated: new Date() })
+        .where(eq(users._id, userId));
     },
 
     async removeEmail(userId: string, address: string): Promise<void> {
-      await this.updateUser(
-        { _id: userId, 'emails.address': insensitiveTrimmedRegexOperator(address) },
-        {
-          $pull: {
-            emails: { address: insensitiveTrimmedRegexOperator(address) },
-          },
-        },
-      );
+      const user = await findUserById(userId);
+      if (!user) return;
+
+      const updatedEmails = user.emails.filter((e) => e.address.toLowerCase() !== address.toLowerCase());
+      await db
+        .update(users)
+        .set({ emails: updatedEmails, updated: new Date() })
+        .where(eq(users._id, userId));
     },
 
     // Web3 Address Management
     async addWeb3Address(userId: string, address: string): Promise<User | null> {
-      const user = await Users.findOne(generateDbFilterById(userId), {});
+      const user = await findUserById(userId);
       if (!user) return null;
 
       const existingEntry = user.services?.web3?.find(
-        (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+        (service) => service.address.toLowerCase() === address.toLowerCase(),
       );
 
       if (existingEntry) return user;
 
-      const nonce = crypto.randomUUID();
-      const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(userId),
-        {
-          $push: {
-            'services.web3': {
-              address,
-              nonce,
-            },
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      const nonce = Math.floor(Math.random() * 1000000).toString();
+      const services = user.services || {};
+      services.web3 = [...(services.web3 || []), { address, nonce }];
 
-      if (!updatedUser) return null;
-      await emit('USER_UPDATE_WEB3_ADDRESS', {
-        action: 'add',
-        address,
-        user: removeConfidentialServiceHashes(updatedUser),
-      });
+      const updatedUser = await updateAndEmit(userId, { services }, 'USER_UPDATE_WEB3_ADDRESS');
       return updatedUser;
     },
 
     async removeWeb3Address(userId: string, address: string): Promise<User | null> {
-      const user = await Users.findOne(generateDbFilterById(userId), {});
+      const user = await findUserById(userId);
       if (!user) return null;
 
       const existingEntry = user.services?.web3?.find(
-        (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+        (service) => service.address.toLowerCase() === address.toLowerCase(),
       );
 
       if (!existingEntry) return null;
 
-      const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(userId),
-        {
-          $pull: {
-            'services.web3': { address: existingEntry.address },
-          },
-        },
-        { returnDocument: 'after' },
+      const services = user.services || {};
+      services.web3 = (services.web3 || []).filter(
+        (s) => s.address.toLowerCase() !== address.toLowerCase(),
       );
 
-      if (!updatedUser) return null;
-      await emit('USER_UPDATE_WEB3_ADDRESS', {
-        action: 'remove',
-        address: existingEntry.address,
-        user: removeConfidentialServiceHashes(updatedUser),
-      });
+      const updatedUser = await updateAndEmit(userId, { services }, 'USER_UPDATE_WEB3_ADDRESS');
       return updatedUser;
     },
 
@@ -495,7 +642,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     ): { address: string; nonce?: string; verified?: boolean } | null {
       return (
         user.services?.web3?.find(
-          (service: { address: string }) => service.address.toLowerCase() === address.toLowerCase(),
+          (service) => service.address.toLowerCase() === address.toLowerCase(),
         ) || null
       );
     },
@@ -504,29 +651,23 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       userId: string,
       webAuthnService: { id: string; publicKey: string; created: Date },
     ): Promise<User | null> {
-      const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(userId),
-        {
-          $push: {
-            'services.webAuthn': webAuthnService,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      return updatedUser;
+      const user = await findUserById(userId);
+      if (!user) return null;
+
+      const services = user.services || {};
+      services.webAuthn = [...(services.webAuthn || []), webAuthnService];
+
+      return updateAndEmit(userId, { services }, undefined);
     },
 
     async removeWebAuthnCredential(userId: string, credentialsId: string): Promise<User | null> {
-      const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(userId),
-        {
-          $pull: {
-            'services.webAuthn': { id: credentialsId },
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      return updatedUser;
+      const user = await findUserById(userId);
+      if (!user) return null;
+
+      const services = user.services || {};
+      services.webAuthn = (services.webAuthn || []).filter((s) => s.id !== credentialsId);
+
+      return updateAndEmit(userId, { services }, undefined);
     },
 
     async createAccessToken(username: string): Promise<{ user: User; token: string } | null> {
@@ -534,15 +675,13 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       const plainToken = crypto.randomUUID();
       // SHA-256 is appropriate for high-entropy tokens (OWASP recommendation)
       const secret = await sha256(plainToken);
-      const updatedUser = await Users.findOneAndUpdate(
-        { username: insensitiveTrimmedRegexOperator(username) },
-        {
-          $set: {
-            'services.token': { secret },
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      const user = await this.findUserByUsername(username);
+      if (!user) return null;
+
+      const services = user.services || {};
+      services.token = { secret };
+
+      const updatedUser = await updateAndEmit(user._id, { services }, undefined);
       if (!updatedUser) return null;
       // Return plain token to caller - this is the only time it's available
       return { user: updatedUser, token: plainToken };
@@ -554,16 +693,13 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
      */
     async setAccessToken(username: string, plainSecret: string): Promise<User | null> {
       const secret = await sha256(plainSecret);
-      const updatedUser = await Users.findOneAndUpdate(
-        { username: insensitiveTrimmedRegexOperator(username) },
-        {
-          $set: {
-            'services.token': { secret },
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      return updatedUser;
+      const user = await this.findUserByUsername(username);
+      if (!user) return null;
+
+      const services = user.services || {};
+      services.token = { secret };
+
+      return updateAndEmit(user._id, { services }, undefined);
     },
 
     async verifyWeb3SignatureAndUpdate(
@@ -574,37 +710,19 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       const isValid = await verifyWeb3Signature(credentials.nonce, signature, credentials.address);
       if (!isValid) return null;
 
-      const web3Services = user.services?.web3?.map(
-        (service: { address: string; nonce?: string; verified?: boolean }) => {
-          if (service.address.toLowerCase() === credentials.address.toLowerCase()) {
-            return {
-              ...service,
-              nonce: undefined,
-              verified: true,
-            };
-          }
-          return service;
-        },
-      );
-
-      if (!web3Services) return null;
-
-      const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(user._id),
-        {
-          $set: {
-            'services.web3': web3Services,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-
-      if (!updatedUser) return null;
-      await emit('USER_UPDATE_WEB3_ADDRESS', {
-        action: 'verify',
-        address: credentials.address,
-        user: removeConfidentialServiceHashes(updatedUser),
+      const services = user.services || {};
+      services.web3 = (services.web3 || []).map((service) => {
+        if (service.address.toLowerCase() === credentials.address.toLowerCase()) {
+          return {
+            ...service,
+            nonce: undefined,
+            verified: true,
+          };
+        }
+        return service;
       });
+
+      const updatedUser = await updateAndEmit(user._id, { services }, 'USER_UPDATE_WEB3_ADDRESS');
       return updatedUser;
     },
 
@@ -616,14 +734,14 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         when: new Date(),
       };
 
-      await Users.updateOne(
-        { _id: userId },
-        {
-          $push: {
-            'services.password.reset': resetToken,
-          },
-        },
-      );
+      const user = await findUserById(userId);
+      if (!user) return;
+
+      const services = user.services || {};
+      if (!services.password) services.password = {};
+      services.password.reset = [...(services.password.reset || []), resetToken];
+
+      await db.update(users).set({ services, updated: new Date() }).where(eq(users._id, userId));
 
       await emit('USER_ACCOUNT_ACTION', {
         action: isEnrollment ? UserAccountAction.ENROLL_ACCOUNT : UserAccountAction.RESET_PASSWORD,
@@ -641,14 +759,17 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         when: new Date(),
       };
 
-      await Users.updateOne(
-        { _id: userId },
-        {
-          $push: {
-            'services.email.verificationTokens': verificationToken,
-          },
-        },
-      );
+      const user = await findUserById(userId);
+      if (!user) return;
+
+      const services = user.services || {};
+      if (!services.email) services.email = {};
+      services.email.verificationTokens = [
+        ...(services.email.verificationTokens || []),
+        verificationToken,
+      ];
+
+      await db.update(users).set({ services, updated: new Date() }).where(eq(users._id, userId));
 
       await emit('USER_ACCOUNT_ACTION', {
         action: UserAccountAction.VERIFY_EMAIL,
@@ -658,87 +779,57 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       });
     },
 
-    addRoles: async (userId: string, roles: string[]) => {
-      const selector = generateDbFilterById(userId);
-      const user = await Users.findOneAndUpdate(
-        selector,
-        {
-          $addToSet: { roles: { $each: roles } },
-        },
-        { returnDocument: 'after' },
-      );
-
+    addRoles: async (userId: string, roles: string[]): Promise<User | null> => {
+      const user = await findUserById(userId);
       if (!user) return null;
 
-      await emit('USER_ADD_ROLES', {
-        user: removeConfidentialServiceHashes(user),
-      });
-
-      return user;
+      const uniqueRoles = [...new Set([...user.roles, ...roles])];
+      const updatedUser = await updateAndEmit(userId, { roles: uniqueRoles }, 'USER_ADD_ROLES');
+      return updatedUser;
     },
 
-    async setUsername(userId: string, username: string) {
+    async setUsername(userId: string, username: string): Promise<User | null> {
       if (!(await userSettings.validateUsername(username))) {
         throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
       }
-      const user = await Users.findOneAndUpdate(
-        { _id: userId },
-        {
-          $set: {
-            username: username.trim(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!user) return null;
-      await emit('USER_UPDATE_USERNAME', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
+      return updateAndEmit(userId, { username: username.trim() }, 'USER_UPDATE_USERNAME');
     },
 
-    async setPassword(userId: string, plainPassword: string) {
+    async setPassword(userId: string, plainPassword: string): Promise<User | null> {
       if (!(await userSettings.validatePassword(plainPassword))) {
         throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
       }
       const password = plainPassword || crypto.randomUUID().split('-').pop();
-      const user = await Users.findOneAndUpdate(
-        { _id: userId },
-        {
-          $set: {
-            initialPassword: false,
-            'services.password': await this.hashPassword(
-              password || crypto.randomUUID().split('-').pop(),
-            ),
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      const user = await findUserById(userId);
       if (!user) return null;
-      await emit('USER_UPDATE_PASSWORD', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
+
+      const services = user.services || {};
+      services.password = {
+        ...services.password,
+        ...(await this.hashPassword(password || crypto.randomUUID().split('-').pop())),
+      };
+
+      return updateAndEmit(userId, { services, initialPassword: false }, 'USER_UPDATE_PASSWORD');
     },
 
-    async resetPassword(token: string, newPassword: string) {
+    async resetPassword(token: string, newPassword: string): Promise<User | null> {
       const resetToken = await this.findResetToken(token);
       if (!resetToken) return null;
+
       const updatedUser = await this.setPassword(resetToken.userId, newPassword);
       if (updatedUser) {
-        // Now invalidate the reset token
-        await Users.updateOne(
-          {
-            _id: resetToken.userId,
-          },
-          {
-            $pull: {
-              'services.password.reset': {
-                token: resetToken.token,
-              },
-            },
-          },
-        );
+        // Invalidate the reset token
+        const user = await findUserById(resetToken.userId);
+        if (user) {
+          const services = user.services || {};
+          if (services.password?.reset) {
+            services.password.reset = services.password.reset.filter(
+              (r) => r.token !== resetToken.token,
+            );
+          }
+          await db.update(users).set({ services, updated: new Date() }).where(eq(users._id, user._id));
+        }
+
         await emit('USER_ACCOUNT_ACTION', {
           action: UserAccountAction.PASSWORD_RESETTED,
           userId: updatedUser._id,
@@ -749,257 +840,157 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return updatedUser;
     },
 
-    updateAvatar: async (_id: string, fileId: string) => {
-      const userFilter = generateDbFilterById(_id);
-      const modifier = {
-        $set: {
-          avatarId: fileId,
-          updated: new Date(),
-        },
+    updateAvatar: async (_id: string, fileId: string): Promise<User | null> => {
+      return updateAndEmit(_id, { avatarId: fileId }, 'USER_UPDATE_AVATAR');
+    },
+
+    updateGuest: async (user: User, guest: boolean): Promise<User | null> => {
+      return updateAndEmit(user._id, { guest }, 'USER_UPDATE_GUEST');
+    },
+
+    updateHeartbeat: async (userId: string, lastLogin: UserLastLogin): Promise<User | null> => {
+      const updatedLastLogin = {
+        timestamp: new Date(),
+        ...lastLogin,
       };
+      return updateAndEmit(userId, { lastLogin: updatedLastLogin }, 'USER_UPDATE_HEARTBEAT');
+    },
 
-      const user = await Users.findOneAndUpdate(userFilter, modifier, {
-        returnDocument: 'after',
-      });
-
+    markDeleted: async (userId: string): Promise<User | null> => {
+      // Note: Sessions cleanup would need to be handled by the session module
+      const user = await findUserById(userId);
       if (!user) return null;
-      await emit('USER_UPDATE_AVATAR', {
-        user: removeConfidentialServiceHashes(user),
-      });
+
+      await db
+        .update(users)
+        .set({
+          username: `deleted-${Date.now()}`,
+          deleted: new Date(),
+          emails: [],
+          roles: [],
+          services: {},
+          pushSubscriptions: [],
+          initialPassword: false,
+          profile: null,
+          lastBillingAddress: null,
+          lastContact: null,
+          lastLogin: null,
+          avatarId: null,
+          updated: new Date(),
+        })
+        .where(eq(users._id, userId));
+
+      const deletedUser = await findUserById(userId);
+      if (deletedUser) {
+        await emit('USER_REMOVE', { user: deletedUser });
+      }
+      return deletedUser;
+    },
+
+    deletePermanently: async ({ userId }: { userId: string }): Promise<User | null> => {
+      const user = await findUserById(userId);
+      if (!user) return null;
+      await db.delete(users).where(eq(users._id, userId));
       return user;
     },
 
-    updateGuest: async (user: User, guest: boolean) => {
-      const updatedUser = await Users.findOneAndUpdate(
-        generateDbFilterById(user._id),
-        {
-          $set: { guest },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!updatedUser) return null;
-      await emit('USER_UPDATE_GUEST', {
-        user: removeConfidentialServiceHashes({
-          ...updatedUser,
-          guest,
-        }),
-      });
-      return updatedUser;
-    },
-
-    updateHeartbeat: async (userId: string, lastLogin: UserLastLogin) => {
-      const user = await Users.findOneAndUpdate(
-        generateDbFilterById(userId),
-        {
-          $set: {
-            lastLogin: {
-              timestamp: new Date(),
-              ...lastLogin,
-            },
-          },
-        },
-        {
-          returnDocument: 'after',
-        },
-      );
-      if (!user) return null;
-      await emit('USER_UPDATE_HEARTBEAT', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
-    },
-
-    markDeleted: async (userId: string) => {
-      await db.collection('sessions').deleteMany({
-        session: insensitiveTrimmedRegexOperator(`"user":"${userId}"`),
-      });
-      const user = await Users.findOneAndUpdate(
-        { _id: userId },
-        {
-          $set: {
-            username: `deleted-${Date.now()}`,
-            deleted: new Date(),
-            emails: [],
-            roles: [],
-            services: {},
-            pushSubscriptions: [],
-            initialPassword: false,
-          },
-          $unset: {
-            profile: 1,
-            lastBillingAddress: 1,
-            lastContact: 1,
-            lastLogin: 1,
-            avatarId: 1,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!user) return null;
-
-      await emit('USER_REMOVE', {
-        user,
-      });
-      return user;
-    },
-
-    deletePermanently: async ({ userId }: { userId: string }) => {
-      return Users.findOneAndDelete({ _id: userId });
-    },
-
-    updateProfile: async (userId: string, updatedData: { profile?: UserProfile; meta?: any }) => {
-      const userFilter = generateDbFilterById(userId);
+    updateProfile: async (
+      userId: string,
+      updatedData: { profile?: UserProfile; meta?: any },
+    ): Promise<User | null> => {
       const { meta, profile } = updatedData;
 
       if (!meta && !profile) {
-        return Users.findOne(userFilter, {});
+        return findUserById(userId);
       }
 
-      const modifier = { $set: {} };
+      const user = await findUserById(userId);
+      if (!user) return null;
+
+      const updates: Partial<UserRow> = {};
 
       if (profile) {
-        modifier.$set = Object.keys(profile).reduce((acc, profileKey) => {
-          return {
-            ...acc,
-            [`profile.${profileKey}`]: profile[profileKey],
-          };
-        }, {});
+        updates.profile = { ...user.profile, ...profile };
       }
 
       if (meta) {
-        // eslint-disable-next-line
-        // @ts-ignore
-        modifier.$set.meta = meta;
+        updates.meta = meta;
       }
 
-      const user = await Users.findOneAndUpdate(userFilter, modifier, {
-        returnDocument: 'after',
-      });
-
-      if (!user) return null;
-      await emit('USER_UPDATE_PROFILE', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
+      return updateAndEmit(userId, updates, 'USER_UPDATE_PROFILE');
     },
 
-    updateLastBillingAddress: async (_id: string, lastBillingAddress: Address) => {
-      const userFilter = generateDbFilterById(_id);
-      const user = await Users.findOne(userFilter, {});
+    updateLastBillingAddress: async (_id: string, lastBillingAddress: Address): Promise<User | null> => {
+      const user = await findUserById(_id);
       if (!user) return null;
       if (!lastBillingAddress) return user;
 
-      const modifier = {
-        $set: {
-          lastBillingAddress,
-          updated: new Date(),
-        },
-      };
+      const updates: Partial<UserRow> = { lastBillingAddress };
       const profile = user.profile || {};
       const isGuest = !!user.guest;
 
       if (!profile.displayName || isGuest) {
-        modifier.$set['profile.displayName'] = [
-          lastBillingAddress.firstName,
-          lastBillingAddress.lastName,
-        ]
-          .filter(Boolean)
-          .join(' ');
+        updates.profile = {
+          ...profile,
+          displayName: [lastBillingAddress.firstName, lastBillingAddress.lastName]
+            .filter(Boolean)
+            .join(' '),
+        };
       }
 
-      const updatedUser = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
-        returnDocument: 'after',
-      });
-
-      if (!updatedUser) return null;
-      await emit('USER_UPDATE_BILLING_ADDRESS', {
-        user: removeConfidentialServiceHashes(updatedUser),
-      });
-      return updatedUser;
+      return updateAndEmit(_id, updates, 'USER_UPDATE_BILLING_ADDRESS');
     },
 
-    updateLastContact: async (_id: string, lastContact: Contact) => {
-      const userFilter = generateDbFilterById(_id);
-      const user = await Users.findOne(userFilter, {});
+    updateLastContact: async (_id: string, lastContact: Contact): Promise<User | null> => {
+      const user = await findUserById(_id);
       if (!user) return null;
+
       const profile = user.profile || {};
       const isGuest = !!user.guest;
 
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          lastContact,
-        },
-      };
+      const updates: Partial<UserRow> = { lastContact };
 
       if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
-        // Backport the contact phone number to the user profile
-        modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
+        updates.profile = {
+          ...profile,
+          phoneMobile: lastContact.telNumber,
+        };
       }
 
-      const updatedUser = await Users.findOneAndUpdate(userFilter, modifier, {
-        returnDocument: 'after',
-      });
-
-      if (!updatedUser) return null;
-      await emit('USER_UPDATE_LAST_CONTACT', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return updatedUser;
+      return updateAndEmit(_id, updates, 'USER_UPDATE_LAST_CONTACT');
     },
 
-    updateRoles: async (_id: string, roles: string[]) => {
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          roles,
-        },
-      };
-
-      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
-        returnDocument: 'after',
-      });
-      if (!user) return null;
-      await emit('USER_UPDATE_ROLE', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
+    updateRoles: async (_id: string, roles: string[]): Promise<User | null> => {
+      return updateAndEmit(_id, { roles }, 'USER_UPDATE_ROLE');
     },
 
-    updateTags: async (_id: string, tags: string[]) => {
-      const user = await Users.findOneAndUpdate(
-        generateDbFilterById(_id),
-        {
-          $set: {
-            updated: new Date(),
-            tags,
-          },
-        },
-        {
-          returnDocument: 'after',
-        },
-      );
-      if (!user) return null;
-      await emit('USER_UPDATE_TAGS', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
+    updateTags: async (_id: string, tags: string[]): Promise<User | null> => {
+      return updateAndEmit(_id, { tags }, 'USER_UPDATE_TAGS');
     },
 
-    updateUser: async (
-      selector: mongodb.Filter<User>,
-      modifier: mongodb.UpdateFilter<User>,
-      updateOptions?: mongodb.FindOneAndUpdateOptions,
-    ) => {
-      const user = await Users.findOneAndUpdate(selector, modifier, {
-        ...updateOptions,
-        returnDocument: 'after',
-      });
+    updateUser: async (userId: string, updates: Partial<User>): Promise<User | null> => {
+      const user = await findUserById(userId);
       if (!user) return null;
-      await emit('USER_UPDATE', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
+
+      const rowUpdates: Partial<UserRow> = {};
+      if (updates.emails !== undefined) rowUpdates.emails = updates.emails;
+      if (updates.roles !== undefined) rowUpdates.roles = updates.roles;
+      if (updates.tags !== undefined) rowUpdates.tags = updates.tags;
+      if (updates.profile !== undefined) rowUpdates.profile = updates.profile;
+      if (updates.meta !== undefined) rowUpdates.meta = updates.meta;
+      if (updates.services !== undefined) rowUpdates.services = updates.services;
+      if (updates.guest !== undefined) rowUpdates.guest = updates.guest;
+      if (updates.avatarId !== undefined) rowUpdates.avatarId = updates.avatarId;
+      if (updates.username !== undefined) rowUpdates.username = updates.username;
+      if (updates.initialPassword !== undefined) rowUpdates.initialPassword = updates.initialPassword;
+      if (updates.lastLogin !== undefined) rowUpdates.lastLogin = updates.lastLogin;
+      if (updates.lastBillingAddress !== undefined)
+        rowUpdates.lastBillingAddress = updates.lastBillingAddress;
+      if (updates.lastContact !== undefined) rowUpdates.lastContact = updates.lastContact;
+      if (updates.pushSubscriptions !== undefined)
+        rowUpdates.pushSubscriptions = updates.pushSubscriptions;
+
+      return updateAndEmit(userId, rowUpdates, 'USER_UPDATE');
     },
 
     addPushSubscription: async (
@@ -1010,47 +1001,71 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         unsubscribeFromOtherUsers: boolean;
       },
     ): Promise<void> => {
-      const updateResult = await Users.updateOne(
-        { _id: userId, 'pushSubscriptions.keys.p256dh': { $ne: subscription?.keys?.p256dh } },
+      const user = await findUserById(userId);
+      if (!user) return;
+
+      // Check if subscription already exists
+      const exists = user.pushSubscriptions.some((s) => s.keys?.p256dh === subscription?.keys?.p256dh);
+      if (exists) return;
+
+      const updatedSubscriptions = [
+        ...user.pushSubscriptions,
         {
-          $push: {
-            pushSubscriptions: {
-              userAgent: subscriptionOptions?.userAgent,
-              ...subscription,
-            },
-          },
+          userAgent: subscriptionOptions?.userAgent,
+          ...subscription,
         },
-        {},
-      );
-      if (updateResult.modifiedCount === 1 && subscriptionOptions?.unsubscribeFromOtherUsers) {
-        await Users.updateMany(
-          { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256dh },
-          {
-            $pull: {
-              pushSubscriptions: { 'keys.p256dh': subscription?.keys?.p256dh },
-            },
-          } as mongodb.UpdateFilter<User>,
-        );
+      ];
+
+      await db
+        .update(users)
+        .set({ pushSubscriptions: updatedSubscriptions, updated: new Date() })
+        .where(eq(users._id, userId));
+
+      // Unsubscribe from other users if requested
+      if (subscriptionOptions?.unsubscribeFromOtherUsers) {
+        const otherUsers = await db.select().from(users).where(sql`${users._id} != ${userId} AND EXISTS (
+            SELECT 1 FROM json_each(${users.pushSubscriptions})
+            WHERE json_extract(value, '$.keys.p256dh') = ${subscription?.keys?.p256dh}
+          )`);
+
+        for (const otherUser of otherUsers) {
+          const filtered = (otherUser.pushSubscriptions || []).filter(
+            (s) => s.keys?.p256dh !== subscription?.keys?.p256dh,
+          );
+          await db
+            .update(users)
+            .set({ pushSubscriptions: filtered, updated: new Date() })
+            .where(eq(users._id, otherUser._id));
+        }
       }
     },
 
     removePushSubscription: async (userId: string, p256dh: string): Promise<void> => {
-      await Users.updateOne(
-        { _id: userId },
-        {
-          $pull: {
-            pushSubscriptions: { 'keys.p256dh': p256dh },
-          },
-        } as mongodb.UpdateFilter<User>,
-        {},
-      );
+      const user = await findUserById(userId);
+      if (!user) return;
+
+      const filtered = user.pushSubscriptions.filter((s) => s.keys?.p256dh !== p256dh);
+      await db
+        .update(users)
+        .set({ pushSubscriptions: filtered, updated: new Date() })
+        .where(eq(users._id, userId));
     },
+
     existingTags: async (): Promise<string[]> => {
-      const tags = (await Users.distinct('tags', {
-        tags: { $exists: true },
-        deleted: null as any,
-      })) as string[];
-      return tags.filter(Boolean).toSorted();
+      const rows = await db
+        .select({ tags: users.tags })
+        .from(users)
+        .where(and(sql`${users.tags} IS NOT NULL`, isNull(users.deleted)));
+
+      const allTags = new Set<string>();
+      for (const row of rows) {
+        if (Array.isArray(row.tags)) {
+          for (const tag of row.tags) {
+            if (tag) allTags.add(tag);
+          }
+        }
+      }
+      return [...allTags].sort();
     },
   };
 };

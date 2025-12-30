@@ -5,16 +5,20 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  getDrizzleDb,
 } from './helpers.js';
+import { users } from '@unchainedshop/core-users';
+import { eq } from 'drizzle-orm';
 import { USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let db;
+let drizzleDb;
 
 test.describe('Web3 Authentication', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
   });
@@ -289,16 +293,18 @@ test.describe('Web3 Authentication', () => {
         },
       });
 
-      const Users = db.collection('users');
-
-      await Users.updateOne(
-        { _id: 'user', 'services.web3.address': address },
-        {
-          $set: {
-            'services.web3.$.nonce': nonce,
-          },
-        },
+      // Get current user and update the web3 nonce for the specific address
+      const [currentUser] = await drizzleDb.select().from(users).where(eq(users._id, 'user')).limit(1);
+      const updatedWeb3 = currentUser.services.web3.map((entry) =>
+        entry.address === address ? { ...entry, nonce } : entry,
       );
+      await drizzleDb
+        .update(users)
+        .set({
+          services: { ...currentUser.services, web3: updatedWeb3 },
+          updated: new Date(),
+        })
+        .where(eq(users._id, 'user'));
 
       const { data } = await graphqlFetchAsUser({
         query: /* GraphQL */ `

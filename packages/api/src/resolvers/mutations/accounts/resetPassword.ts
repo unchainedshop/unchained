@@ -12,10 +12,10 @@ export default async function resetPassword(
   log('mutation resetPassword', { userId });
 
   try {
-    let user = await modules.users.resetPassword(params.token, params.newPassword);
+    const user = await modules.users.resetPassword(params.token, params.newPassword);
     if (!user) throw new InvalidResetTokenError({});
 
-    user = await context.modules.users.updateHeartbeat(user._id, {
+    const updatedUser = await context.modules.users.updateHeartbeat(user._id, {
       remoteAddress: context.remoteAddress,
       remotePort: context.remotePort,
       userAgent: context.getHeader('user-agent'),
@@ -23,13 +23,16 @@ export default async function resetPassword(
       countryCode: context.countryCode,
     });
 
-    if (context.userId) {
-      await context.services.users.migrateUserData(context.userId, user._id);
+    if (context.userId && updatedUser) {
+      await context.services.users.migrateUserData(context.userId, updatedUser._id);
     }
 
-    await context.services.orders.nextUserCart({ user, countryCode: context.countryCode });
+    await context.services.orders.nextUserCart({
+      user: updatedUser || user,
+      countryCode: context.countryCode,
+    });
 
-    return context.login(user);
+    return context.login(updatedUser || user);
   } catch (e) {
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({});
     else throw e;

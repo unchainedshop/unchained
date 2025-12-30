@@ -57,6 +57,7 @@ import { Shop } from './shop-types.ts';
 import { SimpleProduct } from './product/product-simple-types.ts';
 import { TokenizedProduct } from './product/product-tokenized-types.ts';
 import { User } from './user-types.ts';
+import { UserProfile } from './user-profile-types.ts';
 import { WebAuthnCredentials } from './webauthn-credentials-types.ts';
 import { WarehousingProvider } from './warehousing-provider-types.ts';
 import { Work } from './work-types.ts';
@@ -134,6 +135,7 @@ const types = {
   TokenizedProduct,
   Token,
   User,
+  UserProfile,
   WebAuthnCredentials,
   WarehousingProvider,
   Work,

@@ -5,23 +5,22 @@ import {
   disconnect,
   getDrizzleDb,
 } from './helpers.js';
-import { User, ADMIN_TOKEN } from './seeds/users.js';
+import { User, ADMIN_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
 import { and, desc, sql } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let db;
 let graphqlFetch;
 let adminGraphqlFetch;
-let Users;
+let drizzleDb;
 
 test.describe('Auth for anonymous users', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    Users = db.collection('users');
+    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -147,20 +146,17 @@ test.describe('Auth for anonymous users', () => {
 
   test.describe('Mutation.forgotPassword', () => {
     test.before(async () => {
-      const user = await Users.findOne({ _id: 'userthatforgetspasswords' });
-      if (!user) {
-        await Users.insertOne({
-          ...User,
-          _id: 'userthatforgetspasswords',
-          username: `${User.username}${Math.random()}`,
-          emails: [
-            {
-              address: 'userthatforgetspasswords@unchained.local',
-              verified: true,
-            },
-          ],
-        });
-      }
+      await findOrInsertUserToDrizzle(drizzleDb, {
+        ...User,
+        _id: 'userthatforgetspasswords',
+        username: `userthatforgetspasswords-${Date.now()}`,
+        emails: [
+          {
+            address: 'userthatforgetspasswords@unchained.local',
+            verified: true,
+          },
+        ],
+      });
     });
 
     test('create a reset token', async () => {
@@ -181,29 +177,17 @@ test.describe('Auth for anonymous users', () => {
 
   test.describe('Mutation.resetPassword', () => {
     test.before(async () => {
-      const userCopy = {
+      await findOrInsertUserToDrizzle(drizzleDb, {
         ...User,
-        username: `${User.username}${Math.random()}`,
-      };
-      delete userCopy._id;
-      await Users.findOneAndUpdate(
-        { _id: 'userthatforgetspasswords' },
-        {
-          $setOnInsert: {
-            ...userCopy,
-            emails: [
-              {
-                address: 'userthatforgetspasswords@unchained.local',
-                verified: true,
-              },
-            ],
+        _id: 'userthatforgetspasswords',
+        username: `userthatforgetspasswords-${Date.now()}`,
+        emails: [
+          {
+            address: 'userthatforgetspasswords@unchained.local',
+            verified: true,
           },
-        },
-        {
-          returnDocument: 'after',
-          upsert: true,
-        },
-      );
+        ],
+      });
     });
 
     test('create a reset token', async () => {

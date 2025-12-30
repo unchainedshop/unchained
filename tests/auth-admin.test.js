@@ -7,24 +7,23 @@ import {
 } from './helpers.js';
 import { workQueue } from '@unchainedshop/core-worker';
 import { eq, and, sql } from 'drizzle-orm';
-import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
+import { Admin, ADMIN_TOKEN, User, USER_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let db;
+let drizzleDb;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
-let Users;
 
 test.describe('Auth for admin users', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    Users = db.collection('users');
   });
 
   test.after(async () => {
@@ -33,7 +32,7 @@ test.describe('Auth for admin users', () => {
 
   test.describe('Query.users', () => {
     test.before(async () => {
-      await Users.findOrInsertOne({
+      await findOrInsertUserToDrizzle(drizzleDb, {
         ...User,
         _id: 'guest2',
         username: 'guest2',
@@ -47,7 +46,7 @@ test.describe('Auth for admin users', () => {
       });
     });
 
-    test('returns the 2 default users', async () => {
+    test('returns the 3 default users', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
@@ -61,9 +60,10 @@ test.describe('Auth for admin users', () => {
       assert.deepStrictEqual(users, [
         { _id: 'admin', name: 'admin' },
         { _id: 'user', name: 'user' },
+        { _id: 'user-unverified', name: 'user-unverified' },
       ]);
     });
-    test('returns 2 additional guest when using includeGuests', async () => {
+    test('returns 2 additional guests when using includeGuests', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
@@ -78,6 +78,7 @@ test.describe('Auth for admin users', () => {
         { _id: 'admin', name: 'admin' },
         { _id: 'user', name: 'user' },
         { _id: 'guest', name: 'guest' },
+        { _id: 'user-unverified', name: 'user-unverified' },
         { _id: 'guest2', name: 'guest2' },
       ]);
     });
@@ -96,17 +97,17 @@ test.describe('Auth for admin users', () => {
           queryString: 'guest',
         },
       });
-      assert.strictEqual(users.length, 1);
-      assert.deepStrictEqual(users[0], {
-        _id: 'guest',
-        name: 'guest',
-      });
+      assert.strictEqual(users.length, 2);
+      assert.deepStrictEqual(users, [
+        { _id: 'guest', name: 'guest' },
+        { _id: 'guest2', name: 'guest2' },
+      ]);
     });
   });
 
   test.describe('Query.user', () => {
     test.before(async () => {
-      await Users.findOrInsertOne({
+      await findOrInsertUserToDrizzle(drizzleDb, {
         ...User,
         _id: 'guest',
         guest: true,
@@ -140,7 +141,7 @@ test.describe('Auth for admin users', () => {
   });
 
   test.describe('Query.usersCount for admin user', () => {
-    test('returns the 2 default users', async () => {
+    test('returns the 3 default users', async () => {
       const {
         data: { usersCount },
       } = await graphqlFetchAsAdminUser({
@@ -150,9 +151,9 @@ test.describe('Auth for admin users', () => {
           }
         `,
       });
-      assert.strictEqual(usersCount, 2);
+      assert.strictEqual(usersCount, 3);
     });
-    test('returns 3  when using includeGuests', async () => {
+    test('returns 5 when using includeGuests', async () => {
       const {
         data: { usersCount },
       } = await graphqlFetchAsAdminUser({
@@ -162,10 +163,10 @@ test.describe('Auth for admin users', () => {
           }
         `,
       });
-      assert.strictEqual(usersCount, 4);
+      assert.strictEqual(usersCount, 5);
     });
 
-    test('returns 1 for queryString guest', async () => {
+    test('returns 2 for queryString guest', async () => {
       const {
         data: { usersCount },
       } = await graphqlFetchAsAdminUser({
@@ -178,7 +179,7 @@ test.describe('Auth for admin users', () => {
           queryString: 'guest',
         },
       });
-      assert.strictEqual(usersCount, 1);
+      assert.strictEqual(usersCount, 2);
     });
   });
 
@@ -411,7 +412,6 @@ test.describe('Auth for admin users', () => {
         },
       });
 
-      const drizzleDb = getDrizzleDb();
       const work = await intervalUntilTimeout(async () => {
         const rows = await drizzleDb
           .select()
@@ -451,7 +451,6 @@ test.describe('Auth for admin users', () => {
         success: true,
       });
 
-      const drizzleDb = getDrizzleDb();
       const work = await intervalUntilTimeout(async () => {
         const rows = await drizzleDb
           .select()

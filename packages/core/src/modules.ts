@@ -79,6 +79,7 @@ import {
   configureUsersModule,
   type UserSettingsOptions,
   type UsersModule,
+  initializeUsersSchema,
 } from '@unchainedshop/core-users';
 import {
   configureWarehousingModule,
@@ -171,6 +172,7 @@ export default async function initModules(
     initializeEventsSchema,
     initializeFiltersSchema,
     initializeWorkQueueSchema,
+    initializeUsersSchema,
   ]);
 
   const assortments = await configureAssortmentsModule({
@@ -228,9 +230,8 @@ export default async function initModules(
     options: options.quotations,
   });
   const users = await configureUsersModule({
-    db,
+    db: drizzleDb,
     options: options.users,
-    migrationRepository,
   });
   const warehousing = await configureWarehousingModule({
     db: drizzleDb,
