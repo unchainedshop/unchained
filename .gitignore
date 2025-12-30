@@ -17,3 +17,4 @@ fly.toml
 .env.local.tests
 .db
 *.db
+/tools/demo-data-cli/dist
