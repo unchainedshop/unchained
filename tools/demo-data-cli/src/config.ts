@@ -1,0 +1,15 @@
+// Configuration defaults and types
+
+export const DEFAULT_CONFIG = {
+  endpoint: 'http://localhost:3000/bulk-import',
+  products: 1000,
+  chunkSize: 500,
+  dryRun: false,
+  verbose: false,
+} as const;
+
+export const SUPPORTED_LOCALES = ['en', 'de', 'fr'] as const;
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
+export const SUPPORTED_CURRENCIES = ['CHF', 'USD'] as const;
+export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
