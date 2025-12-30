@@ -2,7 +2,7 @@
 
 export const DEFAULT_CONFIG = {
   endpoint: 'http://localhost:4010/bulk-import',
-  products: 1000,
+  products: 10000,
   chunkSize: 500,
   dryRun: false,
   verbose: false,
