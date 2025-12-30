@@ -321,17 +321,20 @@ test.describe('Plugins: Datatrans', () => {
       });
     });
     test('checkout with preferred alias', async () => {
-      const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
+      const { data: { emptyCart, addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!) {
-            addCartProduct(productId: $productId) {
+          mutation addAndCheckout($productId: ID!, $orderId: ID!) {
+            emptyCart(orderId: $orderId) {
               _id
             }
-            updateCart(paymentProviderId: "d4d4d4d4d4") {
+            addCartProduct(productId: $productId, orderId: $orderId) {
+              _id
+            }
+            updateCart(orderId: $orderId, paymentProviderId: "d4d4d4d4d4") {
               _id
               status
             }
-            checkoutCart {
+            checkoutCart(orderId: $orderId) {
               _id
               status
             }
@@ -339,6 +342,7 @@ test.describe('Plugins: Datatrans', () => {
         `,
         variables: {
           productId: 'simpleproduct',
+          orderId: 'datatrans-order2',
         },
       });
       assert.ok(addCartProduct);

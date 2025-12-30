@@ -2,29 +2,24 @@ import type { Context } from '../../context.ts';
 import type { SearchConfiguration } from '@unchainedshop/core-filters';
 
 export interface SearchResultData {
-  searchConfiguration: SearchConfiguration & { productSelector: any };
+  searchConfiguration: SearchConfiguration;
   totalProductIds: string[];
   aggregatedTotalProductIds: string[];
   aggregatedFilteredProductIds: string[];
 }
 
 export const ProductSearchResult = {
-  productsCount: async (
-    { searchConfiguration, aggregatedTotalProductIds }: SearchResultData,
-    _: never,
-    context: Context,
-  ) => {
+  productsCount: async ({ aggregatedTotalProductIds }: SearchResultData, _: never, context: Context) => {
     if (aggregatedTotalProductIds?.length < 1) return 0;
 
     const { modules } = context;
     return modules.products.search.countFilteredProducts({
-      productSelector: searchConfiguration.productSelector,
       productIds: aggregatedTotalProductIds,
     });
   },
 
   filteredProductsCount: async (
-    { searchConfiguration, aggregatedFilteredProductIds }: SearchResultData,
+    { aggregatedFilteredProductIds }: SearchResultData,
     _: never,
     context: Context,
   ) => {
@@ -32,7 +27,6 @@ export const ProductSearchResult = {
 
     const { modules } = context;
     return modules.products.search.countFilteredProducts({
-      productSelector: searchConfiguration.productSelector,
       productIds: aggregatedFilteredProductIds,
     });
   },
@@ -49,7 +43,6 @@ export const ProductSearchResult = {
       limit,
       offset,
       productIds: aggregatedFilteredProductIds,
-      productSelector: searchConfiguration.productSelector,
       sort: searchConfiguration.sortStage,
     });
   },
@@ -57,7 +50,6 @@ export const ProductSearchResult = {
   async filters({ searchConfiguration, totalProductIds }: SearchResultData, _: never, context: Context) {
     const { modules, services } = context;
     const relevantProductIds = await modules.products.findProductIds({
-      productSelector: searchConfiguration.productSelector,
       productIds: totalProductIds,
       includeDrafts: searchConfiguration.searchQuery?.includeInactive,
     });

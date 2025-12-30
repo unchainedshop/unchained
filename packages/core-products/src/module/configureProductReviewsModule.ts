@@ -1,18 +1,31 @@
-import { assertDocumentDBCompatMode, type ModuleInput } from '@unchainedshop/mongodb';
+/**
+ * Product Reviews Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbFilterById,
-  buildSortOptions,
-  mongodb,
-  generateDbObjectId,
-} from '@unchainedshop/mongodb';
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
-  type ProductReview,
-  ProductReviewsCollection,
+  eq,
+  and,
+  inArray,
+  isNull,
+  gte,
+  lte,
+  desc,
+  asc,
+  sql,
+  generateId,
+  type DrizzleDb,
+  type SQL,
+} from '@unchainedshop/store';
+import {
+  productReviews,
   ProductReviewVoteType,
+  searchProductReviewsFTS,
+  type ProductReviewRow,
   type ProductVote,
-} from '../db/ProductReviewsCollection.ts';
+  type ProductReviewVoteTypeType,
+} from '../db/index.ts';
 
 export interface ProductReviewQuery {
   productId?: string;
@@ -30,41 +43,12 @@ const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REMOVE_REVIEW_VOTE',
 ];
 
-const buildFindSelector = ({
-  productId,
-  authorId,
-  queryString,
-  created,
-  updated,
-}: ProductReviewQuery = {}) => {
-  const selector: mongodb.Filter<ProductReview> = {
-    ...(productId ? { productId } : {}),
-    ...(authorId ? { authorId } : {}),
-    deleted: null,
-  };
-
-  if (queryString) {
-    assertDocumentDBCompatMode();
-    (selector as any).$text = { $search: queryString };
-  }
-
-  if (created) {
-    selector.created = created?.end
-      ? { $gte: created?.start || new Date(0), $lte: created.end }
-      : { $gte: created?.start || new Date(0) };
-  }
-  if (updated) {
-    selector.updated = updated?.end
-      ? { $gte: updated?.start || new Date(0), $lte: updated.end }
-      : { $gte: updated?.start || new Date(0) };
-  }
-
-  return selector;
-};
+export type ProductReview = ProductReviewRow;
+export { ProductReviewVoteType, type ProductVote, type ProductReviewVoteTypeType };
 
 const userIdsThatVoted = (
   productReview: ProductReview,
-  { type = ProductReviewVoteType.UPVOTE }: { type: ProductReviewVoteType },
+  { type = ProductReviewVoteType.UPVOTE }: { type: ProductReviewVoteTypeType },
 ): string[] => {
   return (productReview.votes || [])
     .filter(({ type: currentType }) => type === currentType)
@@ -72,23 +56,94 @@ const userIdsThatVoted = (
     .filter(Boolean) as string[];
 };
 
-export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
+export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(PRODUCT_REVIEW_EVENTS);
 
-  const { ProductReviews } = await ProductReviewsCollection(db);
+  const buildConditions = async (query: ProductReviewQuery): Promise<SQL[]> => {
+    const conditions: SQL[] = [isNull(productReviews.deleted)];
 
-  const removeVote = async (selector: mongodb.Filter<ProductReview>, { userId, type }: ProductVote) => {
-    await ProductReviews.updateOne(selector, {
-      $pull: {
-        votes: { userId, type },
-      },
+    if (query.productId) {
+      conditions.push(eq(productReviews.productId, query.productId));
+    }
+    if (query.authorId) {
+      conditions.push(eq(productReviews.authorId, query.authorId));
+    }
+    if (query.queryString) {
+      const matchingIds = await searchProductReviewsFTS(db, query.queryString);
+      if (matchingIds.length === 0) {
+        conditions.push(sql`0 = 1`); // No matches
+      } else {
+        conditions.push(inArray(productReviews._id, matchingIds));
+      }
+    }
+    if (query.created) {
+      if (query.created.start) {
+        conditions.push(gte(productReviews.created, query.created.start));
+      }
+      if (query.created.end) {
+        conditions.push(lte(productReviews.created, query.created.end));
+      }
+    }
+    if (query.updated) {
+      if (query.updated.start) {
+        conditions.push(gte(productReviews.updated, query.updated.start));
+      }
+      if (query.updated.end) {
+        conditions.push(lte(productReviews.updated, query.updated.end));
+      }
+    }
+
+    return conditions;
+  };
+
+  const buildSortOrder = (sort?: SortOption[]) => {
+    if (!sort?.length) {
+      return [desc(productReviews.created)];
+    }
+
+    return sort.map(({ key, value }) => {
+      const column = productReviews[key as keyof typeof productReviews.$inferSelect];
+      if (!column) return desc(productReviews.created);
+      return value === SortDirection.ASC ? asc(column as any) : desc(column as any);
     });
+  };
+
+  const removeVote = async (
+    reviewId: string,
+    { userId, type }: { userId?: string; type: ProductReviewVoteTypeType },
+  ) => {
+    const [review] = await db
+      .select()
+      .from(productReviews)
+      .where(and(eq(productReviews._id, reviewId), isNull(productReviews.deleted)))
+      .limit(1);
+
+    if (!review) return;
+
+    const updatedVotes = (review.votes || []).filter(
+      (vote) => !(vote.userId === userId && vote.type === type),
+    );
+
+    await db
+      .update(productReviews)
+      .set({ votes: updatedVotes, updated: new Date() })
+      .where(eq(productReviews._id, reviewId));
   };
 
   return {
     // Queries
-    findProductReview: async ({ productReviewId }: { productReviewId: string }) =>
-      ProductReviews.findOne(generateDbFilterById(productReviewId), {}),
+    findProductReview: async ({
+      productReviewId,
+    }: {
+      productReviewId: string;
+    }): Promise<ProductReview | null> => {
+      const [result] = await db
+        .select()
+        .from(productReviews)
+        .where(eq(productReviews._id, productReviewId))
+        .limit(1);
+      return result || null;
+    },
 
     findProductReviews: async ({
       offset,
@@ -100,124 +155,199 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
       offset?: number;
       sort?: SortOption[];
     }): Promise<ProductReview[]> => {
-      const reviewsList = ProductReviews.find(buildFindSelector(query), {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(
-          sort || ([{ key: 'created', value: SortDirection.DESC }] as SortOption[]),
-        ),
-      });
+      const conditions = await buildConditions(query);
+      const sortOrder = buildSortOrder(sort);
 
-      return reviewsList.toArray();
+      let dbQuery = db
+        .select()
+        .from(productReviews)
+        .where(and(...conditions));
+
+      if (sortOrder.length > 0) {
+        dbQuery = dbQuery.orderBy(...sortOrder) as typeof dbQuery;
+      }
+      if (offset !== undefined) {
+        dbQuery = dbQuery.offset(offset) as typeof dbQuery;
+      }
+      if (limit !== undefined) {
+        dbQuery = dbQuery.limit(limit) as typeof dbQuery;
+      }
+
+      return dbQuery;
     },
 
     count: async (query: ProductReviewQuery): Promise<number> => {
-      return ProductReviews.countDocuments(buildFindSelector(query));
+      const conditions = await buildConditions(query);
+      const [result] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(productReviews)
+        .where(and(...conditions));
+      return result?.count || 0;
     },
 
     reviewExists: async ({ productReviewId }: { productReviewId: string }): Promise<boolean> => {
-      const productReviewCount = await ProductReviews.countDocuments(
-        generateDbFilterById(productReviewId, { deleted: null }),
-        { limit: 1 },
-      );
-
-      return !!productReviewCount;
+      const [result] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(productReviews)
+        .where(and(eq(productReviews._id, productReviewId), isNull(productReviews.deleted)))
+        .limit(1);
+      return (result?.count || 0) > 0;
     },
 
     // Mutations
-    create: async (
-      doc: Omit<ProductReview, '_id' | 'created' | 'votes'> &
-        Pick<Partial<ProductReview>, 'created' | '_id'>,
-    ): Promise<ProductReview> => {
-      const { insertedId: productReviewId } = await ProductReviews.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
+    create: async (doc: {
+      productId: string;
+      authorId: string;
+      rating: number;
+      title?: string | null;
+      review?: string | null;
+      meta?: unknown;
+      _id?: string;
+      created?: Date;
+    }): Promise<ProductReview> => {
+      const reviewId = doc._id || generateId();
+      await db.insert(productReviews).values({
+        _id: reviewId,
+        created: doc.created || new Date(),
         votes: [],
         ...doc,
       });
 
-      const productReview = (await ProductReviews.findOne(
-        generateDbFilterById(productReviewId),
-        {},
-      )) as ProductReview;
+      const [inserted] = await db
+        .select()
+        .from(productReviews)
+        .where(eq(productReviews._id, reviewId))
+        .limit(1);
+
+      // Insert into FTS
+      await db.run(
+        sql`INSERT INTO product_reviews_fts(_id, productId, title, review)
+            VALUES (${reviewId}, ${doc.productId}, ${doc.title || ''}, ${doc.review || ''})`,
+      );
 
       await emit('PRODUCT_REVIEW_CREATE', {
-        productReview,
+        productReview: inserted,
       });
 
-      return productReview;
+      return inserted;
     },
 
     delete: async (productReviewId: string): Promise<number> => {
-      const { modifiedCount: deletedCount } = await ProductReviews.updateOne(
-        generateDbFilterById(productReviewId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
-        },
-      );
+      const result = await db
+        .update(productReviews)
+        .set({ deleted: new Date() })
+        .where(eq(productReviews._id, productReviewId));
 
       await emit('PRODUCT_REMOVE_REVIEW', {
         productReviewId,
       });
 
-      return deletedCount;
+      return result.rowsAffected || 0;
     },
 
-    deleteMany: async (selector: mongodb.Filter<ProductReview>): Promise<number> => {
-      const productReviews = await ProductReviews.find(selector, {
-        projection: { _id: 1 },
-      }).toArray();
+    deleteMany: async ({
+      productId,
+      excludedProductIds,
+      authorId,
+    }: {
+      productId?: string;
+      excludedProductIds?: string[];
+      authorId?: string;
+    }): Promise<number> => {
+      const conditions: SQL[] = [];
 
-      const deletionResult = await ProductReviews.deleteMany(selector);
+      if (authorId) {
+        conditions.push(eq(productReviews.authorId, authorId));
+      }
+      if (productId) {
+        conditions.push(eq(productReviews.productId, productId));
+      } else if (excludedProductIds?.length) {
+        conditions.push(sql`${productReviews.productId} NOT IN ${excludedProductIds}`);
+      }
+
+      if (conditions.length === 0) return 0;
+
+      // Get IDs for events and FTS cleanup
+      const toDelete = await db
+        .select({ _id: productReviews._id })
+        .from(productReviews)
+        .where(and(...conditions));
+
+      // Delete from FTS
+      for (const row of toDelete) {
+        await db.run(sql`DELETE FROM product_reviews_fts WHERE _id = ${row._id}`);
+      }
+
+      const result = await db.delete(productReviews).where(and(...conditions));
 
       await Promise.all(
-        productReviews.map(async (assortmentFilter) =>
-          emit('PRODUCT_REMOVE_REVIEW', {
-            assortmentFilterId: assortmentFilter._id,
-          }),
-        ),
-      );
-
-      return deletionResult.deletedCount;
-    },
-
-    deleteByAuthorId: async (authorId: string): Promise<number> => {
-      const productReviews = await ProductReviews.find(
-        { authorId },
-        { projection: { _id: 1 } },
-      ).toArray();
-
-      const deletionResult = await ProductReviews.deleteMany({ authorId });
-
-      await Promise.all(
-        productReviews.map(async (review) =>
+        toDelete.map(async (review) =>
           emit('PRODUCT_REMOVE_REVIEW', {
             productReviewId: review._id,
           }),
         ),
       );
 
-      return deletionResult.deletedCount;
+      return result.rowsAffected || 0;
     },
 
-    update: async (productReviewId: string, doc: Partial<ProductReview>) => {
-      const productReview = await ProductReviews.findOneAndUpdate(
-        generateDbFilterById(productReviewId),
-        {
-          $set: {
-            updated: new Date(),
-            ...doc,
-          },
-        },
-        { returnDocument: 'after' },
+    deleteByAuthorId: async (authorId: string): Promise<number> => {
+      const toDelete = await db
+        .select({ _id: productReviews._id })
+        .from(productReviews)
+        .where(eq(productReviews.authorId, authorId));
+
+      // Delete from FTS
+      for (const row of toDelete) {
+        await db.run(sql`DELETE FROM product_reviews_fts WHERE _id = ${row._id}`);
+      }
+
+      const result = await db.delete(productReviews).where(eq(productReviews.authorId, authorId));
+
+      await Promise.all(
+        toDelete.map(async (review) =>
+          emit('PRODUCT_REMOVE_REVIEW', {
+            productReviewId: review._id,
+          }),
+        ),
       );
 
-      if (!productReview) return null;
-      await emit('PRODUCT_UPDATE_REVIEW', { productReview });
-      return productReview;
+      return result.rowsAffected || 0;
     },
+
+    update: async (
+      productReviewId: string,
+      doc: Partial<ProductReview>,
+    ): Promise<ProductReview | null> => {
+      await db
+        .update(productReviews)
+        .set({
+          ...doc,
+          updated: new Date(),
+        })
+        .where(eq(productReviews._id, productReviewId));
+
+      const [updated] = await db
+        .select()
+        .from(productReviews)
+        .where(eq(productReviews._id, productReviewId))
+        .limit(1);
+
+      if (!updated) return null;
+
+      // Update FTS if title or review changed
+      if (doc.title !== undefined || doc.review !== undefined) {
+        await db.run(sql`DELETE FROM product_reviews_fts WHERE _id = ${productReviewId}`);
+        await db.run(
+          sql`INSERT INTO product_reviews_fts(_id, productId, title, review)
+              VALUES (${productReviewId}, ${updated.productId}, ${updated.title || ''}, ${updated.review || ''})`,
+        );
+      }
+
+      await emit('PRODUCT_UPDATE_REVIEW', { productReview: updated });
+      return updated;
+    },
+
     votes: {
       userIdsThatVoted,
 
@@ -232,50 +362,62 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
         productReview: ProductReview,
         {
           userId,
-          type = ProductReviewVoteType.UPVOTE as ProductReviewVoteType,
+          type = ProductReviewVoteType.UPVOTE as ProductReviewVoteTypeType,
           meta,
-        }: { userId: string; type: ProductReviewVoteType; meta?: Record<string, any> },
-      ) => {
+        }: { userId: string; type: ProductReviewVoteTypeType; meta?: Record<string, any> },
+      ): Promise<ProductReview | null> => {
         if (!userIdsThatVoted(productReview, { type }).includes(userId)) {
-          const selector = generateDbFilterById(productReview._id, {
-            deleted: null,
-          });
-
           if (type === ProductReviewVoteType.UPVOTE) {
             // if this is an upvote, remove the downvote first
-            await removeVote(selector, {
+            await removeVote(productReview._id, {
               userId,
-              type: ProductReviewVoteType.DOWNVOTE as ProductReviewVoteType,
+              type: ProductReviewVoteType.DOWNVOTE as ProductReviewVoteTypeType,
             });
           }
           if (type === ProductReviewVoteType.DOWNVOTE) {
             // if this is a downvote, remove the upvote first
-            await removeVote(selector, {
+            await removeVote(productReview._id, {
               userId,
-              type: ProductReviewVoteType.UPVOTE as ProductReviewVoteType,
+              type: ProductReviewVoteType.UPVOTE as ProductReviewVoteTypeType,
             });
           }
 
-          const updatedProductReview = await ProductReviews.findOneAndUpdate(
-            selector,
-            {
-              $push: {
-                votes: {
-                  timestamp: new Date(),
-                  type,
-                  meta,
-                  userId,
-                },
-              },
-            },
-            { returnDocument: 'after' },
-          );
+          // Get current review to get current votes
+          const [current] = await db
+            .select()
+            .from(productReviews)
+            .where(and(eq(productReviews._id, productReview._id), isNull(productReviews.deleted)))
+            .limit(1);
 
-          if (!updatedProductReview) return null;
+          if (!current) return null;
+
+          const newVote: ProductVote = {
+            timestamp: new Date(),
+            type,
+            meta,
+            userId,
+          };
+
+          await db
+            .update(productReviews)
+            .set({
+              votes: [...(current.votes || []), newVote],
+              updated: new Date(),
+            })
+            .where(eq(productReviews._id, productReview._id));
+
+          const [updated] = await db
+            .select()
+            .from(productReviews)
+            .where(eq(productReviews._id, productReview._id))
+            .limit(1);
+
+          if (!updated) return null;
+
           await emit('PRODUCT_REVIEW_ADD_VOTE', {
-            productReview: updatedProductReview,
+            productReview: updated,
           });
-          return updatedProductReview;
+          return updated;
         }
 
         return null;
@@ -283,17 +425,18 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
 
       removeVote: async (
         productReviewId: string,
-        { userId, type = ProductReviewVoteType.UPVOTE as ProductReviewVoteType }: ProductVote,
-      ) => {
-        const selector = generateDbFilterById(productReviewId, {
-          deleted: null,
-        });
-        await removeVote(selector, {
+        {
           userId,
-          type,
-        });
+          type = ProductReviewVoteType.UPVOTE as ProductReviewVoteTypeType,
+        }: { userId?: string; type: ProductReviewVoteTypeType },
+      ): Promise<ProductReview | null> => {
+        await removeVote(productReviewId, { userId, type });
 
-        const productReview = await ProductReviews.findOne(selector, {});
+        const [review] = await db
+          .select()
+          .from(productReviews)
+          .where(and(eq(productReviews._id, productReviewId), isNull(productReviews.deleted)))
+          .limit(1);
 
         await emit('PRODUCT_REMOVE_REVIEW_VOTE', {
           productReviewId,
@@ -301,10 +444,10 @@ export const configureProductReviewsModule = async ({ db }: ModuleInput<Record<s
           type,
         });
 
-        return productReview;
+        return review || null;
       },
     },
   };
 };
 
-export type ProductReviewsModule = Awaited<ReturnType<typeof configureProductReviewsModule>>;
+export type ProductReviewsModule = ReturnType<typeof configureProductReviewsModule>;

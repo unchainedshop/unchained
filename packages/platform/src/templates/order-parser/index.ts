@@ -13,7 +13,7 @@ export const transformOrderToText = async (
   const positions = await getOrderPositionsData(order, { locale }, context);
 
   const positionsText = positions
-    .map((pos) => `  ${pos.quantity}x ${pos.productTexts.title} ${pos.total}`)
+    .map((pos) => `  ${pos.quantity}x ${pos.productTexts?.title || 'Unknown'} ${pos.total}`)
     .join('\n');
 
   const subtotalText = summary.rawPrices.items.amount ? `  Subtotal ${summary.prices.items}\n` : '';

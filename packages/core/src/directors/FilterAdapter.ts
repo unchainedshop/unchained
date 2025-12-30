@@ -1,8 +1,7 @@
 import type { Assortment } from '@unchainedshop/core-assortments';
 import { mongodb } from '@unchainedshop/mongodb';
 import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
-import type { Product } from '@unchainedshop/core-products';
-import type { Filter, SearchConfiguration, SearchQuery } from '@unchainedshop/core-filters';
+import type { Filter, SearchConfiguration, SearchQuery, SortStage } from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
 
 export interface FilterInputText {
@@ -16,12 +15,18 @@ export interface FilterContext {
   searchQuery: SearchQuery;
 }
 
+// Filter query item for products - key/value pairs that map to product fields
+export interface ProductFilterQueryItem {
+  key: string;
+  value: unknown;
+}
+
 export interface SearchAssortmentsOptions extends SearchConfiguration {
   assortmentSelector: mongodb.Filter<Assortment>;
 }
 
 export interface SearchProductsOptions extends SearchConfiguration {
-  productSelector: mongodb.Filter<Product>;
+  productFilterQuery: ProductFilterQueryItem[];
 }
 
 export interface TransformOptions {
@@ -52,14 +57,14 @@ export interface FilterAdapterActions {
     query: mongodb.Filter<Filter>,
     options?: TransformOptions,
   ) => Promise<mongodb.Filter<Filter>>;
-  transformProductSelector: (
-    query: mongodb.Filter<Product>,
+
+  // Transforms product filter query - returns filter items to be applied to product search
+  transformProductFilterQuery: (
+    query: ProductFilterQueryItem[],
     options?: TransformOptions,
-  ) => Promise<mongodb.Filter<Product>>;
-  transformSortStage: (
-    sort: mongodb.FindOptions['sort'],
-    options?: TransformOptions,
-  ) => Promise<mongodb.FindOptions['sort']>;
+  ) => Promise<ProductFilterQueryItem[]>;
+
+  transformSortStage: (sort: SortStage, options?: TransformOptions) => Promise<SortStage>;
 }
 
 export type IFilterAdapter = IBaseAdapter & {
@@ -91,10 +96,10 @@ export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = 
         return lastStage;
       },
 
-      // return a selector that is applied to Products.find to find relevant products
-      // if no key is provided, it expects either null for all products or a list of products that are relevant
-      transformProductSelector: async (lastSelector) => {
-        return lastSelector;
+      // return filter query items to be applied to Products.find
+      // if no key is provided, it expects either null for all products or a list of filter items
+      transformProductFilterQuery: async (lastQuery) => {
+        return lastQuery;
       },
 
       // return a selector that is applied to Filters.find to find relevant filters

@@ -32,8 +32,13 @@ export const ProductVariationSchema = z.object({
 });
 
 const upsert = async (
-  productVariation: Omit<ProductVariation, '_id' | 'created'> &
-    Pick<Partial<ProductVariation>, '_id' | 'created'>,
+  productVariation: {
+    type: string;
+    productId: string;
+    key: string;
+    options?: string[];
+    _id?: string;
+  },
   unchainedAPI: { modules: Modules },
 ) => {
   const { modules } = unchainedAPI;

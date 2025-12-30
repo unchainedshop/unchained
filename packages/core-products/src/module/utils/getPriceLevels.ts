@@ -1,7 +1,7 @@
-import type { Product } from '../../db/ProductsCollection.ts';
+import type { ProductRow } from '../../db/index.ts';
 
 export const getPriceLevels = (params: {
-  product?: Product;
+  product?: ProductRow;
   currencyCode?: string;
   countryCode: string;
 }) => {

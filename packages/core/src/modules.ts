@@ -68,6 +68,7 @@ import {
   configureProductsModule,
   type ProductsModule,
   type ProductsSettingsOptions,
+  initializeProductsSchema,
 } from '@unchainedshop/core-products';
 import {
   configureQuotationsModule,
@@ -173,6 +174,7 @@ export default async function initModules(
     initializeFiltersSchema,
     initializeWorkQueueSchema,
     initializeUsersSchema,
+    initializeProductsSchema,
   ]);
 
   const assortments = await configureAssortmentsModule({
@@ -221,8 +223,7 @@ export default async function initModules(
     options: options.payment,
   });
   const products = await configureProductsModule({
-    db,
-    migrationRepository,
+    db: drizzleDb,
     options: options.products,
   });
   const quotations = await configureQuotationsModule({

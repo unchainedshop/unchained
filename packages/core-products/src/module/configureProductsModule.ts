@@ -1,23 +1,34 @@
+/**
+ * Products Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
-  findPreservingIds,
-  generateDbFilterById,
-  buildSortOptions,
-  mongodb,
-  generateDbObjectId,
-  type ModuleInput,
-  assertDocumentDBCompatMode,
-} from '@unchainedshop/mongodb';
+  eq,
+  and,
+  or,
+  inArray,
+  sql,
+  asc,
+  desc,
+  isNull,
+  isNotNull,
+  generateId,
+  type SQL,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import { SortDirection, type SortOption, type Price } from '@unchainedshop/utils';
 import {
-  type Product,
+  products,
+  ProductStatus,
+  ProductType,
+  searchProductsFTS,
+  searchProductTextsFTS,
+  type ProductRow,
   type ProductAssignment,
   type ProductBundleItem,
   type ProductConfiguration,
-  ProductsCollection,
-  ProductStatus,
-  ProductType,
-} from '../db/ProductsCollection.ts';
+} from '../db/index.ts';
 import { configureProductMediaModule } from './configureProductMediaModule.ts';
 import { configureProductPricesModule } from './configureProductPrices.ts';
 import { configureProductReviewsModule } from './configureProductReviewsModule.ts';
@@ -25,17 +36,23 @@ import { configureProductTextsModule } from './configureProductTextsModule.ts';
 import { configureProductVariationsModule } from './configureProductVariationsModule.ts';
 import { productsSettings, type ProductsSettingsOptions } from '../products-settings.ts';
 
+// Re-export types for backwards compatibility
+export { ProductStatus, ProductType };
+export type Product = ProductRow;
+export type { ProductAssignment, ProductBundleItem, ProductConfiguration };
+
 export interface ProductQuery {
   queryString?: string;
   includeDrafts?: boolean;
   includeDeleted?: boolean;
   productIds?: string[];
-  productSelector?: mongodb.Filter<Product>;
   slugs?: string[];
   tags?: string[];
   skus?: string[];
   bundleItemProductIds?: string[];
   proxyAssignmentProductIds?: string[];
+  // Used by filter plugins to filter products by key/value pairs
+  filterQuery?: { key: string; value: unknown }[];
 }
 
 export interface ProductDiscount {
@@ -61,100 +78,238 @@ const PRODUCT_EVENTS = [
 ];
 
 const InternalProductStatus = {
-  DRAFT: null,
+  DRAFT: null as string | null,
 };
 
-export const buildFindSelector = ({
-  slugs,
-  tags,
-  includeDrafts = false,
-  includeDeleted = false,
-  productIds,
-  productSelector,
-  queryString,
-  skus,
-  bundleItemProductIds,
-  proxyAssignmentProductIds,
-}: ProductQuery) => {
-  const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector } : {};
+// Helper to build JSON field condition with MongoDB-style operator support
 
-  if (productIds && !selector._id) {
-    selector._id = { $in: productIds };
+const buildJsonFieldCondition = (column: any, jsonPath: string, value: unknown): SQL => {
+  if (value === undefined) {
+    // Undefined means field must exist
+    return sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`;
   }
 
-  if (slugs && !selector.slugs) {
-    selector.slugs = { $in: slugs };
-  }
+  // Handle MongoDB-style operators
+  if (value && typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
 
-  if (tags && !selector.tags) {
-    if (Array.isArray(tags)) {
-      selector.tags = { $all: tags };
-    } else {
-      selector.tags = tags;
+    if ('$exists' in obj) {
+      // $exists: true/false - check if field exists
+      return obj.$exists
+        ? sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`
+        : sql`json_extract(${column}, ${jsonPath}) IS NULL`;
     }
-  }
 
-  if (skus) {
-    selector['warehousing.sku'] = { $in: skus };
-  }
-
-  if (bundleItemProductIds || proxyAssignmentProductIds) {
-    const orConditions: mongodb.Filter<Product>[] = [];
-    if (bundleItemProductIds) {
-      orConditions.push({ 'bundleItems.productId': { $in: bundleItemProductIds } } as any);
+    if ('$ne' in obj) {
+      // $ne: value - not equal
+      return sql`(json_extract(${column}, ${jsonPath}) IS NULL OR json_extract(${column}, ${jsonPath}) != ${obj.$ne})`;
     }
-    if (proxyAssignmentProductIds) {
-      orConditions.push({ 'proxy.assignments.productId': { $in: proxyAssignmentProductIds } } as any);
+
+    if ('$in' in obj && Array.isArray(obj.$in)) {
+      // $in: [values] - match any value in array
+      const inConditions = (obj.$in as unknown[]).map(
+        (v) => sql`json_extract(${column}, ${jsonPath}) = ${v}`,
+      );
+      return or(...inConditions) || sql`0 = 1`;
     }
-    selector.$or = orConditions;
-  }
 
-  if (queryString && !selector.$text) {
-    assertDocumentDBCompatMode();
-    (selector as any).$text = { $search: queryString };
-  }
-
-  if (!selector.status) {
-    if (includeDeleted) {
-      selector.status = { $exists: true };
-    } else if (includeDrafts) {
-      selector.status = { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] };
-    } else {
-      selector.status = { $eq: ProductStatus.ACTIVE };
+    if ('$nin' in obj && Array.isArray(obj.$nin)) {
+      // $nin: [values] - not in any value
+      const ninConditions = (obj.$nin as unknown[]).map(
+        (v) => sql`json_extract(${column}, ${jsonPath}) != ${v}`,
+      );
+      return and(...ninConditions) || sql`1 = 1`;
     }
+
+    // Unknown object - stringify it for comparison (fallback)
+    return sql`json_extract(${column}, ${jsonPath}) = ${JSON.stringify(value)}`;
   }
 
-  return selector;
+  // Primitive value - direct equality
+  return sql`json_extract(${column}, ${jsonPath}) = ${value}`;
 };
 
-export const configureProductsModule = async (moduleInput: ModuleInput<ProductsSettingsOptions>) => {
-  const { db, options: productsOptions = {} } = moduleInput;
+// Convenience wrappers for specific JSON columns
+const buildMetaCondition = (jsonPath: string, value: unknown) =>
+  buildJsonFieldCondition(products.meta, jsonPath, value);
+const buildWarehousingCondition = (jsonPath: string, value: unknown) =>
+  buildJsonFieldCondition(products.warehousing, jsonPath, value);
+const buildCommerceCondition = (jsonPath: string, value: unknown) =>
+  buildJsonFieldCondition(products.commerce, jsonPath, value);
+const buildSupplyCondition = (jsonPath: string, value: unknown) =>
+  buildJsonFieldCondition(products.supply, jsonPath, value);
 
+export interface ProductsModuleInput {
+  db: DrizzleDb;
+  options?: ProductsSettingsOptions;
+}
+
+export const configureProductsModule = async ({
+  db,
+  options: productsOptions = {},
+}: ProductsModuleInput) => {
   registerEvents(PRODUCT_EVENTS);
   await productsSettings.configureSettings(productsOptions);
 
-  const { Products, ProductTexts } = await ProductsCollection(db);
+  // Build filter conditions from query params
+  const buildConditions = async (query: ProductQuery): Promise<SQL[]> => {
+    const conditions: SQL[] = [];
+
+    if (query.productIds?.length) {
+      conditions.push(inArray(products._id, query.productIds));
+    }
+
+    if (query.slugs?.length) {
+      // Check if any slug matches in the JSON array
+      const slugConditions = query.slugs.map(
+        (slug) => sql`EXISTS (SELECT 1 FROM json_each(${products.slugs}) WHERE value = ${slug})`,
+      );
+      conditions.push(or(...slugConditions)!);
+    }
+
+    if (query.tags?.length) {
+      // All tags must match (AND condition)
+      for (const tag of query.tags) {
+        conditions.push(sql`EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${tag})`);
+      }
+    }
+
+    if (query.skus?.length) {
+      // Check warehousing.sku in JSON
+      const skuConditions = query.skus.map(
+        (sku) => sql`json_extract(${products.warehousing}, '$.sku') = ${sku}`,
+      );
+      conditions.push(or(...skuConditions)!);
+    }
+
+    if (query.bundleItemProductIds?.length || query.proxyAssignmentProductIds?.length) {
+      const orConditions: SQL[] = [];
+      if (query.bundleItemProductIds?.length) {
+        // Check bundleItems JSON array for matching productId
+        for (const productId of query.bundleItemProductIds) {
+          orConditions.push(
+            sql`EXISTS (SELECT 1 FROM json_each(${products.bundleItems}) WHERE json_extract(value, '$.productId') = ${productId})`,
+          );
+        }
+      }
+      if (query.proxyAssignmentProductIds?.length) {
+        // Check proxy.assignments JSON array for matching productId
+        for (const productId of query.proxyAssignmentProductIds) {
+          orConditions.push(
+            sql`EXISTS (SELECT 1 FROM json_each(json_extract(${products.proxy}, '$.assignments')) WHERE json_extract(value, '$.productId') = ${productId})`,
+          );
+        }
+      }
+      if (orConditions.length) {
+        conditions.push(or(...orConditions)!);
+      }
+    }
+
+    if (query.queryString) {
+      // Search both products FTS and product_texts FTS
+      const productIds = await searchProductsFTS(db, query.queryString);
+      const textProductIds = await searchProductTextsFTS(db, query.queryString);
+      const allIds = [...new Set([...productIds, ...textProductIds])];
+      if (allIds.length === 0) {
+        conditions.push(sql`0 = 1`); // No matches
+      } else {
+        conditions.push(inArray(products._id, allIds));
+      }
+    }
+
+    // Filter query - used by filter plugins to filter products by key/value pairs
+    // Keys map to product fields: 'tags', 'meta.*' properties, or JSON path in nested fields
+    if (query.filterQuery?.length) {
+      for (const { key, value } of query.filterQuery) {
+        if (key === 'tags') {
+          // Tags are stored as JSON array
+          if (value === true || value === undefined) {
+            // Has any tags
+            conditions.push(sql`json_array_length(${products.tags}) > 0`);
+          } else if (typeof value === 'string') {
+            conditions.push(
+              sql`EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${value})`,
+            );
+          } else if (value && typeof value === 'object' && '$ne' in (value as any)) {
+            // Exclude specific tag
+            const excludeTag = (value as any).$ne;
+            conditions.push(
+              sql`NOT EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${excludeTag})`,
+            );
+          }
+        } else if (key.startsWith('meta.')) {
+          // Meta field query - extract from JSON
+          const metaKey = key.slice(5);
+          const jsonPath = `$.${metaKey}`;
+          conditions.push(buildMetaCondition(jsonPath, value));
+        } else if (key.startsWith('warehousing.')) {
+          // Warehousing field query - extract from JSON column
+          const subKey = key.slice('warehousing.'.length);
+          const jsonPath = `$.${subKey}`;
+          conditions.push(buildWarehousingCondition(jsonPath, value));
+        } else if (key.startsWith('commerce.')) {
+          // Commerce field query - extract from JSON column
+          const subKey = key.slice('commerce.'.length);
+          const jsonPath = `$.${subKey}`;
+          conditions.push(buildCommerceCondition(jsonPath, value));
+        } else if (key.startsWith('supply.')) {
+          // Supply field query - extract from JSON column
+          const subKey = key.slice('supply.'.length);
+          const jsonPath = `$.${subKey}`;
+          conditions.push(buildSupplyCondition(jsonPath, value));
+        } else {
+          // Generic top-level field check - for custom product properties stored in meta
+          const jsonPath = `$.${key}`;
+          conditions.push(buildMetaCondition(jsonPath, value));
+        }
+      }
+    }
+
+    // Status filtering
+    // includeDeleted: include ALL products regardless of status (no filter)
+    // includeDrafts: include ACTIVE and drafts (null status)
+    // default: only ACTIVE products
+    if (query.includeDeleted) {
+      // No status filter - include all products including drafts and deleted
+    } else if (query.includeDrafts) {
+      conditions.push(or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))!);
+    } else {
+      conditions.push(eq(products.status, ProductStatus.ACTIVE));
+    }
+
+    return conditions;
+  };
+
+  // Build sort options
+  const buildSortOptions = (sortOptions: SortOption[]) => {
+    return sortOptions.map(({ key, value }) => {
+      const column = products[key as keyof typeof products];
+      if (!column) return asc(products.sequence);
+      return value === SortDirection.DESC ? desc(column as any) : asc(column as any);
+    });
+  };
 
   /*
    * Product sub entities
    */
 
-  const productTexts = configureProductTextsModule({
-    Products,
-    ProductTexts,
-  });
-
-  const productMedia = await configureProductMediaModule(moduleInput);
-  const productReviews = await configureProductReviewsModule(moduleInput);
-  const productVariations = await configureProductVariationsModule(moduleInput);
+  const productTexts = configureProductTextsModule({ db });
+  const productMedia = configureProductMediaModule({ db });
+  const productReviews = configureProductReviewsModule({ db });
+  const productVariations = configureProductVariationsModule({ db });
 
   const deleteProductPermanently = async (
     { productId }: { productId: string },
     options?: { keepReviews: boolean },
   ): Promise<number> => {
-    const selector: mongodb.Filter<Product> = generateDbFilterById(productId, {
-      status: ProductStatus.DELETED,
-    });
+    // First verify the product is deleted
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(and(eq(products._id, productId), eq(products.status, ProductStatus.DELETED)))
+      .limit(1);
+
+    if (!product) return 0;
 
     await productMedia.deleteMediaFiles({ productId });
     await productTexts.deleteMany({ productId });
@@ -163,20 +318,24 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       await productReviews.deleteMany({ productId });
     }
 
-    const deletedResult = await Products.deleteOne(selector);
+    const result = await db.delete(products).where(eq(products._id, productId));
 
-    return deletedResult.deletedCount;
+    // Update FTS
+    await db.run(sql`DELETE FROM products_fts WHERE _id = ${productId}`);
+
+    return result.rowsAffected || 0;
   };
 
   const publishProduct = async (product: Product): Promise<boolean> => {
     if (product.status === InternalProductStatus.DRAFT) {
-      await Products.updateOne(generateDbFilterById(product._id), {
-        $set: {
+      await db
+        .update(products)
+        .set({
           status: ProductStatus.ACTIVE,
           updated: new Date(),
           published: new Date(),
-        },
-      });
+        })
+        .where(eq(products._id, product._id));
 
       await emit('PRODUCT_PUBLISH', { product });
 
@@ -188,19 +347,18 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
 
   const unpublishProduct = async (product: Product): Promise<boolean> => {
     if (product.status === ProductStatus.ACTIVE) {
-      const result = await Products.updateOne(generateDbFilterById(product._id), {
-        $set: {
-          status: InternalProductStatus.DRAFT,
+      const result = await db
+        .update(products)
+        .set({
+          status: null,
           updated: new Date(),
-        },
-        $unset: {
-          published: 1,
-        },
-      });
+          published: null,
+        })
+        .where(eq(products._id, product._id));
 
       await emit('PRODUCT_UNPUBLISH', { product });
 
-      return Boolean(result.modifiedCount);
+      return (result.rowsAffected || 0) > 0;
     }
 
     return false;
@@ -222,13 +380,17 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       });
     });
     const productIds = filtered.map((filteredAssignment) => filteredAssignment.productId);
-    const selector: mongodb.Filter<Product> = {
-      _id: { $in: productIds },
-      status: includeInactive
-        ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
-        : ProductStatus.ACTIVE,
-    };
-    return Products.find(selector).toArray();
+
+    if (productIds.length === 0) return [];
+
+    const statusCondition = includeInactive
+      ? or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))
+      : eq(products.status, ProductStatus.ACTIVE);
+
+    return db
+      .select()
+      .from(products)
+      .where(and(inArray(products._id, productIds), statusCondition));
   };
 
   /*
@@ -250,60 +412,104 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
           },
     ): Promise<Product | null> => {
       if ('sku' in params) {
-        return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1 } });
+        const [product] = await db
+          .select()
+          .from(products)
+          .where(sql`json_extract(${products.warehousing}, '$.sku') = ${params.sku}`)
+          .orderBy(asc(products.sequence))
+          .limit(1);
+        return product || null;
       }
       if ('slug' in params && params.slug != null) {
-        return Products.findOne({ slugs: params.slug }, {});
+        const [product] = await db
+          .select()
+          .from(products)
+          .where(sql`EXISTS (SELECT 1 FROM json_each(${products.slugs}) WHERE value = ${params.slug})`)
+          .limit(1);
+        return product || null;
       }
       if ('productId' in params && params.productId != null) {
-        return Products.findOne(generateDbFilterById(params.productId), {});
+        const [product] = await db
+          .select()
+          .from(products)
+          .where(eq(products._id, params.productId))
+          .limit(1);
+        return product || null;
       }
       return null;
     },
 
-    findProducts: async (
-      {
-        limit,
-        offset,
-        sort,
-        ...query
-      }: ProductQuery & {
-        limit?: number;
-        offset?: number;
-        sort?: SortOption[];
-      },
-      options?: mongodb.FindOptions,
-    ): Promise<Product[]> => {
+    findProducts: async ({
+      limit,
+      offset,
+      sort,
+      ...query
+    }: ProductQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: SortOption[];
+    }): Promise<Product[]> => {
+      const conditions = await buildConditions(query);
       const defaultSortOption: SortOption[] = [
         { key: 'sequence', value: SortDirection.ASC },
         { key: 'published', value: SortDirection.DESC },
+        { key: '_id', value: SortDirection.DESC }, // Tertiary sort for deterministic ordering
       ];
-      const products = Products.find(buildFindSelector(query), {
-        ...(options || {}),
-        limit,
-        skip: offset,
-        sort: buildSortOptions(sort || defaultSortOption),
-      });
-      return products.toArray();
+
+      let q = db.select().from(products);
+      if (conditions.length) {
+        q = q.where(and(...conditions)) as typeof q;
+      }
+
+      const sortBy = buildSortOptions(sort || defaultSortOption);
+      q = q.orderBy(...sortBy) as typeof q;
+
+      if (limit) {
+        q = q.limit(limit) as typeof q;
+      }
+      if (offset) {
+        q = q.offset(offset) as typeof q;
+      }
+
+      return q;
     },
 
     findProductIds: async (query: ProductQuery): Promise<string[]> => {
-      return Products.distinct('_id', buildFindSelector(query));
+      const conditions = await buildConditions(query);
+      let q = db.select({ _id: products._id }).from(products);
+      if (conditions.length) {
+        q = q.where(and(...conditions)) as typeof q;
+      }
+      const rows = await q;
+      return rows.map((r) => r._id);
     },
 
     count: async (query: ProductQuery) => {
-      return Products.countDocuments(buildFindSelector(query));
+      const conditions = await buildConditions(query);
+      let q = db.select({ count: sql<number>`count(*)` }).from(products);
+      if (conditions.length) {
+        q = q.where(and(...conditions)) as typeof q;
+      }
+      const [result] = await q;
+      return result?.count || 0;
     },
 
     productExists: async ({ productId, slug }: { productId?: string; slug?: string }) => {
-      const selector: mongodb.Filter<Product> = productId
-        ? generateDbFilterById(productId)
-        : { slugs: slug };
-      selector.status = { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] };
+      const conditions: SQL[] = [];
+      if (productId) {
+        conditions.push(eq(products._id, productId));
+      } else if (slug) {
+        conditions.push(sql`EXISTS (SELECT 1 FROM json_each(${products.slugs}) WHERE value = ${slug})`);
+      }
+      conditions.push(or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))!);
 
-      const productCount = await Products.countDocuments(selector, { limit: 1 });
+      const [result] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(products)
+        .where(and(...conditions))
+        .limit(1);
 
-      return !!productCount;
+      return (result?.count || 0) > 0;
     },
 
     isActive: (product: Product) => {
@@ -312,8 +518,10 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     isDraft: (product: Product) => {
       return product.status === ProductStatus.DRAFT || product.status === InternalProductStatus.DRAFT;
     },
-    normalizedStatus: (product: Product): ProductStatus => {
-      return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
+    normalizedStatus: (product: Product): (typeof ProductStatus)[keyof typeof ProductStatus] => {
+      return product.status === null
+        ? ProductStatus.DRAFT
+        : (product.status as (typeof ProductStatus)[keyof typeof ProductStatus]);
     },
 
     proxyAssignments: async (
@@ -322,21 +530,22 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     ): Promise<{ assignment: ProductAssignment; product: Product }[]> => {
       const assignments = product.proxy?.assignments || [];
       const productIds = assignments.map(({ productId }) => productId);
-      const selector: mongodb.Filter<Product> = {
-        _id: { $in: productIds },
-        status: includeInactive
-          ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
-          : ProductStatus.ACTIVE,
-      };
-      const supportedProductIds = await Products.find(selector, {
-        projection: { _id: 1 },
-      })
-        .map(({ _id }) => _id)
-        .toArray();
+
+      if (productIds.length === 0) return [];
+
+      const statusCondition = includeInactive
+        ? or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))
+        : eq(products.status, ProductStatus.ACTIVE);
+
+      const supportedProducts = await db
+        .select({ _id: products._id })
+        .from(products)
+        .where(and(inArray(products._id, productIds), statusCondition));
+
+      const supportedProductIds = supportedProducts.map(({ _id }) => _id);
+
       return assignments
-        .filter(({ productId }) => {
-          return supportedProductIds.includes(productId);
-        })
+        .filter(({ productId }) => supportedProductIds.includes(productId))
         .map((assignment) => ({
           assignment,
           product,
@@ -384,8 +593,11 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       type,
       sequence,
       ...productData
-    }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted' | 'slugs'> &
-      Pick<Partial<Product>, '_id' | 'created' | 'updated' | 'deleted'>): Promise<Product> => {
+    }: {
+      type: string;
+      sequence?: number;
+      _id?: string;
+    } & Partial<Omit<Product, '_id' | 'type'>>): Promise<Product> => {
       if (productData._id) {
         await deleteProductPermanently(
           {
@@ -395,58 +607,110 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
         );
       }
 
-      const { insertedId: productId } = await Products.insertOne({
-        _id: generateDbObjectId(),
+      const productId = productData._id || generateId();
+
+      // Get sequence if not provided
+      let seq = sequence;
+      if (seq === undefined) {
+        const [countResult] = await db.select({ count: sql<number>`count(*)` }).from(products);
+        seq = (countResult?.count || 0) + 10;
+      }
+
+      await db.insert(products).values({
+        _id: productId,
         created: new Date(),
         type,
-        status: InternalProductStatus.DRAFT,
-        sequence: sequence ?? (await Products.countDocuments({})) + 10,
+        sequence: seq,
         slugs: [],
         ...productData,
+        status: productData.status ?? null, // DRAFT if not specified
       });
 
-      const product = (await Products.findOne(generateDbFilterById(productId), {})) as Product;
-      await emit('PRODUCT_CREATE', { product });
-
-      return product;
-    },
-
-    update: async (productId: string, doc: mongodb.UpdateFilter<Product>): Promise<string> => {
-      const updateDoc = doc;
-      const product = await Products.findOneAndUpdate(
-        generateDbFilterById(productId),
-        {
-          $set: {
-            updated: new Date(),
-            ...updateDoc,
-          },
-        },
-        { returnDocument: 'after' },
+      // Update FTS
+      const sku = productData.warehousing?.sku || '';
+      await db.run(
+        sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${productId}, ${sku}, '')`,
       );
 
-      // Deprecation notice: remove "...updateDoc", product should be inside product field
-      await emit('PRODUCT_UPDATE', { productId, ...updateDoc, product });
+      const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+
+      await emit('PRODUCT_CREATE', { product });
+
+      return product as Product;
+    },
+
+    update: async (productId: string, doc: Partial<Product>): Promise<string> => {
+      await db
+        .update(products)
+        .set({
+          updated: new Date(),
+          ...doc,
+        })
+        .where(eq(products._id, productId));
+
+      // Update FTS if warehousing.sku or slugs changed
+      if (doc.warehousing || doc.slugs) {
+        const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+        if (product) {
+          const sku = product.warehousing?.sku || '';
+          const slugsText = (product.slugs || []).join(' ');
+          await db.run(sql`DELETE FROM products_fts WHERE _id = ${productId}`);
+          await db.run(
+            sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${productId}, ${sku}, ${slugsText})`,
+          );
+        }
+      }
+
+      const [updatedProduct] = await db
+        .select()
+        .from(products)
+        .where(eq(products._id, productId))
+        .limit(1);
+
+      await emit('PRODUCT_UPDATE', { productId, ...doc, product: updatedProduct });
 
       return productId;
     },
+
     firstActiveProductProxy: async (productId: string) => {
-      return Products.findOne({ 'proxy.assignments.productId': productId });
+      const [product] = await db
+        .select()
+        .from(products)
+        .where(
+          sql`EXISTS (SELECT 1 FROM json_each(json_extract(${products.proxy}, '$.assignments')) WHERE json_extract(value, '$.productId') = ${productId})`,
+        )
+        .limit(1);
+      return product || null;
     },
+
     firstActiveProductBundle: async (productId: string) => {
-      return Products.findOne({ 'bundleItems.productId': productId });
+      const [product] = await db
+        .select()
+        .from(products)
+        .where(
+          sql`EXISTS (SELECT 1 FROM json_each(${products.bundleItems}) WHERE json_extract(value, '$.productId') = ${productId})`,
+        )
+        .limit(1);
+      return product || null;
     },
+
     delete: async (productId: string) => {
-      const deletedProduct = await Products.findOneAndUpdate(
-        generateDbFilterById(productId),
-        {
-          $set: {
-            status: ProductStatus.DELETED,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!deletedProduct) return null;
+      const result = await db
+        .update(products)
+        .set({
+          status: ProductStatus.DELETED,
+          updated: new Date(),
+        })
+        .where(eq(products._id, productId));
+
+      if ((result.rowsAffected || 0) === 0) return null;
+
+      const [deletedProduct] = await db
+        .select()
+        .from(products)
+        .where(eq(products._id, productId))
+        .limit(1);
+
       await emit('PRODUCT_REMOVE', { productId });
       return deletedProduct;
     },
@@ -470,60 +734,63 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
         proxyId: string;
         vectors: ProductConfiguration[];
       }): Promise<boolean> => {
-        const assignment = {
+        const assignment: ProductAssignment = {
           vector: Object.fromEntries(vectors.map(({ key, value }) => [key, value])),
           productId,
         };
 
-        const modifier = {
-          $set: {
-            updated: new Date(),
-          },
-          $push: {
-            'proxy.assignments': assignment,
-          },
-        };
+        // Get current product
+        const [product] = await db.select().from(products).where(eq(products._id, proxyId)).limit(1);
 
-        const updated = await Products.updateOne(
-          generateDbFilterById(proxyId, {
-            'proxy.assignments': {
-              $not: {
-                $elemMatch: {
-                  vector: assignment.vector,
-                },
-              },
-            },
-          }),
-          modifier,
+        if (!product) return false;
+
+        const currentAssignments = product.proxy?.assignments || [];
+
+        // Check if assignment already exists
+        const exists = currentAssignments.some(
+          (a) => JSON.stringify(a.vector) === JSON.stringify(assignment.vector),
         );
+        if (exists) return false;
 
-        if (updated.modifiedCount > 0) {
-          await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
-          return true;
-        }
+        const newAssignments = [...currentAssignments, assignment];
 
-        return false;
+        await db
+          .update(products)
+          .set({
+            updated: new Date(),
+            proxy: { assignments: newAssignments },
+          })
+          .where(eq(products._id, proxyId));
+
+        await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+        return true;
       },
 
       removeAssignment: async (
         productId: string,
         { vectors }: { vectors: ProductConfiguration[] },
       ): Promise<number> => {
-        const vector = {};
-        vectors.forEach(({ key, value }) => {
-          vector[key] = value;
-        });
-        const modifier = {
-          $set: {
+        const vector = Object.fromEntries(vectors.map(({ key, value }) => [key, value]));
+
+        // Get current product
+        const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+
+        if (!product) return 0;
+
+        const currentAssignments = product.proxy?.assignments || [];
+        const newAssignments = currentAssignments.filter(
+          (a) => JSON.stringify(a.vector) !== JSON.stringify(vector),
+        );
+
+        if (newAssignments.length === currentAssignments.length) return 0;
+
+        await db
+          .update(products)
+          .set({
             updated: new Date(),
-          },
-          $pull: {
-            'proxy.assignments': {
-              vector,
-            },
-          },
-        };
-        await Products.updateOne(generateDbFilterById(productId), modifier);
+            proxy: { assignments: newAssignments },
+          })
+          .where(eq(products._id, productId));
 
         await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId, vectors });
 
@@ -533,14 +800,20 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
 
     bundleItems: {
       addBundleItem: async (productId: string, doc: ProductBundleItem): Promise<string> => {
-        await Products.updateOne(generateDbFilterById(productId), {
-          $set: {
+        const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+
+        if (!product) return productId;
+
+        const currentBundleItems = product.bundleItems || [];
+        const newBundleItems = [...currentBundleItems, doc];
+
+        await db
+          .update(products)
+          .set({
             updated: new Date(),
-          },
-          $push: {
-            bundleItems: doc,
-          },
-        });
+            bundleItems: newBundleItems,
+          })
+          .where(eq(products._id, productId));
 
         await emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
 
@@ -548,21 +821,22 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       },
 
       removeBundleItem: async (productId: string, index: number) => {
-        const product = await Products.findOne(generateDbFilterById(productId), {});
+        const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
 
         if (!product) return null;
 
-        const { bundleItems = [] } = product;
+        const bundleItems = [...(product.bundleItems || [])];
         const removedItems = bundleItems.splice(index, 1);
         const removedItem = removedItems.length === 1 ? removedItems[0] : null;
 
         if (removedItem) {
-          await Products.updateOne(generateDbFilterById(productId), {
-            $set: {
+          await db
+            .update(products)
+            .set({
               updated: new Date(),
               bundleItems,
-            },
-          });
+            })
+            .where(eq(products._id, productId));
         }
 
         await emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
@@ -575,19 +849,18 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     },
 
     removeAllAssignmentsAndBundleItems: async (productId: string) => {
-      return Products.findOneAndUpdate(
-        generateDbFilterById(productId),
-        {
-          $set: {
-            updated: new Date(),
-          },
-          $unset: {
-            'proxy.assignments': '1',
-            bundleItems: '1',
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      await db
+        .update(products)
+        .set({
+          updated: new Date(),
+          proxy: null,
+          bundleItems: null,
+        })
+        .where(eq(products._id, productId));
+
+      const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+
+      return product;
     },
 
     media: productMedia,
@@ -595,52 +868,85 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     variations: productVariations,
 
     search: {
-      buildActiveDraftStatusFilter: (): mongodb.Filter<Product> => ({
+      buildActiveDraftStatusFilter: () => ({
         status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
       }),
-      buildActiveStatusFilter: (): mongodb.Filter<Product> => ({
+      buildActiveStatusFilter: () => ({
         status: { $in: [ProductStatus.ACTIVE] },
       }),
       countFilteredProducts: async ({
         productIds,
-        productSelector,
       }: {
         productIds: string[];
-        productSelector: mongodb.Filter<Product>;
+        productSelector?: any;
       }): Promise<number> => {
-        return Products.countDocuments({
-          ...productSelector,
-          _id: { $in: productIds },
-        });
+        if (productIds.length === 0) return 0;
+        const [result] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(products)
+          .where(inArray(products._id, productIds));
+        return result?.count || 0;
       },
       findFilteredProducts: async ({
         limit,
         offset,
         productIds,
-        productSelector,
         sort,
       }: {
         limit?: number;
         offset?: number;
         productIds: string[];
-        productSelector: mongodb.Filter<Product>;
-        sort?: mongodb.FindOptions['sort'];
+        productSelector?: any;
+        sort?: any;
       }): Promise<Product[]> => {
-        return findPreservingIds(Products)(productSelector, productIds, {
-          skip: offset,
-          limit,
-          sort,
-        });
+        if (productIds.length === 0) return [];
+
+        let q = db.select().from(products).where(inArray(products._id, productIds));
+
+        if (sort) {
+          // Handle sort options - convert MongoDB sort to Drizzle
+          const sortEntries = Object.entries(sort);
+          for (const [key, direction] of sortEntries) {
+            const column = products[key as keyof typeof products];
+            if (column) {
+              q = q.orderBy(direction === -1 ? desc(column as any) : asc(column as any)) as typeof q;
+            }
+          }
+        }
+
+        if (limit) {
+          q = q.limit(limit) as typeof q;
+        }
+        if (offset) {
+          q = q.offset(offset) as typeof q;
+        }
+
+        return q;
       },
     },
 
     texts: productTexts,
     existingTags: async (): Promise<string[]> => {
-      const tags = await Products.distinct('tags', {
-        tags: { $exists: true },
-        status: { $ne: ProductStatus.DELETED },
-      });
-      return tags.filter(Boolean).toSorted();
+      // Get all distinct tags from non-deleted products
+      const rows = await db
+        .select({ tags: products.tags })
+        .from(products)
+        .where(
+          and(
+            isNotNull(products.tags),
+            or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))!,
+          ),
+        );
+
+      const allTags = new Set<string>();
+      for (const row of rows) {
+        if (row.tags) {
+          for (const tag of row.tags) {
+            if (tag) allTags.add(tag);
+          }
+        }
+      }
+      return Array.from(allTags).sort();
     },
   };
 };

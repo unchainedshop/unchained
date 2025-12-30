@@ -1,5 +1,4 @@
 import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
-import type { ProductPriceRate } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
 const getExchangeRates = async (base): Promise<{ currency: string; rates: Record<string, string> }> => {
@@ -33,7 +32,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
       // five minutes
       const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
 
-      const rates: ProductPriceRate[] = Object.entries(pairs)
+      const rates = Object.entries(pairs)
         .map(([quoteCurrency, rate]) => {
           return {
             baseCurrency,

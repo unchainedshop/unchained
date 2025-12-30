@@ -1,4 +1,5 @@
-import type { ProductPrice, ProductPriceRange } from '../../db/ProductsCollection.ts';
+import type { ProductPrice } from '../../db/index.ts';
+import type { ProductPriceRange } from '../configureProductPrices.ts';
 
 export const getPriceRange = (params: {
   productId: string;

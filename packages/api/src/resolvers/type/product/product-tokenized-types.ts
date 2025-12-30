@@ -1,9 +1,12 @@
-import type {
-  Product,
-  ProductContractConfiguration,
-  ProductContractStandard,
-} from '@unchainedshop/core-products';
+import type { Product, ProductContractStandardType } from '@unchainedshop/core-products';
 import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
+
+// Configuration returned by the contractConfiguration resolver
+export interface ProductContractConfiguration {
+  supply: number;
+  tokenId: string;
+  ercMetadataProperties?: Record<string, any>;
+}
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 
 import type { Context } from '../../../context.ts';
@@ -27,7 +30,7 @@ export const TokenizedProduct = {
     };
   },
 
-  contractStandard({ tokenization }: Product): ProductContractStandard | null {
+  contractStandard({ tokenization }: Product): ProductContractStandardType | null {
     return tokenization?.contractStandard || null;
   },
 

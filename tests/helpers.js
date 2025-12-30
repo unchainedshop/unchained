@@ -12,7 +12,7 @@ import {
   seedCurrenciesToDrizzle,
 } from './seeds/locale-data.js';
 import { ADMIN_TOKEN, seedUsersToDrizzle } from './seeds/users.js';
-import seedProducts, { seedMediaObjectsToDrizzle } from './seeds/products.js';
+import { seedMediaObjectsToDrizzle, seedProductsToDrizzle } from './seeds/products.js';
 import { seedDeliveryProvidersToDrizzle } from './seeds/deliveries.js';
 import { seedPaymentsToDrizzle } from './seeds/payments.js';
 import { seedWarehousingProvidersToDrizzle } from './seeds/warehousings.js';
@@ -62,12 +62,12 @@ export const setupDatabase = async () => {
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 
   // Seed MongoDB collections that are not yet migrated to Drizzle
-  await seedProducts(db);
   await seedOrders(db);
   await seedAssortments(db);
 
   // Seed Drizzle tables (bypasses modules to avoid emitting events)
   await seedUsersToDrizzle(drizzleDb);
+  await seedProductsToDrizzle(drizzleDb);
   await seedCountriesToDrizzle(drizzleDb);
   await seedLanguagesToDrizzle(drizzleDb);
   await seedCurrenciesToDrizzle(drizzleDb);

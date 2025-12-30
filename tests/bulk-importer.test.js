@@ -2,7 +2,8 @@ import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } f
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
 import { filters } from '@unchainedshop/core-filters';
-import { eq } from 'drizzle-orm';
+import { products } from '@unchainedshop/core-products';
+import { eq, sql } from '@unchainedshop/store';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -246,10 +247,14 @@ test.describe('Bulk Importer', () => {
       });
       assert.ok(addWork);
 
-      const Products = db.collection('products');
+      const drizzleDb = getDrizzleDb();
 
       const result = await intervalUntilTimeout(async () => {
-        const product = await Products.findOne({ tags: 'awesome2' });
+        const [product] = await drizzleDb
+          .select()
+          .from(products)
+          .where(sql`EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = 'awesome2')`)
+          .limit(1);
         return !!product;
       }, 10000);
 

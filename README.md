@@ -1,13 +1,55 @@
 # Unchained Engine
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/unchained?referralCode=ZXvOAF)
-
-Licensed under the EUPL 1.2
-
+[![npm version](https://img.shields.io/npm/v/@unchainedshop/platform.svg)](https://www.npmjs.com/package/@unchainedshop/platform)
+[![GitHub stars](https://img.shields.io/github/stars/unchainedshop/unchained)](https://github.com/unchainedshop/unchained/stargazers)
+[![License: EUPL-1.2](https://img.shields.io/badge/License-EUPL--1.2-blue.svg)](https://opensource.org/licenses/EUPL-1.2)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Bundle Size](https://pkg-size.dev/badge/bundle/1604171)](https://pkg-size.dev/@unchainedshop/platform)
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
 
 Unchained Engine is a modular, API-first e-commerce platform built as a monorepo with npm workspaces. It provides a complete solution for building custom e-commerce applications with GraphQL APIs, extensible plugin architecture, and support for modern use cases like subscriptions, quotations, and tokenized products.
+
+## Why Unchained?
+
+### Blazing Fast Performance
+
+Benchmarked against alternatives, Unchained delivers superior performance:
+
+| Metric | Unchained | Vendure |
+|--------|-----------|---------|
+| Memory footprint | 120 MB | 700 MB (2x workers) |
+| Cold boot (prod) | 150 ms | ~3,000 ms |
+| Product list query (50 items) | 30-45 ms | 115-180 ms |
+| node_modules size | 90 MB | 262 MB |
+
+See [BENCHMARKS.md](BENCHMARKS.md) for detailed comparisons.
+
+### AI-Native Commerce
+
+First headless commerce platform with native AI integration:
+
+- **Admin Copilot**: Natural language product and order management
+- **MCP Server**: Model Context Protocol for AI agent integration
+- **Self-hosted LLM Support**: Run AI locally with llama.cpp
+
+### Built for B2B Complexity
+
+Enterprise features included out-of-the-box:
+
+- **Quotations (RFQ)**: Complete request-for-quote workflows
+- **Enrollments**: Subscription and recurring billing management
+- **Multi-currency/language**: International commerce ready
+- **Event-driven**: Redis, AWS EventBridge, and custom adapters
+
+### Modern Tokenized Commerce
+
+Web3-ready with NFT and blockchain support:
+
+- **Tokenized Products**: ERC-721/ERC-1155 support
+- **ETH Minter**: Built-in Ethereum minting adapter
+- **Token Metadata**: Standard-compliant metadata endpoints
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/unchained?referralCode=ZXvOAF)
 
 ### **[View Documentation](https://docs.unchained.shop)**
 
@@ -265,6 +307,17 @@ See [SECURITY.md](SECURITY.md) for complete security documentation, compliance d
 - [Security Documentation](SECURITY.md)
 - [Changelog](CHANGELOG.md)
 - [Benchmarks](BENCHMARKS.md)
+
+## Used By
+
+<!--
+We'd love to showcase projects built with Unchained Engine!
+To add your company or project:
+1. Open a PR adding your logo to this section
+2. Or tell us about your project: hello@unchained.shop
+-->
+
+*Building with Unchained? [Let us know](mailto:hello@unchained.shop) or [open a PR](https://github.com/unchainedshop/unchained/pulls) to be featured here.*
 
 ## Contributing
 

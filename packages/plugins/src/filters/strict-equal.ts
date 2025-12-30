@@ -12,16 +12,14 @@ const StrictQualFilter: IFilterAdapter = {
     return {
       ...FilterAdapter.actions(params),
 
-      transformProductSelector: async (lastSelector, options) => {
+      transformProductFilterQuery: async (lastFilterQuery, options) => {
         const { key, value } = options || {};
 
         if (key) {
-          return {
-            ...lastSelector,
-            [key]: value !== undefined ? value : { $exists: true },
-          };
+          // Add filter item for this key/value pair
+          return [...lastFilterQuery, { key, value: value !== undefined ? value : { $exists: true } }];
         }
-        return lastSelector;
+        return lastFilterQuery;
       },
     };
   },

@@ -1,11 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { ProductReviewVoteType } from '@unchainedshop/core-products';
+import type { ProductReviewVoteTypeType } from '@unchainedshop/core-products';
 import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async function removeProductReviewVote(
   root: never,
-  params: { productReviewId: string; type: ProductReviewVoteType },
+  params: { productReviewId: string; type: ProductReviewVoteTypeType },
   { modules, userId }: Context,
 ) {
   const { productReviewId, type } = params;

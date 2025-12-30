@@ -1,6 +1,6 @@
 import {
   type ProductText,
-  ProductStatus,
+  type ProductStatusType,
   type Product as IProduct,
   ProductType,
 } from '@unchainedshop/core-products';
@@ -131,7 +131,7 @@ export const Product = {
     });
   },
 
-  status(product: IProduct, _, { modules }: Context): ProductStatus {
+  status(product: IProduct, _, { modules }: Context): ProductStatusType {
     return modules.products.normalizedStatus(product);
   },
 

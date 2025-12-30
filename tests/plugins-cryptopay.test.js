@@ -19,6 +19,7 @@ import {
 } from './seeds/cryptopay.js';
 import { paymentProviders } from '@unchainedshop/core-payment';
 import { currencies } from '@unchainedshop/core-currencies';
+import { products, productRates } from '@unchainedshop/core-products';
 
 test.describe('Plugins: Cryptopay', () => {
   let db;
@@ -30,43 +31,63 @@ test.describe('Plugins: Cryptopay', () => {
     drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-    await db.collection('products').findOrInsertOne({
-      ...SimpleProduct,
+    // Insert products into Drizzle (products are now in SQLite)
+    await drizzleDb.insert(products).values({
       _id: 'single-item-product-id',
+      type: SimpleProduct.type,
+      status: SimpleProduct.status,
+      sequence: SimpleProduct.sequence || 0,
+      slugs: SimpleProduct.slugs || [],
+      tags: SimpleProduct.tags || [],
+      commerce: SimpleProduct.commerce,
+      warehousing: SimpleProduct.warehousing,
+      supply: SimpleProduct.supply,
+      created: SimpleProduct.created,
+      updated: SimpleProduct.updated,
+      published: SimpleProduct.published,
     });
 
     await drizzleDb.insert(currencies).values({ ...BTCCurrency, created: new Date() });
     await drizzleDb.insert(currencies).values({ ...ETHCurrency, created: new Date() });
     await drizzleDb.insert(currencies).values({ ...SHIBCurrency, created: new Date() });
 
-    await db.collection('product_rates').findOrInsertOne({
+    // Insert product rates into Drizzle (product_rates are now in SQLite)
+    await drizzleDb.insert(productRates).values({
+      _id: 'shib-rate',
       baseCurrency: 'CHF',
       quoteCurrency: SHIBCurrency.isoCode,
       rate: 0.00000002711,
       timestamp: new Date(),
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1), // 1 day
-      archived: false,
     });
 
-    const SimpleBtcProduct = {
-      ...SimpleProduct,
-      commerce: {
-        pricing: [
-          {
-            amount: 10 ** 7, // 0.1 BTC
-            maxQuantity: 0,
-            isTaxable: false,
-            isNetPrice: false,
-            currencyCode: 'BTC',
-            countryCode: 'CH',
-          },
-        ],
-      },
+    const SimpleBtcCommerce = {
+      pricing: [
+        {
+          amount: 10 ** 7, // 0.1 BTC
+          maxQuantity: 0,
+          isTaxable: false,
+          isNetPrice: false,
+          currencyCode: 'BTC',
+          countryCode: 'CH',
+        },
+      ],
     };
 
-    await db.collection('products').findOrInsertOne({
-      ...SimpleBtcProduct,
+    // Insert BTC product into Drizzle
+    await drizzleDb.insert(products).values({
       _id: 'single-btc-item-product-id',
+      type: SimpleProduct.type,
+      status: SimpleProduct.status,
+      sequence: SimpleProduct.sequence || 0,
+      slugs: SimpleProduct.slugs || [],
+      tags: SimpleProduct.tags || [],
+      commerce: SimpleBtcCommerce,
+      warehousing: SimpleProduct.warehousing,
+      supply: SimpleProduct.supply,
+      created: SimpleProduct.created,
+      updated: SimpleProduct.updated,
+      published: SimpleProduct.published,
     });
 
     // Insert payment provider into Drizzle (payment providers are now in SQLite)

@@ -1,16 +1,26 @@
-import type { ModuleInput } from '@unchainedshop/mongodb';
+/**
+ * Product Media Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
+import { systemLocale } from '@unchainedshop/utils';
 import {
-  findLocalizedText,
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-} from '@unchainedshop/mongodb';
+  eq,
+  and,
+  inArray,
+  notInArray,
+  desc,
+  asc,
+  sql,
+  generateId,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import {
-  type ProductMedia,
-  ProductMediaCollection,
-  type ProductMediaText,
-} from '../db/ProductMediaCollection.ts';
+  productMedia,
+  productMediaTexts,
+  type ProductMediaRow,
+  type ProductMediaTextRow,
+} from '../db/index.ts';
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',
@@ -19,140 +29,199 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
 
-export const configureProductMediaModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
-  registerEvents(PRODUCT_MEDIA_EVENTS);
+export type ProductMedia = ProductMediaRow;
+export type ProductMediaText = ProductMediaTextRow;
 
-  const { ProductMedias, ProductMediaTexts } = await ProductMediaCollection(db);
+export const configureProductMediaModule = ({ db }: { db: DrizzleDb }) => {
+  registerEvents(PRODUCT_MEDIA_EVENTS);
 
   const upsertLocalizedText = async (
     productMediaId: string,
     locale: Intl.Locale,
     text: Omit<Partial<ProductMediaText>, 'productMediaId' | 'locale'>,
   ): Promise<ProductMediaText> => {
-    const productMediaText = (await ProductMediaTexts.findOneAndUpdate(
-      {
-        productMediaId,
-        locale: locale.baseName,
-      },
-      {
-        $set: {
-          updated: new Date(),
+    // Try to find existing text
+    const [existing] = await db
+      .select()
+      .from(productMediaTexts)
+      .where(
+        and(
+          eq(productMediaTexts.productMediaId, productMediaId),
+          eq(productMediaTexts.locale, locale.baseName),
+        ),
+      )
+      .limit(1);
+
+    let mediaText: ProductMediaText;
+
+    if (existing) {
+      // Update existing
+      await db
+        .update(productMediaTexts)
+        .set({
           title: text.title,
           subtitle: text.subtitle,
-        },
-        $setOnInsert: {
-          _id: generateDbObjectId(),
-          productMediaId,
-          created: new Date(),
-          locale: locale.baseName,
-        },
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    )) as ProductMediaText;
+          updated: new Date(),
+        })
+        .where(eq(productMediaTexts._id, existing._id));
+
+      const [updated] = await db
+        .select()
+        .from(productMediaTexts)
+        .where(eq(productMediaTexts._id, existing._id))
+        .limit(1);
+      mediaText = updated;
+    } else {
+      // Insert new
+      const textId = generateId();
+      await db.insert(productMediaTexts).values({
+        _id: textId,
+        productMediaId,
+        locale: locale.baseName,
+        title: text.title,
+        subtitle: text.subtitle,
+        created: new Date(),
+      });
+
+      const [inserted] = await db
+        .select()
+        .from(productMediaTexts)
+        .where(eq(productMediaTexts._id, textId))
+        .limit(1);
+      mediaText = inserted;
+    }
+
     await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
       productMediaId,
-      text: productMediaText,
+      text: mediaText,
     });
-    return productMediaText;
+
+    return mediaText;
   };
 
   return {
     // Queries
-    findProductMedia: async ({ productMediaId }: { productMediaId: string }) => {
-      return ProductMedias.findOne(generateDbFilterById(productMediaId), {});
+    findProductMedia: async ({
+      productMediaId,
+    }: {
+      productMediaId: string;
+    }): Promise<ProductMedia | null> => {
+      const [result] = await db
+        .select()
+        .from(productMedia)
+        .where(eq(productMedia._id, productMediaId))
+        .limit(1);
+      return result || null;
     },
 
-    findProductMedias: async (
-      {
-        productId,
-        productIds,
-        tags,
-        offset,
-        limit,
-      }: {
-        productId?: string;
-        productIds?: string[];
-        limit?: number;
-        offset?: number;
-        tags?: string[];
-      },
-      options?: mongodb.FindOptions,
-    ): Promise<ProductMedia[]> => {
-      const selector: mongodb.Filter<ProductMedia> = {};
+    findProductMedias: async ({
+      productId,
+      productIds,
+      tags,
+      offset,
+      limit,
+    }: {
+      productId?: string;
+      productIds?: string[];
+      limit?: number;
+      offset?: number;
+      tags?: string[];
+    }): Promise<ProductMedia[]> => {
+      const conditions: ReturnType<typeof eq>[] = [];
+
       if (productId) {
-        selector.productId = productId;
+        conditions.push(eq(productMedia.productId, productId));
       }
-      if (productIds) {
-        selector.productId = { $in: productIds };
+      if (productIds?.length) {
+        conditions.push(inArray(productMedia.productId, productIds));
       }
-      if (tags?.length && tags?.length > 0) {
-        selector.tags = { $all: tags };
+      if (tags?.length) {
+        // All tags must be present
+        for (const tag of tags) {
+          conditions.push(
+            sql`EXISTS (SELECT 1 FROM json_each(${productMedia.tags}) WHERE value = ${tag})`,
+          );
+        }
       }
 
-      const mediaList = ProductMedias.find(selector, {
-        skip: offset,
-        limit,
-        sort: { sortKey: 1 },
-        ...options,
-      });
+      let query = db.select().from(productMedia);
 
-      return mediaList.toArray();
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions)) as typeof query;
+      }
+
+      query = query.orderBy(asc(productMedia.sortKey)) as typeof query;
+
+      if (offset !== undefined) {
+        query = query.offset(offset) as typeof query;
+      }
+      if (limit !== undefined) {
+        query = query.limit(limit) as typeof query;
+      }
+
+      return query;
     },
 
     // Mutations
     create: async ({
       sortKey,
       ...doc
-    }: Omit<ProductMedia, 'sortKey' | 'tags' | '_id' | 'created'> &
-      Partial<Pick<ProductMedia, 'sortKey' | 'tags' | '_id'>>): Promise<ProductMedia> => {
-      if (sortKey === undefined || sortKey === null) {
+    }: {
+      productId: string;
+      mediaId: string;
+      sortKey?: number;
+      tags?: string[];
+      meta?: unknown;
+      _id?: string;
+    }): Promise<ProductMedia> => {
+      let finalSortKey = sortKey;
+
+      if (finalSortKey === undefined || finalSortKey === null) {
         // Get next sort key
-        const lastProductMedia = (await ProductMedias.findOne(
-          {
-            productId: doc.productId,
-          },
-          {
-            sort: { sortKey: -1 },
-          },
-        )) || { sortKey: 0 };
-        sortKey = lastProductMedia.sortKey + 1;
+        const [lastMedia] = await db
+          .select({ sortKey: productMedia.sortKey })
+          .from(productMedia)
+          .where(eq(productMedia.productId, doc.productId))
+          .orderBy(desc(productMedia.sortKey))
+          .limit(1);
+
+        finalSortKey = (lastMedia?.sortKey || 0) + 1;
       }
 
-      const { insertedId: productMediaId } = await ProductMedias.insertOne({
-        _id: generateDbObjectId(),
+      const mediaId = doc._id || generateId();
+      await db.insert(productMedia).values({
+        _id: mediaId,
         created: new Date(),
         tags: [],
         ...doc,
-        sortKey,
+        sortKey: finalSortKey,
       });
 
-      const productMedia = (await ProductMedias.findOne(
-        generateDbFilterById(productMediaId),
-        {},
-      )) as ProductMedia;
+      const [inserted] = await db
+        .select()
+        .from(productMedia)
+        .where(eq(productMedia._id, mediaId))
+        .limit(1);
 
       await emit('PRODUCT_ADD_MEDIA', {
-        productMedia,
+        productMedia: inserted,
       });
 
-      return productMedia;
+      return inserted;
     },
 
-    delete: async (productMediaId: string) => {
-      const selector = generateDbFilterById(productMediaId);
+    delete: async (productMediaId: string): Promise<number> => {
+      // Delete associated texts
+      await db.delete(productMediaTexts).where(eq(productMediaTexts.productMediaId, productMediaId));
 
-      await ProductMediaTexts.deleteMany({ productMediaId });
-
-      const deletedResult = await ProductMedias.deleteOne(selector);
+      // Delete media
+      const result = await db.delete(productMedia).where(eq(productMedia._id, productMediaId));
 
       await emit('PRODUCT_REMOVE_MEDIA', {
         productMediaId,
       });
 
-      return deletedResult.deletedCount;
+      return result.rowsAffected || 0;
     },
 
     deleteMediaFiles: async ({
@@ -164,38 +233,66 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       excludedProductIds?: string[];
       excludedProductMediaIds?: string[];
     }): Promise<number> => {
-      const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
+      const conditions: ReturnType<typeof eq>[] = [];
 
-      if (!productId && excludedProductIds) {
-        selector.productId = { $nin: excludedProductIds };
+      if (productId) {
+        conditions.push(eq(productMedia.productId, productId));
+      } else if (excludedProductIds?.length) {
+        conditions.push(notInArray(productMedia.productId, excludedProductIds));
       }
 
-      if (excludedProductMediaIds) {
-        selector._id = { $nin: excludedProductMediaIds };
+      if (excludedProductMediaIds?.length) {
+        conditions.push(notInArray(productMedia._id, excludedProductMediaIds));
       }
 
-      const ids = await ProductMedias.distinct('_id', selector);
+      // Get IDs to delete
+      let selectQuery = db.select({ _id: productMedia._id }).from(productMedia);
+      if (conditions.length > 0) {
+        selectQuery = selectQuery.where(and(...conditions)) as typeof selectQuery;
+      }
+      const toDelete = await selectQuery;
 
-      await ProductMediaTexts.deleteMany({ productMediaId: { $in: ids } });
+      const ids = toDelete.map((row) => row._id);
 
-      const deletedResult = await ProductMedias.deleteMany(selector);
+      if (ids.length > 0) {
+        // Delete texts
+        await db.delete(productMediaTexts).where(inArray(productMediaTexts.productMediaId, ids));
 
-      await Promise.all(
-        ids.map(async (assortmentMediaId) =>
-          emit('PRODUCT_REMOVE_MEDIA', {
-            assortmentMediaId,
-          }),
-        ),
-      );
+        // Delete media
+        const result = await db.delete(productMedia).where(inArray(productMedia._id, ids));
 
-      return deletedResult.deletedCount;
+        // Emit events
+        await Promise.all(
+          ids.map(async (mediaId) =>
+            emit('PRODUCT_REMOVE_MEDIA', {
+              productMediaId: mediaId,
+            }),
+          ),
+        );
+
+        return result.rowsAffected || 0;
+      }
+
+      return 0;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (productMediaId: string, doc: Partial<ProductMedia>) => {
-      const selector = generateDbFilterById(productMediaId);
-      const modifier = { $set: doc };
-      return ProductMedias.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
+    update: async (productMediaId: string, doc: Partial<ProductMedia>): Promise<ProductMedia | null> => {
+      await db
+        .update(productMedia)
+        .set({
+          ...doc,
+          updated: new Date(),
+        })
+        .where(eq(productMedia._id, productMediaId));
+
+      const [updated] = await db
+        .select()
+        .from(productMedia)
+        .where(eq(productMedia._id, productMediaId))
+        .limit(1);
+
+      return updated || null;
     },
 
     updateManualOrder: async ({
@@ -208,23 +305,23 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     }): Promise<ProductMedia[]> => {
       const changedProductMediaIds = await Promise.all(
         sortKeys.map(async ({ productMediaId, sortKey }) => {
-          await ProductMedias.updateOne(generateDbFilterById(productMediaId), {
-            $set: {
+          await db
+            .update(productMedia)
+            .set({
               sortKey: sortKey + 1,
               updated: new Date(),
-            },
-          });
+            })
+            .where(eq(productMedia._id, productMediaId));
 
           return productMediaId;
         }),
       );
 
-      const productMedias = await ProductMedias.find(
-        {
-          _id: { $in: changedProductMediaIds },
-        },
-        { sort: { sortKey: 1 } },
-      ).toArray();
+      const productMedias = await db
+        .select()
+        .from(productMedia)
+        .where(inArray(productMedia._id, changedProductMediaIds))
+        .orderBy(asc(productMedia.sortKey));
 
       await emit('PRODUCT_REORDER_MEDIA', { productMedias });
 
@@ -237,18 +334,27 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
 
     texts: {
       // Queries
-      findMediaTexts: async (
-        query: { productMediaId?: string; productMediaIds?: string[] },
-        options?: mongodb.FindOptions,
-      ): Promise<ProductMediaText[]> => {
-        const selector: mongodb.Filter<ProductMediaText> = {};
+      findMediaTexts: async (query: {
+        productMediaId?: string;
+        productMediaIds?: string[];
+      }): Promise<ProductMediaText[]> => {
+        const conditions: ReturnType<typeof eq>[] = [];
+
         if (query.productMediaId) {
-          selector.productMediaId = query.productMediaId;
+          conditions.push(eq(productMediaTexts.productMediaId, query.productMediaId));
         }
-        if (query.productMediaIds) {
-          selector.productMediaId = { $in: query.productMediaIds };
+        if (query.productMediaIds?.length) {
+          conditions.push(inArray(productMediaTexts.productMediaId, query.productMediaIds));
         }
-        return ProductMediaTexts.find(selector, options).toArray();
+
+        if (conditions.length === 0) {
+          return db.select().from(productMediaTexts);
+        }
+
+        return db
+          .select()
+          .from(productMediaTexts)
+          .where(and(...conditions));
       },
 
       findLocalizedMediaText: async ({
@@ -257,14 +363,57 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       }: {
         productMediaId: string;
         locale: Intl.Locale;
-      }): Promise<ProductMediaText> => {
-        const text = await findLocalizedText<ProductMediaText>(
-          ProductMediaTexts,
-          { productMediaId },
-          locale,
-        );
+      }): Promise<ProductMediaText | null> => {
+        // Try exact match first
+        const [exactMatch] = await db
+          .select()
+          .from(productMediaTexts)
+          .where(
+            and(
+              eq(productMediaTexts.productMediaId, productMediaId),
+              eq(productMediaTexts.locale, locale.baseName),
+            ),
+          )
+          .limit(1);
 
-        return text;
+        if (exactMatch) return exactMatch;
+
+        // Try language only (without region)
+        const [languageMatch] = await db
+          .select()
+          .from(productMediaTexts)
+          .where(
+            and(
+              eq(productMediaTexts.productMediaId, productMediaId),
+              sql`${productMediaTexts.locale} LIKE ${locale.language + '%'}`,
+            ),
+          )
+          .limit(1);
+
+        if (languageMatch) return languageMatch;
+
+        // Try system locale
+        const [systemMatch] = await db
+          .select()
+          .from(productMediaTexts)
+          .where(
+            and(
+              eq(productMediaTexts.productMediaId, productMediaId),
+              eq(productMediaTexts.locale, systemLocale.baseName),
+            ),
+          )
+          .limit(1);
+
+        if (systemMatch) return systemMatch;
+
+        // Return any text for this media
+        const [anyMatch] = await db
+          .select()
+          .from(productMediaTexts)
+          .where(eq(productMediaTexts.productMediaId, productMediaId))
+          .limit(1);
+
+        return anyMatch || null;
       },
 
       // Mutations
@@ -275,13 +424,11 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
           'productMediaId' | 'locale'
         >)[],
       ): Promise<ProductMediaText[]> => {
-        const mediaTexts = (
-          await Promise.all(
-            texts.map(async ({ locale, ...text }) =>
-              upsertLocalizedText(productMediaId, new Intl.Locale(locale), text),
-            ),
-          )
-        ).filter(Boolean) as ProductMediaText[];
+        const mediaTexts = await Promise.all(
+          texts.map(async ({ locale, ...text }) =>
+            upsertLocalizedText(productMediaId, new Intl.Locale(locale), text),
+          ),
+        );
 
         return mediaTexts;
       },
@@ -289,4 +436,4 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
   };
 };
 
-export type ProductMediaModule = Awaited<ReturnType<typeof configureProductMediaModule>>;
+export type ProductMediaModule = ReturnType<typeof configureProductMediaModule>;

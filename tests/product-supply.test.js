@@ -5,16 +5,20 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  getDrizzleDb,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
+import { products } from '@unchainedshop/core-products';
+import { eq } from '@unchainedshop/store';
 
 let graphqlFetch;
-let db;
+let drizzleDb;
 
 test.describe('Product: Supply', async () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
@@ -70,7 +74,11 @@ test.describe('Product: Supply', async () => {
       });
 
       assert.strictEqual(updateProductSupply._id, SimpleProduct._id);
-      const updatedProduct = await db.collection('products').findOne({ _id: SimpleProduct._id });
+      const [updatedProduct] = await drizzleDb
+        .select()
+        .from(products)
+        .where(eq(products._id, SimpleProduct._id))
+        .limit(1);
       assert.deepStrictEqual(updatedProduct.supply, {
         weightInGram: 100,
         heightInMillimeters: 200,

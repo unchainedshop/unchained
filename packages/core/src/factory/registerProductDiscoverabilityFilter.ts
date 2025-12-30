@@ -19,16 +19,14 @@ export default function registerProductDiscoverabilityFilter({
       return {
         ...FilterAdapter.actions(params),
 
-        transformProductSelector: async (lastSelector, options) => {
+        transformProductFilterQuery: async (lastFilterQuery, options) => {
           const { key } = options || {};
 
           if (!key) {
-            const newSelector = { ...lastSelector };
-            if (!newSelector.$and) newSelector.$and = [];
-            newSelector.$and.push({ tags: { $ne: hiddenTagValue } });
-            return newSelector;
+            // When no specific key is provided, add tag exclusion filter
+            return [...lastFilterQuery, { key: 'tags', value: { $ne: hiddenTagValue } }];
           }
-          return lastSelector;
+          return lastFilterQuery;
         },
       };
     },

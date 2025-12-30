@@ -11,16 +11,9 @@ export default (unchainedAPI: UnchainedCore) =>
   >(async (queries) => {
     const productVariationIds = [...new Set(queries.map((q) => q.productVariationId).filter(Boolean))];
 
-    const texts = await unchainedAPI.modules.products.variations.texts.findVariationTexts(
-      {
-        productVariationIds,
-      },
-      {
-        sort: {
-          productVariationId: 1,
-        },
-      },
-    );
+    const texts = await unchainedAPI.modules.products.variations.texts.findVariationTexts({
+      productVariationIds,
+    });
 
     const localeMap = buildLocaleMap(queries, texts);
 

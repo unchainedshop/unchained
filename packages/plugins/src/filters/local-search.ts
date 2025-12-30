@@ -22,17 +22,10 @@ const LocalSearch: IFilterAdapter = {
 
         if (!queryString) return productIds;
 
-        const products = await params.modules.products.texts.findTexts(
-          {
-            queryString,
-            productIds: productIds ? [...new Set(productIds)] : undefined,
-          },
-          {
-            projection: {
-              productId: 1,
-            },
-          },
-        );
+        const products = await params.modules.products.texts.findTexts({
+          queryString,
+          productIds: productIds ? [...new Set(productIds)] : undefined,
+        });
 
         return products.map(({ productId }) => productId);
       },

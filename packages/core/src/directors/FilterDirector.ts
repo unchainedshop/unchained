@@ -1,6 +1,11 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
-import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.ts';
+import type {
+  FilterAdapterActions,
+  FilterContext,
+  IFilterAdapter,
+  ProductFilterQueryItem,
+} from './FilterAdapter.ts';
 import {
   type Filter,
   filtersSettings,
@@ -8,8 +13,8 @@ import {
   type SearchConfiguration,
   type SearchFilterQuery,
   type SearchQuery,
+  type SortStage,
 } from '@unchainedshop/core-filters';
-import type { Product } from '@unchainedshop/core-products';
 import type { Modules } from '../modules.ts';
 
 export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
@@ -109,14 +114,14 @@ export const FilterDirector: IFilterDirector = {
         }, params.productIds);
       },
 
-      transformProductSelector: async (defaultSelector, options) => {
-        return reduceAdapters<mongodb.Filter<Product>>(async (lastSelector, adapter) => {
-          return adapter.transformProductSelector(await lastSelector, options);
-        }, defaultSelector);
+      transformProductFilterQuery: async (defaultFilterQuery, options) => {
+        return reduceAdapters<ProductFilterQueryItem[]>(async (lastFilterQuery, adapter) => {
+          return adapter.transformProductFilterQuery(await lastFilterQuery, options);
+        }, defaultFilterQuery);
       },
 
       transformSortStage: async (defaultStage, options) => {
-        return reduceAdapters<mongodb.FindOptions['sort']>(async (lastSortStage, adapter) => {
+        return reduceAdapters<SortStage>(async (lastSortStage, adapter) => {
           return adapter.transformSortStage(await lastSortStage, options);
         }, defaultStage);
       },
@@ -136,17 +141,21 @@ export const FilterDirector: IFilterDirector = {
   ) {
     const { modules } = unchainedAPI;
     const director = await FilterDirector.actions({ filter, searchQuery: {} }, unchainedAPI);
-    const productSelector = await director.transformProductSelector(
-      modules.products.search.buildActiveDraftStatusFilter(),
-      {
-        key: filter.key,
-        value,
-      },
-    );
 
-    if (!productSelector) return [];
+    // Build filter query from adapter transformations
+    const baseFilterQuery: ProductFilterQueryItem[] = [];
+    const productFilterQuery = await director.transformProductFilterQuery(baseFilterQuery, {
+      key: filter.key,
+      value,
+    });
+
+    // If no filter query items, return all active/draft products
+    if (!productFilterQuery || productFilterQuery.length === 0) {
+      return modules.products.findProductIds({ includeDrafts: true });
+    }
+
     return modules.products.findProductIds({
-      productSelector,
+      filterQuery: productFilterQuery,
       includeDrafts: true,
     });
   },
@@ -160,7 +169,7 @@ export const FilterDirector: IFilterDirector = {
       filter.type === FilterType.SWITCH
         ? {
             true: await this.findProductIds(filter, { value: true }, unchainedAPI),
-            false: await this.findProductIds(filter, { value: { $in: [null, false] } }, unchainedAPI),
+            false: await this.findProductIds(filter, { value: false }, unchainedAPI),
           }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
             const accumulator = await accumulatorPromise;

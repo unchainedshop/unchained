@@ -8,14 +8,9 @@ export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ productMediaId: string; locale: Intl.Locale }, ProductMediaText>(async (queries) => {
     const productMediaIds = [...new Set(queries.map((q) => q.productMediaId).filter(Boolean))];
 
-    const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts(
-      { productMediaIds },
-      {
-        sort: {
-          productMediaId: 1,
-        },
-      },
-    );
+    const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts({
+      productMediaIds,
+    });
 
     const localeMap = buildLocaleMap(queries, texts);
     const textsMap = buildTextMap(localeMap, texts, (text) => text.productMediaId);

@@ -140,7 +140,7 @@ const ETHMinter: IWarehousingAdapter = {
           locale: locale || systemLocale,
         });
 
-        const name = `${text.title} #${tokenSerialNumber}`;
+        const name = `${text?.title || 'Untitled'} #${tokenSerialNumber}`;
 
         const isDefaultLanguageActive = locale ? locale.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
@@ -153,7 +153,7 @@ const ETHMinter: IWarehousingAdapter = {
 
         return {
           name,
-          description: text.description,
+          description: text?.description,
           image: url,
           properties: ercMetadataProperties,
           localization,

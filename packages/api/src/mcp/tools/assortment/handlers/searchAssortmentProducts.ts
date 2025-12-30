@@ -39,7 +39,6 @@ export default async function searchAssortmentProducts(
     limit,
     offset,
     productIds: result.aggregatedFilteredProductIds,
-    productSelector: result.searchConfiguration.productSelector,
     sort: result.searchConfiguration.sortStage,
   });
   const products_normalized = await Promise.all(

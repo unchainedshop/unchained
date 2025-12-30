@@ -1,11 +1,10 @@
-import {
-  defaultFilterSelector,
-  defaultProductSelector,
-  defaultSortStage,
-  type SearchQuery,
-} from '@unchainedshop/core-filters';
+import { defaultFilterSelector, defaultSortStage, type SearchQuery } from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
-import { FilterDirector, type SearchProductsOptions } from '../directors/index.ts';
+import {
+  FilterDirector,
+  type SearchProductsOptions,
+  type ProductFilterQueryItem,
+} from '../directors/index.ts';
 
 export async function searchProductsService(
   this: Modules,
@@ -18,16 +17,18 @@ export async function searchProductsService(
     defaultFilterSelector(searchQuery),
     options,
   );
-  const productSelector = await filterActions.transformProductSelector(
-    defaultProductSelector(searchQuery, { modules: this }),
-    options,
-  );
-  const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery), options);
+
+  // Build product filter query from adapters
+  const baseFilterQuery: ProductFilterQueryItem[] = [];
+  const productFilterQuery = await filterActions.transformProductFilterQuery(baseFilterQuery, options);
+
+  // Get sort stage from search query
+  const sortStage = defaultSortStage(searchQuery);
 
   const searchConfiguration: SearchProductsOptions = {
     searchQuery,
     filterSelector,
-    productSelector,
+    productFilterQuery,
     sortStage,
     ...options,
     forceLiveCollection: !!options.forceLiveCollection,

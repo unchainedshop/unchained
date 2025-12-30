@@ -1,17 +1,27 @@
-import type { ModuleInput } from '@unchainedshop/mongodb';
+/**
+ * Product Variations Module - Drizzle ORM with SQLite/Turso
+ */
+
 import { emit, registerEvents } from '@unchainedshop/events';
+import { systemLocale } from '@unchainedshop/utils';
 import {
-  findLocalizedText,
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-} from '@unchainedshop/mongodb';
+  eq,
+  and,
+  isNull,
+  inArray,
+  notInArray,
+  sql,
+  generateId,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import {
-  type ProductVariation,
-  ProductVariationsCollection,
-  type ProductVariationText,
+  productVariations,
+  productVariationTexts,
   ProductVariationType,
-} from '../db/ProductVariationsCollection.ts';
+  type ProductVariationRow,
+  type ProductVariationTextRow,
+  type ProductVariationTypeType,
+} from '../db/index.ts';
 
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',
@@ -21,10 +31,12 @@ const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_REMOVE_VARIATION_OPTION',
 ];
 
-export const configureProductVariationsModule = async ({ db }: ModuleInput<Record<string, unknown>>) => {
-  registerEvents(PRODUCT_VARIATION_EVENTS);
+export type ProductVariation = ProductVariationRow;
+export type ProductVariationText = ProductVariationTextRow;
+export { ProductVariationType, type ProductVariationTypeType };
 
-  const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);
+export const configureProductVariationsModule = ({ db }: { db: DrizzleDb }) => {
+  registerEvents(PRODUCT_VARIATION_EVENTS);
 
   const upsertLocalizedText = async (
     {
@@ -32,7 +44,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       productVariationOptionValue,
     }: {
       productVariationId: string;
-      productVariationOptionValue?: string;
+      productVariationOptionValue?: string | null;
     },
     locale: Intl.Locale,
     text: Omit<
@@ -40,130 +52,199 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       'locale' | 'productVariationId' | 'productVariationOptionValue'
     >,
   ): Promise<ProductVariationText> => {
-    const productVariationText = (await ProductVariationTexts.findOneAndUpdate(
-      {
-        productVariationId,
-        productVariationOptionValue: productVariationOptionValue || {
-          $eq: null,
-        },
-        locale: locale.baseName,
-      },
-      {
-        $set: {
+    // Try to find existing text
+    const conditions = [
+      eq(productVariationTexts.productVariationId, productVariationId),
+      eq(productVariationTexts.locale, locale.baseName),
+    ];
+
+    if (productVariationOptionValue) {
+      conditions.push(
+        eq(productVariationTexts.productVariationOptionValue, productVariationOptionValue),
+      );
+    } else {
+      conditions.push(isNull(productVariationTexts.productVariationOptionValue));
+    }
+
+    const [existing] = await db
+      .select()
+      .from(productVariationTexts)
+      .where(and(...conditions))
+      .limit(1);
+
+    let variationText: ProductVariationText;
+
+    if (existing) {
+      // Update existing
+      await db
+        .update(productVariationTexts)
+        .set({
           ...text,
           updated: new Date(),
-        },
-        $setOnInsert: {
-          _id: generateDbObjectId(),
-          productVariationId,
-          productVariationOptionValue: productVariationOptionValue || null,
-          created: new Date(),
-          locale: locale.baseName,
-        },
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    )) as ProductVariationText;
+        })
+        .where(eq(productVariationTexts._id, existing._id));
+
+      const [updated] = await db
+        .select()
+        .from(productVariationTexts)
+        .where(eq(productVariationTexts._id, existing._id))
+        .limit(1);
+      variationText = updated;
+    } else {
+      // Insert new
+      const textId = generateId();
+      await db.insert(productVariationTexts).values({
+        _id: textId,
+        productVariationId,
+        productVariationOptionValue: productVariationOptionValue || null,
+        locale: locale.baseName,
+        ...text,
+        created: new Date(),
+      });
+
+      const [inserted] = await db
+        .select()
+        .from(productVariationTexts)
+        .where(eq(productVariationTexts._id, textId))
+        .limit(1);
+      variationText = inserted;
+    }
 
     await emit('PRODUCT_UPDATE_VARIATION_TEXT', {
       productVariationId,
       productVariationOptionValue,
-      text: productVariationText,
+      text: variationText,
     });
-    return productVariationText;
+
+    return variationText;
   };
 
   return {
     // Queries
-    findProductVariationByKey: async ({ productId, key }: { productId: string; key: string }) => {
-      const selector: mongodb.Filter<ProductVariation> = {
-        productId,
-        key,
-      };
-      return ProductVariations.findOne(selector, {});
+    findProductVariationByKey: async ({
+      productId,
+      key,
+    }: {
+      productId: string;
+      key: string;
+    }): Promise<ProductVariation | null> => {
+      const [result] = await db
+        .select()
+        .from(productVariations)
+        .where(and(eq(productVariations.productId, productId), eq(productVariations.key, key)))
+        .limit(1);
+      return result || null;
     },
 
-    findProductVariation: async ({ productVariationId }: { productVariationId: string }) => {
-      return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
+    findProductVariation: async ({
+      productVariationId,
+    }: {
+      productVariationId: string;
+    }): Promise<ProductVariation | null> => {
+      const [result] = await db
+        .select()
+        .from(productVariations)
+        .where(eq(productVariations._id, productVariationId))
+        .limit(1);
+      return result || null;
     },
 
-    findProductVariations: async (
-      query: {
-        productId?: string;
-        productIds?: string[];
-        productVariationIds?: string[];
-        tags?: string[];
-        limit?: number;
-        offset?: number;
-      },
-      options?: mongodb.FindOptions,
-    ): Promise<ProductVariation[]> => {
+    findProductVariations: async (query: {
+      productId?: string;
+      productIds?: string[];
+      productVariationIds?: string[];
+      tags?: string[];
+      limit?: number;
+      offset?: number;
+    }): Promise<ProductVariation[]> => {
       const { productId, productIds, productVariationIds, tags, offset, limit } = query;
-      const selector: mongodb.Filter<ProductVariation> = {};
+      const conditions: ReturnType<typeof eq>[] = [];
 
       if (productId) {
-        selector.productId = productId;
+        conditions.push(eq(productVariations.productId, productId));
       }
-      if (productIds) {
-        selector.productId = { $in: productIds };
+      if (productIds?.length) {
+        conditions.push(inArray(productVariations.productId, productIds));
       }
-      if (productVariationIds) {
-        selector._id = { $in: productVariationIds };
+      if (productVariationIds?.length) {
+        conditions.push(inArray(productVariations._id, productVariationIds));
       }
-      if (tags && tags.length > 0) {
-        selector.tags = { $all: tags };
+      if (tags?.length) {
+        // All tags must be present
+        for (const tag of tags) {
+          conditions.push(
+            sql`EXISTS (SELECT 1 FROM json_each(${productVariations.tags}) WHERE value = ${tag})`,
+          );
+        }
       }
 
-      const variations = ProductVariations.find(selector, {
-        skip: offset,
-        limit,
-        ...options,
-      });
+      let dbQuery = db.select().from(productVariations);
 
-      return variations.toArray();
+      if (conditions.length > 0) {
+        dbQuery = dbQuery.where(and(...conditions)) as typeof dbQuery;
+      }
+
+      if (offset !== undefined) {
+        dbQuery = dbQuery.offset(offset) as typeof dbQuery;
+      }
+      if (limit !== undefined) {
+        dbQuery = dbQuery.limit(limit) as typeof dbQuery;
+      }
+
+      return dbQuery;
     },
 
     create: async ({
       type,
       ...doc
-    }: Omit<ProductVariation, '_id' | 'created'> &
-      Pick<Partial<ProductVariation>, '_id' | 'created'> & {
-        locale?: string;
-        title?: string;
-      }): Promise<ProductVariation> => {
-      const { insertedId: productVariationId } = await ProductVariations.insertOne({
-        _id: generateDbObjectId(),
+    }: {
+      type: string;
+      productId: string;
+      key: string;
+      options?: string[];
+      _id?: string;
+      locale?: string;
+      title?: string;
+    } & Partial<
+      Omit<ProductVariation, '_id' | 'type' | 'productId' | 'key'>
+    >): Promise<ProductVariation> => {
+      const variationId = doc._id || generateId();
+      await db.insert(productVariations).values({
+        _id: variationId,
         created: new Date(),
-        type: ProductVariationType[type],
+        type: ProductVariationType[type as keyof typeof ProductVariationType] || type,
         ...doc,
       });
 
-      const productVariation = (await ProductVariations.findOne(
-        generateDbFilterById(productVariationId),
-        {},
-      )) as ProductVariation;
+      const [inserted] = await db
+        .select()
+        .from(productVariations)
+        .where(eq(productVariations._id, variationId))
+        .limit(1);
 
       await emit('PRODUCT_CREATE_VARIATION', {
-        productVariation,
+        productVariation: inserted,
       });
 
-      return productVariation;
+      return inserted;
     },
 
-    delete: async (productVariationId: string) => {
-      const selector = generateDbFilterById(productVariationId);
+    delete: async (productVariationId: string): Promise<number> => {
+      // Delete associated texts
+      await db
+        .delete(productVariationTexts)
+        .where(eq(productVariationTexts.productVariationId, productVariationId));
 
-      await ProductVariationTexts.deleteMany({ productVariationId });
-
-      const deletedResult = await ProductVariations.deleteOne(selector);
+      // Delete variation
+      const result = await db
+        .delete(productVariations)
+        .where(eq(productVariations._id, productVariationId));
 
       await emit('PRODUCT_REMOVE_VARIATION', {
         productVariationId,
       });
 
-      return deletedResult.deletedCount;
+      return result.rowsAffected || 0;
     },
 
     deleteVariations: async ({
@@ -172,60 +253,120 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
     }: {
       productId?: string;
       excludedProductIds?: string[];
-    }) => {
-      const selector: mongodb.Filter<ProductVariation> = {};
+    }): Promise<number> => {
+      const conditions: ReturnType<typeof eq>[] = [];
+
       if (productId) {
-        selector.productId = productId;
-      } else if (excludedProductIds) {
-        selector.productId = { $nin: excludedProductIds };
+        conditions.push(eq(productVariations.productId, productId));
+      } else if (excludedProductIds?.length) {
+        conditions.push(notInArray(productVariations.productId, excludedProductIds));
       }
 
-      const ids = await ProductVariations.find(selector, { projection: { _id: true } })
-        .map((m) => m._id)
-        .toArray();
-      await ProductVariationTexts.deleteMany({ productVariationId: { $in: ids } });
+      if (conditions.length === 0) return 0;
 
-      const deletedResult = await ProductVariations.deleteMany(selector);
-      return deletedResult.deletedCount;
+      // Get IDs to delete
+      const toDelete = await db
+        .select({ _id: productVariations._id })
+        .from(productVariations)
+        .where(and(...conditions));
+
+      const ids = toDelete.map((row) => row._id);
+
+      if (ids.length > 0) {
+        // Delete texts
+        await db
+          .delete(productVariationTexts)
+          .where(inArray(productVariationTexts.productVariationId, ids));
+      }
+
+      // Delete variations
+      const result = await db.delete(productVariations).where(and(...conditions));
+      return result.rowsAffected || 0;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (productVariationId: string, doc: Partial<ProductVariation>) => {
-      const selector = generateDbFilterById(productVariationId);
-      const modifier = { $set: doc };
-      return ProductVariations.findOneAndUpdate(selector, modifier, {
-        returnDocument: 'after',
-      });
+    update: async (
+      productVariationId: string,
+      doc: Partial<ProductVariation>,
+    ): Promise<ProductVariation | null> => {
+      await db
+        .update(productVariations)
+        .set({
+          ...doc,
+          updated: new Date(),
+        })
+        .where(eq(productVariations._id, productVariationId));
+
+      const [updated] = await db
+        .select()
+        .from(productVariations)
+        .where(eq(productVariations._id, productVariationId))
+        .limit(1);
+
+      return updated || null;
     },
 
-    addVariationOption: async (productVariationId, { value }: { value: string }) => {
-      const productVariation = await ProductVariations.findOneAndUpdate(
-        generateDbFilterById(productVariationId),
-        {
-          $set: {
-            updated: new Date(),
-          },
-          $addToSet: {
-            options: value,
-          },
-        },
-        { returnDocument: 'after' },
+    addVariationOption: async (
+      productVariationId: string,
+      { value }: { value: string },
+    ): Promise<ProductVariation | null> => {
+      const [current] = await db
+        .select()
+        .from(productVariations)
+        .where(eq(productVariations._id, productVariationId))
+        .limit(1);
+
+      if (!current) return null;
+
+      const currentOptions = current.options || [];
+      if (currentOptions.includes(value)) {
+        // Already exists
+        return current;
+      }
+
+      await db
+        .update(productVariations)
+        .set({
+          options: [...currentOptions, value],
+          updated: new Date(),
+        })
+        .where(eq(productVariations._id, productVariationId));
+
+      const [updated] = await db
+        .select()
+        .from(productVariations)
+        .where(eq(productVariations._id, productVariationId))
+        .limit(1);
+
+      if (!updated) return null;
+
+      await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation: updated, value });
+      return updated;
+    },
+
+    removeVariationOption: async (
+      productVariationId: string,
+      productVariationOptionValue: string,
+    ): Promise<void> => {
+      const [current] = await db
+        .select()
+        .from(productVariations)
+        .where(eq(productVariations._id, productVariationId))
+        .limit(1);
+
+      if (!current) return;
+
+      const updatedOptions = (current.options || []).filter(
+        (opt) => opt !== productVariationOptionValue,
       );
 
-      if (!productVariation) return null;
-      await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
-      return productVariation;
-    },
-
-    removeVariationOption: async (productVariationId: string, productVariationOptionValue: string) => {
-      await ProductVariations.updateOne(generateDbFilterById(productVariationId), {
-        $set: {
+      await db
+        .update(productVariations)
+        .set({
+          options: updatedOptions,
           updated: new Date(),
-        },
-        $pull: {
-          options: productVariationOptionValue,
-        },
-      });
+        })
+        .where(eq(productVariations._id, productVariationId));
 
       await emit('PRODUCT_REMOVE_VARIATION_OPTION', {
         productVariationId,
@@ -239,25 +380,37 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
 
     texts: {
       // Queries
-      findVariationTexts: async (
-        query: {
-          productVariationId?: string;
-          productVariationIds?: string[];
-          productVariationOptionValue?: string | null;
-        },
-        options?: mongodb.FindOptions,
-      ): Promise<ProductVariationText[]> => {
-        const selector: mongodb.Filter<ProductVariationText> = {};
+      findVariationTexts: async (query: {
+        productVariationId?: string;
+        productVariationIds?: string[];
+        productVariationOptionValue?: string | null;
+      }): Promise<ProductVariationText[]> => {
+        const conditions: ReturnType<typeof eq>[] = [];
+
         if (query.productVariationId) {
-          selector.productVariationId = query.productVariationId;
+          conditions.push(eq(productVariationTexts.productVariationId, query.productVariationId));
         }
-        if (query.productVariationIds) {
-          selector.productVariationId = { $in: query.productVariationIds };
+        if (query.productVariationIds?.length) {
+          conditions.push(inArray(productVariationTexts.productVariationId, query.productVariationIds));
         }
         if (query.productVariationOptionValue !== undefined) {
-          selector.productVariationOptionValue = query.productVariationOptionValue || { $eq: null };
+          if (query.productVariationOptionValue === null) {
+            conditions.push(isNull(productVariationTexts.productVariationOptionValue));
+          } else {
+            conditions.push(
+              eq(productVariationTexts.productVariationOptionValue, query.productVariationOptionValue),
+            );
+          }
         }
-        return ProductVariationTexts.find(selector, options).toArray();
+
+        if (conditions.length === 0) {
+          return db.select().from(productVariationTexts);
+        }
+
+        return db
+          .select()
+          .from(productVariationTexts)
+          .where(and(...conditions));
       },
 
       findLocalizedVariationText: async ({
@@ -268,16 +421,54 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
         locale: Intl.Locale;
         productVariationId: string;
         productVariationOptionValue?: string;
-      }): Promise<ProductVariationText> => {
-        const selector: mongodb.Filter<ProductVariationText> = { productVariationId };
-        selector.productVariationOptionValue = productVariationOptionValue ?? { $eq: null };
-        const text = await findLocalizedText<ProductVariationText>(
-          ProductVariationTexts,
-          selector,
-          locale,
-        );
+      }): Promise<ProductVariationText | null> => {
+        const baseConditions = [eq(productVariationTexts.productVariationId, productVariationId)];
 
-        return text;
+        if (productVariationOptionValue) {
+          baseConditions.push(
+            eq(productVariationTexts.productVariationOptionValue, productVariationOptionValue),
+          );
+        } else {
+          baseConditions.push(isNull(productVariationTexts.productVariationOptionValue));
+        }
+
+        // Try exact match first
+        const [exactMatch] = await db
+          .select()
+          .from(productVariationTexts)
+          .where(and(...baseConditions, eq(productVariationTexts.locale, locale.baseName)))
+          .limit(1);
+
+        if (exactMatch) return exactMatch;
+
+        // Try language only (without region)
+        const [languageMatch] = await db
+          .select()
+          .from(productVariationTexts)
+          .where(
+            and(...baseConditions, sql`${productVariationTexts.locale} LIKE ${locale.language + '%'}`),
+          )
+          .limit(1);
+
+        if (languageMatch) return languageMatch;
+
+        // Try system locale
+        const [systemMatch] = await db
+          .select()
+          .from(productVariationTexts)
+          .where(and(...baseConditions, eq(productVariationTexts.locale, systemLocale.baseName)))
+          .limit(1);
+
+        if (systemMatch) return systemMatch;
+
+        // Return any text for this variation
+        const [anyMatch] = await db
+          .select()
+          .from(productVariationTexts)
+          .where(and(...baseConditions))
+          .limit(1);
+
+        return anyMatch || null;
       },
 
       // Mutations
@@ -289,7 +480,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
         >)[],
         productVariationOptionValue?: string,
       ): Promise<ProductVariationText[]> => {
-        const productVariationTexts = await Promise.all(
+        const productVariationTextsList = await Promise.all(
           texts.map(async ({ locale, ...text }) =>
             upsertLocalizedText(
               {
@@ -302,10 +493,10 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
           ),
         );
 
-        return productVariationTexts;
+        return productVariationTextsList;
       },
     },
   };
 };
 
-export type ProductVariationsModule = Awaited<ReturnType<typeof configureProductVariationsModule>>;
+export type ProductVariationsModule = ReturnType<typeof configureProductVariationsModule>;

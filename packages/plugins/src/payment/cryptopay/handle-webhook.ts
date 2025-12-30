@@ -2,7 +2,6 @@ import { createLogger } from '@unchainedshop/logger';
 import { type Context } from '@unchainedshop/api';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { type CryptopayModule } from './module.ts';
-import { type ProductPriceRate } from '@unchainedshop/core-products';
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_MAX_RATE_AGE = '360' } = process.env;
 
@@ -100,7 +99,7 @@ export default async function handleWebhook(
     const timestampDate = new Date(timestamp);
     const expiresAt = new Date(new Date().getTime() + parseInt(CRYPTOPAY_MAX_RATE_AGE, 10) * 1000);
 
-    const rateData: ProductPriceRate = {
+    const rateData = {
       baseCurrency,
       quoteCurrency: token,
       rate,

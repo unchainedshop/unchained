@@ -1,7 +1,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert';
-import { initDb, stopDb } from '@unchainedshop/mongodb';
-import type { Db } from 'mongodb';
+import { createTestDb, type DrizzleDbConnection } from '@unchainedshop/store';
+import { initializeUsersSchema } from '../db/index.ts';
 import { toArrayBuffer, buf2hex, configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts';
 
 describe('WebAuthn Module', () => {
@@ -80,18 +80,20 @@ describe('WebAuthn Module', () => {
   });
 
   describe('configureUsersWebAuthnModule', () => {
-    let db: Db;
+    let connection: DrizzleDbConnection;
 
     before(async () => {
-      db = await initDb({ forceInMemory: true });
+      // Create in-memory SQLite database for testing
+      connection = createTestDb();
+      await initializeUsersSchema(connection.db);
     });
 
     after(async () => {
-      await stopDb();
+      connection.close();
     });
 
     it('should initialize the module', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       assert.ok(webAuthnModule);
       assert.ok(typeof webAuthnModule.createCredentialCreationOptions === 'function');
@@ -103,7 +105,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should create credential creation options with correct structure', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const options = await webAuthnModule.createCredentialCreationOptions(
         'https://example.com',
@@ -127,7 +129,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should create credential request options with correct structure', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const options = await webAuthnModule.createCredentialRequestOptions(
         'https://example.com',
@@ -147,7 +149,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should delete user WebAuthn credentials', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       // Create some credentials first (no delay needed - IDs are now unique)
       await webAuthnModule.createCredentialCreationOptions('https://example.com', 'testuser-delete');
@@ -160,7 +162,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should return null when verifying credential creation without a request', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const result = await webAuthnModule.verifyCredentialCreation('nonexistent-user', {
         id: 'some-id',
@@ -178,7 +180,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should return null when verifying credential request without a matching request', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const result = await webAuthnModule.verifyCredentialRequest([], 'testuser', {
         requestId: 'nonexistent-request-id',
@@ -199,7 +201,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should return null when verifying credential request without matching public key', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       // First create a request
       const options = await webAuthnModule.createCredentialRequestOptions(
@@ -227,7 +229,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should return null when verifying credential creation with invalid credentials', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       // First create a request
       await webAuthnModule.createCredentialCreationOptions(
@@ -253,7 +255,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should return null when verifying credential request with invalid signature', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       // First create a request
       const options = await webAuthnModule.createCredentialRequestOptions(
@@ -295,7 +297,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should handle multiple credential creation requests for the same user', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const options1 = await webAuthnModule.createCredentialCreationOptions(
         'https://example.com',
@@ -313,7 +315,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should generate unique challenges for each request', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const challenges = new Set<string>();
       for (let i = 0; i < 5; i++) {
@@ -331,7 +333,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should return null for unknown AAGUID in findMDSMetadataForAAGUID', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const result = await webAuthnModule.findMDSMetadataForAAGUID(
         '00000000-0000-0000-0000-000000000000',
@@ -342,7 +344,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should lookup metadata for known AAGUID (YubiKey 5)', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       // YubiKey 5 FIPS Series AAGUID
       const result = await webAuthnModule.findMDSMetadataForAAGUID(
@@ -357,7 +359,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should accept custom timeout in credential creation options', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const options = await webAuthnModule.createCredentialCreationOptions(
         'https://example.com',
@@ -370,7 +372,7 @@ describe('WebAuthn Module', () => {
     });
 
     it('should accept custom userVerification in credential request options', async () => {
-      const webAuthnModule = await configureUsersWebAuthnModule({ db });
+      const webAuthnModule = await configureUsersWebAuthnModule({ db: connection.db });
 
       const options = await webAuthnModule.createCredentialRequestOptions(
         'https://example.com',

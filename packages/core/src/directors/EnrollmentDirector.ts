@@ -35,10 +35,10 @@ const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {
   adapterSortKey: 'orderIndex',
 });
 
-const findAppropriateAdapters = (productPlan?: ProductPlan) =>
+const findAppropriateAdapters = (productPlan?: ProductPlan | null) =>
   baseDirector.getAdapters({
     adapterFilter: (Adapter: IEnrollmentAdapter) => {
-      const activated = Adapter.isActivatedFor(productPlan);
+      const activated = Adapter.isActivatedFor(productPlan ?? undefined);
       if (!activated) {
         logger.warn(`Enrollment Director -> ${Adapter.key} (${Adapter.version}) skipped`);
       }

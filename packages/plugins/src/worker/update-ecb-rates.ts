@@ -1,5 +1,4 @@
 import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
-import type { ProductPriceRate } from '@unchainedshop/core-products';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:worker:update-ecb-rates');
@@ -69,7 +68,7 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
           },
         };
 
-      const rates: ProductPriceRate[] = data
+      const rates = data
         .map((d) => {
           return {
             baseCurrency,

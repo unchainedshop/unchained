@@ -1,9 +1,9 @@
 import type { Context } from '../../../context.ts';
 import type { Product } from '@unchainedshop/core-products';
-import {
-  type ProductReview as ProductReviewType,
-  ProductReviewVoteType,
-  type ProductVote,
+import type {
+  ProductReview as ProductReviewType,
+  ProductReviewVoteTypeType,
+  ProductVote,
 } from '@unchainedshop/core-products';
 import type { User } from '@unchainedshop/core-users';
 
@@ -12,7 +12,7 @@ type HelperType<P, T> = (product: ProductReviewType, params: P, context: Context
 export interface ProductReviewHelperTypes {
   author: HelperType<never, Promise<User>>;
   product: HelperType<never, Promise<Product>>;
-  voteCount: HelperType<{ type: ProductReviewVoteType }, number>;
+  voteCount: HelperType<{ type: ProductReviewVoteTypeType }, number>;
   ownVotes: HelperType<never, Promise<ProductVote[]>>;
 }
 export const ProductReview: ProductReviewHelperTypes = {

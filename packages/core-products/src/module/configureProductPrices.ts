@@ -1,14 +1,26 @@
+/**
+ * Product Prices Module - Drizzle ORM with SQLite/Turso
+ */
+
+import { eq, and, or, lte, gte, desc, sql, generateId, type DrizzleDb } from '@unchainedshop/store';
 import { getPriceLevels } from './utils/getPriceLevels.ts';
 import { getPriceRange } from './utils/getPriceRange.ts';
-import { type ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.ts';
 import {
-  type Product,
+  productRates,
+  type ProductRateRow,
+  type ProductRow,
   type ProductConfiguration,
   type ProductPrice,
-  type ProductPriceRange,
-} from '../db/ProductsCollection.ts';
+} from '../db/index.ts';
 
-export const getDecimals = (originDecimals) => {
+export type ProductPriceRate = ProductRateRow;
+
+export interface ProductPriceRange {
+  minPrice: ProductPrice;
+  maxPrice: ProductPrice;
+}
+
+export const getDecimals = (originDecimals?: number | null) => {
   if (originDecimals === null || originDecimals === undefined) {
     return 2;
   }
@@ -48,14 +60,14 @@ export const configureProductPricesModule = ({
   db,
 }: {
   proxyProducts: (
-    product: Product,
+    product: ProductRow,
     vectors: ProductConfiguration[],
     options: { includeInactive?: boolean },
-  ) => Promise<Product[]>;
-  db: any;
+  ) => Promise<ProductRow[]>;
+  db: DrizzleDb;
 }) => {
   const catalogPrice = async (
-    product: Product,
+    product: ProductRow,
     {
       countryCode,
       currencyCode,
@@ -88,12 +100,12 @@ export const configureProductPricesModule = ({
 
     priceRange: getPriceRange,
 
-    async catalogPrices(product: Product): Promise<ProductPrice[]> {
+    async catalogPrices(product: ProductRow): Promise<ProductPrice[]> {
       return (product.commerce && product.commerce.pricing) || [];
     },
 
     catalogPriceRange: async (
-      product: Product,
+      product: ProductRow,
       {
         quantity = 0,
         vectors = [],
@@ -138,7 +150,7 @@ export const configureProductPricesModule = ({
     },
 
     catalogPricesLeveled: async (
-      product: Product,
+      product: ProductRow,
       { currencyCode, countryCode }: { currencyCode: string; countryCode: string },
     ): Promise<
       {
@@ -188,30 +200,34 @@ export const configureProductPricesModule = ({
           decimals?: number;
         },
         referenceDate: Date = new Date(),
-      ): Promise<{ rate: number; expiresAt?: Date } | null> => {
-        const priceRates = await (await ProductPriceRates(db)).ProductRates;
-        const mostRecentCurrencyRate = await priceRates.findOne(
-          {
-            $or: [
-              {
-                baseCurrency: baseCurrency.isoCode,
-                quoteCurrency: quoteCurrency.isoCode,
-              },
-              {
-                baseCurrency: quoteCurrency.isoCode,
-                quoteCurrency: baseCurrency.isoCode,
-              },
-            ],
-            timestamp: { $lte: referenceDate },
-            expiresAt: { $gte: referenceDate },
-          },
-          { sort: { timestamp: -1 } },
-        );
+      ): Promise<{ rate: number; expiresAt?: Date | null } | null> => {
+        const [mostRecentCurrencyRate] = await db
+          .select()
+          .from(productRates)
+          .where(
+            and(
+              or(
+                and(
+                  eq(productRates.baseCurrency, baseCurrency.isoCode),
+                  eq(productRates.quoteCurrency, quoteCurrency.isoCode),
+                ),
+                and(
+                  eq(productRates.baseCurrency, quoteCurrency.isoCode),
+                  eq(productRates.quoteCurrency, baseCurrency.isoCode),
+                ),
+              ),
+              lte(productRates.timestamp, referenceDate),
+              gte(productRates.expiresAt, referenceDate),
+            ),
+          )
+          .orderBy(desc(productRates.timestamp))
+          .limit(1);
 
         if (!mostRecentCurrencyRate) return null;
         const rate = normalizeRate(baseCurrency, quoteCurrency, mostRecentCurrencyRate);
         return { rate, expiresAt: mostRecentCurrencyRate.expiresAt };
       },
+
       getRateRange: async (
         baseCurrency: {
           isoCode: string;
@@ -223,26 +239,31 @@ export const configureProductPricesModule = ({
         },
         referenceDate: Date = new Date(),
       ): Promise<{ min: number; max: number } | null> => {
-        const priceRates = await (await ProductPriceRates(db)).ProductRates;
-        const rates = await priceRates
-          .find({
-            $or: [
-              {
-                baseCurrency: baseCurrency.isoCode,
-                quoteCurrency: quoteCurrency.isoCode,
-              },
-              {
-                baseCurrency: quoteCurrency.isoCode,
-                quoteCurrency: baseCurrency.isoCode,
-              },
-            ],
-            timestamp: { $lte: referenceDate },
-            expiresAt: { $gte: referenceDate },
-          })
-          .toArray();
+        const rates = await db
+          .select()
+          .from(productRates)
+          .where(
+            and(
+              or(
+                and(
+                  eq(productRates.baseCurrency, baseCurrency.isoCode),
+                  eq(productRates.quoteCurrency, quoteCurrency.isoCode),
+                ),
+                and(
+                  eq(productRates.baseCurrency, quoteCurrency.isoCode),
+                  eq(productRates.quoteCurrency, baseCurrency.isoCode),
+                ),
+              ),
+              lte(productRates.timestamp, referenceDate),
+              gte(productRates.expiresAt, referenceDate),
+            ),
+          );
+
+        if (rates.length === 0) return null;
+
         return rates.reduce(
-          (acc, rate) => {
-            const curRate = normalizeRate(baseCurrency, quoteCurrency, rate);
+          (acc, rateRecord) => {
+            const curRate = normalizeRate(baseCurrency, quoteCurrency, rateRecord);
             const lastMinRate = acc.min || curRate;
             const lastMaxRate = acc.max || curRate;
             return {
@@ -253,44 +274,51 @@ export const configureProductPricesModule = ({
           {} as { min: number; max: number },
         );
       },
-      updateRates: async (rates: ProductPriceRate[]): Promise<boolean> => {
-        const priceRates = await ProductPriceRates(db);
+
+      updateRates: async (
+        rates: {
+          baseCurrency: string;
+          quoteCurrency: string;
+          rate: number;
+          expiresAt?: Date;
+          timestamp?: Date;
+        }[],
+      ): Promise<boolean> => {
         try {
           if (rates?.length) {
-            const BulkOp = priceRates.ProductRates.initializeOrderedBulkOp();
-            rates.forEach((rate) => {
-              BulkOp.find({
-                baseCurrency: rate.baseCurrency,
-                quoteCurrency: rate.quoteCurrency,
-                rate: rate.rate,
-                expiresAt: { $gte: rate.timestamp },
-                archived: false,
-              })
-                .upsert()
-                .updateOne({
-                  $set: {
-                    expiresAt: rate.expiresAt,
-                  },
-                  $setOnInsert: {
-                    baseCurrency: rate.baseCurrency,
-                    quoteCurrency: rate.quoteCurrency,
-                    timestamp: rate.timestamp,
-                    rate: rate.rate,
-                  },
-                });
+            for (const rate of rates) {
+              // Try to find an existing rate to update
+              const [existing] = await db
+                .select()
+                .from(productRates)
+                .where(
+                  and(
+                    eq(productRates.baseCurrency, rate.baseCurrency),
+                    eq(productRates.quoteCurrency, rate.quoteCurrency),
+                    sql`${productRates.rate} = ${rate.rate}`,
+                    gte(productRates.expiresAt, rate.timestamp || new Date()),
+                  ),
+                )
+                .limit(1);
 
-              // Archive the others that were still valid
-              BulkOp.find({
-                baseCurrency: rate.baseCurrency,
-                quoteCurrency: rate.quoteCurrency,
-                expiresAt: { $gte: rate.timestamp, $lt: rate.expiresAt },
-              }).update({
-                $set: {
-                  archived: true,
-                },
-              });
-            });
-            await BulkOp.execute();
+              if (existing) {
+                // Update expiresAt
+                await db
+                  .update(productRates)
+                  .set({ expiresAt: rate.expiresAt })
+                  .where(eq(productRates._id, existing._id));
+              } else {
+                // Insert new rate
+                await db.insert(productRates).values({
+                  _id: generateId(),
+                  baseCurrency: rate.baseCurrency,
+                  quoteCurrency: rate.quoteCurrency,
+                  rate: rate.rate,
+                  timestamp: rate.timestamp || new Date(),
+                  expiresAt: rate.expiresAt,
+                });
+              }
+            }
           }
           return true;
         } catch {

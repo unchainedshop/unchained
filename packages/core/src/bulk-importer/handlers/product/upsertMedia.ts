@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import type { ProductMedia } from '@unchainedshop/core-products';
 import type { Modules } from '../../../modules.ts';
 import type { Services } from '../../../services/index.ts';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
@@ -21,13 +20,23 @@ export const MediaSchema = z.object({
   sortKey: z.number().optional(),
 });
 
-const upsertProductMedia = async (productMedia: ProductMedia, { modules }: { modules: Modules }) => {
+const upsertProductMedia = async (
+  productMedia: {
+    _id?: string;
+    productId: string;
+    mediaId: string;
+    sortKey?: number;
+    tags?: string[];
+    meta?: unknown;
+  },
+  { modules }: { modules: Modules },
+) => {
   try {
     const productMediaObj = await modules.products.media.create(productMedia);
     return productMediaObj;
   } catch {
     const { _id, ...productMediaData } = productMedia;
-    const productMediaId = _id;
+    const productMediaId = _id!;
     return modules.products.media.update(productMediaId, productMediaData);
   }
 };
@@ -54,7 +63,7 @@ export default async function upsertMedia(
           tags,
           productId,
           mediaId: file._id,
-        } as ProductMedia,
+        },
         unchainedAPI,
       );
       if (!productMedia) throw new Error(`Unable to create product media object for file ${fileId}`);

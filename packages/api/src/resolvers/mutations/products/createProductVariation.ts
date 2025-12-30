@@ -1,7 +1,7 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.ts';
-import { ProductVariationType, ProductType } from '@unchainedshop/core-products';
+import { ProductType, type ProductVariationTypeType } from '@unchainedshop/core-products';
 
 export interface VariationInputText {
   locale: string;
@@ -15,7 +15,7 @@ export default async function F(
     productId: string;
     variation: {
       key: string;
-      type: ProductVariationType;
+      type: ProductVariationTypeType;
     };
     texts?: VariationInputText[];
   },

@@ -227,6 +227,7 @@ export const GermanProductText = {
 
 export const GermanPlanProductText = {
   ...GermanProductText,
+  _id: 'german-plan-product',
   productId: 'plan-product',
   slug: 'plan',
   title: 'weekly',
@@ -649,6 +650,186 @@ export default async function seedProducts(db) {
 
 // All media objects for seeding
 const allMediaObjects = [{ ...JpegMedia, path: JpegMedia.path || 'product-media' }, GridfsMedia];
+
+// All products for seeding
+const allProducts = [
+  SimpleProduct,
+  SimpleProduct2,
+  SimpleProductDraft,
+  UnpublishedProduct,
+  SimpleProductBundle,
+  ConfigurableProduct,
+  ProxySimpleProduct1,
+  ProxySimpleProduct2,
+  ProxyPlanProduct1,
+  ProxyPlanProduct2,
+  ProxyPlanProduct3,
+  ProxyProduct,
+  PlanProduct,
+  TokenizedProduct1,
+  LeveledPricingProduct,
+];
+
+const allProductTexts = [GermanProductText, FrenchProductText, GermanPlanProductText];
+
+const allProductMedia = [JpegProductMedia, GridFsProductMedia];
+
+const allProductMediaTexts = [GermanJpegProductMediaText, FrenchJpegProductMediaText];
+
+/**
+ * Seed products into the Drizzle database.
+ * This directly inserts into the database WITHOUT using the module to avoid emitting events.
+ */
+export async function seedProductsToDrizzle(db) {
+  const {
+    products,
+    productTexts,
+    productMedia,
+    productMediaTexts,
+    productVariations,
+    productVariationTexts,
+    productReviews,
+  } = await import('@unchainedshop/core-products');
+
+  const { sql } = await import('@unchainedshop/store');
+
+  // Clear existing data
+  await db.delete(productVariationTexts);
+  await db.delete(productVariations);
+  await db.delete(productMediaTexts);
+  await db.delete(productMedia);
+  await db.delete(productTexts);
+  await db.delete(productReviews);
+  await db.delete(products);
+
+  // Insert products
+  for (const product of allProducts) {
+    await db.insert(products).values({
+      _id: product._id,
+      type: product.type,
+      status: product.status,
+      sequence: product.sequence || 0,
+      slugs: product.slugs || [],
+      tags: product.tags || [],
+      published: product.published,
+      commerce: product.commerce || null,
+      bundleItems: product.bundleItems || null,
+      proxy: product.proxy || null,
+      supply: product.supply || null,
+      warehousing: product.warehousing || null,
+      plan: product.plan || null,
+      tokenization: product.tokenization || null,
+      meta: product.meta || null,
+      created: product.created,
+      updated: product.updated || null,
+      deleted: null,
+    });
+    // Insert into FTS - extract sku from warehousing JSON and slugs from array
+    const sku = product.warehousing?.sku || '';
+    const slugsText = (product.slugs || []).join(' ');
+    await db.run(
+      sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${product._id}, ${sku}, ${slugsText})`,
+    );
+  }
+
+  // Insert product texts
+  for (const text of allProductTexts) {
+    await db.insert(productTexts).values({
+      _id: text._id,
+      productId: text.productId,
+      locale: text.locale,
+      slug: text.slug || null,
+      title: text.title || null,
+      subtitle: text.subtitle || null,
+      description: text.description || null,
+      brand: text.brand || null,
+      vendor: text.vendor || null,
+      labels: text.labels || null,
+      created: text.created || new Date(),
+      updated: text.updated || null,
+    });
+    // Insert into FTS
+    await db.run(
+      sql`INSERT INTO product_texts_fts(_id, productId, title, subtitle, brand, vendor, description, labels, slug)
+          VALUES (${text._id}, ${text.productId}, ${text.title || ''}, ${text.subtitle || ''}, ${text.brand || ''}, ${text.vendor || ''}, ${text.description || ''}, ${JSON.stringify(text.labels || [])}, ${text.slug || ''})`,
+    );
+  }
+
+  // Insert product media
+  for (const media of allProductMedia) {
+    await db.insert(productMedia).values({
+      _id: media._id,
+      mediaId: media.mediaId,
+      productId: media.productId,
+      sortKey: media.sortKey || 0,
+      tags: media.tags || [],
+      meta: media.meta || null,
+      created: media.created,
+      updated: media.updated || null,
+    });
+  }
+
+  // Insert product media texts
+  for (const text of allProductMediaTexts) {
+    await db.insert(productMediaTexts).values({
+      _id: text._id,
+      productMediaId: text.productMediaId,
+      locale: text.locale,
+      title: text.title || null,
+      subtitle: text.subtitle || null,
+      created: text.created || new Date(),
+      updated: text.updated || null,
+    });
+  }
+
+  // Insert product variations
+  for (const variation of ProductVariations) {
+    await db.insert(productVariations).values({
+      _id: variation._id,
+      productId: variation.productId,
+      key: variation.key,
+      type: variation.type,
+      options: variation.options || [],
+      tags: variation.tags || null,
+      created: new Date(),
+      updated: null,
+    });
+  }
+
+  // Insert product variation texts
+  for (const text of ProductVariationTexts) {
+    await db.insert(productVariationTexts).values({
+      _id: text._id,
+      productVariationId: text.productVariationId,
+      productVariationOptionValue: text.productVariationOptionValue || null,
+      locale: text.locale,
+      title: text.title || null,
+      subtitle: text.subtitle || null,
+      created: new Date(),
+      updated: null,
+    });
+  }
+
+  // Insert product reviews
+  await db.insert(productReviews).values({
+    _id: SimpleProductReview._id,
+    productId: SimpleProductReview.productId,
+    authorId: SimpleProductReview.authorId,
+    rating: SimpleProductReview.rating,
+    title: SimpleProductReview.title || null,
+    review: SimpleProductReview.review || null,
+    meta: SimpleProductReview.meta || null,
+    votes: SimpleProductReview.votes || [],
+    created: SimpleProductReview.created,
+    updated: SimpleProductReview.updated || null,
+    deleted: null,
+  });
+  // Insert into FTS
+  await db.run(
+    sql`INSERT INTO product_reviews_fts(_id, productId, title, review)
+        VALUES (${SimpleProductReview._id}, ${SimpleProductReview.productId}, ${SimpleProductReview.title || ''}, ${SimpleProductReview.review || ''})`,
+  );
+}
 
 /**
  * Seed media objects into the Drizzle database.

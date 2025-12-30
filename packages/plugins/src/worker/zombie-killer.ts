@@ -60,14 +60,8 @@ export const ZombieKillerWorker: IWorkerAdapter<
       });
 
       // Remove unreferenced files
-      const productMedia = await modules.products.media.findProductMedias(
-        {},
-        { projection: { mediaId: 1 } },
-      );
-      const assortmentMedia = await modules.assortments.media.findAssortmentMedias(
-        {},
-        { projection: { mediaId: 1 } },
-      );
+      const productMedia = await modules.products.media.findProductMedias({});
+      const assortmentMedia = await modules.assortments.media.findAssortmentMedias({});
 
       const allFileIdsLinked = [...productMedia, ...assortmentMedia].map((l) => l?.mediaId);
       const allFileIdsRelevant = (
