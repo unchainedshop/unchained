@@ -91,6 +91,7 @@ export const BasePricingDirector = <
               // 1. it should propably be required to pass an order
               // 2. we should pass the order in the pricing context or pricing adapter context
               // 3. it can't be different orders for different discounts in the same calculation rebuild
+              if (!orderDiscount.orderId) return null;
               const order = await unchainedAPI.modules.orders.findOrder({
                 orderId: orderDiscount.orderId,
               });
@@ -98,7 +99,12 @@ export const BasePricingDirector = <
               if (!DiscountAdapter) return null;
 
               const adapter = await DiscountAdapter.actions({
-                context: { order: order!, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
+                context: {
+                  order: order!,
+                  orderDiscount,
+                  code: orderDiscount.code ?? undefined,
+                  ...unchainedAPI,
+                },
               });
 
               const configuration = adapter.discountForPricingAdapterKey({

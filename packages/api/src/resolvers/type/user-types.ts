@@ -3,7 +3,7 @@ import type { SortOption } from '@unchainedshop/utils';
 import type { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import type { File } from '@unchainedshop/core-files';
 import type { Language } from '@unchainedshop/core-languages';
-import type { Order, OrderStatus } from '@unchainedshop/core-orders';
+import type { Order, OrderStatusType } from '@unchainedshop/core-orders';
 import type { PaymentCredentials } from '@unchainedshop/core-payment';
 import type { Quotation } from '@unchainedshop/core-quotations';
 import type { Email, User as UserType, UserProfile } from '@unchainedshop/core-users';
@@ -72,7 +72,7 @@ export interface UserHelperTypes {
       includeCarts: boolean;
       sort?: SortOption[];
       queryString?: string;
-      status?: OrderStatus[];
+      status?: OrderStatusType[];
       userId?: string;
       limit?: number;
       offset?: number;

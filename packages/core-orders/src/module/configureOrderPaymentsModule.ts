@@ -1,24 +1,47 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { eq, inArray, type DrizzleDb, generateId, buildSelectColumns } from '@unchainedshop/store';
 import type { PricingCalculation } from '@unchainedshop/utils';
-import { type OrderPayment, OrderPaymentStatus } from '../db/OrderPaymentsCollection.ts';
+import {
+  orderPayments,
+  OrderPaymentStatus,
+  rowToOrderPayment,
+  type OrderPayment,
+  type OrderPaymentRow,
+  type OrderLogEntry,
+} from '../db/schema.ts';
+
+type SelectOrderPayment = OrderPayment | Partial<OrderPayment>;
+
+// Column mapping for field selection
+const PAYMENT_COLUMNS = {
+  _id: orderPayments._id,
+  orderId: orderPayments.orderId,
+  paymentProviderId: orderPayments.paymentProviderId,
+  status: orderPayments.status,
+  transactionId: orderPayments.transactionId,
+  paid: orderPayments.paid,
+  calculation: orderPayments.calculation,
+  context: orderPayments.context,
+  log: orderPayments.log,
+  created: orderPayments.created,
+  updated: orderPayments.updated,
+} as const;
+
+export type OrderPaymentFields = keyof typeof PAYMENT_COLUMNS;
+
+export interface OrderPaymentQueryOptions {
+  fields?: OrderPaymentFields[];
+}
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
-export const buildFindOrderPaymentByIdSelector = (orderPaymentId: string) =>
-  generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;
-
-export const configureOrderPaymentsModule = ({
-  OrderPayments,
-}: {
-  OrderPayments: mongodb.Collection<OrderPayment>;
-}) => {
+export const configureOrderPaymentsModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 
   const normalizedStatus = (orderPayment: OrderPayment) => {
     return orderPayment.status === null
       ? OrderPaymentStatus.OPEN
-      : (orderPayment.status as OrderPaymentStatus);
+      : (orderPayment.status as (typeof OrderPaymentStatus)[keyof typeof OrderPaymentStatus]);
   };
 
   const updateStatus = async (
@@ -27,60 +50,93 @@ export const configureOrderPaymentsModule = ({
       transactionId,
       status,
       info,
-    }: { transactionId?: string; status: OrderPaymentStatus; info?: string },
+    }: {
+      transactionId?: string;
+      status: (typeof OrderPaymentStatus)[keyof typeof OrderPaymentStatus];
+      info?: string;
+    },
   ) => {
     const date = new Date();
-    const modifier: mongodb.UpdateFilter<OrderPayment> = {
-      $set: { status, updated: new Date() },
-      $push: {
-        log: {
-          date,
-          status,
-          info,
-        },
-      },
+    const updates: Partial<OrderPayment> = {
+      status,
+      updated: date,
     };
+
     if (transactionId) {
-      // eslint-disable-next-line
-      // @ts-ignore
-      modifier.$set.transactionId = transactionId;
+      updates.transactionId = transactionId;
     }
     if (status === OrderPaymentStatus.PAID) {
-      // eslint-disable-next-line
-      // @ts-ignore
-      modifier.$set.paid = date;
+      updates.paid = date;
     }
 
-    const selector = buildFindOrderPaymentByIdSelector(orderPaymentId);
-    return OrderPayments.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
+    // Get current payment to update log
+    const [current] = await db
+      .select()
+      .from(orderPayments)
+      .where(eq(orderPayments._id, orderPaymentId))
+      .limit(1);
+
+    if (!current) return null;
+
+    const logEntry: OrderLogEntry = { date, status, info };
+    const log: OrderLogEntry[] = [...(current.log || []), logEntry];
+
+    await db
+      .update(orderPayments)
+      .set({ ...updates, log })
+      .where(eq(orderPayments._id, orderPaymentId));
+
+    const [updated] = await db
+      .select()
+      .from(orderPayments)
+      .where(eq(orderPayments._id, orderPaymentId))
+      .limit(1);
+
+    return updated ? rowToOrderPayment(updated) : null;
   };
 
   return {
     // Queries
     findOrderPayment: async (
-      {
-        orderPaymentId,
-      }: {
-        orderPaymentId: string;
-      },
-      options?: mongodb.FindOptions,
+      { orderPaymentId }: { orderPaymentId: string },
+      options?: OrderPaymentQueryOptions,
     ) => {
-      return OrderPayments.findOne(buildFindOrderPaymentByIdSelector(orderPaymentId), options);
+      if (!orderPaymentId) return null;
+
+      const selectColumns = buildSelectColumns(PAYMENT_COLUMNS, options?.fields);
+
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(orderPayments)
+        : db.select().from(orderPayments);
+
+      const [payment] = await baseQuery.where(eq(orderPayments._id, orderPaymentId)).limit(1);
+      return payment
+        ? selectColumns
+          ? (payment as SelectOrderPayment as OrderPayment)
+          : rowToOrderPayment(payment as OrderPaymentRow)
+        : null;
     },
 
-    findOrderPaymentsByProviderIds: async (
-      {
-        paymentProviderIds,
-      }: {
-        paymentProviderIds: string[];
-      },
-      options?: mongodb.FindOptions,
-    ): Promise<OrderPayment[]> => {
+    findOrderPaymentsByProviderIds: async ({
+      paymentProviderIds,
+    }: {
+      paymentProviderIds: string[];
+    }): Promise<OrderPayment[]> => {
       if (!paymentProviderIds?.length) return [];
-      return OrderPayments.find({ paymentProviderId: { $in: paymentProviderIds } }, options).toArray();
+      const rows = await db
+        .select()
+        .from(orderPayments)
+        .where(inArray(orderPayments.paymentProviderId, paymentProviderIds));
+      return rows.map(rowToOrderPayment);
     },
+
     findOrderPaymentByTransactionId: async (transactionId: string) => {
-      return OrderPayments.findOne({ transactionId });
+      const [payment] = await db
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments.transactionId, transactionId))
+        .limit(1);
+      return payment ? rowToOrderPayment(payment) : null;
     },
 
     normalizedStatus,
@@ -88,35 +144,47 @@ export const configureOrderPaymentsModule = ({
     // Mutations
 
     create: async (
-      doc: Omit<OrderPayment, '_id' | 'created'> & Pick<Partial<OrderPayment>, '_id' | 'created'>,
+      doc: Pick<OrderPayment, 'orderId' | 'paymentProviderId'> &
+        Partial<Omit<OrderPayment, 'orderId' | 'paymentProviderId'>>,
     ): Promise<OrderPayment> => {
-      const { insertedId: orderPaymentId } = await OrderPayments.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
-        status: null,
-        context: doc.context || {},
+      const orderPaymentId = doc._id || generateId();
+      const now = new Date();
+
+      await db.insert(orderPayments).values({
+        _id: orderPaymentId,
+        created: now,
+        orderId: doc.orderId,
+        paymentProviderId: doc.paymentProviderId,
+        status: doc.status ?? null,
+        calculation: doc.calculation ?? [],
+        log: doc.log ?? [],
+        context: doc.context ?? {},
       });
 
-      const orderPayment = (await OrderPayments.findOne(
-        buildFindOrderPaymentByIdSelector(orderPaymentId),
-      )) as OrderPayment;
+      const [orderPayment] = await db
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, orderPaymentId))
+        .limit(1);
 
-      return orderPayment;
+      return rowToOrderPayment(orderPayment);
     },
 
     logEvent: async (orderPaymentId: string, event: any): Promise<boolean> => {
       const date = new Date();
-      const modifier = {
-        $push: {
-          log: {
-            date,
-            status: undefined,
-            info: JSON.stringify(event),
-          },
-        },
-      };
-      await OrderPayments.updateOne(generateDbFilterById(orderPaymentId), modifier);
+
+      const [current] = await db
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, orderPaymentId))
+        .limit(1);
+
+      if (!current) return false;
+
+      const logEntry: OrderLogEntry = { date, info: JSON.stringify(event) };
+      const log: OrderLogEntry[] = [...(current.log || []), logEntry];
+
+      await db.update(orderPayments).set({ log }).where(eq(orderPayments._id, orderPaymentId));
 
       return true;
     },
@@ -132,28 +200,34 @@ export const configureOrderPaymentsModule = ({
     },
 
     updateContext: async (orderPaymentId: string, context: any) => {
-      const selector = buildFindOrderPaymentByIdSelector(orderPaymentId);
-      if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
+      const [current] = await db
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, orderPaymentId))
+        .limit(1);
 
-      const contextSetters = Object.fromEntries(
-        Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
-      );
-      const orderPayment = await OrderPayments.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            ...contextSetters,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      if (!current) return null;
+      if (!context || Object.keys(context).length === 0) return rowToOrderPayment(current);
 
-      if (!orderPayment) return null;
-      await emit('ORDER_UPDATE_PAYMENT', {
-        orderPayment,
-      });
-      return orderPayment;
+      const mergedContext = { ...(current.context || {}), ...context };
+
+      await db
+        .update(orderPayments)
+        .set({
+          context: mergedContext,
+          updated: new Date(),
+        })
+        .where(eq(orderPayments._id, orderPaymentId));
+
+      const [orderPayment] = await db
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, orderPaymentId))
+        .limit(1);
+
+      const result = orderPayment ? rowToOrderPayment(orderPayment) : null;
+      await emit('ORDER_UPDATE_PAYMENT', { orderPayment: result });
+      return result;
     },
 
     updateStatus,
@@ -162,22 +236,26 @@ export const configureOrderPaymentsModule = ({
       orderPaymentId: string,
       calculation: T[],
     ) => {
-      return OrderPayments.findOneAndUpdate(
-        buildFindOrderPaymentByIdSelector(orderPaymentId),
-        {
-          $set: {
-            calculation,
-            updated: new Date(),
-          },
-        },
-        {
-          returnDocument: 'after',
-        },
-      );
+      await db
+        .update(orderPayments)
+        .set({
+          calculation,
+          updated: new Date(),
+        })
+        .where(eq(orderPayments._id, orderPaymentId));
+
+      const [updated] = await db
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, orderPaymentId))
+        .limit(1);
+
+      return updated ? rowToOrderPayment(updated) : null;
     },
+
     deleteOrderPayments: async (orderId: string) => {
-      const { deletedCount } = await OrderPayments.deleteMany({ orderId });
-      return deletedCount;
+      const result = await db.delete(orderPayments).where(eq(orderPayments.orderId, orderId));
+      return result.rowsAffected;
     },
   };
 };

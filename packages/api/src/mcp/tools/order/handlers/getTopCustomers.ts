@@ -14,11 +14,7 @@ export default async function getTopCustomers(context: Context, params: Params<'
       status: [OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
       dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
     },
-    {
-      projection: {
-        _id: 1,
-      },
-    },
+    { fields: ['_id'] },
   );
 
   const orderIds = orders.map(({ _id }) => _id);

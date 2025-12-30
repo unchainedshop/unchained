@@ -50,7 +50,7 @@ export async function discountedEntitiesService(
   });
   const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
     ProductPricingSheet({
-      calculation: orderPosition.calculation,
+      calculation: orderPosition.calculation ?? [],
       currencyCode: order.currencyCode,
       quantity: orderPosition.quantity,
     })

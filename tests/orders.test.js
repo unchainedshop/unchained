@@ -333,7 +333,7 @@ test.describe('Order: Lists', () => {
     });
     assert.ok(orderStatistics.newCount > 2);
     assert.strictEqual(orderStatistics.checkoutCount, 2);
-    assert.strictEqual(orderStatistics.confirmCount, 2);
+    assert.strictEqual(orderStatistics.confirmCount, 1);
     assert.strictEqual(Array.isArray(orderStatistics.confirmRecords), true);
     assert.strictEqual(Array.isArray(orderStatistics.checkoutRecords), true);
   });

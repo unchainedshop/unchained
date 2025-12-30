@@ -116,7 +116,9 @@ export const DeliveryDirector: IDeliveryDirector = {
       deliveryProviderId: orderDelivery!.deliveryProviderId,
     });
 
-    const address = orderDelivery!.context?.address || order!.billingAddress;
+    const address =
+      (orderDelivery!.context as { address?: typeof order.billingAddress } | null)?.address ||
+      order!.billingAddress;
 
     const adapter = await DeliveryDirector.actions(
       deliveryProvider!,

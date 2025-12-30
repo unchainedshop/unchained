@@ -21,7 +21,13 @@ export async function removeCartDiscountService(
     const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
     if (Adapter) {
       const adapter = await Adapter.actions({
-        context: { order, orderDiscount, code: orderDiscount.code, modules: this, ...requestContext },
+        context: {
+          order,
+          orderDiscount,
+          code: orderDiscount.code ?? undefined,
+          modules: this,
+          ...requestContext,
+        },
       });
       await adapter.release();
     }

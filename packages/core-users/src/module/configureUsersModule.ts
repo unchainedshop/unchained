@@ -17,14 +17,15 @@ import {
 import type { Address, Contact } from '@unchainedshop/mongodb';
 import {
   users,
+  rowToUser,
+  type User,
   type UserRow,
   type Email,
   type UserLastLogin,
   type UserProfile,
   type UserServices,
-  type PushSubscriptionObject,
-} from '../db/schema.ts';
-import { searchUsersFTS } from '../db/fts.ts';
+  searchUsersFTS,
+} from '../db/index.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, type SortOption, sha256 } from '@unchainedshop/utils';
 import type { DateFilterInput } from '@unchainedshop/utils';
@@ -57,26 +58,7 @@ const USER_EVENTS = [
   'USER_REMOVE',
 ];
 
-export interface User {
-  _id: string;
-  deleted?: Date | null;
-  avatarId?: string;
-  emails: Email[];
-  guest: boolean;
-  initialPassword: boolean;
-  lastBillingAddress?: Address;
-  lastContact?: Contact;
-  lastLogin?: UserLastLogin;
-  profile?: UserProfile;
-  roles: string[];
-  services: any; // Keep as `any` for backward compatibility with API resolvers
-  tags?: string[];
-  pushSubscriptions: PushSubscriptionObject[];
-  username?: string;
-  meta?: any;
-  created: Date;
-  updated?: Date;
-}
+export type { User };
 
 export interface UserQuery {
   includeGuests?: boolean;
@@ -89,27 +71,6 @@ export interface UserQuery {
   username?: string;
   web3Verified?: boolean;
 }
-
-const rowToUser = (row: UserRow): User => ({
-  _id: row._id,
-  username: row.username ?? undefined,
-  guest: row.guest,
-  initialPassword: row.initialPassword,
-  avatarId: row.avatarId ?? undefined,
-  roles: row.roles,
-  tags: row.tags ?? undefined,
-  meta: row.meta ?? undefined,
-  emails: row.emails,
-  services: row.services ?? undefined,
-  profile: row.profile ?? undefined,
-  lastLogin: row.lastLogin ?? undefined,
-  lastBillingAddress: row.lastBillingAddress ?? undefined,
-  lastContact: row.lastContact ?? undefined,
-  pushSubscriptions: row.pushSubscriptions,
-  created: row.created,
-  updated: row.updated ?? undefined,
-  deleted: row.deleted ?? undefined,
-});
 
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = { ...rawUser };

@@ -8,6 +8,7 @@ import {
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { paymentProviders, paymentCredentials } from '@unchainedshop/core-payment';
+import { orders, orderPayments, orderPositions } from '@unchainedshop/core-orders';
 import { eq } from 'drizzle-orm';
 import test from 'node:test';
 import assert from 'node:assert';
@@ -17,12 +18,11 @@ test.describe('Plugins: Datatrans', () => {
   const amount = '20000';
   const currency = 'CHF';
 
-  let db;
   let drizzleDb;
   let graphqlFetch;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -35,21 +35,21 @@ test.describe('Plugins: Datatrans', () => {
       created: new Date(),
     });
 
-    // Add a demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    // Add a demo order ready to checkout (orders now use Drizzle)
+    await drizzleDb.insert(orderPayments).values({
       ...SimplePayment,
       _id: '1111112222',
       paymentProviderId: 'd4d4d4d4d4',
       orderId: 'datatrans-order',
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await drizzleDb.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'datatrans-order-position',
       orderId: 'datatrans-order',
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await drizzleDb.insert(orders).values({
       ...SimpleOrder,
       _id: 'datatrans-order',
       orderNumber: 'datatrans',
@@ -57,20 +57,20 @@ test.describe('Plugins: Datatrans', () => {
     });
 
     // Add a second demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    await drizzleDb.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'datatrans-payment2',
       paymentProviderId: 'd4d4d4d4d4',
       orderId: 'datatrans-order2',
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await drizzleDb.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'datatrans-order-position2',
       orderId: 'datatrans-order2',
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await drizzleDb.insert(orders).values({
       ...SimpleOrder,
       _id: 'datatrans-order2',
       orderNumber: 'datatrans2',
@@ -221,10 +221,13 @@ test.describe('Plugins: Datatrans', () => {
 
       assert.strictEqual(result.status, 200);
 
-      const order = await db.collection('orders').findOne({ _id: 'datatrans-order' });
+      const [order] = await drizzleDb.select().from(orders).where(eq(orders._id, 'datatrans-order'));
       assert.strictEqual(order.status, 'CONFIRMED');
 
-      const orderPayment = await db.collection('order_payments').findOne({ _id: orderPaymentId });
+      const [orderPayment] = await drizzleDb
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, orderPaymentId));
       assert.strictEqual(orderPayment.status, 'PAID');
     });
   });
@@ -321,7 +324,7 @@ test.describe('Plugins: Datatrans', () => {
       });
     });
     test('checkout with preferred alias', async () => {
-      const { data: { emptyCart, addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
+      const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addAndCheckout($productId: ID!, $orderId: ID!) {
             emptyCart(orderId: $orderId) {

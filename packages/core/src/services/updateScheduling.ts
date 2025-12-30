@@ -41,7 +41,7 @@ export async function updateSchedulingService(
               product,
               orderPosition,
               order,
-              referenceDate: order.ordered,
+              referenceDate: order.ordered ?? undefined,
               quantity: orderPosition.quantity,
             },
             {

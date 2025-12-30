@@ -132,6 +132,49 @@ export const products = sqliteTable(
 export type ProductRow = typeof products.$inferSelect;
 export type NewProductRow = typeof products.$inferInsert;
 
+// Domain interface with undefined for optional fields
+export interface Product {
+  _id: string;
+  type: string;
+  status: string | null;
+  sequence: number;
+  slugs: string[];
+  tags: string[];
+  published?: Date;
+  commerce?: ProductCommerce;
+  bundleItems?: ProductBundleItem[];
+  proxy?: ProductProxy;
+  supply?: ProductSupply;
+  warehousing?: ProductWarehousing;
+  plan?: ProductPlan;
+  tokenization?: ProductTokenization;
+  meta?: Record<string, unknown>;
+  created: Date;
+  updated?: Date;
+  deleted?: Date;
+}
+
+export const rowToProduct = (row: ProductRow): Product => ({
+  _id: row._id,
+  type: row.type,
+  status: row.status,
+  sequence: row.sequence,
+  slugs: row.slugs ?? [],
+  tags: row.tags ?? [],
+  published: row.published ?? undefined,
+  commerce: row.commerce ?? undefined,
+  bundleItems: row.bundleItems ?? undefined,
+  proxy: row.proxy ?? undefined,
+  supply: row.supply ?? undefined,
+  warehousing: row.warehousing ?? undefined,
+  plan: row.plan ?? undefined,
+  tokenization: row.tokenization ?? undefined,
+  meta: (row.meta as Record<string, unknown>) ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+  deleted: row.deleted ?? undefined,
+});
+
 // ============ PRODUCT TEXTS ============
 
 export const productTexts = sqliteTable(
@@ -161,6 +204,37 @@ export const productTexts = sqliteTable(
 export type ProductTextRow = typeof productTexts.$inferSelect;
 export type NewProductTextRow = typeof productTexts.$inferInsert;
 
+// Domain interface with undefined for optional fields
+export interface ProductText {
+  _id: string;
+  productId: string;
+  locale: string;
+  slug?: string;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  brand?: string;
+  vendor?: string;
+  labels?: string[];
+  created: Date;
+  updated?: Date;
+}
+
+export const rowToProductText = (row: ProductTextRow): ProductText => ({
+  _id: row._id,
+  productId: row.productId,
+  locale: row.locale,
+  slug: row.slug ?? undefined,
+  title: row.title ?? undefined,
+  subtitle: row.subtitle ?? undefined,
+  description: row.description ?? undefined,
+  brand: row.brand ?? undefined,
+  vendor: row.vendor ?? undefined,
+  labels: row.labels ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+});
+
 // ============ PRODUCT MEDIA ============
 
 export const productMedia = sqliteTable(
@@ -186,6 +260,29 @@ export const productMedia = sqliteTable(
 export type ProductMediaRow = typeof productMedia.$inferSelect;
 export type NewProductMediaRow = typeof productMedia.$inferInsert;
 
+// Domain interface with undefined for optional fields
+export interface ProductMedia {
+  _id: string;
+  mediaId: string;
+  productId: string;
+  sortKey: number;
+  tags: string[];
+  meta?: Record<string, unknown>;
+  created: Date;
+  updated?: Date;
+}
+
+export const rowToProductMedia = (row: ProductMediaRow): ProductMedia => ({
+  _id: row._id,
+  mediaId: row.mediaId,
+  productId: row.productId,
+  sortKey: row.sortKey,
+  tags: row.tags ?? [],
+  meta: (row.meta as Record<string, unknown>) ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+});
+
 // ============ PRODUCT MEDIA TEXTS ============
 
 export const productMediaTexts = sqliteTable(
@@ -207,6 +304,27 @@ export const productMediaTexts = sqliteTable(
 
 export type ProductMediaTextRow = typeof productMediaTexts.$inferSelect;
 export type NewProductMediaTextRow = typeof productMediaTexts.$inferInsert;
+
+// Domain interface with undefined for optional fields
+export interface ProductMediaText {
+  _id: string;
+  productMediaId: string;
+  locale: string;
+  title?: string;
+  subtitle?: string;
+  created: Date;
+  updated?: Date;
+}
+
+export const rowToProductMediaText = (row: ProductMediaTextRow): ProductMediaText => ({
+  _id: row._id,
+  productMediaId: row.productMediaId,
+  locale: row.locale,
+  title: row.title ?? undefined,
+  subtitle: row.subtitle ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+});
 
 // ============ PRODUCT VARIATIONS ============
 
@@ -235,6 +353,29 @@ export const productVariations = sqliteTable(
 export type ProductVariationRow = typeof productVariations.$inferSelect;
 export type NewProductVariationRow = typeof productVariations.$inferInsert;
 
+// Domain interface with undefined for optional fields
+export interface ProductVariation {
+  _id: string;
+  productId: string;
+  key: string;
+  type: string;
+  options: string[];
+  tags?: string[];
+  created: Date;
+  updated?: Date;
+}
+
+export const rowToProductVariation = (row: ProductVariationRow): ProductVariation => ({
+  _id: row._id,
+  productId: row.productId,
+  key: row.key,
+  type: row.type,
+  options: row.options ?? [],
+  tags: row.tags ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+});
+
 // ============ PRODUCT VARIATION TEXTS ============
 
 export const productVariationTexts = sqliteTable(
@@ -257,6 +398,29 @@ export const productVariationTexts = sqliteTable(
 
 export type ProductVariationTextRow = typeof productVariationTexts.$inferSelect;
 export type NewProductVariationTextRow = typeof productVariationTexts.$inferInsert;
+
+// Domain interface with undefined for optional fields
+export interface ProductVariationText {
+  _id: string;
+  productVariationId: string;
+  productVariationOptionValue?: string;
+  locale: string;
+  title?: string;
+  subtitle?: string;
+  created: Date;
+  updated?: Date;
+}
+
+export const rowToProductVariationText = (row: ProductVariationTextRow): ProductVariationText => ({
+  _id: row._id,
+  productVariationId: row.productVariationId,
+  productVariationOptionValue: row.productVariationOptionValue ?? undefined,
+  locale: row.locale,
+  title: row.title ?? undefined,
+  subtitle: row.subtitle ?? undefined,
+  created: row.created,
+  updated: row.updated ?? undefined,
+});
 
 // ============ PRODUCT REVIEWS ============
 
@@ -300,6 +464,35 @@ export const productReviews = sqliteTable(
 export type ProductReviewRow = typeof productReviews.$inferSelect;
 export type NewProductReviewRow = typeof productReviews.$inferInsert;
 
+// Domain interface with undefined for optional fields
+export interface ProductReview {
+  _id: string;
+  productId: string;
+  authorId: string;
+  rating: number;
+  title?: string;
+  review?: string;
+  meta?: Record<string, unknown>;
+  votes: ProductVote[];
+  created: Date;
+  updated?: Date;
+  deleted?: Date;
+}
+
+export const rowToProductReview = (row: ProductReviewRow): ProductReview => ({
+  _id: row._id,
+  productId: row.productId,
+  authorId: row.authorId,
+  rating: row.rating,
+  title: row.title ?? undefined,
+  review: row.review ?? undefined,
+  meta: (row.meta as Record<string, unknown>) ?? undefined,
+  votes: row.votes ?? [],
+  created: row.created,
+  updated: row.updated ?? undefined,
+  deleted: row.deleted ?? undefined,
+});
+
 // ============ PRODUCT RATES ============
 
 export const productRates = sqliteTable(
@@ -321,3 +514,22 @@ export const productRates = sqliteTable(
 
 export type ProductRateRow = typeof productRates.$inferSelect;
 export type NewProductRateRow = typeof productRates.$inferInsert;
+
+// Domain interface with undefined for optional fields
+export interface ProductRate {
+  _id: string;
+  baseCurrency: string;
+  quoteCurrency: string;
+  rate: number;
+  expiresAt?: Date;
+  timestamp?: Date;
+}
+
+export const rowToProductRate = (row: ProductRateRow): ProductRate => ({
+  _id: row._id,
+  baseCurrency: row.baseCurrency,
+  quoteCurrency: row.quoteCurrency,
+  rate: row.rate,
+  expiresAt: row.expiresAt ?? undefined,
+  timestamp: row.timestamp ?? undefined,
+});

@@ -4,6 +4,8 @@ import { setupUsersFTS } from './fts.ts';
 export {
   users,
   webauthnCredentialsRequests,
+  rowToUser,
+  type User,
   type UserRow,
   type NewUserRow,
   type WebAuthnRequestRow,

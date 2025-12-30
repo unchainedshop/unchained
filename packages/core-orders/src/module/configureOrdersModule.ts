@@ -1,10 +1,5 @@
-import { generateDbFilterById, type ModuleInput, mongodb } from '@unchainedshop/mongodb';
-import { createRequire } from 'node:module';
-import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.ts';
-import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.ts';
-import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.ts';
-import { OrderPositionsCollection } from '../db/OrderPositionsCollection.ts';
-import { OrdersCollection, type Order, OrderStatus } from '../db/OrdersCollection.ts';
+import { eq, ne, and, sql, type DrizzleDb } from '@unchainedshop/store';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { ordersSettings, type OrdersSettingsOptions } from '../orders-settings.ts';
 import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.ts';
 import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.ts';
@@ -12,13 +7,16 @@ import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.ts'
 import { configureOrderPositionsModule } from './configureOrderPositionsModule.ts';
 import { configureOrderModuleMutations } from './configureOrdersModule-mutations.ts';
 import { configureOrdersModuleQueries } from './configureOrdersModule-queries.ts';
-import { emit, registerEvents } from '@unchainedshop/events';
-
-import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
-
-// @kontsedal/locco uses a deprecated way of importing files in ESM (node16 behavior)
-const require = createRequire(import.meta.url);
-const { Locker, MongoAdapter } = require('@kontsedal/locco');
+import {
+  orders,
+  orderDeliveries,
+  orderPayments,
+  OrderStatus,
+  rowToOrder,
+  type Order,
+  type OrderLogEntry,
+} from '../db/schema.ts';
+import { upsertOrderFTS } from '../db/fts.ts';
 
 // NOTE: Renamed from ORDER_FULLFILLED to ORDER_FULFILLED in v5.0.0
 // This is a breaking change for event subscribers
@@ -31,61 +29,83 @@ const ORDER_EVENTS: string[] = [
 
 export const configureOrdersModule = async ({
   db,
-  migrationRepository,
   options: orderOptions = {},
-}: ModuleInput<OrdersSettingsOptions>) => {
-  // Migration v3 -> v4
-  renameCurrencyCode(migrationRepository);
-
+}: {
+  db: DrizzleDb;
+  options?: OrdersSettingsOptions;
+}) => {
   registerEvents(ORDER_EVENTS);
 
   ordersSettings.configureSettings(orderOptions);
 
-  const Orders = await OrdersCollection(db);
-  const OrderDeliveries = await OrderDeliveriesCollection(db);
-  const OrderDiscounts = await OrderDiscountsCollection(db);
-  const OrderPayments = await OrderPaymentsCollection(db);
-  const OrderPositions = await OrderPositionsCollection(db);
+  const orderQueries = configureOrdersModuleQueries({ db });
 
-  const mongoAdapter = new MongoAdapter({
-    client: {
-      db: () => db,
-    },
-  });
-  const locker = new Locker({
-    adapter: mongoAdapter,
-    retrySettings: { retryDelay: 200, retryTimes: 10 },
-  });
+  const orderMutations = configureOrderModuleMutations({ db });
 
-  const orderQueries = configureOrdersModuleQueries({ Orders });
+  const orderDiscountsModule = configureOrderDiscountsModule({ db });
 
-  const orderMutations = configureOrderModuleMutations({
-    Orders,
-    OrderPositions,
-  });
+  const orderPositionsModule = configureOrderPositionsModule({ db });
 
-  const orderDiscountsModule = configureOrderDiscountsModule({
-    OrderDiscounts,
-  });
+  const orderPaymentsModule = configureOrderPaymentsModule({ db });
 
-  const orderPositionsModule = configureOrderPositionsModule({
-    OrderPositions,
-  });
-
-  const orderPaymentsModule = configureOrderPaymentsModule({
-    OrderPayments,
-  });
-
-  const orderDeliveriesModule = configureOrderDeliveriesModule({
-    OrderDeliveries,
-  });
+  const orderDeliveriesModule = configureOrderDeliveriesModule({ db });
 
   const findNewOrderNumber = async (order: Order, index = 0) => {
     const newHashID = ordersSettings.orderNumberHashFn(order, index);
-    if ((await Orders.countDocuments({ orderNumber: newHashID }, { limit: 1 })) === 0) {
+
+    // Check if order number already exists
+    const [existing] = await db
+      .select({ _id: orders._id })
+      .from(orders)
+      .where(eq(orders.orderNumber, newHashID))
+      .limit(1);
+
+    if (!existing) {
       return newHashID;
     }
     return findNewOrderNumber(order, index + 1);
+  };
+
+  // Simple in-memory lock for single-instance deployments
+  // For distributed deployments, consider using a Redis-based lock
+  const locks = new Map<string, { resolve: () => void; promise: Promise<void> }>();
+
+  const acquireLock = async (orderId: string, identifier: string, timeout = 5000) => {
+    const lockKey = `order:${identifier}:${orderId}`;
+
+    // Wait for existing lock if any
+    const existingLock = locks.get(lockKey);
+    if (existingLock) {
+      await Promise.race([existingLock.promise, new Promise((resolve) => setTimeout(resolve, timeout))]);
+    }
+
+    // Create new lock
+    let resolveLock: () => void;
+    const lockPromise = new Promise<void>((resolve) => {
+      resolveLock = resolve;
+    });
+
+    locks.set(lockKey, { resolve: resolveLock!, promise: lockPromise });
+
+    // Auto-release after timeout
+    const timeoutId = setTimeout(() => {
+      const lock = locks.get(lockKey);
+      if (lock?.promise === lockPromise) {
+        lock.resolve();
+        locks.delete(lockKey);
+      }
+    }, timeout);
+
+    return {
+      release: () => {
+        clearTimeout(timeoutId);
+        const lock = locks.get(lockKey);
+        if (lock?.promise === lockPromise) {
+          lock.resolve();
+          locks.delete(lockKey);
+        }
+      },
+    };
   };
 
   return {
@@ -100,158 +120,172 @@ export const configureOrdersModule = async ({
 
     updateStatus: async (
       orderId: string,
-      { status, info }: { status: OrderStatus | null; info?: string },
+      { status, info }: { status: (typeof OrderStatus)[keyof typeof OrderStatus] | null; info?: string },
     ) => {
-      const selector = generateDbFilterById(orderId);
-      const order = await Orders.findOne(selector, {});
+      const [orderRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
-      if (!order) return null;
-      if (order.status === status) return order;
+      if (!orderRow) return null;
+      if (orderRow.status === status) return rowToOrder(orderRow);
+
+      const order = rowToOrder(orderRow);
 
       const date = new Date();
-      const $set: Partial<Order> = {
+      const updates: Partial<Order> = {
         status,
-        updated: new Date(),
+        updated: date,
       };
+
       switch (status) {
         // explicitly use fallthrough here!
         case OrderStatus.FULFILLED:
-          $set.fulfilled = order.fulfilled || date;
+          updates.fulfilled = order.fulfilled || date;
         case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
         case OrderStatus.CONFIRMED:
           if (status === OrderStatus.REJECTED) {
-            $set.rejected = order.rejected || date;
+            updates.rejected = order.rejected || date;
           } else {
-            $set.confirmed = order.confirmed || date;
+            updates.confirmed = order.confirmed || date;
           }
         case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
-          $set.ordered = order.ordered || date;
-          $set.orderNumber = order.orderNumber || (await findNewOrderNumber(order));
+          updates.ordered = order.ordered || date;
+          updates.orderNumber = order.orderNumber || (await findNewOrderNumber(order));
           break;
         default:
           break;
       }
 
-      const modifier: mongodb.UpdateFilter<Order> = {
-        $set,
-        $push: {
-          log: {
-            date,
-            status,
-            info,
-          },
-        },
-      };
+      // Update log
+      const logEntry: OrderLogEntry = { date, status: status ?? undefined, info };
+      const log: OrderLogEntry[] = [...(order.log || []), logEntry];
 
-      const modificationResult = await Orders.findOneAndUpdate(
-        {
-          ...selector,
-          status: { $ne: status }, // Only update if status is different
-        },
-        modifier,
-        {
-          returnDocument: 'after',
-          includeResultMetadata: true,
-        },
-      );
+      // Update only if status is different
+      // Use sql for ne comparison since status can be null
+      await db
+        .update(orders)
+        .set({ ...updates, log })
+        .where(
+          and(
+            eq(orders._id, orderId),
+            status === null
+              ? sql`${orders.status} IS NOT NULL`
+              : order.status === null
+                ? sql`${orders.status} IS NULL`
+                : ne(orders.status, status),
+          ),
+        );
 
-      if (modificationResult.ok) {
+      const [modifiedOrderRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (modifiedOrderRow) {
+        // Update FTS index
+        await upsertOrderFTS(db, modifiedOrderRow);
+
+        const modifiedOrder = rowToOrder(modifiedOrderRow);
         if (order.status === null) {
           // The first time that an order transitions away from cart is a checkout event
-          await emit('ORDER_CHECKOUT', { order: modificationResult.value, oldStatus: order.status });
+          await emit('ORDER_CHECKOUT', { order: modifiedOrder, oldStatus: order.status });
         }
         switch (status) {
           case OrderStatus.FULFILLED:
-            await emit('ORDER_FULFILLED', { order: modificationResult.value, oldStatus: order.status });
+            await emit('ORDER_FULFILLED', { order: modifiedOrder, oldStatus: order.status });
             break;
           case OrderStatus.REJECTED:
-            await emit('ORDER_REJECTED', { order: modificationResult.value, oldStatus: order.status });
+            await emit('ORDER_REJECTED', { order: modifiedOrder, oldStatus: order.status });
             break;
           case OrderStatus.CONFIRMED:
-            await emit('ORDER_CONFIRMED', { order: modificationResult.value, oldStatus: order.status });
+            await emit('ORDER_CONFIRMED', { order: modifiedOrder, oldStatus: order.status });
             break;
           default:
             break;
         }
+        return modifiedOrder;
       }
 
-      return modificationResult.value || Orders.findOne(selector, {});
+      return order;
     },
 
-    acquireLock: async (orderId: string, identifier: string, timeout = 5000) => {
-      return await locker.lock(`order:${identifier}:${orderId}`, timeout).acquire();
-    },
+    acquireLock,
 
     setDeliveryProvider: async (orderId: string, deliveryProviderId: string) => {
-      const delivery = await OrderDeliveries.findOne({
-        orderId,
-        deliveryProviderId,
-      });
+      // Find existing delivery with this provider
+      const [existingDelivery] = await db
+        .select()
+        .from(orderDeliveries)
+        .where(
+          and(
+            eq(orderDeliveries.orderId, orderId),
+            eq(orderDeliveries.deliveryProviderId, deliveryProviderId),
+          ),
+        )
+        .limit(1);
+
       const deliveryId =
-        delivery?._id ||
+        existingDelivery?._id ||
         (
           await orderDeliveriesModule.create({
-            calculation: [],
-            deliveryProviderId,
-            log: [],
             orderId,
-            status: null,
+            deliveryProviderId,
           })
         )._id;
 
-      const order = await Orders.findOneAndUpdate(
-        { _id: orderId, deliveryId: { $ne: deliveryId } },
-        {
-          $set: {
-            deliveryId,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      // Update order only if deliveryId is different
+      const [currentRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
-      if (!order) return null;
+      if (!currentRow) return null;
+      if (currentRow.deliveryId === deliveryId) return rowToOrder(currentRow);
+
+      await db.update(orders).set({ deliveryId, updated: new Date() }).where(eq(orders._id, orderId));
+
+      const [orderRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      const resultOrder = rowToOrder(orderRow);
       await emit('ORDER_SET_DELIVERY_PROVIDER', {
-        order,
+        order: resultOrder,
         deliveryProviderId,
       });
 
-      return order;
+      return resultOrder;
     },
 
     setPaymentProvider: async (orderId: string, paymentProviderId: string) => {
-      const payment = await OrderPayments.findOne({
-        orderId,
-        paymentProviderId,
-      });
+      // Find existing payment with this provider
+      const [existingPayment] = await db
+        .select()
+        .from(orderPayments)
+        .where(
+          and(
+            eq(orderPayments.orderId, orderId),
+            eq(orderPayments.paymentProviderId, paymentProviderId),
+          ),
+        )
+        .limit(1);
 
       const paymentId =
-        payment?._id ||
+        existingPayment?._id ||
         (
           await orderPaymentsModule.create({
-            calculation: [],
-            paymentProviderId,
-            log: [],
             orderId,
-            status: null,
+            paymentProviderId,
           })
         )._id;
 
-      const order = await Orders.findOneAndUpdate(
-        { _id: orderId, paymentId: { $ne: paymentId } },
-        {
-          $set: { paymentId, updated: new Date() },
-        },
-        { returnDocument: 'after' },
-      );
+      // Update order only if paymentId is different
+      const [currentRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
-      if (!order) return null;
+      if (!currentRow) return null;
+      if (currentRow.paymentId === paymentId) return rowToOrder(currentRow);
+
+      await db.update(orders).set({ paymentId, updated: new Date() }).where(eq(orders._id, orderId));
+
+      const [orderRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      const resultOrder = rowToOrder(orderRow);
       await emit('ORDER_SET_PAYMENT_PROVIDER', {
-        order,
+        order: resultOrder,
         paymentProviderId,
       });
 
-      return order;
+      return resultOrder;
     },
   };
 };

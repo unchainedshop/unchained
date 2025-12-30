@@ -35,9 +35,12 @@ export const getOrderSummaryData = async (
   });
 
   const deliveryAddress = ch.addressToString(
-    orderDelivery?.context?.deliveryAddress || order.billingAddress,
+    (orderDelivery?.context as { deliveryAddress?: typeof order.billingAddress } | null)
+      ?.deliveryAddress ||
+      order.billingAddress ||
+      undefined,
   );
-  const billingAddress = ch.addressToString(order.billingAddress);
+  const billingAddress = ch.addressToString(order.billingAddress ?? undefined);
   const orderPricing = OrderPricingSheet({
     calculation: order.calculation,
     currencyCode: order.currencyCode,

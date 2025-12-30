@@ -218,7 +218,7 @@ const Payrexx: IPaymentAdapter = {
               orderPaymentId: gatewayObject.referenceId,
             });
             return {
-              transactionId: gatewayId,
+              transactionId: String(gatewayId),
               gatewayObject,
             };
           } catch (e) {

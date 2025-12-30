@@ -1,13 +1,8 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  type Address,
-  type Contact,
-  generateDbFilterById,
-  generateDbObjectId,
-  mongodb,
-} from '@unchainedshop/mongodb';
-import { type Order, OrderStatus } from '../db/OrdersCollection.ts';
-import type { OrderPosition } from '../db/OrderPositionsCollection.ts';
+import type { Address, Contact } from '@unchainedshop/mongodb';
+import { eq, and, type DrizzleDb, generateId } from '@unchainedshop/store';
+import { orders, orderPositions, OrderStatus, rowToOrder, type Order } from '../db/schema.ts';
+import { upsertOrderFTS, deleteOrderFTS } from '../db/fts.ts';
 
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',
@@ -17,13 +12,7 @@ const ORDER_EVENTS: string[] = [
   'ORDER_UPDATE',
 ];
 
-export const configureOrderModuleMutations = ({
-  Orders,
-  OrderPositions,
-}: {
-  Orders: mongodb.Collection<Order>;
-  OrderPositions: mongodb.Collection<OrderPosition>;
-}) => {
+export const configureOrderModuleMutations = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ORDER_EVENTS);
 
   return {
@@ -45,9 +34,12 @@ export const configureOrderModuleMutations = ({
       originEnrollmentId?: string;
       context?: Record<string, any>;
     }) => {
-      const { insertedId: orderId } = await Orders.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
+      const orderId = generateId();
+      const now = new Date();
+
+      await db.insert(orders).values({
+        _id: orderId,
+        created: now,
         status: null,
         billingAddress,
         contact,
@@ -60,25 +52,35 @@ export const configureOrderModuleMutations = ({
         context: context || {},
       });
 
-      const order = (await Orders.findOne(generateDbFilterById(orderId), {})) as Order;
+      const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
+      // Update FTS index
+      await upsertOrderFTS(db, row);
+
+      const order = rowToOrder(row);
       await emit('ORDER_CREATE', { order });
       return order;
     },
 
     delete: async (orderId: string) => {
-      const { deletedCount } = await Orders.deleteOne({ _id: orderId });
-      if (!deletedCount) return 0;
+      const result = await db.delete(orders).where(eq(orders._id, orderId));
+      if (!result.rowsAffected) return 0;
+
+      // Remove from FTS index
+      await deleteOrderFTS(db, orderId);
+
       await emit('ORDER_REMOVE', { orderId });
-      return deletedCount;
+      return result.rowsAffected;
     },
 
     setCartOwner: async ({ orderId, userId }: { orderId: string; userId: string }) => {
-      await Orders.updateOne(generateDbFilterById(orderId), {
-        $set: {
-          userId,
-        },
-      });
+      await db.update(orders).set({ userId }).where(eq(orders._id, orderId));
+
+      // Update FTS index
+      const [order] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+      if (order) {
+        await upsertOrderFTS(db, order);
+      }
     },
 
     moveCartPositions: async ({
@@ -88,87 +90,104 @@ export const configureOrderModuleMutations = ({
       fromOrderId: string;
       toOrderId: string;
     }) => {
-      await OrderPositions.updateMany(
-        { orderId: fromOrderId },
-        {
-          $set: {
-            orderId: toOrderId,
-          },
-        },
-      );
+      await db
+        .update(orderPositions)
+        .set({ orderId: toOrderId })
+        .where(eq(orderPositions.orderId, fromOrderId));
     },
 
-    updateBillingAddress: async (orderId: string, billingAddress: Address) => {
-      const selector = generateDbFilterById(orderId);
-      const order = await Orders.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            billingAddress,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!order) return null;
+    updateBillingAddress: async (orderId: string, billingAddress: Address): Promise<Order | null> => {
+      await db
+        .update(orders)
+        .set({
+          billingAddress,
+          updated: new Date(),
+        })
+        .where(eq(orders._id, orderId));
+
+      const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (!row) return null;
+      const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'billingAddress' });
       return order;
     },
 
-    updateContact: async (orderId: string, contact: Contact) => {
-      const selector = generateDbFilterById(orderId);
-      const order = await Orders.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            contact,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!order) return null;
+    updateContact: async (orderId: string, contact: Contact): Promise<Order | null> => {
+      await db
+        .update(orders)
+        .set({
+          contact,
+          updated: new Date(),
+        })
+        .where(eq(orders._id, orderId));
+
+      const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (!row) return null;
+
+      // Update FTS index (contact has searchable fields)
+      await upsertOrderFTS(db, row);
+
+      const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'contact' });
       return order;
     },
 
-    updateCalculationSheet: async (orderId: string, calculation: any) => {
-      const selector = generateDbFilterById(orderId);
-      const order = await Orders.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            calculation,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!order) return null;
+    updateCalculationSheet: async (orderId: string, calculation: any): Promise<Order | null> => {
+      await db
+        .update(orders)
+        .set({
+          calculation,
+          updated: new Date(),
+        })
+        .where(eq(orders._id, orderId));
+
+      const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (!row) return null;
+      const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'calculation' });
       return order;
     },
 
-    updateContext: async (orderId: string, context: any) => {
-      const selector = generateDbFilterById<Order>(orderId);
-      selector.status = { $in: [null, OrderStatus.PENDING] };
+    updateContext: async (orderId: string, context: any): Promise<Order | null> => {
+      // Only update if order is a cart or pending
+      const [current] = await db
+        .select()
+        .from(orders)
+        .where(
+          and(
+            eq(orders._id, orderId),
+            // Status is null (cart) or PENDING
+            // Using isNull since we're checking for null status
+          ),
+        )
+        .limit(1);
 
-      if (!context || Object.keys(context).length === 0) return Orders.findOne(selector, {});
+      if (!current) return null;
 
-      const contextSetters = Object.fromEntries(
-        Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
-      );
-      const order = await Orders.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            ...contextSetters,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!order) return null;
+      // Only allow updates if status is null (cart) or PENDING
+      if (current.status !== null && current.status !== OrderStatus.PENDING) {
+        return rowToOrder(current);
+      }
+
+      if (!context || Object.keys(context).length === 0) return rowToOrder(current);
+
+      const mergedContext = { ...(current.context || {}), ...context };
+
+      await db
+        .update(orders)
+        .set({
+          context: mergedContext,
+          updated: new Date(),
+        })
+        .where(eq(orders._id, orderId));
+
+      const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (!row) return null;
+      const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'context' });
       return order;
     },
@@ -181,33 +200,39 @@ export const configureOrderModuleMutations = ({
         contact?: Contact;
       },
     ): Promise<Order | null> => {
-      const $set: Record<string, any> = { updated: new Date() };
+      const [current] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (!current) return null;
+
+      const setFields: Record<string, unknown> = { updated: new Date() };
 
       if (updates.billingAddress) {
-        $set.billingAddress = updates.billingAddress;
+        setFields.billingAddress = updates.billingAddress;
       }
       if (updates.contact) {
-        $set.contact = updates.contact;
+        setFields.contact = updates.contact;
       }
       if (updates.meta && Object.keys(updates.meta).length > 0) {
-        const contextSetters = Object.fromEntries(
-          Object.entries(updates.meta).map(([key, value]) => [`context.${key}`, value]),
-        );
-        Object.assign($set, contextSetters);
+        setFields.context = { ...(current.context || {}), ...updates.meta };
       }
 
-      if (Object.keys($set).length === 1) {
+      if (Object.keys(setFields).length === 1) {
         // Only 'updated' field, nothing to update
-        return Orders.findOne(generateDbFilterById(orderId), {});
+        return rowToOrder(current);
       }
 
-      const order = await Orders.findOneAndUpdate(
-        generateDbFilterById(orderId),
-        { $set },
-        { returnDocument: 'after' },
-      );
+      await db.update(orders).set(setFields).where(eq(orders._id, orderId));
 
-      if (!order) return null;
+      const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
+
+      if (!row) return null;
+
+      // Update FTS index if contact changed
+      if (updates.contact) {
+        await upsertOrderFTS(db, row);
+      }
+
+      const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'cartFields' });
       return order;
     },

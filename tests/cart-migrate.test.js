@@ -1,16 +1,19 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { GUEST_TOKEN } from './seeds/users.js';
+import { orders } from '@unchainedshop/core-orders';
+import { eq, and } from '@unchainedshop/store';
 import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Guest user cart migration', () => {
-  let db;
+  let drizzleDb;
   let loggedInGraphqlFetch;
   let orderId;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
+    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -93,10 +96,11 @@ test.describe('Guest user cart migration', () => {
         }
       `,
     });
-    const adminOrder = await db.collection('orders').findOne({
-      userId: loginWithPassword.user._id,
-      _id: orderId,
-    });
+    const [adminOrder] = await drizzleDb
+      .select()
+      .from(orders)
+      .where(and(eq(orders.userId, loginWithPassword.user._id), eq(orders._id, orderId)))
+      .limit(1);
     assert.ok(adminOrder);
   });
 });

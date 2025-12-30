@@ -31,14 +31,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   };
 
   const isOwnedOrder = async (obj: any, params: { orderId: string }, { modules, userId }: Context) => {
-    const order = await modules.orders.findOrder(
-      { orderId: params.orderId },
-      {
-        projection: {
-          userId: 1,
-        },
-      },
-    );
+    const order = await modules.orders.findOrder({ orderId: params.orderId }, { fields: ['userId'] });
     if (!order) return true;
     return order.userId === userId;
   };
@@ -66,11 +59,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedOrderPayment = async (obj: any, params: { orderPaymentId: string }, context: Context) => {
     const payment = await context.modules.orders.payments.findOrderPayment(
       { orderPaymentId: params.orderPaymentId },
-      {
-        projection: {
-          orderId: 1,
-        },
-      },
+      { fields: ['orderId'] },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -86,11 +75,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   ) => {
     const delivery = await context.modules.orders.deliveries.findDelivery(
       { orderDeliveryId: params.orderDeliveryId },
-      {
-        projection: {
-          orderId: 1,
-        },
-      },
+      { fields: ['orderId'] },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -102,11 +87,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedOrderItem = async (obj: any, params: { itemId: string }, context: Context) => {
     const item = await context.modules.orders.positions.findOrderPosition(
       { itemId: params.itemId },
-      {
-        projection: {
-          orderId: 1,
-        },
-      },
+      { fields: ['orderId'] },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -118,16 +99,13 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedOrderDiscount = async (obj: any, params: { discountId: string }, context: Context) => {
     const discount = await context.modules.orders.discounts.findOrderDiscount(
       { discountId: params.discountId },
-      {
-        projection: {
-          orderId: 1,
-        },
-      },
+      { fields: ['orderId'] },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!discount) return true;
-    const orderId = discount && discount.orderId;
+    const orderId = discount?.orderId;
+    if (!orderId) return true;
     return isOwnedOrder(null, { orderId }, context);
   };
 

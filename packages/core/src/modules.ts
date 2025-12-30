@@ -57,6 +57,7 @@ import {
   configureOrdersModule,
   type OrdersModule,
   type OrdersSettingsOptions,
+  initializeOrdersSchema,
 } from '@unchainedshop/core-orders';
 import {
   configurePaymentModule,
@@ -175,6 +176,7 @@ export default async function initModules(
     initializeWorkQueueSchema,
     initializeUsersSchema,
     initializeProductsSchema,
+    initializeOrdersSchema,
   ]);
 
   const assortments = await configureAssortmentsModule({
@@ -214,9 +216,8 @@ export default async function initModules(
     db: drizzleDb,
   });
   const orders = await configureOrdersModule({
-    db,
+    db: drizzleDb,
     options: options.orders,
-    migrationRepository,
   });
   const payment = await configurePaymentModule({
     db: drizzleDb,

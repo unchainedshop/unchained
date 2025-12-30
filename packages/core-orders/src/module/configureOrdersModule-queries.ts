@@ -1,7 +1,67 @@
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
-import buildFindSelector from './buildFindSelector.ts';
-import { type Order, type OrderQuery } from '../db/OrdersCollection.ts';
+import {
+  eq,
+  and,
+  isNull,
+  isNotNull,
+  inArray,
+  gte,
+  lte,
+  desc,
+  asc,
+  sql,
+  buildSelectColumns,
+  type DrizzleDb,
+  type SQL,
+} from '@unchainedshop/store';
+import { orders, OrderStatus, rowToOrder, type Order, type OrderRow } from '../db/schema.ts';
+import { searchOrdersFTS } from '../db/fts.ts';
+import type { DateFilterInput } from '@unchainedshop/utils';
+
+// Column mapping for field selection
+const ORDERS_COLUMNS = {
+  _id: orders._id,
+  userId: orders.userId,
+  status: orders.status,
+  orderNumber: orders.orderNumber,
+  countryCode: orders.countryCode,
+  currencyCode: orders.currencyCode,
+  deliveryId: orders.deliveryId,
+  paymentId: orders.paymentId,
+  originEnrollmentId: orders.originEnrollmentId,
+  billingAddress: orders.billingAddress,
+  contact: orders.contact,
+  calculation: orders.calculation,
+  context: orders.context,
+  log: orders.log,
+  ordered: orders.ordered,
+  confirmed: orders.confirmed,
+  fulfilled: orders.fulfilled,
+  rejected: orders.rejected,
+  created: orders.created,
+  updated: orders.updated,
+  deleted: orders.deleted,
+} as const;
+
+export type OrderFields = keyof typeof ORDERS_COLUMNS;
+
+export interface OrderQueryOptions {
+  fields?: OrderFields[];
+}
+
+export interface OrderQuery {
+  includeCarts?: boolean;
+  queryString?: string;
+  status?: (typeof OrderStatus)[keyof typeof OrderStatus][];
+  userId?: string;
+  deliveryIds?: string[];
+  paymentIds?: string[];
+  dateRange?: DateFilterInput;
+  orderIds?: string[];
+  // Used by API layer to filter by provider IDs (resolved to payment/delivery IDs before query)
+  paymentProviderIds?: string[];
+  deliveryProviderIds?: string[];
+}
 
 export interface OrderReport {
   newCount: number;
@@ -35,27 +95,96 @@ export interface DateRange {
 
 export type StatisticsDateField = 'created' | 'ordered' | 'rejected' | 'confirmed' | 'fulfilled';
 
-function buildDateMatch(dateField: string, dateRange?: DateRange) {
-  if (!dateRange?.start && !dateRange?.end) return { [dateField]: { $exists: true } };
+const buildConditions = async (
+  db: DrizzleDb,
+  {
+    includeCarts,
+    status,
+    userId,
+    queryString,
+    paymentIds,
+    deliveryIds,
+    dateRange,
+    orderIds,
+  }: OrderQuery,
+): Promise<SQL[]> => {
+  const conditions: SQL[] = [];
 
-  const rangeMatch: Record<string, any> = {};
-  if (dateRange?.start) rangeMatch.$gte = new Date(dateRange.start);
-  if (dateRange?.end) rangeMatch.$lte = new Date(dateRange.end);
+  if (userId) {
+    conditions.push(eq(orders.userId, userId));
+  }
 
-  return { [dateField]: rangeMatch };
-}
-export interface OrderAggregateParams {
-  match?: Record<string, any>;
-  matchAfterGroup?: Record<string, any>;
-  project?: Record<string, any>;
-  group?: Record<string, any>;
-  sort?: Record<string, number>;
-  limit?: number;
-  addFields?: Record<string, any>;
-  pipeline?: any[];
-}
+  if (orderIds?.length) {
+    conditions.push(inArray(orders._id, orderIds));
+  }
 
-export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Collection<Order> }) => {
+  if (dateRange) {
+    if (dateRange.start) {
+      conditions.push(gte(orders.ordered, new Date(dateRange.start)));
+    }
+    if (dateRange.end) {
+      conditions.push(lte(orders.ordered, new Date(dateRange.end)));
+    }
+  }
+
+  if (deliveryIds?.length) {
+    conditions.push(inArray(orders.deliveryId, deliveryIds));
+  }
+
+  if (paymentIds?.length) {
+    conditions.push(inArray(orders.paymentId, paymentIds));
+  }
+
+  if (status?.length) {
+    conditions.push(inArray(orders.status, status));
+  } else if (!includeCarts) {
+    conditions.push(isNotNull(orders.status));
+  }
+
+  if (queryString) {
+    const matchingIds = await searchOrdersFTS(db, queryString);
+    if (matchingIds.length === 0) {
+      // No matches - add impossible condition
+      conditions.push(sql`0 = 1`);
+    } else {
+      conditions.push(inArray(orders._id, matchingIds));
+    }
+  }
+
+  return conditions;
+};
+
+const buildSortOrder = (sort: SortOption[]) => {
+  return sort.map((s) => {
+    // Map sort keys to column expressions
+    switch (s.key) {
+      case '_id':
+        return s.value === SortDirection.ASC ? asc(orders._id) : desc(orders._id);
+      case 'created':
+        return s.value === SortDirection.ASC ? asc(orders.created) : desc(orders.created);
+      case 'updated':
+        return s.value === SortDirection.ASC ? asc(orders.updated) : desc(orders.updated);
+      case 'ordered':
+        return s.value === SortDirection.ASC ? asc(orders.ordered) : desc(orders.ordered);
+      case 'confirmed':
+        return s.value === SortDirection.ASC ? asc(orders.confirmed) : desc(orders.confirmed);
+      case 'fulfilled':
+        return s.value === SortDirection.ASC ? asc(orders.fulfilled) : desc(orders.fulfilled);
+      case 'rejected':
+        return s.value === SortDirection.ASC ? asc(orders.rejected) : desc(orders.rejected);
+      case 'orderNumber':
+        return s.value === SortDirection.ASC ? asc(orders.orderNumber) : desc(orders.orderNumber);
+      case 'status':
+        return s.value === SortDirection.ASC ? asc(orders.status) : desc(orders.status);
+      case 'userId':
+        return s.value === SortDirection.ASC ? asc(orders.userId) : desc(orders.userId);
+      default:
+        return desc(orders.created);
+    }
+  });
+};
+
+export const configureOrdersModuleQueries = ({ db }: { db: DrizzleDb }) => {
   return {
     isCart: (order: Order) => {
       return order.status === null;
@@ -69,29 +198,38 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       countryCode?: string;
       orderNumber?: string;
       userId: string;
-    }) => {
-      const selector: mongodb.Filter<Order> = {
-        countryCode,
-        status: { $eq: null },
-        userId,
-      };
+    }): Promise<Order | null> => {
+      const conditions: SQL[] = [eq(orders.userId, userId), isNull(orders.status)];
 
-      if (orderNumber) {
-        selector.orderNumber = orderNumber;
+      if (countryCode) {
+        conditions.push(eq(orders.countryCode, countryCode));
       }
 
-      const options: mongodb.FindOptions = {
-        sort: {
-          updated: -1,
-        },
-      };
-      return Orders.findOne(selector, options);
+      if (orderNumber) {
+        conditions.push(eq(orders.orderNumber, orderNumber));
+      }
+
+      const [row] = await db
+        .select()
+        .from(orders)
+        .where(and(...conditions))
+        .orderBy(desc(orders.updated))
+        .limit(1);
+
+      return row ? rowToOrder(row) : null;
     },
 
     count: async (query: OrderQuery): Promise<number> => {
-      const orderCount = await Orders.countDocuments(buildFindSelector(query));
-      return orderCount;
+      const conditions = await buildConditions(db, query);
+
+      const [result] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(orders)
+        .where(conditions.length ? and(...conditions) : undefined);
+
+      return result?.count || 0;
     },
+
     findOrder: async (
       {
         orderId,
@@ -100,23 +238,37 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         orderId?: string;
         orderNumber?: string;
       },
-      options?: mongodb.FindOptions,
-    ) => {
-      const selector = orderId ? generateDbFilterById(orderId) : { orderNumber };
-      return Orders.findOne(selector, options);
+      options?: OrderQueryOptions,
+    ): Promise<Order | null> => {
+      const selectColumns = buildSelectColumns(ORDERS_COLUMNS, options?.fields);
+
+      if (orderId) {
+        const baseQuery = selectColumns
+          ? db.select(selectColumns).from(orders)
+          : db.select().from(orders);
+        const [row] = await baseQuery.where(eq(orders._id, orderId)).limit(1);
+        return row ? (selectColumns ? (row as Order) : rowToOrder(row as OrderRow)) : null;
+      }
+      if (orderNumber) {
+        const baseQuery = selectColumns
+          ? db.select(selectColumns).from(orders)
+          : db.select().from(orders);
+        const [row] = await baseQuery.where(eq(orders.orderNumber, orderNumber)).limit(1);
+        return row ? (selectColumns ? (row as Order) : rowToOrder(row as OrderRow)) : null;
+      }
+      return null;
     },
 
-    findCartsToInvalidate: async (maxAgeDays = 30) => {
+    findCartsToInvalidate: async (maxAgeDays = 30): Promise<Order[]> => {
       const ONE_DAY_IN_MILLISECONDS = 86400000;
-
       const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
 
-      const orders = await Orders.find({
-        status: { $eq: null },
-        updated: { $gte: minValidDate },
-      }).toArray();
+      const rows = await db
+        .select()
+        .from(orders)
+        .where(and(isNull(orders.status), gte(orders.updated, minValidDate)));
 
-      return orders;
+      return rows.map(rowToOrder);
     },
 
     findOrders: async (
@@ -131,54 +283,37 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         offset?: number;
         sort?: SortOption[];
       },
-      options?: mongodb.FindOptions,
+      options?: OrderQueryOptions,
     ): Promise<Order[]> => {
       const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.DESC }];
-      const findOptions: mongodb.FindOptions = {
-        skip: offset,
-        limit,
-        sort: buildSortOptions(sort || defaultSortOption),
-      };
-      const selector = buildFindSelector({ queryString, ...query });
+      const conditions = await buildConditions(db, { queryString, ...query });
 
-      if (queryString) {
-        return Orders.find(selector, {
-          ...options,
-          projection: { score: { $meta: 'textScore' } },
-          sort: { score: { $meta: 'textScore' } },
-        }).toArray();
+      const selectColumns = buildSelectColumns(ORDERS_COLUMNS, options?.fields);
+
+      const baseQuery = selectColumns ? db.select(selectColumns).from(orders) : db.select().from(orders);
+
+      let ordersQuery = baseQuery
+        .where(conditions.length ? and(...conditions) : undefined)
+        .orderBy(...buildSortOrder(sort || defaultSortOption));
+
+      if (typeof offset === 'number') {
+        ordersQuery = ordersQuery.offset(offset) as typeof ordersQuery;
+      }
+      if (typeof limit === 'number') {
+        ordersQuery = ordersQuery.limit(limit) as typeof ordersQuery;
       }
 
-      return Orders.find(selector, findOptions).toArray();
+      const rows = await ordersQuery;
+      return selectColumns ? (rows as Order[]) : rows.map((row) => rowToOrder(row as OrderRow));
     },
+
     orderExists: async ({ orderId }: { orderId: string }): Promise<boolean> => {
-      const orderCount = await Orders.countDocuments(generateDbFilterById(orderId), {
-        limit: 1,
-      });
-      return !!orderCount;
-    },
-    aggregateOrders: async ({
-      match,
-      project,
-      group,
-      sort,
-      limit,
-      addFields,
-      pipeline,
-    }: OrderAggregateParams): Promise<mongodb.Document[]> => {
-      const stages: mongodb.Document[] = [];
-      if (pipeline?.length) {
-        return await Orders.aggregate(pipeline).toArray();
-      }
-
-      if (match) stages.push({ $match: match });
-      if (project) stages.push({ $project: project });
-      if (group) stages.push({ $group: group });
-      if (addFields) stages.push({ $addFields: addFields });
-      if (sort) stages.push({ $sort: sort });
-      if (typeof limit === 'number') stages.push({ $limit: limit });
-
-      return Orders.aggregate(stages, { allowDiskUse: true }).toArray();
+      const [result] = await db
+        .select({ _id: orders._id })
+        .from(orders)
+        .where(eq(orders._id, orderId))
+        .limit(1);
+      return !!result;
     },
 
     // Statistics methods
@@ -188,16 +323,32 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         dateRange?: DateRange,
         options?: { includeCarts?: boolean },
       ): Promise<number> {
-        const match: mongodb.BSON.Document = buildDateMatch(dateField, dateRange);
+        const conditions: SQL[] = [];
 
-        if (options?.includeCarts) {
-          match.status = null;
-          match.orderNumber = null;
+        // Date field must exist
+        const dateColumn = orders[dateField];
+        if (dateRange?.start || dateRange?.end) {
+          if (dateRange.start) {
+            conditions.push(gte(dateColumn, new Date(dateRange.start)));
+          }
+          if (dateRange.end) {
+            conditions.push(lte(dateColumn, new Date(dateRange.end)));
+          }
+        } else {
+          conditions.push(isNotNull(dateColumn));
         }
 
-        const pipeline: mongodb.BSON.Document[] = [{ $match: match }, { $count: 'count' }];
-        const result = await Orders.aggregate(pipeline).toArray();
-        return result[0]?.count ?? 0;
+        if (options?.includeCarts) {
+          conditions.push(isNull(orders.status));
+          conditions.push(isNull(orders.orderNumber));
+        }
+
+        const [result] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(orders)
+          .where(and(...conditions));
+
+        return result?.count || 0;
       },
 
       async aggregateByDateField(
@@ -205,48 +356,63 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
         dateRange?: DateRange,
         options?: { includeCarts?: boolean },
       ): Promise<OrderStatisticsRecord[]> {
-        const match: mongodb.BSON.Document = buildDateMatch(dateField, dateRange);
+        const conditions: SQL[] = [];
 
-        if (options?.includeCarts) {
-          match.status = null;
-          match.orderNumber = null;
+        // Date field must exist
+        const dateColumn = orders[dateField];
+        if (dateRange?.start || dateRange?.end) {
+          if (dateRange.start) {
+            conditions.push(gte(dateColumn, new Date(dateRange.start)));
+          }
+          if (dateRange.end) {
+            conditions.push(lte(dateColumn, new Date(dateRange.end)));
+          }
+        } else {
+          conditions.push(isNotNull(dateColumn));
         }
 
-        const pipeline: mongodb.BSON.Document[] = [
-          { $match: match },
-          {
-            $addFields: {
-              orderTotal: {
-                $reduce: {
-                  input: { $ifNull: ['$calculation', []] },
-                  initialValue: 0,
-                  in: { $add: ['$$value', { $ifNull: ['$$this.amount', 0] }] },
-                },
-              },
-            },
-          },
-          {
-            $group: {
-              _id: {
-                date: { $dateToString: { format: '%Y-%m-%d', date: `$${dateField}` } },
-                currency: '$currencyCode',
-              },
-              totalAmount: { $sum: '$orderTotal' },
-              count: { $sum: 1 },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              date: '$_id.date',
-              total: { amount: '$totalAmount', currencyCode: '$_id.currency' },
-              count: 1,
-            },
-          },
-          { $sort: { date: 1 } },
-        ];
+        if (options?.includeCarts) {
+          conditions.push(isNull(orders.status));
+          conditions.push(isNull(orders.orderNumber));
+        }
 
-        return Orders.aggregate(pipeline).toArray() as Promise<OrderStatisticsRecord[]>;
+        // Use SQL query for aggregation with JSON extraction
+        const whereClause = conditions.length ? and(...conditions) : sql`1=1`;
+
+        const rows = await db.all<{
+          date: string;
+          currencyCode: string;
+          totalAmount: number;
+          count: number;
+        }>(
+          sql`
+            SELECT
+              strftime('%Y-%m-%d', ${dateColumn}/1000, 'unixepoch') as date,
+              currencyCode,
+              COALESCE(SUM(
+                CASE
+                  WHEN json_valid(calculation) THEN
+                    (SELECT COALESCE(SUM(CAST(json_extract(value, '$.amount') AS REAL)), 0)
+                     FROM json_each(calculation))
+                  ELSE 0
+                END
+              ), 0) as totalAmount,
+              COUNT(*) as count
+            FROM orders
+            WHERE ${whereClause}
+            GROUP BY date, currencyCode
+            ORDER BY date ASC
+          `,
+        );
+
+        return rows.map((row) => ({
+          date: row.date,
+          count: Number(row.count),
+          total: {
+            amount: Number(row.totalAmount),
+            currencyCode: row.currencyCode,
+          },
+        }));
       },
 
       async getTopCustomers(
@@ -255,67 +421,50 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       ): Promise<TopCustomerRecord[]> {
         const limit = options?.limit || 10;
 
-        const pipeline: mongodb.BSON.Document[] = [
-          { $match: { _id: { $in: orderIds } } },
-          {
-            $project: {
-              userId: 1,
-              created: 1,
-              currencyCode: 1,
-              itemAmount: {
-                $let: {
-                  vars: {
-                    item: {
-                      $first: {
-                        $filter: {
-                          input: '$calculation',
-                          as: 'c',
-                          cond: { $eq: ['$$c.category', 'ITEMS'] },
-                        },
-                      },
-                    },
-                  },
-                  in: '$$item.amount',
-                },
-              },
-            },
-          },
-          {
-            $group: {
-              _id: { userId: '$userId', currencyCode: '$currencyCode' },
-              totalSpent: { $sum: '$itemAmount' },
-              orderCount: { $sum: 1 },
-              lastOrderDate: { $max: '$created' },
-            },
-          },
-          { $match: { totalSpent: { $gt: 0 } } },
-          {
-            $addFields: {
-              averageOrderValue: {
-                $cond: [{ $eq: ['$orderCount', 0] }, 0, { $divide: ['$totalSpent', '$orderCount'] }],
-              },
-              currencyCode: '$_id.currencyCode',
-              userId: '$_id.userId',
-            },
-          },
-          { $sort: { totalSpent: -1 } },
-          { $limit: limit },
-          {
-            $project: {
-              _id: 0,
-              userId: 1,
-              currencyCode: 1,
-              totalSpent: 1,
-              orderCount: 1,
-              lastOrderDate: 1,
-              averageOrderValue: 1,
-            },
-          },
-        ];
+        if (!orderIds.length) return [];
 
-        return Orders.aggregate(pipeline, { allowDiskUse: true }).toArray() as Promise<
-          TopCustomerRecord[]
-        >;
+        // SQL query to get top customers
+        // The calculation array contains items like: [{ category: 'ITEMS', amount: 123 }, ...]
+        const rows = await db.all<{
+          userId: string;
+          currencyCode: string;
+          totalSpent: number;
+          orderCount: number;
+          lastOrderDate: number;
+        }>(
+          sql.raw(`
+            SELECT
+              userId,
+              currencyCode,
+              COALESCE(SUM(
+                CASE
+                  WHEN json_valid(calculation) THEN
+                    (SELECT COALESCE(json_extract(value, '$.amount'), 0)
+                     FROM json_each(calculation)
+                     WHERE json_extract(value, '$.category') = 'ITEMS'
+                     LIMIT 1)
+                  ELSE 0
+                END
+              ), 0) as totalSpent,
+              COUNT(*) as orderCount,
+              MAX(created) as lastOrderDate
+            FROM orders
+            WHERE _id IN (${orderIds.map((id) => `'${id}'`).join(',')})
+            GROUP BY userId, currencyCode
+            HAVING totalSpent > 0
+            ORDER BY totalSpent DESC
+            LIMIT ${limit}
+          `),
+        );
+
+        return rows.map((row) => ({
+          userId: row.userId,
+          currencyCode: row.currencyCode,
+          totalSpent: Number(row.totalSpent),
+          orderCount: Number(row.orderCount),
+          lastOrderDate: new Date(row.lastOrderDate),
+          averageOrderValue: row.orderCount > 0 ? Number(row.totalSpent) / Number(row.orderCount) : 0,
+        }));
       },
     },
   };

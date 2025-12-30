@@ -64,7 +64,7 @@ export const ProductSwissTax: IProductPricingAdapter = {
         // If still no tax category found, use default
         if (!taxCategory) taxCategory = SwissTaxCategories.DEFAULT;
 
-        const taxRate = taxCategory.rate(context.order?.ordered);
+        const taxRate = taxCategory.rate(context.order?.ordered ?? undefined);
 
         ProductPricingAdapter.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
         params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {

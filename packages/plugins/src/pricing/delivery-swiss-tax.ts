@@ -39,7 +39,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
       calculate: async () => {
         const taxCategory =
           resolveTaxCategoryFromDeliveryProvider(context.provider) || SwissTaxCategories.DEFAULT;
-        const taxRate = taxCategory.rate(context.order?.ordered);
+        const taxRate = taxCategory.rate(context.order?.ordered ?? undefined);
 
         DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
         params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {

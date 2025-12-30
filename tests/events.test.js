@@ -136,8 +136,8 @@ test.describe('Events', () => {
         data: { events },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Events($offset: Int) {
-            events(offset: $offset) {
+          query Events($offset: Int, $types: [String!]) {
+            events(offset: $offset, types: $types) {
               _id
               type
             }
@@ -145,6 +145,7 @@ test.describe('Events', () => {
         `,
         variables: {
           offset: 2,
+          types: SEED_EVENT_TYPES,
         },
       });
       assert.strictEqual(events.length, 2);
@@ -155,8 +156,8 @@ test.describe('Events', () => {
         data: { events },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Events($limit: Int, $offset: Int) {
-            events(limit: $limit, offset: $offset) {
+          query Events($limit: Int, $offset: Int, $types: [String!]) {
+            events(limit: $limit, offset: $offset, types: $types) {
               _id
               type
             }
@@ -165,6 +166,7 @@ test.describe('Events', () => {
         variables: {
           limit: 1,
           offset: 1,
+          types: SEED_EVENT_TYPES,
         },
       });
       assert.strictEqual(events.length, 1);

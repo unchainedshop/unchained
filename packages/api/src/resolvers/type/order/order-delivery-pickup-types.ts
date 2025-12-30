@@ -4,7 +4,8 @@ import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export const OrderDeliveryPickUp = {
   async activePickUpLocation(orderDelivery: OrderDelivery, _: never, requestContext: Context) {
-    const { orderPickUpLocationId } = orderDelivery.context || {};
+    const { orderPickUpLocationId } =
+      (orderDelivery.context as { orderPickUpLocationId?: string }) || {};
 
     const provider = await requestContext.loaders.deliveryProviderLoader.load({
       deliveryProviderId: orderDelivery.deliveryProviderId,
@@ -15,7 +16,7 @@ export const OrderDeliveryPickUp = {
       requestContext,
     );
 
-    return director.pickUpLocationById(orderPickUpLocationId);
+    return orderPickUpLocationId ? director.pickUpLocationById(orderPickUpLocationId) : null;
   },
 
   async pickUpLocations(obj: OrderDelivery, _: never, context: Context) {

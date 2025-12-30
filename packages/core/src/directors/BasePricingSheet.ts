@@ -35,7 +35,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 }
 
 export interface PricingSheetParams<Calculation extends PricingCalculation> {
-  calculation?: Calculation[];
+  calculation?: Calculation[] | null;
   currencyCode?: string;
   quantity?: number;
 }
@@ -44,7 +44,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
   params: PricingSheetParams<Calculation>,
 ): IBasePricingSheet<Calculation> => {
   const pricingSheet: IBasePricingSheet<Calculation> = {
-    calculation: params.calculation || [],
+    calculation: params.calculation ?? [],
     currencyCode: params.currencyCode,
     quantity: params.quantity,
 

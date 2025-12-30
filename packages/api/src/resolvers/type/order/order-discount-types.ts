@@ -11,21 +11,24 @@ export const OrderDiscount = {
       _id: Interface.key,
       label: Interface.label,
       version: Interface.version,
-      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(obj.code),
+      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(obj.code ?? undefined),
       isManualRemovalAllowed: await Interface.isManualRemovalAllowed(),
     };
   },
 
   async order(obj: OrderDiscountType, _: never, { loaders }: Context) {
+    if (!obj.orderId) return null;
     return loaders.orderLoader.load({ orderId: obj.orderId });
   },
 
   async total(obj: OrderDiscountType, _: never, { loaders, services }: Context) {
+    if (!obj.orderId) return null;
     const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     return services.orders.calculateDiscountTotal(order, obj);
   },
 
   async discounted(obj: OrderDiscountType, _: never, { loaders, services }: Context) {
+    if (!obj.orderId) return [];
     const order = await loaders.orderLoader.load({ orderId: obj.orderId });
     return services.orders.discountedEntities(order, obj);
   },

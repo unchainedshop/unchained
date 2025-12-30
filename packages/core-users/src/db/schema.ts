@@ -79,7 +79,7 @@ export const users = sqliteTable(
     avatarId: text('avatarId'),
     roles: text('roles', { mode: 'json' }).$type<string[]>().notNull().default([]),
     tags: text('tags', { mode: 'json' }).$type<string[]>(),
-    meta: text('meta', { mode: 'json' }),
+    meta: text('meta', { mode: 'json' }).$type<Record<string, unknown>>(),
     // Nested objects as JSON
     emails: text('emails', { mode: 'json' }).$type<Email[]>().notNull().default([]),
     services: text('services', { mode: 'json' }).$type<UserServices>(),
@@ -121,3 +121,47 @@ export type UserRow = typeof users.$inferSelect;
 export type NewUserRow = typeof users.$inferInsert;
 export type WebAuthnRequestRow = typeof webauthnCredentialsRequests.$inferSelect;
 export type NewWebAuthnRequestRow = typeof webauthnCredentialsRequests.$inferInsert;
+
+// Domain interface - uses undefined instead of null for optional fields
+export interface User {
+  _id: string;
+  deleted?: Date;
+  avatarId?: string;
+  emails: Email[];
+  guest: boolean;
+  initialPassword: boolean;
+  lastBillingAddress?: Address;
+  lastContact?: Contact;
+  lastLogin?: UserLastLogin;
+  profile?: UserProfile;
+  roles: string[];
+  services: any; // Keep as `any` for backward compatibility with API resolvers
+  tags?: string[];
+  pushSubscriptions: PushSubscriptionObject[];
+  username?: string;
+  meta?: any;
+  created: Date;
+  updated?: Date;
+}
+
+// Transform database row to domain object
+export const rowToUser = (row: UserRow): User => ({
+  _id: row._id,
+  username: row.username ?? undefined,
+  guest: row.guest,
+  initialPassword: row.initialPassword,
+  avatarId: row.avatarId ?? undefined,
+  roles: row.roles,
+  tags: row.tags ?? undefined,
+  meta: row.meta ?? undefined,
+  emails: row.emails,
+  services: row.services ?? undefined,
+  profile: row.profile ?? undefined,
+  lastLogin: row.lastLogin ?? undefined,
+  lastBillingAddress: row.lastBillingAddress ?? undefined,
+  lastContact: row.lastContact ?? undefined,
+  pushSubscriptions: row.pushSubscriptions,
+  created: row.created,
+  updated: row.updated ?? undefined,
+  deleted: row.deleted ?? undefined,
+});

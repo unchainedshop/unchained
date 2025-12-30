@@ -20,14 +20,15 @@ import {
 import { paymentProviders } from '@unchainedshop/core-payment';
 import { currencies } from '@unchainedshop/core-currencies';
 import { products, productRates } from '@unchainedshop/core-products';
+import { orders, orderPayments, orderPositions } from '@unchainedshop/core-orders';
+import { eq } from 'drizzle-orm';
 
 test.describe('Plugins: Cryptopay', () => {
-  let db;
   let drizzleDb;
   let graphqlFetch;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -99,15 +100,15 @@ test.describe('Plugins: Cryptopay', () => {
       created: new Date(),
     });
 
-    // Add a demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    // Add a demo order ready to checkout (orders now use Drizzle)
+    await drizzleDb.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'cryptopay-payment',
       paymentProviderId: 'cryptopay-payment-provider',
       orderId: 'cryptopay-order',
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await drizzleDb.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'cryptopay-order-position',
       orderId: 'cryptopay-order',
@@ -126,7 +127,7 @@ test.describe('Plugins: Cryptopay', () => {
       ],
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await drizzleDb.insert(orders).values({
       ...SimpleOrder,
       _id: 'cryptopay-order',
       orderNumber: 'cryptopay',
@@ -153,14 +154,14 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     // Add a second demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    await drizzleDb.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'cryptopay-payment2',
       paymentProviderId: 'cryptopay-payment-provider',
       orderId: 'cryptopay-order2',
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await drizzleDb.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'cryptopay-order-position2',
       orderId: 'cryptopay-order2',
@@ -168,7 +169,7 @@ test.describe('Plugins: Cryptopay', () => {
       productId: 'single-item-product-id',
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await drizzleDb.insert(orders).values({
       ...SimpleOrder,
       _id: 'cryptopay-order2',
       orderNumber: 'cryptopay2',
@@ -234,28 +235,24 @@ test.describe('Plugins: Cryptopay', () => {
 
   test('Payments Webhook (Cryptopay)', async () => {
     // Setup addresses for tests
-    await db.collection('order_payments').updateOne(
-      { _id: 'cryptopay-payment' },
-      {
-        $set: {
-          context: [
-            { currencyCode: 'BTC', address: BTC_DERIVATIONS[0] },
-            { currencyCode: 'ETH', address: ETH_DERIVATIONS[0] },
-          ],
-        },
-      },
-    );
-    await db.collection('order_payments').updateOne(
-      { _id: 'cryptopay-payment2' },
-      {
-        $set: {
-          context: [
-            { currencyCode: 'BTC', address: BTC_DERIVATIONS[1] },
-            { currencyCode: 'ETH', address: ETH_DERIVATIONS[1] },
-          ],
-        },
-      },
-    );
+    await drizzleDb
+      .update(orderPayments)
+      .set({
+        context: [
+          { currencyCode: 'BTC', address: BTC_DERIVATIONS[0] },
+          { currencyCode: 'ETH', address: ETH_DERIVATIONS[0] },
+        ],
+      })
+      .where(eq(orderPayments._id, 'cryptopay-payment'));
+    await drizzleDb
+      .update(orderPayments)
+      .set({
+        context: [
+          { currencyCode: 'BTC', address: BTC_DERIVATIONS[1] },
+          { currencyCode: 'ETH', address: ETH_DERIVATIONS[1] },
+        ],
+      })
+      .where(eq(orderPayments._id, 'cryptopay-payment2'));
 
     await test('Invalid secret', async () => {
       const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
@@ -276,7 +273,10 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.partialDeepStrictEqual(await result.json(), { success: false });
-      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
+      const [orderPayment] = await drizzleDb
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, 'cryptopay-payment'));
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
@@ -299,7 +299,10 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true }); // the amount is too low but the webhook is still successful
-      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
+      const [orderPayment] = await drizzleDb
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, 'cryptopay-payment'));
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
@@ -322,7 +325,10 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true });
-      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment' });
+      const [orderPayment] = await drizzleDb
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, 'cryptopay-payment'));
       assert.strictEqual(orderPayment.status, 'PAID');
     });
 
@@ -345,7 +351,10 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true });
-      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment2' });
+      const [orderPayment] = await drizzleDb
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, 'cryptopay-payment2'));
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
@@ -368,7 +377,10 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true });
-      const orderPayment = await db.collection('order_payments').findOne({ _id: 'cryptopay-payment2' });
+      const [orderPayment] = await drizzleDb
+        .select()
+        .from(orderPayments)
+        .where(eq(orderPayments._id, 'cryptopay-payment2'));
       assert.strictEqual(orderPayment.status, 'PAID');
     });
   });

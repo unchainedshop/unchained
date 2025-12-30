@@ -6,22 +6,15 @@ export default async function getUserOrders(context: Context, params: Params<'GE
   const { modules } = context;
   const { userId, includeCarts = false, sort, queryString, status, limit = 10, offset = 0 } = params;
 
-  const orders = await modules.orders.findOrders(
-    {
-      userId,
-      includeCarts,
-      queryString,
-      status,
-    } as any,
-    {
-      skip: offset,
-      limit,
-      sort: sort?.reduce((acc, s) => {
-        acc[s.key] = s.value;
-        return acc;
-      }, {} as any),
-    },
-  );
+  const orders = await modules.orders.findOrders({
+    userId,
+    includeCarts,
+    queryString,
+    status,
+    offset,
+    limit,
+    sort: sort?.map((s) => ({ key: s.key, value: s.value })),
+  } as any);
 
   return {
     orders: await Promise.all(

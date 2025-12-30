@@ -1,3 +1,4 @@
+// Module exports
 export * from './module/configureOrdersModule.ts';
 export * from './module/configureOrderDeliveriesModule.ts';
 export * from './module/configureOrderDiscountsModule.ts';
@@ -5,9 +6,9 @@ export * from './module/configureOrderPaymentsModule.ts';
 export * from './module/configureOrderPositionsModule.ts';
 export * from './module/configureOrdersModule-mutations.ts';
 export * from './module/configureOrdersModule-queries.ts';
-export * from './db/OrderDeliveriesCollection.ts';
-export * from './db/OrderDiscountsCollection.ts';
-export * from './db/OrderPaymentsCollection.ts';
-export * from './db/OrderPositionsCollection.ts';
-export * from './db/OrdersCollection.ts';
+
+// DB exports (Drizzle schema)
+export * from './db/index.ts';
+
+// Settings
 export * from './orders-settings.ts';

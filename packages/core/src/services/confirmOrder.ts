@@ -1,4 +1,4 @@
-import { type Order, OrderStatus } from '@unchainedshop/core-orders';
+import { type Order, OrderStatus, type OrderStatusType } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { processOrderService } from './processOrder.ts';
 
@@ -9,7 +9,7 @@ export async function confirmOrderService(
     paymentContext?: any;
     deliveryContext?: any;
     comment?: string;
-    nextStatus?: OrderStatus;
+    nextStatus?: OrderStatusType;
   },
 ) {
   if (order.status !== OrderStatus.PENDING) return order;

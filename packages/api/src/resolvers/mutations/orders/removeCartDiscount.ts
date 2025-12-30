@@ -25,7 +25,7 @@ export default async function removeCartDiscount(
   if (!orderDiscount) throw new OrderDiscountNotFoundError({ orderDiscount });
 
   const order = await modules.orders.findOrder({
-    orderId: orderDiscount.orderId,
+    orderId: orderDiscount.orderId ?? undefined,
   });
 
   if (!order) throw new OrderNotFoundError({ orderId: orderDiscount.orderId });

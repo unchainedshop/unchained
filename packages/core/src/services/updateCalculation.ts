@@ -34,7 +34,7 @@ export async function updateCalculationService(this: Modules, orderId: string) {
       const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
       if (!Adapter) return null;
       const adapter = await Adapter.actions({
-        context: { order: order!, orderDiscount, code: orderDiscount.code, modules: this },
+        context: { order: order!, orderDiscount, code: orderDiscount.code ?? undefined, modules: this },
       });
 
       let isValid = false;

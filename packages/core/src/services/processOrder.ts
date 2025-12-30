@@ -6,6 +6,7 @@ import {
   OrderPaymentStatus,
   type OrderPosition,
   OrderStatus,
+  type OrderStatusType,
 } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.ts';
@@ -54,10 +55,10 @@ const isAutoConfirmationEnabled = async (
 };
 
 const findNextStatus = async (
-  status: OrderStatus | null,
+  status: OrderStatusType | null,
   order: Order,
   modules: Modules,
-): Promise<OrderStatus | null> => {
+): Promise<OrderStatusType | null> => {
   if (status === null) {
     return OrderStatus.PENDING;
   }
@@ -120,7 +121,7 @@ export async function processOrderService(
     paymentContext?: any;
     deliveryContext?: any;
     comment?: string;
-    nextStatus?: OrderStatus;
+    nextStatus?: OrderStatusType;
   },
 ) {
   const {
@@ -132,7 +133,9 @@ export async function processOrderService(
 
   const orderId = initialOrder._id;
   let order = initialOrder;
-  let nextStatus = forceNextStatus || (await findNextStatus(initialOrder.status, order, this));
+  let nextStatus =
+    forceNextStatus ||
+    (await findNextStatus(initialOrder.status as OrderStatusType | null, order, this));
 
   if (nextStatus === OrderStatus.PENDING) {
     // auto charge during transition to pending
@@ -209,7 +212,7 @@ export async function processOrderService(
                 orderPosition,
                 product,
                 quantity: orderPosition.quantity,
-                referenceDate: order.ordered,
+                referenceDate: order.ordered ?? undefined,
               },
               { modules: this },
             );

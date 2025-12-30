@@ -15,11 +15,7 @@ export default async function getTopProducts(context: Context, params: Params<'T
       status: [OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
       dateRange: { start: startDate.toISOString(), end: endDate.toISOString() },
     },
-    {
-      projection: {
-        _id: 1,
-      },
-    },
+    { fields: ['_id'] },
   );
   const orderIds = orders.map(({ _id }) => _id);
 

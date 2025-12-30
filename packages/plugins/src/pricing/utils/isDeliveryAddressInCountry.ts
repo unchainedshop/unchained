@@ -15,9 +15,11 @@ export default function isDeliveryAddressInCountry(
   let countryCode = forceCountryCode?.toUpperCase().trim() || order?.countryCode;
 
   if (orderDelivery || order) {
-    const address = orderDelivery?.context?.address || order?.billingAddress;
-    if (address?.countryCode > '') {
-      countryCode = address.countryCode?.toUpperCase().trim();
+    const address =
+      (orderDelivery?.context as { address?: { countryCode?: string } | null } | null)?.address ||
+      order?.billingAddress;
+    if (address?.countryCode && address.countryCode > '') {
+      countryCode = address.countryCode.toUpperCase().trim();
     }
   }
 

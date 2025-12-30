@@ -1,6 +1,34 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { type OrderDiscount, OrderDiscountTrigger } from '../db/OrderDiscountsCollection.ts';
+import { eq, isNull, and, type DrizzleDb, generateId, buildSelectColumns } from '@unchainedshop/store';
+import {
+  orderDiscounts,
+  OrderDiscountTrigger,
+  rowToOrderDiscount,
+  type OrderDiscount,
+  type OrderDiscountRow,
+} from '../db/schema.ts';
+
+type SelectOrderDiscount = OrderDiscount | Partial<OrderDiscount>;
+
+// Column mapping for field selection
+const DISCOUNT_COLUMNS = {
+  _id: orderDiscounts._id,
+  orderId: orderDiscounts.orderId,
+  code: orderDiscounts.code,
+  discountKey: orderDiscounts.discountKey,
+  trigger: orderDiscounts.trigger,
+  total: orderDiscounts.total,
+  reservation: orderDiscounts.reservation,
+  context: orderDiscounts.context,
+  created: orderDiscounts.created,
+  updated: orderDiscounts.updated,
+} as const;
+
+export type OrderDiscountFields = keyof typeof DISCOUNT_COLUMNS;
+
+export interface OrderDiscountQueryOptions {
+  fields?: OrderDiscountFields[];
+}
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',
@@ -8,86 +36,128 @@ const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_REMOVE_DISCOUNT',
 ];
 
-export const buildFindOrderDiscountByIdSelector = (orderDiscountId: string) =>
-  generateDbFilterById(orderDiscountId) as mongodb.Filter<OrderDiscount>;
-
-export const configureOrderDiscountsModule = ({
-  OrderDiscounts,
-}: {
-  OrderDiscounts: mongodb.Collection<OrderDiscount>;
-}) => {
+export const configureOrderDiscountsModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ORDER_DISCOUNT_EVENTS);
 
   return {
     // Queries
-    findOrderDiscount: async ({ discountId }: { discountId: string }, options?: mongodb.FindOptions) => {
-      return OrderDiscounts.findOne(buildFindOrderDiscountByIdSelector(discountId), options);
+    findOrderDiscount: async (
+      { discountId }: { discountId: string },
+      options?: OrderDiscountQueryOptions,
+    ) => {
+      const selectColumns = buildSelectColumns(DISCOUNT_COLUMNS, options?.fields);
+
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(orderDiscounts)
+        : db.select().from(orderDiscounts);
+
+      const [discount] = await baseQuery.where(eq(orderDiscounts._id, discountId)).limit(1);
+      return discount
+        ? selectColumns
+          ? (discount as SelectOrderDiscount as OrderDiscount)
+          : rowToOrderDiscount(discount as OrderDiscountRow)
+        : null;
     },
 
     findOrderDiscounts: async ({ orderId }: { orderId: string }): Promise<OrderDiscount[]> => {
-      const discounts = OrderDiscounts.find({ orderId });
-      return discounts.toArray();
+      const rows = await db.select().from(orderDiscounts).where(eq(orderDiscounts.orderId, orderId));
+      return rows.map(rowToOrderDiscount);
     },
 
     create: async (
-      doc: Omit<OrderDiscount, '_id' | 'created' | 'trigger'> &
-        Pick<Partial<OrderDiscount>, '_id' | 'created' | 'trigger'>,
+      doc: Pick<OrderDiscount, 'discountKey'> & Partial<Omit<OrderDiscount, 'discountKey'>>,
     ): Promise<OrderDiscount> => {
       const normalizedTrigger = doc.trigger || OrderDiscountTrigger.USER;
-      const { insertedId: discountId } = await OrderDiscounts.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
-        trigger: normalizedTrigger,
-      });
-      const discount = (await OrderDiscounts.findOne({
+      const discountId = doc._id || generateId();
+      const now = new Date();
+
+      await db.insert(orderDiscounts).values({
         _id: discountId,
-      })) as OrderDiscount;
-      await emit('ORDER_CREATE_DISCOUNT', { discount });
-      return discount;
+        created: now,
+        discountKey: doc.discountKey,
+        orderId: doc.orderId ?? null,
+        code: doc.code ?? null,
+        trigger: normalizedTrigger,
+        context: doc.context ?? {},
+      });
+
+      const [discount] = await db
+        .select()
+        .from(orderDiscounts)
+        .where(eq(orderDiscounts._id, discountId))
+        .limit(1);
+
+      const result = rowToOrderDiscount(discount);
+      await emit('ORDER_CREATE_DISCOUNT', { discount: result });
+      return result;
     },
 
     delete: async (orderDiscountId: string) => {
-      const selector = buildFindOrderDiscountByIdSelector(orderDiscountId);
-      const orderDiscount = await OrderDiscounts.findOneAndDelete(selector);
-      await emit('ORDER_REMOVE_DISCOUNT', { discount: orderDiscount });
-      return orderDiscount;
+      const [orderDiscount] = await db
+        .select()
+        .from(orderDiscounts)
+        .where(eq(orderDiscounts._id, orderDiscountId))
+        .limit(1);
+
+      if (orderDiscount) {
+        const result = rowToOrderDiscount(orderDiscount);
+        await db.delete(orderDiscounts).where(eq(orderDiscounts._id, orderDiscountId));
+        await emit('ORDER_REMOVE_DISCOUNT', { discount: result });
+        return result;
+      }
+
+      return null;
     },
 
-    isDiscountCodeUsed: async ({ code, orderId }): Promise<boolean> => {
-      return (
-        (await OrderDiscounts.countDocuments({
-          code,
-          orderId,
-        })) > 0
-      );
+    isDiscountCodeUsed: async ({
+      code,
+      orderId,
+    }: {
+      code: string;
+      orderId: string;
+    }): Promise<boolean> => {
+      const [result] = await db
+        .select({ count: orderDiscounts._id })
+        .from(orderDiscounts)
+        .where(and(eq(orderDiscounts.code, code), eq(orderDiscounts.orderId, orderId)))
+        .limit(1);
+
+      return !!result;
     },
 
-    findSpareDiscount: async ({ code }) => {
-      return OrderDiscounts.findOne({
-        code,
-        orderId: { $exists: false },
-      });
+    findSpareDiscount: async ({ code }: { code: string }) => {
+      const [discount] = await db
+        .select()
+        .from(orderDiscounts)
+        .where(and(eq(orderDiscounts.code, code), isNull(orderDiscounts.orderId)))
+        .limit(1);
+
+      return discount ? rowToOrderDiscount(discount) : null;
     },
 
     update: async (orderDiscountId: string, doc: Partial<OrderDiscount>) => {
-      const discount = await OrderDiscounts.findOneAndUpdate(
-        { _id: orderDiscountId },
-        {
-          $set: {
-            updated: new Date(),
-            ...doc,
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      await db
+        .update(orderDiscounts)
+        .set({
+          ...doc,
+          updated: new Date(),
+        })
+        .where(eq(orderDiscounts._id, orderDiscountId));
 
-      await emit('ORDER_UPDATE_DISCOUNT', { discount });
-      return discount;
+      const [discount] = await db
+        .select()
+        .from(orderDiscounts)
+        .where(eq(orderDiscounts._id, orderDiscountId))
+        .limit(1);
+
+      const result = discount ? rowToOrderDiscount(discount) : null;
+      await emit('ORDER_UPDATE_DISCOUNT', { discount: result });
+      return result;
     },
+
     deleteOrderDiscounts: async (orderId: string) => {
-      const { deletedCount } = await OrderDiscounts.deleteMany({ orderId });
-      return deletedCount;
+      const result = await db.delete(orderDiscounts).where(eq(orderDiscounts.orderId, orderId));
+      return result.rowsAffected;
     },
   };
 };

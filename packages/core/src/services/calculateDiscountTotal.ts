@@ -53,7 +53,7 @@ export async function calculateDiscountTotalService(
 
   // order discounts
   const orderDiscountSum = OrderPricingSheet({
-    calculation: order.calculation,
+    calculation: order.calculation ?? [],
     currencyCode: order.currencyCode,
   }).total({ category: OrderPricingRowCategory.Discounts, discountId: orderDiscountId });
 

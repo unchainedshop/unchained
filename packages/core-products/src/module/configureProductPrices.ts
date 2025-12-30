@@ -8,7 +8,7 @@ import { getPriceRange } from './utils/getPriceRange.ts';
 import {
   productRates,
   type ProductRateRow,
-  type ProductRow,
+  type Product,
   type ProductConfiguration,
   type ProductPrice,
 } from '../db/index.ts';
@@ -60,14 +60,14 @@ export const configureProductPricesModule = ({
   db,
 }: {
   proxyProducts: (
-    product: ProductRow,
+    product: Product,
     vectors: ProductConfiguration[],
     options: { includeInactive?: boolean },
-  ) => Promise<ProductRow[]>;
+  ) => Promise<Product[]>;
   db: DrizzleDb;
 }) => {
   const catalogPrice = async (
-    product: ProductRow,
+    product: Product,
     {
       countryCode,
       currencyCode,
@@ -100,12 +100,12 @@ export const configureProductPricesModule = ({
 
     priceRange: getPriceRange,
 
-    async catalogPrices(product: ProductRow): Promise<ProductPrice[]> {
+    async catalogPrices(product: Product): Promise<ProductPrice[]> {
       return (product.commerce && product.commerce.pricing) || [];
     },
 
     catalogPriceRange: async (
-      product: ProductRow,
+      product: Product,
       {
         quantity = 0,
         vectors = [],
@@ -150,7 +150,7 @@ export const configureProductPricesModule = ({
     },
 
     catalogPricesLeveled: async (
-      product: ProductRow,
+      product: Product,
       { currencyCode, countryCode }: { currencyCode: string; countryCode: string },
     ): Promise<
       {

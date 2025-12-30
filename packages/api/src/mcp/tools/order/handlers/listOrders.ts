@@ -38,9 +38,10 @@ export default async function listOrders(context: Context, params: Params<'LIST'
     ...filters,
   } as any;
 
-  const orders = await modules.orders.findOrders(findOptions, {
+  const orders = await modules.orders.findOrders({
+    ...findOptions,
     limit,
-    skip: offset,
+    offset,
     sort: sortOptions as any,
   });
 

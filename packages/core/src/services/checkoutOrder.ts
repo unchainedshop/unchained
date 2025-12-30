@@ -1,4 +1,4 @@
-import { OrderStatus } from '@unchainedshop/core-orders';
+import type { OrderStatusType } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { nextUserCartService } from './nextUserCart.ts';
 import { validateOrderService } from './validateOrder.ts';
@@ -27,7 +27,7 @@ export async function checkoutOrderService(
     paymentContext?: any;
     deliveryContext?: any;
     comment?: string;
-    nextStatus?: OrderStatus;
+    nextStatus?: OrderStatusType;
   },
 ) {
   const order = await this.orders.findOrder({ orderId });

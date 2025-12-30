@@ -10,17 +10,17 @@ import {
 import { USER_TOKEN } from './seeds/users.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { paymentProviders } from '@unchainedshop/core-payment';
+import { orders, orderPayments, orderPositions } from '@unchainedshop/core-orders';
 import webhookReserved from './seeds/payrexx_webhook_reserved.js';
 
 const payrexxInstance = 'unchained-test';
 
 test.describe('Plugins: Payrexx', () => {
-  let db;
   let drizzleDb;
   let graphqlFetch;
 
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     drizzleDb = getDrizzleDb();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
@@ -33,23 +33,23 @@ test.describe('Plugins: Payrexx', () => {
       created: new Date(),
     });
 
-    // Add a demo order ready to checkout
+    // Add a demo order ready to checkout (orders now use Drizzle)
     // NOTE: The order payment ID must be '1111112222' to match the mock in
     // packages/plugins/tests/mock/payrexx/Gateway/1000001.json which has referenceId: "1111112222"
-    await db.collection('order_payments').findOrInsertOne({
+    await drizzleDb.insert(orderPayments).values({
       ...SimplePayment,
       _id: '1111112222',
       paymentProviderId: 'payrexx-provider',
       orderId: 'payrexx-order',
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await drizzleDb.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'payrexx-order-position',
       orderId: 'payrexx-order',
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await drizzleDb.insert(orders).values({
       ...SimpleOrder,
       _id: 'payrexx-order',
       orderNumber: 'payrexx',
@@ -57,20 +57,20 @@ test.describe('Plugins: Payrexx', () => {
     });
 
     // Add a second demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    await drizzleDb.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'payrexx-payment2',
       paymentProviderId: 'payrexx-provider',
       orderId: 'payrexx-order2',
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await drizzleDb.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'payrexx-order-position2',
       orderId: 'payrexx-order2',
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await drizzleDb.insert(orders).values({
       ...SimpleOrder,
       _id: 'payrexx-order2',
       orderNumber: 'payrexx2',

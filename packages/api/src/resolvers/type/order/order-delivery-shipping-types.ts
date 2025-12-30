@@ -4,7 +4,7 @@ import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export const OrderDeliveryShipping = {
   address(obj: OrderDelivery) {
-    return obj.context?.address;
+    return (obj.context as { address?: unknown } | null)?.address;
   },
 
   status(obj: OrderDelivery, _: never, { modules }: Context) {

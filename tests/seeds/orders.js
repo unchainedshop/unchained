@@ -1,6 +1,13 @@
 import { SimpleDeliveryProvider } from './deliveries.js';
 import { GenericPaymentProvider, SimplePaymentProvider } from './payments.js';
-import chainedUpsert from './utils/chainedUpsert.js';
+import { sql } from '@unchainedshop/store';
+import {
+  orders,
+  orderPayments,
+  orderDeliveries,
+  orderPositions,
+  orderDiscounts,
+} from '@unchainedshop/core-orders';
 
 export const SimpleOrder = {
   _id: 'simple-order',
@@ -364,7 +371,7 @@ export const PickupOrder = {
   _id: 'pickup-order',
   userId: 'user',
   paymentId: 'pickup-order-payment',
-  deliveryId: 'pickup-order-delivery',
+  deliveryId: 'pickup-order-delivery-2',
 };
 
 export const PickupOrderPayment = {
@@ -376,7 +383,7 @@ export const PickupOrderPayment = {
 
 export const PickupOrderDelivery = {
   ...PickupDelivery,
-  _id: 'pickup-order-delivery',
+  _id: 'pickup-order-delivery-2',
   orderId: 'pickup-order',
   deliveryProviderId: 'pickup-delivery-provider',
 };
@@ -441,51 +448,117 @@ export const GenericPaymentOrderPosition = {
   orderId: 'generic-payment-order',
 };
 
-export default async function seedOrders(db) {
-  return chainedUpsert(db)
-    .upsert('orders', SimpleOrder)
-    .upsert('order_payments', SimplePayment)
-    .upsert('order_payments', GenericPayment)
-    .upsert('order_deliveries', SimpleDelivery)
-    .upsert('order_deliveries', PickupDelivery)
-    .upsert('order_positions', SimplePosition)
+// All orders to seed
+const allOrders = [
+  SimpleOrder,
+  ConfirmedOrder,
+  PendingOrder,
+  DiscountedOrder,
+  ShippingOrder,
+  PickupOrder,
+  InvoicePaymentOrder,
+  GenericPaymentOrder,
+];
 
-    .upsert('orders', ConfirmedOrder)
-    .upsert('order_payments', ConfirmedOrderPayment)
-    .upsert('order_deliveries', ConfirmedOrderDelivery)
-    .upsert('order_positions', ConfirmedOrderPosition)
+// All payments to seed
+const allPayments = [
+  SimplePayment,
+  GenericPayment,
+  ConfirmedOrderPayment,
+  PendingOrderPayment,
+  DiscountedPayment,
+  ShippingOrderPayment,
+  PickupOrderPayment,
+  InvoicePaymentOrderPayment,
+  GenericPaymentOrderPayment,
+];
 
-    .upsert('orders', PendingOrder)
-    .upsert('order_payments', PendingOrderPayment)
-    .upsert('order_deliveries', PendingOrderDelivery)
-    .upsert('order_positions', PendingOrderPosition)
+// All deliveries to seed
+const allDeliveries = [
+  SimpleDelivery,
+  PickupDelivery,
+  ConfirmedOrderDelivery,
+  PendingOrderDelivery,
+  DiscountedDelivery,
+  ShippingOrderDelivery,
+  PickupOrderDelivery,
+  InvoicePaymentOrderDelivery,
+  GenericPaymentOrderDelivery,
+];
 
-    .upsert('orders', DiscountedOrder)
-    .upsert('order_payments', DiscountedPayment)
-    .upsert('order_deliveries', DiscountedDelivery)
-    .upsert('order_discounts', DiscountedDiscount)
-    .upsert('order_discounts', DiscountedProductDiscount)
-    .upsert('order_positions', DiscountedPosition)
+// All positions to seed
+const allPositions = [
+  SimplePosition,
+  ConfirmedOrderPosition,
+  PendingOrderPosition,
+  DiscountedPosition,
+  ShippingOrderPosition,
+  PickupOrderPosition,
+  InvoicePaymentOrderPosition,
+  GenericPaymentOrderPosition,
+];
 
-    .upsert('orders', ShippingOrder)
-    .upsert('order_payments', ShippingOrderPayment)
-    .upsert('order_deliveries', ShippingOrderDelivery)
-    .upsert('order_positions', ShippingOrderPosition)
+// All discounts to seed
+const allDiscounts = [DiscountedDiscount, DiscountedProductDiscount];
 
-    .upsert('orders', PickupOrder)
-    .upsert('order_payments', PickupOrderPayment)
-    .upsert('order_deliveries', PickupOrderDelivery)
-    .upsert('order_positions', PickupOrderPosition)
+export async function seedOrdersToDrizzle(db) {
+  // Clear existing data
+  await db.delete(orderDiscounts);
+  await db.delete(orderPositions);
+  await db.delete(orderPayments);
+  await db.delete(orderDeliveries);
+  await db.delete(orders);
 
-    .upsert('orders', InvoicePaymentOrder)
-    .upsert('order_payments', InvoicePaymentOrderPayment)
-    .upsert('order_deliveries', InvoicePaymentOrderDelivery)
-    .upsert('order_positions', InvoicePaymentOrderPosition)
+  // Insert orders
+  await db.insert(orders).values(
+    allOrders.map((order) => ({
+      ...order,
+      calculation: order.calculation || [],
+      log: order.log || [],
+      context: order.context || {},
+    })),
+  );
 
-    .upsert('orders', GenericPaymentOrder)
-    .upsert('order_payments', GenericPaymentOrderPayment)
-    .upsert('order_deliveries', GenericPaymentOrderDelivery)
-    .upsert('order_positions', GenericPaymentOrderPosition)
+  // Insert payments
+  await db.insert(orderPayments).values(
+    allPayments.map((payment) => ({
+      ...payment,
+      calculation: payment.calculation || [],
+      log: payment.log || [],
+      context: payment.context || {},
+    })),
+  );
 
-    .resolve();
+  // Insert deliveries
+  await db.insert(orderDeliveries).values(
+    allDeliveries.map((delivery) => ({
+      ...delivery,
+      calculation: delivery.calculation || [],
+      log: delivery.log || [],
+      context: delivery.context || {},
+    })),
+  );
+
+  // Insert positions
+  await db.insert(orderPositions).values(
+    allPositions.map((position) => ({
+      ...position,
+      calculation: position.calculation || [],
+      scheduling: position.scheduling || [],
+      context: position.context || {},
+    })),
+  );
+
+  // Insert discounts
+  await db.insert(orderDiscounts).values(allDiscounts);
+
+  // Seed FTS for orders
+  for (const order of allOrders) {
+    const emailAddress = order.contact?.emailAddress || '';
+    const telNumber = order.contact?.telNumber || '';
+    await db.run(
+      sql`INSERT OR REPLACE INTO orders_fts(_id, userId, orderNumber, status, emailAddress, telNumber)
+          VALUES (${order._id}, ${order.userId}, ${order.orderNumber || ''}, ${order.status || ''}, ${emailAddress}, ${telNumber})`,
+    );
+  }
 }

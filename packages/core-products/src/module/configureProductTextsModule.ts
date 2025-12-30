@@ -6,11 +6,18 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { findUnusedSlug, systemLocale } from '@unchainedshop/utils';
 import { eq, and, ne, inArray, notInArray, sql, generateId, type DrizzleDb } from '@unchainedshop/store';
 import { productsSettings } from '../products-settings.ts';
-import { products, productTexts, searchProductTextsFTS, type ProductTextRow } from '../db/index.ts';
+import {
+  products,
+  productTexts,
+  searchProductTextsFTS,
+  rowToProductText,
+  type ProductText,
+} from '../db/index.ts';
+
+// Re-export ProductText for backwards compatibility
+export type { ProductText };
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
-
-export type ProductText = ProductTextRow;
 
 export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(PRODUCT_TEXT_EVENTS);
@@ -73,12 +80,12 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         })
         .where(eq(productTexts._id, existing._id));
 
-      const [updated] = await db
+      const [updatedRow] = await db
         .select()
         .from(productTexts)
         .where(eq(productTexts._id, existing._id))
         .limit(1);
-      productText = updated;
+      productText = rowToProductText(updatedRow);
     } else {
       // Insert new
       const textId = generateId();
@@ -92,12 +99,12 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         ...textFields,
       });
 
-      const [inserted] = await db
+      const [insertedRow] = await db
         .select()
         .from(productTexts)
         .where(eq(productTexts._id, textId))
         .limit(1);
-      productText = inserted;
+      productText = rowToProductText(insertedRow);
 
       // Insert into FTS
       const labelsText = (text.labels || []).join(' ');
@@ -184,13 +191,15 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
       }
 
       if (conditions.length === 0) {
-        return db.select().from(productTexts);
+        const rows = await db.select().from(productTexts);
+        return rows.map(rowToProductText);
       }
 
-      return db
+      const rows = await db
         .select()
         .from(productTexts)
         .where(and(...conditions));
+      return rows.map(rowToProductText);
     },
 
     findLocalizedText: async ({
@@ -207,7 +216,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         .where(and(eq(productTexts.productId, productId), eq(productTexts.locale, locale.baseName)))
         .limit(1);
 
-      if (exactMatch) return exactMatch;
+      if (exactMatch) return rowToProductText(exactMatch);
 
       // Try language only (without region)
       const [languageMatch] = await db
@@ -221,7 +230,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         )
         .limit(1);
 
-      if (languageMatch) return languageMatch;
+      if (languageMatch) return rowToProductText(languageMatch);
 
       // Try system locale
       const [systemMatch] = await db
@@ -232,7 +241,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         )
         .limit(1);
 
-      if (systemMatch) return systemMatch;
+      if (systemMatch) return rowToProductText(systemMatch);
 
       // Return any text for this product
       const [anyMatch] = await db
@@ -241,7 +250,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         .where(eq(productTexts.productId, productId))
         .limit(1);
 
-      return anyMatch || null;
+      return anyMatch ? rowToProductText(anyMatch) : null;
     },
 
     // Mutations

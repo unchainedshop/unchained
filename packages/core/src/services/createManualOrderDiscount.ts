@@ -36,15 +36,15 @@ export async function createManualOrderDiscountService(
   });
 
   const adapter = await Adapter.actions({
-    context: { order, orderDiscount: newDiscount, code: newDiscount.code, modules: this },
+    context: { order, orderDiscount: newDiscount, code: newDiscount.code ?? undefined, modules: this },
   });
 
   try {
     const reservation = await adapter.reserve({
-      code: newDiscount.code,
+      code: newDiscount.code ?? undefined,
     });
     const reservedDiscount = this.orders.discounts.update(newDiscount._id, {
-      orderId: newDiscount.orderId,
+      orderId: newDiscount.orderId ?? undefined,
       reservation,
     });
     return reservedDiscount;

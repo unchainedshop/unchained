@@ -24,7 +24,8 @@ import {
   ProductType,
   searchProductsFTS,
   searchProductTextsFTS,
-  type ProductRow,
+  rowToProduct,
+  type Product,
   type ProductAssignment,
   type ProductBundleItem,
   type ProductConfiguration,
@@ -38,8 +39,7 @@ import { productsSettings, type ProductsSettingsOptions } from '../products-sett
 
 // Re-export types for backwards compatibility
 export { ProductStatus, ProductType };
-export type Product = ProductRow;
-export type { ProductAssignment, ProductBundleItem, ProductConfiguration };
+export type { Product, ProductAssignment, ProductBundleItem, ProductConfiguration };
 
 export interface ProductQuery {
   queryString?: string;
@@ -387,10 +387,11 @@ export const configureProductsModule = async ({
       ? or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))
       : eq(products.status, ProductStatus.ACTIVE);
 
-    return db
+    const rows = await db
       .select()
       .from(products)
       .where(and(inArray(products._id, productIds), statusCondition));
+    return rows.map(rowToProduct);
   };
 
   /*
@@ -412,29 +413,29 @@ export const configureProductsModule = async ({
           },
     ): Promise<Product | null> => {
       if ('sku' in params) {
-        const [product] = await db
+        const [row] = await db
           .select()
           .from(products)
           .where(sql`json_extract(${products.warehousing}, '$.sku') = ${params.sku}`)
           .orderBy(asc(products.sequence))
           .limit(1);
-        return product || null;
+        return row ? rowToProduct(row) : null;
       }
       if ('slug' in params && params.slug != null) {
-        const [product] = await db
+        const [row] = await db
           .select()
           .from(products)
           .where(sql`EXISTS (SELECT 1 FROM json_each(${products.slugs}) WHERE value = ${params.slug})`)
           .limit(1);
-        return product || null;
+        return row ? rowToProduct(row) : null;
       }
       if ('productId' in params && params.productId != null) {
-        const [product] = await db
+        const [row] = await db
           .select()
           .from(products)
           .where(eq(products._id, params.productId))
           .limit(1);
-        return product || null;
+        return row ? rowToProduct(row) : null;
       }
       return null;
     },
@@ -471,7 +472,8 @@ export const configureProductsModule = async ({
         q = q.offset(offset) as typeof q;
       }
 
-      return q;
+      const rows = await q;
+      return rows.map(rowToProduct);
     },
 
     findProductIds: async (query: ProductQuery): Promise<string[]> => {
@@ -632,11 +634,12 @@ export const configureProductsModule = async ({
         sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${productId}, ${sku}, '')`,
       );
 
-      const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+      const [productRow] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+      const product = rowToProduct(productRow);
 
       await emit('PRODUCT_CREATE', { product });
 
-      return product as Product;
+      return product;
     },
 
     update: async (productId: string, doc: Partial<Product>): Promise<string> => {
@@ -672,29 +675,29 @@ export const configureProductsModule = async ({
       return productId;
     },
 
-    firstActiveProductProxy: async (productId: string) => {
-      const [product] = await db
+    firstActiveProductProxy: async (productId: string): Promise<Product | null> => {
+      const [row] = await db
         .select()
         .from(products)
         .where(
           sql`EXISTS (SELECT 1 FROM json_each(json_extract(${products.proxy}, '$.assignments')) WHERE json_extract(value, '$.productId') = ${productId})`,
         )
         .limit(1);
-      return product || null;
+      return row ? rowToProduct(row) : null;
     },
 
-    firstActiveProductBundle: async (productId: string) => {
-      const [product] = await db
+    firstActiveProductBundle: async (productId: string): Promise<Product | null> => {
+      const [row] = await db
         .select()
         .from(products)
         .where(
           sql`EXISTS (SELECT 1 FROM json_each(${products.bundleItems}) WHERE json_extract(value, '$.productId') = ${productId})`,
         )
         .limit(1);
-      return product || null;
+      return row ? rowToProduct(row) : null;
     },
 
-    delete: async (productId: string) => {
+    delete: async (productId: string): Promise<Product | null> => {
       const result = await db
         .update(products)
         .set({
@@ -705,14 +708,10 @@ export const configureProductsModule = async ({
 
       if ((result.rowsAffected || 0) === 0) return null;
 
-      const [deletedProduct] = await db
-        .select()
-        .from(products)
-        .where(eq(products._id, productId))
-        .limit(1);
+      const [row] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
 
       await emit('PRODUCT_REMOVE', { productId });
-      return deletedProduct;
+      return row ? rowToProduct(row) : null;
     },
 
     deleteProductPermanently,
@@ -848,7 +847,7 @@ export const configureProductsModule = async ({
       },
     },
 
-    removeAllAssignmentsAndBundleItems: async (productId: string) => {
+    removeAllAssignmentsAndBundleItems: async (productId: string): Promise<Product | null> => {
       await db
         .update(products)
         .set({
@@ -858,9 +857,9 @@ export const configureProductsModule = async ({
         })
         .where(eq(products._id, productId));
 
-      const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
+      const [row] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
 
-      return product;
+      return row ? rowToProduct(row) : null;
     },
 
     media: productMedia,
@@ -921,7 +920,8 @@ export const configureProductsModule = async ({
           q = q.offset(offset) as typeof q;
         }
 
-        return q;
+        const rows = await q;
+        return rows.map(rowToProduct);
       },
     },
 

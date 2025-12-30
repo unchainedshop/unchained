@@ -1,69 +1,124 @@
-import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
+import { eq, inArray, type DrizzleDb, generateId, buildSelectColumns } from '@unchainedshop/store';
 import type { PricingCalculation } from '@unchainedshop/utils';
-import { type OrderDelivery, OrderDeliveryStatus } from '../db/OrderDeliveriesCollection.ts';
+import {
+  orderDeliveries,
+  OrderDeliveryStatus,
+  rowToOrderDelivery,
+  type OrderDelivery,
+  type OrderDeliveryRow,
+  type OrderLogEntry,
+} from '../db/schema.ts';
+
+type SelectOrderDelivery = OrderDelivery | Partial<OrderDelivery>;
+
+// Column mapping for field selection
+const DELIVERY_COLUMNS = {
+  _id: orderDeliveries._id,
+  orderId: orderDeliveries.orderId,
+  deliveryProviderId: orderDeliveries.deliveryProviderId,
+  status: orderDeliveries.status,
+  delivered: orderDeliveries.delivered,
+  calculation: orderDeliveries.calculation,
+  context: orderDeliveries.context,
+  log: orderDeliveries.log,
+  created: orderDeliveries.created,
+  updated: orderDeliveries.updated,
+} as const;
+
+export type OrderDeliveryFields = keyof typeof DELIVERY_COLUMNS;
+
+export interface OrderDeliveryQueryOptions {
+  fields?: OrderDeliveryFields[];
+}
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
-export const buildFindByIdSelector = (orderDeliveryId: string) =>
-  generateDbFilterById(orderDeliveryId) as mongodb.Filter<OrderDelivery>;
-
-export const configureOrderDeliveriesModule = ({
-  OrderDeliveries,
-}: {
-  OrderDeliveries: mongodb.Collection<OrderDelivery>;
-}) => {
+export const configureOrderDeliveriesModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 
   const normalizedStatus = (orderDelivery: OrderDelivery) => {
     return orderDelivery.status === null
       ? OrderDeliveryStatus.OPEN
-      : (orderDelivery.status as OrderDeliveryStatus);
+      : (orderDelivery.status as (typeof OrderDeliveryStatus)[keyof typeof OrderDeliveryStatus]);
   };
 
   const updateStatus = async (
     orderDeliveryId: string,
-    { status, info }: { status: OrderDeliveryStatus; info?: string },
+    {
+      status,
+      info,
+    }: { status: (typeof OrderDeliveryStatus)[keyof typeof OrderDeliveryStatus]; info?: string },
   ) => {
     const date = new Date();
-    const modifier: mongodb.UpdateFilter<OrderDelivery> = {
-      $set: { status, updated: new Date() },
-      $push: {
-        log: {
-          date,
-          status,
-          info,
-        },
-      },
+    const updates: Partial<OrderDelivery> = {
+      status,
+      updated: date,
     };
+
     if (status === OrderDeliveryStatus.DELIVERED) {
-      // eslint-disable-next-line
-      // @ts-ignore
-      modifier.$set.delivered = date;
+      updates.delivered = date;
     }
 
-    const selector = buildFindByIdSelector(orderDeliveryId);
-    return OrderDeliveries.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
+    // Get current delivery to update log
+    const [current] = await db
+      .select()
+      .from(orderDeliveries)
+      .where(eq(orderDeliveries._id, orderDeliveryId))
+      .limit(1);
+
+    if (!current) return null;
+
+    const logEntry: OrderLogEntry = { date, status, info };
+    const log: OrderLogEntry[] = [...(current.log || []), logEntry];
+
+    await db
+      .update(orderDeliveries)
+      .set({ ...updates, log })
+      .where(eq(orderDeliveries._id, orderDeliveryId));
+
+    const [updated] = await db
+      .select()
+      .from(orderDeliveries)
+      .where(eq(orderDeliveries._id, orderDeliveryId))
+      .limit(1);
+
+    return updated ? rowToOrderDelivery(updated) : null;
   };
 
   return {
     // Queries
     findDelivery: async (
       { orderDeliveryId }: { orderDeliveryId: string },
-      options?: mongodb.FindOptions,
+      options?: OrderDeliveryQueryOptions,
     ) => {
-      return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
+      if (!orderDeliveryId) return null;
+
+      const selectColumns = buildSelectColumns(DELIVERY_COLUMNS, options?.fields);
+
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(orderDeliveries)
+        : db.select().from(orderDeliveries);
+
+      const [delivery] = await baseQuery.where(eq(orderDeliveries._id, orderDeliveryId)).limit(1);
+      return delivery
+        ? selectColumns
+          ? (delivery as SelectOrderDelivery as OrderDelivery)
+          : rowToOrderDelivery(delivery as OrderDeliveryRow)
+        : null;
     },
 
-    findDeliveryByProvidersId: async (
-      { deliveryProviderIds }: { deliveryProviderIds: string[] },
-      options?: mongodb.FindOptions,
-    ): Promise<OrderDelivery[]> => {
+    findDeliveryByProvidersId: async ({
+      deliveryProviderIds,
+    }: {
+      deliveryProviderIds: string[];
+    }): Promise<OrderDelivery[]> => {
       if (!deliveryProviderIds?.length) return [];
-      return OrderDeliveries.find(
-        { deliveryProviderId: { $in: deliveryProviderIds } },
-        options,
-      ).toArray();
+      const rows = await db
+        .select()
+        .from(orderDeliveries)
+        .where(inArray(orderDeliveries.deliveryProviderId, deliveryProviderIds));
+      return rows.map(rowToOrderDelivery);
     },
 
     normalizedStatus,
@@ -71,25 +126,35 @@ export const configureOrderDeliveriesModule = ({
     // Mutations
 
     create: async (
-      doc: Omit<OrderDelivery, '_id' | 'created'> & Pick<Partial<OrderDelivery>, '_id' | 'created'>,
+      doc: Pick<OrderDelivery, 'orderId' | 'deliveryProviderId'> &
+        Partial<Omit<OrderDelivery, 'orderId' | 'deliveryProviderId'>>,
     ) => {
-      const { insertedId: orderDeliveryId } = await OrderDeliveries.insertOne({
-        _id: generateDbObjectId(),
-        created: new Date(),
-        ...doc,
-        context: doc.context || {},
-        status: null,
+      const orderDeliveryId = doc._id || generateId();
+      const now = new Date();
+
+      await db.insert(orderDeliveries).values({
+        _id: orderDeliveryId,
+        created: now,
+        orderId: doc.orderId,
+        deliveryProviderId: doc.deliveryProviderId,
+        status: doc.status ?? null,
+        calculation: doc.calculation ?? [],
+        log: doc.log ?? [],
+        context: doc.context ?? {},
       });
 
-      const orderDelivery = (await OrderDeliveries.findOne(
-        buildFindByIdSelector(orderDeliveryId),
-      )) as OrderDelivery;
-      return orderDelivery;
+      const [orderDelivery] = await db
+        .select()
+        .from(orderDeliveries)
+        .where(eq(orderDeliveries._id, orderDeliveryId))
+        .limit(1);
+
+      return rowToOrderDelivery(orderDelivery);
     },
 
     delete: async (orderDeliveryId: string) => {
-      const { deletedCount } = await OrderDeliveries.deleteOne({ _id: orderDeliveryId });
-      return deletedCount;
+      const result = await db.delete(orderDeliveries).where(eq(orderDeliveries._id, orderDeliveryId));
+      return result.rowsAffected;
     },
 
     markAsDelivered: async (orderDelivery: OrderDelivery) => {
@@ -103,28 +168,34 @@ export const configureOrderDeliveriesModule = ({
     },
 
     updateContext: async (orderDeliveryId: string, context: any) => {
-      const selector = buildFindByIdSelector(orderDeliveryId);
-      if (!context || Object.keys(context).length === 0) return OrderDeliveries.findOne(selector, {});
-      const contextSetters = Object.fromEntries(
-        Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
-      );
+      const [current] = await db
+        .select()
+        .from(orderDeliveries)
+        .where(eq(orderDeliveries._id, orderDeliveryId))
+        .limit(1);
 
-      const orderDelivery = await OrderDeliveries.findOneAndUpdate(
-        selector,
-        {
-          $set: {
-            ...contextSetters,
-            updated: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
+      if (!current) return null;
+      if (!context || Object.keys(context).length === 0) return rowToOrderDelivery(current);
 
-      if (!orderDelivery) return null;
-      await emit('ORDER_UPDATE_DELIVERY', {
-        orderDelivery,
-      });
-      return orderDelivery;
+      const mergedContext = { ...(current.context || {}), ...context };
+
+      await db
+        .update(orderDeliveries)
+        .set({
+          context: mergedContext,
+          updated: new Date(),
+        })
+        .where(eq(orderDeliveries._id, orderDeliveryId));
+
+      const [orderDelivery] = await db
+        .select()
+        .from(orderDeliveries)
+        .where(eq(orderDeliveries._id, orderDeliveryId))
+        .limit(1);
+
+      const result = orderDelivery ? rowToOrderDelivery(orderDelivery) : null;
+      await emit('ORDER_UPDATE_DELIVERY', { orderDelivery: result });
+      return result;
     },
 
     updateStatus,
@@ -133,23 +204,26 @@ export const configureOrderDeliveriesModule = ({
       orderDeliveryId: string,
       calculation: T[],
     ) => {
-      return OrderDeliveries.findOneAndUpdate(
-        { _id: orderDeliveryId },
-        {
-          $set: {
-            calculation,
-            updated: new Date(),
-          },
-        },
-        {
-          returnDocument: 'after',
-        },
-      );
+      await db
+        .update(orderDeliveries)
+        .set({
+          calculation,
+          updated: new Date(),
+        })
+        .where(eq(orderDeliveries._id, orderDeliveryId));
+
+      const [updated] = await db
+        .select()
+        .from(orderDeliveries)
+        .where(eq(orderDeliveries._id, orderDeliveryId))
+        .limit(1);
+
+      return updated ? rowToOrderDelivery(updated) : null;
     },
 
     deleteOrderDeliveries: async (orderId: string) => {
-      const { deletedCount } = await OrderDeliveries.deleteMany({ orderId });
-      return deletedCount;
+      const result = await db.delete(orderDeliveries).where(eq(orderDeliveries.orderId, orderId));
+      return result.rowsAffected;
     },
   };
 };
