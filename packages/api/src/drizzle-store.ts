@@ -7,10 +7,6 @@ import * as session from 'express-session';
 import { sql, type DrizzleDb } from '@unchainedshop/store';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { eq, and, or, isNull, gt } from 'drizzle-orm';
-import { createLogger } from '@unchainedshop/logger';
-
-const logger = createLogger('unchained:api');
-
 // Session table schema
 export const sessions = sqliteTable('sessions', {
   _id: text('_id').primaryKey(),
@@ -39,7 +35,6 @@ export default class DrizzleStore extends session.Store {
 
   constructor(options: DrizzleStoreOptions) {
     super();
-    logger.debug('create DrizzleStore instance');
 
     this.db = options.db;
     this.ttl = options.ttl ?? 1209600; // 14 days default
@@ -72,12 +67,8 @@ export default class DrizzleStore extends session.Store {
   }
 
   private async removeExpired(): Promise<void> {
-    try {
-      const now = new Date();
-      await this.db.delete(sessions).where(sql`${sessions.expires} < ${now}`);
-    } catch (error) {
-      logger.error('Error removing expired sessions', { error });
-    }
+    const now = new Date();
+    await this.db.delete(sessions).where(sql`${sessions.expires} < ${now}`);
   }
 
   static create(options: DrizzleStoreOptions): DrizzleStore {
@@ -88,7 +79,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug(`DrizzleStore#get=${sid}`);
 
         const now = new Date();
         const result = await this.db
@@ -99,25 +89,20 @@ export default class DrizzleStore extends session.Store {
 
         const internalSession = result[0];
         if (!internalSession) {
-          logger.debug(`DrizzleStore#get session not found for ${sid}`);
           this.emit('get', sid);
           return callback(null, null);
         }
-        logger.debug(`DrizzleStore#get found session for ${sid}`);
 
         // Handle case where session might be stored as a JSON string
         let sessionData: session.SessionData;
         if (typeof internalSession.session === 'string') {
           try {
             sessionData = JSON.parse(internalSession.session);
-            logger.debug(`DrizzleStore#get parsed JSON session for ${sid}`, { sessionData });
           } catch {
-            logger.error(`Failed to parse session data for ${sid}`);
             return callback(null, null);
           }
         } else {
           sessionData = internalSession.session as session.SessionData;
-          logger.debug(`DrizzleStore#get object session for ${sid}`, { sessionData });
         }
 
         // Add lastModified if touchAfter is enabled
@@ -138,7 +123,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug(`DrizzleStore#set=${sid}`);
 
         // Remove lastModified from session data before storing
         const sessionWithMeta = sessionData as session.SessionData & { lastModified?: Date };
@@ -199,7 +183,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug(`DrizzleStore#touch=${sid}`);
 
         const touchAfterMs = this.touchAfter * 1000;
         const lastModified = sessionData.lastModified ? sessionData.lastModified.getTime() : 0;
@@ -209,7 +192,6 @@ export default class DrizzleStore extends session.Store {
         if (touchAfterMs > 0 && lastModified > 0) {
           const timeElapsed = currentDate.getTime() - lastModified;
           if (timeElapsed < touchAfterMs) {
-            logger.debug(`Skip touching session=${sid}`);
             return callback(null);
           }
         }
@@ -258,7 +240,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug('DrizzleStore#all()');
 
         const now = new Date();
         const results = await this.db
@@ -280,7 +261,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug(`DrizzleStore#destroy=${sid}`);
 
         await this.db.delete(sessions).where(eq(sessions._id, sid));
 
@@ -296,7 +276,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug('DrizzleStore#length()');
 
         const result = await this.db.select({ count: sql<number>`count(*)` }).from(sessions);
         callback(null, result[0]?.count ?? 0);
@@ -310,7 +289,6 @@ export default class DrizzleStore extends session.Store {
     (async () => {
       try {
         await this.initialized;
-        logger.debug('DrizzleStore#clear()');
 
         await this.db.delete(sessions);
 
@@ -322,7 +300,6 @@ export default class DrizzleStore extends session.Store {
   }
 
   close(): void {
-    logger.debug('DrizzleStore#close()');
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = undefined;

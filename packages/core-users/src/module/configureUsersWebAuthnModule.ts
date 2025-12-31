@@ -72,8 +72,6 @@ async function fetchMDSEntriesImpl(): Promise<Map<string, MDSEntry>> {
         }
       }
     }
-
-    logger.debug(`Loaded ${cache.size} MDS entries`);
   } catch (error) {
     logger.warn('Error fetching MDS', { error: error.message });
   }
@@ -258,22 +256,11 @@ export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) =>
       }
 
       const expectedOrigin = request.origin || thisOrigin;
-      logger.info('WebAuthn: Verifying credential creation', {
-        username,
-        expectedOrigin,
-        expectedChallenge: request.challenge,
-        credentialId: credentials.id,
-      });
 
       try {
         const registrationInfo = await webauthnServer.verifyRegistration(credentials, {
           challenge: request.challenge,
           origin: expectedOrigin,
-        });
-
-        logger.info('WebAuthn: Credential creation verified successfully', {
-          username,
-          credentialId: registrationInfo.credential.id,
         });
 
         return {
@@ -341,8 +328,7 @@ export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) =>
           userHandle: credentials.response.userHandle || username,
           counter: authenticationInfo.counter,
         };
-      } catch (error) {
-        logger.debug('WebAuthn credential request verification failed', { error: error.message });
+      } catch {
         return null;
       }
     },

@@ -3,11 +3,13 @@ import { fromZonedTime } from 'date-fns-tz';
 
 const useFormatDateTime = () => {
   const formatDateTime = (date, options: Intl.DateTimeFormatOptions = {}) => {
-    if (!date || !Date.parse(date)) return 'n/a';
+    if (date === null || date === undefined) return 'n/a';
 
-    return Intl.DateTimeFormat(undefined, options).format(
-      new Date(date).getTime(),
-    );
+    // Handle both timestamp numbers and date strings
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) return 'n/a';
+
+    return Intl.DateTimeFormat(undefined, options).format(parsedDate.getTime());
   };
 
   const getDateFormatPattern = () => {
