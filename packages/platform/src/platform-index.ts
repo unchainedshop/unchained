@@ -1,6 +1,5 @@
 export * from './startPlatform.ts';
 export * from './templates/index.ts';
-export * from './migrations/runMigrations.ts';
 
 import { MessagingDirector, getAllAdapters } from '@unchainedshop/core';
 import { getRegisteredEvents } from '@unchainedshop/events';

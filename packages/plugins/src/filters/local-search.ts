@@ -1,14 +1,10 @@
 import { FilterDirector, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
-import { createLogger } from '@unchainedshop/logger';
-import { isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
-
-const logger = createLogger('unchained:local-search');
 
 const LocalSearch: IFilterAdapter = {
   ...FilterAdapter,
 
   key: 'shop.unchained.filters.local-search',
-  label: 'Simple Fulltext search with MongoDB',
+  label: 'Simple Fulltext search with Drizzle',
   version: '1.0.0',
   orderIndex: 10,
 
@@ -78,10 +74,4 @@ const LocalSearch: IFilterAdapter = {
 
 export default LocalSearch;
 
-if (!isDocumentDBCompatModeEnabled()) {
-  FilterDirector.registerAdapter(LocalSearch);
-} else {
-  logger.warn(
-    'Free text search queries have been disabled due to DocumentDB compatibility mode (env UNCHAINED_DOCUMENTDB_COMPAT_MODE is trueish)',
-  );
-}
+FilterDirector.registerAdapter(LocalSearch);

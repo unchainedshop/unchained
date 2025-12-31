@@ -2,7 +2,6 @@ import { z } from 'zod';
 import JSONStream from 'minipass-json-stream';
 import { PassThrough, Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { mongodb } from '@unchainedshop/mongodb';
 import * as AssortmentHandlers from './handlers/assortment/index.ts';
 import * as FilterHandlers from './handlers/filter/index.ts';
 import * as ProductHandlers from './handlers/product/index.ts';
@@ -20,7 +19,6 @@ export interface BulkImportOperationResult {
 export type BulkImportOperation<T> = { payloadSchema?: z.ZodObject } & ((
   payload: any,
   options: {
-    bulk: (collection: string) => typeof mongodb.BulkOperationBase;
     createShouldUpsertIfIDExists?: boolean;
     updateShouldUpsertIfIDNotExists?: boolean;
     skipCacheInvalidation?: boolean;
@@ -57,7 +55,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
   return entityOperation;
 };
 
-export default function createBulkImporterFactory(db, bulkImporterOptions: any) {
+export default function createBulkImporterFactory(bulkImporterOptions: any) {
   bulkOperationHandlers = {
     ASSORTMENT: AssortmentHandlers,
     PRODUCT: ProductHandlers,
@@ -66,7 +64,6 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
   };
 
   const createBulkImporter = (options) => {
-    const bulkOperations = {};
     const preparationIssues: {
       operation: string;
       entity: string;
@@ -77,13 +74,6 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
     const processedOperations = {};
     const { createShouldUpsertIfIDExists, skipCacheInvalidation, updateShouldUpsertIfIDNotExists } =
       options;
-
-    const bulk = (collectionName: string) => {
-      const Collection = db.collection(collectionName);
-      if (!bulkOperations[collectionName])
-        bulkOperations[collectionName] = Collection.initializeOrderedBulkOp();
-      return bulkOperations[collectionName];
-    };
 
     logger.debug(
       `Configure event import with options: createShouldUpsertIfIDExists=${createShouldUpsertIfIDExists} updateShouldUpsertIfIDNotExists=${updateShouldUpsertIfIDNotExists} skipCacheInvalidation=${skipCacheInvalidation}`,
@@ -114,7 +104,7 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
         logger.debug(`🏃‍♂️ ${entity}.${operation}.${payloadId}`);
 
         try {
-          await handler(event.payload, { bulk, logger, ...options }, unchainedAPI);
+          await handler(event.payload, { logger, ...options }, unchainedAPI);
           if (!processedOperations[entity]) processedOperations[entity] = {};
           if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
           processedOperations[entity][operation].push(payloadId);
@@ -133,13 +123,8 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
         }
       },
       execute: async () => {
-        logger.debug(`🍔 ${Object.keys(bulkOperations).join(', ')}`);
-        const processedBulkOperations = await Promise.allSettled(
-          Object.values(bulkOperations).map(async (o: any) => o.execute()),
-        );
         const operationResults = {
           processedOperations,
-          processedBulkOperations,
         };
         if (preparationIssues?.length) {
           logger.warn(

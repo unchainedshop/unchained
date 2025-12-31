@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-enrollments",
   "description": "Subscription and recurring billing module for the Unchained Engine",
-  "version": "4.5.0",
+  "version": "5.0.0-alpha.0",
   "main": "lib/enrollments-index.js",
   "types": "lib/enrollments-index.d.ts",
   "type": "module",
@@ -38,9 +38,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.5.0",
+    "@unchainedshop/events": "^5.0.0-alpha.0",
     "@unchainedshop/store": "^5.0.0-alpha.0",
-    "@unchainedshop/utils": "^4.5.0",
+    "@unchainedshop/utils": "^5.0.0-alpha.0",
     "drizzle-orm": "^0.45.1"
   },
   "devDependencies": {

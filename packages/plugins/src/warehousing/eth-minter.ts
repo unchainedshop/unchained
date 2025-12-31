@@ -9,7 +9,7 @@ import {
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { ProductContractStandard, ProductType } from '@unchainedshop/core-products';
 import { systemLocale } from '@unchainedshop/utils';
-import { generateDbObjectId } from '@unchainedshop/mongodb';
+import { generateId } from '@unchainedshop/store';
 import { getFileAdapter } from '@unchainedshop/core-files';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -89,7 +89,7 @@ const ETHMinter: IWarehousingAdapter = {
         if (contractStandard === 'ERC721') {
           // ERC721 is non-fungible, thus every tokenSerialNumber unique!
           const items = new Array(orderPosition.quantity).fill(null).map((_, i) => ({
-            _id: generateDbObjectId(),
+            _id: generateId(),
             tokenSerialNumber: Number(
               parseInt(MINTER_TOKEN_OFFSET, 10) + tokensCreated + (i + 1),
             ).toString(),
@@ -103,7 +103,7 @@ const ETHMinter: IWarehousingAdapter = {
         // ERC1155 is fungible, allow the same tokenId
         return [
           {
-            _id: generateDbObjectId(),
+            _id: generateId(),
             tokenSerialNumber: tokenId!,
             contractAddress,
             quantity: orderPosition.quantity,

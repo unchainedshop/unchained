@@ -14,7 +14,7 @@ import {
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
-import type { Address, Contact } from '@unchainedshop/mongodb';
+import type { Address, Contact } from '@unchainedshop/utils';
 import {
   users,
   rowToUser,

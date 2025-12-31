@@ -1,4 +1,3 @@
-import { mongodb } from '@unchainedshop/mongodb';
 import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import type {
   FilterAdapterActions,
@@ -8,6 +7,7 @@ import type {
 } from './FilterAdapter.ts';
 import {
   type Filter,
+  type FilterSelector,
   filtersSettings,
   FilterType,
   type SearchConfiguration,
@@ -127,7 +127,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       transformFilterSelector: async (defaultSelector, options) => {
-        return reduceAdapters<mongodb.Filter<Filter>>(async (lastSelector, adapter) => {
+        return reduceAdapters<FilterSelector>(async (lastSelector, adapter) => {
           return adapter.transformFilterSelector(await lastSelector, options);
         }, defaultSelector);
       },

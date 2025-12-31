@@ -95,7 +95,6 @@ import {
   type WorkerSettingsOptions,
   initializeWorkQueueSchema,
 } from '@unchainedshop/core-worker';
-import { type MigrationRepository, type ModuleInput, type mongodb } from '@unchainedshop/mongodb';
 
 export interface Modules {
   assortments: AssortmentsModule;
@@ -133,23 +132,19 @@ export interface ModuleOptions {
 
 export default async function initModules(
   {
-    db,
-    migrationRepository,
     options,
     drizzleDb: providedDrizzleDb,
   }: {
-    db: mongodb.Db;
-    migrationRepository: MigrationRepository<unknown>;
     options: ModuleOptions;
     drizzleDb?: DrizzleDb;
   },
   customModules: Record<
     string,
     {
-      configure: (params: ModuleInput<any>) => any;
+      configure: (params: { db: DrizzleDb; options?: any }) => any;
     }
   >,
-): Promise<Modules> {
+): Promise<{ modules: Modules; db: DrizzleDb }> {
   // Drizzle-based modules use a shared SQLite/Turso database
   // Use provided db, or create new connection if not provided
   let drizzleDb = providedDrizzleDb;
@@ -265,11 +260,10 @@ export default async function initModules(
   };
   for (const [key, customModule] of Object.entries(customModules)) {
     modules[key] = await customModule.configure({
-      db,
+      db: drizzleDb,
       options: options[key],
-      migrationRepository,
     });
   }
 
-  return modules;
+  return { modules, db: drizzleDb };
 }

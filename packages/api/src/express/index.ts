@@ -4,10 +4,9 @@
 import e from 'express';
 import session from 'express-session';
 import multer from 'multer';
-import MongoStore from '../mongo-store.ts';
+import DrizzleStore from '../drizzle-store.ts';
 import { Passport } from 'passport';
 import type { YogaServerInstance } from 'graphql-yoga';
-import { mongodb } from '@unchainedshop/mongodb';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import type { User } from '@unchainedshop/core-users';
@@ -175,11 +174,9 @@ export const connect = (
   expressApp: e.Express,
   {
     graphqlHandler,
-    db,
     unchainedAPI,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
-    db: mongodb.Db;
     unchainedAPI: UnchainedCore;
   },
   {
@@ -237,10 +234,8 @@ export const connect = (
   expressApp.use(
     session({
       secret: process.env.UNCHAINED_TOKEN_SECRET as CipherKey,
-      store: MongoStore.create({
-        client: (db as any).client,
-        dbName: db.databaseName,
-        collectionName: 'sessions',
+      store: DrizzleStore.create({
+        db: unchainedAPI.db,
         touchAfter: 24 * 3600 /* 24 hours */,
       }),
       name,

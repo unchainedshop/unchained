@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.5.0",
+    "@unchainedshop/events": "^5.0.0-alpha.0",
     "@unchainedshop/store": "^5.0.0-alpha.0",
     "drizzle-orm": "^0.45.1"
   },

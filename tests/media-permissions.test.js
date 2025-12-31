@@ -4,7 +4,9 @@ import {
   putFile,
   createAnonymousGraphqlFetch,
   disconnect,
+  getDrizzleDb,
 } from './helpers.js';
+import { sql } from '@unchainedshop/store';
 import {
   Admin,
   ADMIN_TOKEN,
@@ -26,14 +28,13 @@ let adminGraphqlFetch;
 let loggedInGraphqlFetch;
 let anonymousGraphqlFetch;
 let guestGraphqlFetch;
-let db;
 
 const userAvatarFile1 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
 const userAvatar2 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
 test.describe('Media Permissions', () => {
   test.before(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     loggedInGraphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     anonymousGraphqlFetch = createAnonymousGraphqlFetch();
@@ -317,16 +318,14 @@ test.describe('Media Permissions', () => {
     assert.strictEqual((errors || []).length, 0);
     assert.strictEqual(data?.product?.media?.length, 1);
 
-    // Set private!
-    await db.collection('media_objects').updateOne(
-      { _id: data?.product?.media?.[0]?._id },
-      {
-        $set: {
-          'meta.isPrivate': true,
-          'meta.userId': User._id,
-        },
-      },
-    );
+    // Set private using Drizzle
+    const drizzleDb = getDrizzleDb();
+    const mediaId = data?.product?.media?.[0]?._id;
+    await drizzleDb.run(sql`
+      UPDATE media_objects
+      SET meta = json_set(COALESCE(meta, '{}'), '$.isPrivate', true, '$.userId', ${User._id})
+      WHERE _id = ${mediaId}
+    `);
 
     const url = new URL(data?.product?.media?.[0]?.file?.url);
     url.searchParams.set('e', new Date().getTime().toString());

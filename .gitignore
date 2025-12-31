@@ -18,3 +18,4 @@ fly.toml
 .db
 *.db
 /tools/demo-data-cli/dist
+/uploads

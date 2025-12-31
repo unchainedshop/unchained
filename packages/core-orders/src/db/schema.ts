@@ -4,7 +4,7 @@
  */
 
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
-import type { Address, Contact } from '@unchainedshop/mongodb';
+import type { Address, Contact } from '@unchainedshop/utils';
 import type { Price } from '@unchainedshop/utils';
 
 // Log entry type for order-related entities

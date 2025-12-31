@@ -1,7 +1,11 @@
-import type { Assortment } from '@unchainedshop/core-assortments';
-import { mongodb } from '@unchainedshop/mongodb';
 import { BaseAdapter, type IBaseAdapter } from '@unchainedshop/utils';
-import type { Filter, SearchConfiguration, SearchQuery, SortStage } from '@unchainedshop/core-filters';
+import type {
+  Filter,
+  FilterSelector,
+  SearchConfiguration,
+  SearchQuery,
+  SortStage,
+} from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
 
 export interface FilterInputText {
@@ -21,8 +25,15 @@ export interface ProductFilterQueryItem {
   value: unknown;
 }
 
+// Assortment selector type for search operations
+export interface AssortmentSelector {
+  _id?: string | { $in: string[] };
+  isActive?: boolean;
+  isRoot?: boolean;
+}
+
 export interface SearchAssortmentsOptions extends SearchConfiguration {
-  assortmentSelector: mongodb.Filter<Assortment>;
+  assortmentSelector: AssortmentSelector;
 }
 
 export interface SearchProductsOptions extends SearchConfiguration {
@@ -54,9 +65,9 @@ export interface FilterAdapterActions {
   ) => Promise<string[] | undefined>;
 
   transformFilterSelector: (
-    query: mongodb.Filter<Filter>,
+    query: FilterSelector,
     options?: TransformOptions,
-  ) => Promise<mongodb.Filter<Filter>>;
+  ) => Promise<FilterSelector>;
 
   // Transforms product filter query - returns filter items to be applied to product search
   transformProductFilterQuery: (

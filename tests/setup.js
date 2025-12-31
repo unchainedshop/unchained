@@ -2,7 +2,6 @@ import net from 'node:net';
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
-import { stopDb } from '@unchainedshop/mongodb';
 import { createTestDb } from '@unchainedshop/store';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
@@ -108,8 +107,6 @@ export async function shutdownTestPlatform() {
     drizzleConnection.close();
     drizzleConnection = null;
   }
-  // Stop MongoDB memory server to allow process to exit
-  await stopDb();
   serverPort = null;
 }
 

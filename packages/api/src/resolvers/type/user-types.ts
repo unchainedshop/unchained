@@ -10,7 +10,7 @@ import type { Email, User as UserType, UserProfile } from '@unchainedshop/core-u
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { Roles, permissions } from '@unchainedshop/roles';
 import type { ProductReview } from '@unchainedshop/core-products';
-import type { Contact } from '@unchainedshop/mongodb';
+import type { Contact } from '@unchainedshop/utils';
 import type { Country } from '@unchainedshop/core-countries';
 import { checkAction, checkTypeResolver } from '../../acl.ts';
 import { actions } from '../../roles/index.ts';

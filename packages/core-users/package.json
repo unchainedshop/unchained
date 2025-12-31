@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-users",
   "description": "User management module for the Unchained Engine with authentication support",
-  "version": "4.5.0",
+  "version": "5.0.0-alpha.0",
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
@@ -36,12 +36,12 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@passwordless-id/webauthn": "^2.3.1",
-    "@unchainedshop/events": "^4.5.0",
-    "@unchainedshop/file-upload": "^4.5.0",
-    "@unchainedshop/logger": "^4.5.0",
-    "@unchainedshop/roles": "^4.5.0",
+    "@unchainedshop/events": "^5.0.0-alpha.0",
+    "@unchainedshop/file-upload": "^5.0.0-alpha.0",
+    "@unchainedshop/logger": "^5.0.0-alpha.0",
+    "@unchainedshop/roles": "^5.0.0-alpha.0",
     "@unchainedshop/store": "^5.0.0-alpha.0",
-    "@unchainedshop/utils": "^4.5.0",
+    "@unchainedshop/utils": "^5.0.0-alpha.0",
     "drizzle-orm": "^0.45.1",
     "expiry-map": "^2.0.0",
     "p-memoize": "^8.0.0"

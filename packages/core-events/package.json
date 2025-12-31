@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-events",
   "description": "Event history and tracking module for the Unchained Engine",
-  "version": "4.5.0",
+  "version": "5.0.0-alpha.0",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
@@ -35,10 +35,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.5.0",
-    "@unchainedshop/logger": "^4.5.0",
+    "@unchainedshop/events": "^5.0.0-alpha.0",
+    "@unchainedshop/logger": "^5.0.0-alpha.0",
     "@unchainedshop/store": "^5.0.0-alpha.0",
-    "@unchainedshop/utils": "^4.5.0"
+    "@unchainedshop/utils": "^5.0.0-alpha.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

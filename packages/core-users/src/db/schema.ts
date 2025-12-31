@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
-import type { Address, Contact } from '@unchainedshop/mongodb';
+import type { Address, Contact } from '@unchainedshop/utils';
 
 export interface UserProfile {
   displayName?: string;

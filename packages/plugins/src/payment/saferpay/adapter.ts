@@ -1,4 +1,3 @@
-import { mongodb } from '@unchainedshop/mongodb';
 import { type PaymentPageInitializeInput, SaferpayClient } from './api/index.ts';
 import { buildSignature } from './buildSignature.ts';
 import type { SaferpayTransactionsModule } from './module.ts';
@@ -16,9 +15,9 @@ const newSaferpayError = ({ code, message }: { code: string; message?: string })
   return error;
 };
 
-const addTransactionId = (urlString, saferpayTransactionId) => {
+const addTransactionId = (urlString: string, saferpayTransactionId: string) => {
   const urlWithTransactionId = new URL(urlString);
-  urlWithTransactionId.searchParams.append('transactionId', saferpayTransactionId.toString('hex'));
+  urlWithTransactionId.searchParams.append('transactionId', saferpayTransactionId);
   return urlWithTransactionId.href;
 };
 
@@ -106,7 +105,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
           orderPayment._id,
         );
 
-        const signature = await buildSignature(saferpayTransactionId.toString('hex'), orderPayment._id);
+        const signature = await buildSignature(saferpayTransactionId, orderPayment._id);
         const paymentPageInitInput: PaymentPageInitializeInput = {
           ...(transactionContext || {}),
           TerminalId: adapter.getTerminalId(),
@@ -134,7 +133,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
         );
 
         paymentPageInitInput.Notification!.SuccessNotifyUrl = addTransactionId(
-          paymentPageInitInput.Notification!.SuccessNotifyUrl,
+          paymentPageInitInput.Notification!.SuccessNotifyUrl!,
           saferpayTransactionId,
         );
 
@@ -146,7 +145,7 @@ export const WordlineSaferpay: IPaymentAdapter = {
         return JSON.stringify({
           location: paymentPageInit.RedirectUrl,
           token: paymentPageInit.Token,
-          transactionId: saferpayTransactionId.toString('hex'),
+          transactionId: saferpayTransactionId,
         });
       },
 
@@ -162,9 +161,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
         });
         const totalAmount = pricing.total({ useNetPrice: false }).amount;
 
-        const saferpayTransaction = await modules.saferpayTransactions.findTransactionById(
-          mongodb.ObjectId.createFromHexString(transactionId),
-        );
+        const saferpayTransaction =
+          await modules.saferpayTransactions.findTransactionById(transactionId);
 
         if (!saferpayTransaction?.token) {
           throw new Error('No initialized transaction Token');
@@ -205,9 +203,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
         const { transactionId } = orderPayment;
         if (!transactionId) return false;
 
-        const saferpayTransaction = await modules.saferpayTransactions.findTransactionById(
-          mongodb.ObjectId.createFromHexString(transactionId),
-        );
+        const saferpayTransaction =
+          await modules.saferpayTransactions.findTransactionById(transactionId);
 
         if (!saferpayTransaction?.token) {
           throw new Error('No initialized transaction Token');
@@ -240,9 +237,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
         const { transactionId } = orderPayment;
         if (!transactionId) return false;
 
-        const saferpayTransaction = await modules.saferpayTransactions.findTransactionById(
-          mongodb.ObjectId.createFromHexString(transactionId),
-        );
+        const saferpayTransaction =
+          await modules.saferpayTransactions.findTransactionById(transactionId);
 
         if (!saferpayTransaction?.token) {
           throw new Error('No initialized transaction Token');

@@ -1,5 +1,5 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import type { Address, Contact } from '@unchainedshop/mongodb';
+import type { Address, Contact } from '@unchainedshop/utils';
 import { eq, and, type DrizzleDb, generateId } from '@unchainedshop/store';
 import { orders, orderPositions, OrderStatus, rowToOrder, type Order } from '../db/schema.ts';
 import { upsertOrderFTS, deleteOrderFTS } from '../db/fts.ts';

@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "4.5.0",
+  "version": "5.0.0-alpha.0",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -29,7 +29,6 @@
     "packages/store",
     "packages/logger",
     "packages/utils",
-    "packages/mongodb",
     "packages/events",
     "packages/file-upload",
     "packages/roles",
@@ -88,16 +87,11 @@
     "globals": "^16.5.0",
     "graphql": "^16.12.0",
     "graphql-request": "^7.4.0",
-    "mongodb": "^7.0.0",
-    "mongodb-memory-server": "^11.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.7.4",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0",
     "wait-on": "^9.0.1"
-  },
-  "trustedDependencies": [
-    "@mongodb-js/zstd"
-  ]
+  }
 }

@@ -3,7 +3,7 @@ import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
-import type { Address, Contact } from '@unchainedshop/mongodb';
+import type { Address, Contact } from '@unchainedshop/utils';
 
 interface UpdateEnrollmentParams {
   enrollmentId: string;

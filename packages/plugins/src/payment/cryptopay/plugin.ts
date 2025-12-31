@@ -182,7 +182,7 @@ const Cryptopay: IPaymentAdapter = {
         );
 
         const walletForOrderPayment = foundWalletsWithBalances.find(
-          (wallet) => BigInt(wallet.amount.toString()) > 0n,
+          (wallet) => BigInt(wallet.amount) > 0n,
         );
 
         const pricing = OrderPricingSheet({
@@ -211,8 +211,8 @@ const Cryptopay: IPaymentAdapter = {
           if (!rate) throw new Error('No conversion rate found');
 
           const convertedAmount = denoteAmount(
-            walletForOrderPayment.amount.toString(),
-            walletForOrderPayment.decimals,
+            walletForOrderPayment.amount,
+            walletForOrderPayment.decimals || 0,
           );
 
           // Add a Promille 🍻
@@ -232,8 +232,8 @@ const Cryptopay: IPaymentAdapter = {
 
         if (walletForOrderPayment) {
           const convertedAmount = denoteAmount(
-            walletForOrderPayment.amount.toString(),
-            walletForOrderPayment.decimals,
+            walletForOrderPayment.amount,
+            walletForOrderPayment.decimals || 0,
           );
 
           if (convertedAmount && convertedAmount >= totalAmount) {

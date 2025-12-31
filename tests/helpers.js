@@ -1,11 +1,5 @@
-import { Collection } from 'mongodb';
-import {
-  initializeTestPlatform,
-  shutdownTestPlatform,
-  getTestPlatform,
-  getServerPort,
-  getDrizzleDb,
-} from './setup.js';
+import { sql } from '@unchainedshop/store';
+import { initializeTestPlatform, shutdownTestPlatform, getServerPort, getDrizzleDb } from './setup.js';
 import {
   seedCountriesToDrizzle,
   seedLanguagesToDrizzle,
@@ -27,22 +21,8 @@ import { seedEventsToDrizzle } from './seeds/events.js';
 import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
 
-// eslint-disable-next-line
-// @ts-expect-error
-Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
-  try {
-    const { insertedId } = await this.insertOne(doc, ...args);
-    return this.findOne({ _id: insertedId }, ...args);
-  } catch {
-    return this.findOne({ _id: doc._id }, ...args);
-  }
-};
-
-let connection;
-
 export { getServerPort, getDrizzleDb } from './setup.js';
 
-export const getConnection = () => connection;
 export const getServerBaseUrl = () => {
   const port = getServerPort();
   return `http://localhost:${port}`;
@@ -52,14 +32,75 @@ export const disconnect = async () => {
   // No-op - cleanup happens in globalTeardown
 };
 
+// List of all tables to clear before seeding test data
+const ALL_TABLES = [
+  // Core tables
+  'users',
+  'web_authn_credentials',
+  'push_subscriptions',
+  'user_emails_verification',
+  'user_login_attempts',
+  'user_avatars',
+  'products',
+  'product_texts',
+  'product_media',
+  'product_media_texts',
+  'product_variations',
+  'product_variation_texts',
+  'product_assignments',
+  'product_bundled_products',
+  'product_reviews',
+  'product_prices',
+  'countries',
+  'country_texts',
+  'languages',
+  'language_texts',
+  'currencies',
+  'files',
+  'bookmarks',
+  'delivery_providers',
+  'payment_providers',
+  'warehousing_providers',
+  'tokens',
+  'enrollments',
+  'enrollment_periods',
+  'quotations',
+  'filters',
+  'filter_texts',
+  'filter_options',
+  'assortments',
+  'assortment_texts',
+  'assortment_links',
+  'assortment_products',
+  'assortment_filters',
+  'work_queue',
+  'events',
+  'orders',
+  'order_positions',
+  'order_deliveries',
+  'order_payments',
+  'order_discounts',
+  'sessions',
+  // FTS tables (virtual tables)
+  // 'countries_fts', // Virtual tables can't be deleted with DELETE
+  // 'languages_fts',
+  // ... etc
+];
+
 export const setupDatabase = async () => {
   // Lazy initialization - ensure platform is running
   await initializeTestPlatform();
 
-  const { db } = getTestPlatform();
   const drizzleDb = getDrizzleDb();
-  const collections = await db.collections();
-  await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
+
+  // Clear all tables
+  for (const table of ALL_TABLES) {
+    try {
+      await drizzleDb.run(sql.raw(`DELETE FROM ${table}`));
+    } catch {
+      // Table may not exist yet, ignore
+    }
+  }
 
   // Seed Drizzle tables (bypasses modules to avoid emitting events)
   await seedUsersToDrizzle(drizzleDb);
@@ -84,7 +125,8 @@ export const setupDatabase = async () => {
   // The seedEventsToDrizzle function clears existing events before seeding
   await seedEventsToDrizzle(drizzleDb);
 
-  return [db, null];
+  // Return array for backwards compatibility with tests using [db] = await setupDatabase()
+  return [drizzleDb, null];
 };
 
 export const createAnonymousGraphqlFetch = () => {

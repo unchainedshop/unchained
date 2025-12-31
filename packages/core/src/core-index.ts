@@ -1,4 +1,3 @@
-import { type mongodb, type MigrationRepository, type ModuleInput } from '@unchainedshop/mongodb';
 import type { DrizzleDb } from '@unchainedshop/store';
 import initServices, { type CustomServices, type Services } from './services/index.ts';
 import initModules, { type Modules, type ModuleOptions } from './modules.ts';
@@ -31,8 +30,6 @@ export * from './factory/index.ts';
 export { default as schedule, type ScheduleData } from './utils/schedule.ts';
 
 export interface UnchainedCoreOptions {
-  db: mongodb.Db;
-  migrationRepository: MigrationRepository<UnchainedCore>;
   drizzleDb?: DrizzleDb;
   bulkImporter?: {
     handlers?: Record<string, BulkImportHandler<UnchainedCore>>;
@@ -40,7 +37,7 @@ export interface UnchainedCoreOptions {
   modules?: Record<
     string,
     {
-      configure: (params: ModuleInput<any>) => any;
+      configure: (params: { db: DrizzleDb; options?: ModuleOptions }) => any;
     }
   >;
   services?: CustomServices;
@@ -52,21 +49,18 @@ export interface UnchainedCore {
   services: Services;
   bulkImporter: BulkImporter;
   options: ModuleOptions;
+  db: DrizzleDb;
 }
 
 export const initCore = async ({
-  db,
-  migrationRepository,
   drizzleDb,
   bulkImporter: bulkImporterOptions = {},
   modules: customModules = {},
   services: customServices = {},
   options = {},
 }: UnchainedCoreOptions): Promise<UnchainedCore> => {
-  // Configure custom modules
-
-  const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions);
-  const modules = await initModules({ db, migrationRepository, options, drizzleDb }, customModules);
+  const bulkImporter = createBulkImporterFactory(bulkImporterOptions);
+  const { modules, db } = await initModules({ options, drizzleDb }, customModules);
   const services = initServices(modules, customServices);
 
   return {
@@ -74,6 +68,7 @@ export const initCore = async ({
     services,
     bulkImporter,
     options,
+    db,
   };
 };
 

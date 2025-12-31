@@ -37,6 +37,7 @@ import '../worker/email.ts';
 import '../worker/error-notifications.ts';
 
 // Asset Management
-import gridfsModules from '../files/gridfs/index.ts';
+import '../files/local/index.ts';
 
-export default gridfsModules;
+// Local files adapter doesn't need a custom module
+export default {};

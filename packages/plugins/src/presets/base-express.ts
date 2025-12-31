@@ -1,7 +1,7 @@
-import handler from '../files/gridfs/handler-express.ts';
+import { createLocalFilesMiddleware } from '../files/local/handler-express.ts';
 
-const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
+const { LOCAL_FILES_PUT_SERVER_PATH = '/files' } = process.env;
 
 export default (app) => {
-  app.use(GRIDFS_PUT_SERVER_PATH, handler);
+  app.use(LOCAL_FILES_PUT_SERVER_PATH, createLocalFilesMiddleware());
 };

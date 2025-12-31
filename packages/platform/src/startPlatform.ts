@@ -1,13 +1,11 @@
 import { startAPIServer, roles, type UnchainedServerOptions } from '@unchainedshop/api';
 import { initCore, type UnchainedCoreOptions } from '@unchainedshop/core';
-import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { setupAccounts } from './setup/setupAccounts.ts';
 import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.ts';
 import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.ts';
-import { createMigrationRepository } from './migrations/migrationRepository.ts';
 import type { IRoleOptionConfig } from '@unchainedshop/roles';
 
 const { UNCHAINED_API_VERSION, npm_package_version } = process.env;
@@ -17,7 +15,7 @@ export { MessageTypes };
 export type PlatformOptions = {
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions;
-} & Omit<UnchainedCoreOptions, 'migrationRepository' | 'db'> &
+} & UnchainedCoreOptions &
   Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 
 const REQUIRED_ENV_VARIABLES = [
@@ -59,7 +57,6 @@ export const startPlatform = async ({
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
   graphqlHandler: any;
-  db: mongodb.Db;
 }> => {
   const start = performance.now();
 
@@ -68,16 +65,8 @@ export const startPlatform = async ({
 
   const configuredRoles = roles.configureRoles(rolesOptions || {});
 
-  // Configure database
-  const db = await initDb();
-
-  // Prepare Migrations
-  const migrationRepository = createMigrationRepository(db);
-
   // Initialise core api using the database
   const unchainedAPI = await initCore({
-    db,
-    migrationRepository,
     bulkImporter,
     drizzleDb,
     modules,
@@ -104,7 +93,6 @@ export const startPlatform = async ({
   // Setup Work Queue
   await setupWorkqueue({
     unchainedAPI,
-    migrationRepository,
     ...workQueueOptions,
   });
 
@@ -140,9 +128,6 @@ export const startPlatform = async ({
       defaultLogger.debug('Stopping GraphQL server', { signal });
       await graphqlHandler.dispose();
 
-      defaultLogger.debug('Stopping DB Connection', { signal });
-      await stopDb();
-
       defaultLogger.debug(`Unchained Engine exiting gracefully`, { signal, version });
       clearTimeout(forceExitTimeout);
       process.exit(0);
@@ -177,5 +162,5 @@ export const startPlatform = async ({
   const end = performance.now();
   defaultLogger.debug(`Unchained Engine started in ${(end - start).toFixed(0)} ms`);
 
-  return { unchainedAPI, graphqlHandler, db };
+  return { unchainedAPI, graphqlHandler };
 };

@@ -21,7 +21,7 @@ export type SortStage = any;
 
 export interface SearchConfiguration {
   searchQuery?: SearchQuery;
-  filterSelector: Record<string, unknown>;
+  filterSelector: FilterSelector;
   sortStage: SortStage;
   forceLiveCollection: boolean;
   locale: Intl.Locale;
