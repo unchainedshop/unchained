@@ -9,7 +9,6 @@ const CreateProductReviewMutation = gql`
   mutation CreateProductReview(
     $productId: ID!
     $productReview: ProductReviewInput!
-    $forceLocale: Locale
   ) {
     createProductReview(productId: $productId, productReview: $productReview) {
       _id

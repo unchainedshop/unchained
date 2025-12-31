@@ -625,7 +625,7 @@ export const configureProductsModule = async ({
         sequence: seq,
         slugs: [],
         ...productData,
-        status: productData.status ?? null, // DRAFT if not specified
+        status: productData.status || null, // DRAFT if not specified (null, undefined, or empty string)
       });
 
       // Update FTS

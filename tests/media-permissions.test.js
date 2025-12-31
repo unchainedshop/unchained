@@ -305,6 +305,7 @@ test.describe('Media Permissions', () => {
             media {
               _id
               file {
+                _id
                 url
               }
             }
@@ -318,13 +319,13 @@ test.describe('Media Permissions', () => {
     assert.strictEqual((errors || []).length, 0);
     assert.strictEqual(data?.product?.media?.length, 1);
 
-    // Set private using Drizzle
+    // Set private using Drizzle - use the file._id, not the product_media._id
     const drizzleDb = getDrizzleDb();
-    const mediaId = data?.product?.media?.[0]?._id;
+    const fileId = data?.product?.media?.[0]?.file?._id;
     await drizzleDb.run(sql`
       UPDATE media_objects
       SET meta = json_set(COALESCE(meta, '{}'), '$.isPrivate', true, '$.userId', ${User._id})
-      WHERE _id = ${mediaId}
+      WHERE _id = ${fileId}
     `);
 
     const url = new URL(data?.product?.media?.[0]?.file?.url);

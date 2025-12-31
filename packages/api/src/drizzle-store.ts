@@ -6,7 +6,7 @@
 import * as session from 'express-session';
 import { sql, type DrizzleDb } from '@unchainedshop/store';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-import { eq, and, or, isNull } from 'drizzle-orm';
+import { eq, and, or, isNull, gt } from 'drizzle-orm';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api');
@@ -94,18 +94,31 @@ export default class DrizzleStore extends session.Store {
         const result = await this.db
           .select()
           .from(sessions)
-          .where(
-            and(eq(sessions._id, sid), or(isNull(sessions.expires), sql`${sessions.expires} > ${now}`)),
-          )
+          .where(and(eq(sessions._id, sid), or(isNull(sessions.expires), gt(sessions.expires, now))))
           .limit(1);
 
         const internalSession = result[0];
         if (!internalSession) {
+          logger.debug(`DrizzleStore#get session not found for ${sid}`);
           this.emit('get', sid);
           return callback(null, null);
         }
+        logger.debug(`DrizzleStore#get found session for ${sid}`);
 
-        const sessionData = internalSession.session as session.SessionData;
+        // Handle case where session might be stored as a JSON string
+        let sessionData: session.SessionData;
+        if (typeof internalSession.session === 'string') {
+          try {
+            sessionData = JSON.parse(internalSession.session);
+            logger.debug(`DrizzleStore#get parsed JSON session for ${sid}`, { sessionData });
+          } catch {
+            logger.error(`Failed to parse session data for ${sid}`);
+            return callback(null, null);
+          }
+        } else {
+          sessionData = internalSession.session as session.SessionData;
+          logger.debug(`DrizzleStore#get object session for ${sid}`, { sessionData });
+        }
 
         // Add lastModified if touchAfter is enabled
         if (this.touchAfter > 0 && internalSession.lastModified) {
@@ -251,7 +264,7 @@ export default class DrizzleStore extends session.Store {
         const results = await this.db
           .select()
           .from(sessions)
-          .where(or(isNull(sessions.expires), sql`${sessions.expires} > ${now}`));
+          .where(or(isNull(sessions.expires), gt(sessions.expires, now)));
 
         const sessionDataList = results.map((r) => r.session as session.SessionData);
 

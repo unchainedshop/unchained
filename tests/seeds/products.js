@@ -268,7 +268,7 @@ const GridfsMedia = {
   name: 'Screenshot from 2024-11-26 16-13-44.png',
   size: 104467,
   type: 'image/png',
-  url: '/gridfs/product-media/7FVJLp22ye9zNNBGEosF9X-screenshot-from-2024-11-26-16-13-44.png',
+  url: '/files/product-media/7FVJLp22ye9zNNBGEosF9X-screenshot-from-2024-11-26-16-13-44.png',
   meta: {
     productId: 'configurable-product-id',
     userId: 'user',

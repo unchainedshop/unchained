@@ -28,6 +28,7 @@
   "scripts": {
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
+    "db:reset": "rm -f unchained.db",
     "build": "tsc -b",
     "start": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
     "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --watch src/boot.ts",

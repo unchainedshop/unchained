@@ -10,11 +10,7 @@ import ProductBriefFragment from '../fragments/ProductBriefFragment';
 import useApp from '../../common/hooks/useApp';
 
 export const ProductBundleItemQuery = gql`
-  query ProductBundleItems(
-    $productId: ID
-    $slug: String
-    $forceLocale: Locale
-  ) {
+  query ProductBundleItems($productId: ID, $slug: String) {
     product(productId: $productId, slug: $slug) {
       _id
       ... on BundleProduct {
@@ -41,7 +37,7 @@ const useProductBundleItems = ({
     IProductBundleItemsQueryVariables
   >(ProductBundleItemQuery, {
     skip: !id && !parsedId,
-    variables: { productId: id || parsedId, forceLocale: selectedLocale },
+    variables: { productId: id || parsedId },
     context: {
       headers: {
         forceLocale: selectedLocale,

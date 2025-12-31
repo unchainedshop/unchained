@@ -15,7 +15,6 @@ const AddProductReviewVoteMutation = gql`
     $productReviewId: ID!
     $type: ProductReviewVoteType!
     $meta: JSON
-    $forceLocale: Locale
   ) {
     addProductReviewVote(
       productReviewId: $productReviewId

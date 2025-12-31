@@ -1,88 +1,68 @@
 import base64ToArrayBuffer from '../../common/utils/base64ToArrayBuffer';
 import useCreateWebAuthnCredentialCreationOptions from './useCreateWebAuthnCredentialCreationOptions';
 
-// Convert ArrayBuffer to base64url string (required by @passwordless-id/webauthn)
-const arrayBufferToBase64url = (buffer: ArrayBuffer): string => {
-  const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-};
-
 const useGenerateWebAuthCredentials = () => {
   const { createWebAuthnCredentialCreationOptions } =
     useCreateWebAuthnCredentialCreationOptions();
 
-  const generateWebAuthCredentials = async ({ username }) => {
+  const generateWebAuthCredentials = async ({ username }: { username: string }) => {
     const { data } = await createWebAuthnCredentialCreationOptions({
       username,
     });
 
-    const { createWebAuthnCredentialCreationOptions: publicKey } = data;
+    const { createWebAuthnCredentialCreationOptions: options } = data;
 
-    const textEncoder = new TextEncoder();
-    publicKey.challenge = base64ToArrayBuffer(publicKey.challenge);
-    publicKey.user = {
-      id: textEncoder.encode(username),
-      name: username,
-      displayName: username,
-    };
-
-    const publicKeyCredentials: any = await navigator.credentials.create({
-      publicKey,
-    });
-
-    const attestationObject = arrayBufferToBase64url(
-      publicKeyCredentials.response.attestationObject,
-    );
-    const clientDataJSON = arrayBufferToBase64url(
-      publicKeyCredentials.response.clientDataJSON,
-    );
-    const rawId = arrayBufferToBase64url(publicKeyCredentials.rawId);
-
-    // Get authenticatorData from the response (available in newer browsers)
-    const authenticatorData = publicKeyCredentials.response.getAuthenticatorData
-      ? arrayBufferToBase64url(
-          publicKeyCredentials.response.getAuthenticatorData(),
-        )
-      : '';
-
-    // Get public key from the response (available in newer browsers)
-    const responsePublicKey = publicKeyCredentials.response.getPublicKey
-      ? arrayBufferToBase64url(publicKeyCredentials.response.getPublicKey())
-      : '';
-
-    // Get public key algorithm
-    const publicKeyAlgorithm = publicKeyCredentials.response
-      .getPublicKeyAlgorithm
-      ? publicKeyCredentials.response.getPublicKeyAlgorithm()
-      : -7; // Default to ES256
-
-    // Get transports if available
-    const transports = publicKeyCredentials.response.getTransports
-      ? publicKeyCredentials.response.getTransports()
-      : ['internal'];
-
-    return {
-      id: rawId,
-      rawId,
-      response: {
-        clientDataJSON,
-        attestationObject,
-        authenticatorData,
-        publicKey: responsePublicKey,
-        publicKeyAlgorithm,
-        transports,
+    // Prepare the publicKey options for navigator.credentials.create()
+    const publicKeyOptions: PublicKeyCredentialCreationOptions = {
+      challenge: base64ToArrayBuffer(options.challenge),
+      rp: {
+        id: options.rp.id,
+        name: options.rp.name,
       },
-      authenticatorAttachment:
-        publicKeyCredentials.authenticatorAttachment || 'platform',
-      clientExtensionResults:
-        publicKeyCredentials.getClientExtensionResults?.() || {},
-      type: 'public-key',
       user: {
-        id: username,
+        id: new TextEncoder().encode(username),
         name: username,
         displayName: username,
       },
+      pubKeyCredParams: options.pubKeyCredParams,
+      timeout: options.timeout,
+      attestation: options.attestation || 'none',
+      authenticatorSelection: options.authenticatorSelection,
     };
+
+    // Create the credential
+    const credential = await navigator.credentials.create({
+      publicKey: publicKeyOptions,
+    }) as PublicKeyCredential | null;
+
+    if (!credential) {
+      throw new Error('Credential creation was cancelled or failed');
+    }
+
+    // Use the native toJSON() method which is supported in all modern browsers
+    // (Firefox 119+, Chrome 129+, Safari 18+)
+    // This properly handles all ArrayBuffer encoding and returns the exact format
+    // expected by @passwordless-id/webauthn server
+    if (typeof credential.toJSON === 'function') {
+      const json = credential.toJSON() as any;
+
+      // The toJSON() method returns the credential in the correct format
+      // We just need to add the user info that the server expects
+      return {
+        ...json,
+        user: {
+          id: username,
+          name: username,
+          displayName: username,
+        },
+      };
+    }
+
+    // Fallback for browsers without toJSON() support (very old browsers)
+    // This should rarely be needed as toJSON() has been available since 2023
+    throw new Error(
+      'Your browser does not support WebAuthn toJSON(). Please update to a newer browser version.'
+    );
   };
 
   return { generateWebAuthCredentials };

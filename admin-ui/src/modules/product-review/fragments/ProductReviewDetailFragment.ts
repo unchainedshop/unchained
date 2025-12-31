@@ -26,7 +26,7 @@ const ProductReviewDetailFragment = gql`
     }
     product {
       _id
-      texts(forceLocale: $forceLocale) {
+      texts {
         _id
         title
         subtitle

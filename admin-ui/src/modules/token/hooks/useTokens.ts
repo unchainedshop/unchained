@@ -6,12 +6,7 @@ import ProductBriefFragment from '../../product/fragments/ProductBriefFragment';
 import { DefaultLimit } from '../../common/data/miscellaneous';
 
 const TokensQuery = gql`
-  query Tokens(
-    $queryString: String
-    $limit: Int
-    $offset: Int
-    $forceLocale: Locale
-  ) {
+  query Tokens($queryString: String, $limit: Int, $offset: Int) {
     tokens(queryString: $queryString, limit: $limit, offset: $offset) {
       ...TokenFragment
       product {

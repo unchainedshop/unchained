@@ -9,11 +9,7 @@ import ProductBriefFragment from '../../product/fragments/ProductBriefFragment';
 import useApp from '../../common/hooks/useApp';
 
 export const AssortmentProductsQuery = gql`
-  query AssortmentProducts(
-    $assortmentId: ID
-    $slug: String
-    $forceLocale: Locale
-  ) {
+  query AssortmentProducts($assortmentId: ID, $slug: String) {
     assortment(assortmentId: $assortmentId, slug: $slug) {
       _id
       productAssignments {
@@ -41,7 +37,6 @@ const useAssortmentProducts = ({
       skip: !id && !parsedId,
       variables: {
         assortmentId: id || parsedId,
-        forceLocale: selectedLocale,
       },
       context: {
         headers: {

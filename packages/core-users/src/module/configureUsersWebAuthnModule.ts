@@ -148,7 +148,16 @@ export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) =>
   return {
     findMDSMetadataForAAGUID: async (aaguid: string) => {
       const mdsEntries = await fetchMDSEntries();
-      const entry = mdsEntries.get(aaguid.toLowerCase());
+      // Normalize AAGUID: lowercase and remove dashes to match MDS format
+      const normalizedAaguid = aaguid.toLowerCase().replace(/-/g, '');
+      // Also try with dashes in case MDS stores them that way
+      const aaguidWithDashes = aaguid.toLowerCase();
+
+      let entry = mdsEntries.get(normalizedAaguid);
+      if (!entry) {
+        entry = mdsEntries.get(aaguidWithDashes);
+      }
+
       return entry?.metadataStatement || null;
     },
 
@@ -235,12 +244,12 @@ export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) =>
       username: string,
       credentials: RegistrationJSON,
     ): Promise<WebAuthnCredential | null> => {
-      // Find the latest request for this username
+      // Find the latest request for this username (ordered by created timestamp)
       const [request] = await db
         .select()
         .from(webauthnCredentialsRequests)
         .where(eq(webauthnCredentialsRequests.username, username))
-        .orderBy(desc(webauthnCredentialsRequests._id))
+        .orderBy(desc(webauthnCredentialsRequests.created))
         .limit(1);
 
       if (!request) {

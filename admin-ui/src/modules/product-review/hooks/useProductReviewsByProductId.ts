@@ -6,7 +6,6 @@ import {
   ISortDirection,
 } from '../../../gql/types';
 import ProductReviewDetailFragment from '../fragments/ProductReviewDetailFragment';
-import useApp from '../../common/hooks/useApp';
 
 const ProductReviewQuery = gql`
   query ProductReviewByProduct(
@@ -15,7 +14,6 @@ const ProductReviewQuery = gql`
     $limit: Int
     $offset: Int
     $sort: [SortOptionInput!]
-    $forceLocale: Locale
   ) {
     product(productId: $productId, slug: $slug) {
       _id
@@ -35,7 +33,6 @@ const useProductReviewsByProductId = ({
   offset = 0,
   sort: sortOptions = [{ key: 'created', value: ISortDirection.Desc }],
 }: IProductReviewByProductQueryVariables = {}) => {
-  const { selectedLocale } = useApp();
   const { data, loading, error, fetchMore } = useQuery<
     IProductReviewByProductQuery,
     IProductReviewByProductQueryVariables
@@ -47,7 +44,6 @@ const useProductReviewsByProductId = ({
       limit,
       offset,
       sort: sortOptions,
-      forceLocale: selectedLocale,
     },
   });
   const product = data?.product;

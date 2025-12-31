@@ -17,14 +17,12 @@ import Badge from '../../common/components/Badge';
 import ImageWithFallback from '../../common/components/ImageWithFallback';
 import formatUsername from '../../common/utils/formatUsername';
 import useAddProductReviewVote from '../hooks/useAddProductReviewVote';
-import Button from '../../common/components/Button';
 import useRemoveProductReviewVote from '../hooks/useRemoveProductReviewVote';
 import useAuth from '../../Auth/useAuth';
 import useCurrentUser from '../../accounts/hooks/useCurrentUser';
 import ProductReviewReportCommentForm from './ProductReviewReportCommentForm';
 import CustomError from '../../common/CustomError';
 import { OnSubmitType } from '../../forms/hooks/useForm';
-import { IUser } from '../../../gql/types';
 
 const voteTypes = {
   UPVOTE: 'UPVOTE',
