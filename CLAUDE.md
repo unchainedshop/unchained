@@ -16,12 +16,11 @@ tsc --build -w       # Watch mode for TypeScript compilation across all packages
 ```bash
 npm test                    # Run all tests (unit + integration)
 npm run test:run:unit       # Run unit tests only (uses node --test in packages/)
-npm run test:run:integration # Run integration tests (uses kitchensink example + tests/)
+npm run test:run:integration # Run integration tests (loads .env.tests, then .env as fallback)
 node --test path/to/test.ts  # Run a single test file
 ```
 
 ### Package-Level Commands
-Individual packages support these scripts:
 ```bash
 cd packages/[package-name]
 npm run build       # Build specific package
@@ -46,7 +45,7 @@ platform     → Highest level orchestration, combines all packages
     ↓
 api          → GraphQL API layer with Express/Fastify adapters, GraphQL Yoga, MCP server
     ↓
-core         → Business logic coordination, integrates all core-* modules
+core         → Business logic coordination, cross-module services, directors
     ↓
 core-*       → Domain-specific modules (users, products, orders, payments, delivery, etc.)
     ↓
@@ -54,64 +53,70 @@ infrastructure → Base utilities (store, events, logger, utils, roles, file-upl
 ```
 
 ### Key Packages
-- **@unchainedshop/platform**: Complete engine bundle - the main entry point bundling api, core, plugins, and infrastructure
-- **@unchainedshop/api**: GraphQL API with server adapters (Express, Fastify), MCP server integration, and session management
-- **@unchainedshop/core**: Orchestrates all core-* modules and provides cross-module services
-- **@unchainedshop/plugins**: Plugin system with Directors and Adapters for payment, delivery, pricing, and warehousing
-- **@unchainedshop/ticketing**: Event ticketing functionality
-- **Infrastructure packages**: store, events, logger, utils, roles, file-upload - foundational utilities used across all layers
+- **@unchainedshop/platform**: Complete engine bundle - main entry point combining api, core, plugins, and infrastructure
+- **@unchainedshop/api**: GraphQL API with server adapters (Express, Fastify), MCP server, and session management
+- **@unchainedshop/core**: Orchestrates all core-* modules, provides cross-module services and directors
+- **@unchainedshop/plugins**: Plugin collection for payment, delivery, pricing, and warehousing
+- **@unchainedshop/store**: Drizzle ORM storage layer (SQLite/Turso) - exports db utilities and FTS helpers
+- **Infrastructure packages**: events, logger, utils, roles, file-upload
 
-### Plugin Architecture
-The plugin system uses a Director/Adapter pattern:
-- **Directors** manage collections of adapters (e.g., PaymentDirector)
-- **Adapters** implement specific behaviors (e.g., StripeAdapter)
-- Plugins self-register when imported
-- Configuration happens through director.registerAdapter()
+### Plugin Architecture (Director/Adapter Pattern)
+- **Directors** manage collections of adapters (e.g., `PaymentDirector`, `DeliveryDirector`)
+- **Adapters** implement specific behaviors (e.g., `StripeAdapter`, `PostAdapter`)
+- Plugins self-register when imported via `director.registerAdapter()`
+- Directors located in `packages/core/src/directors/`
 
 ### Core Module Pattern
-Each core-* module follows a consistent pattern:
-- **Database schemas**: Drizzle ORM schemas in `src/db/schema.ts` with typed interfaces
-- **Schema initialization**: Idempotent table creation in `src/db/index.ts`
-- **Full-text search**: FTS5 virtual tables in `src/db/fts.ts` (where applicable)
-- **Business logic services**: Module-specific operations and queries
-- **Configuration options**: Customizable settings passed during module initialization
-- **TypeScript compilation**: Each package builds independently with project references
+Each core-* module follows a consistent structure:
+```
+packages/core-[module]/src/
+├── db/
+│   ├── schema.ts    # Drizzle ORM schema with typed interfaces
+│   ├── index.ts     # Idempotent table creation (CREATE TABLE IF NOT EXISTS)
+│   └── fts.ts       # FTS5 full-text search setup (where applicable)
+└── module/
+    └── configure[Module]Module.ts  # Business logic and queries
+```
 
-Example modules: core-orders, core-products, core-users, core-payment, core-delivery, core-assortments, core-filters, core-quotations, core-bookmarks, core-enrollments, core-warehousing, core-worker, core-files, core-events, core-countries, core-currencies, core-languages
+### Cross-Module Services
+The `@unchainedshop/core` package provides services that orchestrate across multiple modules:
+- Located in `packages/core/src/services/`
+- Examples: `checkoutOrder`, `processOrder`, `searchProducts`, `findOrInitCart`
+- Services are bound to the Modules object and accessible via `unchainedAPI.services`
 
 ### Architectural Constraints
-**IMPORTANT**: Respect layer boundaries when working with packages:
+**IMPORTANT**: Respect layer boundaries:
 - **DO NOT import `@unchainedshop/store` outside of core-* and infrastructure packages**
-- The API layer (`@unchainedshop/api`) should only use types from core packages, never direct Drizzle imports
+- The API layer should only use types from core packages, never direct Drizzle imports
 - Database queries and Drizzle-specific logic belong exclusively in core-* modules
-- Higher-level packages (api, platform) should use the module APIs exposed by core packages
+- Higher-level packages (api, platform) use module APIs exposed by core packages
+
+### Database Configuration
+```bash
+# Database URL formats supported by @unchainedshop/store:
+DRIZZLE_DB_URL="file:unchained.db"           # Local SQLite file (default)
+DRIZZLE_DB_URL="file::memory:"               # In-memory SQLite (testing)
+DRIZZLE_DB_URL="libsql://your-db.turso.io"   # Turso cloud (requires DRIZZLE_AUTH_TOKEN)
+```
 
 ### TypeScript Configuration
-- Uses TypeScript project references (tsconfig.json) for incremental builds
+- Uses TypeScript project references for incremental builds
 - All packages build to `lib/` directory with declaration files
 - Run `tsc --build` from root to build all packages respecting dependencies
-- Individual packages have isolated TypeScript configurations
 
-### API Structure
-The API package supports multiple server frameworks:
-- **Express**: Import from `@unchainedshop/api/express`
-- **Fastify**: Import from `@unchainedshop/api/fastify`
-- **GraphQL Yoga**: Core GraphQL server implementation
-- **MCP Server**: Model Context Protocol server for AI integrations
+### API Server Frameworks
+```typescript
+import { ... } from '@unchainedshop/api/express'  // Express adapter
+import { ... } from '@unchainedshop/api/fastify'  // Fastify adapter
+```
 
 ### Development Workflow
 1. Most development happens in `packages/` directory
-2. Examples in `examples/` demonstrate different use cases (kitchensink, minimal, oidc, ticketing)
-3. Integration tests in `tests/` directory validate end-to-end functionality
-4. Unit tests live within each package alongside source files
-5. The `npm run dev` command runs admin-ui, kitchensink example, and watches all packages
+2. Examples in `examples/` demonstrate use cases (kitchensink, minimal, oidc, ticketing)
+3. Integration tests in `tests/` directory, unit tests within each package
+4. `npm run dev` runs admin-ui, kitchensink example, and watches all packages
 
 ### Environment Configuration
-- Use `.env` files for local configuration
-- Default values in `.env.defaults`
-- Integration tests use `.env.tests` with `.env` as fallback
+- Integration tests: `.env.tests` with `.env` as fallback
 - Node.js 22+ required (see .nvmrc)
 - SQLite (default) or Turso for cloud deployments
-- Use `DRIZZLE_DB_URL` for database connection (default: `file:unchained.db`)
-
- No newline at end of file
