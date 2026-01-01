@@ -5,6 +5,7 @@ import {
   and,
   or,
   inArray,
+  isNull,
   sql,
   asc,
   desc,
@@ -412,7 +413,7 @@ export const configureQuotationsModule = async ({
         .where(
           and(
             eq(quotations.userId, userId),
-            or(eq(quotations.status, QuotationStatus.REQUESTED), sql`${quotations.status} IS NULL`),
+            or(eq(quotations.status, QuotationStatus.REQUESTED), isNull(quotations.status)),
           ),
         );
       return result.rowsAffected;

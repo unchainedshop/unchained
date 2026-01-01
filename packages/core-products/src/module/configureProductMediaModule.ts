@@ -11,6 +11,7 @@ import {
   notInArray,
   desc,
   asc,
+  like,
   sql,
   generateId,
   type DrizzleDb,
@@ -385,7 +386,7 @@ export const configureProductMediaModule = ({ db }: { db: DrizzleDb }) => {
           .where(
             and(
               eq(productMediaTexts.productMediaId, productMediaId),
-              sql`${productMediaTexts.locale} LIKE ${locale.language + '%'}`,
+              like(productMediaTexts.locale, locale.language + '%'),
             ),
           )
           .limit(1);

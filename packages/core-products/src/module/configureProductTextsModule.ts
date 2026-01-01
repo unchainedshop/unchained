@@ -10,6 +10,7 @@ import {
   ne,
   inArray,
   notInArray,
+  like,
   sql,
   generateId,
   buildSelectColumns,
@@ -264,10 +265,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         .select()
         .from(productTexts)
         .where(
-          and(
-            eq(productTexts.productId, productId),
-            sql`${productTexts.locale} LIKE ${locale.language + '%'}`,
-          ),
+          and(eq(productTexts.productId, productId), like(productTexts.locale, locale.language + '%')),
         )
         .limit(1);
 

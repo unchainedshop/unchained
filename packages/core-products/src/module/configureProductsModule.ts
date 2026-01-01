@@ -148,14 +148,9 @@ const buildJsonFieldCondition = (
   if (value && typeof value === 'object' && value !== null) {
     const obj = value as Record<string, unknown>;
 
-    // Existence check: { exists: true/false } or { $exists: true/false } (MongoDB-style)
+    // Existence check: { exists: true/false }
     if ('exists' in obj && typeof obj.exists === 'boolean') {
       return obj.exists
-        ? sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`
-        : sql`json_extract(${column}, ${jsonPath}) IS NULL`;
-    }
-    if ('$exists' in obj && typeof obj.$exists === 'boolean') {
-      return obj.$exists
         ? sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`
         : sql`json_extract(${column}, ${jsonPath}) IS NULL`;
     }
@@ -286,16 +281,11 @@ export const configureProductsModule = async ({
               sql`EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${value})`,
             );
           } else if (value && typeof value === 'object') {
-            const filterValue = value as { notEqual?: string; $ne?: string };
+            const filterValue = value as { notEqual?: string };
             if ('notEqual' in filterValue && filterValue.notEqual) {
-              // Exclude specific tag using typed filter
+              // Exclude specific tag
               conditions.push(
                 sql`NOT EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${filterValue.notEqual})`,
-              );
-            } else if ('$ne' in filterValue && filterValue.$ne) {
-              // Exclude specific tag using MongoDB-style filter
-              conditions.push(
-                sql`NOT EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${filterValue.$ne})`,
               );
             }
           }
@@ -947,10 +937,10 @@ export const configureProductsModule = async ({
 
     search: {
       buildActiveDraftStatusFilter: () => ({
-        status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
+        status: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
       }),
       buildActiveStatusFilter: () => ({
-        status: { $in: [ProductStatus.ACTIVE] },
+        status: [ProductStatus.ACTIVE],
       }),
       countFilteredProducts: async ({
         productIds,

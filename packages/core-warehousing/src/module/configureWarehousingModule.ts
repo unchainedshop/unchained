@@ -6,6 +6,7 @@ import {
   isNull,
   isNotNull,
   inArray,
+  like,
   sql,
   asc,
   generateId,
@@ -164,10 +165,7 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
     if (query.queryString) {
       const pattern = `%${query.queryString}%`;
       conditions.push(
-        or(
-          sql`${warehousingProviders._id} LIKE ${pattern}`,
-          sql`${warehousingProviders.adapterKey} LIKE ${pattern}`,
-        )!,
+        or(like(warehousingProviders._id, pattern), like(warehousingProviders.adapterKey, pattern))!,
       );
     }
 

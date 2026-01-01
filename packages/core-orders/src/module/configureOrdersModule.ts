@@ -1,4 +1,4 @@
-import { eq, ne, and, sql, type DrizzleDb } from '@unchainedshop/store';
+import { eq, ne, and, isNull, isNotNull, type DrizzleDb } from '@unchainedshop/store';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { ordersSettings, type OrdersSettingsOptions } from '../orders-settings.ts';
 import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.ts';
@@ -167,9 +167,9 @@ export const configureOrdersModule = async ({
           and(
             eq(orders._id, orderId),
             status === null
-              ? sql`${orders.status} IS NOT NULL`
+              ? isNotNull(orders.status)
               : order.status === null
-                ? sql`${orders.status} IS NULL`
+                ? isNull(orders.status)
                 : ne(orders.status, status),
           ),
         );

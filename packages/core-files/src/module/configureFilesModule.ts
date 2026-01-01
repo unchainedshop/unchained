@@ -6,6 +6,7 @@ import {
   inArray,
   sql,
   lt,
+  isNotNull,
   generateId,
   buildSelectColumns,
   type DrizzleDb,
@@ -243,7 +244,7 @@ export const configureFilesModule = async ({
       const now = new Date();
       const result = await db
         .delete(mediaObjects)
-        .where(and(sql`${mediaObjects.expires} IS NOT NULL`, lt(mediaObjects.expires, now)));
+        .where(and(isNotNull(mediaObjects.expires), lt(mediaObjects.expires, now)));
       return result.rowsAffected;
     },
   };

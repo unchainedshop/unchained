@@ -24,7 +24,7 @@ export default function registerProductDiscoverabilityFilter({
 
           if (!key) {
             // When no specific key is provided, add tag exclusion filter
-            return [...lastFilterQuery, { key: 'tags', value: { $ne: hiddenTagValue } }];
+            return [...lastFilterQuery, { key: 'tags', value: { notEqual: hiddenTagValue } }];
           }
           return lastFilterQuery;
         },

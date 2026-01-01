@@ -8,6 +8,7 @@ import {
   eq,
   and,
   inArray,
+  notInArray,
   isNull,
   gte,
   lte,
@@ -272,7 +273,7 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
       if (productId) {
         conditions.push(eq(productReviews.productId, productId));
       } else if (excludedProductIds?.length) {
-        conditions.push(sql`${productReviews.productId} NOT IN ${excludedProductIds}`);
+        conditions.push(notInArray(productReviews.productId, excludedProductIds));
       }
 
       if (conditions.length === 0) return 0;

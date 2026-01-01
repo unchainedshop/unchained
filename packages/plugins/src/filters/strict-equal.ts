@@ -17,7 +17,7 @@ const StrictQualFilter: IFilterAdapter = {
 
         if (key) {
           // Add filter item for this key/value pair
-          return [...lastFilterQuery, { key, value: value !== undefined ? value : { $exists: true } }];
+          return [...lastFilterQuery, { key, value: value !== undefined ? value : { exists: true } }];
         }
         return lastFilterQuery;
       },

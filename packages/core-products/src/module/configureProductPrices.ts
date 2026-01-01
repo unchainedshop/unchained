@@ -2,7 +2,7 @@
  * Product Prices Module - Drizzle ORM with SQLite/Turso
  */
 
-import { eq, and, or, lte, gte, desc, sql, generateId, type DrizzleDb } from '@unchainedshop/store';
+import { eq, and, or, lte, gte, desc, generateId, type DrizzleDb } from '@unchainedshop/store';
 import { getPriceLevels } from './utils/getPriceLevels.ts';
 import { getPriceRange } from './utils/getPriceRange.ts';
 import {
@@ -295,7 +295,7 @@ export const configureProductPricesModule = ({
                   and(
                     eq(productRates.baseCurrency, rate.baseCurrency),
                     eq(productRates.quoteCurrency, rate.quoteCurrency),
-                    sql`${productRates.rate} = ${rate.rate}`,
+                    eq(productRates.rate, rate.rate),
                     gte(productRates.expiresAt, rate.timestamp || new Date()),
                   ),
                 )

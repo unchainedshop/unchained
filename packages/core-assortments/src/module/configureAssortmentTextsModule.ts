@@ -2,6 +2,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateId,
   eq,
+  ne,
   and,
   inArray,
   notInArray,
@@ -56,10 +57,7 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
         .select({ _id: assortmentTexts._id })
         .from(assortmentTexts)
         .where(
-          and(
-            sql`${assortmentTexts.assortmentId} != ${assortmentId}`,
-            eq(assortmentTexts.slug, newPotentialSlug),
-          ),
+          and(ne(assortmentTexts.assortmentId, assortmentId), eq(assortmentTexts.slug, newPotentialSlug)),
         )
         .limit(1);
       return !existing;
@@ -170,7 +168,7 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
       .from(assortments)
       .where(
         and(
-          sql`${assortments._id} != ${assortmentId}`,
+          ne(assortments._id, assortmentId),
           sql`EXISTS (SELECT 1 FROM json_each(${assortments.slugs}) WHERE value = ${slug})`,
         ),
       );

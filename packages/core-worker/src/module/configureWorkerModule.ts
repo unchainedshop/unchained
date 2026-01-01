@@ -137,7 +137,7 @@ interface QuerySelectorOptions {
   priority?: number;
   autoscheduled?: boolean;
   scheduleId?: string | null;
-  started?: Date | { $lte: Date };
+  started?: Date | { lte: Date };
 }
 
 const buildQueryConditions = async (
@@ -245,8 +245,8 @@ const buildQueryConditions = async (
   if (started) {
     if (started instanceof Date) {
       conditions.push(lte(workQueue.started, started));
-    } else if ('$lte' in started) {
-      conditions.push(lte(workQueue.started, started.$lte));
+    } else if ('lte' in started) {
+      conditions.push(lte(workQueue.started, started.lte));
     }
   }
 
@@ -808,7 +808,7 @@ export const configureWorkerModule = async ({
       // Find allocated work started before referenceDate for this worker
       const conditions = await buildQueryConditions(db, {
         status: [WorkStatus.ALLOCATED],
-        started: { $lte: referenceDate },
+        started: { lte: referenceDate },
         worker: [worker, '', null as unknown as string],
         types,
       });

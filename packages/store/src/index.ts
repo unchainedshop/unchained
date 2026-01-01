@@ -24,8 +24,10 @@ export {
   isNotNull,
   inArray,
   notInArray,
+  like,
   asc,
   desc,
+  count,
 } from 'drizzle-orm';
 export type { SQL } from 'drizzle-orm';
 export type { LibSQLDatabase } from 'drizzle-orm/libsql';
@@ -103,12 +105,51 @@ export async function initializeDrizzleDb(
 }
 
 /**
+ * Counter for generating unique IDs within the same second.
+ * Initialized with a cryptographically random value to avoid collisions across processes.
+ */
+const counterBytes = crypto.getRandomValues(new Uint8Array(3));
+let idCounter = (counterBytes[0] << 16) | (counterBytes[1] << 8) | counterBytes[2];
+
+/**
+ * Random 5-byte value generated once per process.
+ * Used to ensure uniqueness across different machines/processes.
+ */
+const processRandom = crypto.getRandomValues(new Uint8Array(5));
+
+/**
  * Generate a unique ID compatible with MongoDB ObjectId format.
- * Produces a 24-character hexadecimal string (12 random bytes).
+ * Produces a 24-character hexadecimal string (12 bytes) that is:
+ * - Sortable by insertion time (first 4 bytes are Unix timestamp)
+ * - Unique across processes (5 random bytes per process)
+ * - Unique within process (3-byte incrementing counter)
+ *
+ * Structure (12 bytes = 24 hex chars):
+ * - Bytes 0-3: Unix timestamp in seconds (big-endian)
+ * - Bytes 4-8: Process-unique random value
+ * - Bytes 9-11: Incrementing counter (big-endian)
  */
 export function generateId(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  const timestamp = Math.floor(Date.now() / 1000);
+  idCounter = (idCounter + 1) % 0xffffff;
+
+  const buffer = new Uint8Array(12);
+
+  // Bytes 0-3: timestamp (big-endian)
+  buffer[0] = (timestamp >> 24) & 0xff;
+  buffer[1] = (timestamp >> 16) & 0xff;
+  buffer[2] = (timestamp >> 8) & 0xff;
+  buffer[3] = timestamp & 0xff;
+
+  // Bytes 4-8: process random
+  buffer.set(processRandom, 4);
+
+  // Bytes 9-11: counter (big-endian)
+  buffer[9] = (idCounter >> 16) & 0xff;
+  buffer[10] = (idCounter >> 8) & 0xff;
+  buffer[11] = idCounter & 0xff;
+
+  return Array.from(buffer, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**

@@ -6,6 +6,7 @@ import {
   isNull,
   isNotNull,
   inArray,
+  like,
   sql,
   asc,
   generateId,
@@ -125,10 +126,7 @@ export const configureDeliveryModule = async ({
     if (query.queryString) {
       const pattern = `%${query.queryString}%`;
       conditions.push(
-        or(
-          sql`${deliveryProviders._id} LIKE ${pattern}`,
-          sql`${deliveryProviders.adapterKey} LIKE ${pattern}`,
-        )!,
+        or(like(deliveryProviders._id, pattern), like(deliveryProviders.adapterKey, pattern))!,
       );
     }
 

@@ -26,7 +26,7 @@ export async function loadFiltersService(
     includeInactive: true,
   });
 
-  const extractedFilterIds = (filterSelector?._id as any)?.$in || [];
+  const extractedFilterIds = Array.isArray(filterSelector?._id) ? filterSelector._id : [];
   const sortedFilters = otherFilters.toSorted((left, right) => {
     const leftIndex = extractedFilterIds.indexOf(left._id);
     const rightIndex = extractedFilterIds.indexOf(right._id);

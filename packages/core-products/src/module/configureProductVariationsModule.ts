@@ -10,6 +10,7 @@ import {
   isNull,
   inArray,
   notInArray,
+  like,
   sql,
   generateId,
   type DrizzleDb,
@@ -445,9 +446,7 @@ export const configureProductVariationsModule = ({ db }: { db: DrizzleDb }) => {
         const [languageMatch] = await db
           .select()
           .from(productVariationTexts)
-          .where(
-            and(...baseConditions, sql`${productVariationTexts.locale} LIKE ${locale.language + '%'}`),
-          )
+          .where(and(...baseConditions, like(productVariationTexts.locale, locale.language + '%')))
           .limit(1);
 
         if (languageMatch) return languageMatch;

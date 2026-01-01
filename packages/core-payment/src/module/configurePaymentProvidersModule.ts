@@ -6,6 +6,7 @@ import {
   isNull,
   isNotNull,
   inArray,
+  like,
   sql,
   asc,
   generateId,
@@ -100,10 +101,7 @@ export const configurePaymentProvidersModule = (db: DrizzleDb) => {
     if (query.queryString) {
       const pattern = `%${query.queryString}%`;
       conditions.push(
-        or(
-          sql`${paymentProviders._id} LIKE ${pattern}`,
-          sql`${paymentProviders.adapterKey} LIKE ${pattern}`,
-        )!,
+        or(like(paymentProviders._id, pattern), like(paymentProviders.adapterKey, pattern))!,
       );
     }
 

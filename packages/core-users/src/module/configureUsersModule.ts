@@ -4,12 +4,14 @@
 
 import {
   eq,
+  ne,
   and,
   inArray,
   sql,
   asc,
   desc,
   isNull,
+  isNotNull,
   generateId,
   buildSelectColumns,
   type SQL,
@@ -1035,10 +1037,18 @@ export const configureUsersModule = async ({
 
       // Unsubscribe from other users if requested
       if (subscriptionOptions?.unsubscribeFromOtherUsers) {
-        const otherUsers = await db.select().from(users).where(sql`${users._id} != ${userId} AND EXISTS (
-            SELECT 1 FROM json_each(${users.pushSubscriptions})
-            WHERE json_extract(value, '$.keys.p256dh') = ${subscription?.keys?.p256dh}
-          )`);
+        const otherUsers = await db
+          .select()
+          .from(users)
+          .where(
+            and(
+              ne(users._id, userId),
+              sql`EXISTS (
+                SELECT 1 FROM json_each(${users.pushSubscriptions})
+                WHERE json_extract(value, '$.keys.p256dh') = ${subscription?.keys?.p256dh}
+              )`,
+            ),
+          );
 
         for (const otherUser of otherUsers) {
           const filtered = (otherUser.pushSubscriptions || []).filter(
@@ -1067,7 +1077,7 @@ export const configureUsersModule = async ({
       const rows = await db
         .select({ tags: users.tags })
         .from(users)
-        .where(and(sql`${users.tags} IS NOT NULL`, isNull(users.deleted)));
+        .where(and(isNotNull(users.tags), isNull(users.deleted)));
 
       const allTags = new Set<string>();
       for (const row of rows) {

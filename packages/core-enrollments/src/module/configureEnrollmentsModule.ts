@@ -6,6 +6,7 @@ import {
   or,
   isNull,
   inArray,
+  like,
   sql,
   asc,
   desc,
@@ -339,10 +340,7 @@ export const configureEnrollmentsModule = async ({
         ? db.select(selectColumns).from(enrollments)
         : db.select().from(enrollments);
       const results = await baseQuery.where(
-        and(
-          isNull(enrollments.deleted),
-          sql`${enrollments.periods} LIKE ${`%"orderId":"${params.orderId}"%`}`,
-        ),
+        and(isNull(enrollments.deleted), like(enrollments.periods, `%"orderId":"${params.orderId}"%`)),
       );
       return results.length > 0
         ? selectColumns
@@ -535,7 +533,7 @@ export const configureEnrollmentsModule = async ({
           and(
             eq(enrollments.userId, userId),
             or(
-              sql`${enrollments.status} IS NULL`,
+              isNull(enrollments.status),
               eq(enrollments.status, EnrollmentStatus.INITIAL),
               eq(enrollments.status, EnrollmentStatus.TERMINATED),
             ),

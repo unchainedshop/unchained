@@ -52,8 +52,8 @@ export const defaultProductSelector = ({ includeInactive }: SearchQuery, { modul
 };
 
 export interface FilterSelector {
-  _id?: string | { $in: string[] };
-  key?: string | { $in: string[] };
+  _id?: string | string[];
+  key?: string | string[];
   isActive?: boolean;
 }
 
@@ -64,10 +64,10 @@ export const defaultFilterSelector = (searchQuery: SearchQuery): FilterSelector 
 
   if (filterIds) {
     // return explicit list because filters are preset by search
-    selector._id = { $in: filterIds };
+    selector._id = filterIds;
   } else if (keys.length > 0) {
     // return filters that are part of the filterQuery
-    selector.key = { $in: keys };
+    selector.key = keys;
   }
 
   if (!includeInactive) {
