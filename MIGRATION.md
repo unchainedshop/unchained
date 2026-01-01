@@ -4,6 +4,328 @@
 
 ---
 
+## v4 → v5 (Drizzle Migration)
+
+This is a **major architectural change** from MongoDB to Drizzle ORM with SQLite/Turso. This migration requires careful planning and data migration.
+
+### Prerequisites
+
+1. Backup your MongoDB database
+2. Export data for migration (see Data Migration section)
+3. Set up SQLite or Turso database
+4. Update all dependencies
+
+### Environment Variables
+
+```diff
+# Removed
+- MONGO_URL=mongodb://localhost:27017/unchained
+- MONGO_REPLICASET_URL=...
+- UNCHAINED_DOCUMENTDB_COMPAT_MODE=1
+
+# Added
++ DRIZZLE_DB_URL=file:unchained.db              # Local SQLite file
++ DRIZZLE_DB_URL=file::memory:                  # In-memory (testing)
++ DRIZZLE_DB_URL=libsql://your-db.turso.io      # Turso cloud
++ DRIZZLE_DB_TOKEN=your-turso-auth-token        # Required for Turso
+
+# Unchanged but now required
+UNCHAINED_TOKEN_SECRET=minimum-32-character-secret
+```
+
+### Dependencies
+
+Remove MongoDB packages and add Drizzle packages:
+
+```bash
+# Remove MongoDB dependencies
+npm uninstall mongodb mongodb-memory-server @mongodb-js/zstd
+
+# Add Drizzle dependencies (already included in @unchainedshop/store)
+# The store package is a dependency of core packages, no need to install directly
+```
+
+### Boot File Changes
+
+```diff
+import Fastify from 'fastify';
+import { startPlatform } from '@unchainedshop/platform';
+import { connect } from '@unchainedshop/api/fastify';
+import defaultModules from '@unchainedshop/plugins/presets/all.js';
+import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
++ import { createDrizzleDb } from '@unchainedshop/store';
+
+const fastify = Fastify();
+
++ // Create database connection
++ const { db: drizzleDb } = createDrizzleDb({
++   url: process.env.DRIZZLE_DB_URL || 'file:unchained.db',
++   authToken: process.env.DRIZZLE_DB_TOKEN,
++ });
+
+const platform = await startPlatform({
+  modules: defaultModules,
++ drizzleDb,
+});
+
+connect(fastify, platform, {
+  initPluginMiddlewares,
+  adminUI: true,
+});
+
+await fastify.listen({ host: '::', port: 3000 });
+```
+
+### Package Import Changes
+
+```diff
+# Database utilities
+- import { mongodb, generateDbObjectId } from '@unchainedshop/mongodb';
++ import { eq, generateId, type DrizzleDb } from '@unchainedshop/store';
+
+# Types (unchanged - still from respective packages)
+import { User } from '@unchainedshop/core-users';
+import { Order } from '@unchainedshop/core-orders';
+```
+
+### Custom Module Migration
+
+If you have custom modules using MongoDB:
+
+```diff
+- import { mongodb, buildFindSelector } from '@unchainedshop/mongodb';
++ import { eq, and, isNull, sql, type DrizzleDb } from '@unchainedshop/store';
++ import { myTable, rowToMyEntity } from '../db/index.js';
+
+- export const configureMyModule = async ({ db }) => {
+-   const collection = await db.collection('my_entities');
++ export const configureMyModule = async ({ db }: { db: DrizzleDb }) => {
+
+  return {
+-   findOne: async ({ _id }) => {
+-     return collection.findOne({ _id });
+-   },
++   findOne: async ({ _id }) => {
++     const [row] = await db.select().from(myTable)
++       .where(eq(myTable._id, _id))
++       .limit(1);
++     return row ? rowToMyEntity(row) : null;
++   },
+
+-   find: async (query) => {
+-     return collection.find(buildFindSelector(query)).toArray();
+-   },
++   find: async (query) => {
++     const conditions = [isNull(myTable.deleted)];
++     if (query.status) conditions.push(eq(myTable.status, query.status));
++     const rows = await db.select().from(myTable)
++       .where(and(...conditions));
++     return rows.map(rowToMyEntity);
++   },
+  };
+};
+```
+
+### Schema Definition
+
+Create schema files for custom tables:
+
+```typescript
+// src/db/schema.ts
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+
+export const myTable = sqliteTable('my_entities', {
+  _id: text('_id').primaryKey(),
+  name: text('name').notNull(),
+  status: text('status'),
+  data: text('data', { mode: 'json' }),  // JSON columns for complex data
+  created: integer('created', { mode: 'timestamp_ms' }).notNull(),
+  updated: integer('updated', { mode: 'timestamp_ms' }),
+  deleted: integer('deleted', { mode: 'timestamp_ms' }),
+}, (table) => [
+  index('idx_my_entities_status').on(table.status),
+]);
+
+export type MyEntityRow = typeof myTable.$inferSelect;
+
+export function rowToMyEntity(row: MyEntityRow): MyEntity {
+  return {
+    _id: row._id,
+    name: row.name,
+    status: row.status ?? undefined,
+    data: row.data ?? undefined,
+    created: row.created,
+    updated: row.updated ?? undefined,
+  };
+}
+```
+
+```typescript
+// src/db/index.ts
+import { sql, type DrizzleDb } from '@unchainedshop/store';
+
+export * from './schema.js';
+
+export async function initializeMySchema(db: DrizzleDb): Promise<void> {
+  await db.run(sql`
+    CREATE TABLE IF NOT EXISTS my_entities (
+      _id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      status TEXT,
+      data TEXT,
+      created INTEGER NOT NULL,
+      updated INTEGER,
+      deleted INTEGER
+    )
+  `);
+  await db.run(sql`CREATE INDEX IF NOT EXISTS idx_my_entities_status ON my_entities(status)`);
+}
+```
+
+### Full-Text Search Migration
+
+Replace MongoDB `$text` searches with FTS5:
+
+```diff
+- // MongoDB text search
+- const results = await collection.find({
+-   $text: { $search: searchText }
+- }).toArray();
+
++ // Drizzle FTS5 search
++ import { createFTS } from '@unchainedshop/store';
++
++ const myFTS = createFTS({
++   ftsTable: 'my_entities_fts',
++   sourceTable: 'my_entities',
++   columns: ['_id', 'name', 'description'],
++ });
++
++ // In schema initialization
++ await myFTS.setup(db);
++
++ // In search function
++ const matchingIds = await myFTS.search(db, searchText);
++ const results = await db.select().from(myTable)
++   .where(inArray(myTable._id, matchingIds));
+```
+
+### Authentication Changes
+
+The authentication system has been refactored:
+
+```diff
+# Token versioning for session revocation
++ User.tokenVersion: number  // Increment to invalidate all sessions
+
+# New mutation
++ Mutation.logoutAllSessions  // Invalidates all user sessions
+
+# OIDC provider support
++ const authHandler = createAuthHandler({
++   oidcProviders: [{
++     name: 'keycloak',
++     issuer: 'https://keycloak.example.com/realms/master',
++     audience: 'your-client-id',
++     rolesPath: ['realm_access', 'roles'],
++     roleMapping: { admin: 'admin', user: 'user' },
++   }],
++   autoCreateOIDCUsers: true,
++ });
+```
+
+### Testing Changes
+
+Update test setup for in-memory SQLite:
+
+```diff
+- import { MongoMemoryServer } from 'mongodb-memory-server';
++ import { createTestDb, initializeDrizzleDb } from '@unchainedshop/store';
+
+- let mongod: MongoMemoryServer;
++ let dbConnection: ReturnType<typeof createTestDb>;
+
+beforeAll(async () => {
+- mongod = await MongoMemoryServer.create();
+- process.env.MONGO_URL = mongod.getUri();
++ dbConnection = createTestDb();
++ await initializeDrizzleDb(dbConnection.db, [
++   initializeUsersSchema,
++   initializeProductsSchema,
++   // ... other schema initializers
++ ]);
+});
+
+afterAll(async () => {
+- await mongod.stop();
++ dbConnection.close();
+});
+```
+
+### Data Migration
+
+Export data from MongoDB and import into SQLite/Turso:
+
+```typescript
+// Example migration script
+import { MongoClient } from 'mongodb';
+import { createDrizzleDb, generateId } from '@unchainedshop/store';
+import { users } from './db/schema.js';
+
+async function migrateUsers() {
+  // Connect to MongoDB
+  const mongoClient = new MongoClient(process.env.OLD_MONGO_URL);
+  await mongoClient.connect();
+  const mongoDb = mongoClient.db();
+
+  // Connect to SQLite/Turso
+  const { db } = createDrizzleDb({
+    url: process.env.DRIZZLE_DB_URL,
+    authToken: process.env.DRIZZLE_DB_TOKEN,
+  });
+
+  // Migrate users
+  const mongoUsers = await mongoDb.collection('users').find({}).toArray();
+  for (const user of mongoUsers) {
+    await db.insert(users).values({
+      _id: user._id.toString(),
+      username: user.username,
+      emails: JSON.stringify(user.emails),
+      services: JSON.stringify(user.services),
+      profile: JSON.stringify(user.profile),
+      roles: JSON.stringify(user.roles),
+      created: user.created?.getTime() || Date.now(),
+      updated: user.updated?.getTime(),
+    });
+  }
+
+  await mongoClient.close();
+}
+```
+
+### Removed Features
+
+The following features are no longer available:
+
+- **GridFS file storage**: Use MinIO or local file storage instead
+- **MongoDB migrations**: Drizzle schemas are idempotent, no migration system needed
+- **DocumentDB compatibility mode**: Not applicable with SQLite/Turso
+- **MongoDB-specific operators**: `$text`, `$regex`, `$in`, `$elemMatch`, etc.
+
+### Common Errors & Solutions
+
+| Error | Solution |
+|-------|----------|
+| `Cannot find module '@unchainedshop/mongodb'` | Package removed - use `@unchainedshop/store` instead |
+| `MONGO_URL is not defined` | Use `DRIZZLE_DB_URL` instead |
+| `collection.findOne is not a function` | Rewrite using Drizzle ORM queries |
+| `$text operator not supported` | Use `createFTS()` for full-text search |
+| `Cannot read property 'db' of undefined` | Pass `drizzleDb` to `startPlatform()` |
+| `SQLITE_ERROR: no such table` | Ensure schema initialization runs before queries |
+| `TOKEN_SECRET too short` | `UNCHAINED_TOKEN_SECRET` must be at least 32 characters |
+
+---
+
 ## v3 → v4
 
 ### Environment Variables

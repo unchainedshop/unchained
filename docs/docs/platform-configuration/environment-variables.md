@@ -7,9 +7,9 @@ This document provides a comprehensive list of all environment variables used by
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `NODE_ENV` | - | Node environment (development, test, production). Affects caching, logging, and other behaviors |
-| `PORT` | - | Base port number used by the application. MongoDB memory server uses PORT+1 |
-| `MONGO_URL` | - | MongoDB connection URL. If not set, uses mongodb-memory-server in development/test |
-| `UNCHAINED_DOCUMENTDB_COMPAT_MODE` | - | Enable AWS DocumentDB compatibility mode (set to any truthy value to enable) |
+| `PORT` | - | Base port number used by the application |
+| `DRIZZLE_DB_URL` | `file:unchained.db` | Database connection URL (see Database Configuration below) |
+| `DRIZZLE_DB_TOKEN` | - | Turso authentication token (required for cloud databases) |
 | `UNCHAINED_API_VERSION` | `packageJson.version` | API version returned in GraphQL context, defaults to package.json version |
 | `UNCHAINED_LANG` | `de` | Default language code |
 | `UNCHAINED_COUNTRY` | `CH` | Default country code |
@@ -17,6 +17,29 @@ This document provides a comprehensive list of all environment variables used by
 | `DEBUG` | - | Debug namespace for detailed logging |
 | `LOG_LEVEL` | `Info` | Log level (Error, Warn, Info, Verbose, Debug) |
 | `UNCHAINED_LOG_FORMAT` | `unchained` | Log format type |
+
+## Database Configuration
+
+Unchained Engine v5+ uses Drizzle ORM with SQLite/Turso as the database backend.
+
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `DRIZZLE_DB_URL` | `file:unchained.db` | Yes | Database connection URL |
+| `DRIZZLE_DB_TOKEN` | - | For Turso | Turso authentication token |
+
+### Connection URL Formats
+
+```bash
+# Local SQLite file (default)
+DRIZZLE_DB_URL=file:unchained.db
+
+# In-memory database (for testing)
+DRIZZLE_DB_URL=file::memory:
+
+# Turso cloud database
+DRIZZLE_DB_URL=libsql://your-db.turso.io
+DRIZZLE_DB_TOKEN=your-auth-token
+```
 
 ## Security & Authentication
 

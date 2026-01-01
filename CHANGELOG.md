@@ -1,3 +1,222 @@
+# Unchained Engine v5.0.0-alpha.0 ("Drizzle")
+
+This release represents a **fundamental architectural shift** from MongoDB to Drizzle ORM with SQLite/Turso support. This is the largest change in Unchained Engine's history, enabling edge deployments, simplified infrastructure, and improved type safety.
+
+## Breaking Changes - Database Migration
+
+**IMPORTANT**: This release requires a complete database migration. MongoDB is no longer supported. You must migrate your data to SQLite or Turso before upgrading.
+
+### Database Layer
+
+- **BREAKING**: `@unchainedshop/mongodb` package removed, replaced with `@unchainedshop/store`
+- **BREAKING**: MongoDB is no longer supported. Use SQLite locally or Turso for cloud deployments
+- **BREAKING**: All MongoDB-specific query operators (`$text`, `$regex`, `$in`, etc.) are replaced with Drizzle equivalents
+- **BREAKING**: GridFS file storage plugin removed (use MinIO or local storage instead)
+- **BREAKING**: MongoDB migrations system removed (Drizzle schemas are idempotent)
+- **BREAKING**: DocumentDB compatibility mode removed
+
+### Environment Variables
+
+```diff
+# Removed
+- MONGO_URL
+- MONGO_REPLICASET_URL
+- UNCHAINED_DOCUMENTDB_COMPAT_MODE
+
+# Added
++ DRIZZLE_DB_URL=file:unchained.db     # Local SQLite
++ DRIZZLE_DB_URL=libsql://db.turso.io  # Turso cloud
++ DRIZZLE_DB_TOKEN=<auth-token>        # Turso auth (optional)
+```
+
+### Boot File Changes
+
+```diff
+- import { startPlatform } from '@unchainedshop/platform';
++ import { startPlatform } from '@unchainedshop/platform';
++ import { createDrizzleDb } from '@unchainedshop/store';
+
++ // Create database connection
++ const { db } = createDrizzleDb({
++   url: process.env.DRIZZLE_DB_URL || 'file:unchained.db',
++   authToken: process.env.DRIZZLE_DB_TOKEN,
++ });
+
+const platform = await startPlatform({
+  modules: defaultModules,
++ drizzleDb: db,
+});
+```
+
+### Module Pattern Changes
+
+Each core module now uses explicit Drizzle schemas:
+
+```typescript
+// Old MongoDB pattern
+import { mongodb } from '@unchainedshop/mongodb';
+const collection = await mongodb.collection('countries');
+const result = await collection.findOne({ _id: id });
+
+// New Drizzle pattern
+import { eq, type DrizzleDb } from '@unchainedshop/store';
+import { countries, rowToCountry } from '../db/index.js';
+
+const [row] = await db.select().from(countries).where(eq(countries._id, id)).limit(1);
+const result = row ? rowToCountry(row) : null;
+```
+
+### Authentication Refactoring
+
+- **NEW**: Cookie-based session management (replacing express-session)
+- **NEW**: JWT token versioning with `tokenVersion` field for instant session revocation
+- **NEW**: OIDC provider support with role mapping
+- **NEW**: `Mutation.logoutAllSessions` - Invalidates all user sessions
+- **NEW**: Backchannel logout handler for Express OIDC flows
+- **REMOVED**: `express-session` dependency
+- **REMOVED**: `passport` dependency (replaced with custom auth)
+- **REMOVED**: `@fastify/session` dependency
+
+### Dependencies
+
+**Removed:**
+- `mongodb` (>= 7 < 8)
+- `mongodb-memory-server` (>= 11 < 12)
+- `@mongodb-js/zstd` (>= 7 < 8)
+- `express-session`
+- `passport`, `passport-strategy`
+- `bcryptjs`
+
+**Added:**
+- `drizzle-orm` (^0.45.1)
+- `drizzle-kit` (^0.31.8)
+- `@libsql/client` (>=0.14.0)
+- `cookie-parser`
+
+### New Store Package
+
+The new `@unchainedshop/store` package provides:
+
+```typescript
+import {
+  // Database connection
+  createDrizzleDb,
+  createTestDb,
+  initializeDrizzleDb,
+
+  // ID generation
+  generateId,
+
+  // Query helpers
+  buildSelectColumns,
+  createFTS,
+
+  // Drizzle operators (re-exported)
+  eq, and, or, ne, lt, gt, lte, gte,
+  isNull, isNotNull, inArray, notInArray,
+  asc, desc, sql,
+
+  // Types
+  type DrizzleDb,
+  type DrizzleDbConfig,
+  type DrizzleDbConnection,
+  type FTSConfig,
+} from '@unchainedshop/store';
+```
+
+### Schema Definition Pattern
+
+Each module now defines explicit Drizzle schemas:
+
+```typescript
+// packages/core-countries/src/db/schema.ts
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+
+export const countries = sqliteTable('countries', {
+  _id: text('_id').primaryKey(),
+  isoCode: text('isoCode').notNull(),
+  isActive: integer('isActive', { mode: 'boolean' }).default(true),
+  defaultCurrencyCode: text('defaultCurrencyCode'),
+  created: integer('created', { mode: 'timestamp_ms' }).notNull(),
+  updated: integer('updated', { mode: 'timestamp_ms' }),
+  deleted: integer('deleted', { mode: 'timestamp_ms' }),
+}, (table) => [
+  index('idx_countries_isoCode').on(table.isoCode),
+]);
+```
+
+### Full-Text Search
+
+FTS5 virtual tables replace MongoDB `$text` indexes:
+
+```typescript
+import { createFTS } from '@unchainedshop/store';
+
+const productsFTS = createFTS({
+  ftsTable: 'products_fts',
+  sourceTable: 'products',
+  columns: ['_id', 'sku', 'title', 'description'],
+});
+
+// Setup (in schema initialization)
+await productsFTS.setup(db);
+
+// Search (returns matching IDs ordered by BM25 relevance)
+const ids = await productsFTS.search(db, 'search term');
+```
+
+### Testing Changes
+
+- Tests now use in-memory SQLite (`file::memory:`)
+- `createTestDb()` helper for isolated test databases
+- Parallel test suite execution supported
+- No MongoDB Memory Server dependency
+
+```typescript
+import { createTestDb, initializeDrizzleDb } from '@unchainedshop/store';
+
+const { db, close } = createTestDb();
+await initializeDrizzleDb(db, [initializeUsersSchema, ...]);
+
+// Run tests...
+
+close();
+```
+
+## Major
+
+- Complete database layer rewrite from MongoDB to Drizzle ORM
+- SQLite/Turso database support for edge deployments
+- Cookie-based authentication with JWT token versioning
+- OIDC provider support with role mapping
+- FTS5 full-text search implementation
+- Simplified testing with in-memory SQLite
+
+## Minor
+
+- Improved type safety across all modules with explicit Drizzle schemas
+- Better performance with optimized Drizzle queries
+- Simplified testing infrastructure without MongoDB Memory Server
+- New `createFTS()` helper for full-text search setup
+- New `buildSelectColumns()` helper for partial field selection
+
+## Patch
+
+- Fixed various type inconsistencies in module interfaces
+- Improved error messages for database operations
+- Better handling of null/undefined in row transformations
+
+## Migration Guide
+
+See [MIGRATION.md](./MIGRATION.md) for detailed upgrade instructions from v4 to v5, including:
+- Database migration process
+- Environment variable changes
+- Boot file updates
+- Testing setup changes
+- Common errors and solutions
+
+---
+
 # Unchained Engine v4.5
 
 ## Minor

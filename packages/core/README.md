@@ -15,10 +15,16 @@ npm install @unchainedshop/core
 
 ```typescript
 import { initCore, type UnchainedCore } from '@unchainedshop/core';
+import { createDrizzleDb } from '@unchainedshop/store';
+
+// Create database connection
+const { db: drizzleDb } = createDrizzleDb({
+  url: process.env.DRIZZLE_DB_URL || 'file:unchained.db',
+  authToken: process.env.DRIZZLE_DB_TOKEN,
+});
 
 const unchainedCore = await initCore({
-  db,
-  migrationRepository,
+  drizzleDb,
   options: {
     // Module-specific options
   },
@@ -590,9 +596,16 @@ EnrollmentDirector.registerAdapter(MyEnrollmentAdapter);
 ## Configuration
 
 ```typescript
+import { createDrizzleDb } from '@unchainedshop/store';
+
+// Create database connection
+const { db: drizzleDb } = createDrizzleDb({
+  url: process.env.DRIZZLE_DB_URL || 'file:unchained.db',
+  authToken: process.env.DRIZZLE_DB_TOKEN,
+});
+
 const core = await initCore({
-  db,
-  migrationRepository,
+  drizzleDb,
   modules: {
     // Custom modules
   },

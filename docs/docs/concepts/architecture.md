@@ -24,7 +24,7 @@ flowchart TD
     B["Platform<br/><i>@unchainedshop/platform</i>"]
     C["Service Gateway<br/><i>Checkout, Pricing, Messaging</i>"]
     D["Core Modules<br/><i>@unchainedshop/core-*</i>"]
-    E["Infrastructure<br/><i>MongoDB, Events, Logger</i>"]
+    E["Infrastructure<br/><i>Store (Drizzle), Events, Logger</i>"]
 
     A --> B --> C --> D --> E
 ```
@@ -119,7 +119,7 @@ Foundation utilities used across all layers:
 
 | Package | Description |
 |---------|-------------|
-| `@unchainedshop/mongodb` | Database lifecycle, queries, migrations |
+| `@unchainedshop/store` | Drizzle ORM storage layer for SQLite/Turso |
 | `@unchainedshop/events` | Event emitter with pluggable backends |
 | `@unchainedshop/logger` | High-performance logging |
 | `@unchainedshop/utils` | Common utilities and base classes |
@@ -128,7 +128,7 @@ Foundation utilities used across all layers:
 
 ## API Design Principles
 
-1. **Stateless**: All data stored in MongoDB, no server-side sessions
+1. **Stateless**: All data stored in SQLite/Turso database, cookie-based sessions
 2. **Guest Users**: Anonymous users use `loginAsGuest` mutation for cart operations
 3. **Server-side Logic**: All business logic remains server-side for omni-channel support
 

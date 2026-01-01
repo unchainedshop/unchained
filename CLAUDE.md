@@ -50,7 +50,7 @@ core         → Business logic coordination, integrates all core-* modules
     ↓
 core-*       → Domain-specific modules (users, products, orders, payments, delivery, etc.)
     ↓
-infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-upload)
+infrastructure → Base utilities (store, events, logger, utils, roles, file-upload)
 ```
 
 ### Key Packages
@@ -59,7 +59,7 @@ infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-u
 - **@unchainedshop/core**: Orchestrates all core-* modules and provides cross-module services
 - **@unchainedshop/plugins**: Plugin system with Directors and Adapters for payment, delivery, pricing, and warehousing
 - **@unchainedshop/ticketing**: Event ticketing functionality
-- **Infrastructure packages**: mongodb, events, logger, utils, roles, file-upload - foundational utilities used across all layers
+- **Infrastructure packages**: store, events, logger, utils, roles, file-upload - foundational utilities used across all layers
 
 ### Plugin Architecture
 The plugin system uses a Director/Adapter pattern:
@@ -70,7 +70,9 @@ The plugin system uses a Director/Adapter pattern:
 
 ### Core Module Pattern
 Each core-* module follows a consistent pattern:
-- **Database collections and schemas**: MongoDB collections with typed interfaces
+- **Database schemas**: Drizzle ORM schemas in `src/db/schema.ts` with typed interfaces
+- **Schema initialization**: Idempotent table creation in `src/db/index.ts`
+- **Full-text search**: FTS5 virtual tables in `src/db/fts.ts` (where applicable)
 - **Business logic services**: Module-specific operations and queries
 - **Configuration options**: Customizable settings passed during module initialization
 - **TypeScript compilation**: Each package builds independently with project references
@@ -79,9 +81,9 @@ Example modules: core-orders, core-products, core-users, core-payment, core-deli
 
 ### Architectural Constraints
 **IMPORTANT**: Respect layer boundaries when working with packages:
-- **DO NOT import `@unchainedshop/mongodb` outside of core-* and infrastructure packages**
-- The API layer (`@unchainedshop/api`) should only use types from core packages, never direct MongoDB imports
-- Database queries and MongoDB-specific logic belong exclusively in core-* modules
+- **DO NOT import `@unchainedshop/store` outside of core-* and infrastructure packages**
+- The API layer (`@unchainedshop/api`) should only use types from core packages, never direct Drizzle imports
+- Database queries and Drizzle-specific logic belong exclusively in core-* modules
 - Higher-level packages (api, platform) should use the module APIs exposed by core packages
 
 ### TypeScript Configuration
@@ -109,5 +111,7 @@ The API package supports multiple server frameworks:
 - Default values in `.env.defaults`
 - Integration tests use `.env.tests` with `.env` as fallback
 - Node.js 22+ required (see .nvmrc)
-- MongoDB required (or use MongoDB Memory Server for testing)
+- SQLite (default) or Turso for cloud deployments
+- Use `DRIZZLE_DB_URL` for database connection (default: `file:unchained.db`)
+
  No newline at end of file

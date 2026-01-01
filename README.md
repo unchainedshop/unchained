@@ -58,7 +58,7 @@ Web3-ready with NFT and blockchain support:
 ### Prerequisites
 
 - Node.js >=22 (see [.nvmrc](.nvmrc))
-- MongoDB (or use MongoDB Memory Server for development)
+- SQLite (included) or [Turso](https://turso.tech) for cloud deployments
 
 ### Create a New Project
 
@@ -91,7 +91,7 @@ core         → Business logic coordination, integrates all core-* modules
     ↓
 core-*       → Domain-specific modules (users, products, orders, etc.)
     ↓
-infrastructure → Base utilities (mongodb, events, logger, utils, roles)
+infrastructure → Base utilities (store, events, logger, utils, roles)
 ```
 
 ## Packages
@@ -134,7 +134,7 @@ Foundational utilities used across all layers:
 
 | Package | Description |
 |---------|-------------|
-| [@unchainedshop/mongodb](packages/mongodb/README.md) | MongoDB database abstraction with utilities and DocumentDB compatibility |
+| [@unchainedshop/store](packages/store/README.md) | Drizzle ORM storage layer for SQLite/Turso databases |
 | [@unchainedshop/events](packages/events/README.md) | Event emitter abstraction with pluggable adapters (Redis, Kafka, etc.) |
 | [@unchainedshop/logger](packages/logger/README.md) | High-performance logging with JSON/human-readable formats |
 | [@unchainedshop/utils](packages/utils/README.md) | Common utilities, locale helpers, and Director/Adapter base classes |
@@ -200,7 +200,7 @@ The [@unchainedshop/plugins](packages/plugins/README.md) package includes:
 - Order-level and product-level discounts, Price rounding
 
 ### File Storage
-- MongoDB GridFS, MinIO/S3-compatible storage
+- Local file storage, MinIO/S3-compatible storage
 
 ### Workers
 - Email (Nodemailer), SMS (Twilio, Bulkgate), Push notifications
@@ -238,6 +238,7 @@ unchained/
 │   ├── api/            # GraphQL API
 │   ├── core/           # Business logic orchestration
 │   ├── core-*/         # Domain modules
+│   ├── store/          # Drizzle ORM database layer
 │   ├── plugins/        # Official plugins
 │   ├── ticketing/      # Ticketing extension
 │   └── ...             # Infrastructure packages
