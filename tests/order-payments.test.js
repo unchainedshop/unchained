@@ -1,14 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { PrePaidPaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePayment, GenericPayment } from './seeds/orders.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 test.describe('Order: Payments', () => {
   let graphqlFetchAsAdmin;
@@ -16,7 +14,7 @@ test.describe('Order: Payments', () => {
   let graphqlFetchAsAnonymousUser;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();

@@ -1,13 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { SimpleProduct, SimpleProductReview } from './seeds/products.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 let graphqlFetch;
 let graphqlFetchAsNormalUser;
@@ -15,7 +13,7 @@ let graphqlFetchAsAnonymusUser;
 
 test.describe('Product: Reviews', async () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymusUser = createAnonymousGraphqlFetch();

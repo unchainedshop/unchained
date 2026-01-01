@@ -293,6 +293,8 @@ export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) =>
       username: string,
       credentials: AuthenticationJSON & { requestId: string },
     ): Promise<{ userHandle: string; counter: number } | null> => {
+      if (!credentials?.requestId) return null;
+
       const [request] = await db
         .select()
         .from(webauthnCredentialsRequests)

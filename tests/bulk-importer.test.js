@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { intervalUntilTimeout } from './wait.js';
 import { filters } from '@unchainedshop/core-filters';
@@ -8,11 +8,14 @@ import { eq, sql } from '@unchainedshop/store';
 import assert from 'node:assert';
 import test from 'node:test';
 
+let createLoggedInGraphqlFetch;
+
 test.describe('Bulk Importer', () => {
   let graphqlFetch;
+  let db;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, db } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
@@ -247,10 +250,8 @@ test.describe('Bulk Importer', () => {
       });
       assert.ok(addWork);
 
-      const drizzleDb = getDrizzleDb();
-
       const result = await intervalUntilTimeout(async () => {
-        const [product] = await drizzleDb
+        const [product] = await db
           .select()
           .from(products)
           .where(sql`EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = 'awesome2')`)
@@ -343,14 +344,8 @@ test.describe('Bulk Importer', () => {
 
       assert.ok(addWork);
 
-      const drizzleDb = getDrizzleDb();
-
       const result = await intervalUntilTimeout(async () => {
-        const [filter] = await drizzleDb
-          .select()
-          .from(filters)
-          .where(eq(filters._id, 'Filter A'))
-          .limit(1);
+        const [filter] = await db.select().from(filters).where(eq(filters._id, 'Filter A')).limit(1);
         return filter?.isActive === false;
       }, 3000);
 
@@ -495,10 +490,8 @@ test.describe('Bulk Importer', () => {
 
       assert.ok(addWork);
 
-      const drizzleDb = getDrizzleDb();
-
       const assortmentHasBaseTag = await intervalUntilTimeout(async () => {
-        const [assortment] = await drizzleDb
+        const [assortment] = await db
           .select()
           .from(assortments)
           .where(eq(assortments._id, 'Assortment A'))
@@ -507,7 +500,7 @@ test.describe('Bulk Importer', () => {
       }, 3000);
 
       const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(async () => {
-        const [media] = await drizzleDb
+        const [media] = await db
           .select()
           .from(assortmentMedia)
           .where(eq(assortmentMedia._id, 'assortment-a-meteor'))
@@ -518,7 +511,7 @@ test.describe('Bulk Importer', () => {
       assert.strictEqual(assortmentHasBaseTag, true);
 
       const productLinkHasBeenReplaced = await intervalUntilTimeout(async () => {
-        const [result] = await drizzleDb
+        const [result] = await db
           .select({ count: sql`count(*)` })
           .from(assortmentProducts)
           .where(eq(assortmentProducts.assortmentId, 'Assortment A'));

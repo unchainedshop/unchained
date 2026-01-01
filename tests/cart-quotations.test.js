@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { SimpleOrder } from './seeds/orders.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { ProposedQuotation } from './seeds/quotations.js';
@@ -6,11 +6,13 @@ import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
+let createLoggedInGraphqlFetch;
+
 let graphqlFetch;
 
 test.describe('Cart: Quotations', () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
   });
 

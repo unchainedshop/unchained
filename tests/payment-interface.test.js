@@ -1,17 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 test.describe('Payment: Interfaces', () => {
   // Global setup
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
   });
 
   test.after(async () => {

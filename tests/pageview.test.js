@@ -1,26 +1,21 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
 import { and, eq, desc, sql } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let drizzleDb;
+let db;
 
 test.describe('Mutation.pageView', () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch, db } = await setupDatabase());
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
-    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -44,7 +39,7 @@ test.describe('Mutation.pageView', () => {
       assert.ok(data);
       assert.strictEqual(data.pageView, '/products/test-product');
 
-      const [event] = await drizzleDb
+      const [event] = await db
         .select()
         .from(events)
         .where(
@@ -79,7 +74,7 @@ test.describe('Mutation.pageView', () => {
       assert.ok(data);
       assert.strictEqual(data.pageView, '/checkout');
 
-      const [event] = await drizzleDb
+      const [event] = await db
         .select()
         .from(events)
         .where(
@@ -114,7 +109,7 @@ test.describe('Mutation.pageView', () => {
 
       assert.ok(data);
       assert.strictEqual(data.pageView, '/products/anonymous-view');
-      const [event] = await drizzleDb
+      const [event] = await db
         .select()
         .from(events)
         .where(
@@ -152,7 +147,7 @@ test.describe('Mutation.pageView', () => {
         assert.ok(data);
         assert.strictEqual(data.pageView, path);
 
-        const [event] = await drizzleDb
+        const [event] = await db
           .select()
           .from(events)
           .where(

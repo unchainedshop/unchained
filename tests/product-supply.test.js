@@ -1,25 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
 import { products } from '@unchainedshop/core-products';
 import { eq } from '@unchainedshop/store';
 
 let graphqlFetch;
-let drizzleDb;
+let createAnonymousGraphqlFetch;
+let db;
 
 test.describe('Product: Supply', async () => {
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    const result = await setupDatabase();
+    createAnonymousGraphqlFetch = result.createAnonymousGraphqlFetch;
+    db = result.db;
+    graphqlFetch = result.createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   test.after(async () => {
@@ -74,7 +70,7 @@ test.describe('Product: Supply', async () => {
       });
 
       assert.strictEqual(updateProductSupply._id, SimpleProduct._id);
-      const [updatedProduct] = await drizzleDb
+      const [updatedProduct] = await db
         .select()
         .from(products)
         .where(eq(products._id, SimpleProduct._id))

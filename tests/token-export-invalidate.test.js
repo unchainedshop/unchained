@@ -1,12 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   TestToken1,
@@ -21,12 +15,16 @@ import { eq } from 'drizzle-orm';
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let drizzleDb;
+let db;
 
 test.describe('Token Export and Invalidation', () => {
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const {
+      createLoggedInGraphqlFetch,
+      createAnonymousGraphqlFetch,
+      db: drizzleDb,
+    } = await setupDatabase();
+    db = drizzleDb;
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -265,9 +263,6 @@ test.describe('Token Export and Invalidation', () => {
 
   test.describe('Mutation.invalidateToken for admin user', () => {
     test('should return error when trying to invalidate an already invalidated token', async () => {
-      // When a token is already invalidated (has invalidatedDate set), the invalidateToken
-      // mutation returns null because the MongoDB update filter doesn't match.
-      // This causes a GraphQL error because the mutation return type is non-nullable.
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation InvalidateToken($tokenId: ID!) {
@@ -282,9 +277,7 @@ test.describe('Token Export and Invalidation', () => {
       });
 
       assert.ok(errors);
-      // The mutation returns null for an already-invalidated token, causing an INTERNAL_SERVER_ERROR
-      // because the return type is non-nullable
-      assert.strictEqual(errors[0]?.extensions?.code, 'INTERNAL_SERVER_ERROR');
+      assert.strictEqual(errors[0]?.extensions?.code, 'TokenWrongStatusError');
     });
 
     test('should return error when token not found', async () => {
@@ -308,7 +301,7 @@ test.describe('Token Export and Invalidation', () => {
     test('should return ProductNotFoundError when token has invalid product', async () => {
       // Insert the token with invalid product directly (not seeded to avoid breaking other token queries)
       // Token surrogates are now in Drizzle/SQLite
-      await drizzleDb.insert(tokenSurrogates).values({
+      await db.insert(tokenSurrogates).values({
         _id: TokenWithInvalidProduct._id,
         userId: TokenWithInvalidProduct.userId,
         walletAddress: TokenWithInvalidProduct.walletAddress,
@@ -340,9 +333,7 @@ test.describe('Token Export and Invalidation', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
 
       // Clean up - remove the token with invalid product to avoid affecting other tests
-      await drizzleDb
-        .delete(tokenSurrogates)
-        .where(eq(tokenSurrogates._id, TokenWithInvalidProduct._id));
+      await db.delete(tokenSurrogates).where(eq(tokenSurrogates._id, TokenWithInvalidProduct._id));
     });
 
     test('should successfully invalidate a token when all invalidation criteria are met (needs proper virtual provider setup)', async () => {

@@ -1,12 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createAnonymousGraphqlFetch,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
 import { users } from '@unchainedshop/core-users';
@@ -16,23 +10,28 @@ let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsAdminUser;
 let resetPasswordToken;
 let verifyEmailToken;
+let db;
 
 test.describe('User Token Validation', () => {
   test.before(async () => {
-    await setupDatabase();
+    const {
+      createLoggedInGraphqlFetch,
+      createAnonymousGraphqlFetch,
+      db: drizzleDb,
+    } = await setupDatabase();
+    db = drizzleDb;
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    const drizzleDb = getDrizzleDb();
 
     // Create test users in Drizzle
-    const [existingResetUser] = await drizzleDb
+    const [existingResetUser] = await db
       .select()
       .from(users)
       .where(eq(users._id, 'user-reset-password'))
       .limit(1);
 
     if (!existingResetUser) {
-      await drizzleDb.insert(users).values({
+      await db.insert(users).values({
         _id: 'user-reset-password',
         username: `resetuser${Math.random()}`,
         emails: [
@@ -47,19 +46,19 @@ test.describe('User Token Validation', () => {
         created: new Date(),
       });
       // Insert into FTS
-      await drizzleDb.run(
+      await db.run(
         sql`INSERT INTO users_fts(_id, username) VALUES ('user-reset-password', ${`resetuser${Math.random()}`})`,
       );
     }
 
-    const [existingVerifyUser] = await drizzleDb
+    const [existingVerifyUser] = await db
       .select()
       .from(users)
       .where(eq(users._id, 'user-verify-email'))
       .limit(1);
 
     if (!existingVerifyUser) {
-      await drizzleDb.insert(users).values({
+      await db.insert(users).values({
         _id: 'user-verify-email',
         username: `verifyuser${Math.random()}`,
         emails: [
@@ -74,7 +73,7 @@ test.describe('User Token Validation', () => {
         created: new Date(),
       });
       // Insert into FTS
-      await drizzleDb.run(
+      await db.run(
         sql`INSERT INTO users_fts(_id, username) VALUES ('user-verify-email', ${`verifyuser${Math.random()}`})`,
       );
     }
@@ -89,7 +88,7 @@ test.describe('User Token Validation', () => {
       `,
     });
 
-    const [resetEvent] = await drizzleDb
+    const [resetEvent] = await db
       .select()
       .from(events)
       .where(
@@ -114,7 +113,7 @@ test.describe('User Token Validation', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const [verifyEvent] = await drizzleDb
+    const [verifyEvent] = await db
       .select()
       .from(events)
       .where(

@@ -1,12 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  createLoggedInGraphqlFetch,
-  disconnect,
-  setupDatabase,
-  getServerBaseUrl,
-  getDrizzleDb,
-} from './helpers.js';
+import { disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SimpleProduct } from './seeds/products.js';
@@ -24,16 +18,18 @@ import { orders, orderPayments, orderPositions } from '@unchainedshop/core-order
 import { eq } from 'drizzle-orm';
 
 test.describe('Plugins: Cryptopay', () => {
-  let drizzleDb;
+  let db;
+  let port;
   let graphqlFetch;
 
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const { createLoggedInGraphqlFetch, db: drizzleDb, port: serverPort } = await setupDatabase();
+    db = drizzleDb;
+    port = serverPort;
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Insert products into Drizzle (products are now in SQLite)
-    await drizzleDb.insert(products).values({
+    await db.insert(products).values({
       _id: 'single-item-product-id',
       type: SimpleProduct.type,
       status: SimpleProduct.status,
@@ -48,12 +44,12 @@ test.describe('Plugins: Cryptopay', () => {
       published: SimpleProduct.published,
     });
 
-    await drizzleDb.insert(currencies).values({ ...BTCCurrency, created: new Date() });
-    await drizzleDb.insert(currencies).values({ ...ETHCurrency, created: new Date() });
-    await drizzleDb.insert(currencies).values({ ...SHIBCurrency, created: new Date() });
+    await db.insert(currencies).values({ ...BTCCurrency, created: new Date() });
+    await db.insert(currencies).values({ ...ETHCurrency, created: new Date() });
+    await db.insert(currencies).values({ ...SHIBCurrency, created: new Date() });
 
     // Insert product rates into Drizzle (product_rates are now in SQLite)
-    await drizzleDb.insert(productRates).values({
+    await db.insert(productRates).values({
       _id: 'shib-rate',
       baseCurrency: 'CHF',
       quoteCurrency: SHIBCurrency.isoCode,
@@ -76,7 +72,7 @@ test.describe('Plugins: Cryptopay', () => {
     };
 
     // Insert BTC product into Drizzle
-    await drizzleDb.insert(products).values({
+    await db.insert(products).values({
       _id: 'single-btc-item-product-id',
       type: SimpleProduct.type,
       status: SimpleProduct.status,
@@ -92,7 +88,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     // Insert payment provider into Drizzle (payment providers are now in SQLite)
-    await drizzleDb.insert(paymentProviders).values({
+    await db.insert(paymentProviders).values({
       _id: 'cryptopay-payment-provider',
       adapterKey: 'shop.unchained.payment.cryptopay',
       type: 'GENERIC',
@@ -101,14 +97,14 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     // Add a demo order ready to checkout (orders now use Drizzle)
-    await drizzleDb.insert(orderPayments).values({
+    await db.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'cryptopay-payment',
       paymentProviderId: 'cryptopay-payment-provider',
       orderId: 'cryptopay-order',
     });
 
-    await drizzleDb.insert(orderPositions).values({
+    await db.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'cryptopay-order-position',
       orderId: 'cryptopay-order',
@@ -127,7 +123,7 @@ test.describe('Plugins: Cryptopay', () => {
       ],
     });
 
-    await drizzleDb.insert(orders).values({
+    await db.insert(orders).values({
       ...SimpleOrder,
       _id: 'cryptopay-order',
       orderNumber: 'cryptopay',
@@ -161,7 +157,7 @@ test.describe('Plugins: Cryptopay', () => {
       orderId: 'cryptopay-order2',
     });
 
-    await drizzleDb.insert(orderPositions).values({
+    await db.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'cryptopay-order-position2',
       orderId: 'cryptopay-order2',
@@ -169,7 +165,7 @@ test.describe('Plugins: Cryptopay', () => {
       productId: 'single-item-product-id',
     });
 
-    await drizzleDb.insert(orders).values({
+    await db.insert(orders).values({
       ...SimpleOrder,
       _id: 'cryptopay-order2',
       orderNumber: 'cryptopay2',
@@ -235,7 +231,7 @@ test.describe('Plugins: Cryptopay', () => {
 
   test('Payments Webhook (Cryptopay)', async () => {
     // Setup addresses for tests
-    await drizzleDb
+    await db
       .update(orderPayments)
       .set({
         context: [
@@ -244,7 +240,7 @@ test.describe('Plugins: Cryptopay', () => {
         ],
       })
       .where(eq(orderPayments._id, 'cryptopay-payment'));
-    await drizzleDb
+    await db
       .update(orderPayments)
       .set({
         context: [
@@ -255,7 +251,7 @@ test.describe('Plugins: Cryptopay', () => {
       .where(eq(orderPayments._id, 'cryptopay-payment2'));
 
     await test('Invalid secret', async () => {
-      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
+      const result = await fetch(`http://localhost:${port}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -273,7 +269,7 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.partialDeepStrictEqual(await result.json(), { success: false });
-      const [orderPayment] = await drizzleDb
+      const [orderPayment] = await db
         .select()
         .from(orderPayments)
         .where(eq(orderPayments._id, 'cryptopay-payment'));
@@ -281,7 +277,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test('Pay too little for product with crypto prices', async () => {
-      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
+      const result = await fetch(`http://localhost:${port}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -299,7 +295,7 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true }); // the amount is too low but the webhook is still successful
-      const [orderPayment] = await drizzleDb
+      const [orderPayment] = await db
         .select()
         .from(orderPayments)
         .where(eq(orderPayments._id, 'cryptopay-payment'));
@@ -307,7 +303,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test('Pay product with crypto prices', async () => {
-      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
+      const result = await fetch(`http://localhost:${port}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -325,7 +321,7 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true });
-      const [orderPayment] = await drizzleDb
+      const [orderPayment] = await db
         .select()
         .from(orderPayments)
         .where(eq(orderPayments._id, 'cryptopay-payment'));
@@ -333,7 +329,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test.skip('Pay too little for converted prices', async () => {
-      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
+      const result = await fetch(`http://localhost:${port}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -351,7 +347,7 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true });
-      const [orderPayment] = await drizzleDb
+      const [orderPayment] = await db
         .select()
         .from(orderPayments)
         .where(eq(orderPayments._id, 'cryptopay-payment2'));
@@ -359,7 +355,7 @@ test.describe('Plugins: Cryptopay', () => {
     });
 
     await test.skip('Pay product with fiat prices in SHIB', async () => {
-      const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
+      const result = await fetch(`http://localhost:${port}/payment/cryptopay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -377,7 +373,7 @@ test.describe('Plugins: Cryptopay', () => {
         }),
       });
       assert.deepStrictEqual(await result.json(), { success: true });
-      const [orderPayment] = await drizzleDb
+      const [orderPayment] = await db
         .select()
         .from(orderPayments)
         .where(eq(orderPayments._id, 'cryptopay-payment2'));

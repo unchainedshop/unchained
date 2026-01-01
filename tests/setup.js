@@ -14,7 +14,11 @@ let platform = null;
 let drizzleConnection = null;
 
 export async function initializeTestPlatform() {
-  if (platform) return platform;
+  if (platform) {
+    // Already initialized - return existing context
+    const { port } = fastify.server.address();
+    return { db: drizzleConnection.db, port };
+  }
 
   // Set a placeholder ROOT_URL (required by startPlatform, updated after we know the port)
   process.env.ROOT_URL = 'http://localhost:0';
@@ -42,16 +46,16 @@ export async function initializeTestPlatform() {
   connect(fastify, platform, { initPluginMiddlewares, allowRemoteToLocalhostSecureCookies: true });
 
   // Let Fastify choose an available port automatically (port 0)
-  await fastify.listen();
+  await fastify.listen({ port: 0, host: 'localhost' });
 
   // Update ROOT_URL with the actual port for file upload URLs
-  const { address, port } = fastify.server.address();
-  process.env.ROOT_URL = `http://${address}:${port}`;
+  const { port } = fastify.server.address();
+  process.env.ROOT_URL = `http://localhost:${port}`;
 
   // Access tokens are pre-configured in test seeds (tests/seeds/users.js)
   // No need to call setAccessToken - users are seeded with SHA-256 hashed tokens
 
-  return platform;
+  return { db: drizzleConnection.db, port };
 }
 
 export async function shutdownTestPlatform() {

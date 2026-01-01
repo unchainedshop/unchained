@@ -1,4 +1,4 @@
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import { disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -19,10 +19,13 @@ test.skip('Plugins: Postfinance Checkout', () => {
   if (secretsSet) {
     let db;
     let graphqlFetch;
+    let serverPort;
 
     test.before(async () => {
-      [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      const context = await setupDatabase();
+      db = context.db;
+      graphqlFetch = context.createLoggedInGraphqlFetch(USER_TOKEN);
+      serverPort = context.port;
 
       // Add a postfinance checkout provider
       await db.collection('payment-providers').findOrInsertOne({
@@ -244,7 +247,7 @@ test.skip('Plugins: Postfinance Checkout', () => {
         assert.ok(new RegExp(`^${escapeRegExp(url)}?`).test(location));
 
         // Simulate WebHook call
-        const result = await fetch(`${getServerBaseUrl()}/payment/postfinance-checkout`, {
+        const result = await fetch(`${`http://localhost:${serverPort}`}/payment/postfinance-checkout`, {
           method: 'POST',
           duplex: 'half',
           headers: {

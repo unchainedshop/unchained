@@ -1,13 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct, ProxyProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 test.describe('Product: Assignments', async () => {
   let graphqlFetchAsAdmin;
@@ -15,7 +13,7 @@ test.describe('Product: Assignments', async () => {
   let graphqlAnonymousFetch;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();

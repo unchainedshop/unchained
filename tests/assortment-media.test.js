@@ -1,10 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  putFile,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, putFile, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments.js';
 import fs from 'node:fs';
@@ -15,6 +9,9 @@ import test from 'node:test';
 
 import { fileURLToPath } from 'node:url';
 
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
+
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const assortmentMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
@@ -23,7 +20,7 @@ const assortmentMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets
 test.describe('AssortmentMedia', () => {
   let graphqlFetch;
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 

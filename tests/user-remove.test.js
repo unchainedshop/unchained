@@ -1,13 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  createJWTToken,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, createJWTToken, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
@@ -15,7 +12,7 @@ let graphqlFetchAsAnonymous;
 
 test.describe('User Removal', () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();

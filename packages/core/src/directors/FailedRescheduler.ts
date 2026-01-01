@@ -37,7 +37,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
             ? new Date(now.getTime() + workDelayMs * 2)
             : new Date(now.setSeconds(now.getSeconds() + 5));
 
-        defaultLogger.error(
+        defaultLogger.warn(
           `${FailedRescheduler.key} -> Reschedule failed work ${work._id} ${
             work.type
           } for ${scheduled.toISOString()} (in ${Math.round(workDelayMs / 1000)}). Remaining retries: ${

@@ -1,10 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  createAnonymousGraphqlFetch,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCountry, GermanyCountry, FranceCountry, InactiveCountry } from './seeds/locale-data.js';
 import { countries } from '@unchainedshop/core-countries';
@@ -13,18 +7,20 @@ import { eq, sql, isNull, and } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
+
 test.describe('Country', () => {
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
-  let drizzleDb;
+  let db;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch, db } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -631,12 +627,12 @@ test.describe('Country', () => {
         flagEmoji: '🇳🇱',
         name: 'Netherlands',
       });
-      await drizzleDb.delete(countries).where(eq(countries.isoCode, 'NL'));
+      await db.delete(countries).where(eq(countries.isoCode, 'NL'));
     });
 
     test('update a country', async () => {
-      const [country] = await drizzleDb.select().from(countries).limit(1);
-      const [currency] = await drizzleDb.select().from(currencies).limit(1);
+      const [country] = await db.select().from(countries).limit(1);
+      const [currency] = await db.select().from(currencies).limit(1);
 
       const { data: { updateCountry } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -670,7 +666,7 @@ test.describe('Country', () => {
     });
 
     test('return error when passed invalid countryId', async () => {
-      const [currency] = await drizzleDb.select().from(currencies).limit(1);
+      const [currency] = await db.select().from(currencies).limit(1);
 
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -693,7 +689,7 @@ test.describe('Country', () => {
     });
 
     test('return not found error when passed non existing countryId', async () => {
-      const [currency] = await drizzleDb.select().from(currencies).limit(1);
+      const [currency] = await db.select().from(currencies).limit(1);
 
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -716,7 +712,7 @@ test.describe('Country', () => {
     });
 
     test('remove a country', async () => {
-      await drizzleDb
+      await db
         .insert(countries)
         .values({ _id: 'et', isoCode: 'ET', created: new Date(), deleted: null });
       const { data: { removeCountry } = {}, errors } = await graphqlFetch({
@@ -733,17 +729,17 @@ test.describe('Country', () => {
       assert.partialDeepStrictEqual(removeCountry, {
         isoCode: 'ET',
       });
-      const [notDeletedCount] = await drizzleDb
+      const [notDeletedCount] = await db
         .select({ count: sql`count(*)` })
         .from(countries)
         .where(and(eq(countries._id, 'et'), isNull(countries.deleted)));
       assert.strictEqual(Number(notDeletedCount.count), 0);
-      const [totalCount] = await drizzleDb
+      const [totalCount] = await db
         .select({ count: sql`count(*)` })
         .from(countries)
         .where(eq(countries._id, 'et'));
       assert.strictEqual(Number(totalCount.count), 1);
-      await drizzleDb.delete(countries).where(eq(countries._id, 'et'));
+      await db.delete(countries).where(eq(countries._id, 'et'));
     });
 
     test('return not found error when passed non existing country ID', async () => {
@@ -773,14 +769,14 @@ test.describe('Country', () => {
     });
 
     test('query active countries', async () => {
-      await drizzleDb.insert(countries).values({
+      await db.insert(countries).values({
         _id: 'uk',
         isoCode: 'UK',
         isActive: true,
         created: new Date(),
         deleted: null,
       });
-      await drizzleDb.insert(countries).values({
+      await db.insert(countries).values({
         _id: 'it',
         isoCode: 'IT',
         isActive: false,
@@ -799,12 +795,12 @@ test.describe('Country', () => {
       });
       assert.strictEqual(errors, undefined);
       assert.ok(countriesData?.length >= 2);
-      await drizzleDb.delete(countries).where(eq(countries._id, 'it'));
-      await drizzleDb.delete(countries).where(eq(countries._id, 'uk'));
+      await db.delete(countries).where(eq(countries._id, 'it'));
+      await db.delete(countries).where(eq(countries._id, 'uk'));
     });
 
     test('query.country inactive single country', async () => {
-      await drizzleDb.insert(countries).values({
+      await db.insert(countries).values({
         _id: 'et',
         isoCode: 'ET',
         isActive: false,
@@ -825,7 +821,7 @@ test.describe('Country', () => {
       assert.deepStrictEqual(country, {
         isoCode: 'ET',
       });
-      await drizzleDb.delete(countries).where(eq(countries._id, 'et'));
+      await db.delete(countries).where(eq(countries._id, 'et'));
     });
 
     test('query.country return error when passed invalid ID', async () => {

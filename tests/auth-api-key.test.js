@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { Admin } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -8,10 +8,11 @@ import test from 'node:test';
 const API_KEY_TOKEN = 'Bearer admin:secret';
 
 let apiKeyGraphqlFetch;
+let createLoggedInGraphqlFetch;
 
 test.describe('API Key Authentication', () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch } = await setupDatabase());
     apiKeyGraphqlFetch = createLoggedInGraphqlFetch(API_KEY_TOKEN);
   });
 

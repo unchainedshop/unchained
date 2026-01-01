@@ -1,12 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  createLoggedInGraphqlFetch,
-  disconnect,
-  setupDatabase,
-  getServerBaseUrl,
-  getDrizzleDb,
-} from './helpers.js';
+import { disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { paymentProviders } from '@unchainedshop/core-payment';
@@ -16,16 +10,18 @@ import webhookReserved from './seeds/payrexx_webhook_reserved.js';
 const payrexxInstance = 'unchained-test';
 
 test.describe('Plugins: Payrexx', () => {
-  let drizzleDb;
+  let db;
+  let port;
   let graphqlFetch;
 
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const { createLoggedInGraphqlFetch, db: drizzleDb, port: serverPort } = await setupDatabase();
+    db = drizzleDb;
+    port = serverPort;
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Add a payrexx provider (payment providers are now in Drizzle/SQLite)
-    await drizzleDb.insert(paymentProviders).values({
+    await db.insert(paymentProviders).values({
       _id: 'payrexx-provider',
       adapterKey: 'shop.unchained.payment.payrexx',
       type: 'GENERIC',
@@ -36,20 +32,20 @@ test.describe('Plugins: Payrexx', () => {
     // Add a demo order ready to checkout (orders now use Drizzle)
     // NOTE: The order payment ID must be '1111112222' to match the mock in
     // packages/plugins/tests/mock/payrexx/Gateway/1000001.json which has referenceId: "1111112222"
-    await drizzleDb.insert(orderPayments).values({
+    await db.insert(orderPayments).values({
       ...SimplePayment,
       _id: '1111112222',
       paymentProviderId: 'payrexx-provider',
       orderId: 'payrexx-order',
     });
 
-    await drizzleDb.insert(orderPositions).values({
+    await db.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'payrexx-order-position',
       orderId: 'payrexx-order',
     });
 
-    await drizzleDb.insert(orders).values({
+    await db.insert(orders).values({
       ...SimpleOrder,
       _id: 'payrexx-order',
       orderNumber: 'payrexx',
@@ -57,20 +53,20 @@ test.describe('Plugins: Payrexx', () => {
     });
 
     // Add a second demo order ready to checkout
-    await drizzleDb.insert(orderPayments).values({
+    await db.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'payrexx-payment2',
       paymentProviderId: 'payrexx-provider',
       orderId: 'payrexx-order2',
     });
 
-    await drizzleDb.insert(orderPositions).values({
+    await db.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'payrexx-order-position2',
       orderId: 'payrexx-order2',
     });
 
-    await drizzleDb.insert(orders).values({
+    await db.insert(orders).values({
       ...SimpleOrder,
       _id: 'payrexx-order2',
       orderNumber: 'payrexx2',
@@ -119,7 +115,7 @@ test.describe('Plugins: Payrexx', () => {
     const webhookBody = {
       transaction: { status: 'waiting' },
     };
-    const result = await fetch(`${getServerBaseUrl()}/payment/payrexx`, {
+    const result = await fetch(`http://localhost:${port}/payment/payrexx`, {
       method: 'POST',
       duplex: 'half',
       headers: { 'Content-Type': 'application/json' },
@@ -142,7 +138,7 @@ test.describe('Plugins: Payrexx', () => {
         },
       },
     };
-    const result = await fetch(`${getServerBaseUrl()}/payment/payrexx`, {
+    const result = await fetch(`http://localhost:${port}/payment/payrexx`, {
       method: 'POST',
       duplex: 'half',
       headers: { 'Content-Type': 'application/json' },

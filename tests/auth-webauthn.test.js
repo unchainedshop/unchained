@@ -1,10 +1,4 @@
-import {
-  setupDatabase,
-  createAnonymousGraphqlFetch,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  getServerBaseUrl,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -314,13 +308,15 @@ class VirtualAuthenticator {
 let anonymousGraphqlFetch;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
+let serverPort;
 
 test.describe('WebAuthn Flows', () => {
   test.before(async () => {
-    await setupDatabase();
+    const { createAnonymousGraphqlFetch, createLoggedInGraphqlFetch, port } = await setupDatabase();
     anonymousGraphqlFetch = createAnonymousGraphqlFetch();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    serverPort = port;
   });
 
   test.after(async () => {
@@ -519,8 +515,12 @@ test.describe('WebAuthn Flows', () => {
     let storedCredentialId;
     let storedPrivateKey;
     const testUsername = 'user'; // Use existing seeded user
-    const origin = getServerBaseUrl();
+    let origin;
     const rpId = 'localhost';
+
+    test.before(() => {
+      origin = `http://localhost:${serverPort}`;
+    });
 
     test('should successfully register a WebAuthn credential', async () => {
       // Step 1: Get credential creation options

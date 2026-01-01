@@ -6,7 +6,7 @@ export interface RawPayloadType<T> {
   payload: T;
 }
 export interface EmitAdapter {
-  publish(eventName: string, data: RawPayloadType<Record<string, any>>): void;
+  publish(eventName: string, data: RawPayloadType<Record<string, any>>): void | Promise<void>;
   subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;
 }
 
@@ -49,11 +49,11 @@ export const EventDirector = {
 
     const payload = data || {};
 
-    Adapter?.publish(eventName, {
+    await Adapter?.publish(eventName, {
       payload,
     });
 
-    HistoryAdapter?.publish(eventName, {
+    await HistoryAdapter?.publish(eventName, {
       payload,
     });
 

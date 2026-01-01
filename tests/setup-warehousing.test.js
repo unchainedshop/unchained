@@ -1,13 +1,15 @@
 import { test, before, describe } from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { SimpleWarehousingProvider } from './seeds/warehousings.js';
+
+let createLoggedInGraphqlFetch;
 
 let graphqlFetch;
 
 describe('Setup: Warehousing', async () => {
   before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 

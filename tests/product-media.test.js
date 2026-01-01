@@ -1,17 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  putFile,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, putFile, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { JpegProductMedia, SimpleProduct } from './seeds/products.js';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,7 +19,7 @@ const productMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/co
 
 test.describe('Product: Media', async () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 

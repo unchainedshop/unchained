@@ -1,10 +1,4 @@
-import {
-  setupDatabase,
-  createAnonymousGraphqlFetch,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { User, ADMIN_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
 import { and, desc, sql } from 'drizzle-orm';
@@ -13,14 +7,18 @@ import test from 'node:test';
 
 let graphqlFetch;
 let adminGraphqlFetch;
-let drizzleDb;
+let db;
 
 test.describe('Auth for anonymous users', () => {
   test.before(async () => {
-    await setupDatabase();
+    const {
+      createAnonymousGraphqlFetch,
+      createLoggedInGraphqlFetch,
+      db: drizzleDb,
+    } = await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    drizzleDb = getDrizzleDb();
+    db = drizzleDb;
   });
 
   test.after(async () => {
@@ -146,7 +144,7 @@ test.describe('Auth for anonymous users', () => {
 
   test.describe('Mutation.forgotPassword', () => {
     test.before(async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'userthatforgetspasswords',
         username: `userthatforgetspasswords-${Date.now()}`,
@@ -177,7 +175,7 @@ test.describe('Auth for anonymous users', () => {
 
   test.describe('Mutation.resetPassword', () => {
     test.before(async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'userthatforgetspasswords',
         username: `userthatforgetspasswords-${Date.now()}`,
@@ -207,8 +205,7 @@ test.describe('Auth for anonymous users', () => {
 
     test('change password with token from forgotPassword call', async () => {
       // Reset the password with that token
-      const drizzleDb = getDrizzleDb();
-      const [event] = await drizzleDb
+      const [event] = await db
         .select()
         .from(events)
         .where(

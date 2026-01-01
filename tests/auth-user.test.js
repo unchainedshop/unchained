@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { User, Admin, USER_TOKEN, ADMIN_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
 import { events } from '@unchainedshop/core-events';
 import { users } from '@unchainedshop/core-users';
@@ -6,14 +6,14 @@ import { and, desc, sql, eq } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let drizzleDb;
+let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 test.describe('Auth for logged in users', () => {
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const { createLoggedInGraphqlFetch, db: drizzleDb } = await setupDatabase();
+    db = drizzleDb;
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
@@ -129,7 +129,7 @@ test.describe('Auth for logged in users', () => {
 
   test.describe('Mutation.verifyEmail', () => {
     test.before(async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'userthatmustverifyemail',
         username: `userthatmustverifyemail-${Date.now()}`,
@@ -159,8 +159,7 @@ test.describe('Auth for logged in users', () => {
 
     test('verifies the e-mail of user', async () => {
       // Reset the password with that token
-      const drizzleDb = getDrizzleDb();
-      const [event] = await drizzleDb
+      const [event] = await db
         .select()
         .from(events)
         .where(
@@ -197,7 +196,7 @@ test.describe('Auth for logged in users', () => {
     });
 
     test('e-mail is tagged as verified', async () => {
-      const [user] = await drizzleDb
+      const [user] = await db
         .select()
         .from(users)
         .where(eq(users._id, 'userthatmustverifyemail'))
@@ -227,7 +226,7 @@ test.describe('Auth for logged in users', () => {
 
   test.describe('Mutation.logout', () => {
     test('log out userthatlogsout', async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'userthatlogsout',
         username: 'userthatlogsout',
@@ -261,11 +260,7 @@ test.describe('Auth for logged in users', () => {
       assert.deepStrictEqual(logout, {
         success: true,
       });
-      const [user] = await drizzleDb
-        .select()
-        .from(users)
-        .where(eq(users._id, 'userthatlogsout'))
-        .limit(1);
+      const [user] = await db.select().from(users).where(eq(users._id, 'userthatlogsout')).limit(1);
       const {
         services: {
           resume: { loginTokens },
@@ -275,7 +270,7 @@ test.describe('Auth for logged in users', () => {
     });
 
     test('log out userthatlogsout without explicit token', async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'userthatlogsout',
         username: 'userthatlogsout',
@@ -312,11 +307,7 @@ test.describe('Auth for logged in users', () => {
       assert.deepStrictEqual(logout, {
         success: true,
       });
-      const [user] = await drizzleDb
-        .select()
-        .from(users)
-        .where(eq(users._id, 'userthatlogsout'))
-        .limit(1);
+      const [user] = await db.select().from(users).where(eq(users._id, 'userthatlogsout')).limit(1);
       const {
         services: {
           resume: { loginTokens },

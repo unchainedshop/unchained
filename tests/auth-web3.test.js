@@ -1,24 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { users } from '@unchainedshop/core-users';
 import { eq } from 'drizzle-orm';
 import { USER_TOKEN } from './seeds/users.js';
 
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
+
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let drizzleDb;
+let db;
 
 test.describe('Web3 Authentication', () => {
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch, db } = await setupDatabase());
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
   });
@@ -294,11 +290,11 @@ test.describe('Web3 Authentication', () => {
       });
 
       // Get current user and update the web3 nonce for the specific address
-      const [currentUser] = await drizzleDb.select().from(users).where(eq(users._id, 'user')).limit(1);
+      const [currentUser] = await db.select().from(users).where(eq(users._id, 'user')).limit(1);
       const updatedWeb3 = currentUser.services.web3.map((entry) =>
         entry.address === address ? { ...entry, nonce } : entry,
       );
-      await drizzleDb
+      await db
         .update(users)
         .set({
           services: { ...currentUser.services, web3: updatedWeb3 },

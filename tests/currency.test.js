@@ -1,10 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  createAnonymousGraphqlFetch,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { BaseCurrency, EuroCurrency, UsdCurrency, InactiveCurrency } from './seeds/locale-data.js';
 import { currencies } from '@unchainedshop/core-currencies';
@@ -12,18 +6,20 @@ import { eq, sql, isNull, and } from 'drizzle-orm';
 import assert from 'node:assert';
 import test from 'node:test';
 
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
+
 test.describe('Currency', () => {
   let graphqlFetch;
   let graphqlFetchAsNormalUser;
   let graphqlFetchAsAnonymousUser;
-  let drizzleDb;
+  let db;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch, db } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-    drizzleDb = getDrizzleDb();
   });
 
   test.after(async () => {
@@ -608,11 +604,11 @@ test.describe('Currency', () => {
         isoCode: 'BTC',
         isActive: true,
       });
-      await drizzleDb.delete(currencies).where(eq(currencies.isoCode, 'BTC'));
+      await db.delete(currencies).where(eq(currencies.isoCode, 'BTC'));
     });
 
     test('update a currency', async () => {
-      const [currency] = await drizzleDb.select().from(currencies).limit(1);
+      const [currency] = await db.select().from(currencies).limit(1);
 
       const { data: { updateCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -680,7 +676,7 @@ test.describe('Currency', () => {
     });
 
     test('remove a currency', async () => {
-      await drizzleDb.insert(currencies).values({ _id: 'etb', isoCode: 'ETB', created: new Date() });
+      await db.insert(currencies).values({ _id: 'etb', isoCode: 'ETB', created: new Date() });
       const { data: { removeCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -695,17 +691,17 @@ test.describe('Currency', () => {
       assert.partialDeepStrictEqual(removeCurrency, {
         isoCode: 'ETB',
       });
-      const [notDeletedCount] = await drizzleDb
+      const [notDeletedCount] = await db
         .select({ count: sql`count(*)` })
         .from(currencies)
         .where(and(eq(currencies._id, 'etb'), isNull(currencies.deleted)));
       assert.strictEqual(Number(notDeletedCount.count), 0);
-      const [totalCount] = await drizzleDb
+      const [totalCount] = await db
         .select({ count: sql`count(*)` })
         .from(currencies)
         .where(eq(currencies._id, 'etb'));
       assert.strictEqual(Number(totalCount.count), 1);
-      await drizzleDb.delete(currencies).where(eq(currencies._id, 'etb'));
+      await db.delete(currencies).where(eq(currencies._id, 'etb'));
     });
 
     test('return not found error when passed non existing currencyId', async () => {
@@ -737,13 +733,13 @@ test.describe('Currency', () => {
     });
 
     test('query active currencies', async () => {
-      await drizzleDb.insert(currencies).values({
+      await db.insert(currencies).values({
         _id: 'etb',
         isoCode: 'ETB',
         isActive: true,
         created: new Date(),
       });
-      await drizzleDb.insert(currencies).values({
+      await db.insert(currencies).values({
         _id: 'btc',
         isoCode: 'BTC',
         isActive: false,
@@ -762,12 +758,12 @@ test.describe('Currency', () => {
       });
       assert.strictEqual(errors, undefined);
       assert.ok(currenciesData.length >= 2);
-      await drizzleDb.delete(currencies).where(eq(currencies._id, 'etb'));
-      await drizzleDb.delete(currencies).where(eq(currencies._id, 'btc'));
+      await db.delete(currencies).where(eq(currencies._id, 'etb'));
+      await db.delete(currencies).where(eq(currencies._id, 'btc'));
     });
 
     test('query inactive single currency', async () => {
-      await drizzleDb.insert(currencies).values({
+      await db.insert(currencies).values({
         _id: 'sigt',
         isoCode: 'SIGT',
         isActive: false,
@@ -787,7 +783,7 @@ test.describe('Currency', () => {
       assert.deepStrictEqual(currency, {
         isoCode: 'SIGT',
       });
-      await drizzleDb.delete(currencies).where(eq(currencies._id, 'sigt'));
+      await db.delete(currencies).where(eq(currencies._id, 'sigt'));
     });
 
     test('query.currency return error when passed invalid ID', async () => {

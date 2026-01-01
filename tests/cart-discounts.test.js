@@ -1,15 +1,17 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { SimpleOrder, DiscountedDiscount } from './seeds/orders.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
+
+let createLoggedInGraphqlFetch;
 
 test.describe('Cart: Discounts', () => {
   let graphqlFetch;
   let adminGraphqlFetch;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });

@@ -1,6 +1,6 @@
 import { sql } from '@unchainedshop/store';
 import { signAccessToken } from '@unchainedshop/api/lib/auth.js';
-import { initializeTestPlatform, shutdownTestPlatform, getServerPort, getDrizzleDb } from './setup.js';
+import { initializeTestPlatform, shutdownTestPlatform } from './setup.js';
 import {
   seedCountriesToDrizzle,
   seedLanguagesToDrizzle,
@@ -22,26 +22,34 @@ import { seedEventsToDrizzle } from './seeds/events.js';
 import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
 
-export { getServerPort, getDrizzleDb } from './setup.js';
-
-// Helper to create a JWT token for a user ID
+/** Helper to create a JWT token for a user ID */
 export const createJWTToken = (userId, tokenVersion = 1) => {
   const { token } = signAccessToken(userId, tokenVersion);
   return `Bearer ${token}`;
 };
 
-export const getServerBaseUrl = () => {
-  const port = getServerPort();
-  return `http://localhost:${port}`;
-};
-
-export const disconnect = async () => {
-  // No-op - cleanup happens in globalTeardown
+/** Helper to upload a file via PUT request */
+export const putFile = async (file, { url, type }) => {
+  const signal = AbortSignal.timeout(5000);
+  const response = await fetch(url, {
+    signal,
+    method: 'PUT',
+    body: file,
+    // @ts-expect-error - duplex is required for streaming but not in types
+    duplex: 'half',
+    headers: type ? { 'Content-Type': type } : undefined,
+  });
+  if (response.ok) {
+    return response.text();
+  }
+  const errorText = await response.text().catch(() => 'Could not read error body');
+  return Promise.reject(
+    new Error(`PUT ${url} failed: ${response.status} ${response.statusText} - ${errorText}`),
+  );
 };
 
 // List of all tables to clear before seeding test data
 const ALL_TABLES = [
-  // Core tables
   'users',
   'web_authn_credentials',
   'push_subscriptions',
@@ -88,18 +96,12 @@ const ALL_TABLES = [
   'order_payments',
   'order_discounts',
   'sessions',
-  // FTS tables (virtual tables)
-  // 'countries_fts', // Virtual tables can't be deleted with DELETE
-  // 'languages_fts',
-  // ... etc
 ];
 
-export const setupDatabase = async () => {
-  // Lazy initialization - ensure platform is running
-  await initializeTestPlatform();
+// Test context - initialized once per process
+let testContext = null;
 
-  const drizzleDb = getDrizzleDb();
-
+async function seedDatabaseTables(drizzleDb) {
   // Clear all tables
   for (const table of ALL_TABLES) {
     try {
@@ -127,75 +129,63 @@ export const setupDatabase = async () => {
   await seedAssortmentsToDrizzle(drizzleDb);
   await seedWorkQueueToDrizzle(drizzleDb);
   await seedOrdersToDrizzle(drizzleDb);
-
-  // Seed events AFTER other Drizzle seeds to avoid events polluting the test data
-  // The seedEventsToDrizzle function clears existing events before seeding
   await seedEventsToDrizzle(drizzleDb);
+}
 
-  // Return array for backwards compatibility with tests using [db] = await setupDatabase()
-  return [drizzleDb, null];
-};
-
-export const createAnonymousGraphqlFetch = () => {
-  return createLoggedInGraphqlFetch(null);
-};
-
-export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
-  const port = getServerPort();
-  const client = new GraphQLClient(`http://localhost:${port}/graphql`, {
-    errorPolicy: 'all',
-  });
-
-  return async ({ query, headers, ...options }) =>
-    client.rawRequest({
-      query,
-      requestHeaders: token
-        ? {
-            authorization: token,
-            ...(headers || {}),
-          }
-        : headers,
-      ...options,
-    });
-};
-
-export const putFile = async (file, { url, type }) => {
-  const signal = AbortSignal.timeout(5000);
-  const response = await fetch(url, {
-    signal,
-    method: 'PUT',
-    body: file,
-    // eslint-disable-next-line
-    // @ts-expect-error
-    duplex: 'half',
-    headers: type
-      ? {
-          'Content-Type': type,
-        }
-      : undefined,
-  });
-  if (response.ok) {
-    return response.text();
+/**
+ * Initialize test platform and seed database.
+ * Returns a context object with all test utilities:
+ * - db: Drizzle database instance
+ * - port: Server port number
+ * - createLoggedInGraphqlFetch(token?): Create a GraphQL fetch function with auth
+ * - createAnonymousGraphqlFetch(): Create a GraphQL fetch function without auth
+ *
+ * Safe to call multiple times - will reuse existing context and re-seed database.
+ */
+export const setupDatabase = async () => {
+  // Reuse existing context if already initialized
+  if (testContext) {
+    // Re-seed database for fresh test data
+    await seedDatabaseTables(testContext.db);
+    return testContext;
   }
-  const errorText = await response.text().catch(() => 'Could not read error body');
-  return Promise.reject(
-    new Error(`PUT ${url} failed: ${response.status} ${response.statusText} - ${errorText}`),
-  );
+
+  // Initialize platform (creates server and database)
+  const { db, port } = await initializeTestPlatform();
+
+  // Seed database
+  await seedDatabaseTables(db);
+
+  // Create graphql fetch factory (standalone function, no `this` binding needed)
+  const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
+    const client = new GraphQLClient(`http://localhost:${port}/graphql`, {
+      errorPolicy: 'all',
+    });
+    return async ({ query, headers, ...options }) =>
+      client.rawRequest({
+        query,
+        requestHeaders: token ? { authorization: token, ...(headers || {}) } : headers,
+        ...options,
+      });
+  };
+
+  const createAnonymousGraphqlFetch = () => createLoggedInGraphqlFetch(null);
+
+  // Create context with all test utilities
+  testContext = {
+    db,
+    port,
+    createLoggedInGraphqlFetch,
+    createAnonymousGraphqlFetch,
+  };
+
+  return testContext;
 };
 
-export async function globalSetup() {
-  await initializeTestPlatform();
-  await setupDatabase();
-}
-
-export async function globalTeardown() {
-  await shutdownTestPlatform();
-}
-
-// Node.js test runner global setup:
-// - Default export runs as setup
-// - Return value is the teardown function
-export default async function setup() {
-  await globalSetup();
-  return globalTeardown;
-}
+/** Disconnect from test platform and clean up resources. */
+export const disconnect = async () => {
+  if (testContext) {
+    await shutdownTestPlatform();
+    testContext = null;
+  }
+};

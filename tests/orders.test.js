@@ -1,13 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createAnonymousGraphqlFetch,
-  createLoggedInGraphqlFetch,
-  disconnect,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ConfirmedOrder, PendingOrder, SimpleOrder } from './seeds/orders.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 test.describe('Order: Lists', () => {
   let graphqlFetch;
@@ -15,7 +13,7 @@ test.describe('Order: Lists', () => {
   let graphqlFetchAsAnonymousUser;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
@@ -50,7 +48,7 @@ test.describe('Order: Lists', () => {
       `,
       variables: {},
     });
-    assert.strictEqual(ordersCount, 2);
+    assert.strictEqual(ordersCount, 3);
   });
 
   // Query.ordersCount for anonymous user
@@ -120,7 +118,7 @@ test.describe('Order: Lists', () => {
       variables: {},
     });
 
-    assert.strictEqual(orders.length, 2);
+    assert.strictEqual(orders.length, 3);
 
     assert.partialDeepStrictEqual(
       orders.find((o) => o._id === PendingOrder._id),
@@ -332,7 +330,7 @@ test.describe('Order: Lists', () => {
       variables: {},
     });
     assert.ok(orderStatistics.newCount > 2);
-    assert.strictEqual(orderStatistics.checkoutCount, 2);
+    assert.strictEqual(orderStatistics.checkoutCount, 3);
     assert.strictEqual(orderStatistics.confirmCount, 1);
     assert.strictEqual(Array.isArray(orderStatistics.confirmRecords), true);
     assert.strictEqual(Array.isArray(orderStatistics.checkoutRecords), true);

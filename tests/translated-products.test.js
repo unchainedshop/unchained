@@ -1,20 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { ProductVariations } from './seeds/products.js';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 let graphqlFetch;
 let graphqlAnonymousFetch;
 
 test.describe('Product: Translated Texts', async () => {
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = createAnonymousGraphqlFetch();
   });

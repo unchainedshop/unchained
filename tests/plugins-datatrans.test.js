@@ -1,10 +1,4 @@
-import {
-  createLoggedInGraphqlFetch,
-  disconnect,
-  setupDatabase,
-  getServerBaseUrl,
-  getDrizzleDb,
-} from './helpers.js';
+import { disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { paymentProviders, paymentCredentials } from '@unchainedshop/core-payment';
@@ -18,16 +12,18 @@ test.describe('Plugins: Datatrans', () => {
   const amount = '20000';
   const currency = 'CHF';
 
-  let drizzleDb;
+  let db;
+  let port;
   let graphqlFetch;
 
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const { createLoggedInGraphqlFetch, db: drizzleDb, port: serverPort } = await setupDatabase();
+    db = drizzleDb;
+    port = serverPort;
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Add a datatrans provider (payment providers are now in Drizzle/SQLite)
-    await drizzleDb.insert(paymentProviders).values({
+    await db.insert(paymentProviders).values({
       _id: 'd4d4d4d4d4',
       adapterKey: 'shop.unchained.datatrans',
       type: 'GENERIC',
@@ -36,20 +32,20 @@ test.describe('Plugins: Datatrans', () => {
     });
 
     // Add a demo order ready to checkout (orders now use Drizzle)
-    await drizzleDb.insert(orderPayments).values({
+    await db.insert(orderPayments).values({
       ...SimplePayment,
       _id: '1111112222',
       paymentProviderId: 'd4d4d4d4d4',
       orderId: 'datatrans-order',
     });
 
-    await drizzleDb.insert(orderPositions).values({
+    await db.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'datatrans-order-position',
       orderId: 'datatrans-order',
     });
 
-    await drizzleDb.insert(orders).values({
+    await db.insert(orders).values({
       ...SimpleOrder,
       _id: 'datatrans-order',
       orderNumber: 'datatrans',
@@ -57,20 +53,20 @@ test.describe('Plugins: Datatrans', () => {
     });
 
     // Add a second demo order ready to checkout
-    await drizzleDb.insert(orderPayments).values({
+    await db.insert(orderPayments).values({
       ...SimplePayment,
       _id: 'datatrans-payment2',
       paymentProviderId: 'd4d4d4d4d4',
       orderId: 'datatrans-order2',
     });
 
-    await drizzleDb.insert(orderPositions).values({
+    await db.insert(orderPositions).values({
       ...SimplePosition,
       _id: 'datatrans-order-position2',
       orderId: 'datatrans-order2',
     });
 
-    await drizzleDb.insert(orders).values({
+    await db.insert(orders).values({
       ...SimpleOrder,
       _id: 'datatrans-order2',
       orderNumber: 'datatrans2',
@@ -145,7 +141,7 @@ test.describe('Plugins: Datatrans', () => {
       const userId = User._id;
       const sign = '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
       const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
-      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
+      const result = await fetch(`http://localhost:${port}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -157,7 +153,7 @@ test.describe('Plugins: Datatrans', () => {
       assert.strictEqual(result.status, 200);
 
       // Payment credentials are now in Drizzle/SQLite
-      const [paymentCredential] = await drizzleDb
+      const [paymentCredential] = await db
         .select()
         .from(paymentCredentials)
         .where(eq(paymentCredentials.paymentProviderId, paymentProviderId))
@@ -171,7 +167,7 @@ test.describe('Plugins: Datatrans', () => {
       const userId = User._id;
       const sign = '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
       const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
-      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
+      const result = await fetch(`http://localhost:${port}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -191,7 +187,7 @@ test.describe('Plugins: Datatrans', () => {
       const sign = '28f99091d4fc5859dabfff335eb07e06e00b0ca53775816d329ba88c17b1a36e';
       const refno = Buffer.from(orderPaymentId, 'hex').toString('base64');
 
-      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
+      const result = await fetch(`http://localhost:${port}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -209,7 +205,7 @@ test.describe('Plugins: Datatrans', () => {
       const userId = User._id;
       const sign = 'a146037afae54a78b61865b9c2bb38a60c687692833a1388a03176574cb2a004';
       const refno = Buffer.from(orderPaymentId, 'hex').toString('base64');
-      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
+      const result = await fetch(`http://localhost:${port}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {
@@ -221,10 +217,10 @@ test.describe('Plugins: Datatrans', () => {
 
       assert.strictEqual(result.status, 200);
 
-      const [order] = await drizzleDb.select().from(orders).where(eq(orders._id, 'datatrans-order'));
+      const [order] = await db.select().from(orders).where(eq(orders._id, 'datatrans-order'));
       assert.strictEqual(order.status, 'CONFIRMED');
 
-      const [orderPayment] = await drizzleDb
+      const [orderPayment] = await db
         .select()
         .from(orderPayments)
         .where(eq(orderPayments._id, orderPaymentId));
@@ -240,7 +236,7 @@ test.describe('Plugins: Datatrans', () => {
       const sign = '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
       const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
 
-      const result = await fetch(`${getServerBaseUrl()}/payment/datatrans/webhook`, {
+      const result = await fetch(`http://localhost:${port}/payment/datatrans/webhook`, {
         method: 'POST',
         duplex: 'half',
         headers: {

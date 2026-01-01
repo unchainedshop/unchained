@@ -1,4 +1,4 @@
-import { setupDatabase, createAnonymousGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { SimpleProduct2, SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -7,7 +7,7 @@ let graphqlFetch;
 
 test.describe('Public Queries', () => {
   test.before(async () => {
-    await setupDatabase();
+    const { createAnonymousGraphqlFetch } = await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
   });
 

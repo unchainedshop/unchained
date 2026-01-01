@@ -1,13 +1,11 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { TestToken1, TestToken3 } from './seeds/tokens.js';
 import assert from 'node:assert';
 import test from 'node:test';
+
+let createLoggedInGraphqlFetch;
+let createAnonymousGraphqlFetch;
 
 test.describe('Tokens', () => {
   let graphqlFetch;
@@ -15,7 +13,7 @@ test.describe('Tokens', () => {
   let graphqlFetchAsAnonymousUser;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();

@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { UnpublishedProduct, SimpleProduct, PlanProduct } from './seeds/products.js';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users.js';
 import { bookmarks } from '@unchainedshop/core-bookmarks';
@@ -7,13 +7,13 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 let graphqlFetch;
-let drizzleDb;
+let db;
 
 test.describe('User: Bookmarks', () => {
   test.before(async () => {
-    await setupDatabase();
+    const { createLoggedInGraphqlFetch, db: drizzleDb } = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    drizzleDb = getDrizzleDb();
+    db = drizzleDb;
   });
 
   test.after(async () => {
@@ -97,7 +97,7 @@ test.describe('User: Bookmarks', () => {
 
   test.describe('Mutation.removeBookmark', () => {
     test('remove a bookmark', async () => {
-      const [bookmark] = await drizzleDb
+      const [bookmark] = await db
         .select()
         .from(bookmarks)
         .where(eq(bookmarks.userId, User._id))

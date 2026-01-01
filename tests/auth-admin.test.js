@@ -1,10 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-  disconnect,
-  getDrizzleDb,
-} from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { workQueue } from '@unchainedshop/core-worker';
 import { eq, and, sql } from 'drizzle-orm';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
@@ -12,15 +6,19 @@ import { intervalUntilTimeout } from './wait.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-let drizzleDb;
+let db;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
 test.describe('Auth for admin users', () => {
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const {
+      createLoggedInGraphqlFetch,
+      createAnonymousGraphqlFetch,
+      db: drizzleDb,
+    } = await setupDatabase();
+    db = drizzleDb;
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
@@ -32,7 +30,7 @@ test.describe('Auth for admin users', () => {
 
   test.describe('Query.users', () => {
     test.before(async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'guest2',
         username: 'guest2',
@@ -107,7 +105,7 @@ test.describe('Auth for admin users', () => {
 
   test.describe('Query.user', () => {
     test.before(async () => {
-      await findOrInsertUserToDrizzle(drizzleDb, {
+      await findOrInsertUserToDrizzle(db, {
         ...User,
         _id: 'guest',
         guest: true,
@@ -413,7 +411,7 @@ test.describe('Auth for admin users', () => {
       });
 
       const work = await intervalUntilTimeout(async () => {
-        const rows = await drizzleDb
+        const rows = await db
           .select()
           .from(workQueue)
           .where(
@@ -452,7 +450,7 @@ test.describe('Auth for admin users', () => {
       });
 
       const work = await intervalUntilTimeout(async () => {
-        const rows = await drizzleDb
+        const rows = await db
           .select()
           .from(workQueue)
           .where(

@@ -44,5 +44,8 @@ export default async function invalidateToken(
 
   if (!isInvalidateable) throw new TokenWrongStatusError({ tokenId });
 
-  return modules.warehousing.invalidateToken(tokenId);
+  const invalidatedToken = await modules.warehousing.invalidateToken(tokenId);
+  if (!invalidatedToken) throw new TokenWrongStatusError({ tokenId });
+
+  return invalidatedToken;
 }

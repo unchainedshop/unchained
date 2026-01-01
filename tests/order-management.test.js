@@ -1,13 +1,13 @@
-import test, { describe } from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert';
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
-import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders.js';
+import { setupDatabase, disconnect } from './helpers.js';
+import { SimpleOrder, ConfirmedOrder, PendingOrder, PendingOrder2 } from './seeds/orders.js';
 
 test.describe('Order: Transaction / Management', () => {
   let graphqlFetch;
 
   test.before(async () => {
-    await setupDatabase();
+    const { createLoggedInGraphqlFetch } = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
@@ -170,6 +170,27 @@ test.describe('Order: Transaction / Management', () => {
     assert.strictEqual(errors[0]?.extensions?.code, 'OrderWrongStatusError');
   });
 
+  test('reject a pending order', async () => {
+    const result = await graphqlFetch({
+      query: /* GraphQL */ `
+        mutation rejectOrder($orderId: ID!) {
+          rejectOrder(orderId: $orderId) {
+            _id
+            status
+          }
+        }
+      `,
+      variables: {
+        orderId: PendingOrder2._id,
+      },
+    });
+    const { data: { rejectOrder } = {} } = result;
+    assert.partialDeepStrictEqual(rejectOrder, {
+      _id: PendingOrder2._id,
+      status: 'REJECTED',
+    });
+  });
+
   test('return not found error when passed non existing orderId', async () => {
     const { errors } = await graphqlFetch({
       query: /* GraphQL */ `
@@ -293,32 +314,5 @@ test.describe('Order: Transaction / Management', () => {
       },
     });
     assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
-  });
-});
-
-describe('Order: Transaction / Management (Rejection)', () => {
-  test('reject a pending order', async () => {
-    await setupDatabase();
-    const graphqlFetch = createLoggedInGraphqlFetch();
-
-    const result = await graphqlFetch({
-      query: /* GraphQL */ `
-        mutation rejectOrder($orderId: ID!) {
-          rejectOrder(orderId: $orderId) {
-            _id
-            status
-          }
-        }
-      `,
-      variables: {
-        orderId: PendingOrder._id,
-      },
-    });
-    const { data: { rejectOrder } = {} } = result;
-    await disconnect();
-    assert.partialDeepStrictEqual(rejectOrder, {
-      _id: PendingOrder._id,
-      status: 'REJECTED',
-    });
   });
 });

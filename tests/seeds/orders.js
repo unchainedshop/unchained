@@ -213,6 +213,36 @@ export const PendingOrderPosition = {
   orderId: 'pending-order',
 };
 
+// Second pending order for rejection testing (separate from confirm testing)
+export const PendingOrder2 = {
+  ...ConfirmedOrder,
+  orderNumber: null,
+  _id: 'pending-order-2',
+  paymentId: 'pending-order-2-payment',
+  deliveryId: 'pending-order-2-delivery',
+  status: 'PENDING',
+  confirmed: null,
+};
+
+export const PendingOrder2Payment = {
+  ...SimplePayment,
+  _id: 'pending-order-2-payment',
+  orderId: 'pending-order-2',
+  paymentProviderId: 'prepaid-payment-provider',
+};
+
+export const PendingOrder2Delivery = {
+  ...SimpleDelivery,
+  _id: 'pending-order-2-delivery',
+  orderId: 'pending-order-2',
+};
+
+export const PendingOrder2Position = {
+  ...SimplePosition,
+  _id: 'pending-order-2-position',
+  orderId: 'pending-order-2',
+};
+
 export const DiscountedOrder = {
   ...SimpleOrder,
   _id: 'discounted-order',
@@ -453,6 +483,7 @@ const allOrders = [
   SimpleOrder,
   ConfirmedOrder,
   PendingOrder,
+  PendingOrder2,
   DiscountedOrder,
   ShippingOrder,
   PickupOrder,
@@ -466,6 +497,7 @@ const allPayments = [
   GenericPayment,
   ConfirmedOrderPayment,
   PendingOrderPayment,
+  PendingOrder2Payment,
   DiscountedPayment,
   ShippingOrderPayment,
   PickupOrderPayment,
@@ -479,6 +511,7 @@ const allDeliveries = [
   PickupDelivery,
   ConfirmedOrderDelivery,
   PendingOrderDelivery,
+  PendingOrder2Delivery,
   DiscountedDelivery,
   ShippingOrderDelivery,
   PickupOrderDelivery,
@@ -491,6 +524,7 @@ const allPositions = [
   SimplePosition,
   ConfirmedOrderPosition,
   PendingOrderPosition,
+  PendingOrder2Position,
   DiscountedPosition,
   ShippingOrderPosition,
   PickupOrderPosition,

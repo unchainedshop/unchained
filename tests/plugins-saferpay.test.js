@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
+import { disconnect, setupDatabase } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
@@ -30,10 +30,13 @@ test.describe('Plugins: Worldline/Saferpay', () => {
 
     let db;
     let graphqlFetch;
+    let serverPort;
 
     test.before(async () => {
-      [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      const context = await setupDatabase();
+      db = context.db;
+      graphqlFetch = context.createLoggedInGraphqlFetch(USER_TOKEN);
+      serverPort = context.port;
 
       // Add a worldline saferpay provider
       await db.collection('payment-providers').findOrInsertOne({
@@ -242,7 +245,7 @@ test.describe('Plugins: Worldline/Saferpay', () => {
 
       await simulatePayment(location);
 
-      const url = new URL(`${getServerBaseUrl()}/payment/saferpay/webhook`);
+      const url = new URL(`${`http://localhost:${serverPort}`}/payment/saferpay/webhook`);
       url.searchParams.set('orderPaymentId', 'saferpay-payment');
       url.searchParams.set('signature', await buildSignature(transactionId, 'saferpay-payment'));
       url.searchParams.set('transactionId', transactionId);

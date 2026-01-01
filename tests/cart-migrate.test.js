@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getDrizzleDb } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { GUEST_TOKEN } from './seeds/users.js';
 import { orders } from '@unchainedshop/core-orders';
@@ -7,13 +7,14 @@ import assert from 'node:assert';
 import test from 'node:test';
 
 test.describe('Guest user cart migration', () => {
-  let drizzleDb;
+  let db;
   let loggedInGraphqlFetch;
   let orderId;
 
   test.before(async () => {
-    await setupDatabase();
-    drizzleDb = getDrizzleDb();
+    const { createLoggedInGraphqlFetch, db: drizzleDb } = await setupDatabase();
+    db = drizzleDb;
+    loggedInGraphqlFetch = createLoggedInGraphqlFetch(GUEST_TOKEN);
   });
 
   test.after(async () => {
@@ -21,7 +22,6 @@ test.describe('Guest user cart migration', () => {
   });
 
   test('add a product to the cart', async () => {
-    loggedInGraphqlFetch = createLoggedInGraphqlFetch(GUEST_TOKEN);
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation addCartProduct(
@@ -96,7 +96,7 @@ test.describe('Guest user cart migration', () => {
         }
       `,
     });
-    const [adminOrder] = await drizzleDb
+    const [adminOrder] = await db
       .select()
       .from(orders)
       .where(and(eq(orders.userId, loginWithPassword.user._id), eq(orders._id, orderId)))

@@ -1,12 +1,14 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, disconnect } from './helpers.js';
 import assert from 'node:assert';
 import test from 'node:test';
+
+let createLoggedInGraphqlFetch;
 
 test.describe('Setup: Basic Context', () => {
   let graphqlFetch;
 
   test.before(async () => {
-    await setupDatabase();
+    ({ createLoggedInGraphqlFetch } = await setupDatabase());
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
