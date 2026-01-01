@@ -147,11 +147,8 @@ export const configureAssortmentsModule = async ({
 
     if (queryString) {
       const matchingIds = await searchAssortmentsFTS(db, queryString);
-      if (matchingIds.length === 0) {
-        conditions.push(eq(assortments._id, '__no_match__'));
-      } else {
-        conditions.push(inArray(assortments._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(assortments._id, matchingIds));
     }
 
     return conditions;
@@ -333,8 +330,14 @@ export const configureAssortmentsModule = async ({
 
       const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
       let queryBuilder = selectColumns
-        ? db.select(selectColumns).from(assortments).where(and(...conditions))
-        : db.select().from(assortments).where(and(...conditions));
+        ? db
+            .select(selectColumns)
+            .from(assortments)
+            .where(and(...conditions))
+        : db
+            .select()
+            .from(assortments)
+            .where(and(...conditions));
 
       const sortOptions = buildSortOptions(sort || defaultSortOption);
       if (sortOptions.length > 0) {
@@ -600,7 +603,7 @@ export const configureAssortmentsModule = async ({
         assortmentIds: string[];
         limit: number;
         offset: number;
-        sort?: SortOption[] | Record<string, number>;
+        sort?: SortOption[];
         includeInactive?: boolean;
       }): Promise<Assortment[]> => {
         if (!assortmentIds.length) return [];
@@ -615,8 +618,7 @@ export const configureAssortmentsModule = async ({
           .from(assortments)
           .where(and(...conditions));
 
-        // Handle both SortOption[] and SortStage (Record<string, number>) formats
-        const sortOptions = Array.isArray(sort) ? buildSortOptions(sort) : [];
+        const sortOptions = sort ? buildSortOptions(sort) : [];
         if (sortOptions.length > 0) {
           queryBuilder = queryBuilder.orderBy(...sortOptions) as typeof queryBuilder;
         }

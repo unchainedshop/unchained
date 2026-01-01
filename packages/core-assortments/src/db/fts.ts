@@ -1,4 +1,5 @@
 import { sql, createFTS, type DrizzleDb } from '@unchainedshop/store';
+import { escapeFTS5WithPrefix } from '@unchainedshop/utils';
 
 /**
  * Assortments FTS - manual setup because slugs is a JSON array that needs preprocessing.
@@ -17,13 +18,14 @@ export async function setupAssortmentsFTS(db: DrizzleDb): Promise<void> {
 }
 
 export async function searchAssortmentsFTS(db: DrizzleDb, searchText: string): Promise<string[]> {
-  const escapedSearch = searchText.replace(/[*"\\]/g, '');
-  if (!escapedSearch.trim()) return [];
+  // Use secure FTS5 escaping to prevent SQL injection
+  const safeQuery = escapeFTS5WithPrefix(searchText);
+  if (!safeQuery) return [];
 
   const result = await db.all<{ _id: string }>(
     sql.raw(`
     SELECT _id FROM assortments_fts
-    WHERE assortments_fts MATCH '"${escapedSearch}"*'
+    WHERE assortments_fts MATCH '${safeQuery}'
     ORDER BY bm25(assortments_fts)
   `),
   );

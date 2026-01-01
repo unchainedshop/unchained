@@ -12,6 +12,7 @@ import {
   sql,
   type DrizzleDb,
 } from '@unchainedshop/store';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { assortmentProducts, type AssortmentProduct } from '../db/schema.ts';
 import { type InvalidateCacheFn } from './configureAssortmentsModule.ts';
 
@@ -103,9 +104,27 @@ export const configureAssortmentProductsModule = ({
         productId?: string;
         productIds?: string[];
       },
-      options?: { limit?: number; offset?: number; sort?: Record<string, number> },
+      options?: { limit?: number; offset?: number; sort?: SortOption[] },
     ): Promise<AssortmentProduct[]> => {
-      void options;
+      const PRODUCT_COLUMNS = {
+        _id: assortmentProducts._id,
+        assortmentId: assortmentProducts.assortmentId,
+        productId: assortmentProducts.productId,
+        sortKey: assortmentProducts.sortKey,
+        tags: assortmentProducts.tags,
+        meta: assortmentProducts.meta,
+        created: assortmentProducts.created,
+        updated: assortmentProducts.updated,
+      } as const;
+
+      const orderBy = options?.sort?.length
+        ? options.sort.map(({ key, value }) => {
+            const column =
+              PRODUCT_COLUMNS[key as keyof typeof PRODUCT_COLUMNS] ?? assortmentProducts.sortKey;
+            return value === SortDirection.DESC ? desc(column) : asc(column);
+          })
+        : [asc(assortmentProducts.sortKey)];
+
       const conditions: ReturnType<typeof eq>[] = [];
 
       if (assortmentId) {
@@ -120,14 +139,26 @@ export const configureAssortmentProductsModule = ({
         conditions.push(inArray(assortmentProducts.productId, productIds));
       }
 
-      if (conditions.length === 0) {
-        return db.select().from(assortmentProducts);
+      let query =
+        conditions.length === 0
+          ? db
+              .select()
+              .from(assortmentProducts)
+              .orderBy(...orderBy)
+          : db
+              .select()
+              .from(assortmentProducts)
+              .where(and(...conditions))
+              .orderBy(...orderBy);
+
+      if (options?.limit) {
+        query = query.limit(options.limit) as typeof query;
+      }
+      if (options?.offset) {
+        query = query.offset(options.offset) as typeof query;
       }
 
-      return db
-        .select()
-        .from(assortmentProducts)
-        .where(and(...conditions));
+      return query;
     },
 
     findSiblings: async ({
@@ -304,7 +335,7 @@ export const configureAssortmentProductsModule = ({
         });
       }
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     update: async (

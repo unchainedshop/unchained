@@ -1,6 +1,20 @@
 import type { CheckPermissionArgs } from '@unchainedshop/roles';
 import { Roles } from '@unchainedshop/roles';
+import { emit } from '@unchainedshop/events';
 import { NoPermissionError, PermissionSystemError } from './errors.ts';
+
+// Sensitive action prefixes that should be logged when granted
+const SENSITIVE_ACTION_PREFIXES = [
+  'manage',
+  'login',
+  'logout',
+  'reset',
+  'forgot',
+  'impersonate',
+  'update',
+  'create',
+  'viewUser',
+];
 
 const defaultOptions = {
   showKey: true,
@@ -29,18 +43,39 @@ const checkAction = async (context, action, args = emptyArray, options: any = em
   const { key } = options || emptyObject;
 
   const hasPermission = await Roles.userHasPermission(context, action, args);
-  if (hasPermission) return;
 
-  const keyText = key && key !== '' ? ` in "${key}"` : '';
+  if (!hasPermission) {
+    // Log access denial for security auditing
+    await emit('ACL_DENIED', {
+      userId: context.userId || 'anonymous',
+      action,
+      key: key || null,
+      remoteAddress: context.remoteAddress,
+      timestamp: new Date().toISOString(),
+    });
 
-  throw new NoPermissionError({
-    userId: context.userId,
-    action,
-    key,
-    message: `The user "${
-      context.userId || 'anonymous'
-    }" has no permission to perform the action "${action}"${keyText}`,
-  });
+    const keyText = key && key !== '' ? ` in "${key}"` : '';
+
+    throw new NoPermissionError({
+      userId: context.userId,
+      action,
+      key,
+      message: `The user "${
+        context.userId || 'anonymous'
+      }" has no permission to perform the action "${action}"${keyText}`,
+    });
+  }
+
+  // Log grants for sensitive actions
+  if (SENSITIVE_ACTION_PREFIXES.some((prefix) => action.startsWith(prefix))) {
+    await emit('ACL_GRANTED_SENSITIVE', {
+      userId: context.userId,
+      action,
+      key: key || null,
+      remoteAddress: context.remoteAddress,
+      timestamp: new Date().toISOString(),
+    });
+  }
 };
 
 const wrapFunction = (fn, name, action, userOptions?: any) => {

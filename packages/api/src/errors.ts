@@ -104,6 +104,10 @@ export const UserWeb3AddressSignatureError = createError(
 export const UserNoCartError = createError('UserNoCartError', 'No open cart available to checkout');
 export const OrderItemNotFoundError = createError('OrderItemNotFoundError', 'Order Item not found');
 export const OrderNotFoundError = createError('OrderNotFoundError', 'Order not found');
+export const OrderAccessDeniedError = createError(
+  'OrderAccessDeniedError',
+  'Not authorized to access this cart',
+);
 export const OrderNumberAlreadyExistsError = createError(
   'OrderNumberAlreadyExistsError',
   'This orderNumber has already been used by another order',

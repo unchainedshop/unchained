@@ -13,7 +13,7 @@ export default async function getAssortmentProducts(context: Context, params: Pa
 
   const assortmentProducts = await modules.assortments.products.findAssortmentProducts(
     { assortmentId },
-    { sort: { sortKey: 1 } },
+    { sort: [{ key: 'sortKey', value: 'ASC' }] },
   );
 
   const products = await Promise.all(

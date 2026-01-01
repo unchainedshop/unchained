@@ -112,47 +112,74 @@ const InternalProductStatus = {
   DRAFT: null as string | null,
 };
 
-// Helper to build JSON field condition with MongoDB-style operator support
+/**
+ * Filter value types for JSON field queries.
+ * Supports direct values, existence checks, exclusions, and set membership.
+ */
+export type JsonFilterValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { exists: boolean }
+  | { notEqual: unknown }
+  | { in: unknown[] }
+  | { notIn: unknown[] };
 
-const buildJsonFieldCondition = (column: any, jsonPath: string, value: unknown): SQL => {
+/**
+ * Build a SQL condition for querying JSON fields with typed filter values.
+ * Replaces MongoDB-style operators with explicit typed alternatives.
+ */
+const buildJsonFieldCondition = (
+  column:
+    | typeof products.meta
+    | typeof products.warehousing
+    | typeof products.commerce
+    | typeof products.supply,
+  jsonPath: string,
+  value: JsonFilterValue | unknown,
+): SQL => {
   if (value === undefined) {
     // Undefined means field must exist
     return sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`;
   }
 
-  // Handle MongoDB-style operators
-  if (value && typeof value === 'object') {
+  // Handle typed filter operators
+  if (value && typeof value === 'object' && value !== null) {
     const obj = value as Record<string, unknown>;
 
-    if ('$exists' in obj) {
-      // $exists: true/false - check if field exists
+    // Existence check: { exists: true/false } or { $exists: true/false } (MongoDB-style)
+    if ('exists' in obj && typeof obj.exists === 'boolean') {
+      return obj.exists
+        ? sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`
+        : sql`json_extract(${column}, ${jsonPath}) IS NULL`;
+    }
+    if ('$exists' in obj && typeof obj.$exists === 'boolean') {
       return obj.$exists
         ? sql`json_extract(${column}, ${jsonPath}) IS NOT NULL`
         : sql`json_extract(${column}, ${jsonPath}) IS NULL`;
     }
 
-    if ('$ne' in obj) {
-      // $ne: value - not equal
-      return sql`(json_extract(${column}, ${jsonPath}) IS NULL OR json_extract(${column}, ${jsonPath}) != ${obj.$ne})`;
+    // Not equal: { notEqual: value }
+    if ('notEqual' in obj) {
+      return sql`(json_extract(${column}, ${jsonPath}) IS NULL OR json_extract(${column}, ${jsonPath}) != ${obj.notEqual})`;
     }
 
-    if ('$in' in obj && Array.isArray(obj.$in)) {
-      // $in: [values] - match any value in array
-      const inConditions = (obj.$in as unknown[]).map(
-        (v) => sql`json_extract(${column}, ${jsonPath}) = ${v}`,
-      );
-      return or(...inConditions) || sql`0 = 1`;
+    // In array: { in: [values] }
+    if ('in' in obj && Array.isArray(obj.in)) {
+      if (obj.in.length === 0) return sql`false`;
+      const inConditions = obj.in.map((v) => sql`json_extract(${column}, ${jsonPath}) = ${v}`);
+      return or(...inConditions) || sql`false`;
     }
 
-    if ('$nin' in obj && Array.isArray(obj.$nin)) {
-      // $nin: [values] - not in any value
-      const ninConditions = (obj.$nin as unknown[]).map(
-        (v) => sql`json_extract(${column}, ${jsonPath}) != ${v}`,
-      );
-      return and(...ninConditions) || sql`1 = 1`;
+    // Not in array: { notIn: [values] }
+    if ('notIn' in obj && Array.isArray(obj.notIn)) {
+      if (obj.notIn.length === 0) return sql`true`;
+      const ninConditions = obj.notIn.map((v) => sql`json_extract(${column}, ${jsonPath}) != ${v}`);
+      return and(...ninConditions) || sql`true`;
     }
 
-    // Unknown object - stringify it for comparison (fallback)
+    // Object value - stringify for comparison
     return sql`json_extract(${column}, ${jsonPath}) = ${JSON.stringify(value)}`;
   }
 
@@ -161,13 +188,13 @@ const buildJsonFieldCondition = (column: any, jsonPath: string, value: unknown):
 };
 
 // Convenience wrappers for specific JSON columns
-const buildMetaCondition = (jsonPath: string, value: unknown) =>
+const buildMetaCondition = (jsonPath: string, value: JsonFilterValue | unknown) =>
   buildJsonFieldCondition(products.meta, jsonPath, value);
-const buildWarehousingCondition = (jsonPath: string, value: unknown) =>
+const buildWarehousingCondition = (jsonPath: string, value: JsonFilterValue | unknown) =>
   buildJsonFieldCondition(products.warehousing, jsonPath, value);
-const buildCommerceCondition = (jsonPath: string, value: unknown) =>
+const buildCommerceCondition = (jsonPath: string, value: JsonFilterValue | unknown) =>
   buildJsonFieldCondition(products.commerce, jsonPath, value);
-const buildSupplyCondition = (jsonPath: string, value: unknown) =>
+const buildSupplyCondition = (jsonPath: string, value: JsonFilterValue | unknown) =>
   buildJsonFieldCondition(products.supply, jsonPath, value);
 
 export interface ProductsModuleInput {
@@ -241,11 +268,8 @@ export const configureProductsModule = async ({
       const productIds = await searchProductsFTS(db, query.queryString);
       const textProductIds = await searchProductTextsFTS(db, query.queryString);
       const allIds = [...new Set([...productIds, ...textProductIds])];
-      if (allIds.length === 0) {
-        conditions.push(sql`0 = 1`); // No matches
-      } else {
-        conditions.push(inArray(products._id, allIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(products._id, allIds));
     }
 
     // Filter query - used by filter plugins to filter products by key/value pairs
@@ -261,12 +285,19 @@ export const configureProductsModule = async ({
             conditions.push(
               sql`EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${value})`,
             );
-          } else if (value && typeof value === 'object' && '$ne' in (value as any)) {
-            // Exclude specific tag
-            const excludeTag = (value as any).$ne;
-            conditions.push(
-              sql`NOT EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${excludeTag})`,
-            );
+          } else if (value && typeof value === 'object') {
+            const filterValue = value as { notEqual?: string; $ne?: string };
+            if ('notEqual' in filterValue && filterValue.notEqual) {
+              // Exclude specific tag using typed filter
+              conditions.push(
+                sql`NOT EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${filterValue.notEqual})`,
+              );
+            } else if ('$ne' in filterValue && filterValue.$ne) {
+              // Exclude specific tag using MongoDB-style filter
+              conditions.push(
+                sql`NOT EXISTS (SELECT 1 FROM json_each(${products.tags}) WHERE value = ${filterValue.$ne})`,
+              );
+            }
           }
         } else if (key.startsWith('meta.')) {
           // Meta field query - extract from JSON
@@ -311,12 +342,23 @@ export const configureProductsModule = async ({
     return conditions;
   };
 
-  // Build sort options
+  // Sortable columns mapping for type-safe sorting
+  const SORTABLE_COLUMNS = {
+    _id: products._id,
+    sequence: products.sequence,
+    status: products.status,
+    type: products.type,
+    published: products.published,
+    created: products.created,
+    updated: products.updated,
+  } as const;
+
+  // Build sort options with proper typing
   const buildSortOptions = (sortOptions: SortOption[]) => {
     return sortOptions.map(({ key, value }) => {
-      const column = products[key as keyof typeof products];
+      const column = SORTABLE_COLUMNS[key as keyof typeof SORTABLE_COLUMNS];
       if (!column) return asc(products.sequence);
-      return value === SortDirection.DESC ? desc(column as any) : asc(column as any);
+      return value === SortDirection.DESC ? desc(column) : asc(column);
     });
   };
 
@@ -354,7 +396,7 @@ export const configureProductsModule = async ({
     // Update FTS
     await db.run(sql`DELETE FROM products_fts WHERE _id = ${productId}`);
 
-    return result.rowsAffected || 0;
+    return result.rowsAffected;
   };
 
   const publishProduct = async (product: Product): Promise<boolean> => {
@@ -389,7 +431,7 @@ export const configureProductsModule = async ({
 
       await emit('PRODUCT_UNPUBLISH', { product });
 
-      return (result.rowsAffected || 0) > 0;
+      return result.rowsAffected > 0;
     }
 
     return false;
@@ -492,9 +534,7 @@ export const configureProductsModule = async ({
       ];
 
       const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
-      let q = selectColumns
-        ? db.select(selectColumns).from(products)
-        : db.select().from(products);
+      let q = selectColumns ? db.select(selectColumns).from(products) : db.select().from(products);
 
       if (conditions.length) {
         q = q.where(and(...conditions)) as typeof q;
@@ -682,7 +722,7 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    update: async (productId: string, doc: Partial<Product>): Promise<string> => {
+    update: async (productId: string, doc: Partial<Product>): Promise<Product | null> => {
       await db
         .update(products)
         .set({
@@ -704,15 +744,14 @@ export const configureProductsModule = async ({
         }
       }
 
-      const [updatedProduct] = await db
-        .select()
-        .from(products)
-        .where(eq(products._id, productId))
-        .limit(1);
+      const [updatedRow] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
 
-      await emit('PRODUCT_UPDATE', { productId, ...doc, product: updatedProduct });
+      if (!updatedRow) return null;
 
-      return productId;
+      const updatedProduct = rowToProduct(updatedRow);
+      await emit('PRODUCT_UPDATE', { productId, product: updatedProduct });
+
+      return updatedProduct;
     },
 
     firstActiveProductProxy: async (productId: string): Promise<Product | null> => {
@@ -746,7 +785,7 @@ export const configureProductsModule = async ({
         })
         .where(eq(products._id, productId));
 
-      if ((result.rowsAffected || 0) === 0) return null;
+      if (result.rowsAffected === 0) return null;
 
       const [row] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
 
@@ -935,20 +974,17 @@ export const configureProductsModule = async ({
         limit?: number;
         offset?: number;
         productIds: string[];
-        productSelector?: any;
-        sort?: any;
+        sort?: SortOption[];
       }): Promise<Product[]> => {
         if (productIds.length === 0) return [];
 
         let q = db.select().from(products).where(inArray(products._id, productIds));
 
-        if (sort) {
-          // Handle sort options - convert MongoDB sort to Drizzle
-          const sortEntries = Object.entries(sort);
-          for (const [key, direction] of sortEntries) {
-            const column = products[key as keyof typeof products];
+        if (sort?.length) {
+          for (const { key, value } of sort) {
+            const column = COLUMNS[key as keyof typeof COLUMNS];
             if (column) {
-              q = q.orderBy(direction === -1 ? desc(column as any) : asc(column as any)) as typeof q;
+              q = q.orderBy(value === SortDirection.DESC ? desc(column) : asc(column)) as typeof q;
             }
           }
         }

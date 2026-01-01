@@ -7,19 +7,35 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:worker:email');
 
+/**
+ * Escape HTML special characters to prevent XSS attacks.
+ */
+function escapeHtml(str: string | undefined | null): string {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 
 const buildLink = async ({ filename, content, href, contentType, encoding, path }) => {
+  const safeFilename = escapeHtml(filename);
   if (path) {
-    return `<a href="file:/${path.startsWith('/') ? path : `${process.cwd()}/${path}`}">${filename}</a>`;
+    const safePath = path.startsWith('/') ? path : `${process.cwd()}/${path}`;
+    return `<a href="file:/${escapeHtml(safePath)}">${safeFilename}</a>`;
   }
   if (href) {
-    return `<a href="${href}">${filename}</a>`;
+    return `<a href="${escapeHtml(href)}">${safeFilename}</a>`;
   }
   if (content && encoding === 'base64') {
-    return `<a target="_blank" href="${`data:${contentType};base64,${content}`}">${filename}</a>`;
+    // Content-Type should be sanitized, but escape anyway for safety
+    return `<a target="_blank" href="data:${escapeHtml(contentType)};base64,${content}">${safeFilename}</a>`;
   }
   return '';
 };
@@ -43,7 +59,8 @@ const openInBrowser = async (options): Promise<boolean> => {
     return false;
   }
 
-  const messageBody = options.html || options.text.replace(/(\r\n|\n|\r)/gm, '<br/>');
+  // Escape plain text body, HTML body is already rendered by the sender
+  const messageBody = options.html || escapeHtml(options.text).replace(/(\r\n|\n|\r)/gm, '<br/>');
   const attachmentLinks = await Promise.all((options.attachments || []).map(buildLink));
   const content = `
 <!DOCTYPE html>
@@ -53,13 +70,13 @@ const openInBrowser = async (options): Promise<boolean> => {
     <meta name="viewport" content="width=device-width,initial-scale=1">
   </head>
   <body>
-    <b>From:&nbsp</b>${options.from}<br/>
-    <b>To:&nbsp;</b>${options.to}<br/>
-    <b>Cc:&nbsp;</b>${options.cc}<br/>
-    <b>Bcc:&nbsp;</b>${options.bcc}<br/>
-    <b>Reply-To:&nbsp;</b>${options.replyTo}<br/>
+    <b>From:&nbsp</b>${escapeHtml(options.from)}<br/>
+    <b>To:&nbsp;</b>${escapeHtml(options.to)}<br/>
+    <b>Cc:&nbsp;</b>${escapeHtml(options.cc)}<br/>
+    <b>Bcc:&nbsp;</b>${escapeHtml(options.bcc)}<br/>
+    <b>Reply-To:&nbsp;</b>${escapeHtml(options.replyTo)}<br/>
     <br/>
-    <b>subject:&nbsp;</b>${options.subject}<br/>
+    <b>subject:&nbsp;</b>${escapeHtml(options.subject)}<br/>
     <b>attachments:&nbsp;</b>${attachmentLinks.join(',&nbsp;')}<br/>
     <hr/>
     ${messageBody}

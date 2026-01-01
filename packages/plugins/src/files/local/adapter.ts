@@ -129,14 +129,15 @@ export const LocalFilesAdapter: IFileAdapter = {
   },
 
   async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname, fileId, headers }: any) {
-    const { href } = new URL(fileLink);
-    const fileName = decodeURIComponent(fname || href.split('/').pop());
+    // URL is pre-validated at service level (uploadFileFromURLService)
+    const url = new URL(fileLink);
+    const fileName = decodeURIComponent(fname || url.href.split('/').pop());
 
     const expiryDate = resolveExpirationDate();
     const hashedFilename = await buildHashedFilename(directoryName, fileName, expiryDate);
 
-    const response = await fetch(href, { headers });
-    if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
+    const response = await fetch(url, { headers });
+    if (!response.ok) throw new Error(`Unexpected response for ${url.href}: ${response.statusText}`);
     const type = mime.getType(fileName) || response.headers.get('content-type');
 
     ensureStorageDir(directoryName);
@@ -146,7 +147,7 @@ export const LocalFilesAdapter: IFileAdapter = {
     await pipeline(Readable.fromWeb(response.body as any), new PassThrough(), writeStream);
 
     const stats = fs.statSync(filePath);
-    const url = `${LOCAL_FILES_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(hashedFilename)}`;
+    const fileUrl = `${LOCAL_FILES_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 
     return {
       _id: fileId || hashedFilename,
@@ -155,7 +156,7 @@ export const LocalFilesAdapter: IFileAdapter = {
       fileName,
       size: stats.size,
       type,
-      url,
+      url: fileUrl,
     } as UploadFileData;
   },
 

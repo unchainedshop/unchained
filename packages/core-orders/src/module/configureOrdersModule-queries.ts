@@ -143,12 +143,8 @@ const buildConditions = async (
 
   if (queryString) {
     const matchingIds = await searchOrdersFTS(db, queryString);
-    if (matchingIds.length === 0) {
-      // No matches - add impossible condition
-      conditions.push(sql`0 = 1`);
-    } else {
-      conditions.push(inArray(orders._id, matchingIds));
-    }
+    // Drizzle handles empty arrays natively - inArray with [] returns false
+    conditions.push(inArray(orders._id, matchingIds));
   }
 
   return conditions;

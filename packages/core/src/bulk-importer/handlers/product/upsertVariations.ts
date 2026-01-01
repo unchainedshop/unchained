@@ -1,6 +1,9 @@
 import { z } from 'zod';
+import { createLogger } from '@unchainedshop/logger';
 import type { ProductVariation } from '@unchainedshop/core-products';
 import type { Modules } from '../../../modules.ts';
+
+const logger = createLogger('unchained:bulk-importer');
 
 const ProductVariationOptionSchema = z.object({
   value: z.string(),
@@ -40,19 +43,30 @@ const upsert = async (
     _id?: string;
   },
   unchainedAPI: { modules: Modules },
-) => {
+): Promise<ProductVariation> => {
   const { modules } = unchainedAPI;
-  try {
-    const newVariation = (await modules.products.variations.create(
-      productVariation,
-    )) as ProductVariation;
-    return newVariation;
-  } catch {
-    return (await modules.products.variations.update(
-      productVariation._id!,
-      productVariation,
-    )) as ProductVariation;
+
+  // Check if the variation already exists
+  if (productVariation._id) {
+    const existing = await modules.products.variations.findProductVariation({
+      productVariationId: productVariation._id,
+    });
+    if (existing) {
+      const updated = await modules.products.variations.update(productVariation._id, productVariation);
+      if (!updated) {
+        throw new Error(`Failed to update product variation ${productVariation._id}`);
+      }
+      logger.debug(`Updated product variation ${productVariation._id}`);
+      return updated as ProductVariation;
+    }
   }
+
+  const newVariation = await modules.products.variations.create(productVariation);
+  if (!newVariation) {
+    throw new Error(`Failed to create product variation`);
+  }
+  logger.debug(`Created product variation ${newVariation._id}`);
+  return newVariation as ProductVariation;
 };
 
 export default async function upsertVariations(

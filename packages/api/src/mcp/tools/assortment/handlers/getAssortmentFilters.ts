@@ -13,7 +13,7 @@ export default async function getAssortmentFilters(context: Context, params: Par
 
   const filters = await modules.assortments.filters.findFilters(
     { assortmentId },
-    { sort: { sortKey: 1 } },
+    { sort: [{ key: 'sortKey', value: 'ASC' }] },
   );
   const filters_normalized = await Promise.all(
     filters?.map(async ({ filterId, ...rest }) => ({

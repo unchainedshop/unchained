@@ -51,7 +51,19 @@ const defaultValidateNewUser = async (user: UserRegistrationData) => {
 };
 
 const defaultValidatePassword = async (password: string) => {
-  return password?.length >= 8;
+  // Require at least 12 characters
+  if (!password || password.length < 12) return false;
+
+  // Require at least one uppercase letter
+  if (!/[A-Z]/.test(password)) return false;
+
+  // Require at least one lowercase letter
+  if (!/[a-z]/.test(password)) return false;
+
+  // Require at least one number
+  if (!/[0-9]/.test(password)) return false;
+
+  return true;
 };
 
 export const userSettings: UserSettings = {

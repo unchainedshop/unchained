@@ -5,15 +5,15 @@ import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
 import type { Modules } from '../modules.ts';
 
 export interface OrderItemDispatch {
-  _id: string;
+  warehousingProviderId: string;
   deliveryProvider: DeliveryProvider;
-  warehousingProvider: WarehousingProvider;
+  warehousingProvider: WarehousingProvider | null;
   product: Product;
   quantity: number;
   countryCode: string;
   userId: string;
-  shipping: Date;
-  earliestDelivery: Date;
+  shipping?: Date;
+  earliestDelivery?: Date;
 }
 
 export async function resolveOrderItemDispatchesService(

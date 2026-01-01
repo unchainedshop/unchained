@@ -253,11 +253,8 @@ const buildQueryConditions = async (
   // Full-text search
   if (queryString) {
     const matchingIds = await searchWorkQueueFTS(db, queryString);
-    if (matchingIds.length === 0) {
-      conditions.push(eq(workQueue._id, '__no_match__'));
-    } else {
-      conditions.push(inArray(workQueue._id, matchingIds));
-    }
+    // Drizzle handles empty arrays natively - inArray with [] returns false
+    conditions.push(inArray(workQueue._id, matchingIds));
   }
 
   return conditions;

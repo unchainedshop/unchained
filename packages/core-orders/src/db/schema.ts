@@ -4,8 +4,15 @@
  */
 
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
-import type { Address, Contact } from '@unchainedshop/utils';
+import type { Address, Contact, PricingCalculation } from '@unchainedshop/utils';
 import type { Price } from '@unchainedshop/utils';
+
+// Scheduling entry for order positions
+export interface OrderPositionScheduling {
+  warehousingProviderId: string;
+  shipping?: Date;
+  earliestDelivery?: Date;
+}
 
 // Log entry type for order-related entities
 export interface OrderLogEntry {
@@ -40,7 +47,7 @@ export const orders = sqliteTable(
     // Nested as JSON
     billingAddress: text('billingAddress', { mode: 'json' }).$type<Address>(),
     contact: text('contact', { mode: 'json' }).$type<Contact>(),
-    calculation: text('calculation', { mode: 'json' }).$type<any[]>().default([]),
+    calculation: text('calculation', { mode: 'json' }).$type<PricingCalculation[]>().default([]),
     context: text('context', { mode: 'json' }),
     log: text('log', { mode: 'json' }).$type<OrderLogEntry[]>().default([]),
     // Dates
@@ -77,7 +84,7 @@ export interface Order {
   originEnrollmentId?: string;
   billingAddress?: Address;
   contact?: Contact;
-  calculation: any[];
+  calculation: PricingCalculation[];
   context?: Record<string, unknown>;
   log: OrderLogEntry[];
   ordered?: Date;
@@ -131,8 +138,8 @@ export const orderPositions = sqliteTable(
     quotationId: text('quotationId'),
     // Nested as JSON
     configuration: text('configuration', { mode: 'json' }).$type<OrderPositionConfiguration[] | null>(),
-    calculation: text('calculation', { mode: 'json' }).$type<any[]>().default([]),
-    scheduling: text('scheduling', { mode: 'json' }).$type<any[]>().default([]),
+    calculation: text('calculation', { mode: 'json' }).$type<PricingCalculation[]>().default([]),
+    scheduling: text('scheduling', { mode: 'json' }).$type<OrderPositionScheduling[]>().default([]),
     context: text('context', { mode: 'json' }),
     // Timestamps
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
@@ -156,8 +163,8 @@ export interface OrderPosition {
   quantity: number;
   quotationId?: string;
   configuration?: OrderPositionConfiguration[];
-  calculation: any[];
-  scheduling: any[];
+  calculation: PricingCalculation[];
+  scheduling: OrderPositionScheduling[];
   context?: Record<string, unknown>;
   created: Date;
   updated?: Date;
@@ -203,7 +210,7 @@ export const orderPayments = sqliteTable(
     transactionId: text('transactionId'),
     paid: integer('paid', { mode: 'timestamp_ms' }),
     // Nested as JSON
-    calculation: text('calculation', { mode: 'json' }).$type<any[]>().default([]),
+    calculation: text('calculation', { mode: 'json' }).$type<PricingCalculation[]>().default([]),
     context: text('context', { mode: 'json' }),
     log: text('log', { mode: 'json' }).$type<OrderLogEntry[]>().default([]),
     // Timestamps
@@ -224,7 +231,7 @@ export interface OrderPayment {
   status: string | null;
   transactionId?: string;
   paid?: Date;
-  calculation: any[];
+  calculation: PricingCalculation[];
   context?: Record<string, unknown>;
   log: OrderLogEntry[];
   created: Date;
@@ -270,7 +277,7 @@ export const orderDeliveries = sqliteTable(
     status: text('status'), // null maps to OPEN
     delivered: integer('delivered', { mode: 'timestamp_ms' }),
     // Nested as JSON
-    calculation: text('calculation', { mode: 'json' }).$type<any[]>().default([]),
+    calculation: text('calculation', { mode: 'json' }).$type<PricingCalculation[]>().default([]),
     context: text('context', { mode: 'json' }),
     log: text('log', { mode: 'json' }).$type<OrderLogEntry[]>().default([]),
     // Timestamps
@@ -290,7 +297,7 @@ export interface OrderDelivery {
   deliveryProviderId: string;
   status: string | null;
   delivered?: Date;
-  calculation: any[];
+  calculation: PricingCalculation[];
   context?: Record<string, unknown>;
   log: OrderLogEntry[];
   created: Date;

@@ -46,6 +46,20 @@ const PRODUCT_REVIEW_EVENTS = [
 export type ProductReview = ProductReviewRow;
 export { ProductReviewVoteType, type ProductVote, type ProductReviewVoteTypeType };
 
+const COLUMNS = {
+  _id: productReviews._id,
+  productId: productReviews.productId,
+  authorId: productReviews.authorId,
+  rating: productReviews.rating,
+  title: productReviews.title,
+  review: productReviews.review,
+  meta: productReviews.meta,
+  votes: productReviews.votes,
+  created: productReviews.created,
+  updated: productReviews.updated,
+  deleted: productReviews.deleted,
+} as const;
+
 const userIdsThatVoted = (
   productReview: ProductReview,
   { type = ProductReviewVoteType.UPVOTE }: { type: ProductReviewVoteTypeType },
@@ -70,11 +84,8 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
     }
     if (query.queryString) {
       const matchingIds = await searchProductReviewsFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        conditions.push(sql`0 = 1`); // No matches
-      } else {
-        conditions.push(inArray(productReviews._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(productReviews._id, matchingIds));
     }
     if (query.created) {
       if (query.created.start) {
@@ -102,9 +113,8 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
     }
 
     return sort.map(({ key, value }) => {
-      const column = productReviews[key as keyof typeof productReviews.$inferSelect];
-      if (!column) return desc(productReviews.created);
-      return value === SortDirection.ASC ? asc(column as any) : desc(column as any);
+      const column = COLUMNS[key as keyof typeof COLUMNS] ?? productReviews.created;
+      return value === SortDirection.ASC ? asc(column) : desc(column);
     });
   };
 
@@ -242,7 +252,7 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
         productReviewId,
       });
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     deleteMany: async ({
@@ -288,7 +298,7 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
         ),
       );
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     deleteByAuthorId: async (authorId: string): Promise<number> => {
@@ -312,7 +322,7 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
         ),
       );
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     update: async (

@@ -221,7 +221,7 @@ export const configureProductMediaModule = ({ db }: { db: DrizzleDb }) => {
         productMediaId,
       });
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     deleteMediaFiles: async ({
@@ -270,7 +270,7 @@ export const configureProductMediaModule = ({ db }: { db: DrizzleDb }) => {
           ),
         );
 
-        return result.rowsAffected || 0;
+        return result.rowsAffected;
       }
 
       return 0;

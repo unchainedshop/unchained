@@ -29,7 +29,8 @@ const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
-  UNCHAINED_COOKIE_SAMESITE = 'none',
+  // Changed default from 'none' to 'lax' for CSRF protection
+  UNCHAINED_COOKIE_SAMESITE = 'lax',
   UNCHAINED_COOKIE_INSECURE,
 } = process.env;
 

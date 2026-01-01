@@ -79,51 +79,36 @@ export const configureAssortmentLinksModule = ({
       },
       options?: { limit?: number; offset?: number },
     ): Promise<AssortmentLink[]> => {
-      void options;
+      let condition: ReturnType<typeof eq> | ReturnType<typeof or> | undefined;
 
       if (parentAssortmentId) {
-        return db
-          .select()
-          .from(assortmentLinks)
-          .where(eq(assortmentLinks.parentAssortmentId, parentAssortmentId))
-          .orderBy(asc(assortmentLinks.sortKey));
+        condition = eq(assortmentLinks.parentAssortmentId, parentAssortmentId);
+      } else if (parentAssortmentIds?.length) {
+        condition = inArray(assortmentLinks.parentAssortmentId, parentAssortmentIds);
+      } else if (assortmentId) {
+        condition = or(
+          eq(assortmentLinks.parentAssortmentId, assortmentId),
+          eq(assortmentLinks.childAssortmentId, assortmentId),
+        );
+      } else if (assortmentIds?.length) {
+        condition = or(
+          inArray(assortmentLinks.parentAssortmentId, assortmentIds),
+          inArray(assortmentLinks.childAssortmentId, assortmentIds),
+        );
       }
 
-      if (parentAssortmentIds?.length) {
-        return db
-          .select()
-          .from(assortmentLinks)
-          .where(inArray(assortmentLinks.parentAssortmentId, parentAssortmentIds))
-          .orderBy(asc(assortmentLinks.sortKey));
+      let query = condition
+        ? db.select().from(assortmentLinks).where(condition).orderBy(asc(assortmentLinks.sortKey))
+        : db.select().from(assortmentLinks).orderBy(asc(assortmentLinks.sortKey));
+
+      if (options?.limit) {
+        query = query.limit(options.limit) as typeof query;
+      }
+      if (options?.offset) {
+        query = query.offset(options.offset) as typeof query;
       }
 
-      if (assortmentId) {
-        return db
-          .select()
-          .from(assortmentLinks)
-          .where(
-            or(
-              eq(assortmentLinks.parentAssortmentId, assortmentId),
-              eq(assortmentLinks.childAssortmentId, assortmentId),
-            ),
-          )
-          .orderBy(asc(assortmentLinks.sortKey));
-      }
-
-      if (assortmentIds?.length) {
-        return db
-          .select()
-          .from(assortmentLinks)
-          .where(
-            or(
-              inArray(assortmentLinks.parentAssortmentId, assortmentIds),
-              inArray(assortmentLinks.childAssortmentId, assortmentIds),
-            ),
-          )
-          .orderBy(asc(assortmentLinks.sortKey));
-      }
-
-      return db.select().from(assortmentLinks).orderBy(asc(assortmentLinks.sortKey));
+      return query;
     },
 
     create: async (
@@ -345,7 +330,7 @@ export const configureAssortmentLinksModule = ({
         });
       }
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     updateManualOrder: async (

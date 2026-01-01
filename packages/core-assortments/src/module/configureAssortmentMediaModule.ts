@@ -10,6 +10,7 @@ import {
   sql,
   type DrizzleDb,
 } from '@unchainedshop/store';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
   assortmentMedia,
   assortmentMediaTexts,
@@ -100,23 +101,19 @@ export const configureAssortmentMediaModule = ({ db }: { db: DrizzleDb }) => {
       return result || null;
     },
 
-    findAssortmentMedias: async (
-      {
-        assortmentId,
-        assortmentIds,
-        tags,
-        offset,
-        limit,
-      }: {
-        assortmentId?: string;
-        assortmentIds?: string[];
-        limit?: number;
-        offset?: number;
-        tags?: string[];
-      },
-      options?: { limit?: number; offset?: number },
-    ): Promise<AssortmentMediaType[]> => {
-      void options;
+    findAssortmentMedias: async ({
+      assortmentId,
+      assortmentIds,
+      tags,
+      offset,
+      limit,
+    }: {
+      assortmentId?: string;
+      assortmentIds?: string[];
+      limit?: number;
+      offset?: number;
+      tags?: string[];
+    }): Promise<AssortmentMediaType[]> => {
       const conditions: ReturnType<typeof eq>[] = [];
 
       if (assortmentId) {
@@ -207,7 +204,7 @@ export const configureAssortmentMediaModule = ({ db }: { db: DrizzleDb }) => {
 
       await emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId });
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     deleteMediaFiles: async ({
@@ -258,7 +255,7 @@ export const configureAssortmentMediaModule = ({ db }: { db: DrizzleDb }) => {
         mediaIds.map(async (id) => emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId: id })),
       );
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     update: async (assortmentMediaId: string, doc: Partial<AssortmentMediaType>) => {
@@ -313,9 +310,8 @@ export const configureAssortmentMediaModule = ({ db }: { db: DrizzleDb }) => {
     texts: {
       findMediaTexts: async (
         query: { assortmentMediaId?: string; assortmentMediaIds?: string[] },
-        options?: { limit?: number; offset?: number; sort?: Record<string, number> },
+        options?: { limit?: number; offset?: number; sort?: SortOption[] },
       ): Promise<AssortmentMediaText[]> => {
-        void options;
         const conditions: ReturnType<typeof eq>[] = [];
 
         if (query.assortmentMediaId) {
@@ -325,14 +321,45 @@ export const configureAssortmentMediaModule = ({ db }: { db: DrizzleDb }) => {
           conditions.push(inArray(assortmentMediaTexts.assortmentMediaId, query.assortmentMediaIds));
         }
 
-        if (conditions.length === 0) {
-          return db.select().from(assortmentMediaTexts);
+        const MEDIA_TEXT_COLUMNS = {
+          _id: assortmentMediaTexts._id,
+          assortmentMediaId: assortmentMediaTexts.assortmentMediaId,
+          locale: assortmentMediaTexts.locale,
+          title: assortmentMediaTexts.title,
+          subtitle: assortmentMediaTexts.subtitle,
+          created: assortmentMediaTexts.created,
+          updated: assortmentMediaTexts.updated,
+        } as const;
+
+        const orderBy = options?.sort?.length
+          ? options.sort.map(({ key, value }) => {
+              const column =
+                MEDIA_TEXT_COLUMNS[key as keyof typeof MEDIA_TEXT_COLUMNS] ??
+                assortmentMediaTexts.created;
+              return value === SortDirection.DESC ? desc(column) : asc(column);
+            })
+          : [asc(assortmentMediaTexts.created)];
+
+        let queryBuilder =
+          conditions.length === 0
+            ? db
+                .select()
+                .from(assortmentMediaTexts)
+                .orderBy(...orderBy)
+            : db
+                .select()
+                .from(assortmentMediaTexts)
+                .where(and(...conditions))
+                .orderBy(...orderBy);
+
+        if (options?.limit) {
+          queryBuilder = queryBuilder.limit(options.limit) as typeof queryBuilder;
+        }
+        if (options?.offset) {
+          queryBuilder = queryBuilder.offset(options.offset) as typeof queryBuilder;
         }
 
-        return db
-          .select()
-          .from(assortmentMediaTexts)
-          .where(and(...conditions));
+        return queryBuilder;
       },
 
       findLocalizedMediaText: async ({

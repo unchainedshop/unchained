@@ -58,7 +58,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: Admin._id,
         },
       });
@@ -82,7 +82,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: Admin._id,
         },
       },
@@ -115,7 +115,7 @@ test.describe('Media Permissions', () => {
     });
     assert.deepStrictEqual(confirmMediaUpload, {
       _id: prepareUserAvatarUpload._id,
-      name: 'test-media',
+      name: 'test-media.jpg',
       type: 'image/jpeg',
       size: 38489,
     });
@@ -138,7 +138,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: User._id,
         },
       });
@@ -161,7 +161,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: User._id,
         },
       },
@@ -194,7 +194,7 @@ test.describe('Media Permissions', () => {
     });
     assert.deepStrictEqual(confirmMediaUpload, {
       _id: prepareUserAvatarUpload._id,
-      name: 'test-media',
+      name: 'test-media.jpg',
       size: 8615,
       type: 'image/jpeg',
     });
@@ -215,7 +215,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: UnverifiedUser._id,
         },
       });
@@ -238,7 +238,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: Guest._id,
         },
       });
@@ -261,7 +261,7 @@ test.describe('Media Permissions', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           userId: Guest._id,
         },
       });

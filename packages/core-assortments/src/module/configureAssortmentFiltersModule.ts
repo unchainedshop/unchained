@@ -9,6 +9,7 @@ import {
   desc,
   type DrizzleDb,
 } from '@unchainedshop/store';
+import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import { assortmentFilters, type AssortmentFilter } from '../db/schema.ts';
 
 const ASSORTMENT_FILTER_EVENTS = [
@@ -31,15 +32,56 @@ export const configureAssortmentFiltersModule = ({ db }: { db: DrizzleDb }) => {
     },
 
     findFilters: async (
-      { assortmentId }: { assortmentId: string },
-      options?: { limit?: number; offset?: number; sort?: Record<string, number> },
+      { assortmentId, filterId }: { assortmentId?: string; filterId?: string },
+      options?: { limit?: number; offset?: number; sort?: SortOption[] },
     ): Promise<AssortmentFilter[]> => {
-      void options;
-      return db
-        .select()
-        .from(assortmentFilters)
-        .where(eq(assortmentFilters.assortmentId, assortmentId))
-        .orderBy(asc(assortmentFilters.sortKey));
+      const FILTER_COLUMNS = {
+        _id: assortmentFilters._id,
+        assortmentId: assortmentFilters.assortmentId,
+        filterId: assortmentFilters.filterId,
+        sortKey: assortmentFilters.sortKey,
+        tags: assortmentFilters.tags,
+        meta: assortmentFilters.meta,
+        created: assortmentFilters.created,
+        updated: assortmentFilters.updated,
+      } as const;
+
+      const orderBy = options?.sort?.length
+        ? options.sort.map(({ key, value }) => {
+            const column =
+              FILTER_COLUMNS[key as keyof typeof FILTER_COLUMNS] ?? assortmentFilters.sortKey;
+            return value === SortDirection.DESC ? desc(column) : asc(column);
+          })
+        : [asc(assortmentFilters.sortKey)];
+
+      const conditions: ReturnType<typeof eq>[] = [];
+      if (assortmentId) {
+        conditions.push(eq(assortmentFilters.assortmentId, assortmentId));
+      }
+      if (filterId) {
+        conditions.push(eq(assortmentFilters.filterId, filterId));
+      }
+
+      let query =
+        conditions.length === 0
+          ? db
+              .select()
+              .from(assortmentFilters)
+              .orderBy(...orderBy)
+          : db
+              .select()
+              .from(assortmentFilters)
+              .where(and(...conditions))
+              .orderBy(...orderBy);
+
+      if (options?.limit) {
+        query = query.limit(options.limit) as typeof query;
+      }
+      if (options?.offset) {
+        query = query.offset(options.offset) as typeof query;
+      }
+
+      return query;
     },
 
     findFilterIds: async ({ assortmentId }: { assortmentId: string }): Promise<string[]> => {
@@ -185,7 +227,7 @@ export const configureAssortmentFiltersModule = ({ db }: { db: DrizzleDb }) => {
         ),
       );
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     update: async (assortmentFilterId: string, doc: Partial<AssortmentFilter>) => {

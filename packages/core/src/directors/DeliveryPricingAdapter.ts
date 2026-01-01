@@ -13,8 +13,8 @@ import type { Modules } from '../modules.ts';
 
 export interface DeliveryPricingCalculation extends PricingCalculation {
   discountId?: string;
-  isNetPrice: boolean;
-  isTaxable: boolean;
+  isNetPrice?: boolean;
+  isTaxable?: boolean;
   rate?: number;
 }
 

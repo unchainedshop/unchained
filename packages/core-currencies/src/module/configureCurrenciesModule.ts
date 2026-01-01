@@ -104,12 +104,8 @@ export async function configureCurrenciesModule({ db }: { db: DrizzleDb }) {
 
     if (query.queryString) {
       const matchingIds = await searchCurrenciesFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        // Return impossible condition to yield empty results
-        conditions.push(sql`0 = 1`);
-      } else {
-        conditions.push(inArray(currencies._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(currencies._id, matchingIds));
     }
 
     return conditions;
@@ -196,7 +192,7 @@ export async function configureCurrenciesModule({ db }: { db: DrizzleDb }) {
       return currencyId;
     },
 
-    update: async (currencyId: string, doc: UpdateCurrencyInput): Promise<string> => {
+    update: async (currencyId: string, doc: UpdateCurrencyInput): Promise<Currency | null> => {
       const updateDoc = { ...doc };
       if (updateDoc.isoCode) {
         updateDoc.isoCode = updateDoc.isoCode.toUpperCase();
@@ -207,8 +203,17 @@ export async function configureCurrenciesModule({ db }: { db: DrizzleDb }) {
         .set({ ...updateDoc, updated: new Date() })
         .where(eq(currencies._id, currencyId));
 
-      await emit('CURRENCY_UPDATE', { currencyId });
-      return currencyId;
+      const [updatedRow] = await db
+        .select()
+        .from(currencies)
+        .where(eq(currencies._id, currencyId))
+        .limit(1);
+
+      if (!updatedRow) return null;
+
+      const currency = rowToCurrency(updatedRow);
+      await emit('CURRENCY_UPDATE', { currencyId, currency });
+      return currency;
     },
 
     delete: async (currencyId: string): Promise<number> => {

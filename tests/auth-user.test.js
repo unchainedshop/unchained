@@ -115,7 +115,7 @@ test.describe('Auth for logged in users', () => {
       const { data: { changePassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            changePassword(oldPassword: "password", newPassword: "password") {
+            changePassword(oldPassword: "password", newPassword: "Password123!") {
               success
             }
           }

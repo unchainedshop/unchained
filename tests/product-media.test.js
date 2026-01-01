@@ -29,9 +29,7 @@ test.describe('Product: Media', async () => {
 
   test.describe('Mutation.prepareProductMediaUpload for admin user should', async () => {
     test('return a sign PUT url for media upload', async () => {
-      const {
-        data: { prepareProductMediaUpload },
-      } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           mutation prepareProductMediaUpload($mediaName: String!, $productId: ID!) {
             prepareProductMediaUpload(mediaName: $mediaName, productId: $productId) {
@@ -42,11 +40,12 @@ test.describe('Product: Media', async () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           productId: SimpleProduct._id,
         },
       });
-      assert.notStrictEqual(prepareProductMediaUpload.putURL, null);
+      assert.ok(!result.errors, `GraphQL errors: ${JSON.stringify(result.errors)}`);
+      assert.notStrictEqual(result.data.prepareProductMediaUpload.putURL, null);
     });
 
     test('upload file via PUT successfully', async () => {
@@ -63,7 +62,7 @@ test.describe('Product: Media', async () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           productId: SimpleProduct._id,
         },
       });
@@ -90,7 +89,7 @@ test.describe('Product: Media', async () => {
             }
           `,
           variables: {
-            mediaName: 'test-media',
+            mediaName: 'test-media.pdf',
             productId: SimpleProduct._id,
           },
         },
@@ -123,7 +122,7 @@ test.describe('Product: Media', async () => {
       });
       assert.deepStrictEqual(confirmMediaUpload, {
         _id: prepareProductMediaUpload._id,
-        name: 'test-media',
+        name: 'test-media.pdf',
         type: 'image/jpeg',
         size: 8615,
       });

@@ -43,7 +43,7 @@ test.describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           assortmentId: SimpleAssortment[0]._id,
         },
       });
@@ -64,7 +64,7 @@ test.describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           assortmentId: SimpleAssortment[0]._id,
         },
       });
@@ -94,7 +94,7 @@ test.describe('AssortmentMedia', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      assert.strictEqual(assortment.media[1].file.name, 'test-media');
+      assert.strictEqual(assortment.media[1].file.name, 'test-media.jpg');
       const hash = crypto.createHash('sha256');
       const download = await (await fetch(assortment.media[1].file.url)).text();
       hash.update(download);
@@ -118,7 +118,7 @@ test.describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: 'test-media.jpg',
           assortmentId: SimpleAssortment[0]._id,
         },
       });
@@ -150,7 +150,7 @@ test.describe('AssortmentMedia', () => {
 
       assert.deepStrictEqual(confirmMediaUpload, {
         _id: prepareAssortmentMediaUpload._id,
-        name: 'test-media',
+        name: 'test-media.jpg',
         type: 'image/jpeg',
         size: 8615,
       });

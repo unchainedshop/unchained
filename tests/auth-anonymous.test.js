@@ -91,7 +91,7 @@ test.describe('Auth for anonymous users', () => {
         variables: {
           username: 'newuser',
           email: 'newuser@unchained.local',
-          password: 'password',
+          password: 'Password123!',
           profile: {
             displayName: 'New User',
             birthday,
@@ -231,7 +231,7 @@ test.describe('Auth for anonymous users', () => {
           }
         `,
         variables: {
-          newPassword: 'password',
+          newPassword: 'Password123!',
           token,
         },
       });

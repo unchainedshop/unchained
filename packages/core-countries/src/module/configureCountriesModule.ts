@@ -95,12 +95,8 @@ export async function configureCountriesModule({ db }: { db: DrizzleDb }) {
 
     if (query.queryString) {
       const matchingIds = await searchCountriesFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        // Return impossible condition to yield empty results
-        conditions.push(sql`0 = 1`);
-      } else {
-        conditions.push(inArray(countries._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(countries._id, matchingIds));
     }
 
     return conditions;
@@ -197,14 +193,23 @@ export async function configureCountriesModule({ db }: { db: DrizzleDb }) {
       return countryId;
     },
 
-    update: async (countryId: string, doc: UpdateCountryInput): Promise<string> => {
+    update: async (countryId: string, doc: UpdateCountryInput): Promise<Country | null> => {
       await db
         .update(countries)
         .set({ ...doc, updated: new Date() })
         .where(eq(countries._id, countryId));
 
-      await emit('COUNTRY_UPDATE', { countryId });
-      return countryId;
+      const [updatedRow] = await db
+        .select()
+        .from(countries)
+        .where(eq(countries._id, countryId))
+        .limit(1);
+
+      if (!updatedRow) return null;
+
+      const country = rowToCountry(updatedRow);
+      await emit('COUNTRY_UPDATE', { countryId, country });
+      return country;
     },
 
     delete: async (countryId: string): Promise<number> => {

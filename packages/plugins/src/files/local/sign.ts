@@ -1,7 +1,18 @@
 import crypto from 'node:crypto';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
 
-const SIGNATURE_SECRET =
-  process.env.UNCHAINED_TOKEN_SECRET || process.env.SIGNATURE_SECRET || 'unchained';
+// Require explicit configuration - no weak defaults
+const rawSecret = process.env.SIGNATURE_SECRET || process.env.UNCHAINED_TOKEN_SECRET;
+
+// Validate secret at module load time
+if (!rawSecret || rawSecret.length < 32) {
+  throw new Error(
+    'SIGNATURE_SECRET or UNCHAINED_TOKEN_SECRET must be set with at least 32 characters for file signing',
+  );
+}
+
+// After validation, we know the secret is defined and valid
+const SIGNATURE_SECRET: string = rawSecret;
 
 export default async function sign(
   directoryName: string,
@@ -20,5 +31,7 @@ export async function verify(
   signature: string,
 ): Promise<boolean> {
   const expectedSignature = await sign(directoryName, fileName, expiryTimestamp);
-  return signature === expectedSignature && Date.now() < expiryTimestamp;
+  // Use timing-safe comparison to prevent timing attacks
+  const isValid = await timingSafeStringEqual(signature, expectedSignature);
+  return isValid && Date.now() < expiryTimestamp;
 }

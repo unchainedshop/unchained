@@ -330,7 +330,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         }
 
         const result = await db.delete(productTexts).where(eq(productTexts.productId, productId));
-        return result.rowsAffected || 0;
+        return result.rowsAffected;
       } else if (excludedProductIds?.length) {
         const toDelete = await db
           .select({ _id: productTexts._id })
@@ -344,7 +344,7 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         const result = await db
           .delete(productTexts)
           .where(notInArray(productTexts.productId, excludedProductIds));
-        return result.rowsAffected || 0;
+        return result.rowsAffected;
       }
       return 0;
     },

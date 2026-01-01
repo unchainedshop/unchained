@@ -339,7 +339,7 @@ export const configureUsersWebAuthnModule = async ({ db }: { db: DrizzleDb }) =>
       const result = await db
         .delete(webauthnCredentialsRequests)
         .where(eq(webauthnCredentialsRequests.username, username));
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
   };
 };

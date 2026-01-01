@@ -21,7 +21,7 @@ export default async function emptyCart(
 
   if (!order) return null;
 
-  await modules.orders.positions.removePositions({ orderId: order._id });
+  await modules.orders.positions.deletePositions({ orderId: order._id });
 
   return services.orders.updateCalculation(order._id);
 }

@@ -19,6 +19,7 @@ export {
   type NewOrderPositionRow,
   type OrderPosition,
   type OrderPositionConfiguration,
+  type OrderPositionScheduling,
   type OrderPositionDiscount,
   type OrderPaymentRow,
   type NewOrderPaymentRow,

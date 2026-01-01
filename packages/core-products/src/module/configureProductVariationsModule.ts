@@ -244,7 +244,7 @@ export const configureProductVariationsModule = ({ db }: { db: DrizzleDb }) => {
         productVariationId,
       });
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     deleteVariations: async ({
@@ -281,7 +281,7 @@ export const configureProductVariationsModule = ({ db }: { db: DrizzleDb }) => {
 
       // Delete variations
       const result = await db.delete(productVariations).where(and(...conditions));
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package

@@ -15,6 +15,7 @@ import {
   rowToOrderPosition,
   type OrderPosition,
   type OrderPositionRow,
+  type OrderPositionScheduling,
 } from '../db/schema.ts';
 
 type SelectOrderPosition = OrderPosition | Partial<OrderPosition>;
@@ -108,7 +109,7 @@ export const configureOrderPositionsModule = ({ db }: { db: DrizzleDb }) => {
       return null;
     },
 
-    removePositions: async ({ orderId }: { orderId: string }): Promise<number> => {
+    deletePositions: async ({ orderId }: { orderId: string }): Promise<number> => {
       const result = await db.delete(orderPositions).where(eq(orderPositions.orderId, orderId));
       await emit('ORDER_EMPTY_CART', { orderId, count: result.rowsAffected });
       return result.rowsAffected;
@@ -176,7 +177,7 @@ export const configureOrderPositionsModule = ({ db }: { db: DrizzleDb }) => {
       return orderIdsToRecalculate;
     },
 
-    updateScheduling: async (orderPositionId: string, scheduling: any[]) => {
+    updateScheduling: async (orderPositionId: string, scheduling: OrderPositionScheduling[]) => {
       await db.update(orderPositions).set({ scheduling }).where(eq(orderPositions._id, orderPositionId));
 
       const [updated] = await db

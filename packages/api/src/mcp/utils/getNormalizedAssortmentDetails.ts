@@ -17,7 +17,7 @@ export async function getNormalizedAssortmentDetails(
 
   const filters = await modules.assortments.filters.findFilters(
     { assortmentId: assortment._id },
-    { sort: { sortKey: 1 } },
+    { sort: [{ key: 'sortKey', value: 'ASC' }] },
   );
 
   const assortmentMedias = await modules.assortments.media.findAssortmentMedias({
@@ -34,7 +34,7 @@ export async function getNormalizedAssortmentDetails(
 
   const products = await modules.assortments.products.findAssortmentProducts(
     { assortmentId: assortment._id },
-    { sort: { sortKey: 1 } },
+    { sort: [{ key: 'sortKey', value: 'ASC' }] },
   );
 
   const assortmentIds = assortmentChildLinks.map(({ childAssortmentId }) => childAssortmentId);

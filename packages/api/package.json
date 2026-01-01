@@ -108,6 +108,7 @@
     }
   },
   "dependencies": {
+    "@graphql-yoga/plugin-disable-introspection": "^2.19.0",
     "@unchainedshop/core": "^5.0.0-alpha.0",
     "@unchainedshop/events": "^5.0.0-alpha.0",
     "@unchainedshop/logger": "^5.0.0-alpha.0",

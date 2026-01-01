@@ -60,57 +60,53 @@ const buildSortOptions = (sort: SortOption[] = []) => {
   });
 };
 
-// Extended query type to handle MongoDB-style selectors from loadFiltersService
+/**
+ * Extended query type with typed filter options.
+ * Supports both simple values and array membership filters.
+ */
 interface ExtendedFilterQuery extends FilterQuery {
-  _id?: string | { $in: string[] };
-  key?: string | { $in: string[] };
-  isActive?: boolean;
+  _id?: string | string[];
+  key?: string | string[];
 }
 
 export const buildFindSelector = async (db: DrizzleDb, query: ExtendedFilterQuery): Promise<SQL[]> => {
-  const { includeInactive = false, queryString, filterIds, _id, key, isActive, ...rest } = query;
-  void rest;
-  void isActive; // MongoDB-style selector property, ignored when includeInactive is set
+  const { includeInactive = false, queryString, filterIds, _id, key } = query;
   const conditions: SQL[] = [];
 
   // Handle active filter status:
-  // - If includeInactive is true, include all filters (ignore isActive)
+  // - If includeInactive is true, include all filters
   // - If includeInactive is false (default), only include active filters
   if (!includeInactive) {
     conditions.push(eq(filters.isActive, true));
   }
 
-  // Handle filterIds array
+  // Handle filterIds array (primary way to filter by IDs)
   if (filterIds?.length) {
     conditions.push(inArray(filters._id, filterIds));
   }
 
-  // Handle MongoDB-style _id: { $in: [...] } or _id: 'string'
+  // Handle _id filter: string for single, string[] for multiple
   if (_id) {
     if (typeof _id === 'string') {
       conditions.push(eq(filters._id, _id));
-    } else if (_id.$in?.length) {
-      conditions.push(inArray(filters._id, _id.$in));
+    } else if (Array.isArray(_id) && _id.length > 0) {
+      conditions.push(inArray(filters._id, _id));
     }
   }
 
-  // Handle MongoDB-style key: { $in: [...] } or key: 'string'
+  // Handle key filter: string for single, string[] for multiple
   if (key) {
     if (typeof key === 'string') {
       conditions.push(eq(filters.key, key));
-    } else if (key.$in?.length) {
-      conditions.push(inArray(filters.key, key.$in));
+    } else if (Array.isArray(key) && key.length > 0) {
+      conditions.push(inArray(filters.key, key));
     }
   }
 
   if (queryString) {
     const matchingIds = await searchFiltersFTS(db, queryString);
-    if (matchingIds.length === 0) {
-      // No matches - force empty result
-      conditions.push(eq(filters._id, '__no_match__'));
-    } else {
-      conditions.push(inArray(filters._id, matchingIds));
-    }
+    // Drizzle handles empty arrays natively - inArray with [] returns false
+    conditions.push(inArray(filters._id, matchingIds));
   }
 
   return conditions;
@@ -285,7 +281,7 @@ export const configureFiltersModule = async ({
       await filterTextsModule.deleteMany({ filterId });
       const result = await db.delete(filters).where(eq(filters._id, filterId));
       await emit('FILTER_REMOVE', { filterId });
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
 
     removeFilterOption: async ({

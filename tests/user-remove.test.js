@@ -41,7 +41,7 @@ test.describe('User Removal', () => {
         variables: {
           username: 'testuser1',
           email: 'testuser1@example.com',
-          password: 'password123',
+          password: 'Password123!',
         },
       });
 
@@ -87,7 +87,7 @@ test.describe('User Removal', () => {
 
     test('Should remove user without removing its review', async () => {
       const username = 'userkeepreview';
-      const password = 'password123';
+      const password = 'Password123!';
 
       // Create a new user with a review, then remove the user but keep the review
       const {
@@ -185,7 +185,7 @@ test.describe('User Removal', () => {
 
     test('Should remove user and its review', async () => {
       const username = 'userwithreview';
-      const password = 'password123';
+      const password = 'Password123!';
 
       // Create a new user
       const {

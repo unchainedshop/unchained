@@ -12,9 +12,7 @@ export default (unchainedAPI: UnchainedCore) =>
       const texts = await unchainedAPI.modules.assortments.media.texts.findMediaTexts(
         { assortmentMediaIds },
         {
-          sort: {
-            assortmentMediaId: 1,
-          },
+          sort: [{ key: 'assortmentMediaId', value: 'ASC' }],
         },
       );
 

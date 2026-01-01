@@ -11,17 +11,7 @@
  */
 
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-
-// Helper to build FTS5 match query from search text
-function buildMatchQuery(searchText: string): string | null {
-  const escapedSearch = searchText.replace(/[*"\\]/g, '');
-  if (!escapedSearch.trim()) return null;
-
-  const tokens = escapedSearch.split(/[-_\s]+/).filter((t) => t.length > 0);
-  if (tokens.length === 0) return null;
-
-  return tokens.map((token) => `${token}*`).join(' OR ');
-}
+import { escapeFTS5WithPrefix } from '@unchainedshop/utils';
 
 // Products FTS
 export async function setupProductsFTS(db: DrizzleDb): Promise<void> {
@@ -38,13 +28,14 @@ export async function setupProductsFTS(db: DrizzleDb): Promise<void> {
 }
 
 export async function searchProductsFTS(db: DrizzleDb, searchText: string): Promise<string[]> {
-  const matchQuery = buildMatchQuery(searchText);
-  if (!matchQuery) return [];
+  // Use secure FTS5 escaping to prevent SQL injection
+  const safeQuery = escapeFTS5WithPrefix(searchText);
+  if (!safeQuery) return [];
 
   const result = await db.all<{ _id: string }>(
     sql.raw(`
     SELECT _id FROM products_fts
-    WHERE products_fts MATCH '${matchQuery}'
+    WHERE products_fts MATCH '${safeQuery}'
     ORDER BY bm25(products_fts)
   `),
   );
@@ -72,13 +63,14 @@ export async function setupProductTextsFTS(db: DrizzleDb): Promise<void> {
 }
 
 export async function searchProductTextsFTS(db: DrizzleDb, searchText: string): Promise<string[]> {
-  const matchQuery = buildMatchQuery(searchText);
-  if (!matchQuery) return [];
+  // Use secure FTS5 escaping to prevent SQL injection
+  const safeQuery = escapeFTS5WithPrefix(searchText);
+  if (!safeQuery) return [];
 
   const result = await db.all<{ productId: string }>(
     sql.raw(`
     SELECT productId FROM product_texts_fts
-    WHERE product_texts_fts MATCH '${matchQuery}'
+    WHERE product_texts_fts MATCH '${safeQuery}'
     ORDER BY bm25(product_texts_fts)
   `),
   );
@@ -101,13 +93,14 @@ export async function setupProductReviewsFTS(db: DrizzleDb): Promise<void> {
 }
 
 export async function searchProductReviewsFTS(db: DrizzleDb, searchText: string): Promise<string[]> {
-  const matchQuery = buildMatchQuery(searchText);
-  if (!matchQuery) return [];
+  // Use secure FTS5 escaping to prevent SQL injection
+  const safeQuery = escapeFTS5WithPrefix(searchText);
+  if (!safeQuery) return [];
 
   const result = await db.all<{ _id: string }>(
     sql.raw(`
     SELECT _id FROM product_reviews_fts
-    WHERE product_reviews_fts MATCH '${matchQuery}'
+    WHERE product_reviews_fts MATCH '${safeQuery}'
     ORDER BY bm25(product_reviews_fts)
   `),
   );

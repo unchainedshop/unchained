@@ -11,9 +11,7 @@ export default (unchainedAPI: UnchainedCore) =>
     const texts = await unchainedAPI.modules.assortments.texts.findTexts(
       { assortmentIds },
       {
-        sort: {
-          assortmentId: 1,
-        },
+        sort: [{ key: 'assortmentId', value: 'ASC' }],
       },
     );
 

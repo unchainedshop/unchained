@@ -10,17 +10,7 @@
  */
 
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-
-// Helper to build FTS5 match query from search text
-function buildMatchQuery(searchText: string): string | null {
-  const escapedSearch = searchText.replace(/[*"\\]/g, '');
-  if (!escapedSearch.trim()) return null;
-
-  const tokens = escapedSearch.split(/[-_\s]+/).filter((t) => t.length > 0);
-  if (tokens.length === 0) return null;
-
-  return tokens.map((token) => `${token}*`).join(' OR ');
-}
+import { escapeFTS5WithPrefix } from '@unchainedshop/utils';
 
 // Orders FTS - includes contact fields extracted from JSON
 export async function setupOrdersFTS(db: DrizzleDb): Promise<void> {
@@ -40,13 +30,14 @@ export async function setupOrdersFTS(db: DrizzleDb): Promise<void> {
 }
 
 export async function searchOrdersFTS(db: DrizzleDb, searchText: string): Promise<string[]> {
-  const matchQuery = buildMatchQuery(searchText);
-  if (!matchQuery) return [];
+  // Use secure FTS5 escaping to prevent SQL injection
+  const safeQuery = escapeFTS5WithPrefix(searchText);
+  if (!safeQuery) return [];
 
   const result = await db.all<{ _id: string }>(
     sql.raw(`
     SELECT _id FROM orders_fts
-    WHERE orders_fts MATCH '${matchQuery}'
+    WHERE orders_fts MATCH '${safeQuery}'
     ORDER BY bm25(orders_fts)
   `),
   );

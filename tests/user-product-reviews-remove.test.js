@@ -119,7 +119,7 @@ test.describe('Remove User Product Reviews', () => {
         variables: {
           username: 'noreviewuser',
           email: 'noreview@example.com',
-          password: 'password123',
+          password: 'Password123!',
         },
       });
 
@@ -143,7 +143,7 @@ test.describe('Remove User Product Reviews', () => {
 
     test('should be able to remove another user review even if the user is deleted', async () => {
       const username = 'deletedreviewuser2';
-      const password = 'password123';
+      const password = 'Password123!';
 
       // Create a new user with a review
       const {

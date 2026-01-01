@@ -182,8 +182,8 @@ export const configureFilesModule = async ({
       return fileId;
     },
 
-    update: async (fileId: string, doc: Partial<File>) => {
-      const updateData: Record<string, any> = {
+    update: async (fileId: string, doc: Partial<File>): Promise<File | null> => {
+      const updateData: Record<string, unknown> = {
         updated: new Date(),
       };
 
@@ -197,11 +197,20 @@ export const configureFilesModule = async ({
 
       await db.update(mediaObjects).set(updateData).where(eq(mediaObjects._id, fileId));
 
-      await emit('FILE_UPDATE', { fileId });
-      return fileId;
+      const [updatedRow] = await db
+        .select()
+        .from(mediaObjects)
+        .where(eq(mediaObjects._id, fileId))
+        .limit(1);
+
+      if (!updatedRow) return null;
+
+      const file = rowToFile(updatedRow);
+      await emit('FILE_UPDATE', { fileId, file });
+      return file;
     },
 
-    unexpire: async (fileId: string) => {
+    unexpire: async (fileId: string): Promise<File | null> => {
       await db
         .update(mediaObjects)
         .set({
@@ -210,8 +219,17 @@ export const configureFilesModule = async ({
         })
         .where(eq(mediaObjects._id, fileId));
 
-      await emit('FILE_UPDATE', { fileId });
-      return fileId;
+      const [updatedRow] = await db
+        .select()
+        .from(mediaObjects)
+        .where(eq(mediaObjects._id, fileId))
+        .limit(1);
+
+      if (!updatedRow) return null;
+
+      const file = rowToFile(updatedRow);
+      await emit('FILE_UPDATE', { fileId, file });
+      return file;
     },
 
     delete: async (fileId: string) => {

@@ -185,7 +185,7 @@ export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
       return bookmarkId;
     },
 
-    update: async (bookmarkId: string, doc: Partial<Bookmark>): Promise<string> => {
+    update: async (bookmarkId: string, doc: Partial<Bookmark>): Promise<Bookmark | null> => {
       const updateData: Record<string, unknown> = {
         updated: new Date(),
       };
@@ -196,8 +196,17 @@ export async function configureBookmarksModule({ db }: { db: DrizzleDb }) {
 
       await db.update(bookmarks).set(updateData).where(eq(bookmarks._id, bookmarkId));
 
-      await emit('BOOKMARK_UPDATE', { bookmarkId });
-      return bookmarkId;
+      const [updatedRow] = await db
+        .select()
+        .from(bookmarks)
+        .where(eq(bookmarks._id, bookmarkId))
+        .limit(1);
+
+      if (!updatedRow) return null;
+
+      const bookmark = rowToBookmark(updatedRow);
+      await emit('BOOKMARK_UPDATE', { bookmarkId, bookmark });
+      return bookmark;
     },
 
     delete: async (bookmarkId: string): Promise<number> => {

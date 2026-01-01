@@ -97,7 +97,7 @@ export default [
 
     type Web3Address {
       address: String!
-      nonce: Int
+      nonce: String
       verified: Boolean!
     }
 

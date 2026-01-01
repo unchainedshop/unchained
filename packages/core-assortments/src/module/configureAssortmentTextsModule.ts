@@ -6,10 +6,12 @@ import {
   inArray,
   notInArray,
   sql,
+  asc,
+  desc,
   buildSelectColumns,
   type DrizzleDb,
 } from '@unchainedshop/store';
-import { findUnusedSlug } from '@unchainedshop/utils';
+import { findUnusedSlug, SortDirection, type SortOption } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.ts';
 import { assortments, assortmentTexts, type AssortmentText } from '../db/schema.ts';
 import { searchAssortmentTextsFTS } from '../db/fts.ts';
@@ -34,7 +36,7 @@ export type AssortmentTextFields = keyof AssortmentText;
 
 export interface AssortmentTextQueryOptions {
   fields?: AssortmentTextColumnKeys[];
-  sort?: Record<string, number>;
+  sort?: SortOption[];
 }
 
 export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
@@ -199,6 +201,14 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
     return assortmentText;
   };
 
+  const buildSortOrder = (sort?: SortOption[]) => {
+    if (!sort?.length) return [asc(assortmentTexts.created)];
+    return sort.map(({ key, value }) => {
+      const column = COLUMNS[key as keyof typeof COLUMNS] ?? assortmentTexts.created;
+      return value === SortDirection.DESC ? desc(column) : asc(column);
+    });
+  };
+
   return {
     findTexts: async (
       query: { assortmentId?: string; assortmentIds?: string[]; queryString?: string },
@@ -226,12 +236,14 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
         ? db.select(selectColumns).from(assortmentTexts)
         : db.select().from(assortmentTexts);
 
+      const orderBy = buildSortOrder(options?.sort);
+
       if (conditions.length === 0) {
-        const results = await baseQuery;
+        const results = await baseQuery.orderBy(...orderBy);
         return results as AssortmentText[];
       }
 
-      const results = await baseQuery.where(and(...conditions));
+      const results = await baseQuery.where(and(...conditions)).orderBy(...orderBy);
       return results as AssortmentText[];
     },
 
@@ -317,7 +329,7 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
         result = await db.delete(assortmentTexts);
       }
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
   };
 };

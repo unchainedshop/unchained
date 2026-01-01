@@ -190,11 +190,8 @@ export const configureUsersModule = async ({
 
     if (query.queryString) {
       const matchingIds = await searchUsersFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        conditions.push(sql`0 = 1`);
-      } else {
-        conditions.push(inArray(users._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(users._id, matchingIds));
     }
 
     return conditions;
@@ -394,9 +391,7 @@ export const configureUsersModule = async ({
     ): Promise<User | null> {
       const conditions = await buildConditions(query);
       const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
-      const baseQuery = selectColumns
-        ? db.select(selectColumns).from(users)
-        : db.select().from(users);
+      const baseQuery = selectColumns ? db.select(selectColumns).from(users) : db.select().from(users);
 
       const queryWithConditions =
         conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
@@ -423,9 +418,7 @@ export const configureUsersModule = async ({
       const orderBy = buildOrderBy(sort);
 
       const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
-      const baseQuery = selectColumns
-        ? db.select(selectColumns).from(users)
-        : db.select().from(users);
+      const baseQuery = selectColumns ? db.select(selectColumns).from(users) : db.select().from(users);
 
       const queryWithConditions =
         conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
@@ -616,7 +609,8 @@ export const configureUsersModule = async ({
 
       if (existingEntry) return user;
 
-      const nonce = Math.floor(Math.random() * 1000000).toString();
+      // Use CSPRNG for nonce generation to prevent prediction attacks
+      const nonce = crypto.randomUUID();
       const services = user.services || {};
       services.web3 = [...(services.web3 || []), { address, nonce }];
 

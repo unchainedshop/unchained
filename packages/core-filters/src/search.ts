@@ -1,6 +1,8 @@
+import type { SortOption, SortDirection } from '@unchainedshop/utils';
+
 const ORDER_BY_INDEX = 'default';
-const DIRECTION_DESCENDING = 'DESC';
-const DIRECTION_ASCENDING = 'ASC';
+const DIRECTION_DESCENDING: SortDirection = 'DESC';
+const DIRECTION_ASCENDING: SortDirection = 'ASC';
 
 export type SearchFilterQuery = { key: string; value?: string }[];
 
@@ -14,10 +16,8 @@ export interface SearchQuery {
   queryString?: string;
 }
 
-// Sort type compatible with MongoDB's Sort without importing MongoDB
-// This is intentionally permissive to work with MongoDB types in downstream code
-
-export type SortStage = any;
+// SortStage is now an array of SortOption for Drizzle ORM compatibility
+export type SortStage = SortOption[];
 
 export interface SearchConfiguration {
   searchQuery?: SearchQuery;
@@ -34,12 +34,12 @@ export interface FilterQuery {
   includeInactive?: boolean;
 }
 
-const normalizeDirection = (textualInput: string | undefined) => {
+const normalizeDirection = (textualInput: string | undefined): SortDirection | null => {
   if (textualInput === DIRECTION_ASCENDING) {
-    return 1;
+    return DIRECTION_ASCENDING;
   }
   if (textualInput === DIRECTION_DESCENDING) {
-    return -1;
+    return DIRECTION_DESCENDING;
   }
   return null;
 };
@@ -80,9 +80,7 @@ export const defaultFilterSelector = (searchQuery: SearchQuery): FilterSelector 
 
 export const defaultSortStage = ({ orderBy }: { orderBy?: string }): SortStage => {
   if (!orderBy || orderBy === ORDER_BY_INDEX) {
-    return {
-      index: 1,
-    };
+    return [{ key: 'index', value: DIRECTION_ASCENDING }];
   }
 
   const orderBySlices = orderBy.split('_');
@@ -93,10 +91,14 @@ export const defaultSortStage = ({ orderBy }: { orderBy?: string }): SortStage =
 
   const keyPath = orderBySlices.join('.');
 
-  return {
-    [keyPath]: direction === null ? 1 : direction,
-    ['index']: 1,
-  };
+  const sortOptions: SortStage = [{ key: keyPath, value: direction ?? DIRECTION_ASCENDING }];
+
+  // Add secondary sort by index if not already sorting by index
+  if (keyPath !== 'index') {
+    sortOptions.push({ key: 'index', value: DIRECTION_ASCENDING });
+  }
+
+  return sortOptions;
 };
 
 export const defaultAssortmentSelector = (

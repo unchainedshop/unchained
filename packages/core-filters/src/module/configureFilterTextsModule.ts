@@ -193,7 +193,7 @@ export const configureFilterTextsModule = ({ db }: { db: DrizzleDb }) => {
         result = await db.delete(filterTexts);
       }
 
-      return result.rowsAffected || 0;
+      return result.rowsAffected;
     },
   };
 };

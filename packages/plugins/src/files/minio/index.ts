@@ -187,11 +187,11 @@ export const MinioAdapter: IFileAdapter = {
   async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname, fileId, headers }: any) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
-    const { href } = new URL(fileLink);
-    const fileName = fname || href.split('/').pop();
+    // URL is pre-validated at service level (uploadFileFromURLService)
+    const url = new URL(fileLink);
+    const fileName = fname || url.href.split('/').pop();
     const hashedFilename = await buildHashedFilename(directoryName, fileName, new Date());
 
-    const url = new URL(fileLink);
     const response = await fetch(url, { headers });
     const type = mime.getType(fileName) || response.headers['content-type'];
     const readable = Readable.fromWeb(response.body as ReadableStream<Uint8Array<ArrayBufferLike>>);

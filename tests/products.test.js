@@ -1235,11 +1235,12 @@ test.describe('Products', () => {
           }
         `,
         variables: {
-          queryString: 'SKU-test',
+          queryString: 'SKU',
         },
       });
 
-      assert.strictEqual(products.length, 6);
+      // 5 active products have SKU='SKU' (draft products excluded by default)
+      assert.strictEqual(products.length, 5);
     });
 
     test('return only list of products that include the tags specified', async () => {

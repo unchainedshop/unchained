@@ -33,6 +33,11 @@ export interface PricingCalculation {
   amount: number;
   baseCategory?: string;
   meta?: any;
+  // Extended properties used by specific pricing calculations (delivery, payment, product, order)
+  discountId?: string;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
+  rate?: number;
 }
 
 export type NodeOrTree<T> = string | Tree<T>;
@@ -84,3 +89,5 @@ export interface TimestampFields {
 
 export * from './director/BaseAdapter.ts';
 export * from './director/BaseDirector.ts';
+export * from './fts-escape.ts';
+export * from './validate-url.ts';

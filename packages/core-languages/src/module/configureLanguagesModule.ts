@@ -91,12 +91,8 @@ export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
 
     if (query.queryString) {
       const matchingIds = await searchLanguagesFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        // Return impossible condition to yield empty results
-        conditions.push(sql`0 = 1`);
-      } else {
-        conditions.push(inArray(languages._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(languages._id, matchingIds));
     }
 
     return conditions;
@@ -185,7 +181,7 @@ export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
       return languageId;
     },
 
-    update: async (languageId: string, doc: UpdateLanguageInput): Promise<string> => {
+    update: async (languageId: string, doc: UpdateLanguageInput): Promise<Language | null> => {
       const updateDoc = { ...doc };
       if (updateDoc.isoCode) {
         updateDoc.isoCode = updateDoc.isoCode.toLowerCase();
@@ -196,8 +192,17 @@ export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
         .set({ ...updateDoc, updated: new Date() })
         .where(eq(languages._id, languageId));
 
-      await emit('LANGUAGE_UPDATE', { languageId });
-      return languageId;
+      const [updatedRow] = await db
+        .select()
+        .from(languages)
+        .where(eq(languages._id, languageId))
+        .limit(1);
+
+      if (!updatedRow) return null;
+
+      const language = rowToLanguage(updatedRow);
+      await emit('LANGUAGE_UPDATE', { languageId, language });
+      return language;
     },
 
     delete: async (languageId: string): Promise<number> => {

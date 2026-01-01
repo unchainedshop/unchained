@@ -1,6 +1,9 @@
 import { z } from 'zod';
+import { createLogger } from '@unchainedshop/logger';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 import type { Modules } from '../../../modules.ts';
+
+const logger = createLogger('unchained:bulk-importer');
 
 export const AssortmentLinkSchema = z.object({
   _id: z.string().optional(),
@@ -27,16 +30,32 @@ const upsert = async (
   ) {
     throw new Error(`Can't link non-existing assortment ${assortmentLink.childAssortmentId}`);
   }
-  try {
-    const newAssortmentLink = await modules.assortments.links.create(assortmentLink, {
-      skipInvalidation: true,
+
+  // Check if the link already exists
+  if (assortmentLink._id) {
+    const existing = await modules.assortments.links.findLink({
+      assortmentLinkId: assortmentLink._id,
     });
-    return newAssortmentLink!;
-  } catch {
-    return (await modules.assortments.links.update(assortmentLink._id!, assortmentLink, {
-      skipInvalidation: true,
-    }))!;
+    if (existing) {
+      const updated = await modules.assortments.links.update(assortmentLink._id, assortmentLink, {
+        skipInvalidation: true,
+      });
+      if (!updated) {
+        throw new Error(`Failed to update assortment link ${assortmentLink._id}`);
+      }
+      logger.debug(`Updated assortment link ${assortmentLink._id}`);
+      return updated;
+    }
   }
+
+  const newAssortmentLink = await modules.assortments.links.create(assortmentLink, {
+    skipInvalidation: true,
+  });
+  if (!newAssortmentLink) {
+    throw new Error(`Failed to create assortment link`);
+  }
+  logger.debug(`Created assortment link ${newAssortmentLink._id}`);
+  return newAssortmentLink;
 };
 
 export default async (

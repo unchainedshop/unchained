@@ -1,8 +1,11 @@
 import { z } from 'zod';
+import { createLogger } from '@unchainedshop/logger';
 import type { Services } from '../../../services/index.ts';
 import type { Modules } from '../../../modules.ts';
 import upsertAsset, { AssetSchema } from '../../upsertAsset.ts';
 import type { AssortmentMediaType } from '@unchainedshop/core-assortments';
+
+const logger = createLogger('unchained:bulk-importer');
 
 export const MediaSchema = z.object({
   _id: z.string().optional(),
@@ -20,15 +23,42 @@ export const MediaSchema = z.object({
   sortKey: z.number().optional(),
 });
 
-const upsertMediaObject = async (media, unchainedAPI: { modules: Modules; services: Services }) => {
+interface MediaInput {
+  _id?: string;
+  assortmentId: string;
+  mediaId: string;
+  tags?: string[];
+  sortKey?: number;
+}
+
+const upsertMediaObject = async (
+  media: MediaInput,
+  unchainedAPI: { modules: Modules; services: Services },
+): Promise<AssortmentMediaType> => {
   const { modules } = unchainedAPI;
-  try {
-    const assortmentMedia = (await modules.assortments.media.create(media)) as AssortmentMediaType;
-    return assortmentMedia;
-  } catch {
-    const { _id, ...mediaData } = media;
-    return (await modules.assortments.media.update(_id, mediaData)) as AssortmentMediaType;
+
+  // Check if the media object already exists
+  if (media._id) {
+    const existing = await modules.assortments.media.findAssortmentMedia({
+      assortmentMediaId: media._id,
+    });
+    if (existing) {
+      const { _id, ...mediaData } = media;
+      const updated = await modules.assortments.media.update(_id, mediaData);
+      if (!updated) {
+        throw new Error(`Failed to update assortment media ${_id}`);
+      }
+      logger.debug(`Updated assortment media ${_id}`);
+      return updated as AssortmentMediaType;
+    }
   }
+
+  const assortmentMedia = await modules.assortments.media.create(media);
+  if (!assortmentMedia) {
+    throw new Error(`Failed to create assortment media`);
+  }
+  logger.debug(`Created assortment media ${assortmentMedia._id}`);
+  return assortmentMedia as AssortmentMediaType;
 };
 
 export default async (

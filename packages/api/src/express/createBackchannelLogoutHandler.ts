@@ -10,7 +10,10 @@
 
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { createLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
+
+const logger = createLogger('unchained:api:backchannel-logout');
 
 interface LogoutTokenPayload {
   iss: string; // Issuer
@@ -140,7 +143,7 @@ export function createBackchannelLogoutHandler(
       // Return 200 OK as per the spec (even if user doesn't exist)
       res.status(200).json({ success: true });
     } catch (error) {
-      console.error('Back-channel logout error:', error);
+      logger.error('Back-channel logout error:', { error });
       // Return 200 anyway to prevent the provider from retrying
       // (the spec recommends this behavior)
       res.status(200).json({ success: true });

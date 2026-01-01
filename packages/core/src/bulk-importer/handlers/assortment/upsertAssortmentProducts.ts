@@ -1,7 +1,10 @@
 import { z } from 'zod';
+import { createLogger } from '@unchainedshop/logger';
 import type { AssortmentProduct } from '@unchainedshop/core-assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 import type { Modules } from '../../../modules.ts';
+
+const logger = createLogger('unchained:bulk-importer');
 
 export const AssortmentProductSchema = z.object({
   _id: z.string().optional(),
@@ -20,7 +23,7 @@ const upsert = async (
     sortKey: number;
   },
   unchainedAPI: { modules: Modules },
-) => {
+): Promise<AssortmentProduct> => {
   const { modules } = unchainedAPI;
   if (
     !(await modules.products.productExists({
@@ -29,16 +32,34 @@ const upsert = async (
   ) {
     throw new Error(`Can't link non-existing product ${assortmentProduct.productId}`);
   }
-  try {
-    const newAssortmentProduct = (await modules.assortments.products.create(assortmentProduct, {
-      skipInvalidation: true,
-    })) as AssortmentProduct;
-    return newAssortmentProduct;
-  } catch {
-    return (await modules.assortments.products.update(assortmentProduct._id!, assortmentProduct, {
-      skipInvalidation: true,
-    })) as AssortmentProduct;
+
+  // Check if the assortment product already exists
+  if (assortmentProduct._id) {
+    const existing = await modules.assortments.products.findAssortmentProduct({
+      assortmentProductId: assortmentProduct._id,
+    });
+    if (existing) {
+      const updated = await modules.assortments.products.update(
+        assortmentProduct._id,
+        assortmentProduct,
+        { skipInvalidation: true },
+      );
+      if (!updated) {
+        throw new Error(`Failed to update assortment product ${assortmentProduct._id}`);
+      }
+      logger.debug(`Updated assortment product ${assortmentProduct._id}`);
+      return updated as AssortmentProduct;
+    }
   }
+
+  const newAssortmentProduct = await modules.assortments.products.create(assortmentProduct, {
+    skipInvalidation: true,
+  });
+  if (!newAssortmentProduct) {
+    throw new Error(`Failed to create assortment product`);
+  }
+  logger.debug(`Created assortment product ${newAssortmentProduct._id}`);
+  return newAssortmentProduct as AssortmentProduct;
 };
 
 export default async (

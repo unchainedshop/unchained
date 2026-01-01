@@ -17,6 +17,13 @@ export async function findOrInitCartService(
   if (orderId) {
     const order = await this.orders.findOrder({ orderId });
     if (!order) return null;
+
+    // Validate ownership to prevent cart hijacking (admin users can access any cart)
+    const isAdmin = (user.roles || []).includes('admin');
+    if (order.userId !== user._id && !isAdmin) {
+      return null;
+    }
+
     return order;
   }
 

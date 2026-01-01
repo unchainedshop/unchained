@@ -1,6 +1,9 @@
 import { z } from 'zod';
+import { createLogger } from '@unchainedshop/logger';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 import type { Modules } from '../../../modules.ts';
+
+const logger = createLogger('unchained:bulk-importer');
 
 export const AssortmentFilterSchema = z.object({
   _id: z.string().optional(),
@@ -27,12 +30,22 @@ const upsert = async (
   ) {
     throw new Error(`Can't link non-existing filter ${assortmentFilter.filterId}`);
   }
-  try {
-    const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter);
-    return newAssortmentFilter;
-  } catch {
-    return await modules.assortments.filters.update(assortmentFilter._id!, assortmentFilter);
+
+  // Check if the assortment filter already exists
+  if (assortmentFilter._id) {
+    const existing = await modules.assortments.filters.findFilter({
+      assortmentFilterId: assortmentFilter._id,
+    });
+    if (existing) {
+      const updated = await modules.assortments.filters.update(assortmentFilter._id, assortmentFilter);
+      logger.debug(`Updated assortment filter ${assortmentFilter._id}`);
+      return updated;
+    }
   }
+
+  const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter);
+  logger.debug(`Created assortment filter ${newAssortmentFilter._id}`);
+  return newAssortmentFilter;
 };
 
 export default async (
@@ -59,7 +72,10 @@ export default async (
         },
         unchainedAPI,
       );
-      return assortmentFilter!._id;
+      if (!assortmentFilter) {
+        throw new Error(`Failed to upsert assortment filter for assortment ${assortmentId}`);
+      }
+      return assortmentFilter._id;
     }),
   );
 

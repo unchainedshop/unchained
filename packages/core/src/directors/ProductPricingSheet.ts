@@ -4,8 +4,8 @@ import { BasePricingSheet, type IPricingSheet, type PricingSheetParams } from '.
 
 export interface ProductPricingCalculation extends PricingCalculation {
   discountId?: string;
-  isTaxable: boolean;
-  isNetPrice: boolean;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
   rate?: number;
 }
 

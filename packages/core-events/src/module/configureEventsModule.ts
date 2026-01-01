@@ -74,12 +74,8 @@ export const configureEventsModule = async ({ db }: { db: DrizzleDb }) => {
 
     if (query.queryString) {
       const matchingIds = await searchEventsFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        // Return impossible condition to yield empty results
-        conditions.push(sql`0 = 1`);
-      } else {
-        conditions.push(inArray(events._id, matchingIds));
-      }
+      // Drizzle handles empty arrays natively - inArray with [] returns false
+      conditions.push(inArray(events._id, matchingIds));
     }
 
     if (query.created) {

@@ -56,7 +56,7 @@ export const AssortmentTypes = {
         assortmentId: obj._id,
       },
       {
-        sort: { sortKey: 1 },
+        sort: [{ key: 'sortKey', value: 'ASC' }],
       },
     );
   },
@@ -94,7 +94,7 @@ export const AssortmentTypes = {
         assortmentId: obj._id,
       },
       {
-        sort: { sortKey: 1 },
+        sort: [{ key: 'sortKey', value: 'ASC' }],
       },
     );
   },

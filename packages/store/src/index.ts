@@ -237,16 +237,18 @@ export function createFTS(config: FTSConfig) {
      * @returns Array of matching _id values, ordered by relevance (BM25)
      */
     search: async (db: DrizzleDb, searchText: string): Promise<string[]> => {
-      // Escape special FTS5 characters and add prefix matching
-      const escapedSearch = searchText.replace(/[*"\\]/g, '');
-      if (!escapedSearch.trim()) {
+      // Use secure FTS5 escaping to prevent SQL injection
+      const { escapeFTS5WithPrefix } = await import('@unchainedshop/utils');
+      const safeQuery = escapeFTS5WithPrefix(searchText);
+
+      if (!safeQuery) {
         return [];
       }
 
       const result = await db.all<{ _id: string }>(
         sql.raw(`
         SELECT _id FROM ${ftsTable}
-        WHERE ${ftsTable} MATCH '"${escapedSearch}"*'
+        WHERE ${ftsTable} MATCH '${safeQuery}'
         ORDER BY bm25(${ftsTable})
       `),
       );
