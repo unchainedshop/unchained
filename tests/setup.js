@@ -1,4 +1,3 @@
-import net from 'node:net';
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
@@ -12,61 +11,18 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 let fastify = null;
 let platform = null;
-let serverPort = null;
 let drizzleConnection = null;
-
-// Check if a port is available
-async function isPortAvailable(port) {
-  return new Promise((resolve) => {
-    const server = net.createServer();
-    server.once('error', () => resolve(false));
-    server.once('listening', () => {
-      server.close();
-      resolve(true);
-    });
-    server.listen(port, '127.0.0.1');
-  });
-}
-
-// Find a port where both port and port+1 are available (for Fastify and MongoDB)
-async function findAvailablePortPair(startPort, maxAttempts = 100) {
-  for (let port = startPort; port < startPort + maxAttempts; port++) {
-    // Check both ports sequentially and verify both are free
-    const fastifyPortOk = await isPortAvailable(port);
-    if (!fastifyPortOk) continue;
-
-    const mongoPortOk = await isPortAvailable(port + 1);
-    if (!mongoPortOk) continue;
-
-    return port;
-  }
-  throw new Error(`Could not find available port pair after ${maxAttempts} attempts`);
-}
-
-// Get a random starting port to avoid collisions with zombie processes
-function getRandomStartPort() {
-  // Use ports between 10000 and 50000 to avoid common service ports
-  return 10000 + Math.floor(Math.random() * 40000);
-}
 
 export async function initializeTestPlatform() {
   if (platform) return platform;
 
-  // Find available port pair before starting platform
-  // MongoDB uses PORT+1, so we need both ports free
-  // Use random starting port to avoid collisions with zombie processes from previous runs
-  const port = await findAvailablePortPair(getRandomStartPort());
-  serverPort = port;
-
-  // Set PORT env var so initDb uses the correct port for MongoDB (PORT+1)
-  process.env.PORT = String(port);
-  // Set ROOT_URL dynamically so file upload URLs use the correct port
-  process.env.ROOT_URL = `http://localhost:${port}`;
+  // Set a placeholder ROOT_URL (required by startPlatform, updated after we know the port)
+  process.env.ROOT_URL = 'http://localhost:0';
 
   // Create in-memory Drizzle SQLite database for tests
   drizzleConnection = createTestDb();
 
-  // Start platform with in-memory MongoDB and Drizzle database
+  // Start platform with Drizzle database
   platform = await startPlatform({
     modules: defaultModules,
     drizzleDb: drizzleConnection.db,
@@ -85,8 +41,12 @@ export async function initializeTestPlatform() {
   // Connect platform to Fastify (registers all routes including gridfs for file uploads)
   connect(fastify, platform, { initPluginMiddlewares, allowRemoteToLocalhostSecureCookies: true });
 
-  // Start listening on the pre-checked port
-  await fastify.listen({ port, host: '127.0.0.1' });
+  // Let Fastify choose an available port automatically (port 0)
+  await fastify.listen();
+
+  // Update ROOT_URL with the actual port for file upload URLs
+  const { address, port } = fastify.server.address();
+  process.env.ROOT_URL = `http://${address}:${port}`;
 
   // Access tokens are pre-configured in test seeds (tests/seeds/users.js)
   // No need to call setAccessToken - users are seeded with SHA-256 hashed tokens
@@ -107,7 +67,6 @@ export async function shutdownTestPlatform() {
     drizzleConnection.close();
     drizzleConnection = null;
   }
-  serverPort = null;
 }
 
 export function getTestPlatform() {
@@ -118,10 +77,10 @@ export function getTestPlatform() {
 }
 
 export function getServerPort() {
-  if (!serverPort) {
+  if (!fastify) {
     throw new Error('Server not started');
   }
-  return serverPort;
+  return fastify.server.address().port;
 }
 
 export function getDrizzleDb() {

@@ -91,12 +91,18 @@ export async function seedUsersToDrizzle(db) {
       created: userData.created,
       updated: userData.updated,
     });
-    await db.run(sql`INSERT INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`);
+    await db.run(
+      sql`INSERT INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`,
+    );
   }
 }
 
 export async function findOrInsertUserToDrizzle(db, userData) {
-  const [existing] = await db.select().from(users).where(sql`${users._id} = ${userData._id}`).limit(1);
+  const [existing] = await db
+    .select()
+    .from(users)
+    .where(sql`${users._id} = ${userData._id}`)
+    .limit(1);
   if (existing) return existing;
 
   await db.insert(users).values({
@@ -113,10 +119,16 @@ export async function findOrInsertUserToDrizzle(db, userData) {
   });
 
   if (userData.username) {
-    await db.run(sql`INSERT OR IGNORE INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`);
+    await db.run(
+      sql`INSERT OR IGNORE INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`,
+    );
   }
 
-  const [newUser] = await db.select().from(users).where(sql`${users._id} = ${userData._id}`).limit(1);
+  const [newUser] = await db
+    .select()
+    .from(users)
+    .where(sql`${users._id} = ${userData._id}`)
+    .limit(1);
   return newUser;
 }
 

@@ -46,7 +46,6 @@ export async function initializeUsersSchema(db: DrizzleDb): Promise<void> {
     )
   `);
 
-
   // Create indexes
   await db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username)`);
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_users_guest ON users(guest)`);

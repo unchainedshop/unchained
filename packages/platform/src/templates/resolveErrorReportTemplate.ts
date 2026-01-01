@@ -5,7 +5,6 @@ const {
   EMAIL_FROM = 'noreply@unchained.local',
   EMAIL_ERROR_REPORT_RECIPIENT = 'support@unchained.local',
   EMAIL_WEBSITE_NAME = 'Unchained',
-  ROOT_URL,
 } = process.env;
 
 const formatWorkItems = (workItems) => {
@@ -22,7 +21,7 @@ const resolveErrorReportTemplate: TemplateResolver = async ({ workItems }) => {
 
   const text = `
 -------------------------
-Unchained Endpoint: ${ROOT_URL}
+Unchained Endpoint: ${process.env.ROOT_URL}
 Shop Name: ${EMAIL_WEBSITE_NAME}
 -------------------------
 

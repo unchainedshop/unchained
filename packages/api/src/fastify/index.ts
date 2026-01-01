@@ -1,5 +1,9 @@
 import { getCurrentContextResolver } from '../context.ts';
-import { createAuthContext, defaultCookieConfig, type AuthMiddlewareConfig } from '../middleware/createAuthMiddleware.ts';
+import {
+  createAuthContext,
+  defaultCookieConfig,
+  type AuthMiddlewareConfig,
+} from '../middleware/createAuthMiddleware.ts';
 import bulkImportHandler from './bulkImportHandler.ts';
 import ercMetadataHandler from './ercMetadataHandler.ts';
 import type { YogaServerInstance } from 'graphql-yoga';

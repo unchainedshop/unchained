@@ -61,7 +61,8 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
 };
 
 export type UnchainedContextResolver<Request = any, Response = any> = (
-  params: UnchainedHTTPServerContext & Omit<UnchainedUserContext, 'user'> & { tokenVersion?: number; accessToken?: string },
+  params: UnchainedHTTPServerContext &
+    Omit<UnchainedUserContext, 'user'> & { tokenVersion?: number; accessToken?: string },
   req?: Request,
   res?: Response,
 ) => Promise<Context>;
@@ -71,7 +72,18 @@ export const createContextResolver =
     unchainedAPI: UnchainedCore,
     unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
   ): UnchainedContextResolver =>
-  async ({ getHeader, setHeader, remoteAddress, remotePort, userId, impersonatorId, tokenVersion, accessToken, login, logout }) => {
+  async ({
+    getHeader,
+    setHeader,
+    remoteAddress,
+    remotePort,
+    userId,
+    impersonatorId,
+    tokenVersion,
+    accessToken,
+    login,
+    logout,
+  }) => {
     const loaders = instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext({ getHeader }, unchainedAPI);
 
@@ -92,7 +104,9 @@ export const createContextResolver =
       if (user) {
         // Validate token version if present (local JWT tokens have version)
         if (tokenVersion !== undefined && user.tokenVersion !== tokenVersion) {
-          logger.debug(`Token version mismatch for user ${userId}: token=${tokenVersion}, user=${user.tokenVersion}`);
+          logger.debug(
+            `Token version mismatch for user ${userId}: token=${tokenVersion}, user=${user.tokenVersion}`,
+          );
           // Don't set user - token has been revoked via logoutAllSessions
         } else {
           userContext.user = user;

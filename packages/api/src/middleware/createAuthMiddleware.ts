@@ -9,12 +9,7 @@ import { emit } from '@unchainedshop/events';
 import type { User } from '@unchainedshop/core-users';
 import { type LoginFn, type LogoutFn, type LoginResult } from '../context.ts';
 import { API_EVENTS } from '../events.ts';
-import {
-  signAccessToken,
-  verifyLocalToken,
-  createAuthHandler,
-  type OIDCProvider,
-} from '../auth.ts';
+import { signAccessToken, verifyLocalToken, createAuthHandler, type OIDCProvider } from '../auth.ts';
 
 export interface CookieConfig {
   name: string;

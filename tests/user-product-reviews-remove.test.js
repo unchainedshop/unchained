@@ -6,21 +6,17 @@ import {
   createAnonymousGraphqlFetch,
   createJWTToken,
   disconnect,
-  getDrizzleDb,
 } from './helpers.js';
-import { users } from '@unchainedshop/core-users';
 import { ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
-let drizzleDb;
 
 test.describe('Remove User Product Reviews', () => {
   test.before(async () => {
     await setupDatabase();
-    drizzleDb = getDrizzleDb();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();

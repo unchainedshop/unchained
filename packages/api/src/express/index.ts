@@ -5,7 +5,11 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 
 import { getCurrentContextResolver } from '../context.ts';
-import { createAuthContext, defaultCookieConfig, type AuthMiddlewareConfig } from '../middleware/createAuthMiddleware.ts';
+import {
+  createAuthContext,
+  defaultCookieConfig,
+  type AuthMiddlewareConfig,
+} from '../middleware/createAuthMiddleware.ts';
 import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
 import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
@@ -114,7 +118,10 @@ export const connect = (
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
       res.setHeader('Access-Control-Allow-Credentials', 'true');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || '*');
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        req.headers['access-control-request-headers'] || '*',
+      );
       next();
     });
   }
