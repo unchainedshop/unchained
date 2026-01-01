@@ -58,6 +58,12 @@ export default [
       logout: SuccessResponse
 
       """
+      Log the user out of all sessions across all devices.
+      Invalidates all existing access tokens by incrementing the user's token version.
+      """
+      logoutAllSessions: LogoutAllSessionsResponse!
+
+      """
       Impersonate a user
       """
       impersonate(userId: ID!): LoginMethodResponse!

@@ -1,16 +1,9 @@
-// TODO: Consider creating shared handler abstractions with express adapter
-// to reduce code duplication for bulk import, file upload, webhooks, and chat handlers.
-// See packages/api/src/express/index.ts for the parallel implementation.
-import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
+import { getCurrentContextResolver } from '../context.ts';
+import { createAuthContext, defaultCookieConfig, type AuthMiddlewareConfig } from '../middleware/createAuthMiddleware.ts';
 import bulkImportHandler from './bulkImportHandler.ts';
 import ercMetadataHandler from './ercMetadataHandler.ts';
-import DrizzleStore from '../drizzle-store.ts';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { emit } from '@unchainedshop/events';
-import { API_EVENTS } from '../events.ts';
-import type { User } from '@unchainedshop/core-users';
-import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
 import fastifyMultipart from '@fastify/multipart';
 import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
@@ -20,21 +13,19 @@ import tempUploadHandler from './tempUploadHandler.ts';
 import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { readFileSync } from 'node:fs';
+
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
 }
 
-const resolveUserRemoteAddress = (req: FastifyRequest) => {
-  const remoteAddress =
+const resolveRemoteAddress = (req: FastifyRequest) => ({
+  remoteAddress:
     (req.headers['x-real-ip'] as string) ||
     (req.headers['x-forwarded-for'] as string) ||
-    req.socket?.remoteAddress;
-
-  const remotePort = req.socket?.remotePort;
-
-  return { remoteAddress, remotePort };
-};
+    req.socket?.remoteAddress,
+  remotePort: req.socket?.remotePort,
+});
 
 const {
   MCP_API_PATH = '/mcp',
@@ -42,71 +33,36 @@ const {
   BULK_IMPORT_API_PATH = '/bulk-import',
   TEMP_UPLOAD_API_PATH = '/temp-upload',
   ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
-  UNCHAINED_COOKIE_NAME = 'unchained_token',
-  UNCHAINED_COOKIE_PATH = '/',
-  UNCHAINED_COOKIE_DOMAIN,
-  UNCHAINED_COOKIE_SAMESITE = 'none',
-  UNCHAINED_COOKIE_INSECURE,
 } = process.env;
 
-const middlewareHook = async function middlewareHook(req: any, reply: any) {
-  const setHeader = (key, value) => reply.header(key, value);
-  const getHeader = (key) => req.headers[key];
-  const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
+const createMiddlewareHook = (config: AuthMiddlewareConfig) =>
+  async function middlewareHook(req: any, reply: any) {
+    const { remoteAddress, remotePort } = resolveRemoteAddress(req);
+    const setHeader = (key: string, value: string) => reply.header(key, value);
+    const getHeader = (key: string) => req.headers[key];
 
-  const context = getCurrentContextResolver();
-
-  const login: LoginFn = async function (user: User, options = {}) {
-    const { impersonator } = options;
-
-    req.session.userId = user._id;
-    req.session.impersonatorId = impersonator?._id;
-
-    const tokenObject = {
-      _id: req.session.sessionId,
-      userId: user._id,
-
-      tokenExpires: new Date((req as any).session.cookie._expires),
-    };
-    await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
-
-    (user as any)._inLoginMethodResponse = true;
-    return { user, ...tokenObject };
-  };
-
-  const logout: LogoutFn = async function logout() {
-    const tokenObject = {
-      _id: (req as any).session.sessionId,
-      userId: req.session?.userId,
-    };
-    req.session.userId = null;
-    req.session.impersonatorId = null;
-    await emit(API_EVENTS.API_LOGOUT, tokenObject);
-    return true;
-  };
-
-  const [, accessToken] = req.headers.authorization?.split(' ') || [];
-
-  (req as any).unchainedContext = await context(
-    {
-      setHeader,
+    const authContext = await createAuthContext({
       getHeader,
+      setHeader,
+      getCookie: (name) => req.cookies?.[name],
+      setCookie: (name, value, options) => reply.setCookie(name, value, options),
+      clearCookie: (name, options) => reply.clearCookie(name, options),
       remoteAddress,
       remotePort,
-      login,
-      logout,
-      accessToken,
-      userId: req.session.userId,
-      impersonatorId: req.session.impersonatorId,
-    },
-    req,
-    reply,
-  );
-};
+      config,
+    });
+
+    const contextResolver = getCurrentContextResolver();
+    (req as any).unchainedContext = await contextResolver(
+      { setHeader, getHeader, remoteAddress, remotePort, ...authContext },
+      req,
+      reply,
+    );
+  };
 
 export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
   const logger = createLogger(prefix);
-  function Logger(...args) {
+  function Logger(...args: any[]) {
     this.args = args;
   }
   Logger.prototype.info = logger.info;
@@ -135,6 +91,7 @@ export const connect = (
     adminUI = false,
     chat,
     initPluginMiddlewares,
+    authConfig,
   }: {
     allowRemoteToLocalhostSecureCookies?: boolean;
     adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
@@ -143,96 +100,57 @@ export const connect = (
       app: FastifyInstance,
       { unchainedAPI }: { unchainedAPI: UnchainedCore },
     ) => void;
+    authConfig?: Partial<AuthMiddlewareConfig>;
   } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
-    // Workaround: Allow to use sandbox with localhost
-    // https://github.com/fastify/fastify-cookie/issues/308
-    fastify.addHook('preHandler', async function (request) {
+    fastify.addHook('preHandler', async (request) => {
       request.headers['x-forwarded-proto'] = 'https';
     });
-    fastify.addHook('onSend', async function (req, reply) {
+    fastify.addHook('onSend', async (req, reply) => {
       reply.headers({
         'Access-Control-Allow-Private-Network': 'true',
         'Access-Control-Allow-Origin': req.headers.origin || '*',
         'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'].join(', '),
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || '*',
       });
     });
   }
 
-  const cookieName = UNCHAINED_COOKIE_NAME;
-  const domain = UNCHAINED_COOKIE_DOMAIN;
-  const path = UNCHAINED_COOKIE_PATH;
-  const secure = UNCHAINED_COOKIE_INSECURE ? false : true;
-  const sameSite = ({
-    none: 'none',
-    lax: 'lax',
-    strict: 'strict',
-    '1': true,
-    '0': false,
-  }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
+  const config: AuthMiddlewareConfig = {
+    cookie: defaultCookieConfig,
+    ...authConfig,
+  };
 
   if (!fastify.hasPlugin('@fastify/cookie')) {
     fastify.register(fastifyCookie);
   }
-  fastify.register(fastifySession as any, {
-    secret: process.env.UNCHAINED_TOKEN_SECRET,
-    cookieName,
-    store: DrizzleStore.create({
-      db: unchainedAPI.db,
-      touchAfter: 24 * 3600 /* 24 hours */,
-    }),
-    cookie: {
-      domain,
-      httpOnly: true,
-      path,
-      secure,
-      sameSite,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  });
 
   fastify.decorateRequest('unchainedContext');
-  fastify.addHook('onRequest', middlewareHook);
+  fastify.addHook('onRequest', createMiddlewareHook(config));
 
   fastify.route({
     url: GRAPHQL_API_PATH,
     method: ['GET', 'POST', 'OPTIONS'],
     handler: async (req, reply) => {
-      // Second parameter adds Fastify's `req` and `reply` to the GraphQL Context
-      const response = await graphqlHandler.handleNodeRequestAndResponse(req, reply, {
-        req,
-        reply,
-      });
-      response.headers.forEach((value, key) => {
-        reply.header(key, value);
-      });
+      const response = await graphqlHandler.handleNodeRequestAndResponse(req, reply, { req, reply });
+      response.headers.forEach((value, key) => reply.header(key, value));
       reply.status(response.status);
       reply.send(response.body);
       return reply;
     },
   });
 
-  fastify.route({
-    url: ERC_METADATA_API_PATH,
-    method: ['GET'],
-    handler: ercMetadataHandler,
-  });
-
-  fastify.route({
-    url: MCP_API_PATH,
-    method: ['GET', 'POST', 'DELETE'],
-    handler: mcpHandler,
-  });
+  fastify.route({ url: ERC_METADATA_API_PATH, method: ['GET'], handler: ercMetadataHandler });
+  fastify.route({ url: MCP_API_PATH, method: ['GET', 'POST', 'DELETE'], handler: mcpHandler });
 
   fastify.register((s, opts, registered) => {
-    s.register(fastifyMultipart, { throwFileSizeLimit: true, limits: { fileSize: 1024 * 1024 * 35 } }); // 35MB
+    s.register(fastifyMultipart, { throwFileSizeLimit: true, limits: { fileSize: 1024 * 1024 * 35 } });
     s.route({
       url: TEMP_UPLOAD_API_PATH,
       method: ['POST'],
-      bodyLimit: 1024 * 1024 * 35, // 35MB
+      bodyLimit: 1024 * 1024 * 35,
       handler: tempUploadHandler,
     });
     registered();
@@ -240,26 +158,18 @@ export const connect = (
 
   fastify.register((s, opts, registered) => {
     s.removeAllContentTypeParsers();
-    s.addContentTypeParser('*', function (req, payload, done) {
-      done(null);
-    });
+    s.addContentTypeParser('*', (req, payload, done) => done(null));
     s.route({
       url: BULK_IMPORT_API_PATH,
       method: ['POST'],
-      bodyLimit: 1024 * 1024 * 1024 * 5, // 5GB
+      bodyLimit: 1024 * 1024 * 1024 * 5,
       handler: bulkImportHandler,
     });
     registered();
   });
 
-  if (chat) {
-    connectChat(fastify, chat);
-  }
-
-  if (initPluginMiddlewares) {
-    initPluginMiddlewares(fastify, { unchainedAPI });
-  }
-
+  if (chat) connectChat(fastify, chat);
+  if (initPluginMiddlewares) initPluginMiddlewares(fastify, { unchainedAPI });
   if (adminUI) {
     fastify.register(adminUIRouter, {
       enabled: true,
@@ -268,21 +178,17 @@ export const connect = (
   }
 };
 
-const fallbackLandingPageHandler = (request, reply) => {
+const fallbackLandingPageHandler = (request: FastifyRequest, reply: any) => {
   if (request.raw.method === 'GET') {
     try {
-      // Try to resolve from package exports first (works in non-bundled environments)
       const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
-      const staticPath = new URL(staticURL).pathname;
-      return reply.type('text/html').send(readFileSync(staticPath));
+      return reply.type('text/html').send(readFileSync(new URL(staticURL).pathname));
     } catch {
-      // Fallback for bundled environments: use relative path from this file
       const fallbackPath = new URL('../../index.html', import.meta.url).pathname;
       return reply.type('text/html').send(readFileSync(fallbackPath));
     }
-  } else {
-    return reply.status(404).send();
   }
+  return reply.status(404).send();
 };
 
 const resolveAdminUIPath = () => {
@@ -294,26 +200,19 @@ const resolveAdminUIPath = () => {
   }
 };
 
-export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
-  fastify: FastifyInstance,
-  opts,
-) => {
+export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (fastify, opts) => {
   try {
     let fastifyStatic;
     try {
-      const fastifyStaticModule = await import('@fastify/static');
-      fastifyStatic = fastifyStaticModule.default;
+      fastifyStatic = (await import('@fastify/static')).default;
     } catch {
-      fastify.log.warn("npm dependency @fastify/static is not installed, can't serve admin-ui");
+      fastify.log.warn("@fastify/static not installed, can't serve admin-ui");
     }
 
     if (fastifyStatic) {
       const adminUIPath = resolveAdminUIPath();
       if (adminUIPath) {
-        await fastify.register(fastifyStatic, {
-          root: adminUIPath,
-          prefix: opts.prefix || '/',
-        });
+        await fastify.register(fastifyStatic, { root: adminUIPath, prefix: opts.prefix || '/' });
         return;
       }
     }
@@ -321,15 +220,11 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   } catch (e) {
     fastify.log.error(e);
     if (process.env.NODE_ENV !== 'production') {
-      // Trying the default admin ui dev port
-      fastify.get('/', async (request, reply) => {
-        return reply.redirect('http://localhost:3000');
-      });
+      fastify.get('/', async (request, reply) => reply.redirect('http://localhost:3000'));
     }
   }
 };
 
 // @deprecated use adminUIRouter instead
 export const fastifyRouter = adminUIRouter;
-
 export { connectChat };

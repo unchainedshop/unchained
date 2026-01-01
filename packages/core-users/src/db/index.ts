@@ -38,11 +38,14 @@ export async function initializeUsersSchema(db: DrizzleDb): Promise<void> {
       lastBillingAddress TEXT,
       lastContact TEXT,
       pushSubscriptions TEXT NOT NULL DEFAULT '[]',
+      tokenVersion INTEGER NOT NULL DEFAULT 1,
+      oidcLogoutAt INTEGER,
       created INTEGER NOT NULL,
       updated INTEGER,
       deleted INTEGER
     )
   `);
+
 
   // Create indexes
   await db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username)`);

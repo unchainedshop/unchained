@@ -91,6 +91,10 @@ export const users = sqliteTable(
       .$type<PushSubscriptionObject[]>()
       .notNull()
       .default([]),
+    // Token version for instant token revocation (increment to invalidate all tokens)
+    tokenVersion: integer('tokenVersion').notNull().default(1),
+    // OIDC logout timestamp (tokens issued before this are invalid)
+    oidcLogoutAt: integer('oidcLogoutAt', { mode: 'timestamp_ms' }),
     // Timestamps
     created: integer('created', { mode: 'timestamp_ms' }).notNull(),
     updated: integer('updated', { mode: 'timestamp_ms' }),
@@ -140,6 +144,10 @@ export interface User {
   pushSubscriptions: PushSubscriptionObject[];
   username?: string;
   meta?: any;
+  // Token version for instant revocation - increment to invalidate all tokens
+  tokenVersion: number;
+  // OIDC logout timestamp - tokens issued before this are invalid
+  oidcLogoutAt?: Date;
   created: Date;
   updated?: Date;
 }
@@ -161,6 +169,8 @@ export const rowToUser = (row: UserRow): User => ({
   lastBillingAddress: row.lastBillingAddress ?? undefined,
   lastContact: row.lastContact ?? undefined,
   pushSubscriptions: row.pushSubscriptions,
+  tokenVersion: row.tokenVersion,
+  oidcLogoutAt: row.oidcLogoutAt ?? undefined,
   created: row.created,
   updated: row.updated ?? undefined,
   deleted: row.deleted ?? undefined,

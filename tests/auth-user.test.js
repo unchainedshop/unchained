@@ -80,23 +80,6 @@ test.describe('Auth for logged in users', () => {
     });
   });
 
-  test.describe('Mutation.changePassword', () => {
-    test('change own password as user', async () => {
-      const { data: { changePassword } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            changePassword(oldPassword: "password", newPassword: "password") {
-              success
-            }
-          }
-        `,
-      });
-      assert.deepStrictEqual(changePassword, {
-        success: true,
-      });
-    });
-  });
-
   test.describe('Mutation.sendVerificationEmail', () => {
     test('send verification e-mail', async () => {
       const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
@@ -124,6 +107,23 @@ test.describe('Auth for logged in users', () => {
         `,
       });
       assert.strictEqual(sendVerificationEmail, null);
+    });
+  });
+
+  test.describe('Mutation.changePassword', () => {
+    test('change own password as user', async () => {
+      const { data: { changePassword } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            changePassword(oldPassword: "password", newPassword: "password") {
+              success
+            }
+          }
+        `,
+      });
+      assert.deepStrictEqual(changePassword, {
+        success: true,
+      });
     });
   });
 

@@ -7,12 +7,12 @@ export default [
     """
     type LoginMethodResponse @cacheControl(maxAge: 0, scope: PRIVATE) {
       """
-      Session ID
+      Access token (JWT)
       """
       _id: String!
 
       """
-      Expiration date for the token
+      Expiration date for the access token
       """
       tokenExpires: DateTime!
 
@@ -20,6 +20,21 @@ export default [
       The logged in user
       """
       user: User
+    }
+
+    """
+    Type returned when logging out of all sessions
+    """
+    type LogoutAllSessionsResponse {
+      """
+      Whether the operation was successful
+      """
+      success: Boolean!
+
+      """
+      Number of sessions that were revoked
+      """
+      sessionsRevoked: Int!
     }
 
     type PushSubscription {

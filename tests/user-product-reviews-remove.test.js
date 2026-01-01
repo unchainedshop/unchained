@@ -4,11 +4,11 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
+  createJWTToken,
   disconnect,
   getDrizzleDb,
 } from './helpers.js';
 import { users } from '@unchainedshop/core-users';
-import { eq } from 'drizzle-orm';
 import { ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
@@ -176,23 +176,8 @@ test.describe('Remove User Product Reviews', () => {
       assert.ok(createUser);
       const userId = createUser.user._id;
 
-      // Set a known token secret for the new user so we can authenticate as them
-      const plainSecret = 'testsecret';
-      const crypto = await import('node:crypto');
-      const hashedSecret = crypto
-        .createHash('sha256')
-        .update(`${username}:${plainSecret}`)
-        .digest('hex');
-      // Get current user to preserve services
-      const [currentUser] = await drizzleDb.select().from(users).where(eq(users._id, userId)).limit(1);
-      await drizzleDb
-        .update(users)
-        .set({
-          services: { ...currentUser.services, token: { secret: hashedSecret } },
-          updated: new Date(),
-        })
-        .where(eq(users._id, userId));
-      const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(`Bearer ${username}:${plainSecret}`);
+      // Create a JWT token to authenticate as the new user
+      const graphqlFetchAsNewUser = createLoggedInGraphqlFetch(createJWTToken(userId));
 
       // Create a product review as the new user
       const {

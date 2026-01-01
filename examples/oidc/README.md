@@ -1,128 +1,131 @@
-# Unchained OpenID Connect Example
+# Unchained OIDC JWT Federation Example
 
-This example demonstrates how to integrate [Unchained Commerce](https://unchained.shop) with OpenID Connect (OIDC) providers like [Zitadel](https://zitadel.com) and [Keycloak](https://www.keycloak.org).
+This example demonstrates how to integrate [Unchained Commerce](https://unchained.shop) with OpenID Connect (OIDC) providers using **JWT Federation** - a stateless approach where external OIDC tokens are verified directly via JWKS.
+
+## How It Works
+
+Instead of maintaining server-side sessions, this approach:
+1. Accepts JWT access tokens from external OIDC providers (Keycloak, Auth0, Zitadel, etc.)
+2. Verifies tokens using the provider's public JWKS endpoint
+3. Automatically creates users on first login (optional)
+4. Maps OIDC claims to user profile and roles
 
 ## Prerequisites
 
 - Node.js >=22
-- An OIDC provider (Zitadel Cloud or Keycloak instance)
+- An OIDC provider (Keycloak, Auth0, Zitadel, etc.)
 
 ## Getting Started
 
 1. Install dependencies:
-
    ```bash
    npm install
    ```
 
-2. Configure your OIDC provider (see sections below)
+2. Configure your OIDC provider environment variables (see examples below)
 
 3. Run the development server:
    ```bash
    npm run dev
    ```
 
-## Zitadel Setup
+4. Authenticate with your OIDC provider to obtain a JWT access token
 
-[Zitadel](https://zitadel.com) is a modern identity and access management platform that provides secure authentication and authorization.
-
-### Step-by-step Configuration
-
-1. **Create a Zitadel Cloud Account**
-   - Visit [zitadel.cloud](https://zitadel.cloud) and sign up for a free account
-   - Create a new project or use the default project
-
-2. **Create an Application**
-   - Navigate to your project settings
-   - Click on "Applications" and create a new application
-   - Choose "Web Application" as the application type
-   - Select "PKCE" (Proof Key for Code Exchange) for enhanced security
-
-3. **Configure Application Settings**
-   - Set your redirect URIs (e.g., `http://localhost:4000/auth/callback`)
-   - Note down your Client ID
-
-4. **Environment Configuration**
-
-   Create a `.env` file with the following variables:
-
-   ```env
-   UNCHAINED_ZITADEL_CLIENT_ID=your_client_id_here
-   UNCHAINED_ZITADEL_DISCOVERY_URL=https://your-instance.zitadel.cloud/.well-known/openid-configuration
-   ```
-
-### Resources
-
-- [Zitadel Documentation](https://zitadel.com/docs)
-- [PKCE Flow Guide](https://zitadel.com/docs/guides/integrate/login/oidc/oauth-recommended-flows#authorization-code-with-proof-key-for-code-exchange-pkce)
-
-## Keycloak Setup
-
-[Keycloak](https://www.keycloak.org) is an open-source identity and access management solution for modern applications and services.
-
-### Local Development Setup
-
-1. **Start Keycloak**
-
+5. Make requests to Unchained with the token:
    ```bash
-   # Using Docker
-   docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev
+   curl -H "Authorization: Bearer <your-jwt-token>" http://localhost:4010/graphql
    ```
 
-2. **Access Admin Console**
-   - Navigate to [http://localhost:8080](http://localhost:8080)
-   - Login with admin/admin credentials
+## Environment Configuration
 
-3. **Create a Realm**
-   - Create a new realm (e.g., "myrealm")
-   - Or use the master realm for testing
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OIDC_PROVIDER_NAME` | No | Name for the provider (default: 'oidc') |
+| `OIDC_ISSUER_URL` | Yes | OIDC issuer URL (must match 'iss' claim) |
+| `OIDC_AUDIENCE` | Yes | Expected audience (typically client ID) |
+| `OIDC_ROLES_PATH` | No | Path to roles in token (dot-separated) |
 
-4. **Create a Client**
-   - Navigate to "Clients" and create a new client
-   - Set Client ID to "myclient" (or your preferred name)
-   - Configure appropriate redirect URIs
+## Provider Examples
 
-5. **Environment Configuration**
+### Keycloak
 
-   Add to your `.env` file:
+```env
+OIDC_PROVIDER_NAME=keycloak
+OIDC_ISSUER_URL=https://keycloak.example.com/realms/myrealm
+OIDC_AUDIENCE=my-client-id
+OIDC_ROLES_PATH=resource_access.my-client-id.roles
+```
 
-   ```env
-   UNCHAINED_KEYCLOAK_CLIENT_ID=myclient
-   UNCHAINED_KEYCLOAK_REALM_URL=http://localhost:8080/realms/myrealm
-   ```
+**Local Development:**
+```bash
+docker run -p 8080:8080 \
+  -e KEYCLOAK_ADMIN=admin \
+  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  quay.io/keycloak/keycloak:latest start-dev
+```
 
-### Resources
+### Auth0
 
-- [Keycloak Documentation](https://www.keycloak.org/documentation)
-- [Getting Started Guide](https://www.keycloak.org/getting-started)
-- [Docker Setup](https://www.keycloak.org/getting-started/getting-started-docker)
+```env
+OIDC_PROVIDER_NAME=auth0
+OIDC_ISSUER_URL=https://your-tenant.auth0.com/
+OIDC_AUDIENCE=your-api-audience
+```
 
-## Advanced: MCP Server Authorization
+### Zitadel
 
-Our Keycloak example includes advanced support for **OAuth 2.1** authentication protecting the **Model Context Protocol (MCP) Server** of Unchained Engine.
+```env
+OIDC_PROVIDER_NAME=zitadel
+OIDC_ISSUER_URL=https://your-instance.zitadel.cloud
+OIDC_AUDIENCE=your-project-id
+OIDC_ROLES_PATH=urn:zitadel:iam:org:project:roles
+```
 
-### What is MCP?
+## Multiple Providers
 
-The [Model Context Protocol](https://modelcontextprotocol.io) is a standardized way for AI models to securely access external data sources and tools.
+The OIDC strategy supports multiple providers simultaneously. To configure multiple providers, modify the `boot.ts` file directly:
 
-### OAuth 2.1 Protection
+```typescript
+const oidcStrategy = await createOIDCStrategy({
+  providers: [
+    {
+      name: 'keycloak',
+      issuer: 'https://keycloak.example.com/realms/myrealm',
+      audience: 'my-client-id',
+    },
+    {
+      name: 'auth0',
+      issuer: 'https://your-tenant.auth0.com/',
+      audience: 'your-api-audience',
+    },
+  ],
+});
+```
 
-This example implements OAuth 2.1 authorization as specified in the [MCP Authorization Specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization).
+## Role Mapping
 
-### Usage
+Map external roles to internal Unchained roles:
 
-Once configured, you can expose your MCP server to compatible MCP clients with proper OAuth 2.1 authentication, ensuring secure access to your Unchained Commerce data and operations.
+```typescript
+{
+  name: 'keycloak',
+  issuer: '...',
+  audience: '...',
+  rolesPath: ['resource_access', 'my-client', 'roles'],
+  roleMapping: {
+    'realm-admin': 'admin',
+    'realm-user': 'user',
+  },
+}
+```
 
-## Learn More
+## Resources
 
 - [Unchained Commerce Documentation](https://docs.unchained.shop)
 - [OpenID Connect Specification](https://openid.net/developers/how-connect-works/)
-- [OAuth 2.1 Security Best Practices](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics)
-- [Model Context Protocol](https://modelcontextprotocol.io)
+- [JSON Web Key Set (JWKS)](https://datatracker.ietf.org/doc/html/rfc7517)
 
 ## Support
-
-For questions and support:
 
 - [GitHub Issues](https://github.com/unchainedshop/unchained/issues)
 - [Unchained Commerce Website](https://unchained.shop)

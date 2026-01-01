@@ -4,6 +4,7 @@ import loginWithPassword from './accounts/loginWithPassword.ts';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.ts';
 import loginAsGuest from './accounts/loginAsGuest.ts';
 import logout from './accounts/logout.ts';
+import logoutAllSessions from './accounts/logoutAllSessions.ts';
 import impersonate from './accounts/impersonate.ts';
 import stopImpersonation from './accounts/stopImpersonation.ts';
 import changePassword from './accounts/changePassword.ts';
@@ -158,6 +159,7 @@ import updateCartPaymentInvoice from './orders/updateCartPaymentInvoice.ts';
 
 export default {
   logout: acl(actions.logout)(logout),
+  logoutAllSessions: acl(actions.logout)(logoutAllSessions),
   loginAsGuest: acl(actions.loginAsGuest)(loginAsGuest),
   impersonate: acl(actions.impersonate)(impersonate),
   stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),

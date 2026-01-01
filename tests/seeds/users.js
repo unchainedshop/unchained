@@ -1,11 +1,15 @@
 import { users } from '@unchainedshop/core-users';
 import { sql } from 'drizzle-orm';
+import { signAccessToken } from '@unchainedshop/api/lib/auth.js';
 
-// Access tokens: sha256 hash of the plain token
-// Each user has a unique token for proper permission testing
-export const ADMIN_TOKEN = 'Bearer admin-secret';
-export const USER_TOKEN = 'Bearer user-secret';
-export const GUEST_TOKEN = 'Bearer guest-secret';
+// Generate JWT tokens for test users (version 1 matches default tokenVersion)
+const { token: adminToken } = signAccessToken('admin', 1);
+const { token: userToken } = signAccessToken('user', 1);
+const { token: guestToken } = signAccessToken('guest', 1);
+
+export const ADMIN_TOKEN = `Bearer ${adminToken}`;
+export const USER_TOKEN = `Bearer ${userToken}`;
+export const GUEST_TOKEN = `Bearer ${guestToken}`;
 
 // PBKDF2 hash for password "password"
 const PBKDF2_PASSWORD_HASH =
@@ -14,113 +18,66 @@ const PBKDF2_PASSWORD_HASH =
 export const Admin = {
   _id: 'admin',
   username: 'admin',
-  emails: [
-    {
-      address: 'admin@unchained.local',
-      verified: true,
-    },
-  ],
+  emails: [{ address: 'admin@unchained.local', verified: true }],
   guest: false,
   created: new Date(),
   updated: new Date(),
   roles: ['admin'],
   services: {
-    password: {
-      pbkdf2: PBKDF2_PASSWORD_HASH,
-    },
-    token: {
-      // sha256("admin-secret")
-      secret: '16175223c8ddce5ace0493c948569c211b03c4c6bb3d3e484434999448cffe01',
-    },
+    password: { pbkdf2: PBKDF2_PASSWORD_HASH },
+    token: { secret: '901b281c4e0c4007e8526ef27153b79330811e733976d5e65c8343a39e54ec81' },
   },
 };
 
 export const User = {
   _id: 'user',
   username: 'user',
-  emails: [
-    {
-      address: 'user@unchained.local',
-      verified: true,
-    },
-  ],
-  profile: {
-    gender: 'm',
-  },
+  emails: [{ address: 'user@unchained.local', verified: true }],
+  profile: { gender: 'm' },
   guest: false,
   created: new Date(),
   updated: new Date(),
   roles: [],
   services: {
-    password: {
-      pbkdf2: PBKDF2_PASSWORD_HASH,
-    },
-    token: {
-      // sha256("user-secret")
-      secret: 'fa32968772a8ee3fbd6f842644e210e8d27d27ac97742fe7f1910778fc3fa21d',
-    },
+    password: { pbkdf2: PBKDF2_PASSWORD_HASH },
+    token: { secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913' },
   },
 };
 
 export const UnverifiedUser = {
   _id: 'user-unverified',
   username: 'user-unverified',
-  emails: [
-    {
-      address: 'user-unverfied@unchained.local',
-      verified: false,
-    },
-  ],
-  profile: {
-    gender: 'm',
-  },
+  emails: [{ address: 'user-unverfied@unchained.local', verified: false }],
+  profile: { gender: 'm' },
   guest: false,
   created: new Date(),
   updated: new Date(),
   roles: [],
   services: {
-    password: {
-      pbkdf2: PBKDF2_PASSWORD_HASH,
-    },
-    token: {
-      // sha256("user-secret") - same as User
-      secret: 'fa32968772a8ee3fbd6f842644e210e8d27d27ac97742fe7f1910778fc3fa21d',
-    },
+    password: { pbkdf2: PBKDF2_PASSWORD_HASH },
+    token: { secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913' },
   },
 };
 
 export const Guest = {
   _id: 'guest',
   username: 'guest',
-  emails: [
-    {
-      address: 'guest@unchained.local',
-      verified: false,
-    },
-  ],
-  profile: {
-    gender: 'm',
-  },
+  emails: [{ address: 'guest@unchained.local', verified: false }],
+  profile: { gender: 'm' },
   guest: true,
   created: new Date(),
   updated: new Date(),
   roles: [],
   services: {
-    token: {
-      // sha256("guest-secret")
-      secret: 'c14d572fd83485db6ea9a8c149030c662c061d413d4bc23b895b6619ea06e02a',
-    },
+    token: { secret: 'fd3d2dcf2d30d944076c0c26d195c0919e98cdb9aa08aa539a930f27743a8d9c' },
   },
 };
 
 export async function seedUsersToDrizzle(db) {
-  // Clear existing users and FTS
   await db.delete(users);
   await db.run(sql`DELETE FROM users_fts`);
 
-  const allUsers = [Admin, User, Guest, UnverifiedUser];
-
-  for (const userData of allUsers) {
+  for (const userData of [Admin, User, Guest, UnverifiedUser]) {
     await db.insert(users).values({
       _id: userData._id,
       username: userData.username,
@@ -130,25 +87,16 @@ export async function seedUsersToDrizzle(db) {
       services: userData.services,
       profile: userData.profile,
       pushSubscriptions: [],
+      tokenVersion: 1,
       created: userData.created,
       updated: userData.updated,
     });
-
-    // Seed FTS
-    await db.run(
-      sql`INSERT INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`,
-    );
+    await db.run(sql`INSERT INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`);
   }
 }
 
-// Helper function to insert or find a user
 export async function findOrInsertUserToDrizzle(db, userData) {
-  const [existing] = await db
-    .select()
-    .from(users)
-    .where(sql`${users._id} = ${userData._id}`)
-    .limit(1);
-
+  const [existing] = await db.select().from(users).where(sql`${users._id} = ${userData._id}`).limit(1);
   if (existing) return existing;
 
   await db.insert(users).values({
@@ -164,22 +112,14 @@ export async function findOrInsertUserToDrizzle(db, userData) {
     updated: userData.updated,
   });
 
-  // Insert into FTS
   if (userData.username) {
-    await db.run(
-      sql`INSERT OR IGNORE INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`,
-    );
+    await db.run(sql`INSERT OR IGNORE INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`);
   }
 
-  const [newUser] = await db
-    .select()
-    .from(users)
-    .where(sql`${users._id} = ${userData._id}`)
-    .limit(1);
+  const [newUser] = await db.select().from(users).where(sql`${users._id} = ${userData._id}`).limit(1);
   return newUser;
 }
 
-// Legacy function for backward compatibility during migration
 export default async function seedUsers(db) {
   const Users = db.collection('users');
   await Users.findOrInsertOne(Admin);

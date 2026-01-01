@@ -102,9 +102,7 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.3",
-    "validator": "^13.15.23"
-  },
-  "dependencies": {
+    "validator": "^13.15.23",
     "@passwordless-id/webauthn": "^2.3.1"
   }
 }

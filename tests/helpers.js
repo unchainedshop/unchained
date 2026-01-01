@@ -1,4 +1,5 @@
 import { sql } from '@unchainedshop/store';
+import { signAccessToken } from '@unchainedshop/api/lib/auth.js';
 import { initializeTestPlatform, shutdownTestPlatform, getServerPort, getDrizzleDb } from './setup.js';
 import {
   seedCountriesToDrizzle,
@@ -22,6 +23,12 @@ import { seedTokensToDrizzle } from './seeds/tokens.js';
 import { GraphQLClient } from 'graphql-request';
 
 export { getServerPort, getDrizzleDb } from './setup.js';
+
+// Helper to create a JWT token for a user ID
+export const createJWTToken = (userId, tokenVersion = 1) => {
+  const { token } = signAccessToken(userId, tokenVersion);
+  return `Bearer ${token}`;
+};
 
 export const getServerBaseUrl = () => {
   const port = getServerPort();

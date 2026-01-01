@@ -9,6 +9,8 @@ import {
 } from './context.ts';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { API_EVENTS } from './events.ts';
+
+// Re-export public API
 export * from './events.ts';
 export * from './context.ts';
 export * from './locale-context.ts';
@@ -16,6 +18,7 @@ export * from './loaders/index.ts';
 export * from './errors.ts';
 export * as acl from './acl.ts';
 export * as roles from './roles/index.ts';
+export * from './auth.ts';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 import { buildDefaultTypeDefs } from './schema/index.ts';
@@ -40,16 +43,11 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     ...serverOptions
   } = options as UnchainedServerOptions;
 
-  const contextResolver = createContextResolver(unchainedAPI, {
-    roles,
-    adminUiConfig,
-  });
+  const contextResolver = createContextResolver(unchainedAPI, { roles, adminUiConfig });
 
   setCurrentContextResolver(
     customContext
-      ? (props, ...rest) => {
-          return customContext(contextResolver)(props, ...rest);
-        }
+      ? (props, ...rest) => customContext(contextResolver)(props, ...rest)
       : contextResolver,
   );
 
@@ -58,12 +56,7 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
 
   return createGraphQLServer({
     ...serverOptions,
-    typeDefs: [
-      ...buildDefaultTypeDefs({
-        actions: Object.keys(actions),
-      }),
-      ...(additionalTypeDefs || []),
-    ],
+    typeDefs: [...buildDefaultTypeDefs({ actions: Object.keys(actions) }), ...(additionalTypeDefs || [])],
     resolvers: [resolvers, ...(additionalResolvers || [])],
   });
 };

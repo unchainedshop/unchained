@@ -36,8 +36,6 @@
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.0.3",
-    "@fastify/oauth2": "^8.1.2",
-    "@fastify/session": "^11.1.0",
     "@unchainedshop/admin-ui": "^5.0.0-alpha.0",
     "@unchainedshop/platform": "^5.0.0-alpha.0",
     "@unchainedshop/plugins": "^5.0.0-alpha.0",

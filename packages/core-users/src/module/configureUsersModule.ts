@@ -56,6 +56,8 @@ const USER_EVENTS = [
   'USER_UPDATE_LAST_CONTACT',
   'USER_UPDATE_WEB3_ADDRESS',
   'USER_REMOVE',
+  'USER_TOKEN_VERSION_CHANGED',
+  'USER_OIDC_LOGOUT',
 ];
 
 export type { User };
@@ -251,6 +253,17 @@ export const configureUsersModule = async ({
       return row ? rowToUser(row) : null;
     },
 
+    async findUserByToken(plainToken: string): Promise<User | null> {
+      if (!plainToken) return null;
+      const token = await sha256(plainToken);
+      const [row] = await db
+        .select()
+        .from(users)
+        .where(sql`json_extract(${users.services}, '$.token.secret') = ${token}`)
+        .limit(1);
+      return row ? rowToUser(row) : null;
+    },
+
     async findUnverifiedEmailToken(plainToken: string): Promise<{
       userId: string;
       address: string;
@@ -343,19 +356,6 @@ export const configureUsersModule = async ({
         }
       }
       return null;
-    },
-
-    async findUserByToken(plainToken: string): Promise<User | null> {
-      const token = await sha256(plainToken);
-      if (!token) return null;
-
-      const [row] = await db
-        .select()
-        .from(users)
-        .where(sql`json_extract(${users.services}, '$.token.secret') = ${token}`)
-        .limit(1);
-
-      return row ? rowToUser(row) : null;
     },
 
     async findUser(query: UserQuery & { sort?: SortOption[] }): Promise<User | null> {
@@ -756,7 +756,11 @@ export const configureUsersModule = async ({
       return updateAndEmit(userId, { username: username.trim() }, 'USER_UPDATE_USERNAME');
     },
 
-    async setPassword(userId: string, plainPassword: string): Promise<User | null> {
+    async setPassword(
+      userId: string,
+      plainPassword: string,
+      options?: { invalidateTokens?: boolean },
+    ): Promise<User | null> {
       if (!(await userSettings.validatePassword(plainPassword))) {
         throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
       }
@@ -769,6 +773,13 @@ export const configureUsersModule = async ({
         ...services.password,
         ...(await this.hashPassword(password || crypto.randomUUID().split('-').pop())),
       };
+
+      // Invalidate all tokens when password changes (security best practice)
+      const shouldInvalidateTokens = options?.invalidateTokens !== false;
+      if (shouldInvalidateTokens) {
+        // Increment token version to invalidate all access tokens
+        await this.incrementTokenVersion(userId);
+      }
 
       return updateAndEmit(userId, { services, initialPassword: false }, 'USER_UPDATE_PASSWORD');
     },
@@ -1027,6 +1038,50 @@ export const configureUsersModule = async ({
         }
       }
       return [...allTags].sort();
+    },
+
+    // Token version management for instant token revocation
+
+    /**
+     * Increment the token version to invalidate all existing tokens for this user.
+     * Use this for: password change, force logout, security incidents
+     */
+    incrementTokenVersion: async (userId: string): Promise<number> => {
+      const user = await findUserById(userId);
+      if (!user) return 0;
+
+      const newVersion = user.tokenVersion + 1;
+      await db
+        .update(users)
+        .set({ tokenVersion: newVersion, updated: new Date() })
+        .where(eq(users._id, userId));
+
+      await emit('USER_TOKEN_VERSION_CHANGED', { userId, tokenVersion: newVersion });
+      return newVersion;
+    },
+
+    /**
+     * Get the current token version for a user.
+     * Used during token verification to check if token is still valid.
+     */
+    getTokenVersion: async (userId: string): Promise<number> => {
+      const user = await findUserById(userId);
+      return user?.tokenVersion ?? 0;
+    },
+
+    /**
+     * Update the OIDC logout timestamp for a user.
+     * Tokens issued before this timestamp are considered invalid.
+     * Used for back-channel logout from OIDC providers.
+     */
+    updateOidcLogoutAt: async (userId: string, logoutAt: Date = new Date()): Promise<User | null> => {
+      await db
+        .update(users)
+        .set({ oidcLogoutAt: logoutAt, updated: new Date() })
+        .where(eq(users._id, userId));
+
+      await emit('USER_OIDC_LOGOUT', { userId, logoutAt });
+      return findUserById(userId);
     },
   };
 };
