@@ -18,7 +18,7 @@
  * - GDPR Article 30: Track data processing activities
  */
 
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import { disconnect, setupDatabase } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import { rm, mkdir, readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -42,7 +42,7 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   let orderId;
 
   test.before(async () => {
-    await setupDatabase();
+    const { createLoggedInGraphqlFetch } = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
 
     // Create audit log instance

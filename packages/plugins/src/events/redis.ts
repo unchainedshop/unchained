@@ -17,7 +17,9 @@ const RedisEventEmitter = (): EmitAdapter => {
   });
 
   return {
-    publish: (eventName, payload) => redisPublisher.publish(eventName, JSON.stringify(payload)),
+    publish: async (eventName, payload) => {
+      await redisPublisher.publish(eventName, JSON.stringify(payload));
+    },
     subscribe: (eventName, callback) => {
       if (!subscribedEvents.has(eventName)) {
         redisSubscriber.subscribe(eventName, (payload) => {

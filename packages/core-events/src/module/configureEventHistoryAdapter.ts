@@ -1,4 +1,4 @@
-import { getEmitHistoryAdapter, setEmitHistoryAdapter, type EmitAdapter } from '@unchainedshop/events';
+import { setEmitHistoryAdapter, type EmitAdapter } from '@unchainedshop/events';
 import type { RawPayloadType } from '@unchainedshop/events';
 
 export const configureEventHistoryAdapter = (
