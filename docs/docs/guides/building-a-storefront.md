@@ -15,7 +15,7 @@ Unchained Engine is headless, meaning it provides a GraphQL API that any fronten
 
 ```mermaid
 flowchart LR
-    S[Storefront<br/>React, Vue, Next.js] <--> U[Unchained Engine<br/>GraphQL API] <--> D[(MongoDB)]
+    S[Storefront<br/>React, Vue, Next.js] <--> U[Unchained Engine<br/>GraphQL API] <--> D[(SQLite/Turso)]
 ```
 
 ## Setting Up GraphQL Client

@@ -1,11 +1,41 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateId, eq, and, inArray, notInArray, sql, type DrizzleDb } from '@unchainedshop/store';
+import {
+  generateId,
+  eq,
+  and,
+  inArray,
+  notInArray,
+  sql,
+  buildSelectColumns,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.ts';
 import { assortments, assortmentTexts, type AssortmentText } from '../db/schema.ts';
 import { searchAssortmentTextsFTS } from '../db/fts.ts';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
+
+const COLUMNS = {
+  _id: assortmentTexts._id,
+  assortmentId: assortmentTexts.assortmentId,
+  locale: assortmentTexts.locale,
+  title: assortmentTexts.title,
+  subtitle: assortmentTexts.subtitle,
+  description: assortmentTexts.description,
+  slug: assortmentTexts.slug,
+  created: assortmentTexts.created,
+  updated: assortmentTexts.updated,
+} as const;
+
+type AssortmentTextColumnKeys = keyof typeof COLUMNS;
+
+export type AssortmentTextFields = keyof AssortmentText;
+
+export interface AssortmentTextQueryOptions {
+  fields?: AssortmentTextColumnKeys[];
+  sort?: Record<string, number>;
+}
 
 export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
@@ -172,14 +202,8 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
   return {
     findTexts: async (
       query: { assortmentId?: string; assortmentIds?: string[]; queryString?: string },
-      options?: {
-        limit?: number;
-        offset?: number;
-        sort?: Record<string, number>;
-        projection?: Record<string, number>;
-      },
+      options?: AssortmentTextQueryOptions,
     ): Promise<AssortmentText[]> => {
-      void options;
       const conditions: ReturnType<typeof eq>[] = [];
 
       if (query.assortmentId) {
@@ -197,14 +221,18 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
         conditions.push(inArray(assortmentTexts._id, matchingIds));
       }
 
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(assortmentTexts)
+        : db.select().from(assortmentTexts);
+
       if (conditions.length === 0) {
-        return db.select().from(assortmentTexts);
+        const results = await baseQuery;
+        return results as AssortmentText[];
       }
 
-      return db
-        .select()
-        .from(assortmentTexts)
-        .where(and(...conditions));
+      const results = await baseQuery.where(and(...conditions));
+      return results as AssortmentText[];
     },
 
     findLocalizedText: async ({

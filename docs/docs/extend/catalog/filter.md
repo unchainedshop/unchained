@@ -108,15 +108,12 @@ Lets look into each `field` & `function` defined by `IFilterAdapter` and what th
 - `version`
 - `orderIndex`: defines the execution order of a particular filter adapter. filter adapters lower value will be executed first
 
-- `transformProductSelector`: modifies selectors that are going to be used to filter products list. it gets filters that are added by filter adapters with lowe `orderIndex` as it's argument and is expected to return valid mongodb selector expression.
-In the above example we are adding `status: 'ACTIVE'` selector if there is any filter configuration key provided on the filter, also expect the attribute value to match the configuration key: value.
-Note: filters with higher `orderIndex` will get this value as there argument
-  default value: `{ status: { '$in': [ 'ACTIVE', null ] } }`
+- `transformProductSelector`: modifies query conditions that are going to be used to filter products list. It gets filters that are added by filter adapters with lower `orderIndex` as its argument and is expected to return valid query conditions.
+In the above example we are adding `status: 'ACTIVE'` condition if there is any filter configuration key provided on the filter, also expect the attribute value to match the configuration key: value.
+Note: filters with higher `orderIndex` will get this value as their argument
 - `transformFilterSelector`: This transform fn allows you to customize the selector that returns the filters that should show up for a given search query. By default it uses the assortment's filter links to return those filters. Sometimes there is no assortment scope (global search for products) or you want to make a specific filter appear just everywhere. In those cases this can be helpful by returning additional filters through the selector.
-- `transformSortStage`: Used to modify sort options that will to be applied for filter. default sort option value is `{ index: 1 }` which is for mongodb automatically assigned index value, but it can be changed to use any field in a collection.
-in the example above we are adding a sort `{ created: -1 }` to the previous sort option and filter adapters with higher `orderIndex` will get this value as there parameter.
-
-  default value:  `{ _id: { '$in': [] }, isActive: true }`
+- `transformSortStage`: Used to modify sort options that will be applied for filtering. The default sort option uses the index field, but it can be changed to use any field.
+In the example above we are adding a sort by `created` descending to the previous sort option and filter adapters with higher `orderIndex` will get this value as their parameter.
 
 - `searchAssortments`: Triggered when searching for assortments, It is required to return array of assortment Ids that pass the filter checks or empty array if none is found. it gets `assortmentIds` that have been matched so far by filters with lower `orderIndex`.
 - `searchProducts`: Triggered when searching for products, It is required to return array of product Ids that pass the filter checks or empty array if none is found. it gets `productIds` that have been matched so far by filters with lower `orderIndex`.

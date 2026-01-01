@@ -29,7 +29,7 @@ Those have a free plan that you can use for transactional e-mails.
 
 ### Verify Engine Installation
 
-After you have deployed the Template Railway will start a mongo:7 database service and build your project based on our basic Github Repositories:
+After you have deployed the Template Railway will build your project based on our basic Github Repositories:
 - [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app)
 - [unchainedshop/unchained-storefront](https://github.com/unchainedshop/unchained-storefront)
 
@@ -69,12 +69,15 @@ Railway helps you with this, just go to settings of the unchained service, it wi
 After cloning your own engine backend, you have to install dependencies:
 `npm install`
 
-Next you propably want to connect to the mongodb database service on railway by creating a `.env` file:
-```
-MONGO_URL=mongodb://mongo:***@*.proxy.rlwy.net:***
+For local development, Unchained uses a local SQLite database file by default (`unchained.db`). For production, we recommend using [Turso](https://turso.tech):
+
+```bash
+# Create a .env file with Turso credentials (optional)
+DRIZZLE_DB_URL=libsql://your-db.turso.io
+DRIZZLE_DB_TOKEN=your-auth-token
 ```
 
-You can find the correct MONGO_URL by opening the "MongoDB" service in your railway project and check the variable `MONGO_PUBLIC_URL`. If you skip this step, you need to do the setup once again for your localhost.
+If you skip setting database variables, a local `unchained.db` file will be created automatically.
 
 At the end you can run the backend in development mode with:
 ```

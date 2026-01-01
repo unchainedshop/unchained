@@ -2,12 +2,16 @@
 sidebar_position: 3
 title: Local Search Filter
 sidebar_label: Local Search
-description: MongoDB full-text search filter adapter
+description: SQLite FTS5 full-text search filter adapter
 ---
 
 # Local Search Filter
 
-The Local Search filter provides full-text search using MongoDB's built-in text search capabilities.
+The Local Search filter provides full-text search using SQLite's FTS5 (Full-Text Search 5) capabilities.
+
+:::note v5 Changes
+In Unchained Engine v5, the search implementation uses SQLite FTS5 instead of MongoDB `$text` indexes. The API remains the same, but the underlying search engine has changed.
+:::
 
 ## Installation
 
@@ -26,25 +30,19 @@ import '@unchainedshop/plugins/filters/local-search';
 
 ## Requirements
 
-- MongoDB text indexes on product and assortment text collections
-- **Not compatible with AWS DocumentDB** (automatically disabled in DocumentDB compat mode)
+- FTS5 virtual tables are automatically created during schema initialization
+- Triggers automatically sync data between main tables and FTS tables
 
 ## Behavior
 
 ### `searchProducts()`
 
-Searches product text fields using MongoDB `$text` operator:
+Searches product text fields using SQLite FTS5:
 
 ```typescript
-// Search in product texts (title, description, etc.)
-const selector = {
-  $text: { $search: queryString },
-};
-
-// If productIds provided, filter to those products
-if (productIds) {
-  selector.productId = { $in: productIds };
-}
+// Uses the products_fts virtual table
+// Returns product IDs matching the search query, ordered by BM25 relevance
+const matchingIds = await searchProductsFTS(db, queryString);
 ```
 
 ### `searchAssortments()`
@@ -52,13 +50,8 @@ if (productIds) {
 Searches assortment/category text fields:
 
 ```typescript
-const selector = {
-  $text: { $search: queryString },
-};
-
-if (assortmentIds) {
-  selector.assortmentId = { $in: assortmentIds };
-}
+// Uses the assortments_fts virtual table
+const matchingIds = await searchAssortmentsFTS(db, queryString);
 ```
 
 ### `transformFilterSelector()`
@@ -128,9 +121,9 @@ query SearchCategories {
 }
 ```
 
-## Text Index Configuration
+## FTS5 Index Configuration
 
-MongoDB text indexes are created automatically. The default indexes search:
+FTS5 virtual tables are created automatically during schema initialization. The default indexes search:
 
 **Product Texts:**
 - `title`
@@ -147,6 +140,15 @@ MongoDB text indexes are created automatically. The default indexes search:
 
 ## Search Features
 
+### Prefix Search
+
+FTS5 supports prefix matching by default:
+
+```
+# Prefix search (matches "running", "runner", etc.)
+searchProducts(queryString: "run*")
+```
+
 ### Phrase Search
 
 ```
@@ -154,31 +156,16 @@ MongoDB text indexes are created automatically. The default indexes search:
 searchProducts(queryString: "\"running shoes\"")
 ```
 
-### Negation
+### Boolean Search
 
 ```
-# Exclude terms
-searchProducts(queryString: "shoes -sandals")
+# AND/OR/NOT operators
+searchProducts(queryString: "shoes NOT sandals")
 ```
 
-### Stemming
+### BM25 Ranking
 
-MongoDB applies stemming based on language:
-- "running" matches "run", "runs", "runner"
-
-## DocumentDB Compatibility
-
-Local Search is automatically disabled when `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is set:
-
-```bash
-UNCHAINED_DOCUMENTDB_COMPAT_MODE=true
-```
-
-In this case, implement an alternative search adapter using a service like:
-- Elasticsearch
-- Algolia
-- Meilisearch
-- OpenSearch
+Results are automatically ranked by BM25 relevance score, returning the most relevant matches first.
 
 ## Custom Search Adapter
 

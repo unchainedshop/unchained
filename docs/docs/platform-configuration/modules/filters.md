@@ -24,7 +24,7 @@ export interface FilterSettingsOptions {
 
 ### Default Caching Implementation
 
-- [mongodb](https://github.com/unchainedshop/unchained/blob/master/packages/core-filters/src/product-cache/mongodb.ts)
+The default implementation uses the Drizzle database for filter caching. See the [core-filters package](https://github.com/unchainedshop/unchained/tree/master/packages/core-filters) for implementation details.
 
 :::warning
 If you customize `setCachedProductIds`, ensure you also customize `getCachedProductIds`.

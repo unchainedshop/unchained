@@ -15,7 +15,7 @@ The Bulk Import API is designed for high-volume data synchronization:
 
 ```mermaid
 flowchart LR
-    PIM[PIM/ERP System] --> BI[Bulk Import<br/>Work Queue] --> DB[(Unchained DB<br/>MongoDB)]
+    PIM[PIM/ERP System] --> BI[Bulk Import<br/>Work Queue] --> DB[(Unchained DB<br/>SQLite/Turso)]
 ```
 
 ### Key Features
@@ -23,7 +23,7 @@ flowchart LR
 - **Cloud Native**: Background processing on dedicated worker instances
 - **Transparent Process**: Results stored on work items for queryable success/failure
 - **Error Reporting**: Sync issues reported via email to a central address
-- **Performance**: MongoDB bulk operations and intelligent asset caching
+- **Performance**: Batch operations and intelligent asset caching
 - **Push-Based**: Immediate representation of changes
 
 ## Import Methods

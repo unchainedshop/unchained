@@ -158,10 +158,10 @@ lsof -i :4010
 # Kill the process or use different port in .env
 ```
 
-**MongoDB Connection Failed**
-- Ensure MongoDB is running by checking engine logs
-- Check connection string in dotenv files
-- Verify database permissions if custom connection string is used
+**Database Issues**
+- By default, Unchained uses a local SQLite file (`unchained.db`)
+- Check the `DRIZZLE_DB_URL` environment variable in your `.env` file
+- For cloud deployments, use Turso with `DRIZZLE_DB_URL=libsql://your-db.turso.io`
 
 ### Storefront Issues
 

@@ -28,17 +28,17 @@ import '@unchainedshop/plugins/filters/strict-equal';
 
 ### `transformProductSelector()`
 
-Transforms the MongoDB selector to match exact values:
+Transforms the query conditions to match exact values:
 
 ```typescript
 // Input: { key: "brand", value: "nike" }
-// Output: { brand: "nike" }
+// Matches products where brand equals "nike"
 
 // Input: { key: "inStock", value: undefined }
-// Output: { inStock: { $exists: true } }
+// Matches products where inStock field is not null
 ```
 
-When `value` is provided, it matches exactly. When `value` is undefined, it checks field existence.
+When `value` is provided, it matches exactly. When `value` is undefined, it checks for non-null values.
 
 ## Use Cases
 
@@ -152,14 +152,14 @@ For more complex filtering, create a custom filter adapter or use [Local Search]
 
 ## Combining with Other Filters
 
-Strict Equal runs at `orderIndex: 0`, so it processes first. Subsequent adapters receive its transformed selector:
+Strict Equal runs at `orderIndex: 0`, so it processes first. Subsequent adapters receive its transformed query conditions:
 
 ```typescript
-// Strict Equal output
-{ brand: "nike", color: "blue" }
+// Strict Equal adds conditions
+eq(products.brand, "nike"), eq(products.color, "blue")
 
-// Next adapter (e.g., Local Search) receives this and can add more conditions
-{ brand: "nike", color: "blue", $text: { $search: "running shoes" } }
+// Next adapter (e.g., Local Search) receives this and can add FTS5 search
+// Combined result filters by brand, color, AND full-text search
 ```
 
 ## Related

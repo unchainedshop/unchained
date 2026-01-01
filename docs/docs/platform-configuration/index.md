@@ -18,7 +18,7 @@ To customize an Unchained Engine project, follow these topics:
 The main entry point for an Unchained Engine project is `startPlatform` imported from `@unchainedshop/platform`. Calling it will initialize the Unchained Core, add default messaging templates, and set up the background worker.
 
 To make things a bit more simple, Unchained offers different [presets](./plugin-presets.md) for loading functionalities out-of-the box:
-- `base` (Simple Catalog Price based Pricing strategies, Manual Delivery & Invoice Payment, GridFS Asset Storage)
+- `base` (Simple Catalog Price based Pricing strategies, Manual Delivery & Invoice Payment, Local File Storage)
 - `crypto` (Currency-Rate Updating Workers for ECB & Coinbase, Currency-Converting Pricing Plugin, Event ERC721 Token Lazy-Minting on Ethereum, Payment through Unchained Cryptopay)
 - `countries/ch` (Switzerland Tax Calculation and Migros PickMup Integration)
 - `all` (All of the above + all other available plugins including plugins for various payment gateways)

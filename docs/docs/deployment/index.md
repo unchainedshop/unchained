@@ -45,8 +45,8 @@ See [Docker Deployment](./docker) for details.
 ### Infrastructure
 
 - **Node.js 22+** - Runtime environment
-- **MongoDB 6+** - Primary database
-- **File Storage** - S3, MinIO, or GridFS for media
+- **SQLite/Turso** - Local SQLite or Turso for cloud deployments
+- **File Storage** - S3, MinIO, or local storage for media
 - **Redis** (optional) - For distributed events and caching
 
 ### Environment Variables
@@ -57,7 +57,8 @@ Essential production variables:
 # Required
 NODE_ENV=production
 ROOT_URL=https://api.myshop.com
-MONGO_URL=mongodb://...
+DRIZZLE_DB_URL=libsql://your-db.turso.io
+DRIZZLE_DB_TOKEN=your-turso-auth-token
 UNCHAINED_TOKEN_SECRET=your-32-char-secret-minimum
 
 # File Storage (when using MinIO plugin)
@@ -80,7 +81,7 @@ See [Environment Variables](../platform-configuration/environment-variables) for
 
 ```mermaid
 flowchart LR
-    S[Storefront<br/>Vercel] --> E[Engine<br/>Railway] --> D[(MongoDB<br/>Atlas)]
+    S[Storefront<br/>Vercel] --> E[Engine<br/>Railway] --> D[(SQLite/Turso)]
 ```
 
 ### Production Setup
@@ -93,7 +94,7 @@ flowchart TD
     CDN --> Engine[Engine<br/>Container]
     CDN --> Admin[Admin UI<br/>Vercel]
 
-    Engine --> MongoDB[(MongoDB<br/>Atlas)]
+    Engine --> Turso[(Turso<br/>Edge Database)]
     Engine --> Redis[(Redis<br/>Events)]
     Engine --> S3[(S3<br/>Files)]
 ```

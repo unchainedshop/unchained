@@ -4,7 +4,17 @@
 
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findUnusedSlug, systemLocale } from '@unchainedshop/utils';
-import { eq, and, ne, inArray, notInArray, sql, generateId, type DrizzleDb } from '@unchainedshop/store';
+import {
+  eq,
+  and,
+  ne,
+  inArray,
+  notInArray,
+  sql,
+  generateId,
+  buildSelectColumns,
+  type DrizzleDb,
+} from '@unchainedshop/store';
 import { productsSettings } from '../products-settings.ts';
 import {
   products,
@@ -12,10 +22,32 @@ import {
   searchProductTextsFTS,
   rowToProductText,
   type ProductText,
+  type ProductTextRow,
 } from '../db/index.ts';
 
 // Re-export ProductText for backwards compatibility
 export type { ProductText };
+
+export type ProductTextFields = keyof ProductText;
+
+export interface ProductTextQueryOptions {
+  fields?: ProductTextFields[];
+}
+
+const COLUMNS = {
+  _id: productTexts._id,
+  productId: productTexts.productId,
+  locale: productTexts.locale,
+  title: productTexts.title,
+  subtitle: productTexts.subtitle,
+  description: productTexts.description,
+  vendor: productTexts.vendor,
+  brand: productTexts.brand,
+  labels: productTexts.labels,
+  slug: productTexts.slug,
+  created: productTexts.created,
+  updated: productTexts.updated,
+} as const;
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 
@@ -169,12 +201,15 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
 
   return {
     // Queries
-    findTexts: async (query: {
-      productId?: string;
-      productIds?: string[];
-      queryString?: string;
-    }): Promise<ProductText[]> => {
-      const conditions: any[] = [];
+    findTexts: async (
+      query: {
+        productId?: string;
+        productIds?: string[];
+        queryString?: string;
+      },
+      options?: ProductTextQueryOptions,
+    ): Promise<ProductText[]> => {
+      const conditions: ReturnType<typeof eq>[] = [];
 
       if (query.productId) {
         conditions.push(eq(productTexts.productId, query.productId));
@@ -190,16 +225,22 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         conditions.push(inArray(productTexts.productId, matchingProductIds));
       }
 
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(productTexts)
+        : db.select().from(productTexts);
+
       if (conditions.length === 0) {
-        const rows = await db.select().from(productTexts);
-        return rows.map(rowToProductText);
+        const rows = await baseQuery;
+        return selectColumns
+          ? (rows as unknown as ProductText[])
+          : rows.map((r) => rowToProductText(r as ProductTextRow));
       }
 
-      const rows = await db
-        .select()
-        .from(productTexts)
-        .where(and(...conditions));
-      return rows.map(rowToProductText);
+      const rows = await baseQuery.where(and(...conditions));
+      return selectColumns
+        ? (rows as unknown as ProductText[])
+        : rows.map((r) => rowToProductText(r as ProductTextRow));
     },
 
     findLocalizedText: async ({

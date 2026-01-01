@@ -34,7 +34,7 @@ export interface AssortmentsSettingsOptions {
 
 ### Default Caching Implementation
 
-- [mongodb](https://github.com/unchainedshop/unchained/blob/master/packages/core-assortments/src/product-cache/mongodb.ts)
+The default implementation uses the Drizzle database for product caching. See the [core-assortments package](https://github.com/unchainedshop/unchained/tree/master/packages/core-assortments) for implementation details.
 
 ### Built-in Tree Zippers
 

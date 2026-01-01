@@ -10,6 +10,7 @@ import {
   asc,
   desc,
   sql,
+  buildSelectColumns,
   type DrizzleDb,
   type SQL,
 } from '@unchainedshop/store';
@@ -54,10 +55,31 @@ export interface AssortmentQuery {
   tags?: string[];
 }
 
+export type AssortmentFields = keyof Assortment;
+
+export interface AssortmentQueryOptions {
+  fields?: AssortmentColumnKeys[];
+}
+
 export type InvalidateCacheFn = (
   params: AssortmentQuery,
   options?: { skipUpstreamTraversal: boolean },
 ) => void;
+
+const COLUMNS = {
+  _id: assortments._id,
+  isActive: assortments.isActive,
+  isRoot: assortments.isRoot,
+  sequence: assortments.sequence,
+  slugs: assortments.slugs,
+  tags: assortments.tags,
+  meta: assortments.meta,
+  created: assortments.created,
+  updated: assortments.updated,
+  deleted: assortments.deleted,
+} as const;
+
+type AssortmentColumnKeys = keyof typeof COLUMNS;
 
 const SORTABLE_COLUMNS = {
   _id: assortments._id,
@@ -293,23 +315,26 @@ export const configureAssortmentsModule = async ({
       return results.map((r) => r._id);
     },
 
-    findAssortments: async ({
-      limit,
-      offset,
-      sort,
-      ...query
-    }: AssortmentQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: SortOption[];
-    }): Promise<Assortment[]> => {
+    findAssortments: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: AssortmentQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: SortOption[];
+      },
+      options?: AssortmentQueryOptions,
+    ): Promise<Assortment[]> => {
       const defaultSortOption: SortOption[] = [{ key: 'sequence', value: SortDirection.ASC }];
       const conditions = await buildFindSelector(query);
 
-      let queryBuilder = db
-        .select()
-        .from(assortments)
-        .where(and(...conditions));
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      let queryBuilder = selectColumns
+        ? db.select(selectColumns).from(assortments).where(and(...conditions))
+        : db.select().from(assortments).where(and(...conditions));
 
       const sortOptions = buildSortOptions(sort || defaultSortOption);
       if (sortOptions.length > 0) {
@@ -324,7 +349,8 @@ export const configureAssortmentsModule = async ({
         queryBuilder = queryBuilder.limit(limit) as typeof queryBuilder;
       }
 
-      return queryBuilder;
+      const results = await queryBuilder;
+      return selectColumns ? (results as Assortment[]) : (results as Assortment[]);
     },
 
     findProductIds: async ({

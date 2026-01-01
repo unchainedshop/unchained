@@ -36,14 +36,14 @@ docker logs -f my-shop
 pm2 logs
 ```
 
-### Check MongoDB Connection
+### Check Database
 
 ```bash
-# Test connection
-mongosh "mongodb://localhost:27017/unchained" --eval "db.adminCommand('ping')"
+# Check if SQLite database file exists
+ls -la unchained.db
 
-# Check collections
-mongosh "mongodb://localhost:27017/unchained" --eval "db.getCollectionNames()"
+# For Turso cloud database, use the Turso CLI
+turso db shell your-db --execute "SELECT 1"
 ```
 
 ## Common Issues
@@ -69,29 +69,32 @@ kill -9 <PID>
 PORT=4011 npm run dev
 ```
 
-#### MongoDB Connection Failed
+#### Database Connection Failed
 
 ```
-MongoServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+LibsqlError: Failed to connect
 ```
 
 **Solutions:**
 
-1. Start MongoDB:
+1. For local SQLite, ensure the directory is writable:
 ```bash
-# macOS with Homebrew
-brew services start mongodb-community
-
-# Docker
-docker run -d -p 27017:27017 mongo:7
+# Check permissions
+ls -la unchained.db
+touch test.db && rm test.db
 ```
 
 2. Check connection string in `.env`:
 ```bash
-MONGO_URL=mongodb://localhost:27017/unchained
+# Local SQLite (default)
+DRIZZLE_DB_URL=file:unchained.db
+
+# Turso cloud
+DRIZZLE_DB_URL=libsql://your-db.turso.io
+DRIZZLE_DB_TOKEN=your-auth-token
 ```
 
-3. For MongoDB Atlas, ensure IP whitelist includes your IP
+3. For Turso, ensure your auth token is valid and not expired
 
 #### Missing Environment Variables
 
@@ -271,10 +274,10 @@ mutation UpdateProductPricing {
 
 1. Ensure a file storage plugin is imported in your entry file:
 ```typescript
-// GridFS (MongoDB built-in)
-import '@unchainedshop/plugins/files/gridfs';
+// Local file storage (default)
+import '@unchainedshop/plugins/files/local';
 
-// Or MinIO/S3
+// Or MinIO/S3 for production
 import '@unchainedshop/plugins/files/minio';
 ```
 
@@ -304,10 +307,14 @@ Unchained Engine automatically creates indexes on commonly queried fields during
 
 **Solutions:**
 
-1. Add indexes for custom fields:
+1. Add indexes for custom fields in your Drizzle schema:
 ```typescript
-// Only needed if you query by custom fields
-await db.collection('products').createIndex({ 'meta.customField': 1 });
+// In your schema file, add indexes to your table definition
+export const products = sqliteTable('products', {
+  // ... columns
+}, (table) => [
+  index('idx_products_customField').on(table.customField),
+]);
 ```
 
 2. Check for N+1 queries in resolvers

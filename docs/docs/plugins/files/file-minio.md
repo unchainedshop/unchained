@@ -9,16 +9,8 @@ description: S3-compatible file storage with MinIO or Amazon S3
 
 S3-compatible object storage using the MinIO client, supporting both MinIO and Amazon S3.
 
-:::warning GridFS Conflict
-If you're using a preset that includes GridFS (like `base` or `all`), you must unregister the GridFS adapter before using MinIO:
-
-```typescript
-import { FileDirector } from '@unchainedshop/file-upload';
-import '@unchainedshop/plugins/files/minio';
-
-// Unregister GridFS adapter loaded by presets
-FileDirector.unregisterAdapter('shop.unchained.file-upload-plugin.gridfs');
-```
+:::tip Default Storage
+In Unchained v5+, MinIO/S3 is the recommended file storage for production. The default local file storage adapter is suitable for development.
 :::
 
 ## Installation
@@ -194,15 +186,15 @@ bucket/
 - **CORS**: Set up CORS for frontend uploads
 - **Encryption**: Enable server-side encryption
 
-## GridFS vs MinIO/S3
+## Local vs MinIO/S3
 
-| Feature | GridFS | MinIO/S3 |
-|---------|--------|----------|
+| Feature | Local File Storage | MinIO/S3 |
+|---------|-------------------|----------|
 | External Service | No | Yes |
-| Scalability | MongoDB limits | Virtually unlimited |
+| Scalability | Disk limits | Virtually unlimited |
 | CDN Integration | Manual | Easy |
 | Development Setup | Simple | Requires MinIO/S3 |
-| Production Scaling | Limited | Excellent |
+| Production Scaling | Single instance | Excellent |
 
 ## Adapter Details
 
@@ -213,6 +205,6 @@ bucket/
 
 ## Related
 
-- [GridFS Storage](./file-gridfs.md) - MongoDB-based storage
+- [Local Storage](./file-local.md) - Local file storage for development
 - [File Uploads Guide](../../guides/file-uploads.md) - File upload implementation
 - [Plugins Overview](./) - All available plugins

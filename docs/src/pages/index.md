@@ -87,7 +87,7 @@ Common issues, debugging tips, and FAQ.
 | **GraphQL API** | Modern API for any frontend - React, Vue, mobile apps. |
 | **Plugin Architecture** | Extend with Directors and Adapters for payment, delivery, pricing. |
 | **Stateless** | Scale horizontally. Run multiple instances behind a load balancer. |
-| **MongoDB** | Flexible document storage with automatic migrations. |
+| **SQLite/Turso** | Local SQLite for development, Turso edge database for production. |
 | **Open Source** | EUPL-1.2 licensed. Self-host or use managed hosting. |
 
 ---

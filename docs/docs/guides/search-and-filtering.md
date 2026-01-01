@@ -526,16 +526,9 @@ FilterDirector.registerAdapter(ElasticsearchFilter);
 
 ## Performance Tips
 
-### 1. Index Your Filters
+### 1. Indexes
 
-Ensure MongoDB indexes exist for filter fields:
-
-```typescript
-// In your migration or setup
-await db.collection('products').createIndex({ 'filterOptions.key': 1 });
-await db.collection('products').createIndex({ 'filterOptions.value': 1 });
-await db.collection('products').createIndex({ status: 1, 'texts.title': 'text' });
-```
+Unchained automatically creates indexes for commonly queried fields during startup. Custom indexes for additional fields can be added in your Drizzle schema definitions.
 
 ### 2. Cache Filter Aggregations
 

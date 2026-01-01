@@ -1,6 +1,16 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import { generateId, eq, and, inArray, asc, desc, type DrizzleDb, type SQL } from '@unchainedshop/store';
+import {
+  generateId,
+  eq,
+  and,
+  inArray,
+  asc,
+  desc,
+  buildSelectColumns,
+  type DrizzleDb,
+  type SQL,
+} from '@unchainedshop/store';
 import { filters, FilterType, type Filter } from '../db/schema.ts';
 import { configureFilterTextsModule } from './configureFilterTextsModule.ts';
 import createFilterValueParser from '../filter-value-parsers/index.ts';
@@ -13,6 +23,25 @@ export type FilterOption = Filter & {
 };
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
+
+const COLUMNS = {
+  _id: filters._id,
+  key: filters.key,
+  type: filters.type,
+  isActive: filters.isActive,
+  options: filters.options,
+  meta: filters.meta,
+  created: filters.created,
+  updated: filters.updated,
+} as const;
+
+type FilterColumnKeys = keyof typeof COLUMNS;
+
+export type FilterFields = keyof Filter;
+
+export interface FilterQueryOptions {
+  fields?: FilterColumnKeys[];
+}
 
 const SORTABLE_COLUMNS = {
   _id: filters._id,
@@ -115,20 +144,26 @@ export const configureFiltersModule = async ({
       return result[0] || null;
     },
 
-    findFilters: async ({
-      limit,
-      offset,
-      sort,
-      ...query
-    }: FilterQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: SortOption[];
-    }): Promise<Filter[]> => {
+    findFilters: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: FilterQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: SortOption[];
+      },
+      options?: FilterQueryOptions,
+    ): Promise<Filter[]> => {
       const defaultSortOption = [{ key: 'created', value: SortDirection.ASC }];
       const conditions = await buildFindSelector(db, query);
 
-      let queryBuilder = db.select().from(filters);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      let queryBuilder = selectColumns
+        ? db.select(selectColumns).from(filters)
+        : db.select().from(filters);
 
       if (conditions.length > 0) {
         queryBuilder = queryBuilder.where(and(...conditions)) as typeof queryBuilder;
@@ -149,7 +184,8 @@ export const configureFiltersModule = async ({
         queryBuilder = queryBuilder.limit(limit) as typeof queryBuilder;
       }
 
-      return queryBuilder;
+      const results = await queryBuilder;
+      return results as Filter[];
     },
 
     count: async (query: FilterQuery): Promise<number> => {

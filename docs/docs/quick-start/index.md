@@ -29,7 +29,7 @@ Unchained Engine follows a headless architecture with three main components:
 flowchart TD
     S[Storefront<br/>Next.js] --> E[Unchained Engine<br/>GraphQL API]
     A[Admin UI<br/>SPA] --> E
-    E --> M[(MongoDB)]
+    E --> M[(SQLite/Turso)]
 ```
 
 - **Unchained Engine**: The core API server providing GraphQL endpoints

@@ -19,7 +19,7 @@ Unchained Engine is a headless, code-first e-commerce platform built with Node.j
 - **Headless**: Decoupled from any specific UI
 - **Plugin architecture**: Extensible via Director/Adapter pattern
 - **Open source**: EUPL-1.2 licensed
-- **MongoDB-based**: Flexible document storage
+- **SQLite/Turso**: Local SQLite for development, Turso edge database for production
 
 ### What frontend frameworks can I use?
 
@@ -43,20 +43,20 @@ Yes. Unchained is designed to scale horizontally and has been used in production
 ### What are the system requirements?
 
 - Node.js 22+
-- MongoDB 6+
+- No database installation required (SQLite is embedded)
 - 1GB+ RAM (2GB+ recommended for production)
 
-### Do I need MongoDB Atlas or can I use local MongoDB?
+### Do I need Turso or can I use local SQLite?
 
-Both work. For development, local MongoDB is fine. For production, MongoDB Atlas is recommended for:
-- Automatic backups
+Both work. For development, local SQLite is used by default (creates `unchained.db` file). For production, [Turso](https://turso.tech) is recommended for:
+- Automatic backups and replication
+- Global edge distribution (low latency worldwide)
 - High availability
-- Monitoring
-- Security
+- Built-in monitoring
 
-### Can I use PostgreSQL instead of MongoDB?
+### Can I use PostgreSQL or MongoDB instead of SQLite?
 
-No. Unchained is designed around MongoDB's document model. The flexible schema is a core architectural choice.
+No. Unchained v5+ is designed around Drizzle ORM with SQLite/Turso. This provides excellent performance for most use cases, and Turso's edge distribution makes it suitable for global deployments.
 
 ### How do I update Unchained?
 
@@ -347,12 +347,12 @@ See [Multi-Language Setup](../guides/multi-language-setup).
 ### What's the recommended production setup?
 
 - Node.js 22+ on container platform
-- MongoDB Atlas for database
+- Turso for database (global edge distribution)
 - S3/MinIO for file storage
-- Redis for distributed events
+- Redis for distributed events (optional)
 - CDN for static assets
 
-See platform-specific documentation for deployment guides.
+See [Production Checklist](../deployment/production-checklist) for deployment guides.
 
 ### How do I handle database migrations?
 
@@ -405,12 +405,14 @@ DEBUG=unchained:* npm run dev
 ### How do I reset the database?
 
 ```bash
-# Drop database
-mongosh --eval "db.dropDatabase()" unchained
+# Delete the local SQLite database file
+rm unchained.db
 
-# Restart server (will recreate collections)
+# Restart server (will recreate database with fresh schema)
 npm run dev
 ```
+
+For Turso cloud databases, use the Turso CLI or dashboard to manage your database.
 
 ### How do I get support?
 

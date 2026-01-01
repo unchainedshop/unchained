@@ -123,7 +123,7 @@ See [Audit Logging](../extend/events#audit-logging) for detailed documentation.
 All user-supplied strings used in regular expressions are escaped:
 
 ```typescript
-import { escapeRegexString } from '@unchainedshop/mongodb';
+import { escapeRegexString } from '@unchainedshop/utils';
 
 // User input is escaped before regex construction
 const regex = new RegExp(escapeRegexString(userInput), 'i');

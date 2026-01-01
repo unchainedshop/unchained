@@ -431,17 +431,17 @@ const MyFilterAdapter: IFilterAdapter = {
         return { assortmentIds: [], totalCount: 0 };
       },
 
-      // Modify MongoDB product selector
+      // Modify product query conditions
       transformProductSelector(selector, options) {
         return selector;
       },
 
-      // Modify MongoDB filter selector
+      // Modify filter query conditions
       transformFilterSelector(selector, options) {
         return selector;
       },
 
-      // Modify MongoDB sort stage
+      // Modify sort stage
       transformSortStage(sort, options) {
         return sort;
       },

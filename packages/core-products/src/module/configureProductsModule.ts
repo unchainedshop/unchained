@@ -14,6 +14,7 @@ import {
   isNull,
   isNotNull,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -26,6 +27,7 @@ import {
   searchProductTextsFTS,
   rowToProduct,
   type Product,
+  type ProductRow,
   type ProductAssignment,
   type ProductBundleItem,
   type ProductConfiguration,
@@ -63,6 +65,35 @@ export interface ProductDiscount {
   discountKey: string;
   context?: any;
 }
+
+export type ProductFields = keyof Product;
+
+export interface ProductQueryOptions {
+  fields?: ProductColumnKeys[];
+}
+
+const COLUMNS = {
+  _id: products._id,
+  type: products.type,
+  status: products.status,
+  sequence: products.sequence,
+  slugs: products.slugs,
+  tags: products.tags,
+  published: products.published,
+  commerce: products.commerce,
+  bundleItems: products.bundleItems,
+  proxy: products.proxy,
+  supply: products.supply,
+  warehousing: products.warehousing,
+  plan: products.plan,
+  tokenization: products.tokenization,
+  meta: products.meta,
+  created: products.created,
+  updated: products.updated,
+  deleted: products.deleted,
+} as const;
+
+type ProductColumnKeys = keyof typeof COLUMNS;
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -440,16 +471,19 @@ export const configureProductsModule = async ({
       return null;
     },
 
-    findProducts: async ({
-      limit,
-      offset,
-      sort,
-      ...query
-    }: ProductQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: SortOption[];
-    }): Promise<Product[]> => {
+    findProducts: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: ProductQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: SortOption[];
+      },
+      options?: ProductQueryOptions,
+    ): Promise<Product[]> => {
       const conditions = await buildConditions(query);
       const defaultSortOption: SortOption[] = [
         { key: 'sequence', value: SortDirection.ASC },
@@ -457,7 +491,11 @@ export const configureProductsModule = async ({
         { key: '_id', value: SortDirection.DESC }, // Tertiary sort for deterministic ordering
       ];
 
-      let q = db.select().from(products);
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      let q = selectColumns
+        ? db.select(selectColumns).from(products)
+        : db.select().from(products);
+
       if (conditions.length) {
         q = q.where(and(...conditions)) as typeof q;
       }
@@ -473,7 +511,9 @@ export const configureProductsModule = async ({
       }
 
       const rows = await q;
-      return rows.map(rowToProduct);
+      return selectColumns
+        ? (rows as unknown as Product[])
+        : rows.map((r) => rowToProduct(r as ProductRow));
     },
 
     findProductIds: async (query: ProductQuery): Promise<string[]> => {

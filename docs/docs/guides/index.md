@@ -39,6 +39,7 @@ Practical, step-by-step guides for common development tasks with Unchained Engin
 Before following these guides, ensure you have:
 
 1. Node.js 22+ installed
-2. MongoDB running (or MongoDB Memory Server for development)
-3. Basic knowledge of TypeScript and GraphQL
-4. An Unchained Engine project set up (see [Quick Start](../quick-start/))
+2. Basic knowledge of TypeScript and GraphQL
+3. An Unchained Engine project set up (see [Quick Start](../quick-start/))
+
+No database installation required - Unchained uses SQLite locally by default.

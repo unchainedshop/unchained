@@ -70,23 +70,16 @@ configureAuditIntegration(auditLog);
 
 ### Database Security
 
-- [ ] **MongoDB authentication** - Database requires authentication
+- [ ] **Database file secured** - SQLite file has appropriate permissions (local) or Turso auth configured (cloud)
 - [ ] **Network isolation** - Database not publicly accessible
-- [ ] **Encrypted connections** - MongoDB connection uses TLS
 - [ ] **Regular backups** - Automated backup schedule configured
 
 ## Performance
 
 ### Database
 
-- [ ] **Indexes created** - All necessary indexes exist
-- [ ] **Connection pooling** - Pool size appropriate for workload
+- [ ] **Indexes created** - All necessary indexes exist (auto-created on startup)
 - [ ] **Query optimization** - No slow queries in production
-
-```bash
-# Check MongoDB indexes
-mongosh --eval "db.products.getIndexes()"
-```
 
 ### Caching
 
@@ -110,9 +103,9 @@ mongosh --eval "db.products.getIndexes()"
 
 ### Storage
 
-- [ ] **File storage configured** - S3, MinIO, or GridFS
+- [ ] **File storage configured** - S3, MinIO, or local storage
 - [ ] **Signed URLs** - Secure file access
-- [ ] **Backup strategy** - Files are backed up
+- [ ] **Backup strategy** - Files and database are backed up
 
 ### Monitoring
 
@@ -141,7 +134,8 @@ LOG_FORMAT=json  # For structured logging
 # Required
 NODE_ENV=production
 ROOT_URL=https://api.myshop.com
-MONGO_URL=mongodb+srv://...
+DRIZZLE_DB_URL=libsql://your-db.turso.io
+DRIZZLE_DB_TOKEN=your-turso-auth-token
 UNCHAINED_TOKEN_SECRET=<32+ character secret>
 
 # Email
@@ -285,14 +279,14 @@ EMAIL_PREVIEW=false  # or just don't set it
 # Check Node.js version
 node --version  # Should be 22+
 
-# Test MongoDB connection
-mongosh "$MONGO_URL" --eval "db.adminCommand('ping')"
+# Test database connection (Turso)
+turso db shell your-db --execute "SELECT 1"
 
 # Test SMTP
 npm run test:email  # If you have this script
 
 # Check environment variables
-env | grep UNCHAINED
+env | grep -E "UNCHAINED|DRIZZLE"
 
 # Test API endpoint
 curl https://api.myshop.com/graphql \

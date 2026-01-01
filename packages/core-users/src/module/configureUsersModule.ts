@@ -11,6 +11,7 @@ import {
   desc,
   isNull,
   generateId,
+  buildSelectColumns,
   type SQL,
   type DrizzleDb,
 } from '@unchainedshop/store';
@@ -62,6 +63,12 @@ const USER_EVENTS = [
 
 export type { User };
 
+export type UserFields = keyof User;
+
+export interface UserQueryOptions {
+  fields?: UserFields[];
+}
+
 export interface UserQuery {
   includeGuests?: boolean;
   includeDeleted?: boolean;
@@ -73,6 +80,29 @@ export interface UserQuery {
   username?: string;
   web3Verified?: boolean;
 }
+
+const COLUMNS = {
+  _id: users._id,
+  username: users.username,
+  guest: users.guest,
+  initialPassword: users.initialPassword,
+  avatarId: users.avatarId,
+  roles: users.roles,
+  tags: users.tags,
+  meta: users.meta,
+  emails: users.emails,
+  services: users.services,
+  profile: users.profile,
+  lastLogin: users.lastLogin,
+  lastBillingAddress: users.lastBillingAddress,
+  lastContact: users.lastContact,
+  pushSubscriptions: users.pushSubscriptions,
+  tokenVersion: users.tokenVersion,
+  oidcLogoutAt: users.oidcLogoutAt,
+  created: users.created,
+  updated: users.updated,
+  deleted: users.deleted,
+} as const;
 
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = { ...rawUser };
@@ -358,40 +388,56 @@ export const configureUsersModule = async ({
       return null;
     },
 
-    async findUser(query: UserQuery & { sort?: SortOption[] }): Promise<User | null> {
+    async findUser(
+      query: UserQuery & { sort?: SortOption[] },
+      options?: UserQueryOptions,
+    ): Promise<User | null> {
       const conditions = await buildConditions(query);
-      let baseQuery = db.select().from(users);
-      if (conditions.length > 0) {
-        baseQuery = baseQuery.where(and(...conditions)) as typeof baseQuery;
-      }
-      const [row] = await baseQuery.limit(1);
-      return row ? rowToUser(row) : null;
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(users)
+        : db.select().from(users);
+
+      const queryWithConditions =
+        conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
+      const [row] = await queryWithConditions.limit(1);
+
+      if (!row) return null;
+      return selectColumns ? (row as unknown as User) : rowToUser(row as UserRow);
     },
 
-    async findUsers({
-      limit,
-      offset,
-      sort,
-      ...query
-    }: UserQuery & {
-      sort?: SortOption[];
-      limit?: number;
-      offset?: number;
-    }): Promise<User[]> {
+    async findUsers(
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: UserQuery & {
+        sort?: SortOption[];
+        limit?: number;
+        offset?: number;
+      },
+      options?: UserQueryOptions,
+    ): Promise<User[]> {
       const conditions = await buildConditions(query);
       const orderBy = buildOrderBy(sort);
 
-      let baseQuery = db.select().from(users);
-      if (conditions.length > 0) {
-        baseQuery = baseQuery.where(and(...conditions)) as typeof baseQuery;
-      }
+      const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
+      const baseQuery = selectColumns
+        ? db.select(selectColumns).from(users)
+        : db.select().from(users);
 
-      const results = await baseQuery
+      const queryWithConditions =
+        conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
+
+      const results = await queryWithConditions
         .orderBy(...orderBy)
         .limit(limit ?? 1000)
         .offset(offset ?? 0);
 
-      return results.map(rowToUser);
+      return selectColumns
+        ? (results as unknown as User[])
+        : results.map((r) => rowToUser(r as UserRow));
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {

@@ -119,11 +119,7 @@ extend enum SearchOrderBy {
 
 Explanation:
 
-DESC at the end means it should sort descending whereas ASC or neither direction means it will sort ascending. Underscores will be replaced by dots before firing to the MongoDB, so "meta_priceRanges_minSimulatedPrice_DESC" this effectively translates to:
-
-```
-{ $sort: { "meta.priceRanges.minSimulatedPrice": -1, "_id": 1 } }
-```
+DESC at the end means it should sort descending whereas ASC or neither direction means it will sort ascending. Underscores will be replaced by dots when building the query, so "meta_priceRanges_minSimulatedPrice_DESC" effectively sorts by `meta.priceRanges.minSimulatedPrice` in descending order.
 
 
 

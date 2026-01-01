@@ -39,9 +39,7 @@ const LocalSearch: IFilterAdapter = {
             assortmentIds,
           },
           {
-            projection: {
-              assortmentId: 1,
-            },
+            fields: ['assortmentId'],
           },
         );
 

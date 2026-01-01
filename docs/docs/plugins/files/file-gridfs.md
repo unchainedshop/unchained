@@ -1,16 +1,26 @@
 ---
 sidebar_position: 21
-title: GridFS File Storage
-sidebar_label: GridFS
-description: MongoDB GridFS file storage for simple deployments
+title: GridFS File Storage (Deprecated)
+sidebar_label: GridFS (Deprecated)
+description: MongoDB GridFS file storage - deprecated in v5
 ---
 
 # GridFS File Storage
 
+:::danger Deprecated in v5
+GridFS file storage has been **removed in Unchained Engine v5** as MongoDB is no longer supported.
+
+**Migration options:**
+- Use [MinIO/S3 Storage](./file-minio.md) for production deployments
+- Use local file storage for development
+
+See the [Migration Guide](/docs/migrations) for upgrade instructions.
+:::
+
 MongoDB GridFS-based file storage for storing files directly in MongoDB.
 
-:::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+:::warning v4 Only
+This plugin is only available in Unchained Engine v4 and earlier. For v5+, use [MinIO/S3 Storage](./file-minio.md) or local file storage.
 :::
 
 ## Installation

@@ -28,21 +28,25 @@ node --version
   ```
 - Direct download from [nodejs.org](https://nodejs.org/)
 
-#### MongoDB (v6.0 or newer)
-Unchained uses MongoDB as its primary database, but you do **not** have to install MongoDB!
+#### Database (SQLite/Turso)
+Unchained Engine v5+ uses SQLite locally or Turso for cloud deployments. **No database installation required!**
 
-Unless you set an explicit connection string, Unchained will automatically download an appropriate version and run it locally for you, thanks to [MongoDB Memory Server](https://typegoose.github.io/mongodb-memory-server/).
+By default, Unchained creates a local SQLite file (`unchained.db`) in your project directory. For cloud deployments, you can use [Turso](https://turso.tech) - a SQLite-compatible edge database.
 
-**Alternative: MongoDB Atlas (Cloud)**
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new cluster
-3. Get your connection string and set it via `MONGO_URL` environment variable
+**Local Development (Default)**
+- No configuration needed
+- Data stored in `unchained.db` file
+- Perfect for development and testing
 
-**Alternative: PostgreSQL via FerretDB**
-1. Set up PostgreSQL
-2. Start the FerretDB Docker container
-3. Get your connection string and set it via the `MONGO_URL` environment variable
-4. Set the `UNCHAINED_DOCUMENTDB_COMPAT_MODE` environment variable to `1`
+**Cloud Deployment (Turso)**
+1. Create a free account at [Turso](https://turso.tech)
+2. Create a new database
+3. Get your connection string and auth token
+4. Set environment variables:
+   ```bash
+   DRIZZLE_DB_URL=libsql://your-db.turso.io
+   DRIZZLE_DB_TOKEN=your-auth-token
+   ```
 
 ## Next Steps
 

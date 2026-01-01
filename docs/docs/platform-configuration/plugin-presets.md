@@ -22,9 +22,9 @@ const platform = await startPlatform({
 connect(app, platform)
 
 // Either:
-// a) Load GridFS REST endpoints for Express.js:
+// a) Load REST endpoints for Express.js:
 import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
-// a) Load GridFS REST endpoints for Fastify:
+// b) Load REST endpoints for Fastify:
 import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
 
 connectPlugins(app);
@@ -71,7 +71,7 @@ The base preset includes essential plugins for a minimal e-commerce setup:
 - Error notifications
 
 **File Storage:**
-- GridFS (MongoDB) file storage with modules
+- Local file storage (default for development)
 
 ### All Preset (`@unchainedshop/plugins/presets/all`)
 

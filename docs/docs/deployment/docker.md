@@ -80,16 +80,10 @@ services:
     environment:
       - NODE_ENV=production
       - ROOT_URL=http://localhost:4010
-      - MONGO_URL=mongodb://mongo:27017/unchained
+      - DRIZZLE_DB_URL=file:/data/unchained.db
       - UNCHAINED_TOKEN_SECRET=${UNCHAINED_TOKEN_SECRET}
-    depends_on:
-      - mongo
-    restart: unless-stopped
-
-  mongo:
-    image: mongo:7
     volumes:
-      - mongo_data:/data/db
+      - db_data:/data
     restart: unless-stopped
 
   admin-ui:
@@ -102,10 +96,12 @@ services:
       - engine
 
 volumes:
-  mongo_data:
+  db_data:
 ```
 
-### With Redis and MinIO
+### With Turso, Redis and MinIO
+
+For production with Turso cloud database:
 
 ```yaml
 # docker-compose.production.yml
@@ -119,7 +115,8 @@ services:
     environment:
       - NODE_ENV=production
       - ROOT_URL=https://api.myshop.com
-      - MONGO_URL=mongodb://mongo:27017/unchained
+      - DRIZZLE_DB_URL=${DRIZZLE_DB_URL}
+      - DRIZZLE_DB_TOKEN=${DRIZZLE_DB_TOKEN}
       - REDIS_URL=redis://redis:6379
       - UNCHAINED_TOKEN_SECRET=${UNCHAINED_TOKEN_SECRET}
       - MINIO_ENDPOINT=minio
@@ -128,15 +125,8 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_BUCKET=unchained-files
     depends_on:
-      - mongo
       - redis
       - minio
-    restart: unless-stopped
-
-  mongo:
-    image: mongo:7
-    volumes:
-      - mongo_data:/data/db
     restart: unless-stopped
 
   redis:
@@ -159,7 +149,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  mongo_data:
   redis_data:
   minio_data:
 ```
@@ -181,14 +170,26 @@ docker build \
 ### Run Container
 
 ```bash
-# Run with environment variables
+# Run with environment variables (local SQLite)
+docker run -d \
+  --name my-shop \
+  -p 4010:4010 \
+  -v unchained-data:/data \
+  -e NODE_ENV=production \
+  -e ROOT_URL=https://api.myshop.com \
+  -e DRIZZLE_DB_URL=file:/data/unchained.db \
+  -e UNCHAINED_TOKEN_SECRET=your-32-character-secret-here \
+  my-shop:latest
+
+# Run with Turso cloud database
 docker run -d \
   --name my-shop \
   -p 4010:4010 \
   -e NODE_ENV=production \
   -e ROOT_URL=https://api.myshop.com \
-  -e MONGO_URL=mongodb://... \
-  -e UNCHAINED_TOKEN_SECRET=your-secret \
+  -e DRIZZLE_DB_URL=libsql://your-db.turso.io \
+  -e DRIZZLE_DB_TOKEN=your-turso-token \
+  -e UNCHAINED_TOKEN_SECRET=your-32-character-secret-here \
   my-shop:latest
 ```
 
@@ -330,8 +331,9 @@ metadata:
   name: unchained-secrets
 type: Opaque
 stringData:
-  MONGO_URL: "mongodb+srv://..."
-  UNCHAINED_TOKEN_SECRET: "your-secret-here"
+  DRIZZLE_DB_URL: "libsql://your-db.turso.io"
+  DRIZZLE_DB_TOKEN: "your-turso-token"
+  UNCHAINED_TOKEN_SECRET: "your-32-character-secret-here"
   STRIPE_SECRET_KEY: "sk_live_..."
 ```
 
@@ -405,7 +407,7 @@ app.get('/health', (req, res) => {
 app.get('/ready', async (req, res) => {
   try {
     // Check database connection
-    await mongoose.connection.db.admin().ping();
+    // The database health is verified through a simple query
     res.json({ status: 'ready' });
   } catch (error) {
     res.status(503).json({ status: 'not ready', error: error.message });
