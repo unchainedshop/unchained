@@ -1,3 +1,4 @@
+import parseMeta from '../../common/utils/parseMeta';
 import {
   AssortmentCSVRow,
   AssortmentImportPayload,
@@ -15,11 +16,18 @@ const normalizeAssortmentContent = (row: AssortmentCSVRow) => {
     content[locale][field] = value || '';
   });
 
-  return content;
+  Object.keys(content).forEach((locale) => {
+    if (!Object.values(content[locale]).every((v) => !v)) {
+      delete content[locale];
+    }
+  });
+
+  return Object.keys(content).length ? content : null;
 };
 
 export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
   const content = normalizeAssortmentContent(row);
+  const meta = parseMeta(row['meta']);
   return {
     _id: row['_id'] || undefined,
     sequence:
@@ -28,6 +36,7 @@ export const assortmentMapper = (row: AssortmentCSVRow): AssortmentCSVRow => {
         : row['sequence'] || 0,
     isActive: row['isActive'] === 'true',
     isRoot: row['isRoot'] === 'true',
+    meta,
     tags: row['tags'] ? (row['tags'] as string).split(';') : ([] as any),
     content,
   };
@@ -45,7 +54,7 @@ export const validateAssortment = (
   const errors: string[] = [];
   for (const assortment of assortmentCSV) {
     const normalized = normalizeAssortmentContent(assortment);
-    if (!normalized || !Object.values(normalized).some((v) => v.title)) {
+    if (!normalized) {
       errors.push(
         intl.formatMessage({
           id: 'assortment_import_localized_texts_missing',

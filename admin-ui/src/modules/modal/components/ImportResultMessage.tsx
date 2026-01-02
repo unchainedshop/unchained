@@ -20,7 +20,6 @@ const ImportResultMessage: React.FC<ImportResultMessageProps> = ({
   entityName = 'items',
 }) => {
   const { formatMessage } = useIntl();
-
   return (
     <div className="p-4">
       <h3 className="text-lg font-semibold mb-4">
@@ -38,13 +37,13 @@ const ImportResultMessage: React.FC<ImportResultMessageProps> = ({
             defaultMessage: '{count} {entityName} imported successfully',
           },
           {
-            count: result.success,
+            count: result?.success,
             entityName,
           },
         )}
       </p>
 
-      {result.failed > 0 && (
+      {result?.failed > 0 && (
         <div>
           <p className="text-red-600 mt-2">
             {formatMessage(
@@ -53,7 +52,7 @@ const ImportResultMessage: React.FC<ImportResultMessageProps> = ({
                 defaultMessage: '{count} {entityName} failed to import',
               },
               {
-                count: result.failed,
+                count: result?.failed,
                 entityName,
               },
             )}

@@ -4116,6 +4116,7 @@ export enum IWorkStatus {
 export enum IWorkType {
   Budgetsms = 'BUDGETSMS',
   Bulkgate = 'BULKGATE',
+  BulkExport = 'BULK_EXPORT',
   BulkImport = 'BULK_IMPORT',
   Email = 'EMAIL',
   EnrollmentOrderGenerator = 'ENROLLMENT_ORDER_GENERATOR',
