@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { LanguageQuery } from '@unchainedshop/core-languages';
 
 export async function searchLanguagesService(
@@ -12,7 +12,7 @@ export async function searchLanguagesService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchLanguageIds = await searchActions.search('languages');
+  const searchLanguageIds = await searchActions.search(SearchEntityType.LANGUAGE);
   if (searchLanguageIds.length === 0) return [];
 
   return this.languages.findLanguages({ ...query, searchLanguageIds });
@@ -28,7 +28,7 @@ export async function searchLanguagesCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchLanguageIds = await searchActions.search('languages');
+  const searchLanguageIds = await searchActions.search(SearchEntityType.LANGUAGE);
   if (searchLanguageIds.length === 0) return 0;
 
   return this.languages.count({ ...query, searchLanguageIds });

@@ -13,7 +13,6 @@ const SENSITIVE_ACTION_PREFIXES = [
   'impersonate',
   'update',
   'create',
-  'viewUser',
 ];
 
 const defaultOptions = {

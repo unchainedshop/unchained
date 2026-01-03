@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { Work, WorkQueueQuery } from '@unchainedshop/core-worker';
 import type { SortOption } from '@unchainedshop/utils';
 
@@ -19,7 +19,7 @@ export async function searchWorkService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchWorkIds = await searchActions.search('work_queue');
+  const searchWorkIds = await searchActions.search(SearchEntityType.WORK_QUEUE);
   if (searchWorkIds.length === 0) return [];
 
   return this.worker.findWorkQueue({
@@ -41,7 +41,7 @@ export async function searchWorkCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchWorkIds = await searchActions.search('work_queue');
+  const searchWorkIds = await searchActions.search(SearchEntityType.WORK_QUEUE);
   if (searchWorkIds.length === 0) return 0;
 
   return this.worker.count({ ...query, searchWorkIds });

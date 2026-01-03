@@ -2,12 +2,14 @@
  * FTS5 Full-Text Search Plugin
  *
  * Self-contained SQLite FTS5 search implementation.
- * Uses its own database connection, separate from core.
+ * Can use shared database connection or separate connection.
  *
- * Usage:
+ * Usage (via preset - recommended):
+ *   import fts5Modules from '@unchainedshop/plugins/search/fts5-search';
+ *   // Pass to platform modules - FTS5 tables are created and adapter registered automatically
+ *
+ * Usage (manual):
  *   import { initializeFTS5Search, setupFTS5Tables } from '@unchainedshop/plugins/search/fts5-search';
- *
- *   // During app initialization:
  *   await setupFTS5Tables(dbUrl, authToken);
  *   initializeFTS5Search();
  */
@@ -15,11 +17,16 @@
 import {
   SearchDirector,
   SearchAdapter,
+  SearchEntityType,
   type ISearchAdapter,
   type SearchContext,
 } from '@unchainedshop/core';
 import { createDrizzleDb, sql, type DrizzleDb } from '@unchainedshop/store';
 import { escapeFTS5WithPrefix } from '@unchainedshop/utils';
+
+// Import the search-index worker to auto-register it
+// This ensures the SEARCH_INDEX work type is available in the GraphQL schema
+import '../worker/search-index.ts';
 
 // Plugin's own database connection (not shared with core)
 let ftsDb: DrizzleDb | null = null;
@@ -229,6 +236,36 @@ async function searchFTS(table: string, searchText: string, idColumn = '_id'): P
 }
 
 /**
+ * Convert SearchEntityType to FTS table config key.
+ * Maps entity types to their corresponding FTS_TABLES keys.
+ */
+function getTableKey(entityType: SearchEntityType): string {
+  const mapping: Record<SearchEntityType, string> = {
+    PRODUCT: 'products',
+    PRODUCT_TEXT: 'product_texts',
+    PRODUCT_REVIEW: 'product_reviews',
+    ASSORTMENT: 'assortments',
+    ASSORTMENT_TEXT: 'assortment_texts',
+    ORDER: 'orders',
+    USER: 'users',
+    QUOTATION: 'quotations',
+    ENROLLMENT: 'enrollments',
+    FILTER: 'filters',
+    FILTER_TEXT: 'filter_texts',
+    COUNTRY: 'countries',
+    CURRENCY: 'currencies',
+    LANGUAGE: 'languages',
+    EVENT: 'events',
+    WORK_QUEUE: 'work_queue',
+    TOKEN_SURROGATE: 'token_surrogates',
+    DELIVERY_PROVIDER: 'delivery_providers',
+    PAYMENT_PROVIDER: 'payment_providers',
+    WAREHOUSING_PROVIDER: 'warehousing_providers',
+  };
+  return mapping[entityType] || entityType.toLowerCase();
+}
+
+/**
  * FTS5 Search Adapter
  */
 const FTS5SearchAdapter: ISearchAdapter = {
@@ -240,72 +277,57 @@ const FTS5SearchAdapter: ISearchAdapter = {
   orderIndex: 10,
 
   actions: (context: SearchContext) => ({
-    ...SearchAdapter.actions(context, { modules: null as any }),
-
-    searchProducts: async () => {
+    search: async (entityType: SearchEntityType) => {
       if (!context.queryString) return [];
 
-      const [productMatches, textMatches] = await Promise.all([
-        searchFTS('products_fts', context.queryString),
-        searchFTS('product_texts_fts', context.queryString, 'productId'),
-      ]);
+      // Handle composite searches (entity + related texts)
+      switch (entityType) {
+        case SearchEntityType.PRODUCT: {
+          const [productMatches, textMatches] = await Promise.all([
+            searchFTS('products_fts', context.queryString),
+            searchFTS('product_texts_fts', context.queryString, 'productId'),
+          ]);
+          return [...new Set([...productMatches, ...textMatches])];
+        }
 
-      return [...new Set([...productMatches, ...textMatches])];
+        case SearchEntityType.ASSORTMENT: {
+          const [assortmentMatches, textMatches] = await Promise.all([
+            searchFTS('assortments_fts', context.queryString),
+            searchFTS('assortment_texts_fts', context.queryString, 'assortmentId'),
+          ]);
+          return [...new Set([...assortmentMatches, ...textMatches])];
+        }
+
+        case SearchEntityType.FILTER: {
+          const [filterMatches, textMatches] = await Promise.all([
+            searchFTS('filters_fts', context.queryString),
+            searchFTS('filter_texts_fts', context.queryString, 'filterId'),
+          ]);
+          return [...new Set([...filterMatches, ...textMatches])];
+        }
+
+        default: {
+          const tableKey = getTableKey(entityType);
+          const config = FTS_TABLES[tableKey];
+          if (!config) return [];
+          return searchFTS(config.table, context.queryString, config.idColumn || '_id');
+        }
+      }
     },
 
-    searchAssortments: async () => {
-      if (!context.queryString) return [];
-
-      const [assortmentMatches, textMatches] = await Promise.all([
-        searchFTS('assortments_fts', context.queryString),
-        searchFTS('assortment_texts_fts', context.queryString, 'assortmentId'),
-      ]);
-
-      return [...new Set([...assortmentMatches, ...textMatches])];
+    indexEntity: async (entityType: SearchEntityType, entityId: string, data) => {
+      const tableKey = getTableKey(entityType);
+      await upsertFTSEntity(tableKey, entityId, data);
     },
 
-    searchUsers: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('users_fts', context.queryString);
+    removeEntity: async (entityType: SearchEntityType, entityId: string) => {
+      const tableKey = getTableKey(entityType);
+      await deleteFTSEntity(tableKey, entityId);
     },
 
-    searchOrders: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('orders_fts', context.queryString);
-    },
-
-    searchQuotations: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('quotations_fts', context.queryString);
-    },
-
-    searchEnrollments: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('enrollments_fts', context.queryString);
-    },
-
-    searchDeliveryProviders: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('delivery_providers_fts', context.queryString);
-    },
-
-    searchPaymentProviders: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('payment_providers_fts', context.queryString);
-    },
-
-    searchWarehousingProviders: async () => {
-      if (!context.queryString) return [];
-      return searchFTS('warehousing_providers_fts', context.queryString);
-    },
-
-    search: async (entityType: string) => {
-      if (!context.queryString) return [];
-
-      const config = FTS_TABLES[entityType.toLowerCase()];
-      if (!config) return [];
-
-      return searchFTS(config.table, context.queryString, config.idColumn || '_id');
+    clearEntities: async (entityType: SearchEntityType) => {
+      const tableKey = getTableKey(entityType);
+      await clearFTSTable(tableKey);
     },
   }),
 };
@@ -377,4 +399,37 @@ export async function clearFTSTable(entityType: string): Promise<void> {
   await ftsDb.run(sql.raw(`DELETE FROM ${config.table}`));
 }
 
+/**
+ * Configure FTS5 module.
+ * Called automatically when included in platform modules.
+ * Sets up FTS5 tables and registers the search adapter.
+ */
+const configureFTS5Module = async ({ db }: { db: DrizzleDb }) => {
+  // Setup FTS5 tables using the shared database connection
+  await setupFTS5WithDb(db);
+
+  // Register the search adapter
+  initializeFTS5Search();
+
+  // Return module API for FTS operations
+  return {
+    upsertEntity: upsertFTSEntity,
+    deleteEntity: deleteFTSEntity,
+    clearTable: clearFTSTable,
+    getDb: getFTS5Db,
+  };
+};
+
+export interface FTS5Module {
+  fts5: Awaited<ReturnType<typeof configureFTS5Module>>;
+}
+
+// Module export for preset integration
+const fts5Modules = {
+  fts5: {
+    configure: configureFTS5Module,
+  },
+};
+
+export { fts5Modules };
 export default FTS5SearchAdapter;

@@ -38,6 +38,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/api": "^5.0.0-alpha.0",
+    "@unchainedshop/core": "^5.0.0-alpha.0",
     "@unchainedshop/core-delivery": "^5.0.0-alpha.0",
     "@unchainedshop/core-enrollments": "^5.0.0-alpha.0",
     "@unchainedshop/core-orders": "^5.0.0-alpha.0",
@@ -45,6 +46,7 @@
     "@unchainedshop/core-products": "^5.0.0-alpha.0",
     "@unchainedshop/core-warehousing": "^5.0.0-alpha.0",
     "@unchainedshop/core-worker": "^5.0.0-alpha.0",
+    "@unchainedshop/store": "^5.0.0-alpha.0",
     "@unchainedshop/events": "^5.0.0-alpha.0",
     "@unchainedshop/file-upload": "^5.0.0-alpha.0",
     "@unchainedshop/logger": "^5.0.0-alpha.0",

@@ -240,20 +240,23 @@ export const configureProductsModule = async ({
     if (query.bundleItemProductIds?.length || query.proxyAssignmentProductIds?.length) {
       const orConditions: SQL[] = [];
       if (query.bundleItemProductIds?.length) {
-        // Check bundleItems JSON array for matching productId
-        for (const productId of query.bundleItemProductIds) {
-          orConditions.push(
-            sql`EXISTS (SELECT 1 FROM json_each(${products.bundleItems}) WHERE json_extract(value, '$.productId') = ${productId})`,
-          );
-        }
+        // Check bundleItems JSON array for matching productId using IN clause
+        // This avoids hitting SQLite's parameter limit with many IDs
+        orConditions.push(
+          sql`EXISTS (SELECT 1 FROM json_each(${products.bundleItems}) WHERE json_extract(value, '$.productId') IN (${sql.join(
+            query.bundleItemProductIds.map((id) => sql`${id}`),
+            sql`, `,
+          )}))`,
+        );
       }
       if (query.proxyAssignmentProductIds?.length) {
-        // Check proxy.assignments JSON array for matching productId
-        for (const productId of query.proxyAssignmentProductIds) {
-          orConditions.push(
-            sql`EXISTS (SELECT 1 FROM json_each(json_extract(${products.proxy}, '$.assignments')) WHERE json_extract(value, '$.productId') = ${productId})`,
-          );
-        }
+        // Check proxy.assignments JSON array for matching productId using IN clause
+        orConditions.push(
+          sql`EXISTS (SELECT 1 FROM json_each(json_extract(${products.proxy}, '$.assignments')) WHERE json_extract(value, '$.productId') IN (${sql.join(
+            query.proxyAssignmentProductIds.map((id) => sql`${id}`),
+            sql`, `,
+          )}))`,
+        );
       }
       if (orConditions.length) {
         conditions.push(or(...orConditions)!);

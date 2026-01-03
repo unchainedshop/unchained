@@ -19,8 +19,8 @@ import '../payment/payrexx/index.ts';
 // Filter
 import '../filters/strict-equal.ts';
 
-// Note: FTS5 search plugin (search/fts5-search.ts) must be initialized separately
-// with setupFTS5Tables() and initializeFTS5Search() during app startup
+// Search
+import { fts5Modules } from '../search/fts5-search.ts';
 
 // Workers
 import '../worker/twilio.ts';
@@ -34,6 +34,7 @@ const modules = {
   ...cryptoModules,
   ...appleTransactionsModules,
   ...saferpayTransactionsModules,
+  ...fts5Modules,
 };
 
 export default modules;

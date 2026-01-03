@@ -3,6 +3,7 @@ import type { Modules } from '../modules.ts';
 import {
   FilterDirector,
   SearchDirector,
+  SearchEntityType,
   type FilterProductsOptions,
   type ProductFilterQueryItem,
 } from '../directors/index.ts';
@@ -80,7 +81,7 @@ export async function searchProductsService(
       { queryString: resolvedSearchQuery.queryString, locale: options.locale, userId: options.userId },
       { modules: this },
     );
-    const searchProductIds = await searchActions.searchProducts();
+    const searchProductIds = await searchActions.search(SearchEntityType.PRODUCT);
     if (searchProductIds.length === 0) {
       totalProductIds = [];
     } else {

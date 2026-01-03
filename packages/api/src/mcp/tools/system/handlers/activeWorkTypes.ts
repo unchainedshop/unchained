@@ -1,12 +1,8 @@
 import { WorkerDirector } from '@unchainedshop/core';
-import type { Context } from '../../../../context.ts';
 
-const activeWorkTypes = async ({ modules }: Context) => {
-  const typeList = await modules.worker.activeWorkTypes();
-  const pluginTypes = WorkerDirector.getActivePluginTypes();
-  const activeTypes = typeList.filter((type) => {
-    return pluginTypes.includes(type);
-  });
+const activeWorkTypes = async () => {
+  // Return all registered worker plugin types that can process work
+  const activeTypes = WorkerDirector.getActivePluginTypes();
   return { activeTypes };
 };
 

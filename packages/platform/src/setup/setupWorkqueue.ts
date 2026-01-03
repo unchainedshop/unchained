@@ -7,8 +7,11 @@ import {
   type IScheduler,
   type IWorker,
   type UnchainedCore,
+  SearchDirector,
 } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
+import { initializeSearchIndexing } from '@unchainedshop/plugins/worker/search-index.js';
+
 const logger = createLogger('unchained:worker');
 
 export type WorkQueueQueueManager = IWorker<any> | IScheduler<any>;
@@ -42,6 +45,11 @@ export async function setupWorkqueue({
   unchainedAPI: UnchainedCore;
 } & SetupWorkqueueOptions) {
   if (workQueueOptions.disableWorker || UNCHAINED_DISABLE_WORKER) return;
+
+  // Initialize search indexing if a search adapter is registered
+  if (SearchDirector.getAdapters().length > 0) {
+    initializeSearchIndexing(unchainedAPI.modules);
+  }
 
   // Start queue managers
   (workQueueOptions?.enabledQueueManagers || defaultQueueManagers).forEach((f) => {

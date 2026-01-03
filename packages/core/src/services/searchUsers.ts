@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { UserQuery } from '@unchainedshop/core-users';
 
 export async function searchUsersService(
@@ -16,7 +16,7 @@ export async function searchUsersService(
     { queryString, locale: options.locale, userId: options.userId },
     { modules: this },
   );
-  const searchUserIds = await searchActions.searchUsers();
+  const searchUserIds = await searchActions.search(SearchEntityType.USER);
   if (searchUserIds.length === 0) return [];
 
   return this.users.findUsers({ ...query, searchUserIds });
@@ -36,7 +36,7 @@ export async function searchUsersCountService(
     { queryString, locale: options.locale, userId: options.userId },
     { modules: this },
   );
-  const searchUserIds = await searchActions.searchUsers();
+  const searchUserIds = await searchActions.search(SearchEntityType.USER);
   if (searchUserIds.length === 0) return 0;
 
   return this.users.count({ ...query, searchUserIds });

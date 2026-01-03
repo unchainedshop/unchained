@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { EnrollmentQuery } from '@unchainedshop/core-enrollments';
 
 export async function searchEnrollmentsService(
@@ -16,7 +16,7 @@ export async function searchEnrollmentsService(
     { queryString, locale: options.locale, userId: options.userId },
     { modules: this },
   );
-  const searchEnrollmentIds = await searchActions.searchEnrollments();
+  const searchEnrollmentIds = await searchActions.search(SearchEntityType.ENROLLMENT);
   if (searchEnrollmentIds.length === 0) return [];
 
   return this.enrollments.findEnrollments({ ...query, searchEnrollmentIds });

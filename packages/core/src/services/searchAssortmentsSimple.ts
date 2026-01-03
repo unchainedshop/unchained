@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { AssortmentQuery } from '@unchainedshop/core-assortments';
 import type { SortOption } from '@unchainedshop/utils';
 
@@ -17,7 +17,7 @@ export async function searchAssortmentsSimpleService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchAssortmentIds = await searchActions.searchAssortments();
+  const searchAssortmentIds = await searchActions.search(SearchEntityType.ASSORTMENT);
   if (searchAssortmentIds.length === 0) return [];
 
   return this.assortments.findAssortments({ ...query, searchAssortmentIds });
@@ -33,7 +33,7 @@ export async function searchAssortmentsSimpleCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchAssortmentIds = await searchActions.searchAssortments();
+  const searchAssortmentIds = await searchActions.search(SearchEntityType.ASSORTMENT);
   if (searchAssortmentIds.length === 0) return 0;
 
   return this.assortments.count({ ...query, searchAssortmentIds });

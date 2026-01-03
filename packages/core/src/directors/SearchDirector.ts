@@ -16,6 +16,13 @@ const baseDirector = BaseDirector<ISearchAdapter>('SearchDirector', {
   adapterSortKey: 'orderIndex',
 });
 
+const noOpActions: SearchAdapterActions = {
+  search: async () => [],
+  indexEntity: async () => {},
+  removeEntity: async () => {},
+  clearEntities: async () => {},
+};
+
 export const SearchDirector: ISearchDirector = {
   ...baseDirector,
 
@@ -24,18 +31,7 @@ export const SearchDirector: ISearchDirector = {
 
     // If no adapters registered, return no-op actions
     if (!adapters.length) {
-      return {
-        searchProducts: async () => [],
-        searchAssortments: async () => [],
-        searchUsers: async () => [],
-        searchOrders: async () => [],
-        searchQuotations: async () => [],
-        searchEnrollments: async () => [],
-        searchDeliveryProviders: async () => [],
-        searchPaymentProviders: async () => [],
-        searchWarehousingProviders: async () => [],
-        search: async () => [],
-      };
+      return noOpActions;
     }
 
     // Use first adapter (lowest orderIndex)

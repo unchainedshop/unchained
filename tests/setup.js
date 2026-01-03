@@ -4,7 +4,7 @@ import { connect } from '@unchainedshop/api/fastify';
 import { createTestDb } from '@unchainedshop/store';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
-import { setupFTS5WithDb, initializeFTS5Search } from '@unchainedshop/plugins/search/fts5-search.js';
+export { rebuildSearchIndexes } from '@unchainedshop/plugins/worker/search-index.js';
 
 // Import additional discount plugins used by kitchensink
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
@@ -18,7 +18,7 @@ export async function initializeTestPlatform() {
   if (platform) {
     // Already initialized - return existing context
     const { port } = fastify.server.address();
-    return { db: drizzleConnection.db, port };
+    return { db: drizzleConnection.db, port, unchainedAPI: platform.unchainedAPI };
   }
 
   // Set a placeholder ROOT_URL (required by startPlatform, updated after we know the port)
@@ -27,9 +27,7 @@ export async function initializeTestPlatform() {
   // Create in-memory Drizzle SQLite database for tests
   drizzleConnection = createTestDb();
 
-  // Initialize FTS5 plugin with the same database connection
-  await setupFTS5WithDb(drizzleConnection.db);
-  initializeFTS5Search();
+  // FTS5 is now initialized automatically via the all-preset modules
 
   // Start platform with Drizzle database
   platform = await startPlatform({
@@ -60,7 +58,7 @@ export async function initializeTestPlatform() {
   // Access tokens are pre-configured in test seeds (tests/seeds/users.js)
   // No need to call setAccessToken - users are seeded with SHA-256 hashed tokens
 
-  return { db: drizzleConnection.db, port };
+  return { db: drizzleConnection.db, port, unchainedAPI: platform.unchainedAPI };
 }
 
 export async function shutdownTestPlatform() {

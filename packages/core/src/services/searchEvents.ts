@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { EventQuery } from '@unchainedshop/core-events';
 import type { SortOption } from '@unchainedshop/utils';
 
@@ -13,7 +13,7 @@ export async function searchEventsService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchEventIds = await searchActions.search('events');
+  const searchEventIds = await searchActions.search(SearchEntityType.EVENT);
   if (searchEventIds.length === 0) return [];
 
   return this.events.findEvents({ ...query, searchEventIds });
@@ -29,7 +29,7 @@ export async function searchEventsCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchEventIds = await searchActions.search('events');
+  const searchEventIds = await searchActions.search(SearchEntityType.EVENT);
   if (searchEventIds.length === 0) return 0;
 
   return this.events.count({ ...query, searchEventIds });

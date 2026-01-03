@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { QuotationQuery } from '@unchainedshop/core-quotations';
 
 export async function searchQuotationsService(
@@ -16,7 +16,7 @@ export async function searchQuotationsService(
     { queryString, locale: options.locale, userId: options.userId },
     { modules: this },
   );
-  const searchQuotationIds = await searchActions.searchQuotations();
+  const searchQuotationIds = await searchActions.search(SearchEntityType.QUOTATION);
   if (searchQuotationIds.length === 0) return [];
 
   return this.quotations.findQuotations({ ...query, searchQuotationIds });

@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { OrderQuery } from '@unchainedshop/core-orders';
 
 export async function searchOrdersService(
@@ -16,7 +16,7 @@ export async function searchOrdersService(
     { queryString, locale: options.locale, userId: options.userId },
     { modules: this },
   );
-  const searchOrderIds = await searchActions.searchOrders();
+  const searchOrderIds = await searchActions.search(SearchEntityType.ORDER);
   if (searchOrderIds.length === 0) return [];
 
   return this.orders.findOrders({ ...query, searchOrderIds });

@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { TokenQuery } from '@unchainedshop/core-warehousing';
 
 export async function searchTokensService(
@@ -13,7 +13,7 @@ export async function searchTokensService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchTokenIds = await searchActions.search('token_surrogates');
+  const searchTokenIds = await searchActions.search(SearchEntityType.TOKEN_SURROGATE);
   if (searchTokenIds.length === 0) return [];
 
   return this.warehousing.findTokens({ ...query, searchTokenIds }, options);
@@ -29,7 +29,7 @@ export async function searchTokensCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchTokenIds = await searchActions.search('token_surrogates');
+  const searchTokenIds = await searchActions.search(SearchEntityType.TOKEN_SURROGATE);
   if (searchTokenIds.length === 0) return 0;
 
   return this.warehousing.tokensCount({ ...query, searchTokenIds });

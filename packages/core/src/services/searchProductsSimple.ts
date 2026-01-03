@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { ProductQuery } from '@unchainedshop/core-products';
 import type { SortOption } from '@unchainedshop/utils';
 
@@ -13,7 +13,7 @@ export async function searchProductsSimpleService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const matchingIds = await searchActions.searchProducts();
+  const matchingIds = await searchActions.search(SearchEntityType.PRODUCT);
   if (matchingIds.length === 0) return [];
 
   return this.products.findProducts({ ...query, searchProductIds: matchingIds });
@@ -29,7 +29,7 @@ export async function searchProductsSimpleCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const matchingIds = await searchActions.searchProducts();
+  const matchingIds = await searchActions.search(SearchEntityType.PRODUCT);
   if (matchingIds.length === 0) return 0;
 
   return this.products.count({ ...query, searchProductIds: matchingIds });

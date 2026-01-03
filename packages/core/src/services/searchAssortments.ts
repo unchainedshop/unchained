@@ -5,7 +5,12 @@ import {
   type SearchQuery,
 } from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
-import { FilterDirector, SearchDirector, type FilterAssortmentsOptions } from '../directors/index.ts';
+import {
+  FilterDirector,
+  SearchDirector,
+  SearchEntityType,
+  type FilterAssortmentsOptions,
+} from '../directors/index.ts';
 
 export async function searchAssortmentsService(
   this: Modules,
@@ -37,7 +42,7 @@ export async function searchAssortmentsService(
       { queryString: searchQuery.queryString, locale: options.locale, userId: options.userId },
       { modules: this },
     );
-    const searchAssortmentIds = await searchActions.searchAssortments();
+    const searchAssortmentIds = await searchActions.search(SearchEntityType.ASSORTMENT);
     if (searchAssortmentIds.length === 0) {
       totalAssortmentIds = [];
     } else {

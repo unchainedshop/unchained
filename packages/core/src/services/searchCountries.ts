@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { CountryQuery } from '@unchainedshop/core-countries';
 
 export async function searchCountriesService(
@@ -12,7 +12,7 @@ export async function searchCountriesService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchCountryIds = await searchActions.search('countries');
+  const searchCountryIds = await searchActions.search(SearchEntityType.COUNTRY);
   if (searchCountryIds.length === 0) return [];
 
   return this.countries.findCountries({ ...query, searchCountryIds });
@@ -28,7 +28,7 @@ export async function searchCountriesCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchCountryIds = await searchActions.search('countries');
+  const searchCountryIds = await searchActions.search(SearchEntityType.COUNTRY);
   if (searchCountryIds.length === 0) return 0;
 
   return this.countries.count({ ...query, searchCountryIds });

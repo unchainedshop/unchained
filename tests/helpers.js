@@ -1,7 +1,7 @@
 import { sql } from '@unchainedshop/store';
 import { signAccessToken } from '@unchainedshop/api/lib/auth.js';
 import { upsertFTSEntity, clearFTSTable } from '@unchainedshop/plugins/search/fts5-search.js';
-import { initializeTestPlatform, shutdownTestPlatform } from './setup.js';
+import { initializeTestPlatform, shutdownTestPlatform, rebuildSearchIndexes } from './setup.js';
 import {
   seedCountriesToDrizzle,
   seedLanguagesToDrizzle,
@@ -357,14 +357,19 @@ export const setupDatabase = async () => {
   if (testContext) {
     // Re-seed database for fresh test data
     await seedDatabaseTables(testContext.db);
+    // Rebuild search indexes after seeding
+    await rebuildSearchIndexes(testContext.unchainedAPI.modules);
     return testContext;
   }
 
   // Initialize platform (creates server and database)
-  const { db, port } = await initializeTestPlatform();
+  const { db, port, unchainedAPI } = await initializeTestPlatform();
 
   // Seed database
   await seedDatabaseTables(db);
+
+  // Rebuild search indexes after seeding
+  await rebuildSearchIndexes(unchainedAPI.modules);
 
   // Create graphql fetch factory (standalone function, no `this` binding needed)
   const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
@@ -385,6 +390,7 @@ export const setupDatabase = async () => {
   testContext = {
     db,
     port,
+    unchainedAPI,
     createLoggedInGraphqlFetch,
     createAnonymousGraphqlFetch,
   };

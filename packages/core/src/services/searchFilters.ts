@@ -1,5 +1,5 @@
 import type { Modules } from '../modules.ts';
-import { SearchDirector } from '../directors/index.ts';
+import { SearchDirector, SearchEntityType } from '../directors/index.ts';
 import type { FilterQuery } from '@unchainedshop/core-filters';
 import type { SortOption } from '@unchainedshop/utils';
 
@@ -13,7 +13,7 @@ export async function searchFiltersService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchFilterIds = await searchActions.search('filters');
+  const searchFilterIds = await searchActions.search(SearchEntityType.FILTER);
   if (searchFilterIds.length === 0) return [];
 
   return this.filters.findFilters({ ...query, searchFilterIds });
@@ -29,7 +29,7 @@ export async function searchFiltersCountService(
   }
 
   const searchActions = SearchDirector.actions({ queryString }, { modules: this });
-  const searchFilterIds = await searchActions.search('filters');
+  const searchFilterIds = await searchActions.search(SearchEntityType.FILTER);
   if (searchFilterIds.length === 0) return 0;
 
   return this.filters.count({ ...query, searchFilterIds });
