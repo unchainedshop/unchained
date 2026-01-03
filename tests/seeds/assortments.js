@@ -271,7 +271,6 @@ export async function seedAssortmentsToDrizzle(db) {
     assortmentMedia,
     assortmentMediaTexts,
   } = await import('@unchainedshop/core-assortments');
-  const { sql } = await import('drizzle-orm');
 
   // Delete all existing data
   await db.delete(assortmentMediaTexts);
@@ -281,10 +280,6 @@ export async function seedAssortmentsToDrizzle(db) {
   await db.delete(assortmentLinks);
   await db.delete(assortmentTexts);
   await db.delete(assortments);
-
-  // Clear FTS tables
-  await db.run(sql`DELETE FROM assortments_fts`);
-  // Note: assortment_texts_fts is synced automatically via triggers from createFTS
 
   // Insert assortments
   for (const assortment of SimpleAssortment) {
@@ -298,12 +293,6 @@ export async function seedAssortmentsToDrizzle(db) {
       created: assortment.created,
       updated: assortment.updated,
     });
-
-    // Insert into FTS
-    const slugsText = (assortment.slugs || []).join(' ');
-    await db.run(
-      sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${assortment._id}, ${slugsText})`,
-    );
   }
 
   // Insert assortment texts
@@ -320,8 +309,6 @@ export async function seedAssortmentsToDrizzle(db) {
       created: new Date(),
       updated: text.updated,
     });
-
-    // Note: assortment_texts_fts is synced automatically via triggers from createFTS
   }
 
   // Insert assortment products

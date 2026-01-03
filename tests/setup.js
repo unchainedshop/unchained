@@ -4,6 +4,7 @@ import { connect } from '@unchainedshop/api/fastify';
 import { createTestDb } from '@unchainedshop/store';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
 import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
+import { setupFTS5WithDb, initializeFTS5Search } from '@unchainedshop/plugins/search/fts5-search.js';
 
 // Import additional discount plugins used by kitchensink
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
@@ -25,6 +26,10 @@ export async function initializeTestPlatform() {
 
   // Create in-memory Drizzle SQLite database for tests
   drizzleConnection = createTestDb();
+
+  // Initialize FTS5 plugin with the same database connection
+  await setupFTS5WithDb(drizzleConnection.db);
+  initializeFTS5Search();
 
   // Start platform with Drizzle database
   platform = await startPlatform({

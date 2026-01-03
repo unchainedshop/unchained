@@ -19,7 +19,6 @@ import {
   type DrizzleDb,
 } from '@unchainedshop/store';
 import { countries, type CountryRow } from '../db/schema.ts';
-import { searchCountriesFTS } from '../db/fts.ts';
 
 export interface Country {
   _id: string;
@@ -35,8 +34,9 @@ export type CountryFields = keyof Country;
 
 export interface CountryQuery {
   includeInactive?: boolean;
-  queryString?: string;
   isoCodes?: string[];
+  countryIds?: string[];
+  searchCountryIds?: string[];
   limit?: number;
   offset?: number;
   sort?: SortOption[];
@@ -93,10 +93,12 @@ export async function configureCountriesModule({ db }: { db: DrizzleDb }) {
       conditions.push(inArray(countries.isoCode, query.isoCodes));
     }
 
-    if (query.queryString) {
-      const matchingIds = await searchCountriesFTS(db, query.queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(countries._id, matchingIds));
+    if (query.countryIds?.length) {
+      conditions.push(inArray(countries._id, query.countryIds));
+    }
+
+    if (query.searchCountryIds?.length) {
+      conditions.push(inArray(countries._id, query.searchCountryIds));
     }
 
     return conditions;

@@ -178,6 +178,25 @@ test.describe('Country', () => {
       ]);
     });
 
+    test('Return empty array when no matching search result found', async () => {
+      const {
+        data: { countries },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Countries($queryString: String) {
+            countries(queryString: $queryString) {
+              _id
+              isoCode
+            }
+          }
+        `,
+        variables: {
+          queryString: 'ZZZZNONEXISTENT',
+        },
+      });
+      assert.strictEqual(countries.length, 0);
+    });
+
     test('Return countries sorted by isoCode ascending', async () => {
       const {
         data: { countries },
@@ -218,25 +237,6 @@ test.describe('Country', () => {
       assert.strictEqual(countries.length, 3);
       assert.strictEqual(countries[0]._id, FranceCountry._id);
       assert.strictEqual(countries[2]._id, BaseCountry._id);
-    });
-
-    test('Return empty array when no matching search result found', async () => {
-      const {
-        data: { countries },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query Countries($queryString: String) {
-            countries(queryString: $queryString) {
-              _id
-              isoCode
-            }
-          }
-        `,
-        variables: {
-          queryString: 'wrong',
-        },
-      });
-      assert.strictEqual(countries.length, 0);
     });
   });
 

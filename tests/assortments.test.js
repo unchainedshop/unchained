@@ -478,7 +478,8 @@ test.describe('Assortments', () => {
           }
         `,
         variables: {
-          queryString: 'simple-assortment',
+          // Search for unique-slug which only matches the first assortment
+          queryString: 'unique-slug',
         },
       });
 
@@ -516,9 +517,11 @@ test.describe('Assortments', () => {
           }
         `,
         variables: {
-          queryString: 'simple-assortment',
+          // Search for unique-slug which only matches the first assortment (which is inactive)
+          queryString: 'unique-slug',
         },
       });
+      // The matching assortment is inactive, so anonymous user sees nothing
       assert.strictEqual(assortments.length, 0);
     });
   });

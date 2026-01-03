@@ -12,18 +12,16 @@ export default async function users(
     includeGuests?: boolean;
     emailVerified?: boolean;
     lastLogin?: DateFilterInput;
+    queryString?: string;
   },
-  { modules, userId }: Context,
+  { services, userId }: Context,
 ) {
-  log(
-    `query users ${params.limit} ${params.offset} ${params.queryString} ${
-      params.includeGuests ? 'includeGuests' : ''
-    }`,
-    {
-      userId,
-      ...(params || {}),
-    },
-  );
+  log(`query users ${params.limit} ${params.offset} ${params.includeGuests ? 'includeGuests' : ''}`, {
+    userId,
+    ...(params || {}),
+  });
 
-  return modules.users.findUsers(params);
+  const { queryString, ...query } = params;
+
+  return services.users.searchUsers(queryString, query);
 }

@@ -2,11 +2,9 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   eq,
   and,
-  or,
   isNull,
   isNotNull,
   inArray,
-  like,
   sql,
   asc,
   generateId,
@@ -49,9 +47,9 @@ const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 
 
 export interface PaymentProviderQuery {
   paymentProviderIds?: string[];
+  searchPaymentProviderIds?: string[];
   type?: PaymentProviderType;
   includeDeleted?: boolean;
-  queryString?: string;
 }
 
 export type PaymentProviderFields = keyof PaymentProvider;
@@ -98,11 +96,8 @@ export const configurePaymentProvidersModule = (db: DrizzleDb) => {
       conditions.push(eq(paymentProviders.type, query.type));
     }
 
-    if (query.queryString) {
-      const pattern = `%${query.queryString}%`;
-      conditions.push(
-        or(like(paymentProviders._id, pattern), like(paymentProviders.adapterKey, pattern))!,
-      );
+    if (query.searchPaymentProviderIds?.length) {
+      conditions.push(inArray(paymentProviders._id, query.searchPaymentProviderIds));
     }
 
     return conditions;

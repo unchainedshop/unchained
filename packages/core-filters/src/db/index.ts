@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupFiltersFTS } from './fts.ts';
 
 export {
   filters,
@@ -74,7 +73,4 @@ export async function initializeFiltersSchema(db: DrizzleDb): Promise<void> {
   await db.run(
     sql`CREATE INDEX IF NOT EXISTS idx_filter_cache_lookup ON filter_productId_cache(filterId, filterOptionValue)`,
   );
-
-  // Setup FTS
-  await setupFiltersFTS(db);
 }

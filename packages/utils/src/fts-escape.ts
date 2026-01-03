@@ -25,6 +25,7 @@
  * @example
  * ```typescript
  * escapeFTS5('hello world')     // '"hello" "world"'
+ * escapeFTS5('hello-world')     // '"hello" "world"' (hyphens become spaces)
  * escapeFTS5('test" OR 1=1 --') // '"test" "11"'
  * escapeFTS5('user*')           // '"user"'
  * escapeFTS5('')                // ''
@@ -42,8 +43,8 @@ export function escapeFTS5(searchText: string): string {
   // ( ) - grouping
   // : - column filter
   // ^ - boost operator
-  // - - NOT operator (when at word start)
-  let cleaned = searchText.replace(/[*"\\():^]/g, '');
+  // - - NOT operator / word separator (replaced with space to match tokenization)
+  let cleaned = searchText.replace(/[*"\\():^]/g, '').replace(/-/g, ' ');
 
   // Step 2: Remove boolean operators as whole words (case-insensitive)
   // Using word boundaries to avoid removing "ANDROID" when removing "AND"

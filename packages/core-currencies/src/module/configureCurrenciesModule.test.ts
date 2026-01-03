@@ -143,26 +143,6 @@ describe('Currencies Module', () => {
     });
   });
 
-  describe('Full-text search', () => {
-    it('should search currencies by text', async () => {
-      const currencies = await currenciesModule.findCurrencies({
-        queryString: 'CHF',
-      });
-
-      assert.ok(currencies.length >= 1, 'Should find at least one currency');
-      const chfCurrency = currencies.find((c) => c.isoCode === 'CHF');
-      assert.ok(chfCurrency, 'Should find CHF currency via FTS');
-    });
-
-    it('should return empty array for no FTS matches', async () => {
-      const currencies = await currenciesModule.findCurrencies({
-        queryString: 'ZZZZNONEXISTENT',
-      });
-
-      assert.strictEqual(currencies.length, 0, 'Should return empty array for no matches');
-    });
-  });
-
   describe('Field projection', () => {
     it('should return only specified fields', async () => {
       const currencies = await currenciesModule.findCurrencies({}, { fields: ['isoCode', 'isActive'] });

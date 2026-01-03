@@ -2,7 +2,6 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import type { Address, Contact } from '@unchainedshop/utils';
 import { eq, and, type DrizzleDb, generateId } from '@unchainedshop/store';
 import { orders, orderPositions, OrderStatus, rowToOrder, type Order } from '../db/schema.ts';
-import { upsertOrderFTS, deleteOrderFTS } from '../db/fts.ts';
 
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',
@@ -54,9 +53,6 @@ export const configureOrderModuleMutations = ({ db }: { db: DrizzleDb }) => {
 
       const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
-      // Update FTS index
-      await upsertOrderFTS(db, row);
-
       const order = rowToOrder(row);
       await emit('ORDER_CREATE', { order });
       return order;
@@ -66,21 +62,12 @@ export const configureOrderModuleMutations = ({ db }: { db: DrizzleDb }) => {
       const result = await db.delete(orders).where(eq(orders._id, orderId));
       if (!result.rowsAffected) return 0;
 
-      // Remove from FTS index
-      await deleteOrderFTS(db, orderId);
-
       await emit('ORDER_REMOVE', { orderId });
       return result.rowsAffected;
     },
 
     setCartOwner: async ({ orderId, userId }: { orderId: string; userId: string }) => {
       await db.update(orders).set({ userId }).where(eq(orders._id, orderId));
-
-      // Update FTS index
-      const [order] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
-      if (order) {
-        await upsertOrderFTS(db, order);
-      }
     },
 
     moveCartPositions: async ({
@@ -125,9 +112,6 @@ export const configureOrderModuleMutations = ({ db }: { db: DrizzleDb }) => {
       const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
       if (!row) return null;
-
-      // Update FTS index (contact has searchable fields)
-      await upsertOrderFTS(db, row);
 
       const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'contact' });
@@ -226,11 +210,6 @@ export const configureOrderModuleMutations = ({ db }: { db: DrizzleDb }) => {
       const [row] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
       if (!row) return null;
-
-      // Update FTS index if contact changed
-      if (updates.contact) {
-        await upsertOrderFTS(db, row);
-      }
 
       const order = rowToOrder(row);
       await emit('ORDER_UPDATE', { order, field: 'cartFields' });

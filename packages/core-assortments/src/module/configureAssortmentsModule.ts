@@ -23,7 +23,6 @@ import {
   type AssortmentLink,
   type AssortmentProduct,
 } from '../db/schema.ts';
-import { searchAssortmentsFTS } from '../db/fts.ts';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.ts';
 import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.ts';
 import { assortmentsSettings, type AssortmentsSettingsOptions } from '../assortments-settings.ts';
@@ -47,8 +46,8 @@ const logger = createLogger('unchained:core');
 const ASSORTMENT_EVENTS = ['ASSORTMENT_CREATE', 'ASSORTMENT_REMOVE', 'ASSORTMENT_UPDATE'];
 
 export interface AssortmentQuery {
-  queryString?: string;
   assortmentIds?: string[];
+  searchAssortmentIds?: string[]; // ANDed with assortmentIds for search filtering
   includeInactive?: boolean;
   includeLeaves?: boolean;
   slugs?: string[];
@@ -110,16 +109,20 @@ export const configureAssortmentsModule = async ({
 
   const buildFindSelector = async ({
     assortmentIds,
+    searchAssortmentIds,
     slugs,
     tags,
     includeLeaves = false,
     includeInactive = false,
-    queryString,
   }: AssortmentQuery): Promise<SQL[]> => {
     const conditions: SQL[] = [isNull(assortments.deleted)];
 
     if (assortmentIds?.length) {
       conditions.push(inArray(assortments._id, assortmentIds));
+    }
+
+    if (searchAssortmentIds?.length) {
+      conditions.push(inArray(assortments._id, searchAssortmentIds));
     }
 
     if (slugs?.length) {
@@ -143,12 +146,6 @@ export const configureAssortmentsModule = async ({
 
     if (!includeInactive) {
       conditions.push(eq(assortments.isActive, true));
-    }
-
-    if (queryString) {
-      const matchingIds = await searchAssortmentsFTS(db, queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(assortments._id, matchingIds));
     }
 
     return conditions;
@@ -505,13 +502,6 @@ export const configureAssortmentsModule = async ({
         .where(eq(assortments._id, assortmentId))
         .limit(1);
 
-      // Update FTS
-      const slugsText = (assortment.slugs || []).join(' ');
-      await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${assortmentId}`);
-      await db.run(
-        sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${assortmentId}, ${slugsText})`,
-      );
-
       await emit('ASSORTMENT_CREATE', { assortment });
       return assortment;
     },
@@ -535,15 +525,6 @@ export const configureAssortmentsModule = async ({
         .limit(1);
 
       if (!assortment) return null;
-
-      // Update FTS if slugs changed
-      if (doc.slugs) {
-        const slugsText = (assortment.slugs || []).join(' ');
-        await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${assortmentId}`);
-        await db.run(
-          sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${assortmentId}, ${slugsText})`,
-        );
-      }
 
       await emit('ASSORTMENT_UPDATE', { assortmentId });
 
@@ -578,9 +559,6 @@ export const configureAssortmentsModule = async ({
         .limit(1);
 
       if (!deletedAssortment) return null;
-
-      // Remove from FTS
-      await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${assortmentId}`);
 
       if (!options?.skipInvalidation) {
         await invalidateCache({}, { skipUpstreamTraversal: true });

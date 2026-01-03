@@ -25,18 +25,18 @@ export interface ProductFilterQueryItem {
   value: unknown;
 }
 
-// Assortment selector type for search operations
+// Assortment selector type for filter operations
 export interface AssortmentSelector {
   _id?: string | { $in: string[] };
   isActive?: boolean;
   isRoot?: boolean;
 }
 
-export interface SearchAssortmentsOptions extends SearchConfiguration {
+export interface FilterAssortmentsOptions extends SearchConfiguration {
   assortmentSelector: AssortmentSelector;
 }
 
-export interface SearchProductsOptions extends SearchConfiguration {
+export interface FilterProductsOptions extends SearchConfiguration {
   productFilterQuery: ProductFilterQueryItem[];
 }
 
@@ -49,20 +49,6 @@ export interface TransformOptions {
 
 export interface FilterAdapterActions {
   aggregateProductIds: (params: { productIds: string[] }) => string[];
-
-  searchAssortments: (
-    params: {
-      assortmentIds?: string[];
-    },
-    options: SearchAssortmentsOptions,
-  ) => Promise<string[] | undefined>;
-
-  searchProducts: (
-    params: {
-      productIds?: string[];
-    },
-    options: SearchProductsOptions,
-  ) => Promise<string[] | undefined>;
 
   transformFilterSelector: (
     query: FilterSelector,
@@ -93,14 +79,6 @@ export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = 
       // This function is called to check if a filter actually matches a certain productId
       aggregateProductIds: ({ productIds }) => {
         return productIds;
-      },
-
-      searchProducts: async ({ productIds }) => {
-        return productIds;
-      },
-
-      searchAssortments: async ({ assortmentIds }) => {
-        return assortmentIds;
       },
 
       transformSortStage: async (lastStage) => {

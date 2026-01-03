@@ -15,7 +15,6 @@ import {
   type SQL,
 } from '@unchainedshop/store';
 import { orders, OrderStatus, rowToOrder, type Order, type OrderRow } from '../db/schema.ts';
-import { searchOrdersFTS } from '../db/fts.ts';
 import type { DateFilterInput } from '@unchainedshop/utils';
 
 // Column mapping for field selection
@@ -51,13 +50,13 @@ export interface OrderQueryOptions {
 
 export interface OrderQuery {
   includeCarts?: boolean;
-  queryString?: string;
   status?: (typeof OrderStatus)[keyof typeof OrderStatus][];
   userId?: string;
   deliveryIds?: string[];
   paymentIds?: string[];
   dateRange?: DateFilterInput;
   orderIds?: string[];
+  searchOrderIds?: string[];
   // Used by API layer to filter by provider IDs (resolved to payment/delivery IDs before query)
   paymentProviderIds?: string[];
   deliveryProviderIds?: string[];
@@ -95,19 +94,16 @@ export interface DateRange {
 
 export type StatisticsDateField = 'created' | 'ordered' | 'rejected' | 'confirmed' | 'fulfilled';
 
-const buildConditions = async (
-  db: DrizzleDb,
-  {
-    includeCarts,
-    status,
-    userId,
-    queryString,
-    paymentIds,
-    deliveryIds,
-    dateRange,
-    orderIds,
-  }: OrderQuery,
-): Promise<SQL[]> => {
+const buildConditions = ({
+  includeCarts,
+  status,
+  userId,
+  paymentIds,
+  deliveryIds,
+  dateRange,
+  orderIds,
+  searchOrderIds,
+}: OrderQuery): SQL[] => {
   const conditions: SQL[] = [];
 
   if (userId) {
@@ -116,6 +112,10 @@ const buildConditions = async (
 
   if (orderIds?.length) {
     conditions.push(inArray(orders._id, orderIds));
+  }
+
+  if (searchOrderIds?.length) {
+    conditions.push(inArray(orders._id, searchOrderIds));
   }
 
   if (dateRange) {
@@ -139,12 +139,6 @@ const buildConditions = async (
     conditions.push(inArray(orders.status, status));
   } else if (!includeCarts) {
     conditions.push(isNotNull(orders.status));
-  }
-
-  if (queryString) {
-    const matchingIds = await searchOrdersFTS(db, queryString);
-    // Drizzle handles empty arrays natively - inArray with [] returns false
-    conditions.push(inArray(orders._id, matchingIds));
   }
 
   return conditions;
@@ -216,7 +210,7 @@ export const configureOrdersModuleQueries = ({ db }: { db: DrizzleDb }) => {
     },
 
     count: async (query: OrderQuery): Promise<number> => {
-      const conditions = await buildConditions(db, query);
+      const conditions = buildConditions(query);
 
       const [result] = await db
         .select({ count: sql<number>`count(*)` })
@@ -271,7 +265,6 @@ export const configureOrdersModuleQueries = ({ db }: { db: DrizzleDb }) => {
       {
         limit,
         offset,
-        queryString,
         sort,
         ...query
       }: OrderQuery & {
@@ -282,7 +275,7 @@ export const configureOrdersModuleQueries = ({ db }: { db: DrizzleDb }) => {
       options?: OrderQueryOptions,
     ): Promise<Order[]> => {
       const defaultSortOption: SortOption[] = [{ key: 'created', value: SortDirection.DESC }];
-      const conditions = await buildConditions(db, { queryString, ...query });
+      const conditions = buildConditions(query);
 
       const selectColumns = buildSelectColumns(ORDERS_COLUMNS, options?.fields);
 

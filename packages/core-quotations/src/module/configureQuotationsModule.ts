@@ -15,7 +15,6 @@ import {
   type DrizzleDb,
 } from '@unchainedshop/store';
 import { quotations, QuotationStatus, type QuotationRow } from '../db/schema.ts';
-import { searchQuotationsFTS } from '../db/fts.ts';
 import { quotationsSettings, type QuotationsSettingsOptions } from '../quotations-settings.ts';
 
 export interface QuotationProposal {
@@ -58,8 +57,8 @@ export interface Quotation {
 
 export interface QuotationQuery {
   userId?: string;
-  queryString?: string;
   quotationIds?: string[];
+  searchQuotationIds?: string[];
 }
 
 export type QuotationFields = keyof Quotation;
@@ -133,7 +132,7 @@ export const configureQuotationsModule = async ({
 
   quotationsSettings.configureSettings(quotationsOptions);
 
-  const buildConditions = async (query: QuotationQuery): Promise<SQL[]> => {
+  const buildConditions = (query: QuotationQuery): SQL[] => {
     const conditions: SQL[] = [];
 
     if (query.userId) {
@@ -144,13 +143,8 @@ export const configureQuotationsModule = async ({
       conditions.push(inArray(quotations._id, query.quotationIds));
     }
 
-    if (query.queryString) {
-      const matchingIds = await searchQuotationsFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        conditions.push(sql`1 = 0`);
-      } else {
-        conditions.push(inArray(quotations._id, matchingIds));
-      }
+    if (query.searchQuotationIds?.length) {
+      conditions.push(inArray(quotations._id, query.searchQuotationIds));
     }
 
     return conditions;
@@ -264,7 +258,7 @@ export const configureQuotationsModule = async ({
   return {
     // Queries
     count: async (query: QuotationQuery): Promise<number> => {
-      const conditions = await buildConditions(query);
+      const conditions = buildConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
       const [{ count }] = await db
         .select({ count: sql<number>`count(*)` })
@@ -346,7 +340,7 @@ export const configureQuotationsModule = async ({
         sort = s;
       }
 
-      const conditions = await buildConditions(query);
+      const conditions = buildConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
       const orderBy = buildOrderBy(sort);
       const results = await db

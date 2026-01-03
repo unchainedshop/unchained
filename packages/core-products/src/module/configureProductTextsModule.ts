@@ -20,7 +20,6 @@ import { productsSettings } from '../products-settings.ts';
 import {
   products,
   productTexts,
-  searchProductTextsFTS,
   rowToProductText,
   type ProductText,
   type ProductTextRow,
@@ -138,13 +137,6 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
         .where(eq(productTexts._id, textId))
         .limit(1);
       productText = rowToProductText(insertedRow);
-
-      // Insert into FTS
-      const labelsText = (text.labels || []).join(' ');
-      await db.run(
-        sql`INSERT INTO product_texts_fts(_id, productId, title, subtitle, brand, vendor, description, labels, slug)
-            VALUES (${textId}, ${productId}, ${title || ''}, ${text.subtitle || ''}, ${text.brand || ''}, ${text.vendor || ''}, ${text.description || ''}, ${labelsText}, ${slug})`,
-      );
     }
 
     // Update product slugs
@@ -160,13 +152,6 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
             slugs: [...currentSlugs, slug],
           })
           .where(eq(products._id, productId));
-
-        // Update FTS for products
-        const newSlugsText = [...currentSlugs, slug].join(' ');
-        await db.run(sql`DELETE FROM products_fts WHERE _id = ${productId}`);
-        await db.run(
-          sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${productId}, ${product.warehousing?.sku || ''}, ${newSlugsText})`,
-        );
       }
     }
 
@@ -217,13 +202,6 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
       }
       if (query.productIds?.length) {
         conditions.push(inArray(productTexts.productId, query.productIds));
-      }
-      if (query.queryString) {
-        const matchingProductIds = await searchProductTextsFTS(db, query.queryString);
-        if (matchingProductIds.length === 0) {
-          return [];
-        }
-        conditions.push(inArray(productTexts.productId, matchingProductIds));
       }
 
       const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
@@ -317,28 +295,9 @@ export const configureProductTextsModule = ({ db }: { db: DrizzleDb }) => {
       excludedProductIds?: string[];
     }): Promise<number> => {
       if (productId) {
-        // Get IDs to delete for FTS cleanup
-        const toDelete = await db
-          .select({ _id: productTexts._id })
-          .from(productTexts)
-          .where(eq(productTexts.productId, productId));
-
-        for (const row of toDelete) {
-          await db.run(sql`DELETE FROM product_texts_fts WHERE _id = ${row._id}`);
-        }
-
         const result = await db.delete(productTexts).where(eq(productTexts.productId, productId));
         return result.rowsAffected;
       } else if (excludedProductIds?.length) {
-        const toDelete = await db
-          .select({ _id: productTexts._id })
-          .from(productTexts)
-          .where(notInArray(productTexts.productId, excludedProductIds));
-
-        for (const row of toDelete) {
-          await db.run(sql`DELETE FROM product_texts_fts WHERE _id = ${row._id}`);
-        }
-
         const result = await db
           .delete(productTexts)
           .where(notInArray(productTexts.productId, excludedProductIds));

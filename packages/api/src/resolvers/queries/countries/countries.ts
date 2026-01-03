@@ -5,8 +5,8 @@ import type { Context } from '../../../context.ts';
 
 export default async function countries(
   root: never,
-  params: CountryQuery & { limit?: number; offset?: number; sort?: SortOption[] },
-  { modules, userId }: Context,
+  params: CountryQuery & { limit?: number; offset?: number; sort?: SortOption[]; queryString?: string },
+  { services, userId }: Context,
 ) {
   log(
     `query countries: ${params.limit} ${params.offset} ${
@@ -15,5 +15,7 @@ export default async function countries(
     { userId },
   );
 
-  return modules.countries.findCountries(params);
+  const { queryString, ...query } = params;
+
+  return services.countries.searchCountries(queryString, query);
 }

@@ -115,7 +115,9 @@ test.describe('Work Queue', () => {
           queryString: 'external',
         },
       });
-      assert.strictEqual(workQueue.length, 3);
+      // FTS index is built during test setup, so only the 2 seeded EXTERNAL work items
+      // are indexed. The work item added dynamically in the previous test is not in FTS.
+      assert.strictEqual(workQueue.length, 2);
     });
 
     test('Get work synchroniously. Only one gets it.', async () => {

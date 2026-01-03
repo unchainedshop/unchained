@@ -9,8 +9,9 @@ export default async function filters(
     limit?: number;
     offset?: number;
     sort?: SortOption[];
+    queryString?: string;
   },
-  { modules, userId }: Context,
+  { services, userId }: Context,
 ) {
   log(
     `query filters: ${params.limit} ${params.offset} ${params.includeInactive ? 'includeInactive' : ''}`,
@@ -19,5 +20,7 @@ export default async function filters(
     },
   );
 
-  return modules.filters.findFilters(params);
+  const { queryString, ...query } = params;
+
+  return services.filters.searchFilters(queryString, query);
 }

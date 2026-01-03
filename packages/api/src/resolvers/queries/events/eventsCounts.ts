@@ -1,16 +1,17 @@
 import { log } from '@unchainedshop/logger';
+import type { EventQuery } from '@unchainedshop/core-events';
 import type { Context } from '../../../context.ts';
-
-type CountEventsParams = Parameters<Context['modules']['events']['count']>['0'];
 
 export default async function eventsCount(
   root: never,
-  params: CountEventsParams,
-  { modules, userId }: Context,
+  params: EventQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
   log(`query eventsCount  queryString: ${params.queryString}  types: ${params.types}  ${userId}`, {
     userId,
   });
 
-  return modules.events.count(params);
+  const { queryString, ...query } = params;
+
+  return services.events.searchEventsCount(queryString, query);
 }

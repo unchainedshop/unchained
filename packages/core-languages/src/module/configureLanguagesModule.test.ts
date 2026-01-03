@@ -130,26 +130,6 @@ describe('Languages Module', () => {
     });
   });
 
-  describe('Full-text search', () => {
-    it('should search languages by text', async () => {
-      const languages = await languagesModule.findLanguages({
-        queryString: 'de',
-      });
-
-      assert.ok(languages.length >= 1, 'Should find at least one language');
-      const deLanguage = languages.find((l) => l.isoCode === 'de');
-      assert.ok(deLanguage, 'Should find de language via FTS');
-    });
-
-    it('should return empty array for no FTS matches', async () => {
-      const languages = await languagesModule.findLanguages({
-        queryString: 'ZZZZNONEXISTENT',
-      });
-
-      assert.strictEqual(languages.length, 0, 'Should return empty array for no matches');
-    });
-  });
-
   describe('Helper functions', () => {
     it('should check if language is base', async () => {
       // The system locale is typically 'de-CH', so 'de' should be base

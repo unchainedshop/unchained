@@ -15,7 +15,6 @@ import {
 import { findUnusedSlug, SortDirection, type SortOption } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.ts';
 import { assortments, assortmentTexts, type AssortmentText } from '../db/schema.ts';
-import { searchAssortmentTextsFTS } from '../db/fts.ts';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
@@ -57,7 +56,10 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
         .select({ _id: assortmentTexts._id })
         .from(assortmentTexts)
         .where(
-          and(ne(assortmentTexts.assortmentId, assortmentId), eq(assortmentTexts.slug, newPotentialSlug)),
+          and(
+            ne(assortmentTexts.assortmentId, assortmentId),
+            eq(assortmentTexts.slug, newPotentialSlug),
+          ),
         )
         .limit(1);
       return !existing;
@@ -132,8 +134,6 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
         .limit(1);
     }
 
-    // Note: assortment_texts_fts is synced automatically via triggers from createFTS
-
     // Update the assortment's slugs array
     const [currentAssortment] = await db
       .select()
@@ -151,14 +151,6 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
             updated: now,
           })
           .where(eq(assortments._id, assortmentId));
-
-        // Update assortments FTS
-        const newSlugs = [...currentSlugs, slug];
-        const newSlugsText = newSlugs.join(' ');
-        await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${assortmentId}`);
-        await db.run(
-          sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${assortmentId}, ${newSlugsText})`,
-        );
       }
     }
 
@@ -182,13 +174,6 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
           updated: now,
         })
         .where(eq(assortments._id, otherAssortment._id));
-
-      // Update FTS
-      const filteredSlugsText = filteredSlugs.join(' ');
-      await db.run(sql`DELETE FROM assortments_fts WHERE _id = ${otherAssortment._id}`);
-      await db.run(
-        sql`INSERT INTO assortments_fts(_id, slugs_text) VALUES (${otherAssortment._id}, ${filteredSlugsText})`,
-      );
     }
 
     await emit('ASSORTMENT_UPDATE_TEXT', {
@@ -219,14 +204,6 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
       }
       if (query.assortmentIds?.length) {
         conditions.push(inArray(assortmentTexts.assortmentId, query.assortmentIds));
-      }
-
-      if (query.queryString) {
-        const matchingIds = await searchAssortmentTextsFTS(db, query.queryString);
-        if (matchingIds.length === 0) {
-          return [];
-        }
-        conditions.push(inArray(assortmentTexts._id, matchingIds));
       }
 
       const selectColumns = buildSelectColumns(COLUMNS, options?.fields);
@@ -315,7 +292,6 @@ export const configureAssortmentTextsModule = ({ db }: { db: DrizzleDb }) => {
       assortmentId?: string;
       excludedAssortmentIds?: string[];
     }): Promise<number> => {
-      // Note: assortment_texts_fts is synced automatically via triggers from createFTS
       let result;
       if (assortmentId) {
         result = await db.delete(assortmentTexts).where(eq(assortmentTexts.assortmentId, assortmentId));

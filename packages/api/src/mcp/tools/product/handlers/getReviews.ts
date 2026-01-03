@@ -4,7 +4,7 @@ import type { Params } from '../schemas.ts';
 
 export default async function getReviews(context: Context, params: Params<'GET_REVIEWS'>) {
   const { modules } = context;
-  const { productId, limit, offset, queryString, sort } = params;
+  const { productId, limit, offset, sort } = params;
 
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
@@ -15,7 +15,6 @@ export default async function getReviews(context: Context, params: Params<'GET_R
     productId,
     limit,
     offset,
-    queryString,
     sort: sortOptions,
   });
   return { reviews };

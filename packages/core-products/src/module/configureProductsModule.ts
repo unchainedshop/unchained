@@ -23,8 +23,6 @@ import {
   products,
   ProductStatus,
   ProductType,
-  searchProductsFTS,
-  searchProductTextsFTS,
   rowToProduct,
   type Product,
   type ProductRow,
@@ -44,10 +42,10 @@ export { ProductStatus, ProductType };
 export type { Product, ProductAssignment, ProductBundleItem, ProductConfiguration };
 
 export interface ProductQuery {
-  queryString?: string;
   includeDrafts?: boolean;
   includeDeleted?: boolean;
   productIds?: string[];
+  searchProductIds?: string[]; // ANDed with productIds for search filtering
   slugs?: string[];
   tags?: string[];
   skus?: string[];
@@ -212,6 +210,10 @@ export const configureProductsModule = async ({
       conditions.push(inArray(products._id, query.productIds));
     }
 
+    if (query.searchProductIds?.length) {
+      conditions.push(inArray(products._id, query.searchProductIds));
+    }
+
     if (query.slugs?.length) {
       // Check if any slug matches in the JSON array
       const slugConditions = query.slugs.map(
@@ -256,15 +258,6 @@ export const configureProductsModule = async ({
       if (orConditions.length) {
         conditions.push(or(...orConditions)!);
       }
-    }
-
-    if (query.queryString) {
-      // Search both products FTS and product_texts FTS
-      const productIds = await searchProductsFTS(db, query.queryString);
-      const textProductIds = await searchProductTextsFTS(db, query.queryString);
-      const allIds = [...new Set([...productIds, ...textProductIds])];
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(products._id, allIds));
     }
 
     // Filter query - used by filter plugins to filter products by key/value pairs
@@ -382,9 +375,6 @@ export const configureProductsModule = async ({
     }
 
     const result = await db.delete(products).where(eq(products._id, productId));
-
-    // Update FTS
-    await db.run(sql`DELETE FROM products_fts WHERE _id = ${productId}`);
 
     return result.rowsAffected;
   };
@@ -698,12 +688,6 @@ export const configureProductsModule = async ({
         status: productData.status || null, // DRAFT if not specified (null, undefined, or empty string)
       });
 
-      // Update FTS
-      const sku = productData.warehousing?.sku || '';
-      await db.run(
-        sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${productId}, ${sku}, '')`,
-      );
-
       const [productRow] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
       const product = rowToProduct(productRow);
 
@@ -720,19 +704,6 @@ export const configureProductsModule = async ({
           ...doc,
         })
         .where(eq(products._id, productId));
-
-      // Update FTS if warehousing.sku or slugs changed
-      if (doc.warehousing || doc.slugs) {
-        const [product] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
-        if (product) {
-          const sku = product.warehousing?.sku || '';
-          const slugsText = (product.slugs || []).join(' ');
-          await db.run(sql`DELETE FROM products_fts WHERE _id = ${productId}`);
-          await db.run(
-            sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${productId}, ${sku}, ${slugsText})`,
-          );
-        }
-      }
 
       const [updatedRow] = await db.select().from(products).where(eq(products._id, productId)).limit(1);
 

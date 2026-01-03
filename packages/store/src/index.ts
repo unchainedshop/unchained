@@ -179,6 +179,10 @@ export function buildSelectColumns<T extends Record<string, unknown>>(
 
 /**
  * Configuration for creating an FTS5 full-text search table.
+ *
+ * @deprecated Use the FTS5 search plugin (@unchainedshop/plugins/search/fts5-search)
+ * for full-text search functionality instead. This helper creates trigger-based
+ * FTS sync which is being replaced by event-driven indexing.
  */
 export interface FTSConfig {
   /**
@@ -200,6 +204,10 @@ export interface FTSConfig {
 
 /**
  * Create FTS5 full-text search helpers for a table.
+ *
+ * @deprecated Use the FTS5 search plugin (@unchainedshop/plugins/search/fts5-search)
+ * for full-text search functionality instead. This helper creates trigger-based
+ * FTS sync which is being replaced by event-driven indexing.
  *
  * Returns setup and search functions that can be used by modules.
  *

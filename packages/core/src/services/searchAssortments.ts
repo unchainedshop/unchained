@@ -5,7 +5,7 @@ import {
   type SearchQuery,
 } from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
-import { FilterDirector, type SearchAssortmentsOptions } from '../directors/index.ts';
+import { FilterDirector, SearchDirector, type FilterAssortmentsOptions } from '../directors/index.ts';
 
 export async function searchAssortmentsService(
   this: Modules,
@@ -21,7 +21,7 @@ export async function searchAssortmentsService(
   const assortmentSelector = defaultAssortmentSelector(searchQuery);
   const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery), options);
 
-  const searchConfiguration: SearchAssortmentsOptions = {
+  const searchConfiguration: FilterAssortmentsOptions = {
     searchQuery,
     filterSelector,
     assortmentSelector,
@@ -30,11 +30,29 @@ export async function searchAssortmentsService(
     forceLiveCollection: !!options.forceLiveCollection,
   };
 
-  const assortmentIds = await searchQuery.assortmentIds;
-
-  const totalAssortmentIds =
-    (await filterActions.searchAssortments({ assortmentIds }, searchConfiguration)) ||
-    (await this.assortments.findAssortmentIds({ includeInactive: searchQuery.includeInactive }));
+  // Use SearchDirector for full-text search, module handles intersection with assortmentIds
+  let totalAssortmentIds: string[];
+  if (searchQuery.queryString) {
+    const searchActions = SearchDirector.actions(
+      { queryString: searchQuery.queryString, locale: options.locale, userId: options.userId },
+      { modules: this },
+    );
+    const searchAssortmentIds = await searchActions.searchAssortments();
+    if (searchAssortmentIds.length === 0) {
+      totalAssortmentIds = [];
+    } else {
+      totalAssortmentIds = await this.assortments.findAssortmentIds({
+        includeInactive: searchQuery.includeInactive,
+        assortmentIds: searchQuery.assortmentIds,
+        searchAssortmentIds,
+      });
+    }
+  } else {
+    totalAssortmentIds = await this.assortments.findAssortmentIds({
+      includeInactive: searchQuery.includeInactive,
+      assortmentIds: searchQuery.assortmentIds,
+    });
+  }
 
   return {
     searchConfiguration,

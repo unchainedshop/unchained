@@ -9,8 +9,9 @@ export default async function assortments(
     limit?: number;
     offset?: number;
     sort?: SortOption[];
+    queryString?: string;
   },
-  { modules, userId }: Context,
+  { services, userId }: Context,
 ) {
   log(
     `query assortments: ${params.limit}  ${params.offset} ${
@@ -19,5 +20,7 @@ export default async function assortments(
     { userId },
   );
 
-  return modules.assortments.findAssortments(params);
+  const { queryString, ...query } = params;
+
+  return services.assortments.searchAssortments(queryString, query);
 }

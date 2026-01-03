@@ -24,7 +24,6 @@ import {
   type SQL,
 } from '@unchainedshop/store';
 import { workQueue, WorkStatus, type Work } from '../db/index.ts';
-import { searchWorkQueueFTS } from '../db/fts.ts';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -68,10 +67,11 @@ export interface WorkerReport {
 }
 
 export interface WorkQueueQuery {
+  workIds?: string[];
+  searchWorkIds?: string[];
   created?: { end?: Date; start?: Date };
   types?: string[];
   status?: WorkStatus[];
-  queryString?: string;
   scheduled?: { end?: Date; start?: Date };
 }
 
@@ -126,11 +126,12 @@ const buildStatusCondition = (status: WorkStatus): SQL => {
 };
 
 interface QuerySelectorOptions {
+  workIds?: string[];
+  searchWorkIds?: string[];
   created?: { end?: Date; start?: Date };
   scheduled?: { end?: Date; start?: Date };
   status?: WorkStatus[];
   workId?: string;
-  queryString?: string;
   types?: string[];
   worker?: string | null | string[];
   type?: string;
@@ -143,12 +144,13 @@ interface QuerySelectorOptions {
 const buildQueryConditions = async (
   db: DrizzleDb,
   {
+    workIds,
+    searchWorkIds,
     created,
     scheduled,
     types,
     status,
     workId,
-    queryString,
     worker,
     type,
     priority,
@@ -158,6 +160,15 @@ const buildQueryConditions = async (
   }: QuerySelectorOptions,
 ): Promise<SQL[]> => {
   const conditions: SQL[] = [];
+
+  // Work IDs filter
+  if (workIds?.length) {
+    conditions.push(inArray(workQueue._id, workIds));
+  }
+
+  if (searchWorkIds?.length) {
+    conditions.push(inArray(workQueue._id, searchWorkIds));
+  }
 
   // Status conditions
   if (status?.length) {
@@ -248,13 +259,6 @@ const buildQueryConditions = async (
     } else if ('lte' in started) {
       conditions.push(lte(workQueue.started, started.lte));
     }
-  }
-
-  // Full-text search
-  if (queryString) {
-    const matchingIds = await searchWorkQueueFTS(db, queryString);
-    // Drizzle handles empty arrays natively - inArray with [] returns false
-    conditions.push(inArray(workQueue._id, matchingIds));
   }
 
   return conditions;

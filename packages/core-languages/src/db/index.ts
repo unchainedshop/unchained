@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupLanguagesFTS } from './fts.ts';
 
 export { languages, type LanguageRow, type NewLanguageRow } from './schema.ts';
 
@@ -27,7 +26,4 @@ export async function initializeLanguagesSchema(db: DrizzleDb): Promise<void> {
   await db.run(sql`
     CREATE INDEX IF NOT EXISTS idx_languages_isActive ON languages(isActive)
   `);
-
-  // Setup FTS5 full-text search
-  await setupLanguagesFTS(db);
 }

@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupCountriesFTS } from './fts.ts';
 
 export { countries, type CountryRow, type NewCountryRow } from './schema.ts';
 
@@ -28,7 +27,4 @@ export async function initializeCountriesSchema(db: DrizzleDb): Promise<void> {
   await db.run(sql`
     CREATE INDEX IF NOT EXISTS idx_countries_isActive ON countries(isActive)
   `);
-
-  // Setup FTS5 full-text search
-  await setupCountriesFTS(db);
 }

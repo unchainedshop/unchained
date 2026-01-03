@@ -4,12 +4,14 @@ import type { Context } from '../../../context.ts';
 
 export default async function currenciesCount(
   root: never,
-  params: CurrencyQuery,
-  { modules, userId }: Context,
+  params: CurrencyQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
   log(`query currenciesCount: ${params.includeInactive ? 'includeInactive' : ''}`, {
     userId,
   });
 
-  return modules.currencies.count(params);
+  const { queryString, ...query } = params;
+
+  return services.currencies.searchCurrenciesCount(queryString, query);
 }

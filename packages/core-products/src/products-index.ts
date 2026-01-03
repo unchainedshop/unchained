@@ -46,9 +46,6 @@ export {
   type ProductWarehousing,
   type ProductVote,
   initializeProductsSchema,
-  searchProductsFTS,
-  searchProductTextsFTS,
-  searchProductReviewsFTS,
 } from './db/index.ts';
 
 // Modules

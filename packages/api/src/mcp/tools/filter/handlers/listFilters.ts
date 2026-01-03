@@ -3,14 +3,13 @@ import { getNormalizedFilterDetails } from '../../../utils/getNormalizedFilterDe
 import type { Params } from '../schemas.ts';
 
 export default async function listFilters(context: Context, params: Params<'LIST'>) {
-  const { modules } = context;
+  const { services } = context;
   const { limit = 50, offset = 0, sort, includeInactive = false, queryString } = params;
 
   const sortOptions = sort?.map((s) => ({ key: s.key, value: s.value as any })) || undefined;
 
-  const filters = await modules.filters.findFilters({
+  const filters = await services.filters.searchFilters(queryString, {
     includeInactive,
-    queryString,
     limit,
     offset,
     sort: sortOptions as any,

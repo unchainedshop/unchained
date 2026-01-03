@@ -9,7 +9,7 @@ export default async function orders(
   { modules, userId }: Context,
 ) {
   const { limit, offset, paymentProviderIds, deliveryProviderIds, ...restParams } = params;
-  log(`query orders: ${limit} ${offset}  ${restParams?.queryString || ''}`, { userId });
+  log(`query orders: ${limit} ${offset}`, { userId });
 
   const promises: Promise<any>[] = [];
 

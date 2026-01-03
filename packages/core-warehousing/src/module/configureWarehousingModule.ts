@@ -6,7 +6,6 @@ import {
   isNull,
   isNotNull,
   inArray,
-  like,
   sql,
   asc,
   generateId,
@@ -21,7 +20,6 @@ import {
   type TokenSurrogateRow,
   type WarehousingProviderType,
 } from '../db/schema.ts';
-import { searchTokenSurrogatesFTS } from '../db/fts.ts';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 
@@ -53,7 +51,8 @@ export interface TokenSurrogate {
 }
 
 export interface TokenQuery {
-  queryString?: string;
+  tokenIds?: string[];
+  searchTokenIds?: string[];
   userId?: string;
   walletAddressExists?: boolean;
   tokenSerialNumber?: string;
@@ -76,9 +75,9 @@ const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 
 
 export interface WarehousingProviderQuery {
   warehousingProviderIds?: string[];
+  searchWarehousingProviderIds?: string[];
   type?: WarehousingProviderType;
   includeDeleted?: boolean;
-  queryString?: string;
 }
 
 export type WarehousingProviderFields = keyof WarehousingProvider;
@@ -162,11 +161,8 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
       conditions.push(eq(warehousingProviders.type, query.type));
     }
 
-    if (query.queryString) {
-      const pattern = `%${query.queryString}%`;
-      conditions.push(
-        or(like(warehousingProviders._id, pattern), like(warehousingProviders.adapterKey, pattern))!,
-      );
+    if (query.searchWarehousingProviderIds?.length) {
+      conditions.push(inArray(warehousingProviders._id, query.searchWarehousingProviderIds));
     }
 
     return conditions;
@@ -174,6 +170,14 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
 
   const buildTokenConditions = async (query: TokenQuery): Promise<SQL[]> => {
     const conditions: SQL[] = [];
+
+    if (query.tokenIds?.length) {
+      conditions.push(inArray(tokenSurrogates._id, query.tokenIds));
+    }
+
+    if (query.searchTokenIds?.length) {
+      conditions.push(inArray(tokenSurrogates._id, query.searchTokenIds));
+    }
 
     if (query.userId) {
       conditions.push(eq(tokenSurrogates.userId, query.userId));
@@ -214,16 +218,6 @@ export const configureWarehousingModule = async ({ db }: { db: DrizzleDb }) => {
             sql`json_extract(${tokenSurrogates.meta}, '$."${sql.raw(metaKey)}"') = ${JSON.stringify(value)}`,
           );
         }
-      }
-    }
-
-    if (query.queryString) {
-      const matchingIds = await searchTokenSurrogatesFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        // No matches - return impossible condition
-        conditions.push(sql`1 = 0`);
-      } else {
-        conditions.push(inArray(tokenSurrogates._id, matchingIds));
       }
     }
 

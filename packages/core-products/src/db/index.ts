@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupProductsFTS, setupProductTextsFTS, setupProductReviewsFTS } from './fts.ts';
 
 // Re-export schema types and tables
 export {
@@ -68,8 +67,6 @@ export {
   type ProductWarehousing,
   type ProductVote,
 } from './schema.ts';
-
-export { searchProductsFTS, searchProductTextsFTS, searchProductReviewsFTS } from './fts.ts';
 
 export async function initializeProductsSchema(db: DrizzleDb): Promise<void> {
   // Create products table
@@ -257,9 +254,4 @@ export async function initializeProductsSchema(db: DrizzleDb): Promise<void> {
   await db.run(
     sql`CREATE INDEX IF NOT EXISTS idx_product_rates_expiresAt ON product_rates(expiresAt, timestamp)`,
   );
-
-  // Setup FTS
-  await setupProductsFTS(db);
-  await setupProductTextsFTS(db);
-  await setupProductReviewsFTS(db);
 }

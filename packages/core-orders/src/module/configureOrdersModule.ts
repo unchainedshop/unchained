@@ -16,7 +16,6 @@ import {
   type Order,
   type OrderLogEntry,
 } from '../db/schema.ts';
-import { upsertOrderFTS } from '../db/fts.ts';
 
 // NOTE: Renamed from ORDER_FULLFILLED to ORDER_FULFILLED in v5.0.0
 // This is a breaking change for event subscribers
@@ -177,9 +176,6 @@ export const configureOrdersModule = async ({
       const [modifiedOrderRow] = await db.select().from(orders).where(eq(orders._id, orderId)).limit(1);
 
       if (modifiedOrderRow) {
-        // Update FTS index
-        await upsertOrderFTS(db, modifiedOrderRow);
-
         const modifiedOrder = rowToOrder(modifiedOrderRow);
         if (order.status === null) {
           // The first time that an order transitions away from cart is a checkout event

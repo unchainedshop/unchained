@@ -75,7 +75,6 @@ export const Guest = {
 
 export async function seedUsersToDrizzle(db) {
   await db.delete(users);
-  await db.run(sql`DELETE FROM users_fts`);
 
   for (const userData of [Admin, User, Guest, UnverifiedUser]) {
     await db.insert(users).values({
@@ -91,9 +90,6 @@ export async function seedUsersToDrizzle(db) {
       created: userData.created,
       updated: userData.updated,
     });
-    await db.run(
-      sql`INSERT INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`,
-    );
   }
 }
 
@@ -117,12 +113,6 @@ export async function findOrInsertUserToDrizzle(db, userData) {
     created: userData.created || new Date(),
     updated: userData.updated,
   });
-
-  if (userData.username) {
-    await db.run(
-      sql`INSERT OR IGNORE INTO users_fts(_id, username) VALUES (${userData._id}, ${userData.username})`,
-    );
-  }
 
   const [newUser] = await db
     .select()

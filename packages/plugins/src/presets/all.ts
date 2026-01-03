@@ -16,9 +16,11 @@ import '../payment/postfinance-checkout/index.ts';
 import '../payment/datatrans-v2/index.ts';
 import '../payment/payrexx/index.ts';
 
-// Filter & Search
+// Filter
 import '../filters/strict-equal.ts';
-import '../filters/local-search.ts';
+
+// Note: FTS5 search plugin (search/fts5-search.ts) must be initialized separately
+// with setupFTS5Tables() and initializeFTS5Search() during app startup
 
 // Workers
 import '../worker/twilio.ts';

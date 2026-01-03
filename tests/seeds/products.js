@@ -691,8 +691,6 @@ export async function seedProductsToDrizzle(db) {
     productReviews,
   } = await import('@unchainedshop/core-products');
 
-  const { sql } = await import('@unchainedshop/store');
-
   // Clear existing data
   await db.delete(productVariationTexts);
   await db.delete(productVariations);
@@ -724,12 +722,6 @@ export async function seedProductsToDrizzle(db) {
       updated: product.updated || null,
       deleted: null,
     });
-    // Insert into FTS - extract sku from warehousing JSON and slugs from array
-    const sku = product.warehousing?.sku || '';
-    const slugsText = (product.slugs || []).join(' ');
-    await db.run(
-      sql`INSERT INTO products_fts(_id, sku, slugs_text) VALUES (${product._id}, ${sku}, ${slugsText})`,
-    );
   }
 
   // Insert product texts
@@ -748,11 +740,6 @@ export async function seedProductsToDrizzle(db) {
       created: text.created || new Date(),
       updated: text.updated || null,
     });
-    // Insert into FTS
-    await db.run(
-      sql`INSERT INTO product_texts_fts(_id, productId, title, subtitle, brand, vendor, description, labels, slug)
-          VALUES (${text._id}, ${text.productId}, ${text.title || ''}, ${text.subtitle || ''}, ${text.brand || ''}, ${text.vendor || ''}, ${text.description || ''}, ${JSON.stringify(text.labels || [])}, ${text.slug || ''})`,
-    );
   }
 
   // Insert product media
@@ -824,11 +811,6 @@ export async function seedProductsToDrizzle(db) {
     updated: SimpleProductReview.updated || null,
     deleted: null,
   });
-  // Insert into FTS
-  await db.run(
-    sql`INSERT INTO product_reviews_fts(_id, productId, title, review)
-        VALUES (${SimpleProductReview._id}, ${SimpleProductReview.productId}, ${SimpleProductReview.title || ''}, ${SimpleProductReview.review || ''})`,
-  );
 }
 
 /**

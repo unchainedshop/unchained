@@ -4,17 +4,16 @@ import type { Context } from '../../../context.ts';
 
 export default async function filtersCount(
   root: never,
-  params: FilterQuery,
-  { modules, userId }: Context,
+  params: FilterQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
+  const { queryString, ...query } = params;
   log(
-    `query filtersCount: ${params.includeInactive ? 'includeInactive' : ''} queryString: ${
-      params.queryString
-    } `,
+    `query filtersCount: ${params.includeInactive ? 'includeInactive' : ''} queryString: ${queryString} `,
     {
       userId,
     },
   );
 
-  return modules.filters.count(params);
+  return services.filters.searchFiltersCount(queryString, query);
 }

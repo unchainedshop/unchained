@@ -7,7 +7,6 @@ import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
   eq,
   and,
-  inArray,
   notInArray,
   isNull,
   gte,
@@ -22,7 +21,6 @@ import {
 import {
   productReviews,
   ProductReviewVoteType,
-  searchProductReviewsFTS,
   type ProductReviewRow,
   type ProductVote,
   type ProductReviewVoteTypeType,
@@ -31,7 +29,6 @@ import {
 export interface ProductReviewQuery {
   productId?: string;
   authorId?: string;
-  queryString?: string;
   created?: { end?: Date; start?: Date };
   updated?: { end?: Date; start?: Date };
 }
@@ -82,11 +79,6 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
     }
     if (query.authorId) {
       conditions.push(eq(productReviews.authorId, query.authorId));
-    }
-    if (query.queryString) {
-      const matchingIds = await searchProductReviewsFTS(db, query.queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(productReviews._id, matchingIds));
     }
     if (query.created) {
       if (query.created.start) {
@@ -230,12 +222,6 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
         .where(eq(productReviews._id, reviewId))
         .limit(1);
 
-      // Insert into FTS
-      await db.run(
-        sql`INSERT INTO product_reviews_fts(_id, productId, title, review)
-            VALUES (${reviewId}, ${doc.productId}, ${doc.title || ''}, ${doc.review || ''})`,
-      );
-
       await emit('PRODUCT_REVIEW_CREATE', {
         productReview: inserted,
       });
@@ -278,16 +264,11 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
 
       if (conditions.length === 0) return 0;
 
-      // Get IDs for events and FTS cleanup
+      // Get IDs for events
       const toDelete = await db
         .select({ _id: productReviews._id })
         .from(productReviews)
         .where(and(...conditions));
-
-      // Delete from FTS
-      for (const row of toDelete) {
-        await db.run(sql`DELETE FROM product_reviews_fts WHERE _id = ${row._id}`);
-      }
 
       const result = await db.delete(productReviews).where(and(...conditions));
 
@@ -307,11 +288,6 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
         .select({ _id: productReviews._id })
         .from(productReviews)
         .where(eq(productReviews.authorId, authorId));
-
-      // Delete from FTS
-      for (const row of toDelete) {
-        await db.run(sql`DELETE FROM product_reviews_fts WHERE _id = ${row._id}`);
-      }
 
       const result = await db.delete(productReviews).where(eq(productReviews.authorId, authorId));
 
@@ -345,15 +321,6 @@ export const configureProductReviewsModule = ({ db }: { db: DrizzleDb }) => {
         .limit(1);
 
       if (!updated) return null;
-
-      // Update FTS if title or review changed
-      if (doc.title !== undefined || doc.review !== undefined) {
-        await db.run(sql`DELETE FROM product_reviews_fts WHERE _id = ${productReviewId}`);
-        await db.run(
-          sql`INSERT INTO product_reviews_fts(_id, productId, title, review)
-              VALUES (${productReviewId}, ${updated.productId}, ${updated.title || ''}, ${updated.review || ''})`,
-        );
-      }
 
       await emit('PRODUCT_UPDATE_REVIEW', { productReview: updated });
       return updated;

@@ -9,8 +9,9 @@ export default async function products(
     sort: SortOption[];
     limit: number;
     offset: number;
+    queryString?: string;
   },
-  { modules, userId }: Context,
+  { services, userId }: Context,
 ) {
   log(
     `query products: ${params.limit || 0} ${params.offset || 0} ${
@@ -18,5 +19,8 @@ export default async function products(
     } ${params.slugs?.join(',')}`,
     { userId },
   );
-  return modules.products.findProducts(params);
+
+  const { queryString, ...query } = params;
+
+  return services.productsSimple.searchProducts(queryString, query);
 }

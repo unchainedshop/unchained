@@ -85,9 +85,7 @@ export const Product = {
       limit = 10,
       offset = 0,
       sort,
-      queryString,
     }: {
-      queryString?: string;
       limit?: number;
       offset?: number;
       sort?: SortOption[];
@@ -99,17 +97,10 @@ export const Product = {
       limit,
       offset,
       sort,
-      queryString,
     });
   },
-  async reviewsCount(
-    product: IProduct,
-    params: {
-      queryString?: string;
-    },
-    { modules }: Context,
-  ): Promise<number> {
-    return modules.products.reviews.count({ ...params, productId: product._id });
+  async reviewsCount(product: IProduct, _params: unknown, { modules }: Context): Promise<number> {
+    return modules.products.reviews.count({ productId: product._id });
   },
 
   async siblings(

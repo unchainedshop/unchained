@@ -12,9 +12,9 @@ export default async function tokens(
     offset: number;
     queryString?: string;
   },
-  { modules, userId }: Context,
+  { services, userId }: Context,
 ) {
   log(`query tokens`, { userId });
 
-  return modules.warehousing.findTokens({ queryString }, { limit, skip: offset });
+  return services.warehousing.searchTokens(queryString, {}, { limit, skip: offset });
 }

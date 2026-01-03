@@ -4,12 +4,14 @@ import { log } from '@unchainedshop/logger';
 
 export default async function languagesCount(
   root: never,
-  params: LanguageQuery,
-  { modules, userId }: Context,
+  params: LanguageQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
   log(`query languagesCount:  ${params.includeInactive ? 'includeInactive' : ''}`, {
     userId,
   });
 
-  return modules.languages.count(params);
+  const { queryString, ...query } = params;
+
+  return services.languages.searchLanguagesCount(queryString, query);
 }

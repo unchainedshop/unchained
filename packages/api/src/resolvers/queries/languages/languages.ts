@@ -5,8 +5,8 @@ import type { Context } from '../../../context.ts';
 
 export default async function languages(
   root: never,
-  params: LanguageQuery & { limit: number; offset: number; sort?: SortOption[] },
-  { modules, userId }: Context,
+  params: LanguageQuery & { limit: number; offset: number; sort?: SortOption[]; queryString?: string },
+  { services, userId }: Context,
 ) {
   log(
     `query languages: ${params.limit} ${params.offset} ${
@@ -15,5 +15,7 @@ export default async function languages(
     { userId },
   );
 
-  return modules.languages.findLanguages(params);
+  const { queryString, ...query } = params;
+
+  return services.languages.searchLanguages(queryString, query);
 }

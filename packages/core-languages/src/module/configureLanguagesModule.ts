@@ -19,7 +19,6 @@ import {
   type DrizzleDb,
 } from '@unchainedshop/store';
 import { languages, type LanguageRow } from '../db/schema.ts';
-import { searchLanguagesFTS } from '../db/fts.ts';
 
 export interface Language {
   _id: string;
@@ -34,8 +33,9 @@ export type LanguageFields = keyof Language;
 
 export interface LanguageQuery {
   includeInactive?: boolean;
-  queryString?: string;
   isoCodes?: string[];
+  languageIds?: string[];
+  searchLanguageIds?: string[];
   limit?: number;
   offset?: number;
   sort?: SortOption[];
@@ -89,10 +89,12 @@ export async function configureLanguagesModule({ db }: { db: DrizzleDb }) {
       conditions.push(inArray(languages.isoCode, query.isoCodes));
     }
 
-    if (query.queryString) {
-      const matchingIds = await searchLanguagesFTS(db, query.queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(languages._id, matchingIds));
+    if (query.languageIds?.length) {
+      conditions.push(inArray(languages._id, query.languageIds));
+    }
+
+    if (query.searchLanguageIds?.length) {
+      conditions.push(inArray(languages._id, query.searchLanguageIds));
     }
 
     return conditions;

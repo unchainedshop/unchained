@@ -125,13 +125,9 @@ export default async function seedEvents(db) {
  */
 export async function seedEventsToDrizzle(db) {
   const { events } = await import('@unchainedshop/core-events');
-  const { sql } = await import('drizzle-orm');
 
   // Delete all existing events directly
   await db.delete(events);
-
-  // Clear FTS table
-  await db.run(sql`DELETE FROM events_fts`);
 
   // Create fresh events with current timestamps
   const testEvents = createTestEvents();
@@ -145,8 +141,5 @@ export async function seedEventsToDrizzle(db) {
       payload: event.payload,
       created: event.created,
     });
-
-    // Manually insert into FTS table
-    await db.run(sql`INSERT INTO events_fts(_id, type) VALUES (${event._id}, ${event.type})`);
   }
 }

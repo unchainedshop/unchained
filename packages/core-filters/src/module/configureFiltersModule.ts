@@ -16,7 +16,6 @@ import { configureFilterTextsModule } from './configureFilterTextsModule.ts';
 import createFilterValueParser from '../filter-value-parsers/index.ts';
 import { filtersSettings, type FiltersSettingsOptions } from '../filters-settings.ts';
 import type { FilterQuery } from '../search.ts';
-import { searchFiltersFTS } from '../db/fts.ts';
 
 export type FilterOption = Filter & {
   filterOption: string;
@@ -70,7 +69,7 @@ interface ExtendedFilterQuery extends FilterQuery {
 }
 
 export const buildFindSelector = async (db: DrizzleDb, query: ExtendedFilterQuery): Promise<SQL[]> => {
-  const { includeInactive = false, queryString, filterIds, _id, key } = query;
+  const { includeInactive = false, filterIds, searchFilterIds, _id, key } = query;
   const conditions: SQL[] = [];
 
   // Handle active filter status:
@@ -83,6 +82,10 @@ export const buildFindSelector = async (db: DrizzleDb, query: ExtendedFilterQuer
   // Handle filterIds array (primary way to filter by IDs)
   if (filterIds?.length) {
     conditions.push(inArray(filters._id, filterIds));
+  }
+
+  if (searchFilterIds?.length) {
+    conditions.push(inArray(filters._id, searchFilterIds));
   }
 
   // Handle _id filter: string for single, string[] for multiple
@@ -101,12 +104,6 @@ export const buildFindSelector = async (db: DrizzleDb, query: ExtendedFilterQuer
     } else if (Array.isArray(key) && key.length > 0) {
       conditions.push(inArray(filters.key, key));
     }
-  }
-
-  if (queryString) {
-    const matchingIds = await searchFiltersFTS(db, queryString);
-    // Drizzle handles empty arrays natively - inArray with [] returns false
-    conditions.push(inArray(filters._id, matchingIds));
   }
 
   return conditions;

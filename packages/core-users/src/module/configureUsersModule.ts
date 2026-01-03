@@ -27,7 +27,6 @@ import {
   type UserLastLogin,
   type UserProfile,
   type UserServices,
-  searchUsersFTS,
 } from '../db/index.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { systemLocale, SortDirection, type SortOption, sha256 } from '@unchainedshop/utils';
@@ -74,11 +73,11 @@ export interface UserQueryOptions {
 export interface UserQuery {
   includeGuests?: boolean;
   includeDeleted?: boolean;
-  queryString?: string;
   emailVerified?: boolean;
   lastLogin?: DateFilterInput;
   tags?: string[];
   userIds?: string[];
+  searchUserIds?: string[];
   username?: string;
   web3Verified?: boolean;
 }
@@ -139,6 +138,10 @@ export const configureUsersModule = async ({
       conditions.push(inArray(users._id, query.userIds));
     }
 
+    if (query.searchUserIds?.length) {
+      conditions.push(inArray(users._id, query.searchUserIds));
+    }
+
     if (query.username) {
       // Case-insensitive username search
       conditions.push(sql`lower(${users.username}) = lower(${query.username.trim()})`);
@@ -188,12 +191,6 @@ export const configureUsersModule = async ({
       conditions.push(
         sql`json_extract(${users.lastLogin}, '$.timestamp') <= ${new Date(query.lastLogin.end).getTime()}`,
       );
-    }
-
-    if (query.queryString) {
-      const matchingIds = await searchUsersFTS(db, query.queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(users._id, matchingIds));
     }
 
     return conditions;

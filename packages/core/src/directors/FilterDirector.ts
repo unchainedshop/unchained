@@ -100,20 +100,6 @@ export const FilterDirector: IFilterDirector = {
         );
       },
 
-      searchAssortments: async (params, options) => {
-        return reduceAdapters<string[] | undefined>(async (lastSearchPromise, adapter) => {
-          const assortmentIds = await lastSearchPromise;
-          return adapter.searchAssortments({ assortmentIds }, options);
-        }, params.assortmentIds);
-      },
-
-      searchProducts: async (params, options) => {
-        return reduceAdapters<string[] | undefined>(async (lastSearchPromise, adapter) => {
-          const productIds = await lastSearchPromise;
-          return adapter.searchProducts({ productIds }, options);
-        }, params.productIds);
-      },
-
       transformProductFilterQuery: async (defaultFilterQuery, options) => {
         return reduceAdapters<ProductFilterQueryItem[]>(async (lastFilterQuery, adapter) => {
           return adapter.transformProductFilterQuery(await lastFilterQuery, options);

@@ -19,7 +19,6 @@ import {
   type DrizzleDb,
 } from '@unchainedshop/store';
 import { currencies, type CurrencyRow } from '../db/schema.ts';
-import { searchCurrenciesFTS } from '../db/fts.ts';
 
 export interface Currency {
   _id: string;
@@ -37,8 +36,9 @@ export type CurrencyFields = keyof Currency;
 export interface CurrencyQuery {
   includeInactive?: boolean;
   contractAddress?: string;
-  queryString?: string;
   isoCodes?: string[];
+  currencyIds?: string[];
+  searchCurrencyIds?: string[];
   limit?: number;
   offset?: number;
   sort?: SortOption[];
@@ -102,10 +102,12 @@ export async function configureCurrenciesModule({ db }: { db: DrizzleDb }) {
       conditions.push(inArray(currencies.isoCode, query.isoCodes));
     }
 
-    if (query.queryString) {
-      const matchingIds = await searchCurrenciesFTS(db, query.queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(currencies._id, matchingIds));
+    if (query.currencyIds?.length) {
+      conditions.push(inArray(currencies._id, query.currencyIds));
+    }
+
+    if (query.searchCurrencyIds?.length) {
+      conditions.push(inArray(currencies._id, query.searchCurrencyIds));
     }
 
     return conditions;

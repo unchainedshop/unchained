@@ -6,6 +6,10 @@ import createBulkImporterFactory, {
   type BulkImportHandler,
 } from './bulk-importer/index.ts';
 
+// Re-export types that plugins need
+export type { Modules, ModuleOptions } from './modules.ts';
+export type { Services, CustomServices } from './services/index.ts';
+
 import {
   WorkerDirector,
   DeliveryDirector,

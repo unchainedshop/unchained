@@ -3,7 +3,7 @@ import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAsso
 import type { Params } from '../schemas.ts';
 
 export default async function listAssortments(context: Context, params: Params<'LIST'>) {
-  const { modules } = context;
+  const { services } = context;
   const {
     limit = 50,
     offset = 0,
@@ -17,12 +17,11 @@ export default async function listAssortments(context: Context, params: Params<'
 
   const sortOptions = sort?.map((s) => ({ key: s.key, value: s.value as any })) || undefined;
 
-  const assortments = await modules.assortments.findAssortments({
+  const assortments = await services.assortments.searchAssortments(queryString, {
     limit,
     offset,
     tags,
     slugs,
-    queryString,
     includeInactive,
     includeLeaves,
     sort: sortOptions,

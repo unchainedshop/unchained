@@ -20,3 +20,4 @@ fly.toml
 /tools/demo-data-cli/dist
 /uploads
 uploads
+.claude

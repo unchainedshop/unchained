@@ -1,19 +1,20 @@
 import { log } from '@unchainedshop/logger';
+import type { SortOption } from '@unchainedshop/utils';
+import type { EventQuery } from '@unchainedshop/core-events';
 import type { Context } from '../../../context.ts';
-
-type FindEventsParams = Parameters<Context['modules']['events']['findEvents']>['0'];
 
 export default async function events(
   root: never,
-  params: FindEventsParams,
-  { modules, userId }: Context,
+  params: EventQuery & { queryString?: string; limit?: number; offset?: number; sort?: SortOption[] },
+  { services, userId }: Context,
 ) {
+  const { queryString, ...query } = params;
   log(
-    `query events ${params.types?.join(',') || '*'} limit: ${params.limit} offset: ${params.offset} queryString: ${params.queryString}`,
+    `query events ${params.types?.join(',') || '*'} limit: ${params.limit} offset: ${params.offset} queryString: ${queryString}`,
     {
       userId,
     },
   );
 
-  return modules.events.findEvents(params);
+  return services.events.searchEvents(queryString, query);
 }

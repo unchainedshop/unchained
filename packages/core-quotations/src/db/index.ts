@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupQuotationsFTS } from './fts.ts';
 
 export { quotations, QuotationStatus, type QuotationRow, type NewQuotationRow } from './schema.ts';
 
@@ -36,7 +35,4 @@ export async function initializeQuotationsSchema(db: DrizzleDb): Promise<void> {
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_quotations_userId ON quotations(userId)`);
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_quotations_productId ON quotations(productId)`);
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_quotations_status ON quotations(status)`);
-
-  // Setup FTS5 full-text search
-  await setupQuotationsFTS(db);
 }

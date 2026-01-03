@@ -7,6 +7,8 @@ const DIRECTION_ASCENDING: SortDirection = 'ASC';
 export type SearchFilterQuery = { key: string; value?: string }[];
 
 export interface SearchQuery {
+  assortmentId?: string; // Single assortment to search within
+  ignoreChildAssortments?: boolean; // If true, don't include products from child assortments
   assortmentIds?: string[];
   filterIds?: string[];
   filterQuery?: SearchFilterQuery;
@@ -30,7 +32,7 @@ export interface SearchConfiguration {
 
 export interface FilterQuery {
   filterIds?: string[];
-  queryString?: string;
+  searchFilterIds?: string[];
   includeInactive?: boolean;
 }
 

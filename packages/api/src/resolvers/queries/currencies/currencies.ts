@@ -5,8 +5,8 @@ import type { Context } from '../../../context.ts';
 
 export default async function currencies(
   root: never,
-  params: CurrencyQuery & { limit: number; offset: number; sort?: SortOption[] },
-  { modules, userId }: Context,
+  params: CurrencyQuery & { limit: number; offset: number; sort?: SortOption[]; queryString?: string },
+  { services, userId }: Context,
 ) {
   log(
     `query currencies: ${params.limit} ${params.offset} ${
@@ -14,5 +14,8 @@ export default async function currencies(
     }`,
     { userId },
   );
-  return modules.currencies.findCurrencies(params);
+
+  const { queryString, ...query } = params;
+
+  return services.currencies.searchCurrencies(queryString, query);
 }

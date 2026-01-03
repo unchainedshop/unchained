@@ -22,7 +22,6 @@ import {
   type EnrollmentPeriod,
   type EnrollmentPlan,
 } from '../db/schema.ts';
-import { searchEnrollmentsFTS } from '../db/fts.ts';
 import { enrollmentsSettings, type EnrollmentsSettingsOptions } from '../enrollments-settings.ts';
 
 export interface Address {
@@ -82,7 +81,8 @@ export interface Enrollment {
 export interface EnrollmentQuery {
   status?: EnrollmentStatus[];
   userId?: string;
-  queryString?: string;
+  enrollmentIds?: string[];
+  searchEnrollmentIds?: string[];
 }
 
 export type EnrollmentFields = keyof Enrollment;
@@ -162,7 +162,7 @@ export const configureEnrollmentsModule = async ({
 
   enrollmentsSettings.configureSettings(enrollmentOptions);
 
-  const buildConditions = async (query: EnrollmentQuery): Promise<SQL[]> => {
+  const buildConditions = (query: EnrollmentQuery): SQL[] => {
     const conditions: SQL[] = [isNull(enrollments.deleted)];
 
     if (query.status?.length) {
@@ -173,13 +173,12 @@ export const configureEnrollmentsModule = async ({
       conditions.push(eq(enrollments.userId, query.userId));
     }
 
-    if (query.queryString) {
-      const matchingIds = await searchEnrollmentsFTS(db, query.queryString);
-      if (matchingIds.length === 0) {
-        conditions.push(sql`1 = 0`);
-      } else {
-        conditions.push(inArray(enrollments._id, matchingIds));
-      }
+    if (query.enrollmentIds?.length) {
+      conditions.push(inArray(enrollments._id, query.enrollmentIds));
+    }
+
+    if (query.searchEnrollmentIds?.length) {
+      conditions.push(inArray(enrollments._id, query.searchEnrollmentIds));
     }
 
     return conditions;
@@ -292,7 +291,7 @@ export const configureEnrollmentsModule = async ({
   return {
     // Queries
     count: async (query: EnrollmentQuery) => {
-      const conditions = await buildConditions(query);
+      const conditions = buildConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
       const [{ count }] = await db
         .select({ count: sql<number>`count(*)` })
@@ -359,7 +358,7 @@ export const configureEnrollmentsModule = async ({
       offset?: number;
       sort?: SortOption[];
     }): Promise<Enrollment[]> => {
-      const conditions = await buildConditions(query);
+      const conditions = buildConditions(query);
       const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
       const orderBy = buildOrderBy(sort);
       const results = await db

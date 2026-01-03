@@ -1,4 +1,4 @@
-import { setupDatabase, disconnect } from './helpers.js';
+import { setupDatabase, disconnect, refreshFTSIndex } from './helpers.js';
 import { workQueue } from '@unchainedshop/core-worker';
 import { eq, and, sql } from 'drizzle-orm';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN, findOrInsertUserToDrizzle } from './seeds/users.js';
@@ -42,6 +42,8 @@ test.describe('Auth for admin users', () => {
           },
         ],
       });
+      // Refresh FTS index after inserting test-specific data
+      await refreshFTSIndex();
     });
 
     test('returns the 3 default users', async () => {

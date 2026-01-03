@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupOrdersFTS } from './fts.ts';
 
 // Re-export schema types and tables
 export {
@@ -38,8 +37,6 @@ export {
   type OrderDiscountTriggerType,
   type OrderLogEntry,
 } from './schema.ts';
-
-export { searchOrdersFTS, upsertOrderFTS, deleteOrderFTS } from './fts.ts';
 
 export async function initializeOrdersSchema(db: DrizzleDb): Promise<void> {
   // Create orders table
@@ -159,7 +156,4 @@ export async function initializeOrdersSchema(db: DrizzleDb): Promise<void> {
   // Order discounts indexes
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_order_discounts_orderId ON order_discounts(orderId)`);
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_order_discounts_trigger ON order_discounts(trigger)`);
-
-  // Setup FTS
-  await setupOrdersFTS(db);
 }

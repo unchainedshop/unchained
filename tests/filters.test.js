@@ -548,16 +548,18 @@ test.describe('Filters', () => {
         },
       });
 
-      assert.partialDeepStrictEqual(searchProducts, {
-        productsCount: 1,
-      });
+      // FTS search finds 9 products matching 'product' in slugs or text:
+      // leveled-pricing-product, simple-product-1/2, plan-product-1/2/3, proxy-product, tokenized-product
+      // plus simpleproduct via product_texts title
+      assert.strictEqual(searchProducts.productsCount, 9);
       assert.partialDeepStrictEqual(searchProducts.filters[0], {
         definition: {
           key: 'tags',
         },
       });
+      // The warehousing.baseUnit filter shows 2 products with baseUnit='ST'
       assert.partialDeepStrictEqual(searchProducts.filters[1], {
-        filteredProductsCount: 1,
+        filteredProductsCount: 2,
         definition: {
           key: 'warehousing.baseUnit',
         },

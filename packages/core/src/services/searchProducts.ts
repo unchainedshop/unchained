@@ -2,7 +2,8 @@ import { defaultFilterSelector, defaultSortStage, type SearchQuery } from '@unch
 import type { Modules } from '../modules.ts';
 import {
   FilterDirector,
-  type SearchProductsOptions,
+  SearchDirector,
+  type FilterProductsOptions,
   type ProductFilterQueryItem,
 } from '../directors/index.ts';
 
@@ -11,10 +12,39 @@ export async function searchProductsService(
   searchQuery: SearchQuery,
   options: { forceLiveCollection?: boolean; locale: Intl.Locale; userId?: string },
 ) {
-  const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
+  // Resolve assortmentId to productIds and filterIds if provided
+  let resolvedSearchQuery = searchQuery;
+  if (searchQuery.assortmentId) {
+    const assortment = await this.assortments.findAssortment({
+      assortmentId: searchQuery.assortmentId,
+    });
+    if (assortment) {
+      const assortmentProductIds = await this.assortments.findProductIds({
+        assortment,
+        ignoreChildAssortments: searchQuery.ignoreChildAssortments,
+      });
+      const assortmentFilterIds = await this.assortments.filters.findFilterIds({
+        assortmentId: searchQuery.assortmentId,
+      });
+      resolvedSearchQuery = {
+        ...searchQuery,
+        productIds: searchQuery.productIds
+          ? searchQuery.productIds.filter((id) => assortmentProductIds.includes(id))
+          : assortmentProductIds,
+        filterIds: searchQuery.filterIds
+          ? [...new Set([...searchQuery.filterIds, ...assortmentFilterIds])]
+          : assortmentFilterIds,
+      };
+    }
+  }
+
+  const filterActions = await FilterDirector.actions(
+    { searchQuery: resolvedSearchQuery },
+    { modules: this },
+  );
 
   const filterSelector = await filterActions.transformFilterSelector(
-    defaultFilterSelector(searchQuery),
+    defaultFilterSelector(resolvedSearchQuery),
     options,
   );
 
@@ -23,10 +53,10 @@ export async function searchProductsService(
   const productFilterQuery = await filterActions.transformProductFilterQuery(baseFilterQuery, options);
 
   // Get sort stage from search query
-  const sortStage = defaultSortStage(searchQuery);
+  const sortStage = defaultSortStage(resolvedSearchQuery);
 
-  const searchConfiguration: SearchProductsOptions = {
-    searchQuery,
+  const searchConfiguration: FilterProductsOptions = {
+    searchQuery: resolvedSearchQuery,
     filterSelector,
     productFilterQuery,
     sortStage,
@@ -34,9 +64,7 @@ export async function searchProductsService(
     forceLiveCollection: !!options.forceLiveCollection,
   };
 
-  if (searchQuery.productIds?.length === 0) {
-    // Restricted to an empty array of products
-    // will always lead to an empty result
+  if (resolvedSearchQuery.productIds?.length === 0) {
     return {
       searchConfiguration,
       aggregatedTotalProductIds: [],
@@ -45,9 +73,29 @@ export async function searchProductsService(
     };
   }
 
-  const totalProductIds =
-    (await filterActions.searchProducts(searchQuery, searchConfiguration)) ||
-    (await this.products.findProductIds({ includeDrafts: searchQuery.includeInactive }));
+  // Use SearchDirector for full-text search, module handles intersection with productIds
+  let totalProductIds: string[];
+  if (resolvedSearchQuery.queryString) {
+    const searchActions = SearchDirector.actions(
+      { queryString: resolvedSearchQuery.queryString, locale: options.locale, userId: options.userId },
+      { modules: this },
+    );
+    const searchProductIds = await searchActions.searchProducts();
+    if (searchProductIds.length === 0) {
+      totalProductIds = [];
+    } else {
+      totalProductIds = await this.products.findProductIds({
+        includeDrafts: resolvedSearchQuery.includeInactive,
+        productIds: resolvedSearchQuery.productIds,
+        searchProductIds,
+      });
+    }
+  } else {
+    totalProductIds = await this.products.findProductIds({
+      includeDrafts: resolvedSearchQuery.includeInactive,
+      productIds: resolvedSearchQuery.productIds,
+    });
+  }
 
   const filteredProductIds = await FilterDirector.productFacetedSearch(
     totalProductIds,

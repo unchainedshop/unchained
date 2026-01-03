@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupUsersFTS } from './fts.ts';
 
 export {
   users,
@@ -16,8 +15,6 @@ export {
   type Email,
   type UserServices,
 } from './schema.ts';
-
-export { searchUsersFTS } from './fts.ts';
 
 export async function initializeUsersSchema(db: DrizzleDb): Promise<void> {
   // Create users table
@@ -67,7 +64,4 @@ export async function initializeUsersSchema(db: DrizzleDb): Promise<void> {
   await db.run(
     sql`CREATE INDEX IF NOT EXISTS idx_webauthn_username ON webauthn_credentials_requests(username)`,
   );
-
-  // Setup FTS
-  await setupUsersFTS(db);
 }

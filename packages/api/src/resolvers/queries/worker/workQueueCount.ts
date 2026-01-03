@@ -4,12 +4,13 @@ import type { WorkQueueQuery } from '@unchainedshop/core-worker';
 
 export default async function workQueueCount(
   root: never,
-  params: WorkQueueQuery,
-  { modules, userId }: Context,
+  params: WorkQueueQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
   log(`query workQueueCount [${params.status?.join(', ') || ''}] ${JSON.stringify(params.created)}`, {
     userId,
   });
 
-  return modules.worker.count(params);
+  const { queryString, ...query } = params;
+  return services.worker.searchWorkCount(queryString, query);
 }

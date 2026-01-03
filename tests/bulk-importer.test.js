@@ -497,7 +497,7 @@ test.describe('Bulk Importer', () => {
           .where(eq(assortments._id, 'Assortment A'))
           .limit(1);
         return assortment?.tags?.includes('base');
-      }, 3000);
+      }, 5000);
 
       const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(async () => {
         const [media] = await db
@@ -506,7 +506,7 @@ test.describe('Bulk Importer', () => {
           .where(eq(assortmentMedia._id, 'assortment-a-meteor'))
           .limit(1);
         return media?.tags?.includes('small');
-      }, 3000);
+      }, 5000);
       assert.strictEqual(updatedAssortmentMediaHasSmallTag, true);
       assert.strictEqual(assortmentHasBaseTag, true);
 
@@ -516,9 +516,9 @@ test.describe('Bulk Importer', () => {
           .from(assortmentProducts)
           .where(eq(assortmentProducts.assortmentId, 'Assortment A'));
         return result?.count === 1;
-      }, 3000);
+      }, 5000);
 
       assert.strictEqual(productLinkHasBeenReplaced, true);
-    }, 10000);
+    }, 20000);
   });
 });

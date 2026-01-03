@@ -133,26 +133,6 @@ describe('Countries Module', () => {
     });
   });
 
-  describe('Full-text search', () => {
-    it('should search countries by text', async () => {
-      const countries = await countriesModule.findCountries({
-        queryString: 'CH',
-      });
-
-      assert.ok(countries.length >= 1, 'Should find at least one country');
-      const chCountry = countries.find((c) => c.isoCode === 'CH');
-      assert.ok(chCountry, 'Should find CH country via FTS');
-    });
-
-    it('should return empty array for no FTS matches', async () => {
-      const countries = await countriesModule.findCountries({
-        queryString: 'ZZZZNONEXISTENT',
-      });
-
-      assert.strictEqual(countries.length, 0, 'Should return empty array for no matches');
-    });
-  });
-
   describe('Helper functions', () => {
     it('should return flag emoji', async () => {
       const country = await countriesModule.findCountry({ isoCode: 'CH' });

@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupTokenSurrogatesFTS } from './fts.ts';
 
 export {
   warehousingProviders,
@@ -70,7 +69,4 @@ export async function initializeWarehousingSchema(db: DrizzleDb): Promise<void> 
   await db.run(
     sql`CREATE INDEX IF NOT EXISTS idx_token_surrogates_tokenSerialNumber ON token_surrogates(tokenSerialNumber)`,
   );
-
-  // Setup FTS5 full-text search for token surrogates
-  await setupTokenSurrogatesFTS(db);
 }

@@ -2,11 +2,9 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   eq,
   and,
-  or,
   isNull,
   isNotNull,
   inArray,
-  like,
   sql,
   asc,
   generateId,
@@ -64,9 +62,9 @@ export interface DeliveryInterface {
 
 export interface DeliveryProviderQuery {
   deliveryProviderIds?: string[];
+  searchDeliveryProviderIds?: string[];
   type?: DeliveryProviderType;
   includeDeleted?: boolean;
-  queryString?: string;
 }
 
 export type DeliveryProviderFields = keyof DeliveryProvider;
@@ -123,11 +121,8 @@ export const configureDeliveryModule = async ({
       conditions.push(eq(deliveryProviders.type, query.type));
     }
 
-    if (query.queryString) {
-      const pattern = `%${query.queryString}%`;
-      conditions.push(
-        or(like(deliveryProviders._id, pattern), like(deliveryProviders.adapterKey, pattern))!,
-      );
+    if (query.searchDeliveryProviderIds?.length) {
+      conditions.push(inArray(deliveryProviders._id, query.searchDeliveryProviderIds));
     }
 
     return conditions;

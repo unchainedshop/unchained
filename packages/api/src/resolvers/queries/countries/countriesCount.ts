@@ -4,8 +4,8 @@ import { log } from '@unchainedshop/logger';
 
 export default async function countriesCount(
   root: never,
-  params: CountryQuery,
-  { modules, userId }: Context,
+  params: CountryQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
   log(
     `query countriesCount:  ${params.includeInactive ? 'includeInactive' : ''} queryString: ${
@@ -16,5 +16,7 @@ export default async function countriesCount(
     },
   );
 
-  return modules.countries.count(params);
+  const { queryString, ...query } = params;
+
+  return services.countries.searchCountriesCount(queryString, query);
 }

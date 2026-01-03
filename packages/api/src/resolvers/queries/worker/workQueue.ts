@@ -25,18 +25,10 @@ export default async function workQueue(
     };
     sort?: SortOption[];
   },
-  { modules, userId }: Context,
+  { services, userId }: Context,
 ) {
   log(`query workQueue ${limit} ${offset} [${status?.join(', ') || ''}] ${JSON.stringify(created)}`, {
     userId,
   });
-  return modules.worker.findWorkQueue({
-    status,
-    types,
-    created,
-    skip: offset,
-    limit,
-    queryString,
-    sort,
-  });
+  return services.worker.searchWork(queryString, { status, types, created }, { limit, offset, sort });
 }

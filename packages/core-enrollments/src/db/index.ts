@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupEnrollmentsFTS } from './fts.ts';
 
 export {
   enrollments,
@@ -51,7 +50,4 @@ export async function initializeEnrollmentsSchema(db: DrizzleDb): Promise<void> 
   await db.run(
     sql`CREATE INDEX IF NOT EXISTS idx_enrollments_enrollmentNumber ON enrollments(enrollmentNumber)`,
   );
-
-  // Setup FTS5 full-text search
-  await setupEnrollmentsFTS(db);
 }

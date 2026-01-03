@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupAssortmentsFTS, setupAssortmentTextsFTS } from './fts.ts';
 
 export {
   assortments,
@@ -202,8 +201,4 @@ export async function initializeAssortmentsSchema(db: DrizzleDb): Promise<void> 
   await db.run(
     sql`CREATE INDEX IF NOT EXISTS idx_assortment_media_texts_locale ON assortment_media_texts(locale)`,
   );
-
-  // Setup FTS
-  await setupAssortmentsFTS(db);
-  await setupAssortmentTextsFTS(db);
 }

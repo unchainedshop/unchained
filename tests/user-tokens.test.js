@@ -45,10 +45,6 @@ test.describe('User Token Validation', () => {
         pushSubscriptions: [],
         created: new Date(),
       });
-      // Insert into FTS
-      await db.run(
-        sql`INSERT INTO users_fts(_id, username) VALUES ('user-reset-password', ${`resetuser${Math.random()}`})`,
-      );
     }
 
     const [existingVerifyUser] = await db
@@ -72,10 +68,6 @@ test.describe('User Token Validation', () => {
         pushSubscriptions: [],
         created: new Date(),
       });
-      // Insert into FTS
-      await db.run(
-        sql`INSERT INTO users_fts(_id, username) VALUES ('user-verify-email', ${`verifyuser${Math.random()}`})`,
-      );
     }
 
     await graphqlFetchAsAnonymousUser({

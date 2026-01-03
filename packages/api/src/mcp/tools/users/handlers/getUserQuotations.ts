@@ -4,12 +4,11 @@ import type { Params } from '../schemas.ts';
 
 export default async function getUserQuotations(context: Context, params: Params<'GET_QUOTATIONS'>) {
   const { modules } = context;
-  const { userId, sort, queryString, limit = 10, offset = 0 } = params;
+  const { userId, sort, limit = 10, offset = 0 } = params;
 
   const quotations = await modules.quotations.findQuotations(
     {
       userId,
-      queryString,
     },
     {
       skip: offset,

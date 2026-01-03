@@ -27,13 +27,9 @@ export default async function seedWorkQueue(db) {
  */
 export async function seedWorkQueueToDrizzle(db) {
   const { workQueue } = await import('@unchainedshop/core-worker');
-  const { sql } = await import('drizzle-orm');
 
   // Delete all existing work queue entries directly
   await db.delete(workQueue);
-
-  // Clear FTS table
-  await db.run(sql`DELETE FROM work_queue_fts`);
 
   // Insert NewWork (NEW status - no started/finished)
   await db.insert(workQueue).values({
@@ -59,11 +55,4 @@ export async function seedWorkQueueToDrizzle(db) {
     started: new Date(), // Mark as allocated (started)
     input: {},
   });
-
-  // Manually insert into FTS table
-  for (const work of [NewWork, AllocatedWork]) {
-    await db.run(
-      sql`INSERT INTO work_queue_fts(_id, originalWorkId, type, worker, input) VALUES (${work._id}, ${null}, ${work.type}, ${work.worker}, ${JSON.stringify({})})`,
-    );
-  }
 }

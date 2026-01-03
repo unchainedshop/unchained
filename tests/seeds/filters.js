@@ -62,14 +62,10 @@ export default async function seedFilters(db) {
  */
 export async function seedFiltersToDrizzle(db) {
   const { filters, filterTexts } = await import('@unchainedshop/core-filters');
-  const { sql } = await import('drizzle-orm');
 
   // Delete all existing filters and filter_texts directly
   await db.delete(filters);
   await db.delete(filterTexts);
-
-  // Clear FTS table
-  await db.run(sql`DELETE FROM filters_fts`);
 
   // Insert the filter
   await db.insert(filters).values({
@@ -81,11 +77,6 @@ export async function seedFiltersToDrizzle(db) {
     created: MultiChoiceFilter.created,
     updated: MultiChoiceFilter.updated,
   });
-
-  // Manually insert into FTS table
-  await db.run(
-    sql`INSERT INTO filters_fts(_id, key, options) VALUES (${MultiChoiceFilter._id}, ${MultiChoiceFilter.key}, ${JSON.stringify(MultiChoiceFilter.options)})`,
-  );
 
   // Insert filter texts
   await db.insert(filterTexts).values({

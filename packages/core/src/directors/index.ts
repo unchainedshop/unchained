@@ -26,6 +26,9 @@ export * from './EnrollmentDirector.ts';
 export * from './FilterAdapter.ts';
 export * from './FilterDirector.ts';
 
+export * from './SearchAdapter.ts';
+export * from './SearchDirector.ts';
+
 export * from './ProductDiscountAdapter.ts';
 export * from './ProductDiscountDirector.ts';
 export * from './ProductDiscountConfiguration.ts';

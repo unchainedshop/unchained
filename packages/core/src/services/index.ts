@@ -19,7 +19,38 @@ import { supportedPaymentProvidersService } from './supportedPaymentProviders.ts
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.ts';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.ts';
 import { searchAssortmentsService } from './searchAssortments.ts';
+import {
+  searchAssortmentsSimpleService,
+  searchAssortmentsSimpleCountService,
+} from './searchAssortmentsSimple.ts';
 import { searchProductsService } from './searchProducts.ts';
+import {
+  searchProductsSimpleService,
+  searchProductsSimpleCountService,
+} from './searchProductsSimple.ts';
+import { searchUsersService, searchUsersCountService } from './searchUsers.ts';
+import { searchOrdersService } from './searchOrders.ts';
+import { searchQuotationsService } from './searchQuotations.ts';
+import { searchEnrollmentsService } from './searchEnrollments.ts';
+import { searchCountriesService, searchCountriesCountService } from './searchCountries.ts';
+import { searchCurrenciesService, searchCurrenciesCountService } from './searchCurrencies.ts';
+import { searchLanguagesService, searchLanguagesCountService } from './searchLanguages.ts';
+import { searchEventsService, searchEventsCountService } from './searchEvents.ts';
+import { searchFiltersService, searchFiltersCountService } from './searchFilters.ts';
+import { searchTokensService, searchTokensCountService } from './searchTokens.ts';
+import { searchWorkService, searchWorkCountService } from './searchWork.ts';
+import {
+  searchDeliveryProvidersService,
+  searchDeliveryProvidersCountService,
+} from './searchDeliveryProviders.ts';
+import {
+  searchPaymentProvidersService,
+  searchPaymentProvidersCountService,
+} from './searchPaymentProviders.ts';
+import {
+  searchWarehousingProvidersService,
+  searchWarehousingProvidersCountService,
+} from './searchWarehousingProviders.ts';
 import { calculateDiscountTotalService } from './calculateDiscountTotal.ts';
 import { registerPaymentCredentialsService } from './registerPaymentCredentials.ts';
 import { processOrderService } from './processOrder.ts';
@@ -131,6 +162,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       addMultipleCartProducts: addMultipleCartProductsService as Bound<
         typeof addMultipleCartProductsService
       >,
+      searchOrders: searchOrdersService as Bound<typeof searchOrdersService>,
     },
     products: {
       simulateProductPricing: simulateProductPricingService as Bound<
@@ -154,6 +186,8 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof updateUserAvatarAfterUploadService
       >,
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
+      searchUsers: searchUsersService as Bound<typeof searchUsersService>,
+      searchUsersCount: searchUsersCountService as Bound<typeof searchUsersCountService>,
     },
     enrollments: {
       createEnrollmentFromCheckout: createEnrollmentFromCheckoutService as Bound<
@@ -166,6 +200,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       initializeEnrollment: initializeEnrollmentService as Bound<typeof initializeEnrollmentService>,
       activateEnrollment: activateEnrollmentService as Bound<typeof activateEnrollmentService>,
       terminateEnrollment: terminateEnrollmentService as Bound<typeof terminateEnrollmentService>,
+      searchEnrollments: searchEnrollmentsService as Bound<typeof searchEnrollmentsService>,
     },
     quotations: {
       fulfillQuotation: fulfillQuotationService as Bound<typeof fulfillQuotationService>,
@@ -173,32 +208,85 @@ export default function initServices(modules: Modules, customServices: CustomSer
       proposeQuotation: proposeQuotationService as Bound<typeof proposeQuotationService>,
       rejectQuotation: rejectQuotationService as Bound<typeof rejectQuotationService>,
       verifyQuotation: verifyQuotationService as Bound<typeof verifyQuotationService>,
+      searchQuotations: searchQuotationsService as Bound<typeof searchQuotationsService>,
     },
     filters: {
       searchAssortments: searchAssortmentsService as Bound<typeof searchAssortmentsService>,
       searchProducts: searchProductsService as Bound<typeof searchProductsService>,
+      searchFilters: searchFiltersService as Bound<typeof searchFiltersService>,
+      searchFiltersCount: searchFiltersCountService as Bound<typeof searchFiltersCountService>,
       invalidateFilterCache: invalidateFilterCacheService as Bound<typeof invalidateFilterCacheService>,
       loadFilters: loadFiltersService as Bound<typeof loadFiltersService>,
       loadFilterOptions: loadFilterOptionsService as Bound<typeof loadFilterOptionsService>,
       removeFilter: removeFilterService as Bound<typeof removeFilterService>,
     },
+    assortments: {
+      searchAssortments: searchAssortmentsSimpleService as Bound<typeof searchAssortmentsSimpleService>,
+      searchAssortmentsCount: searchAssortmentsSimpleCountService as Bound<
+        typeof searchAssortmentsSimpleCountService
+      >,
+    },
+    productsSimple: {
+      searchProducts: searchProductsSimpleService as Bound<typeof searchProductsSimpleService>,
+      searchProductsCount: searchProductsSimpleCountService as Bound<
+        typeof searchProductsSimpleCountService
+      >,
+    },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
       resolveTokenStatus: resolveTokenStatusService as Bound<typeof resolveTokenStatusService>,
       isTokenInvalidateable: isTokenInvalidateableService as Bound<typeof isTokenInvalidateableService>,
+      searchTokens: searchTokensService as Bound<typeof searchTokensService>,
+      searchTokensCount: searchTokensCountService as Bound<typeof searchTokensCountService>,
+      searchWarehousingProviders: searchWarehousingProvidersService as Bound<
+        typeof searchWarehousingProvidersService
+      >,
+      searchWarehousingProvidersCount: searchWarehousingProvidersCountService as Bound<
+        typeof searchWarehousingProvidersCountService
+      >,
     },
     worker: {
       addMessage: addMessageService as Bound<typeof addMessageService>,
+      searchWork: searchWorkService as Bound<typeof searchWorkService>,
+      searchWorkCount: searchWorkCountService as Bound<typeof searchWorkCountService>,
     },
     delivery: {
       simulateDeliveryPricing: simulateDeliveryPricingService as Bound<
         typeof simulateDeliveryPricingService
+      >,
+      searchDeliveryProviders: searchDeliveryProvidersService as Bound<
+        typeof searchDeliveryProvidersService
+      >,
+      searchDeliveryProvidersCount: searchDeliveryProvidersCountService as Bound<
+        typeof searchDeliveryProvidersCountService
       >,
     },
     payment: {
       simulatePaymentPricing: simulatePaymentPricingService as Bound<
         typeof simulatePaymentPricingService
       >,
+      searchPaymentProviders: searchPaymentProvidersService as Bound<
+        typeof searchPaymentProvidersService
+      >,
+      searchPaymentProvidersCount: searchPaymentProvidersCountService as Bound<
+        typeof searchPaymentProvidersCountService
+      >,
+    },
+    countries: {
+      searchCountries: searchCountriesService as Bound<typeof searchCountriesService>,
+      searchCountriesCount: searchCountriesCountService as Bound<typeof searchCountriesCountService>,
+    },
+    currencies: {
+      searchCurrencies: searchCurrenciesService as Bound<typeof searchCurrenciesService>,
+      searchCurrenciesCount: searchCurrenciesCountService as Bound<typeof searchCurrenciesCountService>,
+    },
+    languages: {
+      searchLanguages: searchLanguagesService as Bound<typeof searchLanguagesService>,
+      searchLanguagesCount: searchLanguagesCountService as Bound<typeof searchLanguagesCountService>,
+    },
+    events: {
+      searchEvents: searchEventsService as Bound<typeof searchEventsService>,
+      searchEventsCount: searchEventsCountService as Bound<typeof searchEventsCountService>,
     },
   };
 

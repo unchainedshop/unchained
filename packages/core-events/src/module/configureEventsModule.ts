@@ -19,7 +19,6 @@ import {
   type DrizzleDb,
 } from '@unchainedshop/store';
 import { events, type EventRow } from '../db/schema.ts';
-import { searchEventsFTS } from '../db/fts.ts';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -43,8 +42,9 @@ export interface EventReport {
 
 export interface EventQuery {
   types?: string[];
-  queryString?: string;
   created?: { end?: Date; start?: Date };
+  eventIds?: string[];
+  searchEventIds?: string[];
 }
 
 const rowToEvent = (row: EventRow): Event => ({
@@ -72,12 +72,6 @@ export const configureEventsModule = async ({ db }: { db: DrizzleDb }) => {
       conditions.push(inArray(events.type, query.types));
     }
 
-    if (query.queryString) {
-      const matchingIds = await searchEventsFTS(db, query.queryString);
-      // Drizzle handles empty arrays natively - inArray with [] returns false
-      conditions.push(inArray(events._id, matchingIds));
-    }
-
     if (query.created) {
       if (query.created.start) {
         conditions.push(gte(events.created, query.created.start));
@@ -85,6 +79,14 @@ export const configureEventsModule = async ({ db }: { db: DrizzleDb }) => {
       if (query.created.end) {
         conditions.push(lte(events.created, query.created.end));
       }
+    }
+
+    if (query.eventIds?.length) {
+      conditions.push(inArray(events._id, query.eventIds));
+    }
+
+    if (query.searchEventIds?.length) {
+      conditions.push(inArray(events._id, query.searchEventIds));
     }
 
     return conditions;

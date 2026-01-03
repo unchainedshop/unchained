@@ -7,36 +7,16 @@ export default async function searchProducts(
   query: {
     assortmentId?: string;
     filterQuery?: SearchFilterQuery;
-    ignoreChildAssortments: boolean;
-    includeInactive: boolean;
+    ignoreChildAssortments?: boolean;
+    includeInactive?: boolean;
     queryString?: string;
     orderBy?: string;
   },
   context: Context,
 ) {
-  const { modules, loaders, services, userId, locale } = context;
-  const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
-    query;
+  const { services, userId, locale } = context;
 
-  log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
+  log(`query search ${query.assortmentId} ${JSON.stringify(query)}`, { userId });
 
-  if (assortmentId) {
-    const assortment = await loaders.assortmentLoader.load({ assortmentId });
-    const productIds = await modules.assortments.findProductIds({
-      assortment,
-      ignoreChildAssortments,
-    });
-    const filterIds = await modules.assortments.filters.findFilterIds({
-      assortmentId,
-    });
-    return services.filters.searchProducts(
-      { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
-      { locale: locale, userId },
-    );
-  }
-
-  return services.filters.searchProducts(
-    { queryString, includeInactive, filterQuery, ...rest },
-    { locale: locale, userId },
-  );
+  return services.filters.searchProducts(query, { locale, userId });
 }

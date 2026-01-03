@@ -1,5 +1,6 @@
 import { sql } from '@unchainedshop/store';
 import { signAccessToken } from '@unchainedshop/api/lib/auth.js';
+import { upsertFTSEntity, clearFTSTable } from '@unchainedshop/plugins/search/fts5-search.js';
 import { initializeTestPlatform, shutdownTestPlatform } from './setup.js';
 import {
   seedCountriesToDrizzle,
@@ -101,6 +102,212 @@ const ALL_TABLES = [
 // Test context - initialized once per process
 let testContext = null;
 
+// FTS entity types to seed
+const FTS_ENTITY_TYPES = [
+  'users',
+  'products',
+  'product_texts',
+  'product_reviews',
+  'countries',
+  'languages',
+  'currencies',
+  'orders',
+  'quotations',
+  'enrollments',
+  'filters',
+  'filter_texts',
+  'assortments',
+  'assortment_texts',
+  'events',
+  'work_queue',
+  'token_surrogates',
+];
+
+async function seedFTSData(drizzleDb) {
+  // Clear all FTS tables
+  for (const entityType of FTS_ENTITY_TYPES) {
+    await clearFTSTable(entityType);
+  }
+
+  // Seed users FTS
+  const users = await drizzleDb.all(sql`SELECT _id, username FROM users`);
+  for (const user of users) {
+    await upsertFTSEntity('users', user._id, { _id: user._id, username: user.username || '' });
+  }
+
+  // Seed countries FTS
+  const countries = await drizzleDb.all(sql`SELECT _id, isoCode, defaultCurrencyCode FROM countries`);
+  for (const country of countries) {
+    await upsertFTSEntity('countries', country._id, {
+      _id: country._id,
+      isoCode: country.isoCode || '',
+      defaultCurrencyCode: country.defaultCurrencyCode || '',
+    });
+  }
+
+  // Seed languages FTS
+  const languages = await drizzleDb.all(sql`SELECT _id, isoCode FROM languages`);
+  for (const language of languages) {
+    await upsertFTSEntity('languages', language._id, {
+      _id: language._id,
+      isoCode: language.isoCode || '',
+    });
+  }
+
+  // Seed currencies FTS
+  const currencies = await drizzleDb.all(sql`SELECT _id, isoCode, contractAddress FROM currencies`);
+  for (const currency of currencies) {
+    await upsertFTSEntity('currencies', currency._id, {
+      _id: currency._id,
+      isoCode: currency.isoCode || '',
+      contractAddress: currency.contractAddress || '',
+    });
+  }
+
+  // Seed products FTS
+  const products = await drizzleDb.all(sql`SELECT _id, slugs, warehousing FROM products`);
+  for (const product of products) {
+    const slugs = product.slugs ? JSON.parse(product.slugs) : [];
+    const warehousing = product.warehousing ? JSON.parse(product.warehousing) : {};
+    await upsertFTSEntity('products', product._id, {
+      _id: product._id,
+      sku: warehousing.sku || '',
+      slugs_text: slugs.join(' '),
+    });
+  }
+
+  // Seed product_texts FTS
+  const productTexts = await drizzleDb.all(
+    sql`SELECT _id, productId, title, subtitle, brand, vendor, description, labels, slug FROM product_texts`,
+  );
+  for (const text of productTexts) {
+    const labels = text.labels ? JSON.parse(text.labels) : [];
+    await upsertFTSEntity('product_texts', text.productId, {
+      _id: text._id,
+      productId: text.productId,
+      title: text.title || '',
+      subtitle: text.subtitle || '',
+      brand: text.brand || '',
+      vendor: text.vendor || '',
+      description: text.description || '',
+      labels: labels.join(' '),
+      slug: text.slug || '',
+    });
+  }
+
+  // Seed assortments FTS
+  const assortments = await drizzleDb.all(sql`SELECT _id, slugs FROM assortments`);
+  for (const assortment of assortments) {
+    const slugs = assortment.slugs ? JSON.parse(assortment.slugs) : [];
+    await upsertFTSEntity('assortments', assortment._id, {
+      _id: assortment._id,
+      slugs_text: slugs.join(' '),
+    });
+  }
+
+  // Seed assortment_texts FTS
+  const assortmentTexts = await drizzleDb.all(
+    sql`SELECT _id, assortmentId, title, subtitle FROM assortment_texts`,
+  );
+  for (const text of assortmentTexts) {
+    await upsertFTSEntity('assortment_texts', text.assortmentId, {
+      _id: text._id,
+      assortmentId: text.assortmentId,
+      title: text.title || '',
+      subtitle: text.subtitle || '',
+    });
+  }
+
+  // Seed orders FTS
+  const orders = await drizzleDb.all(sql`SELECT _id, userId, orderNumber, status, contact FROM orders`);
+  for (const order of orders) {
+    const contact = order.contact ? JSON.parse(order.contact) : {};
+    await upsertFTSEntity('orders', order._id, {
+      _id: order._id,
+      userId: order.userId || '',
+      orderNumber: order.orderNumber || '',
+      status: order.status || '',
+      emailAddress: contact.emailAddress || '',
+      telNumber: contact.telNumber || '',
+    });
+  }
+
+  // Seed quotations FTS
+  const quotations = await drizzleDb.all(
+    sql`SELECT _id, userId, quotationNumber, status FROM quotations`,
+  );
+  for (const quotation of quotations) {
+    await upsertFTSEntity('quotations', quotation._id, {
+      _id: quotation._id,
+      userId: quotation.userId || '',
+      quotationNumber: quotation.quotationNumber || '',
+      status: quotation.status || '',
+    });
+  }
+
+  // Seed enrollments FTS
+  const enrollments = await drizzleDb.all(
+    sql`SELECT _id, userId, enrollmentNumber, status FROM enrollments`,
+  );
+  for (const enrollment of enrollments) {
+    await upsertFTSEntity('enrollments', enrollment._id, {
+      _id: enrollment._id,
+      userId: enrollment.userId || '',
+      enrollmentNumber: enrollment.enrollmentNumber || '',
+      status: enrollment.status || '',
+    });
+  }
+
+  // Seed filters FTS
+  const filters = await drizzleDb.all(sql`SELECT _id, key, options FROM filters`);
+  for (const filter of filters) {
+    const options = filter.options ? JSON.parse(filter.options) : [];
+    await upsertFTSEntity('filters', filter._id, {
+      _id: filter._id,
+      key: filter.key || '',
+      options: options.join(' '),
+    });
+  }
+
+  // Seed events FTS
+  const events = await drizzleDb.all(sql`SELECT _id, type FROM events`);
+  for (const event of events) {
+    await upsertFTSEntity('events', event._id, {
+      _id: event._id,
+      type: event.type || '',
+    });
+  }
+
+  // Seed work_queue FTS
+  const workQueue = await drizzleDb.all(
+    sql`SELECT _id, originalWorkId, type, worker, input FROM work_queue`,
+  );
+  for (const work of workQueue) {
+    await upsertFTSEntity('work_queue', work._id, {
+      _id: work._id,
+      originalWorkId: work.originalWorkId || '',
+      type: work.type || '',
+      worker: work.worker || '',
+      input: typeof work.input === 'string' ? work.input : JSON.stringify(work.input || {}),
+    });
+  }
+
+  // Seed token_surrogates FTS
+  const tokenSurrogates = await drizzleDb.all(
+    sql`SELECT _id, tokenSerialNumber, userId, productId, contractAddress, walletAddress FROM token_surrogates`,
+  );
+  for (const token of tokenSurrogates) {
+    await upsertFTSEntity('token_surrogates', token._id, {
+      _id: token._id,
+      tokenSerialNumber: token.tokenSerialNumber || '',
+      userId: token.userId || '',
+      productId: token.productId || '',
+      contractAddress: token.contractAddress || '',
+      walletAddress: token.walletAddress || '',
+    });
+  }
+}
+
 async function seedDatabaseTables(drizzleDb) {
   // Clear all tables
   for (const table of ALL_TABLES) {
@@ -130,6 +337,9 @@ async function seedDatabaseTables(drizzleDb) {
   await seedWorkQueueToDrizzle(drizzleDb);
   await seedOrdersToDrizzle(drizzleDb);
   await seedEventsToDrizzle(drizzleDb);
+
+  // Seed FTS data after all entities are seeded
+  await seedFTSData(drizzleDb);
 }
 
 /**
@@ -188,4 +398,15 @@ export const disconnect = async () => {
     await shutdownTestPlatform();
     testContext = null;
   }
+};
+
+/**
+ * Refresh FTS index after test-specific data has been seeded.
+ * Call this after inserting additional entities in test.before hooks.
+ */
+export const refreshFTSIndex = async () => {
+  if (!testContext) {
+    throw new Error('Test context not initialized. Call setupDatabase first.');
+  }
+  await seedFTSData(testContext.db);
 };

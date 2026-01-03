@@ -1,6 +1,5 @@
 import { SimpleDeliveryProvider } from './deliveries.js';
 import { GenericPaymentProvider, SimplePaymentProvider } from './payments.js';
-import { sql } from '@unchainedshop/store';
 import {
   orders,
   orderPayments,
@@ -585,14 +584,4 @@ export async function seedOrdersToDrizzle(db) {
 
   // Insert discounts
   await db.insert(orderDiscounts).values(allDiscounts);
-
-  // Seed FTS for orders
-  for (const order of allOrders) {
-    const emailAddress = order.contact?.emailAddress || '';
-    const telNumber = order.contact?.telNumber || '';
-    await db.run(
-      sql`INSERT OR REPLACE INTO orders_fts(_id, userId, orderNumber, status, emailAddress, telNumber)
-          VALUES (${order._id}, ${order.userId}, ${order.orderNumber || ''}, ${order.status || ''}, ${emailAddress}, ${telNumber})`,
-    );
-  }
 }

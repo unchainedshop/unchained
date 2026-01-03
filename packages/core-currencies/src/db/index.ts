@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupCurrenciesFTS } from './fts.ts';
 
 export { currencies, type CurrencyRow, type NewCurrencyRow } from './schema.ts';
 
@@ -32,7 +31,4 @@ export async function initializeCurrenciesSchema(db: DrizzleDb): Promise<void> {
   await db.run(sql`
     CREATE INDEX IF NOT EXISTS idx_currencies_contractAddress ON currencies(contractAddress)
   `);
-
-  // Setup FTS5 full-text search
-  await setupCurrenciesFTS(db);
 }

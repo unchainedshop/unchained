@@ -4,15 +4,16 @@ import type { AssortmentQuery } from '@unchainedshop/core-assortments';
 
 export default async function assortmentsCount(
   root: never,
-  params: AssortmentQuery,
-  { modules, userId }: Context,
+  params: AssortmentQuery & { queryString?: string },
+  { services, userId }: Context,
 ) {
+  const { queryString, ...query } = params;
   log(
     `query assortmentsCount: ${params.includeInactive ? 'includeInactive' : ''} ${params.slugs?.join(
       ',',
-    )}  queryString: ${params.queryString}`,
+    )}  queryString: ${queryString}`,
     { userId },
   );
 
-  return modules.assortments.count(params);
+  return services.assortments.searchAssortmentsCount(queryString, query);
 }

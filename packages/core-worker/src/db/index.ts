@@ -1,5 +1,4 @@
 import { sql, type DrizzleDb } from '@unchainedshop/store';
-import { setupWorkQueueFTS } from './fts.ts';
 
 export { workQueue, WorkStatus, type Work, type NewWork } from './schema.ts';
 
@@ -40,7 +39,4 @@ export async function initializeWorkQueueSchema(db: DrizzleDb): Promise<void> {
     sql`CREATE INDEX IF NOT EXISTS idx_work_queue_originalWorkId ON work_queue(originalWorkId)`,
   );
   await db.run(sql`CREATE INDEX IF NOT EXISTS idx_work_queue_deleted ON work_queue(deleted)`);
-
-  // Setup FTS
-  await setupWorkQueueFTS(db);
 }
