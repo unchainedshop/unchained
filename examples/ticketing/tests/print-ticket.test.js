@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { disconnect, setupDatabase } from './helpers.js';
+import { Orders } from './seeds/orders.js';
 
 test.describe('printTicketsHandler', async () => {
   test.before(async () => {
@@ -12,7 +13,7 @@ test.describe('printTicketsHandler', async () => {
   });
   test('Return PDF stream when valid parameters are provided', async () => {
     const result = await fetch(
-      `http://localhost:4010/rest/print_tickets/?orderId=SimpleOrder._id&otp=4444`,
+      `http://localhost:4010/rest/print_tickets/?orderId=${Orders[0]._id}&otp=4444`,
       {
         headers: {
           'x-magic-key': '84c6c63f1bfc5390740bb16e2ee6f8c66d322a148736aad31b6923fa69c766ed',
@@ -26,7 +27,7 @@ test.describe('printTicketsHandler', async () => {
   });
 
   test('Return PDF_GENERATION_ERROR Error when missing otp parameter', async () => {
-    const result = await fetch(`http://localhost:4010/rest/print_tickets/?orderId=SimpleOrder._id`, {
+    const result = await fetch(`http://localhost:4010/rest/print_tickets/?orderId=${Orders[0]._id}`, {
       headers: {
         'x-magic-key': '84c6c63f1bfc5390740bb16e2ee6f8c66d322a148736aad31b6923fa69c766ed',
       },
