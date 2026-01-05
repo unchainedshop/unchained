@@ -1,53 +1,60 @@
-interface LocalizedString {
+// Google Wallet Types
+export interface LocalizedString {
   defaultValue: { language: string; value: string };
   translatedValues?: { language: string; value: string }[];
 }
 
-interface Image {
+export interface Image {
   sourceUri: { uri: string };
   contentDescription?: LocalizedString;
 }
 
-interface EventVenue {
+export interface EventVenue {
   name?: string;
   address?: string;
 }
-interface EventDateTime {
+
+export interface EventDateTime {
   startDate?: string;
   endDate?: string;
   doorsOpenLabel?: string;
 }
-interface Message {
+
+export interface Message {
   header?: LocalizedString;
   body?: LocalizedString;
 }
-interface Uri {
+
+export interface Uri {
   uri: string;
   description?: string;
 }
-interface LatLongPoint {
+
+export interface LatLongPoint {
   latitude: number;
   longitude: number;
 }
-interface ImageModuleData {
+
+export interface ImageModuleData {
   mainImage: Image;
   id?: string;
 }
-interface TextModuleData {
+
+export interface TextModuleData {
   header?: string;
   body?: string;
   id?: string;
 }
 
-type ConfirmationCodeLabel = 'CONFIRMATION_CODE' | 'CUSTOM';
-type SeatLabel = 'SEAT' | 'CUSTOM';
-type RowLabel = 'ROW' | 'CUSTOM';
-type SectionLabel = 'SECTION' | 'CUSTOM';
-type GateLabel = 'GATE' | 'CUSTOM';
-type ReviewStatus = 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
-type MultipleDevicesAndHoldersAllowedStatus = 'ALLOWED' | 'DISALLOWED';
-type ViewUnlockRequirement = 'NONE' | 'PASSWORD';
-type NotificationSettingsForUpdates = 'ENABLED' | 'DISABLED';
+export type ConfirmationCodeLabel = 'CONFIRMATION_CODE' | 'CUSTOM';
+export type SeatLabel = 'SEAT' | 'CUSTOM';
+export type RowLabel = 'ROW' | 'CUSTOM';
+export type SectionLabel = 'SECTION' | 'CUSTOM';
+export type GateLabel = 'GATE' | 'CUSTOM';
+export type ReviewStatus = 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+export type MultipleDevicesAndHoldersAllowedStatus = 'ALLOWED' | 'DISALLOWED';
+export type ViewUnlockRequirement = 'NONE' | 'PASSWORD';
+export type NotificationSettingsForUpdates = 'ENABLED' | 'DISABLED';
 
 export interface EventTicketClass {
   kind?: string;
@@ -67,7 +74,7 @@ export interface EventTicketClass {
   gateLabel?: GateLabel;
   customGateLabel?: LocalizedString;
   finePrint?: LocalizedString;
-  classTemplateInfo?: any;
+  classTemplateInfo?: Record<string, unknown>;
   id?: string;
   version?: string;
   issuerName?: string;
@@ -76,11 +83,11 @@ export interface EventTicketClass {
   homepageUri?: Uri;
   locations?: LatLongPoint[];
   reviewStatus?: ReviewStatus;
-  review?: any;
-  infoModuleData?: any;
+  review?: Record<string, unknown>;
+  infoModuleData?: Record<string, unknown>;
   imageModulesData?: ImageModuleData[];
   textModulesData?: TextModuleData[];
-  linksModuleData?: any;
+  linksModuleData?: Record<string, unknown>;
   redemptionIssuers?: string[];
   countryCode?: string;
   heroImage?: Image;
@@ -89,14 +96,14 @@ export interface EventTicketClass {
   hexBackgroundColor?: string;
   localizedIssuerName?: LocalizedString;
   multipleDevicesAndHoldersAllowedStatus?: MultipleDevicesAndHoldersAllowedStatus;
-  callbackOptions?: any;
-  securityAnimation?: any;
+  callbackOptions?: Record<string, unknown>;
+  securityAnimation?: Record<string, unknown>;
   viewUnlockRequirement?: ViewUnlockRequirement;
   wideLogo?: Image;
   notifyPreference?: NotificationSettingsForUpdates;
-  appLinkData?: any;
-  valueAddedModuleData?: any[];
-  merchantLocations?: any[];
+  appLinkData?: Record<string, unknown>;
+  valueAddedModuleData?: Record<string, unknown>[];
+  merchantLocations?: Record<string, unknown>[];
   barcode?: { type: string; value: string };
 }
 
@@ -110,10 +117,10 @@ export interface GoogleWalletPassConfigOptions {
   allowMultipleUsersPerObject?: boolean;
   homepageUri?: Uri;
   locations?: LatLongPoint[];
-  infoModuleData?: any;
+  infoModuleData?: Record<string, unknown>;
   imageModulesData?: ImageModuleData[];
   textModulesData?: TextModuleData[];
-  linksModuleData?: any;
+  linksModuleData?: Record<string, unknown>;
   countryCode?: string;
   heroImage?: Image;
   enableSmartTap?: boolean;
@@ -123,20 +130,98 @@ export interface GoogleWalletPassConfigOptions {
   viewUnlockRequirement?: ViewUnlockRequirement;
   wideLogo?: Image;
   notifyPreference?: NotificationSettingsForUpdates;
-  appLinkData?: any;
-  valueAddedModuleData?: any[];
-  merchantLocations?: any[];
+  appLinkData?: Record<string, unknown>;
+  valueAddedModuleData?: Record<string, unknown>[];
+  merchantLocations?: Record<string, unknown>[];
 }
 
-export interface PassConfig {
-  serialNumber?: string | null;
-  barcodes: any[];
+// Apple Wallet Types
+export interface AppleWalletTemplateConfig {
+  description: string;
+  organizationName: string;
+  passTypeIdentifier: string;
+  teamIdentifier: string;
+  backgroundColor?: string;
+  labelColor?: string;
+  foregroundColor?: string;
+  sharingProhibited?: boolean;
+  maxDistance?: number;
+  semantics?: {
+    eventType?: string;
+    silenceRequested?: boolean;
+  };
+}
+
+export interface AppleWalletBarcode {
+  format:
+    | 'PKBarcodeFormatQR'
+    | 'PKBarcodeFormatPDF417'
+    | 'PKBarcodeFormatAztec'
+    | 'PKBarcodeFormatCode128';
+  message: string;
+  messageEncoding: string;
+  altText?: string;
+}
+
+export interface AppleWalletPassField {
+  key: string;
+  label: string;
+  value: string | number | Date;
+  dateStyle?: string;
+  timeStyle?: string;
+  changeMessage?: string;
+}
+
+export interface AppleWalletPassConfig {
+  serialNumber: string;
+  logoText?: string;
   voided: boolean;
-  headerFields: any[];
-  primaryFields: any[];
-  secondaryFields: any[];
-  backFields: any[];
-  authenticationToken?: string | null;
-  webServiceURL?: string | null;
-  logoText?: string | null;
+  authenticationToken: string;
+  webServiceURL: string;
+  barcodes: AppleWalletBarcode[];
+  headerFields: AppleWalletPassField[];
+  primaryFields: AppleWalletPassField[];
+  secondaryFields: AppleWalletPassField[];
+  backFields: AppleWalletPassField[];
+}
+
+export interface PassFieldLabels {
+  eventLabel: string;
+  locationLabel: string;
+  ticketNumberLabel: string;
+  infoLabel: string;
+  slotChangeMessage: string;
+  barcodeHint: string;
+}
+
+// PDF Renderer Types
+export interface BillingAddress {
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  addressLine?: string;
+  city?: string;
+  regionCode?: string;
+  postalCode?: string;
+  countryCode?: string;
+}
+
+export interface TicketItem {
+  contractStandard?: string;
+  contractAddress?: string;
+  productId?: string;
+  quantity?: number;
+  qrCode?: string;
+  label?: string;
+}
+
+export interface TicketReceiptData {
+  title?: string;
+  logoUrl?: string;
+  orderNumber?: string;
+  status?: string;
+  date?: Date;
+  billingAddress?: BillingAddress;
+  confirmed?: Date;
+  tickets: TicketItem[];
 }

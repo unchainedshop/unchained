@@ -1,8 +1,11 @@
 import React from 'react';
 import type { TicketingAPI } from '../types.js';
+import type * as PDFRendererTypes from '@react-pdf/renderer';
+import type * as QRCodeTypes from 'qrcode';
+import type { BillingAddress, TicketItem, TicketReceiptData } from './types.js';
 
-let PDFRenderer: any = null;
-let QRCode: any = null;
+let PDFRenderer: typeof PDFRendererTypes | null = null;
+let QRCode: typeof QRCodeTypes | null = null;
 
 try {
   PDFRenderer = await import('@react-pdf/renderer');
@@ -16,42 +19,12 @@ try {
   QRCode = null;
 }
 
-interface BillingAddress {
-  firstName?: string;
-  lastName?: string;
-  company?: string;
-  addressLine?: string;
-  city?: string;
-  regionCode?: string;
-  postalCode?: string;
-  countryCode?: string;
-}
-interface TicketItem {
-  contractStandard?: string;
-  contractAddress?: string;
-  productId?: string;
-  quantity?: number;
-  qrCode?: string;
-  label?: string;
-}
-
-export interface TicketCustomization {
-  title?: string;
-  logoUrl?: string;
-  orderNumber?: string;
-  status?: any;
-  date?: Date;
-  billingAddress?: BillingAddress;
-  confirmed?: any;
-  tickets: TicketItem[];
-}
-
 export type TicketCustomizationRenderer = (
-  order: string,
+  orderId: string,
   context: TicketingAPI,
-) => Promise<TicketCustomization>;
+) => Promise<TicketReceiptData>;
 
-const defaultRenderer = async (orderId: string, context: TicketingAPI): Promise<TicketCustomization> => {
+const defaultRenderer = async (orderId: string, context: TicketingAPI): Promise<TicketReceiptData> => {
   const { modules } = context;
 
   const [order, positions] = await Promise.all([
@@ -65,7 +38,7 @@ const defaultRenderer = async (orderId: string, context: TicketingAPI): Promise<
     orderPositionId: { $in: positions.map((p) => p._id) },
   });
 
-  const tickets = await Promise.all(
+  const tickets: TicketItem[] = await Promise.all(
     tokens.map(async (token) => {
       const hash = await modules.warehousing.buildAccessKeyForToken(token._id as string);
       const qrCode = QRCode
@@ -76,7 +49,9 @@ const defaultRenderer = async (orderId: string, context: TicketingAPI): Promise<
 
       return {
         contractAddress: token.contractAddress,
-        contractStandard: token.meta?.contractStandard,
+        contractStandard: (token.meta as Record<string, unknown>)?.contractStandard as
+          | string
+          | undefined,
         productId: token.productId,
         quantity: token.quantity,
         qrCode,
@@ -86,12 +61,20 @@ const defaultRenderer = async (orderId: string, context: TicketingAPI): Promise<
   );
 
   return {
-    ...order,
+    orderNumber: order.orderNumber,
+    status: order.status || undefined,
+    confirmed: order.confirmed || undefined,
+    billingAddress: order.billingAddress as BillingAddress,
     tickets,
   };
 };
 
-const TicketDocument = ({ data, styles }: { data: TicketCustomization; styles: any }) => {
+interface TicketDocumentProps {
+  data: TicketReceiptData;
+  styles: ReturnType<typeof PDFRendererTypes.StyleSheet.create>;
+}
+
+const TicketDocument = ({ data, styles }: TicketDocumentProps) => {
   if (!PDFRenderer) return null;
   const { Document, Page, Text, View, Image } = PDFRenderer;
 
@@ -140,7 +123,7 @@ const TicketDocument = ({ data, styles }: { data: TicketCustomization; styles: a
           </Text>
           {data.tickets.map((t, idx) => (
             <View key={idx} style={styles.tokenContainer} wrap={false}>
-              <View style={styles.details}>
+              <View>
                 <Text style={{ fontWeight: 'bold' }}>
                   {t.label} {t.productId}
                 </Text>
@@ -159,18 +142,6 @@ const TicketDocument = ({ data, styles }: { data: TicketCustomization; styles: a
             </View>
           ))}
         </View>
-
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 30,
-            left: 20,
-            right: 20,
-            borderTop: 1,
-            borderColor: '#eee',
-            paddingTop: 10,
-          }}
-        ></View>
       </Page>
     </Document>
   );
@@ -196,8 +167,8 @@ export const createPDFTicketRenderer =
       separator: { borderBottomWidth: 1, borderBottomColor: '#ccc', marginVertical: 5 },
       qrContainer: { position: 'absolute', right: 0, top: 0 },
       logo: { width: 120, marginBottom: 12 },
-      strip: { marginTop: 6, fontSize: 10, color: '#666' },
     });
+
     return {
       contentType: 'application/pdf',
       renderer: await PDFRenderer.renderToStream(<TicketDocument data={data} styles={styles} />),
