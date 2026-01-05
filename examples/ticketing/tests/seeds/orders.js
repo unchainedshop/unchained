@@ -154,7 +154,7 @@ export const SimplePosition = {
 
 export default async function seedOrders(db) {
   return chainedUpsert(db)
-    .upsert('orders', Orders)
+    .upsert('orders', Orders[0])
     .upsert('order_payments', SimplePayment)
     .upsert('order_deliveries', SimpleOrderDelivery)
     .upsert('order_positions', SimplePosition)

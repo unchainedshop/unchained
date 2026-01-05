@@ -13,6 +13,7 @@ import seedPayments from './seeds/payments.js';
 import seedWarehousings from './seeds/warehousings.js';
 import seedOrders from './seeds/orders.js';
 import seedTokens from './seeds/tokens.js';
+
 // eslint-disable-next-line
 // @ts-expect-error
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
@@ -42,7 +43,7 @@ export const setupDatabase = async () => {
 
   const { db } = getTestPlatform();
   const collections = await db.collections();
-  await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
+  await Promise.all(collections.map(async (collection) => collection.deleteMany({})));  
   await seedLocaleData(db);
   await seedProducts(db);
   await seedDeliveries(db);
