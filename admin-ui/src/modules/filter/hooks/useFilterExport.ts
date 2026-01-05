@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
+
 export const FILTER_CSV_SCHEMA = {
   filterFields: ['_id', 'key', 'type', 'isActive'],
   optionFields: ['optionId', 'filterId', 'value'],
@@ -21,13 +22,14 @@ export const buildFilterOptionHeaders = (locales: string[]) => [
 ];
 
 export const useFilterExport = () => {
-  const { exportCSV: exportFilterCSV, isExporting } = useCSVExport((f) => f);
+  const { exportCSV, isExporting } = useCSVExport();
 
-  const exportFilters = useCallback(async (params) => {
-    await exportFilterCSV({ type: 'FILTERS', ...params });
-  }, []);
-  return {
-    exportFilters,
-    isExporting,
-  };
+  const exportFilters = useCallback(
+    async (params: Record<string, unknown>) => {
+      await exportCSV({ type: 'FILTERS', ...params });
+    },
+    [exportCSV],
+  );
+
+  return { exportFilters, isExporting };
 };

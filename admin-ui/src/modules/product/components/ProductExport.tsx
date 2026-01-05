@@ -4,18 +4,31 @@ import { useIntl } from 'react-intl';
 import { useProductExport } from '../hooks/useProductExport';
 import useProductsCount from '../hooks/useProductsCount';
 import useModal from '../../modal/hooks/useModal';
-import ExportOptionsForm from '../../common/components/ExportOptionsForm';
+import ExportOptionsForm, {
+  ExportOption,
+} from '../../common/components/ExportOptionsForm';
 
-const ProductExport = ({ queryString, includeDrafts, tags }) => {
+interface ProductExportProps {
+  queryString?: string;
+  includeDrafts?: boolean;
+  tags?: string[];
+}
+
+const ProductExport = ({
+  queryString,
+  includeDrafts,
+  tags,
+}: ProductExportProps) => {
   const { setModal } = useModal();
   const { productsCount, loading } = useProductsCount({
     queryString,
     includeDrafts,
     tags,
   });
-  const { exportProducts, isLoading } = useProductExport();
+  const { exportProducts, isExporting } = useProductExport();
   const { formatMessage } = useIntl();
-  const PRODUCT_EXPORT_OPTIONS = [
+
+  const EXPORT_OPTIONS: ExportOption[] = [
     {
       key: 'exportProducts',
       label: formatMessage({ id: 'products', defaultMessage: 'Products' }),
@@ -43,30 +56,32 @@ const ProductExport = ({ queryString, includeDrafts, tags }) => {
       }),
     },
   ];
+
   const handleSubmit = useCallback(
-    async (data) => {
+    async (data: Record<string, boolean>) => {
       await exportProducts({ queryString, includeDrafts, tags, ...data });
       setModal(null);
     },
-    [queryString, includeDrafts, tags],
+    [queryString, includeDrafts, tags, exportProducts, setModal],
   );
+
   if (loading) return null;
 
   return (
     <Button
-      onClick={async () => {
+      onClick={() => {
         setModal(
           <ExportOptionsForm
-            options={PRODUCT_EXPORT_OPTIONS}
+            options={EXPORT_OPTIONS}
             onSubmit={handleSubmit}
-            loading={isLoading}
+            loading={isExporting}
           />,
         );
       }}
-      disabled={isLoading || !productsCount}
+      disabled={isExporting || !productsCount}
       variant="secondary"
       text={
-        isLoading
+        isExporting
           ? formatMessage({ id: 'exporting', defaultMessage: 'Exporting...' })
           : formatMessage({ id: 'export', defaultMessage: 'Export' })
       }

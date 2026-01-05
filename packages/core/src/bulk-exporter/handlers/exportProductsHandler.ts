@@ -1,6 +1,7 @@
 import type { UnchainedCore } from '../../core-index.ts';
-import generateCSVFileAndURL from './generateCSVFileAndUrl.js';
-import z from 'zod';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
+import { z } from 'zod';
+import { EXPORTS_DIRECTORY } from '../createBulkExporter.ts';
 
 export const ProductExportPayloadSchema = z.object({
   exportProducts: z.boolean().optional(),
@@ -171,10 +172,8 @@ const exportProductsHandler = async (
       ? await unchainedAPI.modules.products.variations.findProductVariations({ productId })
       : [];
 
-    let normalizedVariations: any[] = [];
+    const normalizedVariations: any[] = [];
     if (exportVariations) {
-      normalizedVariations = [];
-
       for await (const v of variations) {
         const variationTexts = exportVariations
           ? await unchainedAPI.modules.products.variations.texts.findVariationTexts({
@@ -244,7 +243,7 @@ const exportProductsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildProductHeaders(locales),
         rows: productRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'products_export.csv',
         unchainedAPI,
       })
@@ -253,7 +252,7 @@ const exportProductsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildPriceHeaders(),
         rows: priceRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'products_prices_export.csv',
         unchainedAPI,
       })
@@ -262,7 +261,7 @@ const exportProductsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildBundleHeaders(),
         rows: bundleRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'products_bundle_items_export.csv',
         unchainedAPI,
       })
@@ -271,7 +270,7 @@ const exportProductsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildVariationHeaders(locales),
         rows: variationRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'products_variations_export.csv',
         unchainedAPI,
       })
@@ -280,8 +279,8 @@ const exportProductsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildVariationOptionsHeaders(locales),
         rows: variationOptionRows,
-        directoryName: 'exports',
-        fileName: 'products_variation_option_export.csv',
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'products_variation_options_export.csv',
         unchainedAPI,
       })
     : null;

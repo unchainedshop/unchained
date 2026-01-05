@@ -314,7 +314,7 @@ describe('User', () => {
     it('Should [ADD TAGS] successfully', () => {
       cy.get('button#add_tag').click();
       cy.get('input#tags').type('new');
-      cy.contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('input[type="submit"]')
         .contains(localizations.en.save)
         .click({ force: true });

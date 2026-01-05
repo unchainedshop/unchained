@@ -1,6 +1,7 @@
 import type { UnchainedCore } from '../../core-index.ts';
-import generateCSVFileAndURL from './generateCSVFileAndUrl.js';
-import z from 'zod';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
+import { z } from 'zod';
+import { EXPORTS_DIRECTORY } from '../createBulkExporter.ts';
 
 export const FilterExportPayloadSchema = z.object({
   exportFilters: z.boolean().optional(),
@@ -97,7 +98,7 @@ const exportFiltersHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildFilterHeaders(locales),
         rows: filterRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'filters_export.csv',
         unchainedAPI,
       })
@@ -106,8 +107,8 @@ const exportFiltersHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildOptionHeaders(locales),
         rows: optionRows,
-        directoryName: 'exports',
-        fileName: 'filters_options_export.csv',
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'filter_options_export.csv',
         unchainedAPI,
       })
     : null;

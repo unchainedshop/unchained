@@ -47,14 +47,14 @@ export const buildAssortmentChildrenHeaders = () => [
 ];
 
 export const useAssortmentExport = () => {
-  const { exportCSV, isExporting } = useCSVExport((a) => a);
+  const { exportCSV, isExporting } = useCSVExport();
 
-  const exportAssortments = useCallback(async (data) => {
-    await exportCSV({ type: 'ASSORTMENTS', ...data });
-  }, []);
+  const exportAssortments = useCallback(
+    async (data: Record<string, unknown>) => {
+      await exportCSV({ type: 'ASSORTMENTS', ...data });
+    },
+    [exportCSV],
+  );
 
-  return {
-    exportAssortments,
-    isLoading: isExporting,
-  };
+  return { exportAssortments, isExporting };
 };

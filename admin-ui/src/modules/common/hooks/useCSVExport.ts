@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'react-toastify';
+import { useIntl } from 'react-intl';
 import useAddWork from '../../work/hooks/useAddWork';
 import {
   IWorkQuery,
@@ -10,11 +12,18 @@ import { useApolloClient } from '@apollo/client/react';
 import { GetWorkQuery } from '../../work/hooks/useWork';
 import { useRouter } from 'next/router';
 
-export const useCSVExport = (onError?: (error: any) => void) => {
+export interface ExportParams {
+  type: string;
+  pollInterval?: number;
+  [key: string]: unknown;
+}
+
+export const useCSVExport = () => {
   const [isExporting, setIsExporting] = useState(false);
   const client = useApolloClient();
   const router = useRouter();
   const { addWork } = useAddWork();
+  const { formatMessage } = useIntl();
 
   const getWorkStatus = useCallback(
     async (workId: string) => {
@@ -30,7 +39,7 @@ export const useCSVExport = (onError?: (error: any) => void) => {
   );
 
   const exportCSV = useCallback(
-    async ({ type, pollInterval = 2000, ...params }: any) => {
+    async ({ type, pollInterval = 2000, ...params }: ExportParams) => {
       setIsExporting(true);
       try {
         const worker = await addWork({
@@ -40,7 +49,7 @@ export const useCSVExport = (onError?: (error: any) => void) => {
         const workId = worker?.data?.addWork?._id;
         if (!workId) throw new Error('Failed to create export work');
 
-        await new Promise<any>((resolve, reject) => {
+        await new Promise<unknown>((resolve, reject) => {
           const interval = setInterval(async () => {
             try {
               const work = await getWorkStatus(workId);
@@ -53,7 +62,7 @@ export const useCSVExport = (onError?: (error: any) => void) => {
                 clearInterval(interval);
 
                 if (work.status === IWorkStatus.Success && work.success) {
-                  router.push(`/exports?workId=${work?._id}`);
+                  router.push(`/exports?workId=${work._id}`);
                   resolve(work);
                 } else {
                   reject(work.error || new Error('Export failed'));
@@ -67,13 +76,18 @@ export const useCSVExport = (onError?: (error: any) => void) => {
         });
       } catch (error) {
         console.error('Export failed:', error);
-        if (onError) onError(error);
+        toast.error(
+          formatMessage({
+            id: 'export_failed',
+            defaultMessage: 'Export failed. Please try again.',
+          }),
+        );
         return null;
       } finally {
         setIsExporting(false);
       }
     },
-    [addWork, getWorkStatus, onError],
+    [addWork, getWorkStatus, router, formatMessage],
   );
 
   return { isExporting, exportCSV };

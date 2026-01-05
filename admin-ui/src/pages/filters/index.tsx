@@ -121,7 +121,7 @@ const FiltersListView = () => {
           })}
         >
           <FilterExport
-            queryString={queryString}
+            queryString={queryString as string}
             includeInactive={includeInactive}
           />
           <FilterImport />

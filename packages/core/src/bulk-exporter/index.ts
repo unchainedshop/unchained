@@ -1,3 +1,3 @@
-import { default as createExportImporterFactory } from './createBulkExporter.ts';
+import { default as createBulkExporterFactory } from './createBulkExporter.ts';
 export * from './createBulkExporter.ts';
-export default createExportImporterFactory;
+export default createBulkExporterFactory;

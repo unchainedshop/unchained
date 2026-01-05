@@ -2,56 +2,63 @@ import exportProductsHandler from './handlers/exportProductsHandler.ts';
 import exportAssortmentsHandler from './handlers/exportAssortmentsHandler.ts';
 import exportFiltersHandler from './handlers/exportFiltersHandler.ts';
 import { createLogger } from '@unchainedshop/logger';
-import z from 'zod';
+import { z } from 'zod';
+import type { CSVFileResult } from './handlers/generateCSVFileAndUrl.ts';
 
-const logger = createLogger('unchained:bulk-import');
+const logger = createLogger('unchained:bulk-export');
+
+export const EXPORTS_DIRECTORY = 'exports';
+
+export type ExportFiles = Record<string, CSVFileResult | null>;
 
 export interface BulkExportOperationResult {
   entity: string;
   success: boolean;
-  files: any;
+  files: ExportFiles;
 }
-export type BulkExportOperation<T> = { payloadSchema?: z.ZodObject } & ((
-  entity: string,
-  locales: string[],
-  unchainedAPI: T,
-) => Promise<BulkExportOperationResult>);
 
-export type BulkExportHandler<T> = BulkExportOperation<T>;
+export interface BulkExportHandler<T = unknown> {
+  payloadSchema?: z.ZodObject<z.ZodRawShape>;
+  (params: Record<string, unknown>, locales: string[], unchainedAPI: T): Promise<ExportFiles>;
+}
 
-let bulkOperationHandlers: Record<string, BulkExportHandler<any>> = {};
+export interface BulkExporterOptions {
+  handlers?: Record<string, BulkExportHandler>;
+}
 
-export default function createBulkExporterFactory(bulkExporterOptions: any) {
+let bulkOperationHandlers: Record<string, BulkExportHandler> = {};
+
+export default function createBulkExporterFactory(bulkExporterOptions?: BulkExporterOptions) {
   bulkOperationHandlers = {
-    ASSORTMENTS: exportAssortmentsHandler,
-    PRODUCTS: exportProductsHandler,
-    FILTERS: exportFiltersHandler,
+    ASSORTMENTS: exportAssortmentsHandler as unknown as BulkExportHandler,
+    PRODUCTS: exportProductsHandler as unknown as BulkExportHandler,
+    FILTERS: exportFiltersHandler as unknown as BulkExportHandler,
     ...(bulkExporterOptions?.handlers || {}),
   };
 
   const createBulkExporter = ({ entity }: { entity: string }) => {
     const type = entity.toUpperCase();
-    const exportHandler = bulkOperationHandlers?.[type];
+    const exportHandler = bulkOperationHandlers[type];
 
     if (!exportHandler) {
-      throw new Error(`Export entity (${entity}) no supported`);
+      throw new Error(`Export entity (${entity}) is not supported`);
     }
 
     return {
-      validate: async (payload) => {
-        logger.debug(`🩺 ${type} * `);
+      validate: async (payload: Record<string, unknown>) => {
+        logger.debug(`Validating ${type} export payload`);
         try {
-          if (exportHandler?.payloadSchema) {
+          if (exportHandler.payloadSchema) {
             exportHandler.payloadSchema.parse(payload);
           }
         } catch (e) {
-          throw new Error(`${type} (${e.message})`);
+          throw new Error(`${type}: ${(e as Error).message}`);
         }
       },
 
-      execute: async (payload, locales: string[], unchainedApi) => {
-        const result = await exportHandler(payload, locales, unchainedApi);
-        return [result, null];
+      execute: async <T>(payload: Record<string, unknown>, locales: string[], unchainedApi: T) => {
+        const files = await exportHandler(payload, locales, unchainedApi);
+        return [{ entity: type, success: true, files }, null];
       },
     };
   };

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import Button from '../../common/components/Button';
 import { useIntl } from 'react-intl';
 import { useFilterExport } from '../hooks/useFilterExport';
@@ -8,18 +8,21 @@ import ExportOptionsForm, {
   ExportOption,
 } from '../../common/components/ExportOptionsForm';
 
-const FilterExport = ({ queryString, includeInactive }) => {
-  const { formatMessage } = useIntl();
+interface FilterExportProps {
+  queryString?: string;
+  includeInactive?: boolean;
+}
 
+const FilterExport = ({ queryString, includeInactive }: FilterExportProps) => {
+  const { formatMessage } = useIntl();
   const { filtersCount, loading } = useFiltersCount({
     queryString,
     includeInactive,
   });
   const { setModal } = useModal();
-
   const { exportFilters, isExporting } = useFilterExport();
 
-  const FILTER_EXPORT_OPTIONS: ExportOption[] = [
+  const EXPORT_OPTIONS: ExportOption[] = [
     {
       key: 'exportFilters',
       label: formatMessage({ id: 'filters', defaultMessage: 'Filters' }),
@@ -34,12 +37,13 @@ const FilterExport = ({ queryString, includeInactive }) => {
   ];
 
   const handleSubmit = useCallback(
-    async (data) => {
+    async (data: Record<string, boolean>) => {
       await exportFilters({ queryString, includeInactive, ...data });
       setModal(null);
     },
-    [queryString, includeInactive],
+    [queryString, includeInactive, exportFilters, setModal],
   );
+
   if (loading) return null;
 
   return (
@@ -47,15 +51,19 @@ const FilterExport = ({ queryString, includeInactive }) => {
       onClick={() => {
         setModal(
           <ExportOptionsForm
-            options={FILTER_EXPORT_OPTIONS}
+            options={EXPORT_OPTIONS}
             onSubmit={handleSubmit}
             loading={isExporting}
           />,
         );
       }}
-      disabled={!filtersCount}
+      disabled={isExporting || !filtersCount}
       variant="secondary"
-      text={formatMessage({ id: 'export', defaultMessage: 'Export' })}
+      text={
+        isExporting
+          ? formatMessage({ id: 'exporting', defaultMessage: 'Exporting...' })
+          : formatMessage({ id: 'export', defaultMessage: 'Export' })
+      }
     />
   );
 };

@@ -311,7 +311,7 @@ describe('Product', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.SimpleProduct);
       cy.get('input[name="tags"]').type('test');
-      cy.get('button').contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -346,7 +346,7 @@ describe('Product', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.BundleProduct);
       cy.get('input[name="tags"]').type('test');
-      cy.get('button').contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -381,7 +381,7 @@ describe('Product', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.ConfigurableProduct);
       cy.get('input[name="tags"]').type('test');
-      cy.get('button').contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -416,7 +416,7 @@ describe('Product', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.PlanProduct);
       cy.get('input[name="tags"]').type('test');
-      cy.get('button').contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -451,7 +451,7 @@ describe('Product', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.TokenizedProduct);
       cy.get('input[name="tags"]').type('test');
-      cy.get('button').contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -483,10 +483,7 @@ describe('Product', () => {
     });
 
     it('Should [ERROR] when required fields are not provided', () => {
-      cy.get('button[type="button"]#add-tag')
-        .should('contain.text', localizations.en.add_tag)
-
-        .click();
+      cy.get('button[type="button"]#add-tag').click();
 
       cy.get(
         `input[type="submit"][aria-label="${localizations.en.add_product}"]`,

@@ -1,17 +1,26 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import Button from '../../common/components/Button';
 import { useIntl } from 'react-intl';
 import { useAssortmentExport } from '../hooks/useAssortmentExport';
 import useAssortmentsCount from '../hooks/useAssortmentsCount';
-import ExportOptionsForm from '../../common/components/ExportOptionsForm';
+import ExportOptionsForm, {
+  ExportOption,
+} from '../../common/components/ExportOptionsForm';
 import useModal from '../../modal/hooks/useModal';
+
+interface AssortmentExportProps {
+  includeInactive?: boolean;
+  includeLeaves?: boolean;
+  queryString?: string;
+  tags?: string[];
+}
 
 const AssortmentExport = ({
   includeInactive,
   includeLeaves,
   queryString,
   tags,
-}) => {
+}: AssortmentExportProps) => {
   const { setModal } = useModal();
   const { assortmentsCount, loading } = useAssortmentsCount({
     queryString,
@@ -19,11 +28,10 @@ const AssortmentExport = ({
     includeLeaves,
     tags,
   });
-
-  const { exportAssortments, isLoading } = useAssortmentExport();
-
+  const { exportAssortments, isExporting } = useAssortmentExport();
   const { formatMessage } = useIntl();
-  const assortmentExportOptions = [
+
+  const EXPORT_OPTIONS: ExportOption[] = [
     {
       key: 'exportAssortments',
       label: formatMessage({
@@ -57,8 +65,9 @@ const AssortmentExport = ({
       defaultChecked: true,
     },
   ];
+
   const handleSubmit = useCallback(
-    async (data) => {
+    async (data: Record<string, boolean>) => {
       await exportAssortments({
         queryString,
         includeInactive,
@@ -68,25 +77,26 @@ const AssortmentExport = ({
       });
       setModal(null);
     },
-    [queryString, includeInactive, includeLeaves, tags],
+    [queryString, includeInactive, includeLeaves, tags, exportAssortments, setModal],
   );
+
   if (loading) return null;
 
   return (
     <Button
-      onClick={async () => {
+      onClick={() => {
         setModal(
           <ExportOptionsForm
-            options={assortmentExportOptions}
+            options={EXPORT_OPTIONS}
             onSubmit={handleSubmit}
-            loading={isLoading}
+            loading={isExporting}
           />,
         );
       }}
-      disabled={isLoading || !assortmentsCount}
+      disabled={isExporting || !assortmentsCount}
       variant="secondary"
       text={
-        isLoading
+        isExporting
           ? formatMessage({ id: 'exporting', defaultMessage: 'Exporting...' })
           : formatMessage({ id: 'export', defaultMessage: 'Export' })
       }

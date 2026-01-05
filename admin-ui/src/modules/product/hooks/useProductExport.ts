@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
 
 export const PRODUCT_CSV_SCHEMA = {
@@ -58,7 +58,7 @@ export const buildPriceHeaders = () => [...PRODUCT_CSV_SCHEMA.priceFields];
 export const buildBundleHeaders = () => [
   ...PRODUCT_CSV_SCHEMA.bundleItemHeaders,
 ];
-export const buildVariationHeaders = (locales) => [
+export const buildVariationHeaders = (locales: string[]) => [
   ...PRODUCT_CSV_SCHEMA.variationItemHeaders,
   ...locales.flatMap((locale) =>
     PRODUCT_CSV_SCHEMA.variationTextFields.map(
@@ -67,7 +67,7 @@ export const buildVariationHeaders = (locales) => [
   ),
 ];
 
-export const buildVariationOptionsHeaders = (locales) => [
+export const buildVariationOptionsHeaders = (locales: string[]) => [
   ...PRODUCT_CSV_SCHEMA.variationOptionItemHeaders,
   ...locales.flatMap((locale) =>
     PRODUCT_CSV_SCHEMA.variationOptionTextFields.map(
@@ -75,14 +75,16 @@ export const buildVariationOptionsHeaders = (locales) => [
     ),
   ),
 ];
-export const useProductExport = () => {
-  const { exportCSV: exportProductsCSV, isExporting } = useCSVExport((p) => p);
-  const exportProducts = useCallback(async (data) => {
-    await exportProductsCSV({ type: 'PRODUCTS', ...data });
-  }, []);
 
-  return {
-    exportProducts,
-    isLoading: isExporting,
-  };
+export const useProductExport = () => {
+  const { exportCSV, isExporting } = useCSVExport();
+
+  const exportProducts = useCallback(
+    async (data: Record<string, unknown>) => {
+      await exportCSV({ type: 'PRODUCTS', ...data });
+    },
+    [exportCSV],
+  );
+
+  return { exportProducts, isExporting };
 };

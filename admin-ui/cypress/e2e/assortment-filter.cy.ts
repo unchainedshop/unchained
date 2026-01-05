@@ -167,13 +167,13 @@ describe('Assortment Detail Filters', () => {
 
   it('Should [ADD TAG] successfully', () => {
     cy.get('input#tags').clear().type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
     cy.get('span#badge').should('contain.text', 'new');
   });
 
   it('Should [REMOVE TAG] successfully', () => {
     cy.get('input#tags').clear().type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
     cy.get('span#badge').first().get('button#badge-x-button').click();
   });
 
@@ -209,7 +209,7 @@ describe('Assortment Detail Filters', () => {
 
   it('Should [ADD FILTER] successfully', () => {
     cy.get('input#tags').clear().type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
 
     cy.get('span#badge').should('contain.text', 'new');
 

@@ -1,6 +1,7 @@
 import type { UnchainedCore } from '../../core-index.ts';
-import generateCSVFileAndURL from './generateCSVFileAndUrl.js';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
 import { z } from 'zod';
+import { EXPORTS_DIRECTORY } from '../createBulkExporter.ts';
 
 export const AssortmentExportPayloadSchema = z.object({
   exportAssortments: z.boolean().optional(),
@@ -123,7 +124,7 @@ const exportAssortmentsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildAssortmentHeaders(locales),
         rows: assortmentRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'assortments_export.csv',
         unchainedAPI,
       })
@@ -132,7 +133,7 @@ const exportAssortmentsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildFilterHeaders(),
         rows: filterRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'assortment_filters_export.csv',
         unchainedAPI,
       })
@@ -141,7 +142,7 @@ const exportAssortmentsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildProductHeaders(),
         rows: productRows,
-        directoryName: 'exports',
+        directoryName: EXPORTS_DIRECTORY,
         fileName: 'assortment_products_export.csv',
         unchainedAPI,
       })
@@ -150,8 +151,8 @@ const exportAssortmentsHandler = async (
     ? await generateCSVFileAndURL({
         headers: buildChildrenHeaders(),
         rows: childrenRows,
-        directoryName: 'exports',
-        fileName: 'assortment_children_export.csv',
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'assortment_links_export.csv',
         unchainedAPI,
       })
     : null;
