@@ -57,7 +57,7 @@ export const BulkExportWorker: IWorkerAdapter<any, any> = {
       }
       return {
         success: true,
-        result: { files: result },
+        result,
       };
     } catch (err: any) {
       logger.error(err);
