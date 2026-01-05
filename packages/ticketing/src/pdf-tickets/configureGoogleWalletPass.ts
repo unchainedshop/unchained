@@ -1,43 +1,95 @@
 import path from 'node:path';
 import type { Context } from '@unchainedshop/api';
+import { createLogger } from '@unchainedshop/logger';
+import type * as GoogleApisTypes from 'googleapis';
+import type * as JwtTypes from 'jsonwebtoken';
 import type { EventTicketClass, GoogleWalletPassConfigOptions } from './types.js';
 
-let google: any = null;
-let jwt: any = null;
+interface WarehousingToken {
+  _id: string;
+  productId: string;
+  tokenSerialNumber: string;
+}
+
+const logger = createLogger('unchained:ticketing:google-wallet');
+
+let google: typeof GoogleApisTypes | null = null;
+let jwt: typeof JwtTypes | null = null;
 
 try {
   google = await import('googleapis');
 } catch {
-  console.warn('npm dependency googleapis not installed — install to use Google Wallet functionality.');
+  logger.warn('googleapis not installed — install to use Google Wallet functionality');
 }
 
 try {
   jwt = await import('jsonwebtoken');
 } catch {
-  console.warn(
-    'npm dependency jsonwebtoken not installed — install to use Google Wallet functionality.',
-  );
+  logger.warn('jsonwebtoken not installed — install to use Google Wallet functionality');
+}
+
+interface GoogleCredentials {
+  client_email: string;
+  private_key: string;
+}
+
+interface GoogleWalletClient {
+  eventticketclass: {
+    get: (params: { resourceId: string }) => Promise<{ data: EventTicketClass }>;
+    insert: (params: { requestBody: EventTicketClass }) => Promise<{ data: EventTicketClass }>;
+    update: (params: {
+      resourceId: string;
+      requestBody: EventTicketClass;
+    }) => Promise<{ data: EventTicketClass }>;
+  };
+  eventticketobject: {
+    get: (params: { resourceId: string }) => Promise<{ data: Record<string, unknown> }>;
+    insert: (params: {
+      requestBody: Record<string, unknown>;
+    }) => Promise<{ data: Record<string, unknown> }>;
+    update: (params: {
+      resourceId: string;
+      requestBody: Record<string, unknown>;
+    }) => Promise<{ data: Record<string, unknown> }>;
+    patch: (params: {
+      resourceId: string;
+      requestBody: Record<string, unknown>;
+    }) => Promise<{ data: Record<string, unknown> }>;
+  };
+}
+
+function safeMerge<T extends object>(base: T, overrides?: Partial<T>): T {
+  if (!overrides) return base;
+  const result = { ...base } as T;
+  for (const key of Object.keys(overrides) as (keyof T)[]) {
+    const value = overrides[key];
+    if (value !== undefined) {
+      result[key] = value as T[keyof T];
+    }
+  }
+  return result;
 }
 
 export class GoogleEventTicketWallet {
-  authPromise: any;
-  keyFilePath: string;
-  credentials: any;
-  client: any;
-  issuerId: string;
+  private keyFilePath: string;
+  private credentials: GoogleCredentials | null = null;
+  private client: GoogleWalletClient | null = null;
+  private issuerId: string;
 
   constructor(issuerId: string) {
     if (!google) throw new Error('Google Wallet cannot be used — googleapis not installed');
     if (!jwt) throw new Error('Google Wallet cannot be used — jsonwebtoken not installed');
 
-    this.keyFilePath = path.resolve(
-      path.dirname(process.env.GOOGLE_APPLICATION_CREDENTIALS as string),
-      process.env.GOOGLE_APPLICATION_CREDENTIALS as string,
-    );
+    const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    if (!credPath) {
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable must be set');
+    }
+
+    this.keyFilePath = path.resolve(path.dirname(credPath), credPath);
     this.issuerId = issuerId;
   }
 
-  async auth() {
+  async auth(): Promise<void> {
     if (!google) return;
 
     const auth = new google.Auth.GoogleAuth({
@@ -46,83 +98,58 @@ export class GoogleEventTicketWallet {
     });
 
     const { default: keyFile } = await import(this.keyFilePath, { with: { type: 'json' } });
-    this.credentials = keyFile;
+    this.credentials = keyFile as GoogleCredentials;
 
     this.client = new google.walletobjects_v1.Walletobjects({
-      version: 'v1',
       auth: auth,
-    });
+    }) as unknown as GoogleWalletClient;
   }
 
-  private mergeWithDefaults<T extends Record<string, any>>(defaults: T, options?: Partial<T>): T {
-    const merged: any = { ...defaults };
-    if (!options) return merged;
+  async upsertClass(classSuffix: string, options?: Partial<EventTicketClass>): Promise<string> {
+    if (!this.client) throw new Error('Google Wallet client not initialized. Call auth() first.');
 
-    for (const key in options) {
-      if (options[key] !== undefined) merged[key] = options[key];
-    }
-    return merged;
-  }
-
-  async upsertClass(classSuffix: string, options?: Partial<EventTicketClass>) {
     const defaults: EventTicketClass = {
       eventId: `${this.issuerId}.${classSuffix}`,
       hexBackgroundColor: '#FFFFFF',
       reviewStatus: 'UNDER_REVIEW',
-      issuerName: 'Unchained Commerce',
-      countryCode: 'ch',
-      textModulesData: [
-        { header: 'header placeholder', body: 'body placeholder', id: 'TEXT_MODULE_ID' },
-      ],
-      imageModulesData: [
-        {
-          mainImage: {
-            sourceUri: { uri: 'https://dummyimage.com/600x400/000/fff.png&text=Main+Image' },
-            contentDescription: { defaultValue: { language: 'de-CH', value: 'logo' } },
-          },
-          id: 'IMAGE_MODULE_ID',
-        },
-      ],
-      eventName: { defaultValue: { language: 'de-CH', value: 'Event Name Placeholder' } },
-      homepageUri: { uri: 'https://unchained.shop', description: 'Unchained Commerce' },
-      logo: {
-        sourceUri: { uri: 'https://dummyimage.com/600x400/000/fff.png&text=Logo' },
-        contentDescription: { defaultValue: { language: 'de-CH', value: 'logo placeholder' } },
-      },
-      heroImage: {
-        sourceUri: { uri: 'https://dummyimage.com/600x400/000/fff.png&text=Hero+Image' },
-        contentDescription: { defaultValue: { language: 'de-CH', value: 'Hero image description' } },
-      },
+      countryCode: 'CH',
     };
 
-    const newClass = this.mergeWithDefaults(defaults, options);
+    const newClass = safeMerge(defaults, options);
 
     let response;
     try {
       response = await this.client.eventticketclass.get({
         resourceId: `${this.issuerId}.${classSuffix}`,
       });
-    } catch (err) {
-      if (err.response?.status === 404) {
-        response = await this.client.eventticketclass.insert({ requestBody: newClass });
+    } catch (err: unknown) {
+      const error = err as { response?: { status: number } };
+      if (error.response?.status === 404) {
+        await this.client.eventticketclass.insert({ requestBody: newClass as EventTicketClass });
         return `${this.issuerId}.${classSuffix}`;
       } else {
-        console.error(err);
-        return `${this.issuerId}.${classSuffix}`;
+        logger.error('Failed to get event ticket class', { error: err });
+        throw err;
       }
     }
 
-    const updatedClass = { ...response.data, ...newClass, reviewStatus: 'UNDER_REVIEW' };
-    response = await this.client.eventticketclass.update({
+    const updatedClass = { ...response.data, ...newClass, reviewStatus: 'UNDER_REVIEW' as const };
+    await this.client.eventticketclass.update({
       resourceId: `${this.issuerId}.${classSuffix}`,
-      requestBody: updatedClass,
+      requestBody: updatedClass as EventTicketClass,
     });
 
     return `${this.issuerId}.${classSuffix}`;
   }
 
-  async upsertObject(classSuffix: string, objectSuffix: string, barcodeWithUrl: string) {
-    const defaults = {
+  async upsertObject(
+    classSuffix: string,
+    objectSuffix: string,
+    barcodeWithUrl: string,
+  ): Promise<string> {
+    if (!this.client) throw new Error('Google Wallet client not initialized. Call auth() first.');
+
+    const newObject = {
       id: `${this.issuerId}.${objectSuffix}`,
       classId: `${this.issuerId}.${classSuffix}`,
       state: 'ACTIVE',
@@ -131,20 +158,19 @@ export class GoogleEventTicketWallet {
       passConstraints: { screenshotEligibility: 'INELIGIBLE' },
     };
 
-    const newObject = this.mergeWithDefaults(defaults);
-
     let response;
     try {
       response = await this.client.eventticketobject.get({
         resourceId: `${this.issuerId}.${objectSuffix}`,
       });
-    } catch (err) {
-      if (err.response?.status === 404) {
-        response = await this.client.eventticketobject.insert({ requestBody: newObject });
+    } catch (err: unknown) {
+      const error = err as { response?: { status: number } };
+      if (error.response?.status === 404) {
+        await this.client.eventticketobject.insert({ requestBody: newObject });
         return `${this.issuerId}.${objectSuffix}`;
       } else {
-        console.error(err);
-        return `${this.issuerId}.${objectSuffix}`;
+        logger.error('Failed to get event ticket object', { error: err });
+        throw err;
       }
     }
 
@@ -157,16 +183,19 @@ export class GoogleEventTicketWallet {
     return `${this.issuerId}.${objectSuffix}`;
   }
 
-  async expireObject(objectSuffix: string) {
+  async expireObject(objectSuffix: string): Promise<string> {
+    if (!this.client) throw new Error('Google Wallet client not initialized. Call auth() first.');
+
     try {
       await this.client.eventticketobject.get({ resourceId: `${this.issuerId}.${objectSuffix}` });
-    } catch (err) {
-      if (err.response?.status === 404) {
-        console.log(`Object ${this.issuerId}.${objectSuffix} not found!`);
+    } catch (err: unknown) {
+      const error = err as { response?: { status: number } };
+      if (error.response?.status === 404) {
+        logger.debug(`Object ${this.issuerId}.${objectSuffix} not found`);
         return `${this.issuerId}.${objectSuffix}`;
       } else {
-        console.error(err);
-        return `${this.issuerId}.${objectSuffix}`;
+        logger.error('Failed to expire event ticket object', { error: err });
+        throw err;
       }
     }
 
@@ -178,7 +207,10 @@ export class GoogleEventTicketWallet {
     return `${this.issuerId}.${objectSuffix}`;
   }
 
-  createJwtNewObjects(classSuffix: string, objectSuffix: string) {
+  createJwtNewObjects(classSuffix: string, objectSuffix: string): string {
+    if (!this.credentials) throw new Error('Credentials not loaded. Call auth() first.');
+    if (!jwt) throw new Error('jsonwebtoken not installed');
+
     const newClass = { id: `${this.issuerId}.${classSuffix}` };
     const newObject = {
       id: `${this.issuerId}.${objectSuffix}`,
@@ -194,21 +226,36 @@ export class GoogleEventTicketWallet {
       payload: { eventTicketClasses: [newClass], eventTicketObjects: [newObject] },
     };
 
-    const token = jwt.default.sign(claims, this.credentials.private_key, { algorithm: 'RS256' });
+    const sign =
+      (jwt as { default?: typeof import('jsonwebtoken') }).default?.sign ||
+      (jwt as typeof import('jsonwebtoken')).sign;
+    const token = sign(claims, this.credentials.private_key, { algorithm: 'RS256' });
     return `https://pay.google.com/gp/v/save/${token}`;
   }
 }
 
-export default function configureGoogleWalletPass(config: GoogleWalletPassConfigOptions) {
-  return async (token, unchainedAPI: Context) => {
-    const GoogleWallet = new GoogleEventTicketWallet(process.env.GOOGLE_WALLET_ISSUER_ID as string);
+export interface GoogleWalletPassResult {
+  asURL: () => Promise<string>;
+}
+
+export default function configureGoogleWalletPass(
+  config: GoogleWalletPassConfigOptions,
+): (token: WarehousingToken, unchainedAPI: Context) => Promise<GoogleWalletPassResult | undefined> {
+  return async (token: WarehousingToken, unchainedAPI: Context) => {
+    const issuerId = process.env.GOOGLE_WALLET_ISSUER_ID;
+    if (!issuerId) {
+      throw new Error('GOOGLE_WALLET_ISSUER_ID environment variable must be set');
+    }
+
+    const GoogleWallet = new GoogleEventTicketWallet(issuerId);
     await GoogleWallet.auth();
+
     const isProduction = process.env.NODE_ENV === 'production';
     const { user, locale } = unchainedAPI;
-    const normalizedUserLocale = user?.lastLogin?.locale || locale?.language;
+    const normalizedUserLocale = user?.lastLogin?.locale || locale?.language || 'en';
 
     const product = await unchainedAPI.modules.products.findProduct({ productId: token.productId });
-    if (!product) return;
+    if (!product) return undefined;
 
     const hash = await unchainedAPI.modules.warehousing.buildAccessKeyForToken(token._id);
     const barcodeWithUrl = `${process.env.ROOT_URL}/${token._id}?hash=${hash}`;
@@ -222,25 +269,25 @@ export default function configureGoogleWalletPass(config: GoogleWalletPassConfig
 
     const productTexts = await unchainedAPI.modules.products.texts.findLocalizedText({
       productId: token.productId,
-      locale: normalizedUserLocale as any,
+      locale: new Intl.Locale(normalizedUserLocale),
     });
 
     await GoogleWallet.upsertClass(product._id, {
       ...config,
-      eventName: productTexts.title
+      eventName: productTexts?.title
         ? { defaultValue: { language: productTexts.locale, value: productTexts.title } }
         : undefined,
-      textModulesData: [
-        { header: productTexts?.title, body: productTexts?.description, id: 'TEXT_MODULE_ID' },
-      ],
+      textModulesData: productTexts
+        ? [{ header: productTexts.title, body: productTexts.description, id: 'TEXT_MODULE_ID' }]
+        : undefined,
       heroImage:
         isProduction && url
           ? {
               sourceUri: { uri: url },
               contentDescription: {
                 defaultValue: {
-                  language: normalizedUserLocale || 'de-CH',
-                  value: 'Hero image description',
+                  language: normalizedUserLocale,
+                  value: 'Event image',
                 },
               },
             }
@@ -249,6 +296,8 @@ export default function configureGoogleWalletPass(config: GoogleWalletPassConfig
 
     await GoogleWallet.upsertObject(product._id, token.tokenSerialNumber, barcodeWithUrl);
 
-    return { asURL: async () => GoogleWallet.createJwtNewObjects(product._id, token.tokenSerialNumber) };
+    return {
+      asURL: async () => GoogleWallet.createJwtNewObjects(product._id, token.tokenSerialNumber),
+    };
   };
 }

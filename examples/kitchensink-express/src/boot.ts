@@ -12,7 +12,6 @@ import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-of
 import { pluginRegistry } from '@unchainedshop/core';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
-import setupTicketing, { type TicketingAPI } from "@unchainedshop/ticketing";
 
 const logger = createLogger('express');
 const app = express();
@@ -49,23 +48,15 @@ try {
     } : undefined,
   });
 
-  // Seed Database and Set a super insecure Access Token for admin
+  // Seed Database
   await seed(engine.unchainedAPI);
 
-  // Warning: Do not use this in production
-  await engine.unchainedAPI.modules.users.setAccessToken('admin', 'secret');
+  // Warning: Do not use this in production - creates access token for bulk import API
+  const result = await engine.unchainedAPI.modules.users.createAccessToken('admin');
+  if (result) {
+    logger.info(`Access token for admin: ${result.token}`);
+  }
 
-  setupTicketing(engine.unchainedAPI as TicketingAPI, {
-    renderOrderPDF: async ({ orderId }, context: TicketingAPI) => {
-      const order = await context.modules.orders.findOrder({ orderId });
-      console.log(order);
-
-      return
-    },
-    createAppleWalletPass: null,
-    createGoogleWalletPass: null
-
-  });
   await httpServer.listen({ port: process.env.PORT || 3000 });
   logger.info(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
 } catch (error) {
