@@ -31,9 +31,7 @@
     "build": "tsc -b",
     "start": "node --env-file=.env.defaults --env-file-if-exists=.env lib/boot.js",
     "dev": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --watch boot.ts",
-    "test:run:integration": "run-p -r test:integration:*",
-    "test:integration:start": "node --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch boot.ts",
-    "test:integration:run": "node --no-warnings --env-file ../../.env.tests --env-file-if-exists=.env --test-global-setup=../../tests/helpers.js --test --test-concurrency=1 tests/*.test.*"
+    "test:run:integration": "node --no-warnings --env-file ../../.env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 tests/*.test.*"    
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

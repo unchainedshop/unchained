@@ -19,7 +19,7 @@ export type { RendererTypes, TicketingModule, TicketingServices };
 
 export { ticketingServices, ticketingModules };
 
-export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
+export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF?: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
 }
 
