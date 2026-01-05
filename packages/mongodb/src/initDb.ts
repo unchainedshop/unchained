@@ -5,6 +5,7 @@ import type { MongoMemoryServer } from 'mongodb-memory-server';
 let zstdEnabled = false;
 let mongod: Promise<MongoMemoryServer> | null = null;
 let mongoClient: MongoClient | null = null;
+let useEphemeralStorage = false;
 
 const CLEANUP_TIMEOUT_MS = 10000;
 
@@ -21,6 +22,7 @@ export const startDb = async (options?: { forceInMemory?: boolean; port?: number
   const { mkdir } = await import('node:fs/promises');
   const { MongoMemoryServer } = await import('mongodb-memory-server');
   const useInMemory = options?.forceInMemory || process.env.NODE_ENV === 'test';
+  useEphemeralStorage = useInMemory;
   const mongoPort = options?.port ?? parseInt(process.env.PORT || '4010', 10) + 1;
 
   if (!useInMemory) {
@@ -65,8 +67,9 @@ export const stopDb = async () => {
   const cleanup = async () => {
     await mongoClient?.close();
     const server = await mongod;
-    // Use force: true to ensure mongod process is killed even if graceful shutdown fails
-    await server?.stop({ doCleanup: true, force: true });
+    // Only cleanup (delete) database files for ephemeral/test storage
+    // For persistent storage, keep the files to preserve data between restarts
+    await server?.stop({ doCleanup: useEphemeralStorage, force: true });
   };
 
   const timeout = new Promise<never>((_, reject) =>
