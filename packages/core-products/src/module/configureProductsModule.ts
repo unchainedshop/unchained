@@ -12,7 +12,6 @@ import {
   asc,
   desc,
   isNull,
-  isNotNull,
   generateId,
   buildSelectColumns,
   type SQL,
@@ -942,51 +941,60 @@ export const configureProductsModule = async ({
       }): Promise<Product[]> => {
         if (productIds.length === 0) return [];
 
-        let q = db.select().from(products).where(inArray(products._id, productIds));
-
         if (sort?.length) {
+          // With explicit sort, use standard DB pagination
+          let q = db.select().from(products).where(inArray(products._id, productIds));
+
           for (const { key, value } of sort) {
             const column = COLUMNS[key as keyof typeof COLUMNS];
             if (column) {
               q = q.orderBy(value === SortDirection.DESC ? desc(column) : asc(column)) as typeof q;
             }
           }
+
+          if (offset) {
+            q = q.offset(offset) as typeof q;
+          }
+          if (limit) {
+            q = q.limit(limit) as typeof q;
+          }
+
+          const rows = await q;
+          return rows.map(rowToProduct);
         }
 
-        if (limit) {
-          q = q.limit(limit) as typeof q;
-        }
-        if (offset) {
-          q = q.offset(offset) as typeof q;
-        }
+        // No sort specified - preserve input order (important for search relevance)
+        // Use CTE with VALUES to create ordering table, then JOIN for efficient ordering
+        const valuesList = sql.join(
+          productIds.map((id, idx) => sql`(${id}, ${idx})`),
+          sql`, `,
+        );
 
-        const rows = await q;
+        const rows = await db.all<ProductRow>(sql`
+          WITH ordering(id, pos) AS (VALUES ${valuesList})
+          SELECT p.* FROM products p
+          JOIN ordering o ON p._id = o.id
+          ORDER BY o.pos
+          LIMIT ${limit ?? -1} OFFSET ${offset ?? 0}
+        `);
+
         return rows.map(rowToProduct);
       },
     },
 
     texts: productTexts,
     existingTags: async (): Promise<string[]> => {
-      // Get all distinct tags from non-deleted products
-      const rows = await db
-        .select({ tags: products.tags })
-        .from(products)
-        .where(
-          and(
-            isNotNull(products.tags),
-            or(eq(products.status, ProductStatus.ACTIVE), isNull(products.status))!,
-          ),
-        );
-
-      const allTags = new Set<string>();
-      for (const row of rows) {
-        if (row.tags) {
-          for (const tag of row.tags) {
-            if (tag) allTags.add(tag);
-          }
-        }
-      }
-      return Array.from(allTags).sort();
+      // Get all distinct tags from non-deleted products using SQL aggregation
+      // This is more efficient than fetching all rows and processing in JS
+      const result = await db.all<{ tag: string }>(
+        sql`SELECT DISTINCT value as tag
+            FROM products, json_each(products.tags)
+            WHERE products.tags IS NOT NULL
+              AND (products.status = ${ProductStatus.ACTIVE} OR products.status IS NULL)
+              AND value IS NOT NULL
+            ORDER BY value`,
+      );
+      return result.map((r) => r.tag);
     },
   };
 };

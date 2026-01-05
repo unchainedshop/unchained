@@ -348,16 +348,23 @@ export const configureWorkerModule = async ({
     const [work] = await queryBuilder;
     if (!work) return null;
 
-    // Update it to mark as started
+    // Atomic update: only update if still not started (race condition protection)
+    // This ensures only one worker can claim this work item
     const now = new Date();
-    await db
+    const updateResult = await db
       .update(workQueue)
       .set({
         started: now,
         worker,
         updated: now,
       })
-      .where(eq(workQueue._id, work._id));
+      .where(and(eq(workQueue._id, work._id), isNull(workQueue.started)));
+
+    // If no rows were updated, another worker claimed this work
+    if (updateResult.rowsAffected === 0) {
+      // Try again to find another work item
+      return allocateWork({ types, worker });
+    }
 
     // Fetch updated work
     const [updatedWork] = await db.select().from(workQueue).where(eq(workQueue._id, work._id)).limit(1);

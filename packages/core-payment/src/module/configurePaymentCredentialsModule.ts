@@ -213,17 +213,15 @@ export const configurePaymentCredentialsModule = (db: DrizzleDb) => {
     } & Record<string, any>) => {
       const insertedId = _id || generateId();
       const now = new Date();
+      const metaValue = Object.keys(meta).length > 0 ? (meta as Record<string, unknown>) : null;
 
       // Check if credential exists
-      let existingConditions;
-      if (_id) {
-        existingConditions = eq(paymentCredentials._id, _id);
-      } else {
-        existingConditions = and(
-          eq(paymentCredentials.userId, userId),
-          eq(paymentCredentials.paymentProviderId, paymentProviderId),
-        );
-      }
+      const existingConditions = _id
+        ? eq(paymentCredentials._id, _id)
+        : and(
+            eq(paymentCredentials.userId, userId),
+            eq(paymentCredentials.paymentProviderId, paymentProviderId),
+          );
 
       const [existing] = await db.select().from(paymentCredentials).where(existingConditions).limit(1);
 
@@ -234,7 +232,7 @@ export const configurePaymentCredentialsModule = (db: DrizzleDb) => {
           .set({
             updated: now,
             token,
-            meta: Object.keys(meta).length > 0 ? (meta as Record<string, unknown>) : existing.meta,
+            meta: metaValue ?? existing.meta,
           })
           .where(eq(paymentCredentials._id, existing._id));
       } else {
@@ -245,7 +243,7 @@ export const configurePaymentCredentialsModule = (db: DrizzleDb) => {
           paymentProviderId,
           isPreferred: false,
           token,
-          meta: Object.keys(meta).length > 0 ? (meta as Record<string, unknown>) : null,
+          meta: metaValue,
           created: now,
         });
       }

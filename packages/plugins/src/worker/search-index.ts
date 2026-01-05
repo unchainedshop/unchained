@@ -342,12 +342,12 @@ async function queueSearchIndexWork(
 }
 
 // Event subscription configuration
-const EVENT_MAPPINGS: Array<{
+const EVENT_MAPPINGS: {
   event: string;
   entityType: string;
   operation: 'create' | 'update' | 'remove';
   getId: (payload: any) => string | null;
-}> = [
+}[] = [
   // Products
   { event: 'PRODUCT_CREATE', entityType: 'PRODUCT', operation: 'create', getId: (p) => p.product?._id },
   { event: 'PRODUCT_UPDATE', entityType: 'PRODUCT', operation: 'update', getId: (p) => p.productId },

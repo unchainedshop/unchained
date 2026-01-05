@@ -18,9 +18,15 @@ const baseDirector = BaseDirector<ISearchAdapter>('SearchDirector', {
 
 const noOpActions: SearchAdapterActions = {
   search: async () => [],
-  indexEntity: async () => {},
-  removeEntity: async () => {},
-  clearEntities: async () => {},
+  indexEntity: async () => {
+    /* */
+  },
+  removeEntity: async () => {
+    /* */
+  },
+  clearEntities: async () => {
+    /* */
+  },
 };
 
 export const SearchDirector: ISearchDirector = {

@@ -63,8 +63,14 @@ export const SearchAdapter: Omit<ISearchAdapter, 'key' | 'label' | 'version'> = 
 
   actions: () => ({
     search: async () => [],
-    indexEntity: async () => {},
-    removeEntity: async () => {},
-    clearEntities: async () => {},
+    indexEntity: async () => {
+      /* */
+    },
+    removeEntity: async () => {
+      /* */
+    },
+    clearEntities: async () => {
+      /* */
+    },
   }),
 };
