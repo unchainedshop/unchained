@@ -1,7 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert';
+import { disconnect, setupDatabase } from './helpers.js';
 
 test.describe('printTicketsHandler', async () => {
+  test.before(async () => {
+    await setupDatabase();
+  });
+
+  test.after(async () => {
+    await disconnect();
+  });
   test('Return PDF stream when valid parameters are provided', async () => {
     const result = await fetch(
       `http://localhost:4010/rest/print_tickets/?orderId=SimpleOrder._id&otp=4444`,
