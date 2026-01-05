@@ -3,14 +3,54 @@ import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
 import { stopDb } from '@unchainedshop/mongodb';
+import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
 import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
+import configureAppleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureAppleWalletPass.js';
+import configureGoogleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureGoogleWalletPass.js';
+import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
+import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 
 let fastify = null;
 let platform = null;
 let serverPort = null;
 
-// Check if a port is available
+// Configure Apple Wallet Pass (requires @walletpass/pass-js and certificates)
+const createAppleWalletPass = process.env.PASS_TEAM_ID
+  ? configureAppleWalletPass({
+      templateConfig: {
+        description: 'Event Ticket',
+        organizationName: process.env.ORGANIZATION_NAME || 'Unchained Commerce',
+        passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || 'pass.com.example.ticket',
+        teamIdentifier: process.env.PASS_TEAM_ID,
+        backgroundColor: 'rgb(255,255,255)',
+        foregroundColor: 'rgb(50,50,50)',
+      },
+      // Optional: customize field labels for localization
+      labels: {
+        eventLabel: 'Event',
+        locationLabel: 'Venue',
+        ticketNumberLabel: 'Ticket #',
+        infoLabel: 'Details',
+        slotChangeMessage: 'Event time changed: %@',
+        barcodeHint: 'Scan for entry',
+      },
+    })
+  : undefined;
+
+// Configure Google Wallet Pass (requires googleapis and jsonwebtoken)
+const createGoogleWalletPass = process.env.GOOGLE_WALLET_ISSUER_ID
+  ? configureGoogleWalletPass({
+      issuerName: process.env.ORGANIZATION_NAME || 'Unchained Commerce',
+      countryCode: 'CH',
+      hexBackgroundColor: '#FFFFFF',
+      homepageUri: {
+        uri: process.env.ROOT_URL || 'https://unchained.shop',
+        description: 'Event Website',
+      },
+    })
+  : undefined;
+
 async function isPortAvailable(port) {
   return new Promise((resolve) => {
     const server = net.createServer();
@@ -60,11 +100,8 @@ export async function initializeTestPlatform() {
 
   // Start platform with in-memory MongoDB
   platform = await startPlatform({
-    modules: defaultModules,
-    workQueueOptions: {
-      // Workers enabled for work queue tests
-      pollInterval: 500, // Process work every 500ms for faster tests
-    },
+    modules: { ...defaultModules, ...ticketingModules },
+    services: { ...ticketingServices },
   });
 
   // Create Fastify instance
@@ -72,9 +109,21 @@ export async function initializeTestPlatform() {
     disableRequestLogging: true,
     trustProxy: true,
   });
-
+  setupTicketing(platform.unchainedAPI, {
+    // renderOrderPDF uses defaultTicketReceiptRenderer when not specified
+    // For React-PDF based rendering, use:
+    // renderOrderPDF: createPDFTicketRenderer(),
+    createAppleWalletPass,
+    createGoogleWalletPass,
+  });
   // Connect platform to Fastify (registers all routes including gridfs for file uploads)
-  connect(fastify, platform, { initPluginMiddlewares, allowRemoteToLocalhostSecureCookies: true });
+  connect(fastify, platform, {
+    allowRemoteToLocalhostSecureCookies: true,
+    initPluginMiddlewares: (app) => {
+      connectBasePluginsToFastify(app);
+      connectTicketingToFastify(app);
+    },
+  });
 
   // Start listening on the pre-checked port
   await fastify.listen({ port, host: '127.0.0.1' });
