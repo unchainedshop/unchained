@@ -64,6 +64,7 @@ const USER_CSV_SCHEMA = {
     'confirmed',
     'ordered',
     'fulfilled',
+    'products',
   ],
   reviewFields: [
     '_id',
@@ -87,6 +88,7 @@ const USER_CSV_SCHEMA = {
     'expires',
     'fulfilled',
     'rejected',
+    'deleted',
     'meta',
     'configuration',
   ],
@@ -145,11 +147,15 @@ const exportUsersHandler = async (
   }
   if (options.exportOrders) {
     const orders = await modules.orders.findOrders({ userId });
-    for (const order of orders) {
+
+    for await (const order of orders) {
+      const positions = await modules.orders.positions.findOrderPositions({ orderId: order._id });
       const row: Record<string, any> = {};
       USER_CSV_SCHEMA.orderFields.forEach((field) => {
         if ((field === 'ordered' || field === 'confirmed' || field === 'fulfilled') && order[field]) {
           row[field] = new Date(order[field]).getTime();
+        } else if (field === 'products') {
+          row[field] = positions.map((pos) => `${pos.productId}~${pos.quantity}`).join('; ');
         } else if (field === 'billingAddress' && order.billingAddress) {
           row[field] = JSON.stringify(order.billingAddress);
         } else if (field === 'contact' && order.contact) {
@@ -195,11 +201,18 @@ const exportUsersHandler = async (
       });
       for (const quotation of quotations) {
         const row: Record<string, any> = {};
+
         USER_CSV_SCHEMA.quotationFields.forEach((field) => {
-          if (field === 'configuration' && quotation.configuration) {
+          if (
+            (field === 'expires' ||
+              field === 'fulfilled' ||
+              field === 'rejected' ||
+              field === 'deleted') &&
+            quotation[field]
+          ) {
+            row[field] = new Date(quotation[field]).getTime();
+          } else if (field === 'configuration' || (field === 'meta' && quotation[field])) {
             row[field] = JSON.stringify(quotation.configuration);
-          } else if (field === 'meta' && quotation.meta) {
-            row[field] = JSON.stringify(quotation.meta);
           } else {
             row[field] = quotation[field] || '';
           }

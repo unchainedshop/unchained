@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
 
-export const USER_CSV_SCHEMA = {
+
+const USER_CSV_SCHEMA = {
   userFields: [
     '_id',
     'emailAddresses',
@@ -10,7 +11,6 @@ export const USER_CSV_SCHEMA = {
     'username',
     'created',
     'isGuest',
-    'lastLogin',
     'displayName',
     'birthday',
     'phoneMobile',
@@ -27,6 +27,7 @@ export const USER_CSV_SCHEMA = {
     'meta',
     'lastBillingAddress',
     'lastContact',
+    'lastLogin',
   ],
   bookmarkFields: ['_id', 'productId', 'userId'],
   orderFields: [
@@ -42,6 +43,7 @@ export const USER_CSV_SCHEMA = {
     'paymentId',
     'confirmed',
     'ordered',
+    'fulfilled',
   ],
   reviewFields: [
     '_id',
@@ -52,6 +54,8 @@ export const USER_CSV_SCHEMA = {
     'review',
     'vote.type',
     'vote.timestamp',
+    'vote.meta',
+    'meta',
   ],
   quotationFields: [
     '_id',
@@ -63,11 +67,11 @@ export const USER_CSV_SCHEMA = {
     'expires',
     'fulfilled',
     'rejected',
+    'deleted',
     'meta',
     'configuration',
   ],
 };
-
 export const useUserExport = () => {
   const { exportCSV, isExporting } = useCSVExport();
 
