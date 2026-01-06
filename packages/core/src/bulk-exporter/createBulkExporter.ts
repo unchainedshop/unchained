@@ -4,6 +4,7 @@ import exportFiltersHandler from './handlers/exportFiltersHandler.ts';
 import { createLogger } from '@unchainedshop/logger';
 import { z } from 'zod';
 import type { CSVFileResult } from './handlers/generateCSVFileAndUrl.ts';
+import exportUsersHandler from './handlers/exportUsersHandler.ts';
 
 const logger = createLogger('unchained:bulk-export');
 
@@ -33,6 +34,7 @@ export default function createBulkExporterFactory(bulkExporterOptions?: BulkExpo
     ASSORTMENTS: exportAssortmentsHandler as unknown as BulkExportHandler,
     PRODUCTS: exportProductsHandler as unknown as BulkExportHandler,
     FILTERS: exportFiltersHandler as unknown as BulkExportHandler,
+    USER: exportUsersHandler as unknown as BulkExportHandler,
     ...(bulkExporterOptions?.handlers || {}),
   };
 
