@@ -1,3 +1,20 @@
+# Unchained Engine v4.6 (unreleased)
+
+## Minor
+- Added OCSF-compliant audit trail system in `@unchainedshop/events` for security monitoring and compliance (SOC 2, GDPR, HIPAA). Enable with `UNCHAINED_AUDIT_ENABLED=true`.
+- Added new demo data CLI tool (`tools/demo-data-cli`) for seeding development environments with realistic e-commerce data.
+- Typo fix: `FULLFILLED` → `FULFILLED` in `OrderStatus` and `QuotationStatus` enums. Update any code referencing these status values.
+- Typo fix: `services.quotations.fullfillQuotation` → `services.quotations.fulfillQuotation`. Update any code calling this service.
+- Removed `Mutation.setBaseAssortment` and `Assortment.isBase` field. Base assortment concept has been removed from the API.
+- Removed `findOrderPaymentByContextData` from payment module in favor of more specific `findOrderPaymentByTransactionId`.
+- Added timing-safe string comparison utility in `@unchainedshop/utils` for secure token validation.
+
+## Patch
+- Fix `initDb` in `@unchainedshop/mongodb` incorrectly removing database on exit (now only in test mode).
+- Fix WebAuthn not using `generateDbObjectId` for credential creation requests.
+- Improved security documentation with SECURITY.md and deployment security guide.
+- Various test infrastructure improvements and package description updates.
+
 # Unchained Engine v4.5
 
 ## Minor
