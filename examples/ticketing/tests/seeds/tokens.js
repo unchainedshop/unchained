@@ -1,9 +1,10 @@
 import { SimplePosition } from './orders.js';
 import { TokenizedProduct } from './products.js';
+import { User } from './users.js';
 
 export const TestToken1 = {
   _id: 'test-token-1',
-  userId: 'admin',
+  userId: User._id,
   productId: TokenizedProduct._id,
   orderPositionId: SimplePosition,
   tokenSerialNumber: 'TOKEN001',
@@ -18,7 +19,7 @@ export const TestToken1 = {
 
 export const TestToken2 = {
   _id: 'test-token-2',
-  userId: 'admin',
+  userId: User._id,
   productId: TokenizedProduct._id,
   orderPositionId: SimplePosition._id,
   tokenSerialNumber: 'TOKEN002',
@@ -33,7 +34,7 @@ export const TestToken2 = {
 
 export const TestToken3 = {
   _id: 'test-token-3',
-  userId: 'user',
+  userId: User._id,
   productId: TokenizedProduct._id,
   orderPositionId: SimplePosition,
   tokenSerialNumber: 'TOKEN003',

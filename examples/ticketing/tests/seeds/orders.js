@@ -1,6 +1,7 @@
 import { SimpleDeliveryProvider } from './deliveries.js';
 import { SimplePaymentProvider } from './payments.js';
 import { TokenizedProduct } from './products.js';
+import { User } from './users.js';
 import chainedUpsert from './utils/chainedUpsert.js';
 import { VirtualWarehousingProvider } from './warehousings.js';
 
@@ -23,7 +24,7 @@ export const Orders = [
       emailAddress: 'mikaeldd12@unchained.shop',
       telNumber: '+251912669988',
     },
-    userId: '9558711abb067a866ba38a2e',
+    userId: User._id,
     currencyCode: 'CHF',
     countryCode: 'CH',
     calculation: [
