@@ -116,7 +116,6 @@ If you customize `setCachedProductIds`, ensure you also customize `getCachedProd
 | `ASSORTMENT_CREATE` | `{ assortment }` | Emitted when an assortment is created |
 | `ASSORTMENT_UPDATE` | `{ assortmentId }` | Emitted when an assortment is updated |
 | `ASSORTMENT_REMOVE` | `{ assortmentId }` | Emitted when an assortment is removed |
-| `ASSORTMENT_SET_BASE` | `{ assortmentId }` | Emitted when base assortment is set |
 | `ASSORTMENT_ADD_PRODUCT` | `{ assortmentProduct }` | Emitted when a product is added |
 | `ASSORTMENT_REMOVE_PRODUCT` | `{ assortmentProductId }` | Emitted when a product is removed |
 | `ASSORTMENT_REORDER_PRODUCTS` | `{ assortmentProducts }` | Emitted when products are reordered |
