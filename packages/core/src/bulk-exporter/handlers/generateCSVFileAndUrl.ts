@@ -22,6 +22,7 @@ const generateCSVFileAndURL = async (
   },
   expires = 3600000,
 ): Promise<CSVFileResult> => {
+  if (!rows.length) return { url: '', expires: 0 };
   const csvString = toCSV(headers, rows);
 
   const uploaded = await unchainedAPI.services.files.uploadFileFromStream({

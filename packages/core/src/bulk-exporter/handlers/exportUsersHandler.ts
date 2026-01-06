@@ -25,13 +25,12 @@ export interface UserExportParams {
 const USER_CSV_SCHEMA = {
   userFields: [
     '_id',
-    'emails',
+    'emailAddresses',
     'tags',
     'roles',
     'username',
     'created',
     'isGuest',
-    'lastLogin',
     'displayName',
     'birthday',
     'phoneMobile',
@@ -48,6 +47,7 @@ const USER_CSV_SCHEMA = {
     'meta',
     'lastBillingAddress',
     'lastContact',
+    'lastLogin',
   ],
   bookmarkFields: ['_id', 'productId', 'userId'],
   orderFields: [
@@ -63,6 +63,7 @@ const USER_CSV_SCHEMA = {
     'paymentId',
     'confirmed',
     'ordered',
+    'fulfilled',
   ],
   reviewFields: [
     '_id',
@@ -106,14 +107,13 @@ const exportUsersHandler = async (
   userRows.push({
     _id: user._id,
     emailAddresses: user.emails ? user.emails.map((email: any) => email.address).join('; ') : '',
-    created: user.created,
-    lastLogin: user.lastLogin,
+    created: new Date(user.created).getTime(),
     isGuest: user.guest || false,
     tags: user.tags ? user.tags.join('; ') : '',
     roles: user.roles ? user.roles.join('; ') : '',
     username: user.username || '',
     displayName: user.profile?.displayName || '',
-    birthday: user.profile?.birthday || '',
+    birthday: user.profile?.birthday ? new Date(user.profile?.birthday).getTime() : '',
     phoneMobile: user.profile?.phoneMobile || '',
     gender: user.profile?.gender || '',
     'address.addressLine': user.profile?.address?.addressLine || '',
@@ -128,6 +128,7 @@ const exportUsersHandler = async (
     meta: user.meta ? JSON.stringify(user.meta) : '',
     lastBillingAddress: user.lastBillingAddress ? JSON.stringify(user.lastBillingAddress) : '',
     lastContact: user.lastContact ? JSON.stringify(user.lastContact) : '',
+    lastLogin: user.lastLogin ? JSON.stringify(user.lastLogin) : '',
   });
 
   if (options.exportBookmarks) {
@@ -145,7 +146,9 @@ const exportUsersHandler = async (
     for (const order of orders) {
       const row: Record<string, any> = {};
       USER_CSV_SCHEMA.orderFields.forEach((field) => {
-        if (field === 'billingAddress' && order.billingAddress) {
+        if ((field === 'ordered' || field === 'confirmed' || field === 'fulfilled') && order[field]) {
+          row[field] = new Date(order[field]).getTime();
+        } else if (field === 'billingAddress' && order.billingAddress) {
           row[field] = JSON.stringify(order.billingAddress);
         } else if (field === 'contact' && order.contact) {
           row[field] = JSON.stringify(order.contact);
