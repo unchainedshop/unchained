@@ -47,14 +47,14 @@ const UserExport = ({
       }),
       defaultChecked: true,
     },
-    {
+/*     {
       key: 'exportEvents',
       label: formatMessage({
         id: 'events',
         defaultMessage: 'Events',
       }),
       defaultChecked: true,
-    },
+    }, */
     {
       key: 'exportQuotations',
       label: formatMessage({

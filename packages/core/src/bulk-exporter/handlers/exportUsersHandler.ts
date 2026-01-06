@@ -19,6 +19,7 @@ export interface UserExportParams {
   exportBookmarks?: boolean;
   exportEvents?: boolean;
   exportQuotations?: boolean;
+  exportEnrollments?: boolean;
   userId: string;
 }
 
@@ -92,6 +93,28 @@ const USER_CSV_SCHEMA = {
     'meta',
     'configuration',
   ],
+  enrollmentFields: [
+    '_id',
+    'userId',
+    'productId',
+    'enrollmentNumber',
+    'status',
+    'countryCode',
+    'currencyCode',
+    'quantity',
+    'created',
+    'deleted',
+    'expires',
+    'configuration',
+    'billingAddress',
+    'contact.emailAddress',
+    'contact.telNumber',
+    'delivery.providerId',
+    'payment.providerId',
+    'delivery.meta',
+    'payment.meta',
+    'meta',
+  ],
 };
 
 const exportUsersHandler = async (
@@ -106,6 +129,8 @@ const exportUsersHandler = async (
   const bookmarkRows: Record<string, any>[] = [];
   const quotationRows: Record<string, any>[] = [];
   const reviewRows: Record<string, any>[] = [];
+  const enrollmentRows: Record<string, any>[] = [];
+
   if (!user) throw new Error(`User with ID ${userId} not found`);
 
   userRows.push({
@@ -187,7 +212,6 @@ const exportUsersHandler = async (
         } else {
           if (field === 'meta' && review.meta) {
             row[field] = JSON.stringify(review.meta);
-            return;
           } else {
             row[field] = review[field] || '';
           }
@@ -195,87 +219,135 @@ const exportUsersHandler = async (
       });
       reviewRows.push(row);
     }
-    if (options.exportQuotations) {
-      const quotations = await modules.quotations.findQuotations({
-        userId,
+  }
+  if (options.exportQuotations) {
+    const quotations = await modules.quotations.findQuotations({
+      userId,
+    });
+    for (const quotation of quotations) {
+      const row: Record<string, any> = {};
+
+      USER_CSV_SCHEMA.quotationFields.forEach((field) => {
+        if (
+          (field === 'expires' ||
+            field === 'fulfilled' ||
+            field === 'rejected' ||
+            field === 'deleted') &&
+          quotation[field]
+        ) {
+          row[field] = new Date(quotation[field]).getTime();
+        } else if (field === 'configuration' || (field === 'meta' && quotation[field])) {
+          row[field] = JSON.stringify(quotation.configuration);
+        } else {
+          row[field] = quotation[field] || '';
+        }
       });
-      for (const quotation of quotations) {
-        const row: Record<string, any> = {};
-
-        USER_CSV_SCHEMA.quotationFields.forEach((field) => {
-          if (
-            (field === 'expires' ||
-              field === 'fulfilled' ||
-              field === 'rejected' ||
-              field === 'deleted') &&
-            quotation[field]
-          ) {
-            row[field] = new Date(quotation[field]).getTime();
-          } else if (field === 'configuration' || (field === 'meta' && quotation[field])) {
-            row[field] = JSON.stringify(quotation.configuration);
-          } else {
-            row[field] = quotation[field] || '';
-          }
-        });
-        quotationRows.push(row);
-      }
+      quotationRows.push(row);
     }
+  }
 
-    const userCSV = await generateCSVFileAndURL({
-      headers: USER_CSV_SCHEMA.userFields,
-      rows: userRows,
-      directoryName: EXPORTS_DIRECTORY,
-      fileName: 'user_export.csv',
-      unchainedAPI,
+  if (options.exportEnrollments) {
+    const enrollments = await modules.enrollments.findEnrollments({
+      userId,
     });
 
-    const reviewCSV = options.exportReviews
-      ? await generateCSVFileAndURL({
-          headers: USER_CSV_SCHEMA.reviewFields,
-          rows: reviewRows,
-          directoryName: EXPORTS_DIRECTORY,
-          fileName: 'user_reviews_export.csv',
-          unchainedAPI,
-        })
-      : null;
-
-    const quotationCSV = options.exportQuotations
-      ? await generateCSVFileAndURL({
-          headers: USER_CSV_SCHEMA.quotationFields,
-          rows: quotationRows,
-          directoryName: EXPORTS_DIRECTORY,
-          fileName: 'user_quotations_export.csv',
-          unchainedAPI,
-        })
-      : null;
-
-    const bookmarksCSV = options.exportBookmarks
-      ? await generateCSVFileAndURL({
-          headers: USER_CSV_SCHEMA.bookmarkFields,
-          rows: bookmarkRows,
-          directoryName: EXPORTS_DIRECTORY,
-          fileName: 'user_bookmarks_export.csv',
-          unchainedAPI,
-        })
-      : null;
-    const ordersCSV = options.exportOrders
-      ? await generateCSVFileAndURL({
-          headers: USER_CSV_SCHEMA.orderFields,
-          rows: orderRows,
-          directoryName: EXPORTS_DIRECTORY,
-          fileName: 'user_orders_export.csv',
-          unchainedAPI,
-        })
-      : null;
-
-    return {
-      user: userCSV,
-      bookmarks: bookmarksCSV,
-      orders: ordersCSV,
-      reviews: reviewCSV,
-      quotations: quotationCSV,
-    };
+    for (const enrollment of enrollments) {
+      const row: Record<string, any> = {};
+      USER_CSV_SCHEMA.enrollmentFields.forEach((field) => {
+        if ((field === 'created' || field === 'deleted' || field === 'expires') && enrollment[field]) {
+          row[field] = new Date(enrollment[field]).getTime();
+        } else if (field === 'billingAddress' && enrollment[field]) {
+          row[field] = JSON.stringify(enrollment[field]);
+        } else if (field === 'contact.emailAddress' && enrollment.contact) {
+          row[field] = enrollment.contact.emailAddress || '';
+        } else if (field === 'contact.telNumber' && enrollment.contact) {
+          row[field] = enrollment.contact.telNumber || '';
+        } else if (field === 'delivery.providerId' && enrollment.delivery) {
+          row[field] = enrollment.delivery.deliveryProviderId || '';
+        } else if (field === 'payment.providerId' && enrollment.payment) {
+          row[field] = enrollment.payment.paymentProviderId || '';
+        } else if (field === 'delivery.meta' && enrollment.delivery) {
+          row[field] = (enrollment.delivery as any).meta
+            ? JSON.stringify((enrollment.delivery as any).meta)
+            : '';
+        } else if (field === 'payment.meta' && enrollment.payment) {
+          row[field] = (enrollment.payment as any).meta
+            ? JSON.stringify((enrollment.payment as any).meta)
+            : '';
+        } else if (field === 'configuration' || (field === 'meta' && enrollment[field])) {
+          row[field] = JSON.stringify(enrollment.configuration);
+        } else {
+          row[field] = enrollment[field] || '';
+        }
+      });
+      enrollmentRows.push(row);
+    }
   }
+
+  const userCSV = await generateCSVFileAndURL({
+    headers: USER_CSV_SCHEMA.userFields,
+    rows: userRows,
+    directoryName: EXPORTS_DIRECTORY,
+    fileName: 'user_export.csv',
+    unchainedAPI,
+  });
+
+  const reviewCSV = options.exportReviews
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.reviewFields,
+        rows: reviewRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_reviews_export.csv',
+        unchainedAPI,
+      })
+    : null;
+
+  const quotationCSV = options.exportQuotations
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.quotationFields,
+        rows: quotationRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_quotations_export.csv',
+        unchainedAPI,
+      })
+    : null;
+
+  const bookmarksCSV = options.exportBookmarks
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.bookmarkFields,
+        rows: bookmarkRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_bookmarks_export.csv',
+        unchainedAPI,
+      })
+    : null;
+  const ordersCSV = options.exportOrders
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.orderFields,
+        rows: orderRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_orders_export.csv',
+        unchainedAPI,
+      })
+    : null;
+  const enrollmentCSV = options.exportEnrollments
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.enrollmentFields,
+        rows: enrollmentRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_enrollments_export.csv',
+        unchainedAPI,
+      })
+    : null;
+
+  return {
+    user: userCSV,
+    bookmarks: bookmarksCSV,
+    orders: ordersCSV,
+    reviews: reviewCSV,
+    quotations: quotationCSV,
+    enrollments: enrollmentCSV,
+  };
 };
 
 export default exportUsersHandler;

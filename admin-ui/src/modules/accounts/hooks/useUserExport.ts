@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
 
 
-const USER_CSV_SCHEMA = {
+export const USER_CSV_SCHEMA = {
   userFields: [
     '_id',
     'emailAddresses',
@@ -70,6 +70,28 @@ const USER_CSV_SCHEMA = {
     'deleted',
     'meta',
     'configuration',
+  ],
+  enrollmentFields: [
+    '_id',
+    'userId',
+    'productId',
+    'enrollmentNumber',
+    'status',
+    'countryCode',
+    'currencyCode',
+    'quantity',
+    'created',
+    'deleted',
+    'expires',
+    'configuration',
+    'billingAddress',
+    'contact.emailAddress',
+    'contact.telNumber',
+    'delivery.providerId',
+    'payment.providerId',
+    'delivery.meta',
+    'payment.meta',
+    'meta',
   ],
 };
 export const useUserExport = () => {

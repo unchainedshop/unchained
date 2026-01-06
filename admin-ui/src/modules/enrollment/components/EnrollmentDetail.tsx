@@ -287,7 +287,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 </dt>
                 <dd className="mt-2 text-sm text-slate-500">
                   <Link
-                    href={`/delivery-provider?deliveryProviderId=${enrollment?.delivery?.provider._id}`}
+                    href={`/delivery-provider?deliveryProviderId=${enrollment?.delivery?.provider?._id}`}
                     className="text-slate-900 dark:text-slate-300"
                   >
                     {getInterfaceLabel(
