@@ -1,3 +1,4 @@
+import { User } from './users.js';
 import chainedUpsert from './utils/chainedUpsert.js';
 
 export const SimplePaymentProvider = {
@@ -11,7 +12,7 @@ export const SimplePaymentProvider = {
 export const SimplePaymentCredential = {
   paymentProviderId: SimplePaymentProvider._id,
   _id: 'simple-payment-credential',
-  userId: 'admin',
+  userId: User._id,
   isPreferred: true,
   created: new Date(),
 };

@@ -13,6 +13,7 @@ import seedPayments from './seeds/payments.js';
 import seedWarehousings from './seeds/warehousings.js';
 import seedOrders from './seeds/orders.js';
 import seedTokens from './seeds/tokens.js';
+import seedUsers from './seeds/users.js';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -43,7 +44,7 @@ export const setupDatabase = async () => {
 
   const { db } = getTestPlatform();
   const collections = await db.collections();
-  await Promise.all(collections.map(async (collection) => collection.deleteMany({})));  
+  await Promise.all(collections.map(async (collection) => collection.deleteMany({})));    
   await seedLocaleData(db);
   await seedProducts(db);
   await seedDeliveries(db);
@@ -51,6 +52,7 @@ export const setupDatabase = async () => {
   await seedWarehousings(db);
   await seedOrders(db);
   await seedTokens(db);
+  await seedUsers(db);
 
   return [db, null];
 };
