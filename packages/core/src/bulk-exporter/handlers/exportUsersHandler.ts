@@ -72,8 +72,10 @@ const USER_CSV_SCHEMA = {
     'rating',
     'title',
     'review',
-    'votes.type',
-    'votes.timestamp',
+    'vote.type',
+    'vote.timestamp',
+    'vote.meta',
+    'meta',
   ],
   quotationFields: [
     '_id',
@@ -167,13 +169,25 @@ const exportUsersHandler = async (
     for (const review of reviews) {
       const row: Record<string, any> = {};
       USER_CSV_SCHEMA.reviewFields.forEach((field) => {
-        if (field.startsWith('votes.')) {
+        if (field.startsWith('vote.')) {
           const voteField = field.split('.')[1];
-          row[field] = review.votes.map((vote) => vote[voteField]).join('; ');
+          if (voteField === 'timestamp' && review.votes[0][voteField]) {
+            row[field] = new Date(review.votes[0][voteField]).getTime();
+          } else if (voteField === 'meta' && review.votes[0][voteField]) {
+            row[field] = JSON.stringify(review.votes[0][voteField]);
+          } else {
+            row[field] = review.votes[0][voteField] || '';
+          }
         } else {
-          row[field] = review[field] || '';
+          if (field === 'meta' && review.meta) {
+            row[field] = JSON.stringify(review.meta);
+            return;
+          } else {
+            row[field] = review[field] || '';
+          }
         }
       });
+      reviewRows.push(row);
     }
     if (options.exportQuotations) {
       const quotations = await modules.quotations.findQuotations({

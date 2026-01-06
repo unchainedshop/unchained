@@ -50,8 +50,8 @@ export const USER_CSV_SCHEMA = {
     'rating',
     'title',
     'review',
-    'votes.type',
-    'votes.timestamp',
+    'vote.type',
+    'vote.timestamp',
   ],
   quotationFields: [
     '_id',
