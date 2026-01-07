@@ -78,6 +78,8 @@ To use a local LLM:
 llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
 ```
 
+> **Note:** Using llama.cpp with a local server is currently not possible because the Unchained MCP Zod schema has date patterns that llama.cpp cannot handle. See: https://github.com/ggml-org/llama.cpp/issues/12252
+
 Then set:
 ```
 OPENAI_BASE_URL=http://127.0.0.1:8080/v1
