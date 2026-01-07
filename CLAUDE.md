@@ -9,15 +9,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm install          # Install all dependencies (uses npm workspaces)
 npm run dev          # Start development with hot-reload (runs kitchensink example + admin-ui + watches packages)
 npm run build        # Clean all build artifacts and rebuild packages (excludes examples)
-tsc --build -w       # Watch mode for TypeScript compilation across all packages
+npm run dev:watch    # Watch mode for TypeScript compilation across all packages
 ```
 
 ### Testing
 ```bash
-npm test                    # Run all tests (unit + integration)
+npm run test                    # Run all tests (unit + integration)
 npm run test:run:unit       # Run unit tests only (uses node --test in packages/)
 npm run test:run:integration # Run integration tests (uses kitchensink example + tests/)
-node --test path/to/test.ts  # Run a single test file
+node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 path/to/test.ts  # Run a single integration test file (run from monorepo root directory)
+node --test path/to/test.ts # Run a single unit test file
 ```
 
 ### Package-Level Commands

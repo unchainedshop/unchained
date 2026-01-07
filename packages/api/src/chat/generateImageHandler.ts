@@ -5,13 +5,13 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:mcp');
 
-let experimental_generateImage: typeof aiTypes.experimental_generateImage;
+let generateImage: typeof aiTypes.generateImage;
 let tool: typeof aiTypes.tool;
 
 try {
   const aiTools = await import('ai');
   tool = aiTools.tool;
-  experimental_generateImage = aiTools.experimental_generateImage;
+  generateImage = aiTools.generateImage;
 } catch {
   // Already handled
 }
@@ -45,13 +45,12 @@ const generateImageHandler =
     model: aiTypes.ImageModel;
     uploadUrl?: string;
   }) => {
-    return tool<any>({
+    return tool({
       description: 'Generate an image based on the prompt',
-      inputSchema: inputSchema as any,
-      name: 'generate_image',
+      inputSchema,
       execute: async ({ prompt, size = '1024x1024' }) => {
         try {
-          const { image } = await experimental_generateImage({
+          const { image } = await generateImage({
             model,
             prompt,
             size: size as any,

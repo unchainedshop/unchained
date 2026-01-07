@@ -14,7 +14,7 @@ const logger = createLogger('unchained:api:chat');
 let convertToModelMessages: typeof aiTypes.convertToModelMessages;
 let stepCountIs: typeof aiTypes.stepCountIs;
 let streamText: typeof aiTypes.streamText;
-let createMCPClient: typeof mcpTypes.experimental_createMCPClient;
+let createMCPClient: typeof mcpTypes.createMCPClient;
 let StreamableHTTPClientTransport: typeof mcpSDKClientLibraryTypes.StreamableHTTPClientTransport;
 let Client: typeof mcpSDKClientTypes.Client;
 
@@ -29,7 +29,7 @@ try {
   convertToModelMessages = aiTools.convertToModelMessages;
   stepCountIs = aiTools.stepCountIs;
   streamText = aiTools.streamText;
-  createMCPClient = mcpTools.experimental_createMCPClient;
+  createMCPClient = mcpTools.createMCPClient;
 } catch {
   logger.warn(`optional peer npm packages 'ai' and '@ai-sdk/mcp' not installed, chat will not work`);
 }
@@ -136,7 +136,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         },
       };
 
-      const normalizedMessages = convertToModelMessages(messages, { tools: cacheControlledTools });
+      const normalizedMessages = await convertToModelMessages(messages, { tools: cacheControlledTools });
 
       if (normalizedMessages.length > 0) {
         const lastIndex = normalizedMessages.length - 1;
