@@ -1,5 +1,5 @@
+import { Locker, MongoAdapter } from '@kontsedal/locco';
 import { generateDbFilterById, type ModuleInput, mongodb } from '@unchainedshop/mongodb';
-import { createRequire } from 'node:module';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.ts';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.ts';
 import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.ts';
@@ -15,10 +15,6 @@ import { configureOrdersModuleQueries } from './configureOrdersModule-queries.ts
 import { emit, registerEvents } from '@unchainedshop/events';
 
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
-
-// @kontsedal/locco uses a deprecated way of importing files in ESM (node16 behavior)
-const require = createRequire(import.meta.url);
-const { Locker, MongoAdapter } = require('@kontsedal/locco');
 
 // NOTE: Renamed from ORDER_FULLFILLED to ORDER_FULFILLED in v5.0.0
 // This is a breaking change for event subscribers
