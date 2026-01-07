@@ -1,5 +1,4 @@
 import Fastify from 'fastify';
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
@@ -18,14 +17,12 @@ const fastify = Fastify({
   trustProxy: true,
 });
 
-// llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
-const provider = process.env.OPENAI_BASE_URL && process.env.OPENAI_MODEL && createOpenAICompatible({
-  name: 'local',
-  baseURL: process.env.OPENAI_BASE_URL,
-});
+
+const provider = process.env.OPENAI_API_KEY && createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+}); 
 
 const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
-  baseURL: 'https://api.openai.com/v1',
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -51,7 +48,7 @@ try {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: true,
     chat: provider ? {
-      model: provider.chatModel(process.env.OPENAI_MODEL),
+      model: provider.chat(process.env.OPENAI_MODEL || "gpt-5.2"),
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     } : undefined,
     initPluginMiddlewares,

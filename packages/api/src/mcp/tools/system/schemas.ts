@@ -146,11 +146,16 @@ export const actionValidators = {
       .describe(
         'Identifier of the worker that completed the task. Used for logging and tracking purposes.',
       ),
-    started: z.date().optional().describe('Timestamp when the worker began executing this work item.'),
-    finished: z
-      .date()
+    started: z
+      .string()
+      .datetime()
       .optional()
-      .describe('Timestamp when the work execution completed (success or failure).'),
+      .describe('ISO 8601 timestamp when the worker began executing this work item.'),
+    finished: z
+      .string()
+      .datetime()
+      .optional()
+      .describe('ISO 8601 timestamp when the work execution completed (success or failure).'),
   }),
 
   WORKER_PROCESS_NEXT: z.object({
@@ -292,13 +297,15 @@ export const SystemManagementSchema = {
     .optional()
     .describe('Success status for WORKER_FINISH_WORK action. Required to mark work as finished.'),
   started: z
-    .date()
+    .string()
+    .datetime()
     .optional()
-    .describe('Start timestamp for WORKER_FINISH_WORK action. When worker began execution.'),
+    .describe('ISO 8601 start timestamp for WORKER_FINISH_WORK action. When worker began execution.'),
   finished: z
-    .date()
+    .string()
+    .datetime()
     .optional()
-    .describe('Finish timestamp for WORKER_FINISH_WORK action. When work completed.'),
+    .describe('ISO 8601 finish timestamp for WORKER_FINISH_WORK action. When work completed.'),
   status: z
     .array(z.enum(WorkStatusKeys))
     .optional()
