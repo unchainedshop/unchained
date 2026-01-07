@@ -215,7 +215,7 @@ See [MIGRATION.md](MIGRATION.md) for upgrade instructions between major versions
 Unchained provides a Claude Code skill to help with upgrades:
 
 ```bash
-claude skill install https://docs.unchained.shop/skills/upgrade-unchained
+claude "skill install https://docs.unchained.shop/skills/upgrade-unchained/SKILL.md"
 ```
 
 This skill guides Claude through fetching the correct migration guide, changelog, and examples for your target version.

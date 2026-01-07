@@ -1,4 +1,6 @@
-# Unchained Engine v4.6 (unreleased)
+# Unchained Engine v4.7 (unreleased)
+
+# Unchained Engine v4.6
 
 ## Minor
 - Added OCSF-compliant audit trail system in `@unchainedshop/events` for security monitoring and compliance (SOC 2, GDPR, HIPAA). Enable with `UNCHAINED_AUDIT_ENABLED=true`.
