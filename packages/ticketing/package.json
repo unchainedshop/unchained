@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/ticketing",
   "description": "Event ticketing extension for the Unchained Engine with PDF and wallet pass support",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
@@ -34,14 +34,14 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^4.5.0",
-    "@unchainedshop/core": "^4.5.0",
-    "@unchainedshop/core-files": "^4.5.0",
-    "@unchainedshop/core-warehousing": "^4.5.0",
-    "@unchainedshop/core-worker": "^4.5.0",
-    "@unchainedshop/events": "^4.5.0",
-    "@unchainedshop/logger": "^4.5.0",
-    "@unchainedshop/mongodb": "^4.5.0"
+    "@unchainedshop/api": "^4.6.0",
+    "@unchainedshop/core": "^4.6.0",
+    "@unchainedshop/core-files": "^4.6.0",
+    "@unchainedshop/core-warehousing": "^4.6.0",
+    "@unchainedshop/core-worker": "^4.6.0",
+    "@unchainedshop/events": "^4.6.0",
+    "@unchainedshop/logger": "^4.6.0",
+    "@unchainedshop/mongodb": "^4.6.0"
   },
   "peerDependencies": {
     "@parse/node-apn": "^7.0.1",

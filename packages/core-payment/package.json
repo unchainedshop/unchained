@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-payment",
   "description": "Payment provider management module for the Unchained Engine",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "main": "lib/payment-index.js",
   "types": "lib/payment-index.d.ts",
   "type": "module",
@@ -35,9 +35,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.5.0",
-    "@unchainedshop/logger": "^4.5.0",
-    "@unchainedshop/utils": "^4.5.0",
+    "@unchainedshop/events": "^4.6.0",
+    "@unchainedshop/logger": "^4.6.0",
+    "@unchainedshop/utils": "^4.6.0",
     "expiry-map": "^2.0.0",
     "p-memoize": "^8.0.0"
   },
