@@ -70,8 +70,15 @@ test.describe('Product: Commerce', async () => {
           commerce: {
             pricing: [
               {
+                amount: 1000,
+                isTaxable: true,
+                isNetPrice: false,
+                currencyCode: 'CHF',
+                countryCode: 'CH',
+              },
+              {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
@@ -85,7 +92,7 @@ test.describe('Product: Commerce', async () => {
       assert.partialDeepStrictEqual(updateProductCommerce, {
         _id: SimpleProduct._id,
         catalogPrice: {
-          amount: 100,
+          amount: 1000,
           isTaxable: true,
           isNetPrice: false,
           currencyCode: 'CHF',
@@ -108,7 +115,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
@@ -137,7 +144,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
@@ -169,7 +176,7 @@ test.describe('Product: Commerce', async () => {
             pricing: [
               {
                 amount: 100,
-                maxQuantity: 50,
+                minQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
                 currencyCode: 'CHF',
