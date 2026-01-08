@@ -67,6 +67,8 @@ export interface UserQuery {
   tags?: string[];
   userIds?: string[];
   username?: string;
+  usernames?: string[];
+  emails?: string[];
   web3Verified?: boolean;
 }
 

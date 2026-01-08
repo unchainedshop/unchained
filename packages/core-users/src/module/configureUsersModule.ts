@@ -64,6 +64,8 @@ export const buildFindSelector = ({
   tags,
   userIds,
   username,
+  usernames,
+  emails,
   web3Verified,
 }: UserQuery) => {
   const selector: mongodb.Filter<User> = {};
@@ -74,6 +76,16 @@ export const buildFindSelector = ({
   }
   if (username) {
     selector.username = insensitiveTrimmedRegexOperator(username);
+  }
+  if (usernames?.length) {
+    selector.username = {
+      $in: usernames.map((u) => insensitiveTrimmedRegexOperator(u)),
+    } as any;
+  }
+  if (emails?.length) {
+    selector['emails.address'] = {
+      $in: emails.map((e) => insensitiveTrimmedRegexOperator(e)),
+    } as any;
   }
   if (emailVerified === true) {
     selector['emails.verified'] = true;
