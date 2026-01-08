@@ -117,7 +117,7 @@ const Layout = ({
       }),
       icon: FolderArrowDownIcon,
       href: '/exports',
-      count: recentExports?.count,
+      count: recentExports?.count || '',
     },
     isSystemReady && {
       name: formatMessage({

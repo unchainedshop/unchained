@@ -34,7 +34,9 @@ interface RecentExportsResult {
   exports: ExportGroup[];
 }
 
-const getActiveFilesAndCount = (workQueue: ExportedWork[]): RecentExportsResult => {
+const getActiveFilesAndCount = (
+  workQueue: ExportedWork[],
+): RecentExportsResult => {
   if (!workQueue?.length) {
     return { exports: [], count: 0 };
   }

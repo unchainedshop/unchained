@@ -51,7 +51,6 @@ const useWorkQueue = ({
   offset = 0,
   pollInterval = 1000,
 }: IWorkQueueQueryVariables & { pollInterval?: number }) => {
-  const { parseDate } = useFormatDateTime();
   const { data, loading, error, fetchMore, previousData } = useQuery<
     IWorkQueueQuery,
     IWorkQueueQueryVariables
