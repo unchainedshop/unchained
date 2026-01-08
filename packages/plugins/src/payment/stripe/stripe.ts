@@ -10,16 +10,17 @@ const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = proces
 export let stripe: Stripe;
 const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
-try {
-  if (!STRIPE_SECRET) {
-    logger.warn('STRIPE_SECRET is not set, skipping initialization');
+if (!STRIPE_SECRET) {
+  logger.warn('STRIPE_SECRET is not set, skipping initialization');
+} else {
+  try {
+    const { default: Stripe } = await import('stripe');
+    stripe = new Stripe(STRIPE_SECRET, {
+      apiVersion: '2025-12-15.clover',
+    });
+  } catch {
+    logger.warn(`optional peer npm package 'stripe' not installed, stripe adapter will not work`);
   }
-  const { default: Stripe } = await import('stripe');
-  stripe = new Stripe(STRIPE_SECRET as string, {
-    apiVersion: '2025-12-15.clover',
-  });
-} catch {
-  logger.warn(`optional peer npm package 'stripe' not installed, stripe adapter will not work`);
 }
 
 export const upsertCustomer = async ({ userId, name, email }): Promise<string> => {
