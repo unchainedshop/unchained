@@ -1,0 +1,355 @@
+import type { UnchainedCore } from '../../core-index.ts';
+import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
+import { z } from 'zod';
+import { EXPORTS_DIRECTORY } from '../createBulkExporter.ts';
+
+export const UserExportPayloadSchema = z.object({
+  exportReviews: z.boolean().optional(),
+  exportOrders: z.boolean().optional(),
+  exportBookmarks: z.boolean().optional(),
+  exportEvents: z.boolean().optional(),
+  exportQuotations: z.boolean().optional(),
+  exportEnrollments: z.boolean().optional(),
+  userId: z.string().optional(),
+});
+
+export interface UserExportParams {
+  exportReviews?: boolean;
+  exportOrders?: boolean;
+  exportBookmarks?: boolean;
+  exportEvents?: boolean;
+  exportQuotations?: boolean;
+  exportEnrollments?: boolean;
+  userId: string;
+}
+
+const USER_CSV_SCHEMA = {
+  userFields: [
+    '_id',
+    'emailAddresses',
+    'tags',
+    'roles',
+    'username',
+    'created',
+    'isGuest',
+    'displayName',
+    'birthday',
+    'phoneMobile',
+    'gender',
+    'address.addressLine',
+    'address.addressLine2',
+    'address.city',
+    'address.company',
+    'address.countryCode',
+    'address.firstName',
+    'address.lastName',
+    'address.postalCode',
+    'address.regionCode',
+    'meta',
+    'lastBillingAddress',
+    'lastContact',
+    'lastLogin',
+  ],
+  bookmarkFields: ['_id', 'productId', 'userId'],
+  orderFields: [
+    '_id',
+    'userId',
+    'orderNumber',
+    'status',
+    'billingAddress',
+    'contact',
+    'countryCode',
+    'currencyCode',
+    'deliveryId',
+    'paymentId',
+    'confirmed',
+    'ordered',
+    'fulfilled',
+    'products',
+  ],
+  reviewFields: [
+    '_id',
+    'productId',
+    'authorId',
+    'rating',
+    'title',
+    'review',
+    'vote.type',
+    'vote.timestamp',
+    'vote.meta',
+    'meta',
+  ],
+  quotationFields: [
+    '_id',
+    'userId',
+    'quotationNumber',
+    'productId',
+    'status',
+    'price',
+    'expires',
+    'fulfilled',
+    'rejected',
+    'deleted',
+    'meta',
+    'configuration',
+  ],
+  enrollmentFields: [
+    '_id',
+    'userId',
+    'productId',
+    'enrollmentNumber',
+    'status',
+    'countryCode',
+    'currencyCode',
+    'quantity',
+    'created',
+    'deleted',
+    'expires',
+    'configuration',
+    'billingAddress',
+    'contact.emailAddress',
+    'contact.telNumber',
+    'delivery.providerId',
+    'payment.providerId',
+    'delivery.meta',
+    'payment.meta',
+    'meta',
+  ],
+};
+
+const exportUsersHandler = async (
+  { userId, ...options }: UserExportParams,
+  _,
+  unchainedAPI: UnchainedCore,
+) => {
+  const { modules } = unchainedAPI;
+  const user = await modules.users.findUserById(userId);
+  const userRows: Record<string, any>[] = [];
+  const orderRows: Record<string, any>[] = [];
+  const bookmarkRows: Record<string, any>[] = [];
+  const quotationRows: Record<string, any>[] = [];
+  const reviewRows: Record<string, any>[] = [];
+  const enrollmentRows: Record<string, any>[] = [];
+
+  if (!user) throw new Error(`User with ID ${userId} not found`);
+
+  userRows.push({
+    _id: user._id,
+    emailAddresses: user.emails ? user.emails.map((email: any) => email.address).join('; ') : '',
+    created: new Date(user.created).getTime(),
+    isGuest: user.guest || false,
+    tags: user.tags ? user.tags.join('; ') : '',
+    roles: user.roles ? user.roles.join('; ') : '',
+    username: user.username || '',
+    displayName: user.profile?.displayName || '',
+    birthday: user.profile?.birthday ? new Date(user.profile?.birthday).getTime() : '',
+    phoneMobile: user.profile?.phoneMobile || '',
+    gender: user.profile?.gender || '',
+    'address.addressLine': user.profile?.address?.addressLine || '',
+    'address.addressLine2': user.profile?.address?.addressLine2 || '',
+    'address.city': user.profile?.address?.city || '',
+    'address.company': user.profile?.address?.company || '',
+    'address.countryCode': user.profile?.address?.countryCode || '',
+    'address.firstName': user.profile?.address?.firstName || '',
+    'address.lastName': user.profile?.address?.lastName || '',
+    'address.postalCode': user.profile?.address?.postalCode || '',
+    'address.regionCode': user.profile?.address?.regionCode || '',
+    meta: user.meta ? JSON.stringify(user.meta) : '',
+    lastBillingAddress: user.lastBillingAddress ? JSON.stringify(user.lastBillingAddress) : '',
+    lastContact: user.lastContact ? JSON.stringify(user.lastContact) : '',
+    lastLogin: user.lastLogin ? JSON.stringify(user.lastLogin) : '',
+  });
+
+  if (options.exportBookmarks) {
+    const bookmarks = await modules.bookmarks.findBookmarksByUserId(userId);
+    for (const bookmark of bookmarks) {
+      const row: Record<string, any> = {};
+      USER_CSV_SCHEMA.bookmarkFields.forEach((field) => {
+        row[field] = bookmark[field] || '';
+      });
+      bookmarkRows.push(row);
+    }
+  }
+  if (options.exportOrders) {
+    const orders = await modules.orders.findOrders({ userId });
+
+    for await (const order of orders) {
+      const positions = await modules.orders.positions.findOrderPositions({ orderId: order._id });
+      const row: Record<string, any> = {};
+      USER_CSV_SCHEMA.orderFields.forEach((field) => {
+        if ((field === 'ordered' || field === 'confirmed' || field === 'fulfilled') && order[field]) {
+          row[field] = new Date(order[field]).getTime();
+        } else if (field === 'products') {
+          row[field] = positions.map((pos) => `${pos.productId}~${pos.quantity}`).join('; ');
+        } else if (field === 'billingAddress' && order.billingAddress) {
+          row[field] = JSON.stringify(order.billingAddress);
+        } else if (field === 'contact' && order.contact) {
+          row[field] = JSON.stringify(order.contact);
+        } else {
+          row[field] = order[field] || '';
+        }
+      });
+      orderRows.push(row);
+    }
+  }
+
+  if (options.exportReviews) {
+    const reviews = await modules.products.reviews.findProductReviews({
+      authorId: userId,
+    });
+    for (const review of reviews) {
+      const row: Record<string, any> = {};
+      USER_CSV_SCHEMA.reviewFields.forEach((field) => {
+        if (field.startsWith('vote.')) {
+          const voteField = field.split('.')[1];
+          if (voteField === 'timestamp' && review.votes[0][voteField]) {
+            row[field] = new Date(review.votes[0][voteField]).getTime();
+          } else if (voteField === 'meta' && review.votes[0][voteField]) {
+            row[field] = JSON.stringify(review.votes[0][voteField]);
+          } else {
+            row[field] = review.votes[0][voteField] || '';
+          }
+        } else {
+          if (field === 'meta' && review.meta) {
+            row[field] = JSON.stringify(review.meta);
+          } else {
+            row[field] = review[field] || '';
+          }
+        }
+      });
+      reviewRows.push(row);
+    }
+  }
+  if (options.exportQuotations) {
+    const quotations = await modules.quotations.findQuotations({
+      userId,
+    });
+    for (const quotation of quotations) {
+      const row: Record<string, any> = {};
+
+      USER_CSV_SCHEMA.quotationFields.forEach((field) => {
+        if (
+          (field === 'expires' ||
+            field === 'fulfilled' ||
+            field === 'rejected' ||
+            field === 'deleted') &&
+          quotation[field]
+        ) {
+          row[field] = new Date(quotation[field]).getTime();
+        } else if (field === 'configuration' || (field === 'meta' && quotation[field])) {
+          row[field] = JSON.stringify(quotation.configuration);
+        } else {
+          row[field] = quotation[field] || '';
+        }
+      });
+      quotationRows.push(row);
+    }
+  }
+
+  if (options.exportEnrollments) {
+    const enrollments = await modules.enrollments.findEnrollments({
+      userId,
+    });
+
+    for (const enrollment of enrollments) {
+      const row: Record<string, any> = {};
+      USER_CSV_SCHEMA.enrollmentFields.forEach((field) => {
+        if ((field === 'created' || field === 'deleted' || field === 'expires') && enrollment[field]) {
+          row[field] = new Date(enrollment[field]).getTime();
+        } else if (field === 'billingAddress' && enrollment[field]) {
+          row[field] = JSON.stringify(enrollment[field]);
+        } else if (field === 'contact.emailAddress' && enrollment.contact) {
+          row[field] = enrollment.contact.emailAddress || '';
+        } else if (field === 'contact.telNumber' && enrollment.contact) {
+          row[field] = enrollment.contact.telNumber || '';
+        } else if (field === 'delivery.providerId' && enrollment.delivery) {
+          row[field] = enrollment.delivery.deliveryProviderId || '';
+        } else if (field === 'payment.providerId' && enrollment.payment) {
+          row[field] = enrollment.payment.paymentProviderId || '';
+        } else if (field === 'delivery.meta' && enrollment.delivery) {
+          row[field] = (enrollment.delivery as any).meta
+            ? JSON.stringify((enrollment.delivery as any).meta)
+            : '';
+        } else if (field === 'payment.meta' && enrollment.payment) {
+          row[field] = (enrollment.payment as any).meta
+            ? JSON.stringify((enrollment.payment as any).meta)
+            : '';
+        } else if (field === 'configuration' || (field === 'meta' && enrollment[field])) {
+          row[field] = JSON.stringify(enrollment.configuration);
+        } else {
+          row[field] = enrollment[field] || '';
+        }
+      });
+      enrollmentRows.push(row);
+    }
+  }
+
+  const userCSV = await generateCSVFileAndURL({
+    headers: USER_CSV_SCHEMA.userFields,
+    rows: userRows,
+    directoryName: EXPORTS_DIRECTORY,
+    fileName: 'user_export.csv',
+    unchainedAPI,
+  });
+
+  const reviewCSV = options.exportReviews
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.reviewFields,
+        rows: reviewRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_reviews_export.csv',
+        unchainedAPI,
+      })
+    : null;
+
+  const quotationCSV = options.exportQuotations
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.quotationFields,
+        rows: quotationRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_quotations_export.csv',
+        unchainedAPI,
+      })
+    : null;
+
+  const bookmarksCSV = options.exportBookmarks
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.bookmarkFields,
+        rows: bookmarkRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_bookmarks_export.csv',
+        unchainedAPI,
+      })
+    : null;
+  const ordersCSV = options.exportOrders
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.orderFields,
+        rows: orderRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_orders_export.csv',
+        unchainedAPI,
+      })
+    : null;
+  const enrollmentCSV = options.exportEnrollments
+    ? await generateCSVFileAndURL({
+        headers: USER_CSV_SCHEMA.enrollmentFields,
+        rows: enrollmentRows,
+        directoryName: EXPORTS_DIRECTORY,
+        fileName: 'user_enrollments_export.csv',
+        unchainedAPI,
+      })
+    : null;
+
+  return {
+    user: userCSV,
+    bookmarks: bookmarksCSV,
+    orders: ordersCSV,
+    reviews: reviewCSV,
+    quotations: quotationCSV,
+    enrollments: enrollmentCSV,
+  };
+};
+
+export default exportUsersHandler;
+
+exportUsersHandler.payloadSchema = UserExportPayloadSchema;

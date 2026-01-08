@@ -14,6 +14,7 @@ import {
   QrCodeIcon,
   CubeIcon,
   DocumentTextIcon,
+  FolderArrowDownIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -34,6 +35,7 @@ import { useRouter } from 'next/router';
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
 import useApp from '../hooks/useApp';
 import useShopConfiguration from '../hooks/useShopConfiguration';
+import useRecentExports from '../../work/hooks/useRecentExports';
 
 const QuotationIcon = ({ className }) => (
   <svg
@@ -57,6 +59,7 @@ const Layout = ({
   const { formatMessage } = useIntl();
   const { currentUser } = useCurrentUser();
   const { configuration } = useShopConfiguration();
+  const recentExports = useRecentExports();
 
   const { shopInfo } = useShopInfo();
   const [hideNav, setHideNav] = useState(true);
@@ -106,6 +109,15 @@ const Layout = ({
       requiredRole: (user) => user?.roles?.includes('admin'),
       icon: CommandLineIcon,
       href: '/copilot',
+    },
+    {
+      name: formatMessage({
+        id: 'recent_exports',
+        defaultMessage: 'Recent exports',
+      }),
+      icon: FolderArrowDownIcon,
+      href: '/exports',
+      count: recentExports?.count || '',
     },
     isSystemReady && {
       name: formatMessage({

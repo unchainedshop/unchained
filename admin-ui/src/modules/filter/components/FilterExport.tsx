@@ -1,32 +1,67 @@
-import React from 'react';
+import { useCallback } from 'react';
 import Button from '../../common/components/Button';
 import { useIntl } from 'react-intl';
-import useFilters from '../hooks/useFilters';
 import { useFilterExport } from '../hooks/useFilterExport';
+import useFiltersCount from '../hooks/useFiltersCount';
+import useModal from '../../modal/hooks/useModal';
+import ExportOptionsForm, {
+  ExportOption,
+} from '../../common/components/ExportOptionsForm';
 
-const FilterExport = ({ queryString, includeInactive, sortKeys }) => {
-  const { filters, loading, client } = useFilters({
+interface FilterExportProps {
+  queryString?: string;
+  includeInactive?: boolean;
+}
+
+const FilterExport = ({ queryString, includeInactive }: FilterExportProps) => {
+  const { formatMessage } = useIntl();
+  const { filtersCount, loading } = useFiltersCount({
     queryString,
-    sort: sortKeys,
     includeInactive,
   });
+  const { setModal } = useModal();
+  const { exportFilters, isExporting } = useFilterExport();
 
-  const { exportFilters, isLoading } = useFilterExport(filters, client);
-  const { formatMessage } = useIntl();
+  const EXPORT_OPTIONS: ExportOption[] = [
+    {
+      key: 'exportFilters',
+      label: formatMessage({ id: 'filters', defaultMessage: 'Filters' }),
+    },
+    {
+      key: 'exportFilterOptions',
+      label: formatMessage({
+        id: 'filter_options',
+        defaultMessage: 'Filter options',
+      }),
+    },
+  ];
+
+  const handleSubmit = useCallback(
+    async (data: Record<string, boolean>) => {
+      await exportFilters({ queryString, includeInactive, ...data });
+      setModal(null);
+    },
+    [queryString, includeInactive, exportFilters, setModal],
+  );
 
   if (loading) return null;
 
   return (
     <Button
-      onClick={exportFilters}
-      disabled={isLoading || !filters.length}
+      onClick={() => {
+        setModal(
+          <ExportOptionsForm
+            options={EXPORT_OPTIONS}
+            onSubmit={handleSubmit}
+            loading={isExporting}
+          />,
+        );
+      }}
+      disabled={isExporting || !filtersCount}
       variant="secondary"
       text={
-        isLoading
-          ? formatMessage({
-              id: 'loading_translations',
-              defaultMessage: 'Loading translations...',
-            })
+        isExporting
+          ? formatMessage({ id: 'exporting', defaultMessage: 'Exporting...' })
           : formatMessage({ id: 'export', defaultMessage: 'Export' })
       }
     />

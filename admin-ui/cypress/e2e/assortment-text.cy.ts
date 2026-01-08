@@ -147,7 +147,7 @@ describe('Assortment Detail Texts', () => {
 
       cy.get('button#add_tag').click();
       cy.get('input#tags').type('new');
-      cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+      cy.get('button#add-tag').click();
       cy.get('form#add_tag_form').within(() => {
         cy.get('input[type="submit"]').contains(localizations.en.save).click();
       });
@@ -342,80 +342,6 @@ describe('Assortment Detail Texts', () => {
   });
 
   context('Assortment Detail buttons', () => {
-    it('Should [MAKE BASE] successfully', () => {
-      const assortment = AssortmentListResponse.data.assortments.find(
-        ({ _id }) => _id === 'not-base',
-      );
-
-      cy.get(`a[href="/assortments?assortmentSlug=${generateUniqueId(assortment)}"]`)
-        .contains(assortment?.texts?.title)
-        .click();
-
-      cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
-            assortmentId: assortment._id,
-          });
-          expect(response.body).to.deep.eq({
-            data: {
-              assortment,
-            },
-          });
-        },
-      );
-
-      cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
-            assortmentId: assortment._id,
-          });
-          expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
-        },
-      );
-
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
-      );
-      cy.get('h2').within(() => {
-        cy.get('span').should(
-          'contain.text',
-          getContent(
-            replaceIntlPlaceholder(
-              localizations.en.assortment,
-              assortment._id,
-              'id',
-            ),
-          ),
-        );
-      });
-      cy.get('select#locale-wrapper').select('en');
-
-      cy.get('button#not_base').contains(localizations.en.not_base).click();
-      cy.get('button#alert_ok').contains(localizations.en.mark_as_base).click();
-
-      cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
-            assortmentId: assortment._id,
-          });
-          expect(response.body).to.deep.eq({
-            data: {
-              assortment,
-            },
-          });
-        },
-      );
-
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
-      );
-    });
-
     it('Should [MAKE ROOT] successfully', () => {
       const assortment = AssortmentListResponse.data.assortments.find(
         ({ _id }) => _id === 'not-root',

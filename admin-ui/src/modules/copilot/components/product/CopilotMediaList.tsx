@@ -70,14 +70,14 @@ const CopilotMediaList: React.FC<CopilotMediaListProps> = ({ media }) => {
               </span>
               <span>
                 {formatMessage({
-                  id: 'media.created',
+                  id: 'created',
                   defaultMessage: 'Created',
                 })}
                 : {formatDateTime(m.created)}
               </span>
               <span>
                 {formatMessage({
-                  id: 'media.updated',
+                  id: 'updated',
                   defaultMessage: 'Updated',
                 })}
                 : {formatDateTime(m.updated)}

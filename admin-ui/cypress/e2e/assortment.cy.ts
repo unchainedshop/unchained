@@ -294,7 +294,7 @@ describe('Assortment', () => {
 
   it('Should update data and route when [ADD TAG] accordingly', () => {
     cy.get('input#tag-input').type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -314,7 +314,7 @@ describe('Assortment', () => {
       });
     });
     cy.get('input#tag-input').type('old');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -337,7 +337,7 @@ describe('Assortment', () => {
 
   it('Should update data and route when [REMOVE TAG IN ADD TAG] accordingly', () => {
     cy.get('input#tag-input').type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -431,7 +431,7 @@ describe('Assortment', () => {
 
     // add tags
     cy.get('input#tag-input').type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -514,7 +514,7 @@ describe('Assortment', () => {
 
     cy.get('input#title').type('mobile');
     cy.get('input#tags').type('new');
-    cy.get('button#add-tag').contains(localizations.en.add_tag).click();
+    cy.get('button#add-tag').click();
     cy.get('input#isRoot').check();
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_assortment)

@@ -1,66 +1,73 @@
 import { useCallback } from 'react';
 import Button from '../../common/components/Button';
 import { useIntl } from 'react-intl';
-import { useAssortmentExport } from '../hooks/useAssortmentExport';
-import useAssortmentsCount from '../hooks/useAssortmentsCount';
+import { useUserExport } from '../hooks/useUserExport';
 import ExportOptionsForm, {
   ExportOption,
 } from '../../common/components/ExportOptionsForm';
 import useModal from '../../modal/hooks/useModal';
+import useUser from '../hooks/useUser';
 
-interface AssortmentExportProps {
-  includeInactive?: boolean;
-  includeLeaves?: boolean;
-  queryString?: string;
-  tags?: string[];
+interface UserExportProps {
+  userId: string;
 }
 
-const AssortmentExport = ({
-  includeInactive,
-  includeLeaves,
-  queryString,
-  tags,
-}: AssortmentExportProps) => {
+const UserExport = ({
+  userId
+}: UserExportProps) => {
   const { setModal } = useModal();
-  const { assortmentsCount, loading } = useAssortmentsCount({
-    queryString,
-    includeInactive,
-    includeLeaves,
-    tags,
+  const { user, loading } = useUser({
+    userId,    
   });
-  const { exportAssortments, isExporting } = useAssortmentExport();
+  const { exportUser, isExporting } = useUserExport();
   const { formatMessage } = useIntl();
 
   const EXPORT_OPTIONS: ExportOption[] = [
     {
-      key: 'exportAssortments',
+      key: 'exportBookmarks',
       label: formatMessage({
-        id: 'assortments',
-        defaultMessage: 'Assortments',
+        id: 'bookmarks',
+        defaultMessage: 'Bookmarks',
       }),
       defaultChecked: true,
     },
     {
-      key: 'exportProducts',
+      key: 'exportOrders',
       label: formatMessage({
-        id: 'assortment_products',
-        defaultMessage: 'Assortment products',
+        id: 'orders',
+        defaultMessage: 'Orders',
       }),
       defaultChecked: true,
     },
     {
-      key: 'exportLinks',
+      key: 'exportReviews',
       label: formatMessage({
-        id: 'assortment_links',
-        defaultMessage: 'Assortment links',
+        id: 'reviews',
+        defaultMessage: 'Reviews',
+      }),
+      defaultChecked: true,
+    },
+/*     {
+      key: 'exportEvents',
+      label: formatMessage({
+        id: 'events',
+        defaultMessage: 'Events',
+      }),
+      defaultChecked: true,
+    }, */
+    {
+      key: 'exportQuotations',
+      label: formatMessage({
+        id: 'quotations',
+        defaultMessage: 'Quotations',
       }),
       defaultChecked: true,
     },
     {
-      key: 'exportFilters',
+      key: 'exportEnrollments',
       label: formatMessage({
-        id: 'assortment_filters',
-        defaultMessage: 'Assortment filters',
+        id: 'enrollments',
+        defaultMessage: 'Enrollments',
       }),
       defaultChecked: true,
     },
@@ -68,16 +75,13 @@ const AssortmentExport = ({
 
   const handleSubmit = useCallback(
     async (data: Record<string, boolean>) => {
-      await exportAssortments({
-        queryString,
-        includeInactive,
-        includeLeaves,
-        tags,
+      await exportUser({
+        userId,
         ...data,
       });
       setModal(null);
     },
-    [queryString, includeInactive, includeLeaves, tags, exportAssortments, setModal],
+    [userId, exportUser, setModal],
   );
 
   if (loading) return null;
@@ -93,7 +97,7 @@ const AssortmentExport = ({
           />,
         );
       }}
-      disabled={isExporting || !assortmentsCount}
+      disabled={isExporting || !user}
       variant="secondary"
       text={
         isExporting
@@ -104,4 +108,4 @@ const AssortmentExport = ({
   );
 };
 
-export default AssortmentExport;
+export default UserExport;

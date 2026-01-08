@@ -74,22 +74,22 @@ export const CopilotFilterItem = ({ filter, toolCallId = '' }) => {
           >
             {filter.isActive
               ? formatMessage({
-                  id: 'filter.active',
+                  id: 'active',
                   defaultMessage: 'Active',
                 })
               : formatMessage({
-                  id: 'filter.inactive',
+                  id: 'inactive',
                   defaultMessage: 'Inactive',
                 })}
           </span>
           <span>
-            {formatMessage({ id: 'filter.created', defaultMessage: 'Created' })}
-            : {formatDateTime(filter.created)}
+            {formatMessage({ id: 'created', defaultMessage: 'Created' })}:{' '}
+            {formatDateTime(filter.created)}
           </span>
           {filter.updated && (
             <span>
               {formatMessage({
-                id: 'filter.updated',
+                id: 'updated',
                 defaultMessage: 'Updated',
               })}
               : {formatDateTime(filter.updated)}

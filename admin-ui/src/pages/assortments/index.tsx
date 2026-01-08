@@ -136,8 +136,7 @@ const AssortmentsView = () => {
         <AssortmentExport
           includeInactive={includeInactive}
           includeLeaves={includeLeaves}
-          queryString={queryString}
-          sort={sort}
+          queryString={queryString as string}
           tags={tags}
         />
         <AssortmentImport />

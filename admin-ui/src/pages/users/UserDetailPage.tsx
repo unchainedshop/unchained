@@ -14,6 +14,7 @@ import DangerMessage from '../../modules/modal/components/DangerMessage';
 import { toast } from 'react-toastify';
 import useAuth from '../../modules/Auth/useAuth';
 import formatUsername from '../../modules/common/utils/formatUsername';
+import UserExport from '../../modules/accounts/components/UserExport';
 
 const UserDetailPage = ({ userId }) => {
   const { formatMessage } = useIntl();
@@ -74,7 +75,11 @@ const UserDetailPage = ({ userId }) => {
           },
           { id: user?.username },
         )}
-      />
+      >
+        <UserExport
+          userId={userId}
+        />
+        </PageHeader>
       <UserSettings user={user} extendedData={extendedData} />
     </div>
   );
