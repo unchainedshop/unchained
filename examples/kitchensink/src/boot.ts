@@ -20,7 +20,7 @@ const fastify = Fastify({
 
 const provider = process.env.OPENAI_API_KEY && createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-}); 
+});
 
 const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,

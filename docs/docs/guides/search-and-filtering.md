@@ -171,7 +171,7 @@ Note: Filter option texts are managed separately via `updateFilterTexts`.
 Filters are typically assigned through the Assortment system. Products inherit filters from their assortments, and filter options are managed separately through filter configuration.
 
 ```graphql
-mutation CreateFilter {
+mutation LinkAssortmentFilter {
   addAssortmentFilter(assortmentId: "product-assortment", filterId: "filter-id") {
     _id
     assortment {
@@ -193,8 +193,31 @@ mutation CreateFilter {
 ```
 
 ```graphql
-query ProductFilters($productId: ID!) {
-  product(productId: $productId) {
+
+mutation LinkAssortmentProduct {
+  addAssortmentProduct(assortmentId: "product-assortment", productId: "product-id") {
+    _id
+    assortment {
+      _id
+      texts {
+        _id
+        title
+      }
+    }
+    product {
+      _id
+      texts {
+        _id
+        title
+      }
+    }
+  }
+}
+```
+
+```graphql
+query ProductFilters {
+  product(productId: "product-id") {
     _id
     texts {
       title
