@@ -24,11 +24,14 @@ The Unchained Ticketing extension provides:
 │  (Tokens)   │     │  (Magic Keys)    │     │  (PDF, Wallet)      │
 └─────────────┘     └──────────────────┘     └─────────────────────┘
 ```
+By default the module provides a SVG bare bone ticket,  google wallet and apple pass templates.
+In order to use google wallet and apple pass templates you need to install the required dependencies `googleapis` & `jsonwebtoken` for google wallet `@walletpass/pass-js` for apple pass beforehand.
 
 ## Installation
 
 ```bash
 npm install @unchainedshop/ticketing
+npm install googleapis jsonwebtoken @walletpass/pass-js
 ```
 
 ## Basic Setup
@@ -44,6 +47,8 @@ import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import configureAppleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureAppleWalletPass.js';
+import configureGoogleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureGoogleWalletPass.js';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -58,9 +63,35 @@ const platform = await startPlatform({
 
 // Setup ticketing with your custom renderers
 setupTicketing(platform.unchainedAPI as TicketingAPI, {
-  renderOrderPDF: myPDFRenderer,
-  createAppleWalletPass: myAppleWalletRenderer,
-  createGoogleWalletPass: myGoogleWalletRenderer,
+  renderOrderPDF: undefined, // use default SVG template
+  createAppleWalletPass: configureAppleWalletPass({
+      templateConfig: {
+        description: 'Event Ticket',
+        organizationName: 'Unchained Commerce',
+        passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || 'pass.com.example.ticket',
+        teamIdentifier: process.env.PASS_TEAM_ID,
+        backgroundColor: 'rgb(255,255,255)',
+        foregroundColor: 'rgb(50,50,50)',
+      },
+      // Optional: customize field labels for localization
+      labels: {
+        eventLabel: 'Event',
+        locationLabel: 'Venue',
+        ticketNumberLabel: 'Ticket #',
+        infoLabel: 'Details',
+        slotChangeMessage: 'Event time changed: %@',
+        barcodeHint: 'Scan for entry',
+      },
+    }),
+  createGoogleWalletPass: configureGoogleWalletPass({
+      issuerName: 'Unchained Commerce',
+      countryCode: 'CH',
+      hexBackgroundColor: '#FFFFFF',
+      homepageUri: {
+        uri: 'https://unchained.shop',
+        description: 'Event Website',
+      },
+    }),
 });
 
 // Connect Unchained to Fastify
@@ -82,6 +113,8 @@ import express from 'express';
 import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
 import connectTicketingToExpress from '@unchainedshop/ticketing/lib/express.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import configureAppleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureAppleWalletPass.js';
+import configureGoogleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureGoogleWalletPass.js';
 
 const app = express();
 
@@ -91,9 +124,35 @@ const platform = await startPlatform({
 });
 
 setupTicketing(platform.unchainedAPI, {
-  renderOrderPDF: myPDFRenderer,
-  createAppleWalletPass: myAppleWalletRenderer,
-  createGoogleWalletPass: myGoogleWalletRenderer,
+  renderOrderPDF: undefined, // use default SVG template
+  createAppleWalletPass: configureAppleWalletPass({
+      templateConfig: {
+        description: 'Event Ticket',
+        organizationName: 'Unchained Commerce',
+        passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || 'pass.com.example.ticket',
+        teamIdentifier: process.env.PASS_TEAM_ID,
+        backgroundColor: 'rgb(255,255,255)',
+        foregroundColor: 'rgb(50,50,50)',
+      },
+      // Optional: customize field labels for localization
+      labels: {
+        eventLabel: 'Event',
+        locationLabel: 'Venue',
+        ticketNumberLabel: 'Ticket #',
+        infoLabel: 'Details',
+        slotChangeMessage: 'Event time changed: %@',
+        barcodeHint: 'Scan for entry',
+      },
+    }),
+  createGoogleWalletPass: configureGoogleWalletPass({
+      issuerName: 'Unchained Commerce',
+      countryCode: 'CH',
+      hexBackgroundColor: '#FFFFFF',
+      homepageUri: {
+        uri: 'https://unchained.shop',
+        description: 'Event Website',
+      },
+    }),
 });
 
 connectTicketingToExpress(app);
