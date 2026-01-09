@@ -53,12 +53,12 @@ query SearchProducts($query: String!) {
 ### Search with Pagination
 
 ```graphql
-query SearchWithPagination($query: String!) {
+query SearchWithPagination($query: String, $limit: Int, $offset: Int) {
   searchProducts(
-    queryString: $query
+    queryString: $query,    
   ) {
     filteredProductsCount
-    products {
+    products(limit: $limit, offset: $offset) {
       _id
       texts {
         title
@@ -169,6 +169,28 @@ Note: Filter option texts are managed separately via `updateFilterTexts`.
 ### Assigning Filters to Products
 
 Filters are typically assigned through the Assortment system. Products inherit filters from their assortments, and filter options are managed separately through filter configuration.
+
+```graphql
+mutation CreateFilter {
+  addAssortmentFilter(assortmentId: "product-assortment", filterId: "filter-id") {
+    _id
+    assortment {
+      _id
+      texts {
+        _id
+        title
+      }
+    }
+    filter {
+      _id
+      texts {
+        _id
+        title
+      }
+    }
+  }
+}
+```
 
 ```graphql
 query ProductFilters($productId: ID!) {
