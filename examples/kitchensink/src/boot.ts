@@ -53,7 +53,6 @@ try {
     } : undefined,
     initPluginMiddlewares,
   });
-
   await seed(platform.unchainedAPI);
 
   // Warning: Do not use this in production - creates access token for bulk import API

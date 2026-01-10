@@ -12,7 +12,6 @@ const googleWalletHandler: RouteHandlerMethod = async (
 ) => {
   const resolvedContext = req.unchainedContext;
   const { modules } = resolvedContext;
-
   const path = req.url;
 
   logger.info(`${path} (${JSON.stringify(req.query)})`);
