@@ -38,7 +38,7 @@ const buildIndexes = async <T extends Document>(
 export const buildDbIndexes = async <T extends Document>(
   collection: Collection<T>,
   indexes: Indexes,
-  { rebuild }: { rebuild?: boolean } = {},
+  { rebuild = true }: { rebuild?: boolean } = {},
 ) => {
   let success = true;
   const buildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
