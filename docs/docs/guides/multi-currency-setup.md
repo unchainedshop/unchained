@@ -188,11 +188,11 @@ await modules.products.prices.rates.updateRates([
 Use a worker to fetch rates periodically:
 
 ```typescript
-import '@unchainedshop/plugins/worker/external-update-rates';
+import '@unchainedshop/plugins/worker/update-coinbase-rates';
 
 // Configure the worker
 WorkerDirector.configureAutoscheduling({
-  type: 'EXTERNAL_UPDATE_RATES',
+  type: 'UPDATE_COINBASE_RATES',
   input: {
     baseCurrency: 'CHF',
   },

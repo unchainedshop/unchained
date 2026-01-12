@@ -28,28 +28,14 @@ npm install @apollo/client graphql
 
 ```typescript
 // lib/apollo-client.ts
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
-const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_UNCHAINED_URL || 'http://localhost:4010/graphql',
+const httpLink = new HttpLink({
+ uri: process.env.NEXT_PUBLIC_UNCHAINED_URL || 'http://localhost:4010/graphql',
+  credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
 });
-
-const authLink = setContext((_, { headers }) => {
-  const token = typeof window !== 'undefined'
-    ? localStorage.getItem('auth-token')
-    : null;
-
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
-
 export const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: httpLink,
   cache: new InMemoryCache(),
 });
 ```
@@ -66,12 +52,6 @@ import { createClient, fetchExchange, cacheExchange } from 'urql';
 const client = createClient({
   url: process.env.NEXT_PUBLIC_UNCHAINED_URL || 'http://localhost:4010/graphql',
   exchanges: [cacheExchange, fetchExchange],
-  fetchOptions: () => {
-    const token = localStorage.getItem('auth-token');
-    return {
-      headers: { authorization: token ? `Bearer ${token}` : '' },
-    };
-  },
 });
 ```
 
@@ -191,7 +171,7 @@ query Assortments {
 ### Search Products
 
 ```graphql
-query SearchProducts($queryString: String!, $filterQuery: [FilterQueryInput!]) {
+query SearchProducts($queryString: String, $filterQuery: [FilterQueryInput!]) {
   searchProducts(queryString: $queryString, filterQuery: $filterQuery) {
     products {
       _id
