@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-assortments",
   "description": "Assortment and category management module for the Unchained Engine",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "main": "lib/assortments-index.js",
   "types": "lib/assortments-index.d.ts",
   "type": "module",

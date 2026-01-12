@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-orders",
   "description": "Order management module for the Unchained Engine",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "main": "lib/orders-index.js",
   "types": "lib/orders-index.d.ts",
   "type": "module",

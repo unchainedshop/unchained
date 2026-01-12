@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-quotations",
   "description": "Quotation and RFQ management module for the Unchained Engine",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "main": "lib/quotations-index.js",
   "types": "lib/quotations-index.d.ts",
   "type": "module",
