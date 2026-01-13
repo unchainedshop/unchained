@@ -10,9 +10,9 @@ export const googleWalletHandler = async (
 ) => {
   const resolvedContext = req.unchainedContext;
   const { modules } = resolvedContext;
-  logger.info(`${req.path} (${JSON.stringify(req.query)})`);
+  logger.info(`${req.originalUrl} (${JSON.stringify(req.query)})`);
 
-  if (req.path.includes('/download/')) {
+  if (req.originalUrl.includes('/download/')) {
     try {
       const { tokenId } = req.params as { tokenId: string };
       const { hash } = req.query as { hash?: string };
