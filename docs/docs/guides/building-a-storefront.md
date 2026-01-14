@@ -7,7 +7,11 @@ description: Guide to building a frontend storefront with Unchained Engine
 
 # Building a Storefront
 
-This guide covers how to integrate a frontend application with Unchained Engine's GraphQL API.
+This guide covers how to build a **production-ready storefront** on top of **Unchained Engine’s GraphQL API**.
+
+Unchained is not just a product API — it is a **commerce engine**.  
+Prices, texts, taxes, availability, shipping and discounts are resolved dynamically based on **context**.
+
 
 ## Overview
 
@@ -15,7 +19,12 @@ Unchained Engine is headless, meaning it provides a GraphQL API that any fronten
 
 ```mermaid
 flowchart LR
-    S[Storefront<br/>React, Vue, Next.js] <--> U[Unchained Engine<br/>GraphQL API] <--> D[(MongoDB)]
+  B[Browser / Mobile App]  
+  U[Unchained Engine<br/>GraphQL]
+  D[(MongoDB)]
+
+  B -->|cookies + headers| U
+  U --> D
 ```
 
 ## Setting Up GraphQL Client
@@ -37,21 +46,6 @@ const httpLink = new HttpLink({
 export const client = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache(),
-});
-```
-
-### URQL
-
-```bash
-npm install urql graphql
-```
-
-```typescript
-import { createClient, fetchExchange, cacheExchange } from 'urql';
-
-const client = createClient({
-  url: process.env.NEXT_PUBLIC_UNCHAINED_URL || 'http://localhost:4010/graphql',
-  exchanges: [cacheExchange, fetchExchange],
 });
 ```
 
@@ -80,7 +74,6 @@ query Products($limit: Int, $offset: Int) {
     ... on SimpleProduct {
       simulatedPrice(currencyCode: "CHF") {
         amount
-        currencyCode
       }
     }
   }
@@ -634,67 +627,6 @@ export async function getStaticProps({ params }) {
     revalidate: 60, // Regenerate every 60 seconds
   };
 }
-```
-
-## Best Practices
-
-### 1. Cache Management
-
-Use Apollo's cache policies effectively:
-
-```typescript
-const client = new ApolloClient({
-  cache: new InMemoryCache({
-    typePolicies: {
-      Product: {
-        keyFields: ['_id'],
-      },
-      Cart: {
-        keyFields: ['_id'],
-        merge: true,
-      },
-    },
-  }),
-});
-```
-
-### 2. Optimistic Updates
-
-For better UX, update the UI immediately:
-
-```typescript
-const [addToCart] = useMutation(ADD_TO_CART, {
-  optimisticResponse: {
-    addCartProduct: {
-      __typename: 'Order',
-      _id: cart?._id,
-    },
-  },
-});
-```
-
-### 3. Error Boundaries
-
-Handle GraphQL errors gracefully:
-
-```typescript
-function ErrorBoundary({ children }) {
-  return (
-    <ApolloProvider client={client}>
-      <ErrorHandler>{children}</ErrorHandler>
-    </ApolloProvider>
-  );
-}
-```
-
-### 4. Loading States
-
-Always handle loading states:
-
-```typescript
-if (loading) return <Skeleton />;
-if (error) return <ErrorMessage error={error} />;
-if (!data) return <Empty />;
 ```
 
 ## Related
