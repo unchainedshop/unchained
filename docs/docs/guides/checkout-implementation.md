@@ -7,19 +7,25 @@ description: Complete guide to implementing checkout with Unchained Engine
 
 # Checkout Implementation
 
-This guide walks you through implementing a complete checkout flow, from cart creation to order confirmation.
+This guide explains how to implement a **safe, production-ready checkout flow** using Unchained Engine.
 
-## Overview
+Unchained checkout is not a single mutation.  
+It is a **state machine** with **locking, payment signing, stock validation and async confirmation**.
 
-The checkout flow in Unchained Engine follows these steps:
+---
+
+## Checkout State Machine
 
 ```mermaid
 flowchart TD
-    A[1. Create/Login User] --> B[2. Add Products to Cart]
-    B --> C[3. Set Delivery & Payment]
-    C --> D[4. Review Cart]
-    D --> E[5. Checkout]
-    E --> F[6. Order Confirmation]
+  A[Cart] --> B[Delivery Selected]
+  B --> C[Payment Selected]
+  C --> D[Payment Signed]
+  D --> E[Checkout Started]
+  E -->|async| F[PENDING]
+  F -->|webhook| G[CONFIRMED]
+  F -->|failure| H[REJECTED]
+
 ```
 
 ## Step 1: User Authentication
@@ -127,6 +133,8 @@ mutation UpdateQuantity {
   }
 }
 ```
+This recalculates tax, shipping and discounts.
+Always refetch the cart after this.
 
 ### Remove Item
 

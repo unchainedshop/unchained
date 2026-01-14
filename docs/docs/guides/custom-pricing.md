@@ -17,6 +17,22 @@ Unchained uses a pricing pipeline where multiple adapters can contribute to the 
 flowchart LR
     BP[Base Price<br/>Adapter] --> TA[Tax<br/>Adapter] --> DA[Discount<br/>Adapter] --> FP[Final Price]
 ```
+### Key Principles
+
+**Determinism:**
+All pricing must produce the same result for the same input. Avoid using real-time external data after checkout begins. If you fetch external data, store it in meta for reproducibility.
+
+**Immutability after checkout:**
+Once checkoutCart is executed, prices are frozen. Adapters cannot change finalized orders.
+
+**Net vs gross:**
+| Flag               | Meaning                     |
+| ------------------ | --------------------------- |
+| `isNetPrice=true`  | Tax will be added later     |
+| `isNetPrice=false` | Amount already includes tax |
+
+**Currency awareness:**
+Adapters must respect `currencyCode` in context. Do not assume base currency. Use `modules.currencies.round(amount, currencyCode)` for correct rounding.
 
 ## Prerequisites
 
