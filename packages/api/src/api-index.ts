@@ -16,6 +16,7 @@ export * from './loaders/index.ts';
 export * from './errors.ts';
 export * as acl from './acl.ts';
 export * as roles from './roles/index.ts';
+export type { OIDCProviderConfig, AuthConfig } from './auth.ts';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 import { buildDefaultTypeDefs } from './schema/index.ts';

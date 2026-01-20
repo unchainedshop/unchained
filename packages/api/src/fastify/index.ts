@@ -1,12 +1,8 @@
-import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
-import MongoStore from '../mongo-store.ts';
+import { getCurrentContextResolver } from '../context.ts';
+import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
+import type { AuthConfig } from '../auth.ts';
 import type { YogaServerInstance } from 'graphql-yoga';
-import type { mongodb } from '@unchainedshop/mongodb';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { emit } from '@unchainedshop/events';
-import { API_EVENTS } from '../events.ts';
-import type { User } from '@unchainedshop/core-users';
-import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
 import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
@@ -15,91 +11,95 @@ import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { mountPluginRoutes } from './mountPluginRoutes.ts';
 import { readFileSync } from 'node:fs';
+import { createBackchannelLogoutHandler } from '../handlers/createBackchannelLogoutHandler.ts';
+
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
 }
 
-const resolveUserRemoteAddress = (req: FastifyRequest) => {
-  const remoteAddress =
-    (req.headers['x-real-ip'] as string) ||
-    (req.headers['x-forwarded-for'] as string) ||
-    req.socket?.remoteAddress;
+/**
+ * Resolve the user's remote address
+ * SECURITY: Proxy headers (x-forwarded-for, x-real-ip) can be spoofed unless:
+ * - The application is behind a properly configured reverse proxy
+ * - The proxy strips/validates these headers from untrusted sources
+ * When trustProxy is false, we only use the socket's remote address
+ */
+const resolveUserRemoteAddress = (req: FastifyRequest, trustProxy = false) => {
+  let remoteAddress: string | undefined;
+
+  if (trustProxy) {
+    // Only trust proxy headers when explicitly enabled
+    // Per RFC 7239: use the LAST IP in X-Forwarded-For as it's the one added by our trusted proxy
+    // Earlier IPs in the chain can be spoofed by malicious clients
+    const forwardedFor = req.headers['x-forwarded-for'] as string | undefined;
+    const forwardedIps = forwardedFor?.split(',').map((ip) => ip.trim());
+    remoteAddress =
+      (req.headers['x-real-ip'] as string) ||
+      forwardedIps?.[forwardedIps.length - 1] ||
+      req.socket?.remoteAddress;
+  } else {
+    // Default: only use socket address (cannot be spoofed)
+    remoteAddress = req.socket?.remoteAddress;
+  }
 
   const remotePort = req.socket?.remotePort;
 
   return { remoteAddress, remotePort };
 };
 
-const {
-  MCP_API_PATH = '/mcp',
-  GRAPHQL_API_PATH = '/graphql',
-  UNCHAINED_COOKIE_NAME = 'unchained_token',
-  UNCHAINED_COOKIE_PATH = '/',
-  UNCHAINED_COOKIE_DOMAIN,
-  UNCHAINED_COOKIE_SAMESITE = 'none',
-  UNCHAINED_COOKIE_INSECURE,
-} = process.env;
+const { MCP_API_PATH = '/mcp', GRAPHQL_API_PATH = '/graphql' } = process.env;
 
-const middlewareHook = async function middlewareHook(req: any, reply: any) {
-  const setHeader = (key, value) => reply.header(key, value);
-  const getHeader = (key) => req.headers[key];
-  const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
+const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
+  async function middlewareHook(req: any, reply: any) {
+    const setHeader = (key: string, value: string) => reply.header(key, value);
+    const getHeader = (key: string) => req.headers[key];
+    const getCookie = (name: string) => req.cookies?.[name];
+    const setCookie = (name: string, value: string, options: any) =>
+      reply.setCookie(name, value, options);
+    const clearCookie = (name: string, options: any) =>
+      reply.clearCookie(name, { ...options, maxAge: 0 });
+    const { remoteAddress, remotePort } = resolveUserRemoteAddress(req, trustProxy);
 
-  const context = getCurrentContextResolver();
-
-  const login: LoginFn = async function (user: User, options = {}) {
-    const { impersonator } = options;
-
-    req.session.userId = user._id;
-    req.session.impersonatorId = impersonator?._id;
-
-    const tokenObject = {
-      _id: req.session.sessionId,
-      userId: user._id,
-
-      tokenExpires: new Date((req as any).session.cookie._expires),
-    };
-    await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
-
-    (user as any)._inLoginMethodResponse = true;
-    return { user, ...tokenObject };
-  };
-
-  const logout: LogoutFn = async function logout() {
-    const tokenObject = {
-      _id: (req as any).session.sessionId,
-      userId: req.session?.userId,
-    };
-    req.session.userId = null;
-    req.session.impersonatorId = null;
-    await emit(API_EVENTS.API_LOGOUT, tokenObject);
-    return true;
-  };
-
-  const [, accessToken] = req.headers.authorization?.split(' ') || [];
-
-  (req as any).unchainedContext = await context(
-    {
+    const authContextParams: AuthContextParams = {
       setHeader,
       getHeader,
+      getCookie,
+      setCookie,
+      clearCookie,
       remoteAddress,
       remotePort,
-      login,
-      logout,
-      accessToken,
-      userId: req.session.userId,
-      impersonatorId: req.session.impersonatorId,
-    },
-    req,
-    reply,
-  );
-};
+    };
+
+    // Create auth context (handles JWT verification and login/logout functions)
+    const authContext = await createAuthContext(authContextParams, authConfig);
+
+    // Get the context resolver
+    const context = getCurrentContextResolver();
+
+    // Build full context
+    (req as any).unchainedContext = await context(
+      {
+        setHeader,
+        getHeader,
+        remoteAddress,
+        remotePort,
+        login: authContext.login,
+        logout: authContext.logout,
+        accessToken: authContext.accessToken,
+        userId: authContext.userId,
+        impersonatorId: authContext.impersonatorId,
+        tokenVersion: authContext.tokenVersion,
+      },
+      req,
+      reply,
+    );
+  };
 
 export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
   const logger = createLogger(prefix);
-  function Logger(...args) {
-    this.args = args;
+  function Logger(...args: any[]) {
+    (this as any).args = args;
   }
   Logger.prototype.info = logger.info;
   Logger.prototype.error = logger.error;
@@ -110,32 +110,44 @@ export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
   Logger.prototype.child = function () {
     return new Logger();
   };
-  return new Logger();
+  return new (Logger as any)();
 };
 
 export const connect = async (
   fastify: FastifyInstance,
   {
     graphqlHandler,
-    db,
     unchainedAPI,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
-    db: mongodb.Db;
     unchainedAPI: UnchainedCore;
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
     adminUI = false,
     chat,
+    authConfig,
+    trustProxy = false,
   }: {
     allowRemoteToLocalhostSecureCookies?: boolean;
     adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
     chat?: ChatConfiguration;
+    authConfig?: AuthConfig;
+    /** SECURITY: Enable this ONLY if behind a properly configured reverse proxy
+     * that strips/validates x-forwarded-for and x-real-ip headers from untrusted sources */
+    trustProxy?: boolean;
   } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
-    // Workaround: Allow to use sandbox with localhost
+    // SECURITY: This mode is for development only - block in production
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'allowRemoteToLocalhostSecureCookies is not allowed in production. ' +
+          'Configure a proper CORS policy with specific allowed origins instead.',
+      );
+    }
+
+    // Workaround: Allow to use sandbox with localhost (development only)
     // https://github.com/fastify/fastify-cookie/issues/308
     fastify.addHook('preHandler', async function (request) {
       request.headers['x-forwarded-proto'] = 'https';
@@ -151,41 +163,17 @@ export const connect = async (
     });
   }
 
-  const cookieName = UNCHAINED_COOKIE_NAME;
-  const domain = UNCHAINED_COOKIE_DOMAIN;
-  const path = UNCHAINED_COOKIE_PATH;
-  const secure = UNCHAINED_COOKIE_INSECURE ? false : true;
-  const sameSite = ({
-    none: 'none',
-    lax: 'lax',
-    strict: 'strict',
-    '1': true,
-    '0': false,
-  }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
-
+  // Register cookie plugin for JWT cookie handling
   if (!fastify.hasPlugin('@fastify/cookie')) {
     fastify.register(fastifyCookie);
   }
-  fastify.register(fastifySession as any, {
-    secret: process.env.UNCHAINED_TOKEN_SECRET,
-    cookieName,
-    store: MongoStore.create({
-      client: (db as any).client,
-      dbName: db.databaseName,
-      collectionName: 'sessions',
-    }),
-    cookie: {
-      domain,
-      httpOnly: true,
-      path,
-      secure,
-      sameSite,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  });
 
   fastify.decorateRequest('unchainedContext');
-  fastify.addHook('onRequest', middlewareHook);
+  // Note: allowRemoteToLocalhostSecureCookies implies trustProxy for dev convenience
+  fastify.addHook(
+    'onRequest',
+    createMiddlewareHook(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
+  );
 
   fastify.route({
     url: GRAPHQL_API_PATH,
@@ -219,6 +207,21 @@ export const connect = async (
   // Mount plugin routes automatically
   mountPluginRoutes(fastify, unchainedAPI);
 
+  // Mount OIDC back-channel logout endpoint if providers are configured
+  if (authConfig?.oidcProviders?.length) {
+    const backchannelHandler = createBackchannelLogoutHandler(unchainedAPI, authConfig.oidcProviders);
+    fastify.route({
+      url: '/backchannel-logout',
+      method: 'POST',
+      handler: async (request, reply) => {
+        await backchannelHandler.handleNodeRequestAndResponse(request.raw, reply.raw, {
+          unchainedAPI,
+          providers: authConfig.oidcProviders!,
+        });
+      },
+    });
+  }
+
   if (adminUI) {
     fastify.register(adminUIRouter, {
       enabled: true,
@@ -227,7 +230,7 @@ export const connect = async (
   }
 };
 
-const fallbackLandingPageHandler = (request, reply) => {
+const fallbackLandingPageHandler = (request: any, reply: any) => {
   if (request.raw.method === 'GET') {
     try {
       // Try to resolve from package exports first (works in non-bundled environments)

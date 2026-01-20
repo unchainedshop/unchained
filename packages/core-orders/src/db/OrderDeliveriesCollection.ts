@@ -30,7 +30,10 @@ export const OrderDeliveriesCollection = async (db: mongodb.Db) => {
   const OrderDeliveries = db.collection<OrderDelivery>('order_deliveries');
 
   // Order Indexes
-  await buildDbIndexes<OrderDelivery>(OrderDeliveries, [{ index: { orderId: 1 } }]);
+  await buildDbIndexes<OrderDelivery>(OrderDeliveries, [
+    { index: { orderId: 1 } },
+    { index: { orderId: 1, deliveryProviderId: 1 } },
+  ]);
 
   return OrderDeliveries;
 };

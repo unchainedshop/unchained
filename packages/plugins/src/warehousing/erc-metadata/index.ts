@@ -12,7 +12,7 @@ export const ERCMetadataPlugin: IPlugin = {
 
   routes: [
     {
-      path: `${ERC_METADATA_API_PATH}/:productId/:localeOrTokenFilename/:tokenFileName?`,
+      path: `${ERC_METADATA_API_PATH}/:productId/:localeOrTokenFilename{/:tokenFileName}`,
       method: 'GET',
       handler: ercMetadataHandler,
     },

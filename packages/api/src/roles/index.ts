@@ -104,6 +104,7 @@ const actions: Record<string, string> = [
   'managePaymentCredentials',
   'bulkImport',
   'logout',
+  'logoutAllSessions',
   'loginAsGuest',
   'loginWithPassword',
   'loginWithWebAuthn',

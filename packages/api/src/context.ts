@@ -20,6 +20,7 @@ export interface UnchainedUserContext {
   userId?: string;
   impersonatorId?: string;
   accessToken?: string;
+  tokenVersion?: number;
   user?: User;
 }
 
@@ -79,6 +80,7 @@ export const createContextResolver =
     userId,
     impersonatorId,
     accessToken,
+    tokenVersion,
     login,
     logout,
   }) => {
@@ -88,6 +90,7 @@ export const createContextResolver =
 
     const userContext: UnchainedUserContext = { login, logout, impersonatorId };
 
+    // First, try API key authentication if accessToken is provided
     if (accessToken) {
       const accessTokenUser = await unchainedAPI.modules.users.findUserByToken(accessToken);
       if (accessTokenUser) {
@@ -95,11 +98,21 @@ export const createContextResolver =
         userContext.userId = accessTokenUser._id;
       }
     }
+
+    // Second, try JWT-based authentication if userId is provided from JWT
     if (userId && !userContext.userId) {
       const user = await unchainedAPI.modules.users.findUserById(userId);
       if (user) {
-        userContext.user = user;
-        userContext.userId = user._id;
+        // Validate token version if provided (from JWT)
+        // Token version defaults to 1 for users that haven't had their tokens revoked
+        const userTokenVersion = user.tokenVersion ?? 1;
+        if (tokenVersion !== undefined && tokenVersion !== userTokenVersion) {
+          // Token has been revoked (tokenVersion mismatch), don't authenticate
+          // User will remain unauthenticated
+        } else {
+          userContext.user = user;
+          userContext.userId = user._id;
+        }
       }
     }
 

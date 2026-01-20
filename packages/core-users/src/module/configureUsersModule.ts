@@ -818,9 +818,8 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     markDeleted: async (userId: string) => {
-      await db.collection('sessions').deleteMany({
-        session: insensitiveTrimmedRegexOperator(`"user":"${userId}"`),
-      });
+      // Increment token version to invalidate all existing JWT tokens
+      await Users.updateOne({ _id: userId }, { $inc: { tokenVersion: 1 } });
       const user = await Users.findOneAndUpdate(
         { _id: userId },
         {
@@ -971,6 +970,34 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       await emit('USER_UPDATE_ROLE', {
         user: removeConfidentialServiceHashes(user),
       });
+      return user;
+    },
+
+    incrementTokenVersion: async (userId: string): Promise<{ tokenVersion: number } | null> => {
+      const user = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $inc: { tokenVersion: 1 },
+          $set: { updated: new Date() },
+        },
+        { returnDocument: 'after' },
+      );
+      if (!user) return null;
+      return { tokenVersion: user.tokenVersion ?? 1 };
+    },
+
+    updateOidcLogoutAt: async (userId: string, date: Date): Promise<User | null> => {
+      const user = await Users.findOneAndUpdate(
+        generateDbFilterById(userId),
+        {
+          $set: {
+            oidcLogoutAt: date,
+            updated: new Date(),
+          },
+          $inc: { tokenVersion: 1 },
+        },
+        { returnDocument: 'after' },
+      );
       return user;
     },
 

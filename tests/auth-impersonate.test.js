@@ -144,11 +144,23 @@ test.describe('Impersonation', () => {
       const setCookieHeader = result.headers.get('set-cookie');
       assert.ok(setCookieHeader, 'Set-Cookie header should be present');
 
-      const cookieMatch = setCookieHeader.match(/unchained_token=([^;]+)/);
-      assert.ok(cookieMatch, 'Cookie should contain unchained_token');
-      const sessionCookie = cookieMatch[1];
+      // Extract JWT token cookie
+      const tokenMatch = setCookieHeader.match(/unchained_token=([^;,]+)/);
+      assert.ok(tokenMatch, 'Cookie should contain unchained_token');
+      const sessionCookie = tokenMatch[1];
+
+      // Extract fingerprint cookie (required for JWT authentication)
+      // The cookie name may be __Secure-fgp or just fgp depending on secure mode
+      const fingerprintMatch = setCookieHeader.match(/(?:__Secure-)?fgp=([^;,]+)/);
+      const fingerprintCookie = fingerprintMatch ? fingerprintMatch[1] : null;
 
       const graphqlFetchAsImpersonated = createLoggedInGraphqlFetch(null);
+
+      // Build cookie string with both required cookies
+      let cookieString = `unchained_token=${sessionCookie}`;
+      if (fingerprintCookie) {
+        cookieString += `; __Secure-fgp=${fingerprintCookie}`;
+      }
 
       const {
         data: { stopImpersonation },
@@ -165,7 +177,7 @@ test.describe('Impersonation', () => {
           }
         `,
         headers: {
-          cookie: `unchained_token=${sessionCookie}`,
+          cookie: cookieString,
         },
       });
 

@@ -1,20 +1,17 @@
 import e from 'express';
-import session from 'express-session';
-import MongoStore from '../mongo-store.ts';
-import { Passport } from 'passport';
+import cookieParser from 'cookie-parser';
 import type { YogaServerInstance } from 'graphql-yoga';
-import { mongodb } from '@unchainedshop/mongodb';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { emit } from '@unchainedshop/events';
-import type { User } from '@unchainedshop/core-users';
 
-import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
+import { getCurrentContextResolver } from '../context.ts';
+import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
+import type { AuthConfig } from '../auth.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
-import { API_EVENTS } from '../events.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
 import { mountPluginRoutes } from './mountPluginRoutes.ts';
-import type { CipherKey } from 'node:crypto';
+import { createBackchannelLogoutHandler } from '../handlers/createBackchannelLogoutHandler.ts';
+
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
@@ -36,152 +33,123 @@ export const adminUIRouter = (enabled = true) => {
   return router;
 };
 
-const resolveUserRemoteAddress = (req: e.Request) => {
-  const remoteAddress =
-    (req.headers['x-real-ip'] as string) ||
-    (req.headers['x-forwarded-for'] as string) ||
-    req.socket?.remoteAddress;
+/**
+ * Resolve the user's remote address
+ * SECURITY: Proxy headers (x-forwarded-for, x-real-ip) can be spoofed unless:
+ * - The application is behind a properly configured reverse proxy
+ * - The proxy strips/validates these headers from untrusted sources
+ * When trustProxy is false, we only use the socket's remote address
+ */
+const resolveUserRemoteAddress = (req: e.Request, trustProxy = false) => {
+  let remoteAddress: string | undefined;
+
+  if (trustProxy) {
+    // Only trust proxy headers when explicitly enabled
+    // Per RFC 7239: use the LAST IP in X-Forwarded-For as it's the one added by our trusted proxy
+    // Earlier IPs in the chain can be spoofed by malicious clients
+    const forwardedFor = req.headers['x-forwarded-for'] as string | undefined;
+    const forwardedIps = forwardedFor?.split(',').map((ip) => ip.trim());
+    remoteAddress =
+      (req.headers['x-real-ip'] as string) ||
+      forwardedIps?.[forwardedIps.length - 1] ||
+      req.socket?.remoteAddress;
+  } else {
+    // Default: only use socket address (cannot be spoofed)
+    remoteAddress = req.socket?.remoteAddress;
+  }
 
   const remotePort = req.socket?.remotePort;
 
   return { remoteAddress, remotePort };
 };
 
-const {
-  MCP_API_PATH = '/mcp',
-  GRAPHQL_API_PATH = '/graphql',
-  UNCHAINED_COOKIE_NAME = 'unchained_token',
-  UNCHAINED_COOKIE_PATH = '/',
-  UNCHAINED_COOKIE_DOMAIN,
-  UNCHAINED_COOKIE_SAMESITE = 'none',
-  UNCHAINED_COOKIE_INSECURE,
-} = process.env;
+const { MCP_API_PATH = '/mcp', GRAPHQL_API_PATH = '/graphql' } = process.env;
 
-const addContext = async function middlewareWithContext(
-  req: e.Request,
-  res: e.Response,
-  next: e.NextFunction,
-) {
-  try {
-    const setHeader = (key, value) => res.setHeader(key, value);
-    const getHeader = (key) => req.headers[key] as string;
-    const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
+const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false) =>
+  async function middlewareWithContext(req: e.Request, res: e.Response, next: e.NextFunction) {
+    try {
+      const setHeader = (key: string, value: string) => res.setHeader(key, value);
+      const getHeader = (key: string) => req.headers[key] as string;
+      const getCookie = (name: string) => (req as any).cookies?.[name];
+      const setCookie = (name: string, value: string, options: any) => res.cookie(name, value, options);
+      const clearCookie = (name: string, options: any) =>
+        res.clearCookie(name, { ...options, maxAge: 0 });
+      const { remoteAddress, remotePort } = resolveUserRemoteAddress(req, trustProxy);
 
-    const context = getCurrentContextResolver();
-
-    const login: LoginFn = async (user: User, options = {}) => {
-      const { impersonator } = options;
-
-      await new Promise((resolve, reject) => {
-        (req as any).login(user, (error, result) => {
-          if (error) {
-            return reject(error);
-          }
-          (req as any).session.impersonatorId = impersonator?._id;
-          return resolve(result);
-        });
-      });
-
-      const tokenObject = {
-        _id: (req as any).sessionID,
-        userId: user._id,
-
-        tokenExpires: new Date((req as any).session?.cookie._expires),
-      };
-
-      await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
-
-      (user as any)._inLoginMethodResponse = true;
-      return { user, ...tokenObject };
-    };
-
-    const logout: LogoutFn = async (sessionId) => {
-      const { user } = req as any;
-      if (!user) return false;
-
-      const currentSessionId = (req as any).sessionID;
-      const targetSessionId = sessionId || currentSessionId;
-
-      const tokenObject = {
-        _id: targetSessionId,
-        userId: user._id,
-      };
-
-      // If a specific sessionId is provided and it's different from current session,
-      // destroy only that session from the store without affecting current session
-      if (sessionId && sessionId !== currentSessionId) {
-        // Destroy the specific session from the store
-        await new Promise<void>((resolve, reject) => {
-          (req as any).sessionStore.destroy(sessionId, (error: Error | null) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve();
-          });
-        });
-      } else {
-        // Logout current session (passport logout + clear impersonator)
-        await new Promise((resolve, reject) => {
-          (req as any).logout((error: Error | null, result: any) => {
-            if (error) {
-              return reject(error);
-            }
-            (req as any).session.impersonatorId = null;
-            return resolve(result);
-          });
-        });
-      }
-
-      await emit(API_EVENTS.API_LOGOUT, tokenObject);
-      return true;
-    };
-
-    const [, accessToken] = req.headers.authorization?.split(' ') || [];
-
-    (req as any).unchainedContext = await context(
-      {
+      const authContextParams: AuthContextParams = {
         setHeader,
         getHeader,
+        getCookie,
+        setCookie,
+        clearCookie,
         remoteAddress,
         remotePort,
-        login,
-        logout,
-        accessToken,
-        userId: (req as any).user?._id,
-        impersonatorId: (req as any).session.impersonatorId,
-      },
-      req,
-      res,
-    );
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
+      };
+
+      // Create auth context (handles JWT verification and login/logout functions)
+      const authContext = await createAuthContext(authContextParams, authConfig);
+
+      // Get the context resolver
+      const context = getCurrentContextResolver();
+
+      // Build full context
+      (req as any).unchainedContext = await context(
+        {
+          setHeader,
+          getHeader,
+          remoteAddress,
+          remotePort,
+          login: authContext.login,
+          logout: authContext.logout,
+          accessToken: authContext.accessToken,
+          userId: authContext.userId,
+          impersonatorId: authContext.impersonatorId,
+          tokenVersion: authContext.tokenVersion,
+        },
+        req,
+        res,
+      );
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
 
 export const connect = async (
   expressApp: e.Express,
   {
     graphqlHandler,
-    db,
     unchainedAPI,
   }: {
     graphqlHandler: YogaServerInstance<any, any>;
-    db: mongodb.Db;
     unchainedAPI: UnchainedCore;
   },
   {
     allowRemoteToLocalhostSecureCookies = false,
     adminUI = false,
     chat,
+    authConfig,
+    trustProxy = false,
   }: {
     allowRemoteToLocalhostSecureCookies?: boolean;
     adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
     chat?: ChatConfiguration;
+    authConfig?: AuthConfig;
+    /** SECURITY: Enable this ONLY if behind a properly configured reverse proxy
+     * that strips/validates x-forwarded-for and x-real-ip headers from untrusted sources */
+    trustProxy?: boolean;
   } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
-    // Workaround: Allow to use sandbox with localhost
+    // SECURITY: This mode is for development only - block in production
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'allowRemoteToLocalhostSecureCookies is not allowed in production. ' +
+          'Configure a proper CORS policy with specific allowed origins instead.',
+      );
+    }
+
+    // Workaround: Allow to use sandbox with localhost (development only)
     expressApp.set('trust proxy', 1);
     expressApp.use((req, res, next) => {
       req.headers['x-forwarded-proto'] = 'https';
@@ -199,52 +167,17 @@ export const connect = async (
       next();
     });
   }
-  const passport = new Passport();
 
-  passport.serializeUser(function serialize(user, done) {
-    done(null, user._id);
-  });
-  passport.deserializeUser(function deserialize(_id, done) {
-    done(null, { _id });
-  });
+  // Use cookie-parser for JWT cookie handling
+  expressApp.use(cookieParser());
 
-  const name = UNCHAINED_COOKIE_NAME;
-  const domain = UNCHAINED_COOKIE_DOMAIN;
-  const path = UNCHAINED_COOKIE_PATH;
-  const secure = UNCHAINED_COOKIE_INSECURE ? false : true;
-  const sameSite = ({
-    none: 'none',
-    lax: 'lax',
-    strict: 'strict',
-    '1': true,
-    '0': false,
-  }[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || false) as boolean | 'none' | 'lax' | 'strict';
-
+  // Add auth context middleware
+  // Note: allowRemoteToLocalhostSecureCookies implies trustProxy for dev convenience
   expressApp.use(
-    session({
-      secret: process.env.UNCHAINED_TOKEN_SECRET as CipherKey,
-      store: MongoStore.create({
-        client: (db as any).client,
-        dbName: db.databaseName,
-        collectionName: 'sessions',
-        touchAfter: 24 * 3600 /* 24 hours */,
-      }),
-      name,
-      saveUninitialized: false,
-      resave: false,
-      cookie: {
-        domain,
-        path,
-        sameSite,
-        secure,
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-      },
-    }),
-    passport.initialize(),
-    passport.session(),
-    addContext,
+    createAddContextMiddleware(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
   );
+
+  // GraphQL endpoint
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
 
   // MCP endpoint (remains framework-specific due to SDK requirements)
@@ -257,6 +190,17 @@ export const connect = async (
 
   // Mount plugin routes automatically
   mountPluginRoutes(expressApp, unchainedAPI);
+
+  // Mount OIDC back-channel logout endpoint if providers are configured
+  if (authConfig?.oidcProviders?.length) {
+    const backchannelHandler = createBackchannelLogoutHandler(unchainedAPI, authConfig.oidcProviders);
+    expressApp.post('/backchannel-logout', e.urlencoded({ extended: false }), async (req, res) => {
+      await backchannelHandler.handleNodeRequestAndResponse(req, res, {
+        unchainedAPI,
+        providers: authConfig.oidcProviders!,
+      });
+    });
+  }
 
   if (adminUI) {
     expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true));
