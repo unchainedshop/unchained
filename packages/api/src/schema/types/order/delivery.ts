@@ -33,8 +33,6 @@ export default [
       delivered: DateTime
       fee: Price
       discounts: [OrderDeliveryDiscount!]
-      pickUpLocations: [PickUpLocation!]!
-        @deprecated(reason: "Use DeliveryProvider.pickupLocations instead")
       activePickUpLocation: PickUpLocation
     }
 

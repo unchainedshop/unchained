@@ -1,4 +1,4 @@
-import { FileDirector } from '@unchainedshop/file-upload';
+import { FileDirector } from '../directors/FileDirector.ts';
 import type { Modules } from '../modules.ts';
 
 export async function linkFileService(

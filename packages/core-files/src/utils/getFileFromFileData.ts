@@ -1,4 +1,4 @@
-import type { UploadFileData } from '@unchainedshop/file-upload';
+import type { UploadFileData } from '../file-types.ts';
 
 export const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
   _id: fileData._id,

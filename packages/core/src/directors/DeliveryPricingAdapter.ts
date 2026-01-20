@@ -2,9 +2,9 @@ import { DeliveryPricingSheet } from './DeliveryPricingSheet.ts';
 import {
   type BasePricingAdapterContext,
   type IPricingAdapter,
-  type IPricingSheet,
   BasePricingAdapter,
-} from '../directors/index.ts';
+} from './BasePricingAdapter.ts';
+import type { IPricingSheet } from './BasePricingSheet.ts';
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 import type { PricingCalculation } from '@unchainedshop/utils';
 import type { OrderDelivery, OrderDiscount, Order } from '@unchainedshop/core-orders';
@@ -61,6 +61,7 @@ const basePricingAdapter = BasePricingAdapter<
 
 export const DeliveryPricingAdapter: IDeliveryPricingAdapter = {
   ...basePricingAdapter,
+  adapterType: Symbol.for('unchained:adapter:pricing:delivery'),
 
   isActivatedFor: () => {
     return false;

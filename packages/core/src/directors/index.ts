@@ -1,6 +1,5 @@
-// TODO: Consider implementing explicit plugin registration instead of auto-registration on import
-// Current approach: Plugins self-register when imported, which can lead to side-effects
-// Alternative: Require explicit registration calls (e.g., PaymentDirector.registerAdapter(StripeAdapter))
+// Plugins are registered explicitly via pluginRegistry.register() or preset functions like registerAllPlugins()
+// This ensures no side-effects from imports and enables better tree-shaking
 export * from './BasePricingAdapter.ts';
 export * from './BasePricingDirector.ts';
 export * from './BasePricingSheet.ts';
@@ -52,5 +51,8 @@ export * from './BaseWorker.ts';
 
 export * from './QuotationAdapter.ts';
 export * from './QuotationDirector.ts';
+
+export * from './FileDirector.ts';
+export { type IFileAdapter, FileAdapter } from '@unchainedshop/core-files';
 
 export * from './MessagingDirector.ts';

@@ -23,7 +23,6 @@ flowchart LR
 | Provider | Type | Use Case |
 |----------|------|----------|
 | [Stripe](../plugins/payment/stripe.md) | CARD | Credit/debit cards |
-| [PayPal](../plugins/payment/paypal-checkout.md) | GENERIC | PayPal checkout |
 | [Braintree](../plugins/payment/braintree.md) | CARD | Cards, PayPal |
 | [Datatrans](../plugins/payment/datatrans.md) | CARD | Swiss payment gateway |
 | [Saferpay](../plugins/payment/saferpay.md) | CARD | Swiss payment gateway |

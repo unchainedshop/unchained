@@ -3,8 +3,8 @@ import {
   BasePricingAdapter,
   type BasePricingAdapterContext,
   type IPricingAdapter,
-  type IPricingSheet,
-} from '../directors/index.ts';
+} from './BasePricingAdapter.ts';
+import type { IPricingSheet } from './BasePricingSheet.ts';
 import { PaymentPricingSheet } from './PaymentPricingSheet.ts';
 import type { PaymentProvider } from '@unchainedshop/core-payment';
 import type { OrderDiscount, OrderPayment, Order } from '@unchainedshop/core-orders';
@@ -60,6 +60,7 @@ export const PaymentPricingAdapter: IPricingAdapter<
   IPaymentPricingSheet
 > = {
   ...basePricingAdapter,
+  adapterType: Symbol.for('unchained:adapter:pricing:payment'),
 
   isActivatedFor: () => {
     return false;

@@ -5,10 +5,12 @@ import {
   type IPaymentActions,
   type IPaymentAdapter,
   type PaymentContext,
+  PaymentAdapter,
 } from './PaymentAdapter.ts';
 import type { PaymentProvider } from '@unchainedshop/core-payment';
 import { type Order, type OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 const buildPaymentProviderActionsContext = (
   orderPayment: OrderPayment,
@@ -62,8 +64,20 @@ const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 export const PaymentDirector: IPaymentDirector = {
   ...baseDirector,
 
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(PaymentAdapter.adapterType!) as IPaymentAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(PaymentAdapter.adapterType!) as IPaymentAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
+
   actions: async (paymentProvider, paymentContext, unchainedAPI) => {
-    const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey) as IPaymentAdapter;
+    const Adapter = PaymentDirector.getAdapter(paymentProvider.adapterKey) as IPaymentAdapter;
 
     if (!Adapter) {
       throw new Error(`Payment Plugin ${paymentProvider.adapterKey} not available`);

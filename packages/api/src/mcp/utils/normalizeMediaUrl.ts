@@ -1,4 +1,4 @@
-import { getFileAdapter } from '@unchainedshop/core-files';
+import { getFileAdapter } from '@unchainedshop/core';
 
 const normalizeMediaUrl = async (medias: { mediaId: string }[] = [], context) => {
   if (medias?.length) {

@@ -25,6 +25,7 @@ export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
 
 export const WorkerAdapter: Omit<IWorkerAdapter<any, void>, 'key' | 'label' | 'type' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:worker'),
   external: false,
 
   async doWork() {

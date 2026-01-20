@@ -2,7 +2,7 @@ import {
   BasePricingSheet,
   type IBasePricingSheet,
   type PricingSheetParams,
-} from '../directors/index.ts';
+} from './BasePricingSheet.ts';
 import type { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.ts';
 
 export const DeliveryPricingRowCategory = {

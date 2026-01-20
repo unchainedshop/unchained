@@ -1,7 +1,6 @@
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
@@ -15,8 +14,11 @@ const fastify = Fastify({
 });
 
 try {
+  // Register base plugins before starting platform
+  registerBasePlugins();
+
   const platform = await startPlatform({
-    modules: { ...baseModules, ...ticketingModules },
+    modules: ticketingModules,
     services: { ...ticketingServices },
   });
 
@@ -29,11 +31,10 @@ try {
 
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
-    initPluginMiddlewares: (app) => {
-      connectBasePluginsToFastify(app);
-      connectTicketingToFastify(app);
-    }
   });
+
+  // Register ticketing routes (ticketing package not yet migrated to plugin system)
+  connectTicketingToFastify(fastify);
 
   await seed(platform.unchainedAPI);
 

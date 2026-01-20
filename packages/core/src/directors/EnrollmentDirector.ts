@@ -4,11 +4,13 @@ import type {
   EnrollmentContext,
   IEnrollmentAdapter,
 } from './EnrollmentAdapter.ts';
+import { EnrollmentAdapter } from './EnrollmentAdapter.ts';
 import type { OrderPosition } from '@unchainedshop/core-orders';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { Enrollment } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import type { Modules } from '../modules.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -36,7 +38,7 @@ const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {
 });
 
 const findAppropriateAdapters = (productPlan?: ProductPlan) =>
-  baseDirector.getAdapters({
+  EnrollmentDirector.getAdapters({
     adapterFilter: (Adapter: IEnrollmentAdapter) => {
       const activated = Adapter.isActivatedFor(productPlan);
       if (!activated) {
@@ -48,6 +50,18 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
 
 export const EnrollmentDirector: IEnrollmentDirector = {
   ...baseDirector,
+
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(EnrollmentAdapter.adapterType!) as IEnrollmentAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(EnrollmentAdapter.adapterType!) as IEnrollmentAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
 
   transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, unchainedAPI) => {
     const Adapter = findAppropriateAdapters(product.plan)?.[0];

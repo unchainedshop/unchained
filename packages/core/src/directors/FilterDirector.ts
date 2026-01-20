@@ -11,7 +11,8 @@ import {
 } from '@unchainedshop/core-filters';
 import type { Product } from '@unchainedshop/core-products';
 import type { Modules } from '../modules.ts';
-
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { FilterAdapter } from './FilterAdapter.ts';
 export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({
@@ -71,9 +72,21 @@ const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
 export const FilterDirector: IFilterDirector = {
   ...baseDirector,
 
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(FilterAdapter.adapterType!) as IFilterAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(FilterAdapter.adapterType!) as IFilterAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
+
   actions: async (filterContext, unchainedAPI) => {
     const context = { ...filterContext, ...unchainedAPI };
-    const adapters = baseDirector.getAdapters().map((Adapter) => Adapter.actions(context));
+    const adapters = FilterDirector.getAdapters().map((Adapter) => Adapter.actions(context));
 
     const reduceAdapters = <V>(
       reducer: (currentValue: Promise<V>, adapter: FilterAdapterActions, index: number) => Promise<V>,

@@ -560,10 +560,6 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return { user: updatedUser, token: plainToken };
     },
 
-    /**
-     * @deprecated Use createAccessToken() instead which generates secure tokens.
-     * This method accepts user-provided secrets which may have insufficient entropy.
-     */
     async setAccessToken(username: string, plainSecret: string): Promise<User | null> {
       const secret = await sha256(plainSecret);
       const updatedUser = await Users.findOneAndUpdate(

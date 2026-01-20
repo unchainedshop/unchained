@@ -1,6 +1,12 @@
 import type { DeliveryConfiguration } from '@unchainedshop/core-delivery';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
-import { DeliveryAdapter, type DeliveryContext, DeliveryDirector } from '../core-index.ts';
+import {
+  DeliveryAdapter,
+  type DeliveryContext,
+  type IPlugin,
+  type IDeliveryAdapter,
+} from '../core-index.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 import type { Work } from '@unchainedshop/core-worker';
 
 export default function registerShippingDelivery({
@@ -20,8 +26,8 @@ export default function registerShippingDelivery({
   send:
     | boolean
     | ((configuration: DeliveryConfiguration, context: DeliveryContext) => Promise<boolean | Work>);
-}) {
-  DeliveryDirector.registerAdapter({
+}): IPlugin {
+  const adapter: IDeliveryAdapter = {
     ...DeliveryAdapter,
 
     key: `shop.unchained.delivery.shipping-${adapterId}`,
@@ -62,5 +68,15 @@ export default function registerShippingDelivery({
         },
       };
     },
-  });
+  };
+
+  const plugin: IPlugin = {
+    key: adapter.key,
+    label: adapter.label,
+    version: adapter.version,
+    adapters: [adapter],
+  };
+
+  pluginRegistry.register(plugin);
+  return plugin;
 }

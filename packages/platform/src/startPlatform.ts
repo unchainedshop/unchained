@@ -1,5 +1,5 @@
 import { startAPIServer, roles, type UnchainedServerOptions } from '@unchainedshop/api';
-import { initCore, type UnchainedCoreOptions } from '@unchainedshop/core';
+import { initCore, type UnchainedCoreOptions, pluginRegistry } from '@unchainedshop/core';
 import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
@@ -74,16 +74,39 @@ export const startPlatform = async ({
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);
 
+  // Get plugin modules from registry
+  const pluginModuleFactories = pluginRegistry.getModuleFactories();
+  const pluginModules = pluginModuleFactories.reduce(
+    (acc, factory) => {
+      const factoryModules = factory({ db });
+      // Wrap each module in the required { configure: fn } structure
+      Object.entries(factoryModules).forEach(([key, moduleInstance]) => {
+        acc[key] = {
+          configure: () => moduleInstance,
+        };
+      });
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
+
+  // Merge plugin modules with custom modules (custom modules take precedence)
+  const allModules = { ...pluginModules, ...(modules || {}) };
+
   // Initialise core api using the database
   const unchainedAPI = await initCore({
     db,
     migrationRepository,
     bulkImporter,
-    modules,
+    modules: allModules,
     services,
     options,
     bulkExporter,
   });
+
+  // Initialize plugins (call onRegister hooks)
+  await pluginRegistry.initialize(unchainedAPI);
+
   // Setup Accounts specific extensions and event handlers
   setupAccounts(unchainedAPI);
 
@@ -135,6 +158,9 @@ export const startPlatform = async ({
     try {
       defaultLogger.debug('Stopping Workqueue', { signal });
       stopWorkqueue();
+
+      defaultLogger.debug('Shutting down plugins', { signal });
+      await pluginRegistry.shutdown(unchainedAPI);
 
       defaultLogger.debug('Stopping GraphQL server', { signal });
       await graphqlHandler.dispose();

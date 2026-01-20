@@ -106,15 +106,15 @@ export default async (unchainedAPI: UnchainedCore) => {
       created: new Date(),
     });
 
-    logger.log(`
-      initialized database with
-      \ncountries: ${countries.join(',')}
-      \ncurrencies: ${currencies.join(',')}
-      \nlanguages: ${languages.join(',')}
-      \ndeliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})\npaymentProvider: ${
-        paymentProvider._id
-      } (${paymentProvider.adapterKey})
-      \nuser: admin@unchained.local / ${seedPassword}`);
+    logger.log(`initialized database with
+countries: ${countries.join(',')}
+currencies: ${currencies.join(',')}
+languages: ${languages.join(',')}
+deliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})
+paymentProvider: ${
+  paymentProvider._id
+} (${paymentProvider.adapterKey})
+user: admin@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);
   }

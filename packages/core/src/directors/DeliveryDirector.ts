@@ -4,11 +4,13 @@ import {
   type DeliveryContext,
   type IDeliveryAdapter,
   DeliveryError,
+  DeliveryAdapter,
 } from './DeliveryAdapter.ts';
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { type Order, OrderDeliveryStatus } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -30,8 +32,20 @@ const baseDirector = BaseDirector<IDeliveryAdapter>('DeliveryDirector');
 export const DeliveryDirector: IDeliveryDirector = {
   ...baseDirector,
 
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(DeliveryAdapter.adapterType!) as IDeliveryAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(DeliveryAdapter.adapterType!) as IDeliveryAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
+
   actions: async (deliveryProvider, deliveryContext, unchainedAPI) => {
-    const Adapter = baseDirector.getAdapter(deliveryProvider.adapterKey);
+    const Adapter = DeliveryDirector.getAdapter(deliveryProvider.adapterKey);
 
     if (!Adapter) {
       throw new Error(`Delivery Plugin ${deliveryProvider.adapterKey} not available`);

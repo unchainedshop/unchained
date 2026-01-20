@@ -5,13 +5,15 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core');
 
+import { DeliveryDirector } from './DeliveryDirector.ts';
 import {
-  DeliveryDirector,
   type IWarehousingAdapter,
   type WarehousingContext,
   WarehousingError,
-} from '../directors/index.ts';
+  WarehousingAdapter,
+} from './WarehousingAdapter.ts';
 import type { Modules } from '../modules.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export interface EstimatedDispatch {
   shipping?: Date;
@@ -65,8 +67,24 @@ const baseDirector = BaseDirector<IWarehousingAdapter>('WarehousingDirector', {
 export const WarehousingDirector: IWarehousingDirector = {
   ...baseDirector,
 
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(
+      WarehousingAdapter.adapterType!,
+    ) as IWarehousingAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(
+      WarehousingAdapter.adapterType!,
+    ) as IWarehousingAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
+
   actions: async (warehousingProvider, warehousingContext, unchainedAPI) => {
-    const Adapter = baseDirector.getAdapter(warehousingProvider.adapterKey);
+    const Adapter = WarehousingDirector.getAdapter(warehousingProvider.adapterKey);
 
     if (!Adapter) {
       throw new Error(`Warehousing Plugin ${warehousingProvider.adapterKey} not available`);

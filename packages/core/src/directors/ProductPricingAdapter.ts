@@ -4,10 +4,12 @@ import {
   type IProductPricingSheet,
   type ProductPricingCalculation,
   ProductPricingSheet,
+} from './ProductPricingSheet.ts';
+import {
   BasePricingAdapter,
   type BasePricingAdapterContext,
   type IPricingAdapter,
-} from '../directors/index.ts';
+} from './BasePricingAdapter.ts';
 import type { Modules } from '../modules.ts';
 import type { User } from '@unchainedshop/core-users';
 
@@ -32,6 +34,7 @@ const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, Prod
 
 export const ProductPricingAdapter: IProductPricingAdapter = {
   ...basePricingAdapter,
+  adapterType: Symbol.for('unchained:adapter:pricing:product'),
 
   isActivatedFor: () => {
     return false;

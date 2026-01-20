@@ -1,4 +1,5 @@
-import { WorkerAdapter, WorkerDirector } from '../core-index.ts';
+import { WorkerAdapter, type IPlugin, type IWorkerAdapter } from '../core-index.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export default function registerWorker<Input = any, Result = any>({
   type,
@@ -10,8 +11,8 @@ export default function registerWorker<Input = any, Result = any>({
   external?: boolean;
   maxParallelAllocations?: number;
   process?: (input: Input, workId: string) => Promise<Result>;
-}) {
-  WorkerDirector.registerAdapter({
+}): IPlugin {
+  const adapter: IWorkerAdapter<Input, Result> = {
     ...WorkerAdapter,
 
     key: 'shop.unchained.worker.' + type.toLowerCase(),
@@ -42,5 +43,15 @@ export default function registerWorker<Input = any, Result = any>({
         };
       }
     },
-  });
+  };
+
+  const plugin: IPlugin = {
+    key: adapter.key,
+    label: adapter.label,
+    version: adapter.version,
+    adapters: [adapter],
+  };
+
+  pluginRegistry.register(plugin);
+  return plugin;
 }

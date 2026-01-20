@@ -6,7 +6,6 @@ import {
   OrderPricingSheet,
   type IPaymentAdapter,
   PaymentAdapter,
-  PaymentDirector,
   PaymentError,
 } from '@unchainedshop/core';
 
@@ -269,5 +268,3 @@ export const WordlineSaferpay: IPaymentAdapter = {
     return adapter;
   },
 };
-
-PaymentDirector.registerAdapter(WordlineSaferpay);

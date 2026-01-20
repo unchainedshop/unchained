@@ -41,7 +41,6 @@
     "@unchainedshop/api": "^4.6.0",
     "@unchainedshop/core": "^4.6.0",
     "@unchainedshop/events": "^4.6.0",
-    "@unchainedshop/file-upload": "^4.6.0",
     "@unchainedshop/logger": "^4.6.0",
     "@unchainedshop/mongodb": "^4.6.0",
     "@unchainedshop/plugins": "^4.6.0",

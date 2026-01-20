@@ -1,163 +1,39 @@
 import { createLogger } from '@unchainedshop/logger';
-import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.ts';
-import {
-  OrderPricingSheet,
-  type IPaymentAdapter,
-  PaymentAdapter,
-  PaymentDirector,
-  PaymentError,
-} from '@unchainedshop/core';
+import type { IPlugin } from '@unchainedshop/core';
+import { Stripe } from './adapter.ts';
+import { stripeWebhookHandler } from './api.ts';
+
+const { STRIPE_WEBHOOK_PATH = '/payment/stripe/webhook' } = process.env;
 
 const logger = createLogger('unchained:stripe');
 
-const Stripe: IPaymentAdapter = {
-  ...PaymentAdapter,
-
+// Plugin definition
+export const StripePlugin: IPlugin = {
   key: 'shop.unchained.payment.stripe',
-  label: 'Stripe',
+  label: 'Stripe Payment Plugin',
   version: '2.0.0',
 
-  typeSupported(type) {
-    return type === 'GENERIC';
-  },
+  adapters: [Stripe],
 
-  actions: (config, context) => {
-    const { modules } = context;
+  routes: [
+    {
+      path: STRIPE_WEBHOOK_PATH,
+      method: 'POST',
+      handler: stripeWebhookHandler,
+    },
+  ],
 
-    const descriptorPrefix = config.find(({ key }) => key === 'descriptorPrefix')?.value || '';
-
-    const assertUserData = async (forcedUserId) => {
-      const userId = forcedUserId || context?.userId;
-      const user = await modules.users.findUserById(userId);
-      if (!user) throw new Error('User not found');
-      const email = modules.users.primaryEmail(user)?.address;
-      const name = user.profile?.displayName || user.username || email;
-      return {
-        email,
-        name,
-        userId,
-      };
-    };
-    const adapterActions = {
-      ...PaymentAdapter.actions(config, context),
-
-      configurationError() {
-        if (!stripe) return PaymentError.INCOMPLETE_CONFIGURATION;
-        return null;
-      },
-
-      isActive: () => {
-        if (adapterActions.configurationError() === null) return true;
-        return false;
-      },
-
-      isPayLaterAllowed() {
-        return false;
-      },
-
-      validate: async ({ token }) => {
-        const paymentMethod = await stripe.paymentMethods.retrieve(token);
-        return !!paymentMethod;
-      },
-
-      register: async ({ setupIntentId }) => {
-        if (!setupIntentId) {
-          throw new Error('You have to provide a setupIntentId');
-        }
-
-        const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
-        if (setupIntent.status === 'succeeded') {
-          return {
-            token: setupIntent.payment_method,
-            customer: setupIntent.customer,
-            // payment_method_options: setupIntent.payment_method_options,
-            payment_method_types: setupIntent.payment_method_types,
-            usage: setupIntent.usage,
-          };
-        }
-
-        logger.warn('Registration declined', setupIntentId);
-        return null;
-      },
-
-      sign: async (transactionContext = {}) => {
-        const { orderPayment, order, paymentProvider } = context;
-        const { userId, name, email } = await assertUserData(order?.userId);
-        if (orderPayment) {
-          if (!order) throw new Error('order not found in context');
-          const pricing = OrderPricingSheet({
-            calculation: order?.calculation,
-            currencyCode: order?.currencyCode,
-          });
-          const paymentIntent = await createOrderPaymentIntent(
-            { userId, name, email, order, orderPayment, pricing, descriptorPrefix },
-            transactionContext,
-          );
-          return paymentIntent.client_secret;
-        }
-
-        const paymentIntent = await createRegistrationIntent(
-          { userId, name, email, paymentProviderId: paymentProvider._id, descriptorPrefix },
-          transactionContext,
-        );
-        return paymentIntent.client_secret;
-      },
-
-      charge: async ({ paymentIntentId, paymentCredentials }) => {
-        if (!paymentIntentId && !paymentCredentials) {
-          throw new Error('You have to provide paymentIntentId or paymentCredentials');
-        }
-
-        const { order, orderPayment } = context;
-
-        if (!order) throw new Error('order not found in context');
-        if (!orderPayment) throw new Error('orderPayment not found in context');
-
-        const { userId, name, email } = await assertUserData(order?.userId);
-        const pricing = OrderPricingSheet({
-          calculation: order.calculation,
-          currencyCode: order.currencyCode,
-        });
-
-        const paymentIntentObject = paymentIntentId
-          ? await stripe.paymentIntents.retrieve(paymentIntentId)
-          : await createOrderPaymentIntent(
-              { userId, name, email, orderPayment, order, pricing, descriptorPrefix },
-              {
-                customer: paymentCredentials.meta?.customer,
-                confirm: true,
-                payment_method: paymentCredentials.token,
-                payment_method_types: paymentCredentials.meta?.payment_method_types,
-                // payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
-              },
-            );
-
-        const { currencyCode, amount } = pricing.total({ useNetPrice: false });
-
-        if (
-          paymentIntentObject.currency !== currencyCode.toLowerCase() ||
-          paymentIntentObject.amount !== Math.round(amount)
-        ) {
-          throw new Error('The price has changed since the intent has been created');
-        }
-        if (paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id) {
-          throw new Error('The order payment is different from the initiating intent');
-        }
-
-        if (paymentIntentObject.status === 'succeeded') {
-          return paymentIntentObject;
-        }
-
-        logger.info('Charge postponed because paymentIntent has wrong status', {
-          orderPaymentId: paymentIntentObject.id,
-        });
-
-        return false;
-      },
-    };
-
-    return adapterActions;
+  onRegister: () => {
+    if (!process.env.STRIPE_SECRET) {
+      throw new Error('STRIPE_SECRET not set');
+    }
+    if (!process.env.STRIPE_ENDPOINT_SECRET) {
+      logger.warn('STRIPE_ENDPOINT_SECRET not set - webhooks will not work');
+    }
   },
 };
 
-PaymentDirector.registerAdapter(Stripe);
+export default StripePlugin;
+
+// Re-export adapter for direct use
+export { Stripe } from './adapter.ts';

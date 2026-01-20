@@ -49,6 +49,7 @@ export type IWarehousingAdapter = IBaseAdapter & {
 
 export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:warehousing'),
   orderIndex: 0,
 
   typeSupported: () => {

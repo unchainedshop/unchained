@@ -40,6 +40,7 @@ export type QuotationError = (typeof QuotationError)[keyof typeof QuotationError
 
 export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:quotation'),
   orderIndex: 0,
 
   isActivatedFor: () => {

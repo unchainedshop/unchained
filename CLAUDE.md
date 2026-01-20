@@ -37,6 +37,60 @@ npm run lint     # Lint and fix code (ESLint + Prettier)
 npm run pretest  # Run ESLint without fixing
 ```
 
+## Import Conventions
+
+### Relative Imports
+- **MUST** use `.ts` file extensions for all relative imports
+- **MUST NOT** omit file extensions in relative imports
+
+```typescript
+// ✓ Correct
+import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.ts';
+import seed from './seed.ts';
+
+// ✗ Incorrect
+import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection';
+```
+
+### Package Imports
+- **MUST** use package name without extensions for workspace packages
+- **MAY** import from package subpaths using package.json exports
+
+```typescript
+// ✓ Package imports
+import { createLogger } from '@unchainedshop/logger';
+import { startPlatform } from '@unchainedshop/platform';
+```
+
+### Rationale
+- Native Node.js 22+ ESM TypeScript execution
+- TypeScript config: `"allowImportingTsExtensions": true`, `"module": "NodeNext"`
+- No compilation required for development/testing: `node --watch src/file.ts`, `node --test path/to/test.ts`
+
+## Code Modification Practices
+
+### Script Usage Constraints
+- **DO NOT** create standalone scripts (e.g., Python, Node.js, custom executables) to modify code files
+- **DO** use find-and-replace patterns that can be executed directly as sh/bash commands
+
+```bash
+# ✓ Acceptable - Direct bash/sh commands for find and replace
+sed -i '' 's/oldPattern/newPattern/g' file.ts
+find packages/ -name "*.ts" -exec sed -i '' 's/oldImport/newImport/g' {} +
+grep -rl "pattern" packages/ | xargs sed -i '' 's/pattern/replacement/g'
+
+# ✗ Not acceptable - Standalone scripts to modify code
+node transform-code.js
+python refactor.py
+./custom-migration-script.sh
+```
+
+### Rationale
+- Keeps modifications transparent and auditable
+- Avoids introducing one-off tooling dependencies
+- Ensures changes can be reviewed and understood at a glance
+- Standard shell tools (sed, grep, find, awk) are universally available
+
 ## Architecture Overview
 
 Unchained Engine is a modular e-commerce platform built as a monorepo with npm workspaces.
@@ -64,10 +118,50 @@ infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-u
 
 ### Plugin Architecture
 The plugin system uses a Director/Adapter pattern:
-- **Directors** manage collections of adapters (e.g., PaymentDirector)
-- **Adapters** implement specific behaviors (e.g., StripeAdapter)
-- Plugins self-register when imported
-- Configuration happens through director.registerAdapter()
+- **Directors** manage collections of adapters (e.g., PaymentDirector, DeliveryDirector)
+- **Adapters** implement specific behaviors (e.g., Stripe payment adapter, GridFS file storage)
+- **Explicit registration**: Plugins must be explicitly registered before platform startup
+- **Side-effect free**: Plugin files export pure adapter objects without auto-registration
+
+#### Plugin Registration Pattern
+Plugins are registered explicitly before starting the platform:
+
+```typescript
+// Import preset registration function
+import defaultModules, { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+import { startPlatform } from '@unchainedshop/platform';
+
+// Register all plugins before starting platform
+registerAllPlugins();
+
+// Start platform
+const platform = await startPlatform({
+  modules: defaultModules,
+});
+```
+
+#### Available Presets
+- **base**: Essential plugins (Invoice payment, Post delivery, core pricing, workers)
+  - Use `registerBasePlugins()` from `@unchainedshop/plugins/presets/base.js`
+- **all**: Complete plugin bundle (includes base + additional payment gateways, filters, workers)
+  - Use `registerAllPlugins()` from `@unchainedshop/plugins/presets/all.js`
+- **crypto**: Cryptocurrency plugins (Cryptopay, token minting, rate conversion)
+  - Use `registerCryptoPlugins()` from `@unchainedshop/plugins/presets/crypto.js`
+
+#### Registering Individual Plugins
+For custom configurations, import and register individual adapters:
+
+```typescript
+import { PaymentDirector, ProductDiscountDirector } from '@unchainedshop/core';
+import { Stripe } from '@unchainedshop/plugins/payment/stripe/index.js';
+import { DiscountHalfPrice } from '@unchainedshop/plugins/pricing/discount-half-price.js';
+
+// Register specific adapters
+PaymentDirector.registerAdapter(Stripe);
+ProductDiscountDirector.registerAdapter(DiscountHalfPrice);
+```
+
+All plugin files export their adapters as named exports, making cherry-picking straightforward.
 
 ### Core Module Pattern
 Each core-* module follows a consistent pattern:
@@ -86,10 +180,11 @@ Example modules: core-orders, core-products, core-users, core-payment, core-deli
 - Higher-level packages (api, platform) should use the module APIs exposed by core packages
 
 ### TypeScript Configuration
-- Uses TypeScript project references (tsconfig.json) for incremental builds
-- All packages build to `lib/` directory with declaration files
-- Run `tsc --build` from root to build all packages respecting dependencies
-- Individual packages have isolated TypeScript configurations
+- Uses TypeScript project references for incremental builds
+- **MUST** use `"module": "NodeNext"` and `"moduleResolution": "NodeNext"` (native ESM)
+- **MUST** enable `"allowImportingTsExtensions": true` for .ts imports
+- Packages build to `lib/` with declaration files
+- Individual packages extend shared base configs
 
 ### API Structure
 The API package supports multiple server frameworks:
@@ -109,6 +204,6 @@ The API package supports multiple server frameworks:
 - Use `.env` files for local configuration
 - Default values in `.env.defaults`
 - Integration tests use `.env.tests` with `.env` as fallback
-- Node.js 22+ required (see .nvmrc)
+- Node.js 22+ required (25 in .nvmrc)
 - MongoDB required (or use MongoDB Memory Server for testing)
  No newline at end of file

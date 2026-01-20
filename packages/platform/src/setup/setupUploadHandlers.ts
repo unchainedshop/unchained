@@ -1,5 +1,5 @@
 import type { UnchainedCore } from '@unchainedshop/core';
-import { FileDirector } from '@unchainedshop/file-upload';
+import { FileDirector } from '@unchainedshop/core';
 
 export const setupUploadHandlers = ({ services, modules }: UnchainedCore) => {
   FileDirector.registerFileUploadCallback('user-avatars', async (file) => {

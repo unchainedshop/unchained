@@ -1,6 +1,5 @@
 import { startPlatform } from '@unchainedshop/platform';
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import connectBasePluginsToFastify from '@unchainedshop/plugins/presets/base-fastify.js';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import seed from './seed.ts';
 import Fastify from 'fastify';
@@ -14,6 +13,9 @@ const fastify = Fastify({
 });
 
 try {
+  // Register base plugins before starting platform
+  registerBasePlugins();
+
   let context;
   if (process.env.UNCHAINED_ZITADEL_CLIENT_ID) {
     context = await setupZitadel(fastify);
@@ -24,7 +26,6 @@ try {
   }
 
   const platform = await startPlatform({
-    modules: baseModules,
     context,
     options: {
       users: {
@@ -39,7 +40,6 @@ try {
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: true,
-    initPluginMiddlewares: connectBasePluginsToFastify,
   });
 
   await seed(platform.unchainedAPI);

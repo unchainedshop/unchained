@@ -1,9 +1,10 @@
 import type { Work, WorkData, WorkResult } from '@unchainedshop/core-worker';
 import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import type { ScheduleData } from '../utils/schedule.ts';
-import type { IWorkerAdapter } from './WorkerAdapter.ts';
+import { type IWorkerAdapter, WorkerAdapter } from './WorkerAdapter.ts';
 import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -36,6 +37,24 @@ const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
 export const WorkerDirector: IWorkerDirector = {
   ...baseDirector,
 
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(WorkerAdapter.adapterType!) as IWorkerAdapter<
+      any,
+      any
+    >[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(WorkerAdapter.adapterType!) as IWorkerAdapter<
+      any,
+      any
+    >[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
+
   getActivePluginTypes: ({ external } = {}) => {
     return WorkerDirector.getAdapters()
       .filter((adapter) => {
@@ -45,30 +64,8 @@ export const WorkerDirector: IWorkerDirector = {
       .map((adapter) => adapter.type);
   },
 
-  registerAdapter: (Adapter) => {
-    if (WorkerDirector.getAdapterByType(Adapter.type))
-      throw new Error(
-        `WorkerDirector: There is already a adapter registered with type: ${Adapter.type}`,
-      );
-
-    baseDirector.registerAdapter(Adapter);
-  },
-
   disableAutoscheduling: (type) => {
     AutoScheduleMap.delete(type);
-  },
-
-  unregisterAdapter: (key) => {
-    const adapter = WorkerDirector.getAdapter(key);
-    const result = baseDirector.unregisterAdapter(key);
-    if (adapter) {
-      AutoScheduleMap.forEach((workItemConfiguration, scheduleId) => {
-        if (workItemConfiguration.type === adapter.type) {
-          AutoScheduleMap.delete(scheduleId);
-        }
-      });
-    }
-    return result;
   },
 
   configureAutoscheduling: (workItemConfiguration) => {

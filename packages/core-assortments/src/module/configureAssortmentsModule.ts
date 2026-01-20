@@ -36,7 +36,7 @@ export type BreadcrumbAssortmentLinkFunction = (childAssortmentId: string) => Pr
 
 export type BreadcrumbAssortmentProductFunction = (productId: string) => Promise<AssortmentProduct[]>;
 
-const logger = createLogger('unchained:core');
+const logger = createLogger('unchained:core-assortments');
 
 const ASSORTMENT_EVENTS = ['ASSORTMENT_CREATE', 'ASSORTMENT_REMOVE', 'ASSORTMENT_UPDATE'];
 

@@ -18,15 +18,6 @@ export const OrderDeliveryPickUp = {
     return director.pickUpLocationById(orderPickUpLocationId);
   },
 
-  async pickUpLocations(obj: OrderDelivery, _: never, context: Context) {
-    const provider = await context.loaders.deliveryProviderLoader.load({
-      deliveryProviderId: obj.deliveryProviderId,
-    });
-    const director = await DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
-
-    return director.pickUpLocations();
-  },
-
   async provider(obj: OrderDelivery, _: never, { loaders }: Context) {
     return loaders.deliveryProviderLoader.load({
       deliveryProviderId: obj.deliveryProviderId,

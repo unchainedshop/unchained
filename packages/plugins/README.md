@@ -22,7 +22,6 @@ npm install @unchainedshop/plugins
 | Stripe | `payment/stripe` | Stripe payment integration |
 | Datatrans V2 | `payment/datatrans-v2` | Datatrans payment gateway |
 | Saferpay | `payment/saferpay` | Saferpay payment gateway |
-| PayPal Checkout | `payment/paypal-checkout` | PayPal Checkout integration |
 | Braintree | `payment/braintree` | Braintree payments |
 | Payrexx | `payment/payrexx` | Payrexx payment gateway |
 | Apple IAP | `payment/apple-iap` | Apple In-App Purchase |
@@ -134,7 +133,6 @@ All payment plugins implement secure tokenization patterns for PCI DSS SAQ-A eli
 | Stripe | PaymentIntent/SetupIntent tokenization |
 | Datatrans | Secure Fields with HMAC-SHA-256 signatures |
 | Saferpay | Redirect with SHA-256 transaction signatures |
-| PayPal | Order ID references |
 | Braintree | Client SDK tokenization |
 | Cryptopay | BIP-32 HD wallet address derivation |
 

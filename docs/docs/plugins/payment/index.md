@@ -17,7 +17,6 @@ Payment plugins integrate various payment service providers with Unchained Engin
 | [`shop.unchained.datatrans`](./datatrans.md) | Swiss payment service provider |
 | [`shop.unchained.invoice`](./invoice.md) | Pay-per-invoice (B2B) |
 | [`shop.unchained.invoice-prepaid`](./invoice-prepaid.md) | Prepayment invoice |
-| [`shop.unchained.payment.paypal`](./paypal-checkout.md) | PayPal Checkout |
 | [`shop.unchained.payment.payrexx`](./payrexx.md) | Swiss PSP (TWINT, PostFinance) |
 | [`shop.unchained.payment.postfinance-checkout`](./postfinance-checkout.md) | PostFinance Checkout |
 | [`shop.unchained.payment.saferpay`](./saferpay.md) | Worldline Saferpay |

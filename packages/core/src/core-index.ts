@@ -11,6 +11,7 @@ import {
   DeliveryDirector,
   DeliveryPricingDirector,
   EnrollmentDirector,
+  FileDirector,
   FilterDirector,
   OrderDiscountDirector,
   OrderPricingDirector,
@@ -32,6 +33,11 @@ export * from './services/index.ts';
 export * from './directors/index.ts';
 export * from './factory/index.ts';
 export * from './bulk-exporter/index.ts';
+export * from './plugins/PluginRegistry.ts';
+export * from './utils/getFileAdapter.ts';
+
+// Re-export from core-files for convenience
+export { filesSettings } from '@unchainedshop/core-files';
 
 export { default as schedule, type ScheduleData } from './utils/schedule.ts';
 
@@ -92,6 +98,7 @@ export const getAllAdapters = () => {
   const delivery = DeliveryDirector.getAdapters();
   const deliveryPricing = DeliveryPricingDirector.getAdapters();
   const enrollment = EnrollmentDirector.getAdapters();
+  const file = FileDirector.getAdapters();
   const filter = FilterDirector.getAdapters();
   const orderDiscount = OrderDiscountDirector.getAdapters();
   const orderPricing = OrderPricingDirector.getAdapters();
@@ -107,6 +114,7 @@ export const getAllAdapters = () => {
     delivery,
     deliveryPricing,
     enrollment,
+    file,
     filter,
     orderDiscount,
     orderPricing,

@@ -2,14 +2,16 @@ import {
   type IOrderPricingSheet,
   type OrderPricingCalculation,
   OrderPricingSheet,
+} from './OrderPricingSheet.ts';
+import {
   type IOrderPricingAdapter,
   type OrderPricingAdapterContext,
-  BasePricingDirector,
-  type PricingDiscount,
-  type IPricingDirector,
-} from '../directors/index.ts';
+  OrderPricingAdapter,
+} from './OrderPricingAdapter.ts';
+import { BasePricingDirector, type IPricingDirector } from './BasePricingDirector.ts';
+import type { PricingDiscount } from './BasePricingSheet.ts';
 import type { Order, OrderDelivery, OrderPayment, OrderPosition } from '@unchainedshop/core-orders';
-
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 export interface OrderPricingContext {
   currencyCode: string;
   order: Order;
@@ -42,6 +44,22 @@ const baseDirector = BasePricingDirector<
 
 export const OrderPricingDirector: IOrderPricingDirector<any> = {
   ...baseDirector,
+
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(
+      OrderPricingAdapter.adapterType!,
+    ) as IOrderPricingAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(
+      OrderPricingAdapter.adapterType!,
+    ) as IOrderPricingAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
 
   buildPricingContext: async (context, unchainedAPI) => {
     const { modules } = unchainedAPI;

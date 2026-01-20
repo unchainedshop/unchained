@@ -1,3 +1,12 @@
+/**
+ * Redis Event Emitter Adapter
+ *
+ * NOTE: This file uses a different pattern than the plugin architecture.
+ * Events adapters implement EmitAdapter interface and are registered via
+ * setEmitAdapter() instead of the standard IPlugin pattern.
+ *
+ * This adapter auto-configures itself when REDIS_HOST is set in environment.
+ */
 import { createClient } from '@redis/client';
 import { setEmitAdapter, type EmitAdapter } from '@unchainedshop/events';
 

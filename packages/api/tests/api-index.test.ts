@@ -1,5 +1,5 @@
 // Import the function to be tested.
-import { describe, it, mock } from 'node:test';
+import { describe, it, mock, before, after } from 'node:test';
 import assert from 'node:assert';
 import { admin } from '../src/roles/admin.ts';
 import { actions } from '../src/roles/index.ts';
@@ -61,6 +61,16 @@ describe('API', () => {
   });
 
   describe('checkAction', () => {
+    let originalUserHasPermission: typeof Roles.userHasPermission;
+
+    before(() => {
+      originalUserHasPermission = Roles.userHasPermission;
+    });
+
+    after(() => {
+      Roles.userHasPermission = originalUserHasPermission;
+    });
+
     it('should throw a NoPermissionError if the user does not have permission to perform the action', async () => {
       Roles.userHasPermission = mock.fn(async () => false);
 

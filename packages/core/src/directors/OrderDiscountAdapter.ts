@@ -1,10 +1,10 @@
-import {
-  BaseDiscountAdapter,
-  type IDiscountAdapter,
-  type OrderDiscountConfiguration,
-} from '../directors/index.ts';
+import { BaseDiscountAdapter, type IDiscountAdapter } from './BaseDiscountAdapter.ts';
+import type { OrderDiscountConfiguration } from './OrderDiscountConfiguration.ts';
 
-export const OrderDiscountAdapter = BaseDiscountAdapter as Omit<
+export const OrderDiscountAdapter: Omit<
   IDiscountAdapter<OrderDiscountConfiguration>,
   'key' | 'label' | 'version'
->;
+> = {
+  ...(BaseDiscountAdapter as any),
+  adapterType: Symbol.for('unchained:adapter:discount:order'),
+};

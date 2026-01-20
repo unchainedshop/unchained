@@ -1,35 +1,35 @@
-import express from 'express';
-import appleWalletHandler from './mobile-tickets/apple-handler-express.ts';
-import googleWalletHandler from './mobile-tickets/google-handler-express.ts';
-import printTicketsHandler from './pdf-tickets/print-handler-express.ts';
+import type { Express } from 'express';
+import { createServerAdapter } from '@whatwg-node/server';
+import { ticketingRoutes } from './routes.ts';
 
-export default (app: express.Express) => {
-  const {
-    APPLE_WALLET_WEBSERVICE_PATH = '/rest/apple-wallet',
-    GOOGLE_WALLET_WEBSERVICE_PATH = '/rest/google-wallet',
-    UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets',
-  } = process.env;
+export default (app: Express) => {
+  for (const route of ticketingRoutes) {
+    // Create WHATWG-compliant server adapter
+    const adapter = createServerAdapter(async (request: Request, serverContext: any) => {
+      const context = {
+        ...serverContext.unchainedContext,
+        params: serverContext.params || {},
+      };
 
-  app.use(
-    UNCHAINED_PDF_PRINT_HANDLER_PATH,
-    express.json({
-      type: 'application/json',
-    }),
-    printTicketsHandler,
-  );
-  app.use(
-    APPLE_WALLET_WEBSERVICE_PATH,
-    express.json({
-      type: 'application/json',
-    }),
-    appleWalletHandler,
-  );
+      return await route.handler(request, context);
+    });
 
-  app.use(
-    `${GOOGLE_WALLET_WEBSERVICE_PATH}/download/:tokenId`,
-    express.json({
-      type: 'application/json',
-    }),
-    googleWalletHandler,
-  );
+    // Mount the route - use wildcard for paths with /*
+    const expressPath = route.path.replace(/\/\*$/, '/*');
+
+    app.use(expressPath, async (req, res) => {
+      try {
+        // Use handleNodeRequestAndResponse - properly converts Node.js IncomingMessage to WHATWG Request
+        // and automatically sends the response
+        await adapter.handleNodeRequestAndResponse(req, res, {
+          unchainedContext: (req as any).unchainedContext,
+          params: req.params,
+        } as any);
+      } catch {
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Internal Server Error' });
+        }
+      }
+    });
+  }
 };

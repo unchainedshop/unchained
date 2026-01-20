@@ -1,6 +1,6 @@
 import type { Price, PricingCalculation } from '@unchainedshop/utils';
 
-import { BasePricingSheet, type IPricingSheet, type PricingSheetParams } from '../directors/index.ts';
+import { BasePricingSheet, type IPricingSheet, type PricingSheetParams } from './BasePricingSheet.ts';
 
 export interface ProductPricingCalculation extends PricingCalculation {
   discountId?: string;

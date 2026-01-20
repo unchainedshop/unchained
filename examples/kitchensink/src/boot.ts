@@ -2,14 +2,13 @@ import Fastify from 'fastify';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import seed from './seed.ts';
 import { useErrorHandler } from '@envelop/core';
 
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
-import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
+import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
+import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
+import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -27,6 +26,12 @@ const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
 });
 
 try {
+  // Register all plugins before starting platform
+  registerAllPlugins();
+
+  // Register additional discount plugins
+  pluginRegistry.register(HalfPriceManualPlugin);
+  pluginRegistry.register(HundredOffPlugin);
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
 
   const platform = await startPlatform({
@@ -41,7 +46,6 @@ try {
         }
       }),
     ],
-    modules: defaultModules,
   });
 
   connect(fastify, platform, {
@@ -51,7 +55,6 @@ try {
       model: provider.chat(process.env.OPENAI_MODEL || "gpt-5.2"),
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     } : undefined,
-    initPluginMiddlewares,
   });
 
   await seed(platform.unchainedAPI);

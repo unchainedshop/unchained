@@ -169,12 +169,19 @@ test.skip('Plugins: Apple IAP', () => {
     });
 
     test('checkout with stored receipt in credentials', async () => {
-      const { data: { updateOrderPaymentGeneric, checkoutCart } = {} } = await graphqlFetch({
+      const { data: { updateCartPaymentGeneric, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation checkout($orderId: ID!, $orderPaymentId: ID!, $meta: JSON) {
-            updateOrderPaymentGeneric(orderPaymentId: $orderPaymentId, meta: $meta) {
+          mutation checkout($orderId: ID!, $paymentProviderId: ID!, $meta: JSON) {
+            updateCartPaymentGeneric(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
               _id
-              status
+              payment {
+                _id
+                status
+              }
             }
             checkoutCart(orderId: $orderId) {
               _id
@@ -183,15 +190,17 @@ test.skip('Plugins: Apple IAP', () => {
           }
         `,
         variables: {
-          orderPaymentId: 'iap-payment',
+          paymentProviderId: 'iap-payment-provider',
           orderId: 'iap-order',
           meta: {
             transactionIdentifier: singleItemTransactionIdentifier,
           },
         },
       });
-      assert.partialDeepStrictEqual(updateOrderPaymentGeneric, {
-        status: 'OPEN',
+      assert.partialDeepStrictEqual(updateCartPaymentGeneric, {
+        payment: {
+          status: 'OPEN',
+        },
       });
       assert.partialDeepStrictEqual(checkoutCart, {
         status: 'CONFIRMED',
@@ -237,13 +246,7 @@ test.skip('Plugins: Apple IAP', () => {
     test('notification_type = INITIAL_BUY', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
-          mutation prepareCart(
-            $paymentProviderId: ID!
-            $orderId: ID
-            $productId: ID!
-            $orderPaymentId: ID!
-            $meta: JSON
-          ) {
+          mutation prepareCart($paymentProviderId: ID!, $orderId: ID, $productId: ID!, $meta: JSON) {
             emptyCart(orderId: $orderId) {
               _id
             }
@@ -253,15 +256,21 @@ test.skip('Plugins: Apple IAP', () => {
             updateCart(orderId: $orderId, paymentProviderId: $paymentProviderId) {
               _id
             }
-            updateOrderPaymentGeneric(orderPaymentId: $orderPaymentId, meta: $meta) {
+            updateCartPaymentGeneric(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
               _id
-              status
+              payment {
+                _id
+                status
+              }
             }
           }
         `,
         variables: {
           paymentProviderId: 'iap-payment-provider',
-          orderPaymentId: 'iap-payment2',
           orderId: 'iap-order2',
           meta: {
             transactionIdentifier: subscriptionTransactionIdentifier,

@@ -1,3 +1,48 @@
+# Unchained Engine v5.0 (Breaking Changes)
+
+## Major Breaking Changes
+
+### Plugin System Modernization
+- **REMOVED**: All legacy adapter exports from plugin files. Use new `*Plugin` exports instead:
+  - `Invoice` → `InvoicePlugin`
+  - `InvoicePrepaid` → `InvoicePrepaidPlugin`
+  - `Datatrans` → `DatatransPlugin`
+  - `Stripe` → `StripePlugin`
+  - `Post` → `PostPlugin`
+  - `SendMessage` → `SendMessagePlugin`
+  - `PickUp` → `PickMupPlugin`
+  - `GridFS` → `GridFSPlugin`
+  - `Store` → `StorePlugin`
+
+- **REMOVED**: `Director.registerAdapter()` method from all 14 Directors. Use preset registration functions (`registerBasePlugins()`, `registerAllPlugins()`) or `pluginRegistry.register()` instead.
+
+- **REMOVED**: Default exports from `@unchainedshop/plugins/presets/base.js` and `all.js`. Import named registration functions instead.
+
+- **REMOVED**: `PluginRegistry.registerAdapters()` method (was deprecated and non-functional).
+
+### GraphQL API Changes
+- **REMOVED**: Deprecated mutations (replaced by cart-based mutations in v4):
+  - `setOrderDeliveryProvider` → use `updateCart`
+  - `setOrderPaymentProvider` → use `updateCart`
+  - `updateOrderDeliveryShipping` → use `updateCartDeliveryShipping`
+  - `updateOrderDeliveryPickUp` → use `updateCartDeliveryPickUp`
+  - `updateOrderPaymentInvoice` → use `updateCartPaymentInvoice`
+  - `updateOrderPaymentGeneric` → use `updateCartPaymentGeneric`
+
+- **REMOVED**: `OrderDeliveryPickUp.pickUpLocations` field. Use `DeliveryProvider.pickupLocations` instead.
+
+- **REMOVED**: Router export aliases:
+  - `expressRouter` → use `adminUIRouter` from `@unchainedshop/api/express`
+  - `fastifyRouter` → use `adminUIRouter` from `@unchainedshop/api/fastify`
+
+### Plugins
+- **REMOVED**: PayPal Checkout plugin entirely (due to deprecated `@paypal/checkout-server-sdk`). Migrate to Braintree or implement custom PayPal integration using `@paypal/paypal-server-sdk`.
+
+## Migration Guide
+See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migration instructions.
+
+---
+
 # Unchained Engine v4.7 (unreleased)
 
 # Unchained Engine v4.6

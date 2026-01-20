@@ -1,7 +1,19 @@
+/**
+ * Node.js Event Emitter Adapter
+ *
+ * NOTE: This file uses a different pattern than the plugin architecture.
+ * Events adapters implement EmitAdapter interface and are registered via
+ * setEmitAdapter() instead of the standard IPlugin pattern.
+ *
+ * Usage:
+ *   import { setEmitAdapter } from '@unchainedshop/events';
+ *   import { NodeEventEmitter } from '@unchainedshop/plugins/events/node-event-emitter';
+ *   setEmitAdapter(NodeEventEmitter());
+ */
 import { EventEmitter } from 'node:events';
-import { setEmitAdapter, type EmitAdapter } from '@unchainedshop/events';
+import { type EmitAdapter } from '@unchainedshop/events';
 
-const NodeEventEmitter = (): EmitAdapter => {
+export const NodeEventEmitter = (): EmitAdapter => {
   const eventEmitter = new EventEmitter();
 
   return {
@@ -15,4 +27,4 @@ const NodeEventEmitter = (): EmitAdapter => {
   };
 };
 
-setEmitAdapter(NodeEventEmitter());
+export default NodeEventEmitter;

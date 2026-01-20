@@ -1,3 +1,12 @@
+/**
+ * AWS EventBridge Event Emitter Adapter
+ *
+ * NOTE: This file uses a different pattern than the plugin architecture.
+ * Events adapters implement EmitAdapter interface and are registered via
+ * setEmitAdapter() instead of the standard IPlugin pattern.
+ *
+ * This adapter auto-configures itself when EVENT_BRIDGE_* env vars are set.
+ */
 import { type EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
 import { createLogger } from '@unchainedshop/logger';
 

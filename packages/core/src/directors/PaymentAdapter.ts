@@ -64,6 +64,7 @@ export type IPaymentAdapter = IBaseAdapter & {
 
 export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:payment'),
   initialConfiguration: [],
 
   typeSupported: () => {

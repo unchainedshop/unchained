@@ -4,6 +4,7 @@ export interface IBaseAdapter {
   key: string;
   label: string;
   version: string;
+  adapterType?: symbol;
   asString: () => string;
   log: (
     message: string,

@@ -150,7 +150,6 @@ const sidebars = {
             'plugins/payment/datatrans',
             'plugins/payment/invoice',
             'plugins/payment/invoice-prepaid',
-            'plugins/payment/paypal-checkout',
             'plugins/payment/payrexx',
             'plugins/payment/postfinance-checkout',
             'plugins/payment/saferpay',

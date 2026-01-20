@@ -1,17 +1,16 @@
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
-import baseModules from '@unchainedshop/plugins/presets/base.js';
-import initPluginMiddlewares from '@unchainedshop/plugins/presets/base-fastify.js';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 
 const fastify = Fastify();
 
-const platform = await startPlatform({
-  modules: baseModules,
-});
+// Register base plugins before starting platform
+registerBasePlugins();
+
+const platform = await startPlatform({});
 connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: true,
-  initPluginMiddlewares,
   adminUI: true,
 });
 

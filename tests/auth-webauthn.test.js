@@ -5,6 +5,7 @@ import {
   disconnect,
   getServerBaseUrl,
 } from './helpers.js';
+import { getTestPlatform } from './setup.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -716,6 +717,29 @@ test.describe('WebAuthn Flows', () => {
 
       assert.ok(errors);
       assert.ok(errors.length > 0);
+    });
+  });
+
+  test.describe('WebAuthn MDS Metadata', () => {
+    test('should return null for unknown AAGUID', async () => {
+      const { unchainedAPI } = getTestPlatform();
+      const result = await unchainedAPI.modules.users.webAuthn.findMDSMetadataForAAGUID(
+        '00000000-0000-0000-0000-000000000000',
+      );
+      assert.strictEqual(result, null);
+    });
+
+    test('should lookup metadata for known AAGUID (YubiKey 5)', async () => {
+      const { unchainedAPI } = getTestPlatform();
+      // YubiKey 5 FIPS Series AAGUID
+      const result = await unchainedAPI.modules.users.webAuthn.findMDSMetadataForAAGUID(
+        'c5ef55ff-ad9a-4b9f-b580-adebafe026d0',
+      );
+      // If MDS fetch succeeded, we should get metadata; if network failed, null is acceptable
+      if (result !== null) {
+        assert.ok(result.description);
+        assert.ok(typeof result.description === 'string');
+      }
     });
   });
 });

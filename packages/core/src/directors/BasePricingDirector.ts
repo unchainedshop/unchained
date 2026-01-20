@@ -74,7 +74,7 @@ export const BasePricingDirector = <
 
       let calculation: Calculation[] | null = [];
 
-      const Adapters = baseDirector.getAdapters({
+      const Adapters = this.getAdapters({
         adapterFilter: (Adapter) => {
           return Adapter.isActivatedFor(context);
         },

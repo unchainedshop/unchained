@@ -3,7 +3,13 @@ import {
   type WarehousingConfiguration,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
-import { WarehousingAdapter, type WarehousingContext, WarehousingDirector } from '../core-index.ts';
+import {
+  WarehousingAdapter,
+  type WarehousingContext,
+  type IPlugin,
+  type IWarehousingAdapter,
+} from '../core-index.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export default function registerVirtualWarehousing<Metadata = Record<string, any>>({
   adapterId,
@@ -41,8 +47,8 @@ export default function registerVirtualWarehousing<Metadata = Record<string, any
     configuration: WarehousingConfiguration,
     context: WarehousingContext,
   ) => Promise<boolean>;
-}) {
-  WarehousingDirector.registerAdapter({
+}): IPlugin {
+  const adapter: IWarehousingAdapter = {
     ...WarehousingAdapter,
 
     key: 'shop.unchained.warehousing.virtual.' + adapterId,
@@ -96,5 +102,15 @@ export default function registerVirtualWarehousing<Metadata = Record<string, any
         },
       };
     },
-  });
+  };
+
+  const plugin: IPlugin = {
+    key: adapter.key,
+    label: adapter.label,
+    version: adapter.version,
+    adapters: [adapter],
+  };
+
+  pluginRegistry.register(plugin);
+  return plugin;
 }

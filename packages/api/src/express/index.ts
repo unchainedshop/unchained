@@ -1,9 +1,5 @@
-// TODO: Consider creating shared handler abstractions with fastify adapter
-// to reduce code duplication for bulk import, file upload, webhooks, and chat handlers.
-// See packages/api/src/fastify/index.ts for the parallel implementation.
 import e from 'express';
 import session from 'express-session';
-import multer from 'multer';
 import MongoStore from '../mongo-store.ts';
 import { Passport } from 'passport';
 import type { YogaServerInstance } from 'graphql-yoga';
@@ -13,13 +9,11 @@ import { emit } from '@unchainedshop/events';
 import type { User } from '@unchainedshop/core-users';
 
 import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
-import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
-import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
-import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
 import { API_EVENTS } from '../events.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
+import { mountPluginRoutes } from './mountPluginRoutes.ts';
 import type { CipherKey } from 'node:crypto';
 export interface AdminUIRouterOptions {
   prefix: string;
@@ -53,13 +47,7 @@ const resolveUserRemoteAddress = (req: e.Request) => {
   return { remoteAddress, remotePort };
 };
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
 const {
-  BULK_IMPORT_API_PATH = '/bulk-import',
-  ERC_METADATA_API_PATH = '/erc-metadata',
-  TEMP_UPLOAD_API_PATH = '/temp-upload',
   MCP_API_PATH = '/mcp',
   GRAPHQL_API_PATH = '/graphql',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
@@ -171,7 +159,7 @@ const addContext = async function middlewareWithContext(
   }
 };
 
-export const connect = (
+export const connect = async (
   expressApp: e.Express,
   {
     graphqlHandler,
@@ -186,12 +174,10 @@ export const connect = (
     allowRemoteToLocalhostSecureCookies = false,
     adminUI = false,
     chat,
-    initPluginMiddlewares,
   }: {
     allowRemoteToLocalhostSecureCookies?: boolean;
     adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
     chat?: ChatConfiguration;
-    initPluginMiddlewares?: (app: e.Express, { unchainedAPI }: { unchainedAPI: UnchainedCore }) => void;
   } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
@@ -260,10 +246,8 @@ export const connect = (
     addContext,
   );
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
-  expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
-  expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
-  expressApp.use(TEMP_UPLOAD_API_PATH, upload.any(), createTempUploadMiddleware);
 
+  // MCP endpoint (remains framework-specific due to SDK requirements)
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
 
@@ -271,16 +255,12 @@ export const connect = (
     connectChat(expressApp, chat);
   }
 
-  if (initPluginMiddlewares) {
-    initPluginMiddlewares(expressApp, { unchainedAPI });
-  }
+  // Mount plugin routes automatically
+  mountPluginRoutes(expressApp, unchainedAPI);
 
   if (adminUI) {
     expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true));
   }
 };
-
-// @deprecated use adminUIRouter instead
-export const expressRouter = adminUIRouter;
 
 export { connectChat };

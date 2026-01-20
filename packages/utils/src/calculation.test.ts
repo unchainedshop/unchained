@@ -7,6 +7,7 @@ import {
   resolveAmountAndTax,
   applyDiscountToMultipleShares,
   calculateAmountToSplit,
+  getTaxAmount,
 } from './calculation.ts';
 
 describe('roundToNext', () => {
@@ -167,5 +168,36 @@ describe('calculateAmountToSplit', () => {
     };
     const amount = 1000;
     assert.strictEqual(calculateAmountToSplit(configuration, amount), 0);
+  });
+});
+
+describe('getTaxAmount', () => {
+  it('calculates tax for net price (add tax)', () => {
+    const result = getTaxAmount(100, 0.1, true);
+    assert.strictEqual(result, 10);
+  });
+
+  it('calculates tax for gross price (extract tax)', () => {
+    const result = getTaxAmount(110, 0.1, false);
+    assert.ok(Math.abs(result - 10) < 0.0001);
+  });
+
+  it('handles zero rate for net price', () => {
+    assert.strictEqual(getTaxAmount(100, 0, true), 0);
+  });
+
+  it('handles zero rate for gross price', () => {
+    assert.strictEqual(getTaxAmount(100, 0, false), 0);
+  });
+
+  it('handles high tax rate', () => {
+    const result = getTaxAmount(100, 0.25, true);
+    assert.strictEqual(result, 25);
+  });
+
+  it('extracts tax correctly from gross price with standard VAT', () => {
+    // 107.70 CHF gross with 7.7% VAT
+    const result = getTaxAmount(107.7, 0.077, false);
+    assert.ok(Math.abs(result - 7.7) < 0.01);
   });
 });

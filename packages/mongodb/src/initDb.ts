@@ -35,7 +35,7 @@ export const startDb = async (options?: { forceInMemory?: boolean; port?: number
   try {
     mongod = MongoMemoryServer.create({
       instance: useInMemory
-        ? { dbName: 'test', port: mongoPort, storageEngine: 'ephemeralForTest' }
+        ? { dbName: 'test', port: mongoPort, storageEngine: 'wiredTiger' }
         : {
             dbPath: `${process.cwd()}/.db`,
             storageEngine: 'wiredTiger',

@@ -4,8 +4,10 @@ import {
   type IQuotationAdapter,
   type QuotationAdapterActions,
   type QuotationContext,
+  QuotationAdapter,
 } from './QuotationAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -18,7 +20,7 @@ const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {
 });
 
 const findAppropriateAdapters = (quotationContext: QuotationContext, unchainedAPI) =>
-  baseDirector.getAdapters({
+  QuotationDirector.getAdapters({
     adapterFilter: (Adapter: IQuotationAdapter) => {
       const activated = Adapter.isActivatedFor(quotationContext, unchainedAPI);
       if (!activated) {
@@ -30,6 +32,18 @@ const findAppropriateAdapters = (quotationContext: QuotationContext, unchainedAP
 
 export const QuotationDirector: IQuotationDirector = {
   ...baseDirector,
+
+  // Override to query pluginRegistry dynamically
+  getAdapter: (key: string) => {
+    const adapters = pluginRegistry.getAdapters(QuotationAdapter.adapterType!) as IQuotationAdapter[];
+    return adapters.find((adapter) => adapter.key === key) || null;
+  },
+
+  // Override to query pluginRegistry dynamically
+  getAdapters: ({ adapterFilter } = {}) => {
+    const adapters = pluginRegistry.getAdapters(QuotationAdapter.adapterType!) as IQuotationAdapter[];
+    return adapters.filter(adapterFilter || (() => true));
+  },
 
   actions: async (quotationContext, unchainedAPI) => {
     const context = { ...quotationContext, ...unchainedAPI };

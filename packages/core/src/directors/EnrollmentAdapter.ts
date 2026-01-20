@@ -54,6 +54,7 @@ export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, i
 
 export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:enrollment'),
   isActivatedFor: () => {
     return false;
   },

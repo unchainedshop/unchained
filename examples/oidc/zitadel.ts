@@ -3,7 +3,7 @@ import { API_EVENTS, type Context, type UnchainedContextResolver } from '@unchai
 import { emit } from '@unchainedshop/events';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:oidc:zitadel');
@@ -13,7 +13,13 @@ const {
   UNCHAINED_ZITADEL_CLIENT_ID,
   UNCHAINED_ZITADEL_DISCOVERY_URL,
   ROOT_URL = 'http://localhost:4010',
+  NODE_ENV,
 } = process.env;
+
+// Production URL validation
+if (NODE_ENV === 'production' && ROOT_URL?.startsWith('http://')) {
+  throw new Error('ROOT_URL must use https:// in production');
+}
 
 const injectRolesInUser = async (
   userId: string,
@@ -33,6 +39,18 @@ export default async function setupZitadel(app: FastifyInstance) {
     throw new Error(
       'Environment variables UNCHAINED_ZITADEL_CLIENT_ID and UNCHAINED_ZITADEL_DISCOVERY_URL are required',
     );
+
+  // Fetch OIDC discovery document
+  const discoveryResponse = await fetch(
+    `${UNCHAINED_ZITADEL_DISCOVERY_URL}/.well-known/openid-configuration`,
+  );
+  const discoveryData = await discoveryResponse.json();
+
+  // Create JWKS for signature verification using jose
+  const JWKS = jose.createRemoteJWKSet(new URL(discoveryData.jwks_uri), {
+    cooldownDuration: 30000, // 30 seconds cooldown between refreshes
+    cacheMaxAge: 600000, // 10 minutes cache
+  });
 
   await app.register(fastifyCookie);
 
@@ -64,7 +82,13 @@ export default async function setupZitadel(app: FastifyInstance) {
     ) {
       try {
         const accessToken = await this.zitadel.getAccessTokenFromAuthorizationCodeFlow(request);
-        const decoded = jwt.decode(accessToken.token.id_token);
+
+        // SECURITY: Verify ID token signature using JWKS
+        const { payload: decoded } = await jose.jwtVerify(accessToken.token.id_token, JWKS, {
+          issuer: UNCHAINED_ZITADEL_DISCOVERY_URL,
+          audience: UNCHAINED_ZITADEL_CLIENT_ID,
+        });
+
         const {
           sub,
           preferred_username,
@@ -74,7 +98,7 @@ export default async function setupZitadel(app: FastifyInstance) {
           email,
           email_verified,
           [`urn:zitadel:iam:org:project:roles`]: projectRoles,
-        } = decoded as {
+        } = decoded as jose.JWTPayload & {
           sub: string;
           preferred_username: string;
           name?: string;
@@ -139,13 +163,18 @@ export default async function setupZitadel(app: FastifyInstance) {
         ).token;
       }
 
+      // SECURITY: Verify ID token signature using JWKS
+      const { payload: decodedPayload } = await jose.jwtVerify(req.session.zitadel.id_token, JWKS, {
+        issuer: UNCHAINED_ZITADEL_DISCOVERY_URL,
+        audience: UNCHAINED_ZITADEL_CLIENT_ID,
+      });
       const {
         sub,
         [`urn:zitadel:iam:org:project:roles`]: projectRoles,
-      }: {
+      } = decodedPayload as jose.JWTPayload & {
         sub: string;
         [`urn:zitadel:iam:org:project:roles`]: Record<string, Record<string, string>>;
-      } = jwt.decode(req.session.zitadel.id_token) as any;
+      };
 
       const userId = `${UNCHAINED_ZITADEL_CLIENT_ID}:${sub}`;
       const user = await injectRolesInUser(userId, projectRoles, context);

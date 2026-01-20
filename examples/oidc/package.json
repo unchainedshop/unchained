@@ -41,10 +41,10 @@
     "@unchainedshop/admin-ui": "^4.6.0",
     "@unchainedshop/platform": "^4.6.0",
     "@unchainedshop/plugins": "^4.6.0",
-    "fastify": "^5.4.0"
+    "fastify": "^5.4.0",
+    "jose": "^6.0.11"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.0",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",

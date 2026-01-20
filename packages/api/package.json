@@ -121,6 +121,7 @@
     "@unchainedshop/logger": "^4.6.0",
     "@unchainedshop/roles": "^4.6.0",
     "@unchainedshop/utils": "^4.6.0",
+    "@whatwg-node/server": "^0.10.18",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
     "graphql-scalars": "^1.24.2",

@@ -5,7 +5,18 @@
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
-    "./*": "./lib/*"
+    "./presets/*": "./lib/presets/*.js",
+    "./presets/countries/*": "./lib/presets/countries/*.js",
+    "./events/*": "./lib/events/*.js",
+    "./enrollments/*": "./lib/enrollments/*/index.js",
+    "./quotations/*": "./lib/quotations/*/index.js",
+    "./filters/*": "./lib/filters/*/index.js",
+    "./delivery/*": "./lib/delivery/*/index.js",
+    "./warehousing/*": "./lib/warehousing/*/index.js",
+    "./payment/*": "./lib/payment/*/index.js",
+    "./files/*": "./lib/files/*/index.js",
+    "./pricing/*": "./lib/pricing/*/index.js",
+    "./worker/*": "./lib/worker/*/index.js"
   },
   "type": "module",
   "scripts": {
@@ -46,13 +57,11 @@
     "@unchainedshop/core-warehousing": "^4.6.0",
     "@unchainedshop/core-worker": "^4.6.0",
     "@unchainedshop/events": "^4.6.0",
-    "@unchainedshop/file-upload": "^4.6.0",
     "@unchainedshop/logger": "^4.6.0",
     "@unchainedshop/utils": "^4.6.0"
   },
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": ">= 3.714 < 4",
-    "@paypal/checkout-server-sdk": "1.x",
     "@redis/client": ">= 1 < 6",
     "@scure/bip32": ">= 2",
     "@scure/btc-signer": ">= 2",
@@ -69,9 +78,6 @@
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-eventbridge": {
-      "optional": true
-    },
-    "@paypal/checkout-server-sdk": {
       "optional": true
     },
     "@redis/client": {
@@ -112,7 +118,6 @@
     }
   },
   "devDependencies": {
-    "@paypal/checkout-server-sdk": "^1.0.3",
     "@redis/client": "^5.6.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",

@@ -4,6 +4,155 @@
 
 ---
 
+## v4 → v5 (Breaking Changes)
+
+### Plugin System Modernization
+
+**BREAKING CHANGE:** All deprecated adapter exports and registration methods have been removed. You must use the new unified plugin architecture.
+
+#### Legacy Adapter Exports Removed
+
+All old adapter exports from plugin files have been removed. Use the new `*Plugin` exports instead:
+
+```typescript
+// ❌ REMOVED - Old adapter exports
+import { Invoice } from '@unchainedshop/plugins/payment/invoice.ts';
+import { Stripe } from '@unchainedshop/plugins/payment/stripe/index.js';
+import { Post } from '@unchainedshop/plugins/delivery/post.ts';
+import { GridFS } from '@unchainedshop/plugins/files/gridfs/index.js';
+
+// ✅ USE - New plugin exports
+import { InvoicePlugin } from '@unchainedshop/plugins/payment/invoice.ts';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
+import { PostPlugin } from '@unchainedshop/plugins/delivery/post.ts';
+import { GridFSPlugin } from '@unchainedshop/plugins/files/gridfs/index.js';
+```
+
+#### Director.registerAdapter() Removed
+
+The `registerAdapter()` method on all Directors has been removed. Plugins are now registered via the preset functions or `pluginRegistry`:
+
+```typescript
+// ❌ REMOVED
+import { PaymentDirector } from '@unchainedshop/core';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
+PaymentDirector.registerAdapter(StripePlugin);
+
+// ✅ USE - Register via preset functions
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+registerAllPlugins(); // Registers all plugins including Stripe
+
+// ✅ OR USE - Direct plugin registry for custom setups
+import { pluginRegistry } from '@unchainedshop/core';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
+pluginRegistry.register(StripePlugin);
+```
+
+**Affected Directors:**
+- PaymentDirector
+- DeliveryDirector
+- FileDirector
+- WarehousingDirector
+- WorkerDirector
+- FilterDirector
+- QuotationDirector
+- EnrollmentDirector
+- ProductPricingDirector
+- ProductDiscountDirector
+- OrderPricingDirector
+- OrderDiscountDirector
+- PaymentPricingDirector
+- DeliveryPricingDirector
+
+#### Plugin Preset Default Exports Removed
+
+Default exports from preset modules have been removed. Use named registration functions:
+
+```typescript
+// ❌ REMOVED
+import defaultModules from '@unchainedshop/plugins/presets/base.js';
+
+// ✅ USE - Import named registration function
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base.js';
+registerBasePlugins();
+```
+
+#### Available Registration Functions
+
+- `registerBasePlugins()` - Essential plugins (from `@unchainedshop/plugins/presets/base.js`)
+- `registerAllPlugins()` - All available plugins (from `@unchainedshop/plugins/presets/all.js`)
+- `registerCryptoPlugins()` - Cryptocurrency plugins (from `@unchainedshop/plugins/presets/crypto.js`)
+
+### GraphQL API Breaking Changes
+
+#### Deprecated Mutations Removed
+
+The following deprecated mutations have been completely removed. Use the new cart-based mutations instead:
+
+```typescript
+// ❌ REMOVED
+setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!)
+setOrderPaymentProvider(orderId: ID!, paymentProviderId: ID!)
+updateOrderDeliveryShipping(orderId: ID!, address: AddressInput, meta: JSON)
+updateOrderDeliveryPickUp(orderId: ID!, orderPickUpLocationId: String, meta: JSON)
+updateOrderPaymentInvoice(orderId: ID!, paymentContext: JSON, meta: JSON)
+updateOrderPaymentGeneric(orderId: ID!, paymentContext: JSON, meta: JSON)
+updateOrderPaymentCard(orderId: ID!, paymentContext: JSON, meta: JSON) // Removed in v4
+
+// ✅ USE - New cart mutations
+updateCart(orderId: ID!, deliveryProviderId: ID, paymentProviderId: ID, ...)
+updateCartDeliveryShipping(orderId: ID!, address: AddressInput, meta: JSON)
+updateCartDeliveryPickUp(orderId: ID!, orderPickUpLocationId: String, meta: JSON)
+updateCartPaymentInvoice(orderId: ID!, paymentContext: JSON, meta: JSON)
+updateCartPaymentGeneric(orderId: ID!, paymentContext: JSON, meta: JSON)
+```
+
+#### Deprecated Fields Removed
+
+```typescript
+// ❌ REMOVED
+OrderDeliveryPickUp.pickUpLocations
+
+// ✅ USE - Access via DeliveryProvider
+DeliveryProvider.pickupLocations
+```
+
+### API Router Export Changes
+
+Deprecated router aliases have been removed:
+
+```typescript
+// ❌ REMOVED
+import { expressRouter } from '@unchainedshop/api/express';
+import { fastifyRouter } from '@unchainedshop/api/fastify';
+
+// ✅ USE
+import { adminUIRouter } from '@unchainedshop/api/express';
+import { adminUIRouter } from '@unchainedshop/api/fastify';
+```
+
+### PayPal Checkout Plugin Removed
+
+**BREAKING CHANGE:** The PayPal Checkout plugin has been completely removed because the underlying SDK (`@paypal/checkout-server-sdk`) has been deprecated by PayPal.
+
+```typescript
+// ❌ REMOVED
+import { PaypalCheckoutPlugin } from '@unchainedshop/plugins/payment/paypal-checkout-plugin.ts';
+```
+
+**Migration Options:**
+- Use Braintree plugin (supports PayPal via Braintree)
+- Implement custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK)
+- Use alternative payment providers
+
+### PluginRegistry Internal Changes
+
+**BREAKING CHANGE:** `PluginRegistry.registerAdapters()` method removed (was a no-op).
+
+If you were calling this method, simply remove it. Adapters are now registered via `pluginRegistry.register()` or preset functions.
+
+---
+
 ## v3 → v4
 
 ### Environment Variables

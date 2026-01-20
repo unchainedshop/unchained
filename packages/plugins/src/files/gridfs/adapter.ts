@@ -3,16 +3,15 @@ import { finished, pipeline } from 'node:stream/promises';
 import mime from 'mime/lite';
 import {
   FileAdapter,
-  FileDirector,
   buildHashedFilename,
   resolveExpirationDate,
   type IFileAdapter,
-} from '@unchainedshop/file-upload';
-import { type UploadFileData } from '@unchainedshop/file-upload';
+  type UploadFileData,
+  filesSettings,
+} from '@unchainedshop/core-files';
 import sign from './sign.ts';
-import { filesSettings } from '@unchainedshop/core-files';
 import { type UnchainedCore } from '@unchainedshop/core';
-import { type GridFSFileUploadsModule } from './index.ts';
+import { type GridFSFileUploadsModule } from './module.ts';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
@@ -170,5 +169,3 @@ export const GridFSAdapter: IFileAdapter<
     );
   },
 };
-
-FileDirector.registerAdapter(GridFSAdapter);

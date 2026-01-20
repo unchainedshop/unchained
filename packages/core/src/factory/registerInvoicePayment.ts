@@ -2,9 +2,11 @@ import type { PaymentConfiguration } from '@unchainedshop/core-payment';
 import {
   type PaymentContext,
   PaymentAdapter,
-  PaymentDirector,
   type PaymentChargeActionResult,
+  type IPlugin,
+  type IPaymentAdapter,
 } from '../core-index.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 
 export default function registerInvoicePayment({
@@ -22,8 +24,8 @@ export default function registerInvoicePayment({
         configuration: PaymentConfiguration,
         context: PaymentContext,
       ) => Promise<PaymentChargeActionResult | false>);
-}) {
-  PaymentDirector.registerAdapter({
+}): IPlugin {
+  const adapter: IPaymentAdapter = {
     ...PaymentAdapter,
 
     key: `shop.unchained.payment.invoice-${adapterId}`,
@@ -57,5 +59,15 @@ export default function registerInvoicePayment({
         },
       };
     },
-  });
+  };
+
+  const plugin: IPlugin = {
+    key: adapter.key,
+    label: adapter.label,
+    version: adapter.version,
+    adapters: [adapter],
+  };
+
+  pluginRegistry.register(plugin);
+  return plugin;
 }

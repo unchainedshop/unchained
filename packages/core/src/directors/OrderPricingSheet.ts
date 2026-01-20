@@ -5,7 +5,7 @@ import {
   type IPricingSheet,
   type IBasePricingSheet,
   type PricingSheetParams,
-} from '../directors/index.ts';
+} from './BasePricingSheet.ts';
 
 export interface OrderPricingCalculation extends PricingCalculation {
   discountId?: string;

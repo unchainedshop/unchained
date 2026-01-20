@@ -3,7 +3,13 @@ import {
   type DeliveryLocation,
   DeliveryProviderType,
 } from '@unchainedshop/core-delivery';
-import { DeliveryAdapter, type DeliveryContext, DeliveryDirector } from '../core-index.ts';
+import {
+  DeliveryAdapter,
+  type DeliveryContext,
+  type IPlugin,
+  type IDeliveryAdapter,
+} from '../core-index.ts';
+import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 import type { Work } from '@unchainedshop/core-worker';
 
 export default function registerPickUpDelivery({
@@ -25,8 +31,8 @@ export default function registerPickUpDelivery({
     | boolean
     | ((configuration: DeliveryConfiguration, context: DeliveryContext) => Promise<boolean | Work>);
   locations: DeliveryLocation[] | ((context: DeliveryContext) => Promise<DeliveryLocation[]>);
-}) {
-  DeliveryDirector.registerAdapter({
+}): IPlugin {
+  const adapter: IDeliveryAdapter = {
     ...DeliveryAdapter,
 
     key: `shop.unchained.delivery.pickup-${adapterId}`,
@@ -77,5 +83,15 @@ export default function registerPickUpDelivery({
         },
       };
     },
-  });
+  };
+
+  const plugin: IPlugin = {
+    key: adapter.key,
+    label: adapter.label,
+    version: adapter.version,
+    adapters: [adapter],
+  };
+
+  pluginRegistry.register(plugin);
+  return plugin;
 }

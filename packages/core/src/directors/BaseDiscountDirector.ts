@@ -23,10 +23,12 @@ export const BaseDiscountDirector = <DiscountConfigurationType>(
     adapterSortKey: 'orderIndex',
   });
 
-  return {
+  const director: IDiscountDirector<DiscountConfigurationType> = {
     ...baseDirector,
 
-    actions: async (discountContext, unchainedAPI) => {
+    actions: async function (discountContext, unchainedAPI) {
+      // Use regular function instead of arrow function to get proper 'this' binding
+      // Arrow functions inside will inherit 'this' from this outer function
       const context = { ...discountContext, ...unchainedAPI };
 
       return {
@@ -34,8 +36,7 @@ export const BaseDiscountDirector = <DiscountConfigurationType>(
           if (!context.order) return null;
 
           const discounts = await Promise.all(
-            baseDirector
-              .getAdapters()
+            this.getAdapters()
               .filter((Adapter) => Adapter.isManualAdditionAllowed(options?.code))
               .map(async (Adapter) => {
                 const adapter = await Adapter.actions({ context });
@@ -49,10 +50,10 @@ export const BaseDiscountDirector = <DiscountConfigurationType>(
           return discounts.find(({ isValid }) => isValid === true)?.Adapter || null;
         },
 
-        async findSystemDiscounts() {
+        findSystemDiscounts: async () => {
           if (!context.order) return [];
           const discounts = await Promise.all(
-            baseDirector.getAdapters().map(async (Adapter) => {
+            this.getAdapters().map(async (Adapter) => {
               const adapter = await Adapter.actions({ context });
               return {
                 key: Adapter.key,
@@ -70,4 +71,6 @@ export const BaseDiscountDirector = <DiscountConfigurationType>(
       };
     },
   };
+
+  return director;
 };

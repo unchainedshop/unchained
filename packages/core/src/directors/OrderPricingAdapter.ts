@@ -2,10 +2,12 @@ import {
   type IOrderPricingSheet,
   type OrderPricingCalculation,
   OrderPricingSheet,
+} from './OrderPricingSheet.ts';
+import {
   BasePricingAdapter,
   type IPricingAdapter,
   type BasePricingAdapterContext,
-} from '../directors/index.ts';
+} from './BasePricingAdapter.ts';
 import type {
   Order,
   OrderDelivery,
@@ -37,6 +39,7 @@ const basePricingAdapter = BasePricingAdapter<OrderPricingAdapterContext, OrderP
 
 export const OrderPricingAdapter: IOrderPricingAdapter = {
   ...basePricingAdapter,
+  adapterType: Symbol.for('unchained:adapter:pricing:order'),
 
   isActivatedFor: () => {
     return false;

@@ -1,9 +1,4 @@
-import {
-  type IPaymentAdapter,
-  PaymentAdapter,
-  PaymentDirector,
-  PaymentError,
-} from '@unchainedshop/core';
+import { type IPaymentAdapter, PaymentAdapter, PaymentError } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { type AppleTransactionsModule } from './module.ts';
 import { verifyReceipt } from './verify-receipt.ts';
@@ -12,7 +7,7 @@ const logger = createLogger('unchained:apple-iap');
 
 const { APPLE_IAP_SHARED_SECRET } = process.env;
 
-const AppleIAP: IPaymentAdapter = {
+export const AppleIAP: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.apple-iap',
@@ -154,5 +149,3 @@ const AppleIAP: IPaymentAdapter = {
     return adapterActions;
   },
 };
-
-PaymentDirector.registerAdapter(AppleIAP);

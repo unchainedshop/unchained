@@ -3,12 +3,12 @@ import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
 import { stopDb } from '@unchainedshop/mongodb';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 
 // Import additional discount plugins used by kitchensink
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
+import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
+import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
+import { pluginRegistry } from '@unchainedshop/core';
 
 let fastify = null;
 let platform = null;
@@ -62,9 +62,15 @@ export async function initializeTestPlatform() {
   // Set ROOT_URL dynamically so file upload URLs use the correct port
   process.env.ROOT_URL = `http://localhost:${port}`;
 
+  // Register all plugins before starting platform
+  registerAllPlugins();
+
+  // Register additional discount plugins used by kitchensink
+  pluginRegistry.register(HalfPriceManualPlugin);
+  pluginRegistry.register(HundredOffPlugin);
+
   // Start platform with in-memory MongoDB
   platform = await startPlatform({
-    modules: defaultModules,
     workQueueOptions: {
       // Workers enabled for work queue tests
       pollInterval: 500, // Process work every 500ms for faster tests
@@ -78,7 +84,7 @@ export async function initializeTestPlatform() {
   });
 
   // Connect platform to Fastify (registers all routes including gridfs for file uploads)
-  connect(fastify, platform, { initPluginMiddlewares, allowRemoteToLocalhostSecureCookies: true });
+  connect(fastify, platform, { allowRemoteToLocalhostSecureCookies: true });
 
   // Start listening on the pre-checked port
   await fastify.listen({ port, host: '127.0.0.1' });

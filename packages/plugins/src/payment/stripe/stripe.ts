@@ -10,9 +10,7 @@ const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = proces
 export let stripe: Stripe;
 const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
-if (!STRIPE_SECRET) {
-  logger.warn('STRIPE_SECRET is not set, skipping initialization');
-} else {
+if (STRIPE_SECRET) {
   try {
     const { default: Stripe } = await import('stripe');
     stripe = new Stripe(STRIPE_SECRET, {

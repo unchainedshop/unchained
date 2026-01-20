@@ -1,9 +1,4 @@
-// TODO: Consider creating shared handler abstractions with express adapter
-// to reduce code duplication for bulk import, file upload, webhooks, and chat handlers.
-// See packages/api/src/express/index.ts for the parallel implementation.
 import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
-import bulkImportHandler from './bulkImportHandler.ts';
-import ercMetadataHandler from './ercMetadataHandler.ts';
 import MongoStore from '../mongo-store.ts';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type { mongodb } from '@unchainedshop/mongodb';
@@ -13,13 +8,12 @@ import { API_EVENTS } from '../events.ts';
 import type { User } from '@unchainedshop/core-users';
 import fastifySession from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
-import fastifyMultipart from '@fastify/multipart';
 import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.ts';
-import tempUploadHandler from './tempUploadHandler.ts';
 import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
+import { mountPluginRoutes } from './mountPluginRoutes.ts';
 import { readFileSync } from 'node:fs';
 export interface AdminUIRouterOptions {
   prefix: string;
@@ -40,9 +34,6 @@ const resolveUserRemoteAddress = (req: FastifyRequest) => {
 const {
   MCP_API_PATH = '/mcp',
   GRAPHQL_API_PATH = '/graphql',
-  BULK_IMPORT_API_PATH = '/bulk-import',
-  TEMP_UPLOAD_API_PATH = '/temp-upload',
-  ERC_METADATA_API_PATH = '/erc-metadata/:productId/:localeOrTokenFilename/:tokenFileName?',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
   UNCHAINED_COOKIE_DOMAIN,
@@ -122,7 +113,7 @@ export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
   return new Logger();
 };
 
-export const connect = (
+export const connect = async (
   fastify: FastifyInstance,
   {
     graphqlHandler,
@@ -137,15 +128,10 @@ export const connect = (
     allowRemoteToLocalhostSecureCookies = false,
     adminUI = false,
     chat,
-    initPluginMiddlewares,
   }: {
     allowRemoteToLocalhostSecureCookies?: boolean;
     adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
     chat?: ChatConfiguration;
-    initPluginMiddlewares?: (
-      app: FastifyInstance,
-      { unchainedAPI }: { unchainedAPI: UnchainedCore },
-    ) => void;
   } = {},
 ) => {
   if (allowRemoteToLocalhostSecureCookies) {
@@ -219,50 +205,19 @@ export const connect = (
     },
   });
 
-  fastify.route({
-    url: ERC_METADATA_API_PATH,
-    method: ['GET'],
-    handler: ercMetadataHandler,
-  });
-
+  // MCP endpoint (remains framework-specific due to SDK requirements)
   fastify.route({
     url: MCP_API_PATH,
     method: ['GET', 'POST', 'DELETE'],
     handler: mcpHandler,
   });
 
-  fastify.register((s, opts, registered) => {
-    s.register(fastifyMultipart, { throwFileSizeLimit: true, limits: { fileSize: 1024 * 1024 * 35 } }); // 35MB
-    s.route({
-      url: TEMP_UPLOAD_API_PATH,
-      method: ['POST'],
-      bodyLimit: 1024 * 1024 * 35, // 35MB
-      handler: tempUploadHandler,
-    });
-    registered();
-  });
-
-  fastify.register((s, opts, registered) => {
-    s.removeAllContentTypeParsers();
-    s.addContentTypeParser('*', function (req, payload, done) {
-      done(null);
-    });
-    s.route({
-      url: BULK_IMPORT_API_PATH,
-      method: ['POST'],
-      bodyLimit: 1024 * 1024 * 1024 * 5, // 5GB
-      handler: bulkImportHandler,
-    });
-    registered();
-  });
-
   if (chat) {
     connectChat(fastify, chat);
   }
 
-  if (initPluginMiddlewares) {
-    initPluginMiddlewares(fastify, { unchainedAPI });
-  }
+  // Mount plugin routes automatically
+  mountPluginRoutes(fastify, unchainedAPI);
 
   if (adminUI) {
     fastify.register(adminUIRouter, {
@@ -332,8 +287,5 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
     }
   }
 };
-
-// @deprecated use adminUIRouter instead
-export const fastifyRouter = adminUIRouter;
 
 export { connectChat };

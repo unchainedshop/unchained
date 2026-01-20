@@ -6,7 +6,11 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { SendMailDeliveryProvider } from './seeds/deliveries.js';
+import {
+  SendMailDeliveryProvider,
+  SimpleDeliveryProvider,
+  PickupDeliveryProvider,
+} from './seeds/deliveries.js';
 import { SimpleOrder, SimpleDelivery, PickupDelivery } from './seeds/orders.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
@@ -27,10 +31,10 @@ test.describe('Order: Deliveries', () => {
   });
 
   test('admin: set order delivery provider', async () => {
-    const { data: { setOrderDeliveryProvider } = {} } = await graphqlFetchAsAdmin({
+    const { data: { updateCart } = {} } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
-          setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+        mutation updateCart($orderId: ID!, $deliveryProviderId: ID!) {
+          updateCart(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
             _id
             status
             delivery {
@@ -48,7 +52,7 @@ test.describe('Order: Deliveries', () => {
       },
     });
 
-    assert.partialDeepStrictEqual(setOrderDeliveryProvider, {
+    assert.partialDeepStrictEqual(updateCart, {
       _id: SimpleOrder._id,
       delivery: {
         provider: {
@@ -61,8 +65,8 @@ test.describe('Order: Deliveries', () => {
   test('admin: return not found error for non-existing orderId', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
-          setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+        mutation updateCart($orderId: ID!, $deliveryProviderId: ID!) {
+          updateCart(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
             _id
           }
         }
@@ -78,8 +82,8 @@ test.describe('Order: Deliveries', () => {
   test('admin: return error for invalid orderId', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
-          setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+        mutation updateCart($orderId: ID, $deliveryProviderId: ID) {
+          updateCart(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
             _id
           }
         }
@@ -95,8 +99,8 @@ test.describe('Order: Deliveries', () => {
   test('admin: return error for invalid deliveryProviderId', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
-          setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+        mutation updateCart($orderId: ID, $deliveryProviderId: ID) {
+          updateCart(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
             _id
           }
         }
@@ -110,10 +114,10 @@ test.describe('Order: Deliveries', () => {
   });
 
   test('user: set order delivery provider', async () => {
-    const { data: { setOrderDeliveryProvider } = {} } = await graphqlFetchAsNormalUser({
+    const { data: { updateCart } = {} } = await graphqlFetchAsNormalUser({
       query: /* GraphQL */ `
-        mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
-          setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+        mutation updateCart($orderId: ID!, $deliveryProviderId: ID!) {
+          updateCart(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
             _id
             delivery {
               provider {
@@ -128,7 +132,7 @@ test.describe('Order: Deliveries', () => {
         deliveryProviderId: SendMailDeliveryProvider._id,
       },
     });
-    assert.partialDeepStrictEqual(setOrderDeliveryProvider, {
+    assert.partialDeepStrictEqual(updateCart, {
       _id: SimpleOrder._id,
       delivery: {
         provider: {
@@ -141,8 +145,8 @@ test.describe('Order: Deliveries', () => {
   test('anonymous user: returns NoPermissionError', async () => {
     const { errors } = await graphqlFetchAsAnonymousUser({
       query: /* GraphQL */ `
-        mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
-          setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+        mutation updateCart($orderId: ID!, $deliveryProviderId: ID!) {
+          updateCart(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
             _id
           }
         }
@@ -158,42 +162,50 @@ test.describe('Order: Deliveries', () => {
   });
 
   test('admin: update order delivery shipping when provider type is SHIPPING', async () => {
-    const { data: { updateOrderDeliveryShipping } = {} } = await graphqlFetchAsAdmin({
+    const { data: { updateCartDeliveryShipping } = {} } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryShipping(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryShipping(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $address: AddressInput
           $meta: JSON
         ) {
-          updateOrderDeliveryShipping(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryShipping(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             address: $address
             meta: $meta
           ) {
             _id
-            provider {
+            delivery {
               _id
-              type
-            }
-            fee {
-              amount
-            }
-            address {
-              firstName
-              lastName
-              company
-              addressLine
-              addressLine2
-              postalCode
-              countryCode
-              regionCode
-              city
+              provider {
+                _id
+                type
+              }
+              fee {
+                amount
+              }
+              ... on OrderDeliveryShipping {
+                address {
+                  firstName
+                  lastName
+                  company
+                  addressLine
+                  addressLine2
+                  postalCode
+                  countryCode
+                  regionCode
+                  city
+                }
+              }
             }
           }
         }
       `,
       variables: {
-        orderDeliveryId: SimpleDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: SimpleDeliveryProvider._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
@@ -203,28 +215,33 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.partialDeepStrictEqual(updateOrderDeliveryShipping, {
-      _id: SimpleDelivery._id,
-      provider: {
-        type: 'SHIPPING',
-      },
-      address: {
-        firstName: 'Will',
-        lastName: 'Turner',
+    assert.partialDeepStrictEqual(updateCartDeliveryShipping, {
+      _id: SimpleOrder._id,
+      delivery: {
+        _id: SimpleDelivery._id,
+        provider: {
+          type: 'SHIPPING',
+        },
+        address: {
+          firstName: 'Will',
+          lastName: 'Turner',
+        },
       },
     });
   });
 
-  test('admin: return error when passed invalid order delivery ID', async () => {
-    const { errors } = await graphqlFetchAsAdmin({
+  test('admin: update order delivery shipping allows empty orderId for user cart', async () => {
+    const { data: { updateCartDeliveryShipping } = {} } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryShipping(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryShipping(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $address: AddressInput
           $meta: JSON
         ) {
-          updateOrderDeliveryShipping(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryShipping(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             address: $address
             meta: $meta
           ) {
@@ -233,7 +250,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: '',
+        orderId: '',
+        deliveryProviderId: SimpleDeliveryProvider._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
@@ -243,21 +261,22 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.partialDeepStrictEqual(errors[0]?.extensions, {
-      code: 'InvalidIdError',
-    });
+    // Empty orderId is valid - it uses the user's active cart
+    assert.ok(updateCartDeliveryShipping?._id);
   });
 
   test('admin: return error when passed non existing order delivery ID', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryShipping(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryShipping(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $address: AddressInput
           $meta: JSON
         ) {
-          updateOrderDeliveryShipping(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryShipping(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             address: $address
             meta: $meta
           ) {
@@ -266,7 +285,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: 'non-existing-id',
+        orderId: 'non-existing-id',
+        deliveryProviderId: SimpleDeliveryProvider._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
@@ -277,20 +297,22 @@ test.describe('Order: Deliveries', () => {
       },
     });
     assert.partialDeepStrictEqual(errors[0]?.extensions, {
-      code: 'OrderDeliveryNotFoundError',
+      code: 'OrderNotFoundError',
     });
   });
 
   test('admin: return error when order delivery provider type is not SHIPPING', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryShipping(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryShipping(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $address: AddressInput
           $meta: JSON
         ) {
-          updateOrderDeliveryShipping(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryShipping(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             address: $address
             meta: $meta
           ) {
@@ -299,7 +321,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: PickupDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: PickupDeliveryProvider._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
@@ -310,7 +333,7 @@ test.describe('Order: Deliveries', () => {
       },
     });
     assert.partialDeepStrictEqual(errors[0]?.extensions, {
-      orderDeliveryId: PickupDelivery._id,
+      orderId: SimpleOrder._id,
       code: 'OrderDeliveryTypeError',
       received: 'PICKUP',
       required: 'SHIPPING',
@@ -318,28 +341,36 @@ test.describe('Order: Deliveries', () => {
   });
 
   test('user: update order delivery shipping when provider type is SHIPPING', async () => {
-    const { data: { updateOrderDeliveryShipping } = {} } = await graphqlFetchAsNormalUser({
+    const { data: { updateCartDeliveryShipping } = {} } = await graphqlFetchAsNormalUser({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryShipping(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryShipping(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $address: AddressInput
           $meta: JSON
         ) {
-          updateOrderDeliveryShipping(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryShipping(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             address: $address
             meta: $meta
           ) {
             _id
-            address {
-              firstName
-              lastName
+            delivery {
+              _id
+              ... on OrderDeliveryShipping {
+                address {
+                  firstName
+                  lastName
+                }
+              }
             }
           }
         }
       `,
       variables: {
-        orderDeliveryId: SimpleDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: SimpleDeliveryProvider._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
@@ -349,11 +380,14 @@ test.describe('Order: Deliveries', () => {
         },
       },
     });
-    assert.partialDeepStrictEqual(updateOrderDeliveryShipping, {
-      _id: SimpleDelivery._id,
-      address: {
-        firstName: 'Will',
-        lastName: 'Turner',
+    assert.partialDeepStrictEqual(updateCartDeliveryShipping, {
+      _id: SimpleOrder._id,
+      delivery: {
+        _id: SimpleDelivery._id,
+        address: {
+          firstName: 'Will',
+          lastName: 'Turner',
+        },
       },
     });
   });
@@ -361,13 +395,15 @@ test.describe('Order: Deliveries', () => {
   test('anonymous user: returns NoPermissionError', async () => {
     const { errors } = await graphqlFetchAsAnonymousUser({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryShipping(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryShipping(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $address: AddressInput
           $meta: JSON
         ) {
-          updateOrderDeliveryShipping(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryShipping(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             address: $address
             meta: $meta
           ) {
@@ -376,7 +412,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: SimpleDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: SimpleDeliveryProvider._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
@@ -392,52 +429,63 @@ test.describe('Order: Deliveries', () => {
   });
 
   test('admin: update order delivery pickup when provider type is PICKUP', async () => {
-    const { data: { updateOrderDeliveryPickUp } = {} } = await graphqlFetchAsAdmin({
+    const { data: { updateCartDeliveryPickUp } = {} } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryPickUp(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryPickUp(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $orderPickUpLocationId: ID!
           $meta: JSON
         ) {
-          updateOrderDeliveryPickUp(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryPickUp(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             orderPickUpLocationId: $orderPickUpLocationId
             meta: $meta
           ) {
             _id
-            provider {
+            delivery {
               _id
-              type
-            }
-            activePickUpLocation {
-              _id
-              name
-              geoPoint {
-                latitude
-                longitude
-                altitute
+              provider {
+                _id
+                type
+              }
+              ... on OrderDeliveryPickUp {
+                activePickUpLocation {
+                  _id
+                  name
+                  geoPoint {
+                    latitude
+                    longitude
+                    altitute
+                  }
+                }
               }
             }
           }
         }
       `,
       variables: {
-        orderDeliveryId: PickupDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: PickupDeliveryProvider._id,
         orderPickUpLocationId: 'zurich',
         meta: {
           john: 'wayne',
         },
       },
     });
-    assert.partialDeepStrictEqual(updateOrderDeliveryPickUp, {
-      _id: PickupDelivery._id,
-      provider: {
-        type: 'PICKUP',
-      },
-      activePickUpLocation: {
-        _id: 'zurich',
-        geoPoint: null,
-        name: 'Zurich',
+    assert.partialDeepStrictEqual(updateCartDeliveryPickUp, {
+      _id: SimpleOrder._id,
+      delivery: {
+        _id: PickupDelivery._id,
+        provider: {
+          type: 'PICKUP',
+        },
+        activePickUpLocation: {
+          _id: 'zurich',
+          geoPoint: null,
+          name: 'Zurich',
+        },
       },
     });
   });
@@ -445,13 +493,15 @@ test.describe('Order: Deliveries', () => {
   test('admin: return error when order delivery provider type is not PICKUP', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryPickUp(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryPickUp(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $orderPickUpLocationId: ID!
           $meta: JSON
         ) {
-          updateOrderDeliveryPickUp(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryPickUp(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             orderPickUpLocationId: $orderPickUpLocationId
             meta: $meta
           ) {
@@ -460,7 +510,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: SimpleDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: SimpleDeliveryProvider._id,
         orderPickUpLocationId: 'zurich',
         meta: {
           john: 'wayne',
@@ -468,23 +519,25 @@ test.describe('Order: Deliveries', () => {
       },
     });
     assert.partialDeepStrictEqual(errors[0]?.extensions, {
-      orderDeliveryId: SimpleDelivery._id,
+      orderId: SimpleOrder._id,
       code: 'OrderDeliveryTypeError',
       received: 'SHIPPING',
       required: 'PICKUP',
     });
   });
 
-  test('admin: return error when passed invalid order delivery provider ID', async () => {
-    const { errors } = await graphqlFetchAsAdmin({
+  test('admin: update order delivery pickup allows empty orderId for user cart', async () => {
+    const { data: { updateCartDeliveryPickUp } = {} } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryPickUp(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryPickUp(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $orderPickUpLocationId: ID!
           $meta: JSON
         ) {
-          updateOrderDeliveryPickUp(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryPickUp(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             orderPickUpLocationId: $orderPickUpLocationId
             meta: $meta
           ) {
@@ -493,28 +546,30 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: '',
+        orderId: '',
+        deliveryProviderId: PickupDeliveryProvider._id,
         orderPickUpLocationId: 'zurich',
         meta: {
           john: 'wayne',
         },
       },
     });
-    assert.partialDeepStrictEqual(errors[0]?.extensions, {
-      code: 'InvalidIdError',
-    });
+    // Empty orderId is valid - it uses the user's active cart
+    assert.ok(updateCartDeliveryPickUp?._id);
   });
 
   test('admin: return error when passed non existing order delivery provider ID', async () => {
     const { errors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryPickUp(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryPickUp(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $orderPickUpLocationId: ID!
           $meta: JSON
         ) {
-          updateOrderDeliveryPickUp(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryPickUp(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             orderPickUpLocationId: $orderPickUpLocationId
             meta: $meta
           ) {
@@ -523,7 +578,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: 'non-existing-id',
+        orderId: 'non-existing-id',
+        deliveryProviderId: PickupDeliveryProvider._id,
         orderPickUpLocationId: 'zurich',
         meta: {
           john: 'wayne',
@@ -531,44 +587,55 @@ test.describe('Order: Deliveries', () => {
       },
     });
     assert.partialDeepStrictEqual(errors[0]?.extensions, {
-      code: 'OrderDeliveryNotFoundError',
+      code: 'OrderNotFoundError',
     });
   });
 
   test('user: update order delivery pickup when provider type is PICKUP', async () => {
-    const { data: { updateOrderDeliveryPickUp } = {} } = await graphqlFetchAsNormalUser({
+    const { data: { updateCartDeliveryPickUp } = {} } = await graphqlFetchAsNormalUser({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryPickUp(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryPickUp(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $orderPickUpLocationId: ID!
           $meta: JSON
         ) {
-          updateOrderDeliveryPickUp(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryPickUp(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             orderPickUpLocationId: $orderPickUpLocationId
             meta: $meta
           ) {
             _id
-            activePickUpLocation {
+            delivery {
               _id
-              name
+              ... on OrderDeliveryPickUp {
+                activePickUpLocation {
+                  _id
+                  name
+                }
+              }
             }
           }
         }
       `,
       variables: {
-        orderDeliveryId: PickupDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: PickupDeliveryProvider._id,
         orderPickUpLocationId: 'zurich',
         meta: {
           john: 'wayne',
         },
       },
     });
-    assert.partialDeepStrictEqual(updateOrderDeliveryPickUp, {
-      _id: PickupDelivery._id,
-      activePickUpLocation: {
-        _id: 'zurich',
-        name: 'Zurich',
+    assert.partialDeepStrictEqual(updateCartDeliveryPickUp, {
+      _id: SimpleOrder._id,
+      delivery: {
+        _id: PickupDelivery._id,
+        activePickUpLocation: {
+          _id: 'zurich',
+          name: 'Zurich',
+        },
       },
     });
   });
@@ -576,13 +643,15 @@ test.describe('Order: Deliveries', () => {
   test('anonymous user: returns NoPermissionError', async () => {
     const { errors } = await graphqlFetchAsAnonymousUser({
       query: /* GraphQL */ `
-        mutation updateOrderDeliveryPickUp(
-          $orderDeliveryId: ID!
+        mutation updateCartDeliveryPickUp(
+          $orderId: ID!
+          $deliveryProviderId: ID!
           $orderPickUpLocationId: ID!
           $meta: JSON
         ) {
-          updateOrderDeliveryPickUp(
-            orderDeliveryId: $orderDeliveryId
+          updateCartDeliveryPickUp(
+            orderId: $orderId
+            deliveryProviderId: $deliveryProviderId
             orderPickUpLocationId: $orderPickUpLocationId
             meta: $meta
           ) {
@@ -591,7 +660,8 @@ test.describe('Order: Deliveries', () => {
         }
       `,
       variables: {
-        orderDeliveryId: PickupDelivery._id,
+        orderId: SimpleOrder._id,
+        deliveryProviderId: PickupDeliveryProvider._id,
         orderPickUpLocationId: 'zurich',
         meta: {
           john: 'wayne',

@@ -59,6 +59,7 @@ export type IDeliveryAdapter = IBaseAdapter & {
 
 export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:delivery'),
   initialConfiguration: [],
 
   typeSupported: () => {

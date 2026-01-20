@@ -2,14 +2,14 @@ import express from 'express';
 import http from 'node:http';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/express';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-express.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import { createLogger } from '@unchainedshop/logger';
 import seed from './seed.ts';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenAI } from '@ai-sdk/openai';
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
+import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
+import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
+import { pluginRegistry } from '@unchainedshop/core';
 
 const logger = createLogger('express');
 const app = express();
@@ -28,9 +28,14 @@ const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
 const httpServer = http.createServer(app);
 
 try {
-  const engine = await startPlatform({
-    modules: defaultModules,
-  });
+  // Register all plugins before starting platform
+  registerAllPlugins();
+
+  // Register additional discount plugins
+  pluginRegistry.register(HalfPriceManualPlugin);
+  pluginRegistry.register(HundredOffPlugin);
+
+  const engine = await startPlatform({});
 
   connect(app, engine, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
@@ -39,7 +44,6 @@ try {
       model: provider.chatModel(process.env.OPENAI_MODEL),
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
     } : undefined,
-    initPluginMiddlewares,
   });
 
   // Seed Database

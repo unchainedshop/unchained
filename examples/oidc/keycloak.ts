@@ -3,7 +3,7 @@ import { API_EVENTS, type Context, type UnchainedContextResolver, } from '@uncha
 import { emit } from '@unchainedshop/events';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:oidc:keycloak');
@@ -16,7 +16,13 @@ const {
   UNCHAINED_KEYCLOAK_REALM_URL,
   MCP_API_PATH = '/mcp',
   ROOT_URL = 'http://localhost:4010',
+  NODE_ENV,
 } = process.env;
+
+// Production URL validation
+if (NODE_ENV === 'production' && ROOT_URL?.startsWith('http://')) {
+  throw new Error('ROOT_URL must use https:// in production');
+}
 
 export default async function setupKeycloak(app: FastifyInstance) {
   if (!UNCHAINED_KEYCLOAK_REALM_URL || !UNCHAINED_KEYCLOAK_CLIENT_ID)
@@ -28,8 +34,12 @@ export default async function setupKeycloak(app: FastifyInstance) {
     `${UNCHAINED_KEYCLOAK_REALM_URL}/.well-known/openid-configuration`,
   );
   const discoveryData = await discoveryResponse.json();
-  const jwksResponse = await fetch(discoveryData.jwks_uri);
-  const jwksData = await jwksResponse.json();
+
+  // Create JWKS for signature verification using jose
+  const JWKS = jose.createRemoteJWKSet(new URL(discoveryData.jwks_uri), {
+    cooldownDuration: 30000, // 30 seconds cooldown between refreshes
+    cacheMaxAge: 600000, // 10 minutes cache
+  });
 
   await app.register(fastifyCookie);
 
@@ -43,6 +53,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
     },
     startRedirectPath: '/login',
     scope: ['profile', 'email', 'openid'],
+    pkce: 'S256',
     callbackUri: `${ROOT_URL}${UNCHAINED_KEYCLOAK_CALLBACK_PATH}`,
     discovery: { issuer: UNCHAINED_KEYCLOAK_REALM_URL },
   });
@@ -60,7 +71,13 @@ export default async function setupKeycloak(app: FastifyInstance) {
     ) {
       try {
         const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
-        const decoded = jwt.decode(accessToken.token.id_token);
+
+        // SECURITY: Verify ID token signature using JWKS
+        const { payload: decoded } = await jose.jwtVerify(accessToken.token.id_token, JWKS, {
+          issuer: UNCHAINED_KEYCLOAK_REALM_URL,
+          audience: UNCHAINED_KEYCLOAK_CLIENT_ID,
+        });
+
         const {
           sub,
           resource_access,
@@ -70,7 +87,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
           family_name,
           email,
           email_verified,
-        } = decoded as {
+        } = decoded as jose.JWTPayload & {
           sub: string;
           resource_access: Record<string, { roles: string[] }>;
           preferred_username: string;
@@ -173,15 +190,21 @@ export default async function setupKeycloak(app: FastifyInstance) {
   });
 
   app.addHook('onRequest', async (req, reply) => {
-    // Some code
     if (req.url === MCP_API_PATH) {
       try {
-        const encodedToken = req.headers.authorization?.replace('Bearer ', '');
-        const token = encodedToken
-          ? jwt.verify(encodedToken, { key: jwksData?.keys[0], format: 'jwk' }, { complete: true })
-          : null;
-        (req as any).mcp = token;
-      } catch {}
+        const authHeader = req.headers.authorization;
+        if (authHeader?.startsWith('Bearer ')) {
+          const encodedToken = authHeader.slice(7);
+          // SECURITY: Verify token signature using JWKS
+          const { payload } = await jose.jwtVerify(encodedToken, JWKS, {
+            issuer: UNCHAINED_KEYCLOAK_REALM_URL,
+            audience: UNCHAINED_KEYCLOAK_CLIENT_ID,
+          });
+          (req as any).mcp = { payload };
+        }
+      } catch {
+        // Token verification failed - mcp will be undefined
+      }
     }
   });
 
@@ -214,14 +237,18 @@ export default async function setupKeycloak(app: FastifyInstance) {
         ).token;
       }
 
-      const decodedPayload = jwt.decode(req.session.keycloak.id_token);
+      // SECURITY: Verify ID token signature using JWKS
+      const { payload: decodedPayload } = await jose.jwtVerify(req.session.keycloak.id_token, JWKS, {
+        issuer: UNCHAINED_KEYCLOAK_REALM_URL,
+        audience: UNCHAINED_KEYCLOAK_CLIENT_ID,
+      });
       const {
         sub,
         resource_access,
-      }: {
+      } = decodedPayload as jose.JWTPayload & {
         sub: string;
         resource_access: Record<string, { roles: string[] }>;
-      } = decodedPayload as any;
+      };
 
       const userId = `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
       let user = await context.modules.users.findUserById(userId);

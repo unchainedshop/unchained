@@ -70,6 +70,7 @@ export type IFilterAdapter = IBaseAdapter & {
 
 export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = {
   ...BaseAdapter,
+  adapterType: Symbol.for('unchained:adapter:filter'),
   orderIndex: 0,
 
   actions: () => {
