@@ -33,6 +33,10 @@ export interface PricingCalculation {
   amount: number;
   baseCategory?: string;
   meta?: any;
+  discountId?: string;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
+  rate?: number;
 }
 
 export type NodeOrTree<T> = string | Tree<T>;

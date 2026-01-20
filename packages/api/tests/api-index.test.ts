@@ -6,6 +6,11 @@ import { actions } from '../src/roles/index.ts';
 import { checkAction, ensureActionExists, ensureIsFunction } from '../src/acl.ts';
 import { NoPermissionError, PermissionSystemError } from '../src/errors.ts';
 import { Roles } from '@unchainedshop/roles';
+import { registerEvents } from '@unchainedshop/events';
+import { API_EVENTS } from '../src/events.ts';
+
+// Register API events for ACL audit logging
+registerEvents(Object.keys(API_EVENTS));
 
 describe('API', () => {
   describe('roles', () => {

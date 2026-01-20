@@ -1,6 +1,20 @@
 import type { CheckPermissionArgs } from '@unchainedshop/roles';
 import { Roles } from '@unchainedshop/roles';
+import { emit } from '@unchainedshop/events';
 import { NoPermissionError, PermissionSystemError } from './errors.ts';
+import { API_EVENTS } from './events.ts';
+
+const SENSITIVE_ACTION_PREFIXES = [
+  'manage',
+  'login',
+  'logout',
+  'reset',
+  'forgot',
+  'impersonate',
+  'update',
+  'create',
+  'viewUser',
+];
 
 const defaultOptions = {
   showKey: true,
@@ -25,11 +39,30 @@ export const ensureIsFunction = (fn, action, options, key) => {
   }
 };
 
+const isSensitiveAction = (action: string): boolean => {
+  return SENSITIVE_ACTION_PREFIXES.some((prefix) => action.startsWith(prefix));
+};
+
 const checkAction = async (context, action, args = emptyArray, options: any = emptyObject) => {
   const { key } = options || emptyObject;
 
   const hasPermission = await Roles.userHasPermission(context, action, args);
-  if (hasPermission) return;
+  if (hasPermission) {
+    if (isSensitiveAction(action)) {
+      await emit(API_EVENTS.ACL_GRANTED_SENSITIVE, {
+        userId: context.userId,
+        action,
+        key,
+      });
+    }
+    return;
+  }
+
+  await emit(API_EVENTS.ACL_DENIED, {
+    userId: context.userId,
+    action,
+    key,
+  });
 
   const keyText = key && key !== '' ? ` in "${key}"` : '';
 
