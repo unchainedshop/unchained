@@ -4,6 +4,7 @@ import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
 import { stopDb } from '@unchainedshop/mongodb';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
+import * as jose from 'jose';
 
 // Import additional discount plugins used by kitchensink
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
@@ -13,6 +14,12 @@ import { pluginRegistry } from '@unchainedshop/core';
 let fastify = null;
 let platform = null;
 let serverPort = null;
+
+// Test OIDC keypair for backchannel logout tests
+let oidcPrivateKey = null;
+let oidcPublicKey = null;
+export const TEST_OIDC_ISSUER = 'https://test-oidc-provider.example.com';
+export const TEST_OIDC_AUDIENCE = 'test-client-id';
 
 // Check if a port is available
 async function isPortAvailable(port) {
@@ -77,14 +84,39 @@ export async function initializeTestPlatform() {
     },
   });
 
+  // Generate OIDC test keypair for backchannel logout tests
+  const keyPair = await jose.generateKeyPair('RS256');
+  oidcPrivateKey = keyPair.privateKey;
+  oidcPublicKey = keyPair.publicKey;
+
   // Create Fastify instance
   fastify = Fastify({
     disableRequestLogging: true,
     trustProxy: true,
   });
 
+  // Serve JWKS for OIDC tests
+  fastify.get('/.well-known/jwks.json', async () => {
+    const jwk = await jose.exportJWK(oidcPublicKey);
+    return { keys: [{ ...jwk, kid: 'test-key-id', use: 'sig', alg: 'RS256' }] };
+  });
+
+  // OIDC provider configuration for tests
+  const oidcProviders = [
+    {
+      issuer: TEST_OIDC_ISSUER,
+      jwksUri: `http://localhost:${port}/.well-known/jwks.json`,
+      audience: TEST_OIDC_AUDIENCE,
+    },
+  ];
+
   // Connect platform to Fastify (registers all routes including gridfs for file uploads)
-  connect(fastify, platform, { allowRemoteToLocalhostSecureCookies: true });
+  await connect(fastify, platform, {
+    allowRemoteToLocalhostSecureCookies: true,
+    authConfig: {
+      oidcProviders,
+    },
+  });
 
   // Start listening on the pre-checked port
   await fastify.listen({ port, host: '127.0.0.1' });
@@ -121,4 +153,11 @@ export function getServerPort() {
     throw new Error('Server not started');
   }
   return serverPort;
+}
+
+export function getOidcPrivateKey() {
+  if (!oidcPrivateKey) {
+    throw new Error('OIDC keypair not initialized');
+  }
+  return oidcPrivateKey;
 }

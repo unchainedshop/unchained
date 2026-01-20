@@ -2,6 +2,7 @@ import e from 'express';
 import cookieParser from 'cookie-parser';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 
 import { getCurrentContextResolver } from '../context.ts';
 import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
@@ -9,8 +10,8 @@ import type { AuthConfig } from '../auth.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
-import { mountPluginRoutes } from './mountPluginRoutes.ts';
-import { createBackchannelLogoutHandler } from '../handlers/createBackchannelLogoutHandler.ts';
+import { mountRoutes } from './mountRoutes.ts';
+import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 
 export interface AdminUIRouterOptions {
   prefix: string;
@@ -188,19 +189,15 @@ export const connect = async (
     connectChat(expressApp, chat);
   }
 
-  // Mount plugin routes automatically
-  mountPluginRoutes(expressApp, unchainedAPI);
+  // Collect all routes: plugin routes + backchannel logout (if OIDC configured)
+  const routes = pluginRegistry.getRoutes();
 
-  // Mount OIDC back-channel logout endpoint if providers are configured
   if (authConfig?.oidcProviders?.length) {
-    const backchannelHandler = createBackchannelLogoutHandler(unchainedAPI, authConfig.oidcProviders);
-    expressApp.post('/backchannel-logout', e.urlencoded({ extended: false }), async (req, res) => {
-      await backchannelHandler.handleNodeRequestAndResponse(req, res, {
-        unchainedAPI,
-        providers: authConfig.oidcProviders!,
-      });
-    });
+    routes.push(createBackchannelLogoutRoute(authConfig.oidcProviders));
   }
+
+  // Mount all routes uniformly
+  mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
     expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true));

@@ -1,6 +1,5 @@
 import type { Express, RequestHandler } from 'express';
-import type { UnchainedCore } from '@unchainedshop/core';
-import { pluginRegistry } from '@unchainedshop/core';
+import type { UnchainedCore, PluginHttpRoute } from '@unchainedshop/core';
 import { createServerAdapter } from '@whatwg-node/server';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -14,21 +13,20 @@ interface PluginServerContext {
 }
 
 /**
- * Mount plugin routes on Express
+ * Mount HTTP routes on Express
  *
  * Uses @whatwg-node/server to create a framework-agnostic adapter
  * that converts Express requests to WHATWG Request and Response back to Express
  *
  * @param app Express application instance
  * @param unchainedAPI Unchained core API
+ * @param routes Array of routes to mount
  */
-export function mountPluginRoutes(app: Express, unchainedAPI: UnchainedCore): void {
-  const routes = pluginRegistry.getRoutes();
+export function mountRoutes(app: Express, unchainedAPI: UnchainedCore, routes: PluginHttpRoute[]): void {
+  if (routes.length === 0) return;
 
-  if (routes.length > 0) {
-    const endpoints = routes.map((r) => `${r.method} ${r.path}`).join(', ');
-    logger.info(`Mounting ${routes.length} plugin route(s): ${endpoints}`);
-  }
+  const endpoints = routes.map((r) => `${r.method} ${r.path}`).join(', ');
+  logger.info(`Mounting ${routes.length} route(s): ${endpoints}`);
 
   for (const route of routes) {
     // Create WHATWG-compliant server adapter
@@ -46,7 +44,7 @@ export function mountPluginRoutes(app: Express, unchainedAPI: UnchainedCore): vo
         // Call the plugin handler with WHATWG Request and context
         return await route.handler(request, context);
       } catch (error) {
-        logger.error(`Error in plugin route handler ${route.method} ${route.path}`, {
+        logger.error(`Error in route handler ${route.method} ${route.path}`, {
           error: error instanceof Error ? error.message : String(error),
         });
 

@@ -3,15 +3,16 @@ import { createAuthContext, type AuthContextParams } from '../middleware/createA
 import type { AuthConfig } from '../auth.ts';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 import fastifyCookie from '@fastify/cookie';
 import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.ts';
 import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
-import { mountPluginRoutes } from './mountPluginRoutes.ts';
+import { mountRoutes } from './mountRoutes.ts';
 import { readFileSync } from 'node:fs';
-import { createBackchannelLogoutHandler } from '../handlers/createBackchannelLogoutHandler.ts';
+import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 
 export interface AdminUIRouterOptions {
   prefix: string;
@@ -204,23 +205,15 @@ export const connect = async (
     connectChat(fastify, chat);
   }
 
-  // Mount plugin routes automatically
-  mountPluginRoutes(fastify, unchainedAPI);
+  // Collect all routes: plugin routes + backchannel logout (if OIDC configured)
+  const routes = pluginRegistry.getRoutes();
 
-  // Mount OIDC back-channel logout endpoint if providers are configured
   if (authConfig?.oidcProviders?.length) {
-    const backchannelHandler = createBackchannelLogoutHandler(unchainedAPI, authConfig.oidcProviders);
-    fastify.route({
-      url: '/backchannel-logout',
-      method: 'POST',
-      handler: async (request, reply) => {
-        await backchannelHandler.handleNodeRequestAndResponse(request.raw, reply.raw, {
-          unchainedAPI,
-          providers: authConfig.oidcProviders!,
-        });
-      },
-    });
+    routes.push(createBackchannelLogoutRoute(authConfig.oidcProviders));
   }
+
+  // Mount all routes uniformly
+  mountRoutes(fastify, unchainedAPI, routes);
 
   if (adminUI) {
     fastify.register(adminUIRouter, {

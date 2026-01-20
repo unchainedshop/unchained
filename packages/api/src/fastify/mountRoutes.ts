@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import type { UnchainedCore } from '@unchainedshop/core';
-import { pluginRegistry } from '@unchainedshop/core';
+import type { UnchainedCore, PluginHttpRoute } from '@unchainedshop/core';
 import { createServerAdapter } from '@whatwg-node/server';
 
 // Extended context type for our server adapter
@@ -11,23 +10,26 @@ interface PluginServerContext {
 }
 
 /**
- * Mount plugin routes on Fastify
+ * Mount HTTP routes on Fastify
  *
  * Uses @whatwg-node/server to create a framework-agnostic adapter
  * that converts Fastify requests to WHATWG Request and Response back to Fastify
  *
  * @param fastify Fastify instance
  * @param unchainedAPI Unchained core API
+ * @param routes Array of routes to mount
  */
-export function mountPluginRoutes(fastify: FastifyInstance, unchainedAPI: UnchainedCore): void {
-  const routes = pluginRegistry.getRoutes();
-
+export function mountRoutes(
+  fastify: FastifyInstance,
+  unchainedAPI: UnchainedCore,
+  routes: PluginHttpRoute[],
+): void {
   if (routes.length === 0) return;
 
   const endpoints = routes.map((r) => `${r.method} ${r.path}`).join(', ');
-  fastify.log.info(`Mounting ${routes.length} plugin route(s): ${endpoints}`);
+  fastify.log.info(`Mounting ${routes.length} route(s): ${endpoints}`);
 
-  // Register all plugin routes in a scoped context with catch-all parser
+  // Register all routes in a scoped context with catch-all parser
   fastify.register((scope, opts, registered) => {
     // Remove all default parsers for this scope
     scope.removeAllContentTypeParsers();
@@ -53,7 +55,7 @@ export function mountPluginRoutes(fastify: FastifyInstance, unchainedAPI: Unchai
             return await route.handler(request, context);
           } catch (error) {
             fastify.log.error(
-              `Error in plugin route handler ${route.method} ${route.path}: ${error instanceof Error ? error.message : String(error)}`,
+              `Error in route handler ${route.method} ${route.path}: ${error instanceof Error ? error.message : String(error)}`,
             );
 
             return new Response(
