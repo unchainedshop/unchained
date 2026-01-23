@@ -17,8 +17,5 @@ export default async function logoutAllSessions(root: never, _: never, context: 
   // Also logout the current session (clear the cookie)
   await context.logout();
 
-  return {
-    success: true,
-    tokenVersion: result.tokenVersion,
-  };
+  return { success: true };
 }

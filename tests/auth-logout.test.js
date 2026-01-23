@@ -24,25 +24,18 @@ test.describe('Auth: logoutAllSessions Mutation', () => {
   });
 
   test.describe('Mutation.logoutAllSessions', () => {
-    test('authenticated user can call logoutAllSessions and get incremented tokenVersion', async () => {
-      // Get user's initial tokenVersion
-      const Users = db.collection('users');
-      const userBefore = await Users.findOne({ _id: User._id });
-      const initialTokenVersion = userBefore?.tokenVersion ?? 0;
-
+    test('authenticated user can call logoutAllSessions', async () => {
       const { data: { logoutAllSessions } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             logoutAllSessions {
               success
-              tokenVersion
             }
           }
         `,
       });
 
       assert.strictEqual(logoutAllSessions.success, true);
-      assert.strictEqual(logoutAllSessions.tokenVersion, initialTokenVersion + 1);
     });
 
     test('tokenVersion is incremented in database', async () => {

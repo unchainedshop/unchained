@@ -61,7 +61,7 @@ export default [
       Log the user out of all sessions by invalidating all JWT tokens.
       This increments the token version, making all existing tokens invalid.
       """
-      logoutAllSessions: LogoutAllSessionsResponse!
+      logoutAllSessions: SuccessResponse
 
       """
       Impersonate a user

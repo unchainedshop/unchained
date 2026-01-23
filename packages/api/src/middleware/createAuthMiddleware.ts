@@ -192,7 +192,7 @@ export async function createAuthContext(
     const { raw: fingerprintRaw, hash: fingerprintHash } = generateFingerprint();
 
     // Sign new JWT with fingerprint hash
-    const { token: newToken, expires } = signAccessToken(user._id, tokenVersion, {
+    const { token: newToken, expires } = await signAccessToken(user._id, tokenVersion, {
       impersonatorId: impersonator?._id,
       fingerprintHash,
     });

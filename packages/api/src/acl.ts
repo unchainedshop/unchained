@@ -5,15 +5,14 @@ import { NoPermissionError, PermissionSystemError } from './errors.ts';
 import { API_EVENTS } from './events.ts';
 
 const SENSITIVE_ACTION_PREFIXES = [
-  'manage',
+  'manageUser',
   'login',
   'logout',
   'reset',
   'forgot',
   'impersonate',
-  'update',
-  'create',
-  'viewUser',
+  'updateUser',
+  'createUser',
 ];
 
 const defaultOptions = {

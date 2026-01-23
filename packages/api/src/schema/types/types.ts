@@ -4,11 +4,6 @@ export default [
       success: Boolean
     }
 
-    type LogoutAllSessionsResponse @cacheControl(maxAge: 0, scope: PRIVATE) {
-      success: Boolean!
-      tokenVersion: Int!
-    }
-
     enum SortDirection {
       ASC
       DESC

@@ -19,7 +19,7 @@
  *   npm run test-mcp-oauth
  */
 
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 
 const {
   UNCHAINED_KEYCLOAK_REALM_URL = 'http://localhost:8080/realms/publicare',
@@ -133,16 +133,17 @@ async function getAccessToken(clientId: string, clientSecret: string, tokenEndpo
     console.log(`   Scope: ${tokenData.scope}`);
 
     // Decode and display token info
-    const decoded = jwt.decode(tokenData.access_token, { complete: true });
-    if (decoded && typeof decoded === 'object') {
+    try {
+      const payload = jose.decodeJwt(tokenData.access_token);
       console.log('\n📋 Token claims:');
-      const payload = decoded.payload as any;
       console.log(`   Subject: ${payload.sub}`);
       console.log(`   Issuer: ${payload.iss}`);
       console.log(`   Audience: ${payload.aud || 'N/A'}`);
-      if (payload.azp) {
-        console.log(`   Authorized party: ${payload.azp}`);
+      if ((payload as any).azp) {
+        console.log(`   Authorized party: ${(payload as any).azp}`);
       }
+    } catch {
+      // Token couldn't be decoded, skip claims display
     }
 
     return tokenData.access_token;

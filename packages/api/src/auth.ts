@@ -1,5 +1,4 @@
 import { createLogger } from '@unchainedshop/logger';
-import jwt from 'jsonwebtoken';
 import * as jose from 'jose';
 import { createHash } from 'crypto';
 
@@ -78,14 +77,14 @@ export function verifyFingerprint(raw: string, hash: string): boolean {
 /**
  * Sign a new JWT access token for local authentication
  */
-export function signAccessToken(
+export async function signAccessToken(
   userId: string,
   tokenVersion: number,
   options?: {
     impersonatorId?: string;
     fingerprintHash?: string;
   },
-): { token: string; expires: Date } {
+): Promise<{ token: string; expires: Date }> {
   if (!UNCHAINED_TOKEN_SECRET) {
     throw new Error('UNCHAINED_TOKEN_SECRET environment variable is required');
   }
@@ -96,13 +95,10 @@ export function signAccessToken(
   const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
   const now = Math.floor(Date.now() / 1000);
 
-  const payload: AccessTokenPayload = {
-    iss: UNCHAINED_TOKEN_ISSUER, // OWASP: Include issuer claim
+  const payload: Omit<AccessTokenPayload, 'iss' | 'iat' | 'exp'> & { fgp?: string; imp?: string } = {
     sub: userId,
     ver: tokenVersion,
     jti: crypto.randomUUID(),
-    iat: now,
-    exp: now + expirySeconds,
   };
 
   // Add fingerprint hash for sidejacking protection
@@ -114,9 +110,13 @@ export function signAccessToken(
     payload.imp = options.impersonatorId;
   }
 
-  const token = jwt.sign(payload, UNCHAINED_TOKEN_SECRET, {
-    algorithm: 'HS256',
-  });
+  const secret = new TextEncoder().encode(UNCHAINED_TOKEN_SECRET);
+  const token = await new jose.SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt(now)
+    .setIssuer(UNCHAINED_TOKEN_ISSUER)
+    .setExpirationTime(now + expirySeconds)
+    .sign(secret);
 
   const expires = new Date((now + expirySeconds) * 1000);
 
@@ -126,7 +126,7 @@ export function signAccessToken(
 /**
  * Verify a locally-issued JWT token
  */
-export function verifyLocalToken(token: string): AccessTokenPayload | null {
+export async function verifyLocalToken(token: string): Promise<AccessTokenPayload | null> {
   if (!UNCHAINED_TOKEN_SECRET) {
     logger.warn('UNCHAINED_TOKEN_SECRET not set, cannot verify local tokens');
     return null;
@@ -136,16 +136,21 @@ export function verifyLocalToken(token: string): AccessTokenPayload | null {
     // Validate secret strength
     validateSecretStrength(UNCHAINED_TOKEN_SECRET);
 
-    const decoded = jwt.verify(token, UNCHAINED_TOKEN_SECRET, {
+    const secret = new TextEncoder().encode(UNCHAINED_TOKEN_SECRET);
+    const { payload } = await jose.jwtVerify(token, secret, {
       algorithms: ['HS256'], // OWASP: Whitelist allowed algorithms
       issuer: UNCHAINED_TOKEN_ISSUER, // OWASP: Validate issuer
-    }) as AccessTokenPayload;
+    });
 
-    return decoded;
+    return payload as unknown as AccessTokenPayload;
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
+    if (error instanceof jose.errors.JWTExpired) {
       logger.debug('Token expired');
-    } else if (error instanceof jwt.JsonWebTokenError) {
+    } else if (
+      error instanceof jose.errors.JWTInvalid ||
+      error instanceof jose.errors.JWSSignatureVerificationFailed ||
+      error instanceof jose.errors.JWTClaimValidationFailed
+    ) {
       logger.debug('Invalid token signature or claims');
     } else {
       // SECURITY: Only log error message and type, not full object (may contain sensitive data)
@@ -276,7 +281,7 @@ export function createAuthHandler(config?: AuthConfig) {
     }
 
     // First, try local JWT verification (fast path)
-    const localPayload = verifyLocalToken(token);
+    const localPayload = await verifyLocalToken(token);
     if (localPayload) {
       return {
         userId: localPayload.sub,
