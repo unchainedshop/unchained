@@ -1,6 +1,6 @@
 import type { Context } from 'vm';
 import { CountryNotFoundError, CurrencyNotFoundError, LanguageNotFoundError } from '../../../errors.ts';
-import type { LocalizationType, LocalizationModuleConfig } from './types.ts';
+import type { LocalizationType, LocalizationModuleConfig } from './schemas.ts';
 
 export const getLocalizationsConfig = (
   context: Context,

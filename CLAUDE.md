@@ -91,6 +91,22 @@ python refactor.py
 - Ensures changes can be reviewed and understood at a glance
 - Standard shell tools (sed, grep, find, awk) are universally available
 
+### Type Definition Patterns
+- **DO NOT** create standalone `types.ts` files for shared TypeScript types
+- **DO** place types in the most coherent implementation file that can be accessed by all callers
+- **EXCEPTION**: External API contract types (like payment gateway APIs) may use a dedicated types file within their module
+
+```typescript
+// ✓ Correct - Types defined in implementation file
+// packages/core-orders/src/orders.ts
+export interface Order { ... }
+export type OrderStatus = 'pending' | 'confirmed' | 'shipped';
+
+// ✗ Incorrect - Separate types file for internal types
+// packages/core-orders/src/types.ts
+export interface Order { ... }
+```
+
 ## Architecture Overview
 
 Unchained Engine is a modular e-commerce platform built as a monorepo with npm workspaces.

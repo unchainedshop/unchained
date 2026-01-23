@@ -2,7 +2,7 @@ import type {
   LocalizationType,
   LocalizationEntity,
   LocalizationUpdateEntity,
-} from '../tools/localization/types.ts';
+} from '../tools/localization/schemas.ts';
 import validateIsoCode from './validateIsoCode.ts';
 
 const sanitizeEntityData = (

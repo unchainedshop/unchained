@@ -1,14 +1,19 @@
 import { subscribe } from '@unchainedshop/events';
 import type { RawPayloadType } from '@unchainedshop/events';
 import { WorkerEventTypes, type Work } from '@unchainedshop/core-worker';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { RendererTypes, registerRenderer } from './template-registry.ts';
 import ticketingModules, { type TicketingModule } from './module.ts';
 
-import type { TicketingAPI } from './types.ts';
 import setupMagicKey from './magic-key.ts';
 import ticketingServices, { type TicketingServices } from './services.ts';
 
-export type { TicketingAPI, RendererTypes, TicketingModule, TicketingServices };
+export type TicketingAPI = UnchainedCore & {
+  modules: TicketingModule;
+  services: TicketingServices;
+};
+
+export type { RendererTypes, TicketingModule, TicketingServices };
 
 export { ticketingServices, ticketingModules };
 

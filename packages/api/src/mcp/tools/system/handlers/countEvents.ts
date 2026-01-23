@@ -1,5 +1,13 @@
 import type { Context } from '../../../../context.ts';
-import type { EventCountOptions } from '../types.ts';
+
+export interface EventCountOptions {
+  queryString?: string;
+  created?: {
+    start?: Date;
+    end?: Date;
+  };
+  types?: string[];
+}
 
 const countEvents = async ({ modules }: Context, options?: EventCountOptions) => {
   const count = await modules.events.count(options || {});

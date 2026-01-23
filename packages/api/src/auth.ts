@@ -148,6 +148,7 @@ export async function verifyLocalToken(token: string): Promise<AccessTokenPayloa
       logger.debug('Token expired');
     } else if (
       error instanceof jose.errors.JWTInvalid ||
+      error instanceof jose.errors.JWSInvalid ||
       error instanceof jose.errors.JWSSignatureVerificationFailed ||
       error instanceof jose.errors.JWTClaimValidationFailed
     ) {

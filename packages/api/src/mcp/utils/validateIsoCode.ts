@@ -1,4 +1,4 @@
-import type { LocalizationType } from '../tools/localization/types.ts';
+import type { LocalizationType } from '../tools/localization/schemas.ts';
 
 const validateIsoCode = (localizationType: LocalizationType, isoCode: string): string => {
   switch (localizationType) {

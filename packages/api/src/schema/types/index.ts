@@ -15,7 +15,7 @@ import price from './price.ts';
 import payment from './payment.ts';
 import shop from './shop.ts';
 import stock from './stock.ts';
-import types from './types.ts';
+import common from './common.ts';
 import user from './user.ts';
 import warehousing from './warehousing.ts';
 import order from './order/index.ts';
@@ -47,7 +47,7 @@ export default [
   ...payment,
   ...shop,
   ...stock,
-  ...types,
+  ...common,
   ...user,
   ...warehousing,
   ...product,
