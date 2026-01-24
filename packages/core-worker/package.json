@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-worker",
   "description": "Background job and task queue module for the Unchained Engine",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "main": "lib/worker-index.js",
   "types": "lib/worker-index.d.ts",
   "type": "module",

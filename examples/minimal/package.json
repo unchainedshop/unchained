@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Example for Unchained Engine",
   "private": true,
-  "version": "4.6.1",
+  "version": "4.6.2",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",

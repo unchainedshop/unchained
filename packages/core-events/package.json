@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-events",
   "description": "Event history and tracking module for the Unchained Engine",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",

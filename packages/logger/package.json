@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/logger",
   "description": "High-performance logging package for the Unchained Engine",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "main": "lib/logger-index.js",
   "types": "lib/logger-index.d.ts",
   "type": "module",

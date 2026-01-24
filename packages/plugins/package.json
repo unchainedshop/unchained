@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/plugins",
   "description": "Official plugin collection for the Unchained Engine with payment, delivery, and pricing adapters",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {

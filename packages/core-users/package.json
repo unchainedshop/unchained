@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-users",
   "description": "User management module for the Unchained Engine with authentication support",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
