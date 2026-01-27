@@ -5,6 +5,7 @@
 Licensed under the EUPL 1.2
 
 [![Static Badge](https://img.shields.io/badge/PRs-Welcome-brightgreen)](https://github.com/unchainedshop/unchained/issues)
+[![Discord](https://img.shields.io/discord/1465284412370321521?label=Discord&logo=discord&color=5865F2)](https://discord.gg/YEUPchN8)
 
 [![Bundle Size](https://pkg-size.dev/badge/bundle/1604171)](https://pkg-size.dev/@unchainedshop/platform)
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
