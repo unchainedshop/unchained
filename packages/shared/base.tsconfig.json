@@ -10,7 +10,6 @@
     "lib": ["esnext"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,

@@ -176,21 +176,16 @@ export const connect = async (
     createMiddlewareHook(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
   );
 
+
   fastify.route({
-    url: GRAPHQL_API_PATH,
+    url: graphqlHandler.graphqlEndpoint,
     method: ['GET', 'POST', 'OPTIONS'],
     handler: async (req, reply) => {
       // Second parameter adds Fastify's `req` and `reply` to the GraphQL Context
-      const response = await graphqlHandler.handleNodeRequestAndResponse(req, reply, {
+      return graphqlHandler.handleNodeRequestAndResponse(req, reply, {
         req,
         reply,
       });
-      response.headers.forEach((value, key) => {
-        reply.header(key, value);
-      });
-      reply.status(response.status);
-      reply.send(response.body);
-      return reply;
     },
   });
 
