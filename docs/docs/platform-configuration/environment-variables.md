@@ -50,7 +50,6 @@ This document provides a comprehensive list of all environment variables used by
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `GRAPHQL_API_PATH` | `/graphql` | GraphQL API endpoint path |
 | `BULK_IMPORT_API_PATH` | `/bulk-import` | Bulk import API endpoint path |
 | `TEMP_UPLOAD_API_PATH` | `/temp-upload` | Temporary file upload API endpoint path |
 | `MCP_API_PATH` | `/mcp` | Model Context Protocol API endpoint path |

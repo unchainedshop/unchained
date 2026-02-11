@@ -49,7 +49,7 @@ const resolveUserRemoteAddress = (req: FastifyRequest, trustProxy = false) => {
   return { remoteAddress, remotePort };
 };
 
-const { MCP_API_PATH = '/mcp', GRAPHQL_API_PATH = '/graphql' } = process.env;
+const { MCP_API_PATH = '/mcp' } = process.env;
 
 const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
   async function middlewareHook(req: any, reply: any) {
@@ -175,7 +175,6 @@ export const connect = async (
     'onRequest',
     createMiddlewareHook(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
   );
-
 
   fastify.route({
     url: graphqlHandler.graphqlEndpoint,

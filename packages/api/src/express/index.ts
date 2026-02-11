@@ -64,7 +64,7 @@ const resolveUserRemoteAddress = (req: e.Request, trustProxy = false) => {
   return { remoteAddress, remotePort };
 };
 
-const { MCP_API_PATH = '/mcp', GRAPHQL_API_PATH = '/graphql' } = process.env;
+const { MCP_API_PATH = '/mcp' } = process.env;
 
 const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false) =>
   async function middlewareWithContext(req: e.Request, res: e.Response, next: e.NextFunction) {
@@ -179,7 +179,7 @@ export const connect = async (
   );
 
   // GraphQL endpoint
-  expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
+  expressApp.use(graphqlHandler.graphqlEndpoint, graphqlHandler.handle);
 
   // MCP endpoint (remains framework-specific due to SDK requirements)
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
