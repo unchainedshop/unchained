@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop]
+    tags: ['*']
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: docker
+    container: node:25-bookworm
+    env:
+      NODE_ENV: test
+      NODE_NO_WARNINGS: '1'
+      MONGOMS_VERSION: 8.2.3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+  build-and-push:
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: docker
+    env:
+      IMAGE: git.ucc.dev/unchained/unchained/docs
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Forgejo registry
+        run: >
+          docker login
+          -u ${{ github.repository_owner }}
+          -p ${{ github.token }}
+          git.ucc.dev
+
+      - name: Build docs image
+        run: docker build -f ./docs/Dockerfile -t docs:ci ./docs
+
+      - name: Push branch tag
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          docker tag docs:ci "${IMAGE}:${BRANCH}-latest"
+          docker push "${IMAGE}:${BRANCH}-latest"
+
+      - name: Push "next" tag
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          docker tag docs:ci "${IMAGE}:next"
+          docker push "${IMAGE}:next"
+
+      - name: Push "latest" tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker tag docs:ci "${IMAGE}:latest"
+          docker push "${IMAGE}:latest"
+
+      - name: Push "stable" tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          docker tag docs:ci "${IMAGE}:stable"
+          docker push "${IMAGE}:stable"
