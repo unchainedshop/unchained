@@ -4,7 +4,6 @@ export { default as useAddAssortmentMedia } from './hooks/useAddAssortmentMedia'
 export { default as useAddAssortmentProduct } from './hooks/useAddAssortmentProduct';
 export { default as useAssortment } from './hooks/useAssortment';
 export { default as useAssortmentChildren } from './hooks/useAssortmentChildren';
-export { useAssortmentExport } from './hooks/useAssortmentExport';
 export { default as useAssortmentFilters } from './hooks/useAssortmentFilters';
 export { default as useAssortmentLinks } from './hooks/useAssortmentLinks';
 export { default as useAssortmentMedia } from './hooks/useAssortmentMedia';

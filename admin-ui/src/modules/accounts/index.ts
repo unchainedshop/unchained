@@ -25,7 +25,6 @@ export { default as useSetUsername } from './hooks/useSetUsername';
 export { default as useUpdateUserAvatar } from './hooks/useUpdateUserAvatar';
 export { default as useUpdateUserProfile } from './hooks/useUpdateUserProfile';
 export { default as useUser } from './hooks/useUser';
-export { useUserExport } from './hooks/useUserExport';
 export { default as useUserWebAuthnCredentials } from './hooks/useUserWebAuthnCredentials';
 export { default as useUsers } from './hooks/useUsers';
 export { default as useUsersCount } from './hooks/useUsersCount';

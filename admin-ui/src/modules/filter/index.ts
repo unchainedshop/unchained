@@ -1,7 +1,6 @@
 export { default as useCreateFilter } from './hooks/useCreateFilter';
 export { default as useCreateFilterOption } from './hooks/useCreateFilterOption';
 export { default as useFilter } from './hooks/useFilter';
-export { useFilterExport } from './hooks/useFilterExport';
 export { default as useFilterOptions } from './hooks/useFilterOptions';
 export { default as useFilterTypes } from './hooks/useFilterTypes';
 export { default as useFilters } from './hooks/useFilters';

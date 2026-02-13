@@ -5,7 +5,7 @@ const path = require('path');
 
 const MODULES_DIR = path.join(__dirname, 'src/modules');
 const SKIP_MODULES = ['apollo', 'modal', 'Auth', 'UnchainedContext', 'copilot', 'forms', 'common', 'i18n'];
-const SKIP_HOOKS = ['useScaffoldVariationProduct', 'useWorkQueue'];
+const SKIP_HOOKS = ['useScaffoldVariationProduct', 'useUserExport', 'useAssortmentExport', 'useProductExport', 'useFilterExport'];
 
 function getFilesInDirectory(dir) {
   try {

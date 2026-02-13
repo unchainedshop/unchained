@@ -11,7 +11,6 @@ export { default as useProduct } from './hooks/useProduct';
 export { default as useProductAssignments } from './hooks/useProductAssignments';
 export { default as useProductBundleItems } from './hooks/useProductBundleItems';
 export { default as useProductCatalogPrices } from './hooks/useProductCatalogPrices';
-export { useProductExport } from './hooks/useProductExport';
 export { default as useProductMedia } from './hooks/useProductMedia';
 export { default as useProductPlan } from './hooks/useProductPlan';
 export { default as useProductPlanConfigurationOptions } from './hooks/useProductPlanConfigurationOptions';

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "GraphQL React hooks for Unchained Commerce",
   "license": "MIT",
   "main": "dist/index.js",
