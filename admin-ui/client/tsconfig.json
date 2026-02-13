@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "lib": ["ES2020", "DOM"],
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "rootDir": "../src",
+    "declaration": true,
+    "sourceMap": false,
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "../src/modules/*/hooks/**/*.ts",
+    "../src/modules/*/index.ts",
+    "../src/gql/**/*"
+  ],
+  "exclude": [
+    "../src/modules/apollo/**/*",
+    "../src/modules/modal/**/*",
+    "../src/modules/Auth/**/*",
+    "../src/modules/UnchainedContext/**/*",
+    "../src/modules/copilot/**/*",
+    "../src/modules/forms/**/*",
+    "../src/modules/common/**/*",
+    "../src/modules/i18n/**/*",
+    "../src/modules/**/components/**/*",
+    "../src/modules/product/hooks/useScaffoldVariationProduct.ts",
+    "../src/modules/work/hooks/useWorkQueue.ts",
+    "**/*.tsx"
+  ]
+}

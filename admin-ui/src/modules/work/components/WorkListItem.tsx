@@ -6,7 +6,7 @@ import Table from '../../common/components/Table';
 
 import { WORK_STATUSES } from '../../common/data/miscellaneous';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import useFormatWorkDurations from '../hooks/useFormatWorkDurations';
+import useFormatWorkDurations from '../utils/useFormatWorkDurations';
 import Tooltip from '../../common/components/ToolTip';
 import RetryStatistics from './RetryStatistics';
 

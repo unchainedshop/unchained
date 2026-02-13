@@ -1,0 +1,37 @@
+/**
+ * @module @unchainedshop/client/assortment
+ * Auto-generated barrel export file
+ * Generated on: 2026-02-13T20:49:10.380Z
+ */
+
+// Hooks
+export { default as useAddAssortmentFilter } from './hooks/useAddAssortmentFilter';
+export { default as useAddAssortmentLink } from './hooks/useAddAssortmentLink';
+export { default as useAddAssortmentMedia } from './hooks/useAddAssortmentMedia';
+export { default as useAddAssortmentProduct } from './hooks/useAddAssortmentProduct';
+export { default as useAssortment } from './hooks/useAssortment';
+export { default as useAssortmentChildren } from './hooks/useAssortmentChildren';
+export { useAssortmentExport } from './hooks/useAssortmentExport';
+export { default as useAssortmentFilters } from './hooks/useAssortmentFilters';
+export { default as useAssortmentLinks } from './hooks/useAssortmentLinks';
+export { default as useAssortmentMedia } from './hooks/useAssortmentMedia';
+export { default as useAssortmentPaths } from './hooks/useAssortmentPaths';
+export { default as useAssortmentProducts } from './hooks/useAssortmentProducts';
+export { default as useAssortments } from './hooks/useAssortments';
+export { default as useAssortmentsCount } from './hooks/useAssortmentsCount';
+export { default as useCreateAssortment } from './hooks/useCreateAssortment';
+export { default as usePrepareAssortmentImport } from './hooks/usePrepareAssortmentImport';
+export { default as useRemoveAssortment } from './hooks/useRemoveAssortment';
+export { default as useRemoveAssortmentFilter } from './hooks/useRemoveAssortmentFilter';
+export { default as useRemoveAssortmentLink } from './hooks/useRemoveAssortmentLink';
+export { default as useRemoveAssortmentMedia } from './hooks/useRemoveAssortmentMedia';
+export { default as useRemoveAssortmentProduct } from './hooks/useRemoveAssortmentProduct';
+export { default as useReorderAssortmentFilters } from './hooks/useReorderAssortmentFilters';
+export { default as useReorderAssortmentLinks } from './hooks/useReorderAssortmentLinks';
+export { default as useReorderAssortmentMedia } from './hooks/useReorderAssortmentMedia';
+export { default as useReorderAssortmentProducts } from './hooks/useReorderAssortmentProducts';
+export { default as useTranslatedAssortmentMediaTexts } from './hooks/useTranslatedAssortmentMediaTexts';
+export { default as useTranslatedAssortmentTexts } from './hooks/useTranslatedAssortmentTexts';
+export { default as useUpdateAssortment } from './hooks/useUpdateAssortment';
+export { default as useUpdateAssortmentMediaTexts } from './hooks/useUpdateAssortmentMediaTexts';
+export { default as useUpdateAssortmentTexts } from './hooks/useUpdateAssortmentTexts';

@@ -77,7 +77,14 @@ const AssortmentExport = ({
       });
       setModal(null);
     },
-    [queryString, includeInactive, includeLeaves, tags, exportAssortments, setModal],
+    [
+      queryString,
+      includeInactive,
+      includeLeaves,
+      tags,
+      exportAssortments,
+      setModal,
+    ],
   );
 
   if (loading) return null;

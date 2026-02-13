@@ -46,3 +46,6 @@ manifest.json
 .qodo
 
 dist
+# TypeScript build info
+tsconfig.tsbuildinfo
+client/tsconfig.tsbuildinfo

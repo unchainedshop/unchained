@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useCSVExport } from '../../common/hooks/useCSVExport';
 
-
 export const USER_CSV_SCHEMA = {
   userFields: [
     '_id',
