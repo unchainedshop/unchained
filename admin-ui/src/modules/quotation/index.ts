@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/quotation
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.407Z
- */
-
-// Hooks
 export { default as useMakeQuotationProposal } from './hooks/useMakeQuotationProposal';
 export { default as useQuotation } from './hooks/useQuotation';
 export { default as useQuotationStatusTypes } from './hooks/useQuotationStatusTypes';

@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/product
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.398Z
- */
-
-// Hooks
 export { default as useAddProductAssignment } from './hooks/useAddProductAssignment';
 export { default as useAddProductMedia } from './hooks/useAddProductMedia';
 export { default as useCreateProduct } from './hooks/useCreateProduct';
@@ -19,7 +12,6 @@ export { default as useProductAssignments } from './hooks/useProductAssignments'
 export { default as useProductBundleItems } from './hooks/useProductBundleItems';
 export { default as useProductCatalogPrices } from './hooks/useProductCatalogPrices';
 export { useProductExport } from './hooks/useProductExport';
-export { default as useProductImport } from './hooks/useProductImport';
 export { default as useProductMedia } from './hooks/useProductMedia';
 export { default as useProductPlan } from './hooks/useProductPlan';
 export { default as useProductPlanConfigurationOptions } from './hooks/useProductPlanConfigurationOptions';

@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import useScaffoldVariationProduct from '../hooks/useScaffoldVariationProduct';
 import SelectField from '../../forms/components/SelectField';
 import { IProductType } from '../../../gql/types';
+import useApp from '../../../../client/dist/modules/common/hooks/useApp';
 
 const ProductAssignmentScaffoldForm = ({
   proxyProduct,
@@ -16,10 +17,12 @@ const ProductAssignmentScaffoldForm = ({
   onSuccess,
 }) => {
   const { formatMessage } = useIntl();
+  const { selectedLocale } = useApp();
   const scaffoldProduct = useScaffoldVariationProduct({
     onSuccess,
     proxyProduct,
     vectors,
+    locale: selectedLocale,
   });
   const { hasRole } = useAuth();
 

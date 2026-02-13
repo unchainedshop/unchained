@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/payment-providers
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.396Z
- */
-
-// Hooks
 export { default as useCreatePaymentProvider } from './hooks/useCreatePaymentProvider';
 export { default as usePaymentInterfacesByType } from './hooks/usePaymentInterfacesByType';
 export { default as usePaymentProvider } from './hooks/usePaymentProvider';

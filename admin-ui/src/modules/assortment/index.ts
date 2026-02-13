@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/assortment
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.380Z
- */
-
-// Hooks
 export { default as useAddAssortmentFilter } from './hooks/useAddAssortmentFilter';
 export { default as useAddAssortmentLink } from './hooks/useAddAssortmentLink';
 export { default as useAddAssortmentMedia } from './hooks/useAddAssortmentMedia';

@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/filter
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.391Z
- */
-
-// Hooks
 export { default as useCreateFilter } from './hooks/useCreateFilter';
 export { default as useCreateFilterOption } from './hooks/useCreateFilterOption';
 export { default as useFilter } from './hooks/useFilter';

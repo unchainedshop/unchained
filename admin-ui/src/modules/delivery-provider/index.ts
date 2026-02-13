@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/delivery-provider
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.387Z
- */
-
-// Hooks
 export { default as useCreateDeliveryProvider } from './hooks/useCreateDeliveryProvider';
 export { default as useDeliveryInterfacesByType } from './hooks/useDeliveryInterfacesByType';
 export { default as useDeliveryProvider } from './hooks/useDeliveryProvider';

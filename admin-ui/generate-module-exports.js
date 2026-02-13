@@ -60,16 +60,9 @@ function generateModuleIndex(moduleName, modulePath) {
     return null;
   }
 
-  let content = `/**
- * @module @unchainedshop/client/${moduleName}
- * Auto-generated barrel export file
- * Generated on: ${new Date().toISOString()}
- */
+  let content = ``
 
-`;
-
-  content += '// Hooks\n';
-  hooks.forEach(file => {
+    hooks.forEach(file => {
     const exportName = getExportName(file);
     const filePath = path.join(hooksDir, file);
 

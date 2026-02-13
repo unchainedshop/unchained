@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/order
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.395Z
- */
-
-// Hooks
 export { default as useConfirmOrder } from './hooks/useConfirmOrder';
 export { default as useDeliverOrder } from './hooks/useDeliverOrder';
 export { default as useOrder } from './hooks/useOrder';

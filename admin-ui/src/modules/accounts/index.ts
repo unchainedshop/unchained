@@ -1,10 +1,3 @@
-/**
- * @module @unchainedshop/client/accounts
- * Auto-generated barrel export file
- * Generated on: 2026-02-13T20:49:10.372Z
- */
-
-// Hooks
 export { default as logOut } from './hooks/logOut';
 export { default as useAddEmail } from './hooks/useAddEmail';
 export { default as useAddWeb3Address } from './hooks/useAddWeb3Address';
