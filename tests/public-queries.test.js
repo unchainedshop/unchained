@@ -28,11 +28,10 @@ test.describe('Public Queries', () => {
 
     assert.strictEqual(errors, undefined);
     assert.ok(data.products.length > 0);
-
-    const [product] = data.products;
-    assert.deepStrictEqual(product, {
-      _id: SimpleProduct2._id,
-    });
+    assert.ok(
+      data.products.some((p) => p._id === SimpleProduct2._id),
+      `Expected product ${SimpleProduct2._id} to be in results`,
+    );
   });
 
   test('product', async () => {

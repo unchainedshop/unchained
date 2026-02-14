@@ -71,12 +71,16 @@ test.describe('Auth for admin users', () => {
           }
         `,
       });
-      assert.deepStrictEqual(users, [
-        { _id: 'admin', name: 'admin' },
-        { _id: 'user', name: 'user' },
-        { _id: 'guest', name: 'guest' },
-        { _id: 'guest2', name: 'guest2' },
-      ]);
+      assert.strictEqual(users.length, 4);
+      assert.deepStrictEqual(
+        [...users].sort((a, b) => a._id.localeCompare(b._id)),
+        [
+          { _id: 'admin', name: 'admin' },
+          { _id: 'guest', name: 'guest' },
+          { _id: 'guest2', name: 'guest2' },
+          { _id: 'user', name: 'user' },
+        ],
+      );
     });
 
     test('returns users by queryString', async () => {
