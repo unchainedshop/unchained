@@ -6,6 +6,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
+  "scripts": {
+    "build": "npx tsc"
+  },
   "exports": {
     "./product": {
       "import": "./dist/modules/product/index.js",

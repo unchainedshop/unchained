@@ -29,8 +29,7 @@ export default [
       // Root JS config files
       '*.config.js',
       '*.config.mjs',
-      'generate-permissions.js',
-      'generate-module-exports.js',
+      'generate-permissions.js',      
       'custom-formatter.js',
       'extract-missing-translation-keys.js',
       'loadPermissionConfig.js',
