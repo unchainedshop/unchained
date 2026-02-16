@@ -6,7 +6,7 @@ import Badge from '../../common/components/Badge';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import { WORK_STATUSES, getShadowStyle } from '../../common/data/miscellaneous';
 import JSONView from '../../common/components/JSONView';
-import useFormatWorkDurations from '../hooks/useFormatWorkDurations';
+import useFormatWorkDurations from '../utils/useFormatWorkDurations';
 import Tooltip from '../../common/components/ToolTip';
 import RetryStatistics from './RetryStatistics';
 

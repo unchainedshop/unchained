@@ -5,7 +5,6 @@ import {
   IWorkQueueQuery,
   IWorkQueueQueryVariables,
 } from '../../../gql/types';
-import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import WorkFragment from '../fragments/WorkFragment';
 
 const WorkQueueQuery = gql`

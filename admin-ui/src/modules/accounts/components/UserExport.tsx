@@ -12,12 +12,10 @@ interface UserExportProps {
   userId: string;
 }
 
-const UserExport = ({
-  userId
-}: UserExportProps) => {
+const UserExport = ({ userId }: UserExportProps) => {
   const { setModal } = useModal();
   const { user, loading } = useUser({
-    userId,    
+    userId,
   });
   const { exportUser, isExporting } = useUserExport();
   const { formatMessage } = useIntl();
@@ -47,7 +45,7 @@ const UserExport = ({
       }),
       defaultChecked: true,
     },
-/*     {
+    /*     {
       key: 'exportEvents',
       label: formatMessage({
         id: 'events',
