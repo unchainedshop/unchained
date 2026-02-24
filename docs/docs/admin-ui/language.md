@@ -1,6 +1,7 @@
 ---
 sidebar_position: 8
 title: Language
+description: Configure multi-language support for your store by adding and managing locales in the Admin UI.
 sidebar_title: Manage languages
 sidebar_label: Language
 ---

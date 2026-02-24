@@ -2,6 +2,7 @@
 sidebar_position: 10
 sidebar_label: Assortments
 title: Assortments
+description: Organize products into hierarchical categories and assortments with filters and sub-assortment support.
 sidebar_title: Manage assortments
 ---
 

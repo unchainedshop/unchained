@@ -1,3 +1,8 @@
+---
+title: Environment Variables
+description: Complete reference of all environment variables for configuring Unchained Engine core, API, file uploads, and worker settings.
+---
+
 # Environment Variables
 
 This document provides a comprehensive list of all environment variables used by Unchained Engine (excluding plugins and ticketing). Most of the plugins and extensions (like ticketing) have their own environment variables, check their docs individually.

@@ -1,5 +1,6 @@
 ---
 title: MCP Server Reference
+description: Reference documentation for the Model Context Protocol (MCP) server that enables AI agents to manage your Unchained store.
 sidebar_label: MCP Server
 sidebar_position: 2
 ---

@@ -1,6 +1,7 @@
 ---
 sidebar_position: 13
 title: Users
+description: Manage customer accounts and guest users in the Admin UI including profiles, order history, and user roles.
 sidebar_title: Manage Users
 sidebar_label: Users
 ---

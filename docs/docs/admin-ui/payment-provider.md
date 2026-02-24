@@ -1,6 +1,7 @@
 ---
 sidebar_position: 11
 title: Payment provider
+description: Configure and manage payment provider plugins like Stripe, Datatrans, and Invoice in the Admin UI.
 sidebar_title: Manage payment providers
 sidebar_label: Payment provider
 ---

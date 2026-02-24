@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 title: Create Your First Product
+description: Use the Admin UI to create, configure, and publish your first product in Unchained Engine.
 sidebar_label: Your First Product
 ---
 

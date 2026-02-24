@@ -1,6 +1,7 @@
 ---
 sidebar_position: 7
 title: Filter
+description: Create and manage product filters and faceted search options for storefront browsing.
 sidebar_title: Manage filters
 sidebar_label: Filter
 ---

@@ -1,5 +1,6 @@
 ---
 title: Admin Copilot Setup
+description: Set up and use the AI Copilot in the Unchained Admin UI to manage products, orders, and store configuration with natural language.
 sidebar_label: Admin Copilot
 sidebar_position: 3
 ---

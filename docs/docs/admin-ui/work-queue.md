@@ -1,6 +1,7 @@
 ---
 sidebare_position: 15
 title: Work Queue
+description: Monitor and manage background tasks and worker jobs in the Unchained work queue system.
 sidebar_title: Manage workers
 sidebar_label: Work Queue
 ---

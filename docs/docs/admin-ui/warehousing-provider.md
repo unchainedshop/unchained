@@ -1,6 +1,7 @@
 ---
 sidebar_position: 14
 title: Warehousing provider
+description: Configure warehousing provider plugins to manage inventory, stock levels, and product availability.
 sidebar_label: Warehousing provider
 sidebar_title: Manage warehousing provider
 ---

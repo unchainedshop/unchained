@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 title: Start your first Unchained Project on Railway
+description: Deploy an Unchained Engine project to Railway with automated CI pipelines and managed MongoDB.
 sidebar_label: Initialize and Run (Railway)
 pagination_next: platform-configuration/index
 ---

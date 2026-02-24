@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 title: Country
+description: Add and manage supported countries for your e-commerce store including activation and default currency settings.
 sidebar_title: Manage countries
 ---
 

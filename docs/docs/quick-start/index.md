@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: Quick Start
+description: Get started with Unchained Engine by setting up your environment, running locally or on Railway, and creating your first product and order.
 sidebar_label: Quick Start
 ---
 

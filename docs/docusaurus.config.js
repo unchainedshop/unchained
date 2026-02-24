@@ -67,6 +67,37 @@ const config = {
         docsDir: 'docs',
         excludeImports: true,
         removeDuplicateHeadings: true,
+        rootContent: `## About Unchained Engine
+
+Unchained Engine is an open-source, headless, code-first e-commerce SDK for Node.js. It provides a modular architecture where every component can be extended or replaced through a Director/Adapter plugin pattern.
+
+### Package Hierarchy
+
+- **@unchainedshop/platform** — Top-level orchestration, combines all packages
+- **@unchainedshop/api** — GraphQL API layer (Express/Fastify adapters, GraphQL Yoga, MCP server)
+- **@unchainedshop/core** — Business logic coordination across all domain modules
+- **core-*** — Domain modules: orders, products, users, payment, delivery, assortments, filters, enrollments, warehousing, worker, files, events, countries, currencies, languages
+- **@unchainedshop/plugins** — Payment, delivery, pricing, and warehousing adapters (Stripe, Datatrans, Cryptopay, etc.)
+- **Infrastructure** — mongodb, events, logger, utils, roles, file-upload
+
+### Key Entry Points
+
+- **GraphQL API** — Primary interface for storefront and admin operations
+- **MCP Server** — Model Context Protocol server enabling AI agents to manage products, orders, and more
+- **Admin UI** — React-based back-office with built-in AI Copilot
+
+### Plugin System
+
+Plugins follow a Director/Adapter pattern: Directors manage collections of Adapters. Adapters are registered explicitly before platform startup. Available presets: base (essential), all (complete), crypto (cryptocurrency).
+
+### Common Operations
+
+- **Products**: CRUD, pricing, media, variations (configurable/bundle/plan types)
+- **Orders**: Cart management, checkout, payment & delivery processing, lifecycle hooks
+- **Payments**: Pluggable providers (Stripe, Datatrans, Braintree, Apple IAP, Cryptopay, Invoice)
+- **Delivery**: Pluggable providers (Post, Send-Message, Stores)
+- **Pricing**: Layered pricing pipeline with discount support
+- **Assortments**: Hierarchical product categories with filters`,
       },
     ],
   ],
@@ -76,7 +107,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       colorMode: {
-        disableSwitch: true,
+        disableSwitch: false,
         defaultMode: 'light',
       },
 

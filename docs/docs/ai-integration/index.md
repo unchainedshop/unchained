@@ -1,5 +1,6 @@
 ---
 title: AI Integration
+description: Overview of Unchained Engine's AI integration surfaces including MCP Server, Admin Copilot, and llms.txt.
 sidebar_label: AI Integration
 sidebar_position: 1
 ---

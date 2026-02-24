@@ -1,6 +1,7 @@
 ---
 sidebar_position: 7
 title: Messaging
+description: Configure SMS and email messaging templates for order confirmations, enrollment notifications, and quotation updates.
 sidebar_label: Messaging
 ---
 

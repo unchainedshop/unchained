@@ -1,6 +1,7 @@
 ---
 sidebar_position: 5
 title: Delivery provider
+description: Configure and manage delivery provider plugins for shipping, pickup, and digital delivery methods.
 sidebar_title: Manage delivery providers
 ---
 To manage the delivery providers supported in your e-commerce shop, you can navigate to the delivery provider page in the system settings section of the admin UI. This page allows you to manage all the configured delivery plugins in Unchained.

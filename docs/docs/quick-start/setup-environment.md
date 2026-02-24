@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 title: Development Environment Setup
+description: Install Node.js, MongoDB, and other prerequisites needed to develop with Unchained Engine.
 sidebar_label: Setup Environment
 ---
 

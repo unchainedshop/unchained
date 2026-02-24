@@ -2,6 +2,7 @@
 sidebar_position: 8
 sidebar_label: Payment
 title: Write a Payment Provider Plugin
+description: Guide to writing a custom payment provider plugin for Unchained Engine with the PaymentAdapter interface.
 ---
 
 # Payment Provider Plugins

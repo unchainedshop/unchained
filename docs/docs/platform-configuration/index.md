@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: Platform Configuration
+description: Configure Unchained Engine boot options, module settings, plugin registration, and runtime behavior.
 sidebar_label: Platform Configuration
 ---
 

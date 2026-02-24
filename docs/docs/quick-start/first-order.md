@@ -1,6 +1,7 @@
 ---
 sidebar_position: 5
 title: Create Your First Order
+description: Walk through the checkout flow to create your first order using the storefront and Admin UI.
 sidebar_label: Your First Order
 ---
 

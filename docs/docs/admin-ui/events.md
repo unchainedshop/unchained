@@ -1,6 +1,7 @@
 ---
 sidebar_position: 6
 title: Events
+description: Browse and inspect system events emitted by Unchained Engine for debugging and audit purposes.
 sidebar_title: View events
 sidebar_label: Events
 ---

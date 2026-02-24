@@ -1,6 +1,7 @@
 ---
 sidebar_position: 12
 title: Products
+description: Manage products in the Admin UI including creation, pricing, media uploads, and product variations.
 sidebar_title: Manage products
 sidebar_label: Products
 ---

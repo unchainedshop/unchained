@@ -1,6 +1,7 @@
 ---
 sidebar_position: 11
 title: Apple In-App Purchase
+description: Integrate Apple In-App Purchase as a payment provider for iOS app purchases in Unchained Engine.
 sidebar_label: Apple In-App Purchase
 ---
 

@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 title: Currency
+description: Configure supported currencies and cryptocurrency tokens including contract addresses and decimal precision.
 sidebar_title: Manage currencies
 ---
 

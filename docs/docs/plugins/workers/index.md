@@ -13,16 +13,16 @@ Worker plugins handle background tasks like notifications, data processing, and 
 
 These workers are automatically loaded when using the `base` preset and are strongly recommended for proper system operation:
 
-| Adapter Key | Type | Description |
-|-------------|------|-------------|
-| [`shop.unchained.worker-plugin.message`](./worker-message.md) | `MESSAGE` | Routes messages through templates to delivery workers |
-| [`shop.unchained.worker-plugin.email`](./worker-email.md) | `EMAIL` | Email notifications via Nodemailer |
-| [`shop.unchained.worker-plugin.http-request`](./worker-http-request.md) | `HTTP_REQUEST` | Outbound HTTP webhooks |
-| [`shop.unchained.worker-plugin.bulk-import`](./worker-bulk-import.md) | `BULK_IMPORT` | Bulk data import from JSON streams |
-| [`shop.unchained.worker-plugin.external`](./worker-external.md) | `EXTERNAL` | Placeholder for external workers |
-| [`shop.unchained.worker-plugin.heartbeat`](./worker-heartbeat.md) | `HEARTBEAT` | System health check |
-| [`shop.unchained.worker-plugin.zombie-killer`](./worker-zombie-killer.md) | `ZOMBIE_KILLER` | Cleanup orphaned database records |
-| [`shop.unchained.worker.error-notifications`](./worker-error-notifications.md) | `ERROR_NOTIFICATIONS` | Daily error reports |
+| Adapter Key | Type | Description | When to Use |
+|-------------|------|-------------|-------------|
+| [`shop.unchained.worker-plugin.message`](./worker-message.md) | `MESSAGE` | Routes messages through templates to delivery workers | Always — central message routing for all notifications |
+| [`shop.unchained.worker-plugin.email`](./worker-email.md) | `EMAIL` | Email notifications via Nodemailer | When sending transactional emails (order confirmations, etc.) |
+| [`shop.unchained.worker-plugin.http-request`](./worker-http-request.md) | `HTTP_REQUEST` | Outbound HTTP webhooks | When integrating with external services via webhooks |
+| [`shop.unchained.worker-plugin.bulk-import`](./worker-bulk-import.md) | `BULK_IMPORT` | Bulk data import from JSON streams | When importing products, prices, or media in bulk |
+| [`shop.unchained.worker-plugin.external`](./worker-external.md) | `EXTERNAL` | Placeholder for external workers | When delegating work to external systems (e.g. ERP) |
+| [`shop.unchained.worker-plugin.heartbeat`](./worker-heartbeat.md) | `HEARTBEAT` | System health check | Always — monitors worker system health |
+| [`shop.unchained.worker-plugin.zombie-killer`](./worker-zombie-killer.md) | `ZOMBIE_KILLER` | Cleanup orphaned database records | Always — prevents stale data buildup |
+| [`shop.unchained.worker.error-notifications`](./worker-error-notifications.md) | `ERROR_NOTIFICATIONS` | Daily error reports | When you want daily summaries of worker failures |
 
 ## SMS Workers
 

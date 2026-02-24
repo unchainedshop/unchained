@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 title: Start your first Unchained Project
+description: Create a new Unchained Engine project from the template, configure it, and run it locally with hot-reload.
 sidebar_label: Initialize and Run (Local)
 pagination_next: quick-start/first-product
 ---

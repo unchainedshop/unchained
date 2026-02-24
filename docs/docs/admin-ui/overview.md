@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: Overview
+description: Overview of the Unchained Admin UI for managing products, orders, customers, and store configuration.
 sidebar_label: Overview
 sidebar_title: Overview
 ---

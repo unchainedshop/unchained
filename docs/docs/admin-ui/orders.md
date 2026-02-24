@@ -1,6 +1,7 @@
 ---
 sidebar_position: 9
 title: Orders
+description: View and manage orders in the Admin UI including status tracking, payment confirmation, and delivery updates.
 sidebar_title: Manage orders
 sidebar_label: Orders
 ---

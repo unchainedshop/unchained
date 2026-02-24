@@ -2,6 +2,7 @@
 sidebar_position: 2
 sidebar_label: Authentication 
 title: Authentication
+description: Configure authentication flows in Unchained including web authentication and email/password registration.
 ---
 # Authentication
 Unchained engine offers several authentication flows to users to register and access the platform. The admin UI is designed to support most of these authentication and authorization flows. However, some authentication flows are more suitable for a storefront than a control panel, and hence, the admin UI may not support them.
