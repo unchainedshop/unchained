@@ -67,6 +67,81 @@ const options = {
 };
 ```
 
+## Module API
+
+Access via `modules.orders` in the Unchained API context.
+
+### Queries
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `cart` | `{ userId, countryCode?, orderNumber? }` | Get user's cart |
+| `findOrder` | `{ orderId? \| orderNumber? }, options?` | Find a specific order |
+| `findOrders` | `{ limit?, offset?, sort?, ...query }` | List orders with pagination |
+| `findOrderIds` | `query` | Get array of order IDs |
+| `count` | `query` | Count orders |
+| `orderExists` | `{ orderId }` | Check if order exists |
+| `isCart` | `order` | Check if order is a cart |
+
+### Mutations
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `create` | `{ userId, countryCode, currencyCode, billingAddress?, contact?, context? }` | Create order |
+| `delete` | `orderId` | Delete order |
+| `setCartOwner` | `{ orderId, userId }` | Change order owner |
+| `updateBillingAddress` | `orderId, billingAddress` | Update billing address |
+| `updateContact` | `orderId, contact` | Update contact info |
+| `updateContext` | `orderId, context` | Update order context/meta |
+| `updateStatus` | `orderId, { status, info? }` | Update order status |
+| `setPaymentProvider` | `orderId, paymentProviderId` | Set payment method |
+| `setDeliveryProvider` | `orderId, deliveryProviderId` | Set delivery method |
+| `acquireLock` | `orderId, identifier, timeout?` | Acquire distributed lock |
+
+### Sub-modules
+
+**`modules.orders.positions`** — Order line items:
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `findOrderPosition` | `{ itemId }` | Get single position |
+| `findOrderPositions` | `{ orderId }` | Get all positions in order |
+| `addProductItem` | `{ orderId, productId, quantity, configuration? }` | Add product to cart |
+| `updateProductItem` | `{ orderPositionId, quantity, configuration }` | Update line item |
+| `delete` | `orderPositionId` | Remove line item |
+| `removePositions` | `{ orderId }` | Clear all positions |
+
+**`modules.orders.payments`** — Order payments:
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `findOrderPayment` | `{ orderPaymentId }` | Get payment record |
+| `updateStatus` | `orderPaymentId, { status, transactionId?, info? }` | Update payment status |
+| `markAsPaid` | `orderPaymentId, info?` | Mark as paid |
+
+**`modules.orders.deliveries`** — Order deliveries:
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `findOrderDelivery` | `{ orderDeliveryId }` | Get delivery record |
+| `updateStatus` | `orderDeliveryId, { status, info? }` | Update delivery status |
+
+**`modules.orders.discounts`** — Order discounts:
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `findOrderDiscount` | `{ orderDiscountId }` | Get discount record |
+| `create` | `doc` | Create discount |
+| `delete` | `orderDiscountId` | Remove discount |
+
+### Statistics
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `statistics.countByDateField` | `dateField, dateRange?, options?` | Count orders by date |
+| `statistics.aggregateByDateField` | `dateField, dateRange?, options?` | Aggregate stats by date |
+| `statistics.getTopCustomers` | `orderIds, options?` | Get top spending customers |
+
 ## Events
 
 | Event | Payload | Description |

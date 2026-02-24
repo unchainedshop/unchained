@@ -13,6 +13,45 @@ The currencies module manages supported currencies for pricing and transactions.
 
 The currencies module has no configuration options.
 
+## Module API
+
+Access via `modules.currencies` in the Unchained API context.
+
+### Queries
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `findCurrency` | `{ isoCode? \| currencyId? }` | Find currency by ISO code or ID |
+| `findCurrencies` | `{ limit?, offset?, sort?, ...query }` | List currencies with pagination |
+| `count` | `query` | Count currencies matching criteria |
+| `currencyExists` | `{ currencyId }` | Check if currency exists |
+
+### Mutations
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `create` | `doc` | Create a new currency |
+| `update` | `currencyId, doc` | Update currency |
+| `delete` | `currencyId` | Delete currency |
+
+### Usage
+
+```typescript
+// Find a currency
+const chf = await modules.currencies.findCurrency({ isoCode: 'CHF' });
+
+// List active currencies
+const currencies = await modules.currencies.findCurrencies({
+  includeInactive: false,
+});
+
+// Create a new currency
+await modules.currencies.create({
+  isoCode: 'EUR',
+  isActive: true,
+});
+```
+
 ## Events
 
 | Event | Payload | Description |
@@ -21,6 +60,7 @@ The currencies module has no configuration options.
 | `CURRENCY_UPDATE` | `{ currencyId }` | Emitted when a currency is updated |
 | `CURRENCY_REMOVE` | `{ currencyId }` | Emitted when a currency is removed |
 
-## More Information
+## Related
 
-For API usage and detailed documentation, see the [core-currencies package on GitHub](https://github.com/unchainedshop/unchained/tree/master/packages/core-currencies).
+- [Multi-Currency Setup](../../guides/multi-currency-setup.md) - Multi-currency guide
+- [Pricing System](../../concepts/pricing-system.md) - How pricing works

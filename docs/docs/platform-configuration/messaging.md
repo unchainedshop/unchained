@@ -1,97 +1,295 @@
 ---
 sidebar_position: 7
 title: Messaging
-description: Configure SMS and email messaging templates for order confirmations, enrollment notifications, and quotation updates.
+description: Configure email and SMS messaging templates for notifications, order confirmations, and custom alerts.
 sidebar_label: Messaging
 ---
 
-:::info
-Customize messaging
-:::
+# Messaging
 
-It is possible to trigger `SMS` or `EMAIL` notification for various operation performed. Notification are
-are added to the work queue for processing, By default Email notification is triggered by the engine to
-the following operations.
+Unchained Engine includes an event-driven messaging system that sends notifications via email or SMS. Messages are processed asynchronously through the worker queue.
 
-- User Enrollment
-- User email verification
-- Order delivery
-- Order confirmation
-- Order rejection
-- Quotation status change
+## Architecture
 
-You can override the default template and/or add your own email/SMS notification. In order to add a
-custom `EMAIL` or `SMS` notification you must create a function that implement the
-`TemplateResolver` and register the template with the `IMessagingDirector`. After
-that you only need to add work in the queue with the corresponding type(EMAIL/SMS) with template name you
-want to use and any required dynamic data required in the template.
+```mermaid
+flowchart LR
+    E[Platform Event] -->|triggers| M[MESSAGE Work]
+    M -->|resolves template| T[TemplateResolver]
+    T -->|creates| W1[EMAIL Work]
+    T -->|creates| W2[SMS Work]
+    W1 -->|processed by| WK1[Email Worker]
+    W2 -->|processed by| WK2[SMS Worker]
+```
 
-Bellow is an example of a simple error notification email message configuration setup, that will send an
-automated email to support team when a user encounter error during some action.
+1. A platform event (e.g., `ORDER_CONFIRMED`) triggers a `MESSAGE` work item
+2. The Message Worker resolves the template registered for that message type
+3. The template resolver returns one or more concrete work items (EMAIL, SMS, etc.)
+4. Each work item is processed by the corresponding worker adapter
 
-## Implement TemplateResolver
+## Built-in Message Types
+
+Unchained registers 7 default message templates:
+
+| Template | Trigger | Description |
+|----------|---------|-------------|
+| `ACCOUNT_ACTION` | User registration, password reset, email verification | Account lifecycle emails with action URLs |
+| `ORDER_CONFIRMATION` | `ORDER_CHECKOUT`, `ORDER_CONFIRMED` events | Order confirmation sent to the customer |
+| `ORDER_REJECTION` | `ORDER_REJECTED` event | Order rejection notification |
+| `DELIVERY` | `ORDER_CONFIRMED` event | Forwards order details to internal recipients (warehouse, support) |
+| `QUOTATION_STATUS` | Quotation status changes | Quotation update notification |
+| `ENROLLMENT_STATUS` | Enrollment status changes | Subscription status notification |
+| `ERROR_REPORT` | Worker failures | Sends failed work items to support team |
+
+### ACCOUNT_ACTION
+
+Handles all user account lifecycle emails:
+
+| Action | When | Content |
+|--------|------|---------|
+| `enroll-account` | New user enrollment | Welcome email with setup link |
+| `reset-password` | Password reset request | Reset link with token |
+| `verify-email` | Email verification | Verification link |
+| *(empty)* | Password changed | Confirmation notice |
+
+Input: `{ userId, action, recipientEmail, token }`
+
+### ORDER_CONFIRMATION
+
+Sent when an order transitions past PENDING status. Includes order details, items, pricing, and delivery info.
+
+Input: `{ orderId, locale }`
+
+### DELIVERY
+
+Forwards order information to internal recipients (e.g., warehouse staff). Configured via the delivery provider's configuration keys:
+
+```graphql
+mutation {
+  createDeliveryProvider(
+    deliveryProvider: {
+      type: SHIPPING
+      adapterKey: "shop.unchained.delivery.send-message"
+      configuration: [
+        { key: "from", value: "shop@example.com" }
+        { key: "to", value: "warehouse@example.com" }
+        { key: "cc", value: "logistics@example.com" }
+      ]
+    }
+  ) { _id }
+}
+```
+
+### ERROR_REPORT
+
+Automatically sends failed work items to the address configured in `ERROR_REPORT_RECIPIENT` environment variable.
+
+## Custom Templates
+
+### 1. Implement a TemplateResolver
+
+A template resolver is a function that transforms input data into one or more message work configurations:
 
 ```typescript
+import { TemplateResolver } from '@unchainedshop/core';
 
-const errorReported: TemplateResolver = async (
-  { userId, emailSubject, error, resolverName },
-  context
+const myTemplate: TemplateResolver = async (
+  { userId, orderId, customData },
+  unchainedAPI
 ) => {
-  const { modules } = context;
+  const { modules } = unchainedAPI;
   const user = await modules.users.findUserById(userId);
-  const text = `${user.profile?.address?.firstName} ${user.profile?.address?.lastName} encountered ${error} in ${resolverName}`
+  const email = modules.users.primaryEmail(user);
+
   return [
     {
-      type: "EMAIL",
-      retries: 0,
+      type: 'EMAIL',
       input: {
-        from: user.contact.emailAddress,
-        to: "support@dshop.local",
-        replyTo: user.contact.emailAddress,
-        subject: emailSubject || 'Error occurred',
-        text,
+        from: 'shop@example.com',
+        to: email.address,
+        subject: 'Your custom notification',
+        text: `Hello ${user.profile?.address?.firstName}, ${customData}`,
+        html: `<p>Hello <b>${user.profile?.address?.firstName}</b>, ${customData}</p>`,
       },
     },
   ];
 };
-
 ```
 
-## Register email template into Messaging director
+### 2. Register the Template
 
 ```typescript
 import { MessagingDirector } from '@unchainedshop/core';
 
-MessagingDirector.registerTemplate('ERROR_REPORT', errorReported);
+MessagingDirector.registerTemplate('MY_CUSTOM_TEMPLATE', myTemplate);
 ```
 
-## Trigger message
+### 3. Trigger the Message
 
-Triggering the message is done by adding a work in the work queue and is treated like any other work, you
-simple specify the work type as `MESSAGE` and the template you want to use for the message as input to
-the work.
+Add a `MESSAGE` work item to the queue:
 
 ```typescript
-const someResolver =  async (root, params, context: AppContext) => {
-  const { modules, userId, countryCode } = context;
+await modules.worker.addWork({
+  type: 'MESSAGE',
+  retries: 0,
+  input: {
+    template: 'MY_CUSTOM_TEMPLATE',
+    userId,
+    orderId,
+    customData: 'Your order has been updated.',
+  },
+});
+```
 
-  await modules.worker.addWork(
+## Overriding Built-in Templates
+
+Register a template with the same name as a built-in type to override it:
+
+```typescript
+import { MessagingDirector } from '@unchainedshop/core';
+
+MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async ({ orderId, locale }, api) => {
+  const order = await api.modules.orders.findOrder({ orderId });
+  const user = await api.modules.users.findUserById(order.userId);
+  const email = api.modules.users.primaryEmail(user);
+
+  return [
     {
-      type: "MESSAGE",
-      retries: 0,
+      type: 'EMAIL',
       input: {
-        template: "ERROR_REPORT",
-        userId,
-        error: 'Required more information',
-        resolverName: 'someResolver'
-        ...params,
+        from: 'shop@example.com',
+        to: email.address,
+        subject: `Order #${order.orderNumber} confirmed`,
+        html: renderOrderEmail(order), // Your custom rendering
       },
     },
-  );
-  return true;
+  ];
+});
+```
+
+## Email Attachments
+
+Email templates support three attachment formats:
+
+```typescript
+return [
+  {
+    type: 'EMAIL',
+    input: {
+      from: 'shop@example.com',
+      to: 'customer@example.com',
+      subject: 'Your invoice',
+      text: 'Please find your invoice attached.',
+      attachments: [
+        // File path
+        { filename: 'invoice.pdf', path: '/tmp/invoice-123.pdf' },
+
+        // Inline content (base64)
+        {
+          filename: 'data.csv',
+          content: Buffer.from(csvData).toString('base64'),
+          contentType: 'text/csv',
+          encoding: 'base64',
+        },
+
+        // URL reference
+        { filename: 'receipt.pdf', href: 'https://example.com/receipts/123.pdf' },
+      ],
+    },
+  },
+];
+```
+
+## Multi-Channel Messages
+
+A single template can return multiple work items for different channels:
+
+```typescript
+const orderAlert: TemplateResolver = async ({ orderId }, api) => {
+  const order = await api.modules.orders.findOrder({ orderId });
+
+  return [
+    {
+      type: 'EMAIL',
+      input: {
+        to: 'admin@example.com',
+        subject: `New order #${order.orderNumber}`,
+        text: `Order total: ${order.pricing?.total}`,
+      },
+    },
+    {
+      type: 'TWILIO',
+      input: {
+        to: '+41791234567',
+        text: `New order #${order.orderNumber}`,
+      },
+    },
+  ];
 };
 ```
 
-If you want to override the existing template with your own custom template, follow the steps above and
-register the template using the same name as the message type you want to override. Look into
-the `MessageTypes` enum definition to see all the built in message template name used in the engine.
+## SMS Providers
+
+### Twilio
+
+Environment variables: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_SMS_FROM`
+
+```typescript
+{ type: 'TWILIO', input: { to: '+41791234567', text: 'Hello!' } }
+```
+
+### BulkGate
+
+Environment variables: `BULKGATE_APPLICATION_ID`, `BULKGATE_APPLICATION_TOKEN`
+
+```typescript
+{ type: 'BULKGATE', input: { to: '+41791234567', text: 'Hello!' } }
+```
+
+### BudgetSMS
+
+Environment variables: `BUDGETSMS_USERNAME`, `BUDGETSMS_USERID`, `BUDGETSMS_HANDLE`
+
+```typescript
+{ type: 'BUDGETSMS', input: { to: '+41791234567', text: 'Hello!' } }
+```
+
+## Email Configuration
+
+### Production
+
+Set the `MAIL_URL` environment variable to your SMTP server:
+
+```bash
+MAIL_URL=smtp://user:password@smtp.example.com:587
+```
+
+### Development
+
+In non-production mode, emails are intercepted and opened in the browser for preview. Disable this with:
+
+```bash
+UNCHAINED_DISABLE_EMAIL_INTERCEPTION=1
+```
+
+## MessagingDirector API
+
+```typescript
+import { MessagingDirector } from '@unchainedshop/core';
+
+// Register a template
+MessagingDirector.registerTemplate(name: string, resolver: TemplateResolver): void
+
+// Get a registered template resolver
+MessagingDirector.getTemplate(name: string): TemplateResolver | undefined
+
+// List all registered template names
+MessagingDirector.getRegisteredTemplates(): string[]
+```
+
+## Related
+
+- [Email Worker](../plugins/workers/worker-email.md) - Email delivery plugin
+- [Twilio Worker](../plugins/workers/twilio.md) - SMS via Twilio
+- [BulkGate Worker](../plugins/workers/worker-bulkgate.md) - SMS via BulkGate
+- [BudgetSMS Worker](../plugins/workers/worker-budgetsms.md) - SMS via BudgetSMS
+- [Worker Module](./modules/worker.md) - Background job processing

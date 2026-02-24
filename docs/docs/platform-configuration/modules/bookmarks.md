@@ -13,6 +13,48 @@ The bookmarks module allows users to save products for later reference, implemen
 
 The bookmarks module has no configuration options.
 
+## Module API
+
+Access via `modules.bookmarks` in the Unchained API context.
+
+### Queries
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `findBookmarkById` | `bookmarkId` | Find a specific bookmark |
+| `findBookmarksByUserId` | `userId` | Get all bookmarks for a user |
+| `findBookmarks` | `query` | Find bookmarks by custom filter |
+
+### Mutations
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `create` | `doc` | Create a new bookmark |
+| `update` | `bookmarkId, doc` | Update bookmark |
+| `delete` | `bookmarkId` | Delete bookmark |
+| `deleteByUserId` | `userId` | Delete all bookmarks for a user |
+| `deleteByProductId` | `productId` | Delete all bookmarks for a product |
+| `replaceUserId` | `{ oldUserId, newUserId }` | Migrate bookmarks between users (used during guest-to-registered conversion) |
+
+### Usage
+
+```typescript
+// Create a bookmark
+await modules.bookmarks.create({
+  userId: 'user-123',
+  productId: 'product-456',
+});
+
+// Get user's wishlist
+const wishlist = await modules.bookmarks.findBookmarksByUserId('user-123');
+
+// Migrate bookmarks when guest converts to registered user
+await modules.bookmarks.replaceUserId({
+  oldUserId: 'guest-id',
+  newUserId: 'registered-id',
+});
+```
+
 ## Events
 
 | Event | Payload | Description |
@@ -21,6 +63,6 @@ The bookmarks module has no configuration options.
 | `BOOKMARK_UPDATE` | `{ bookmarkId }` | Emitted when a bookmark is updated |
 | `BOOKMARK_REMOVE` | `{ bookmarkId }` | Emitted when a bookmark is removed |
 
-## More Information
+## Related
 
-For API usage and detailed documentation, see the [core-bookmarks package on GitHub](https://github.com/unchainedshop/unchained/tree/master/packages/core-bookmarks).
+- [Authentication](../../concepts/authentication.md) - Guest-to-registered conversion

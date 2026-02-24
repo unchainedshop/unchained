@@ -46,6 +46,8 @@ const sidebars = {
         'concepts/order-lifecycle',
         'concepts/pricing-system',
         'concepts/authentication',
+        'concepts/permissions',
+        'concepts/graphql-api',
       ],
     },
 
@@ -295,6 +297,10 @@ const sidebars = {
     'guides/file-uploads',
     'guides/custom-pricing',
     'guides/ticketing-setup',
+    'guides/server-setup',
+    'guides/testing',
+    'guides/seed-data',
+    'guides/contributing',
   ],
 
   // Admin UI sidebar (separate section)
