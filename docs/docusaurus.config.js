@@ -55,6 +55,21 @@ const config = {
       }),
     ],
   ],
+  plugins: [
+    [
+      'docusaurus-plugin-llms',
+      {
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        title: 'Unchained Engine',
+        description:
+          'Headless, code-first e-commerce SDK for Node.js with GraphQL API, MCP server for AI agents, and Admin UI Copilot.',
+        docsDir: 'docs',
+        excludeImports: true,
+        removeDuplicateHeadings: true,
+      },
+    ],
+  ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({

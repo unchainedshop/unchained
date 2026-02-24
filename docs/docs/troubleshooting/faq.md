@@ -418,3 +418,7 @@ npm run dev
 2. Search [GitHub Issues](https://github.com/unchainedshop/unchained/issues)
 3. Ask in [GitHub Discussions](https://github.com/unchainedshop/unchained/discussions)
 4. For enterprise support, contact support@unchained.shop
+
+## AI Integration
+
+For questions about the MCP server, Admin Copilot, or connecting AI agents to Unchained, see the [AI Integration FAQ](../ai-integration/ai-faq).

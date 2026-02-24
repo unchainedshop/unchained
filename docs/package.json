@@ -32,6 +32,7 @@
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
     "@graphql-markdown/types": "^1.8.0",
+    "docusaurus-plugin-llms": "^0.2.0",
     "docusaurus-plugin-typedoc": "^1.4.2",
     "typedoc": "^0.28.15",
     "typedoc-plugin-markdown": "^4.9.0"
