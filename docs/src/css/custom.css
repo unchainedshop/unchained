@@ -285,6 +285,29 @@
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
 }
 
+/* Search dropdown */
+[class*='dropdownMenu'] {
+  --search-local-modal-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --search-local-spacing: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+}
+
+[data-theme='dark'] [class*='dropdownMenu'] {
+  --search-local-modal-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[class*='noResultsIcon'] svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+[class*='noResults'] {
+  padding: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
 /* Search dropdown - fix hover/active state in dark mode */
 [data-theme='dark'] [class*='suggestion']:hover,
 [data-theme='dark'] [class*='cursor'] {
