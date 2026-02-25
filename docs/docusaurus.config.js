@@ -130,11 +130,6 @@ Plugins follow a Director/Adapter pattern: Directors manage collections of Adapt
         },
         items: [
           {
-            position: 'left',
-            label: 'GraphQL Playground',
-            href: 'https://engine.unchained.shop/graphql',
-          },
-          {
             href: 'https://github.com/unchainedshop/unchained/blob/master/CHANGELOG.md',
             label: 'Changelog',
             position: 'right',

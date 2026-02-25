@@ -299,6 +299,185 @@ code {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* ===== Code Blocks ===== */
+
+/* Container */
+[class*='codeBlockContainer'] {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.625rem;
+  overflow: hidden;
+  box-shadow: none;
+  background: transparent;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+[data-theme='dark'] [class*='codeBlockContainer'] {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Content wrapper */
+[class*='codeBlockContent'] {
+  position: relative;
+  padding-top: 2.25rem;
+}
+
+/* Code area */
+[class*='codeBlockContent'] pre {
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+[data-theme='dark'] [class*='codeBlockContent'] pre {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Title bar - always visible, positioned at the top */
+[class*='codeBlockContent'] > [class*='buttonGroup'] {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0.75rem;
+  height: 2.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] [class*='buttonGroup'] {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Language label - displayed on the left side of the title bar */
+[class*='codeBlockContent']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0.75rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ifm-color-emphasis-500);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.language-js [class*='codeBlockContent']::before,
+.language-javascript [class*='codeBlockContent']::before {
+  content: 'JavaScript';
+}
+
+.language-ts [class*='codeBlockContent']::before,
+.language-typescript [class*='codeBlockContent']::before {
+  content: 'TypeScript';
+}
+
+.language-tsx [class*='codeBlockContent']::before {
+  content: 'TSX';
+}
+
+.language-jsx [class*='codeBlockContent']::before {
+  content: 'JSX';
+}
+
+.language-bash [class*='codeBlockContent']::before,
+.language-shell [class*='codeBlockContent']::before,
+.language-sh [class*='codeBlockContent']::before {
+  content: 'Terminal';
+}
+
+.language-json [class*='codeBlockContent']::before {
+  content: 'JSON';
+}
+
+.language-graphql [class*='codeBlockContent']::before,
+.language-gql [class*='codeBlockContent']::before {
+  content: 'GraphQL';
+}
+
+.language-yaml [class*='codeBlockContent']::before,
+.language-yml [class*='codeBlockContent']::before {
+  content: 'YAML';
+}
+
+.language-css [class*='codeBlockContent']::before {
+  content: 'CSS';
+}
+
+.language-html [class*='codeBlockContent']::before {
+  content: 'HTML';
+}
+
+.language-env [class*='codeBlockContent']::before {
+  content: '.env';
+}
+
+.language-markdown [class*='codeBlockContent']::before,
+.language-md [class*='codeBlockContent']::before {
+  content: 'Markdown';
+}
+
+/* Copy button styling - always visible */
+[class*='codeBlockContent'] > [class*='buttonGroup'] button {
+  background: none !important;
+  border: none;
+  padding: 0.25rem;
+  color: var(--ifm-color-emphasis-500);
+  cursor: pointer;
+  transition: color 0.15s ease;
+  opacity: 1 !important;
+}
+
+[class*='codeBlockContent'] > [class*='buttonGroup'] button:hover {
+  color: var(--ifm-color-emphasis-900);
+  background: none !important;
+}
+
+/* Code block with explicit title (Docusaurus title= attribute) */
+[class*='codeBlockTitle'] {
+  padding: 0 0.75rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ifm-color-emphasis-500);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 0;
+}
+
+[data-theme='dark'] [class*='codeBlockTitle'] {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* When there's a title, hide the language pseudo-element and remove extra top padding */
+[class*='codeBlockTitle'] + [class*='codeBlockContent'] {
+  padding-top: 0;
+}
+
+[class*='codeBlockTitle'] + [class*='codeBlockContent']::before {
+  display: none;
+}
+
+[class*='codeBlockTitle'] + [class*='codeBlockContent'] [class*='buttonGroup'] {
+  position: absolute !important;
+  top: -2.25rem;
+  border: none;
+  background: transparent;
+}
+
 h1,
 h2,
 h3,
