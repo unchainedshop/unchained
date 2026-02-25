@@ -9,13 +9,9 @@ import { useMemo } from 'react';
 import useScaffoldVariationProduct from '../hooks/useScaffoldVariationProduct';
 import SelectField from '../../forms/components/SelectField';
 import { IProductType } from '../../../gql/types';
-import useApp from '../../../../client/dist/modules/common/hooks/useApp';
+import useApp from '../../common/hooks/useApp';
 
-const ProductAssignmentScaffoldForm = ({
-  proxyProduct,
-  vectors,
-  onSuccess,
-}) => {
+const ProductAssignmentScaffoldForm = ({ proxyProduct, vectors, onSuccess }) => {
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
   const scaffoldProduct = useScaffoldVariationProduct({
@@ -26,10 +22,7 @@ const ProductAssignmentScaffoldForm = ({
   });
   const { hasRole } = useAuth();
 
-  const variations = useMemo(
-    () => vectors.map(({ value }) => value),
-    [vectors],
-  );
+  const variations = useMemo(() => vectors.map(({ value }) => value), [vectors]);
 
   const defaultTitle = useMemo(() => {
     const baseTitle = proxyProduct?.texts?.title ?? '';
