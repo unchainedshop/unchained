@@ -159,26 +159,6 @@ Plugins follow a Director/Adapter pattern: Directors manage collections of Adapt
           },
         ],
       },
-      footer: {
-        style: 'light',
-        links: [
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'Blog',
-                // to: '/blog',
-                href: 'https://unchained.shop/de/blog',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/unchainedshop/unchained',
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} Unchained Commerce. Built with Docusaurus.`,
-      },
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,

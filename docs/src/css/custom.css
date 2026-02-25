@@ -44,6 +44,7 @@
 
 [class*='docsWrapper_'] {
   max-width: 1440px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -145,6 +146,7 @@
 
 [data-theme='dark'] .navbar {
   border: none;
+  background-color: var(--ifm-background-color);
 }
 
 .navbar__link {
@@ -236,16 +238,6 @@ h6 {
 .breadcrumbs__link {
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-}
-
-/* ===== Footer ===== */
-
-.footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-[data-theme='dark'] .footer {
-  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ===== Homepage ===== */
