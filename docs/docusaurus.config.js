@@ -120,6 +120,23 @@ Plugins follow a Director/Adapter pattern: Directors manage collections of Adapt
         disableSwitch: false,
         defaultMode: 'light',
       },
+      mermaid: {
+        theme: { light: 'base', dark: 'base' },
+        options: {
+          themeVariables: {
+            primaryColor: '#f5f5f5',
+            primaryTextColor: '#171717',
+            primaryBorderColor: '#d4d4d4',
+            lineColor: '#a3a3a3',
+            secondaryColor: '#e5e5e5',
+            tertiaryColor: '#fafafa',
+            textColor: '#171717',
+            noteBkgColor: '#f5f5f5',
+            noteTextColor: '#171717',
+            noteBorderColor: '#d4d4d4',
+          },
+        },
+      },
 
       navbar: {
         title: 'Unchained Engine',
