@@ -211,6 +211,7 @@ const orderAlert: TemplateResolver = async ({ orderId }, api) => {
     {
       type: 'EMAIL',
       input: {
+        from: 'shop@example.com',
         to: 'admin@example.com',
         subject: `New order #${order.orderNumber}`,
         text: `Order total: ${order.pricing?.total}`,
@@ -219,6 +220,7 @@ const orderAlert: TemplateResolver = async ({ orderId }, api) => {
     {
       type: 'TWILIO',
       input: {
+        from: '+15550001234', // Omit if TWILIO_SMS_FROM env var is set
         to: '+41791234567',
         text: `New order #${order.orderNumber}`,
       },
