@@ -24,7 +24,7 @@ Access via `modules.events` in the Unchained API context.
 | `findEvent` | `{ eventId }, options?` | Find a specific event |
 | `findEvents` | `{ limit?, offset?, ...query }` | List events with pagination |
 | `count` | `query` | Count events matching criteria |
-| `getReport` | `{ eventNames?, from?, to? }` | Get aggregated event statistics |
+| `getReport` | `{ dateRange?, types? }` | Get aggregated event statistics |
 
 ### Usage
 
@@ -37,9 +37,11 @@ const events = await modules.events.findEvents({
 
 // Get event statistics for a date range
 const report = await modules.events.getReport({
-  eventNames: ['ORDER_CONFIRMED'],
-  from: new Date('2024-01-01'),
-  to: new Date('2024-12-31'),
+  types: ['ORDER_CONFIRMED'],
+  dateRange: {
+    start: new Date('2024-01-01'),
+    end: new Date('2024-12-31'),
+  },
 });
 
 // Count specific events

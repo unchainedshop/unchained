@@ -414,8 +414,8 @@ Scope values: `PUBLIC`, `PRIVATE`
 | `ProductType` | `SIMPLE_PRODUCT`, `CONFIGURABLE_PRODUCT`, `BUNDLE_PRODUCT`, `PLAN_PRODUCT`, `TOKENIZED_PRODUCT` |
 | `ProductStatus` | `DRAFT`, `ACTIVE`, `DELETED` |
 | `OrderStatus` | `OPEN`, `PENDING`, `CONFIRMED`, `FULFILLED`, `REJECTED` |
-| `PaymentProviderType` | `CARD`, `INVOICE`, `GENERIC` |
-| `DeliveryProviderType` | `SHIPPING`, `PICKUP`, `LOCAL` |
+| `PaymentProviderType` | `INVOICE`, `GENERIC` |
+| `DeliveryProviderType` | `SHIPPING`, `PICKUP` |
 | `WarehousingProviderType` | `PHYSICAL`, `VIRTUAL` |
 | `FilterType` | `SWITCH`, `SINGLE_CHOICE`, `MULTI_CHOICE`, `RANGE` |
 | `QuotationStatus` | `REQUESTED`, `PROCESSING`, `PROPOSED`, `FULFILLED`, `REJECTED` |

@@ -7,7 +7,7 @@ description: Complete reference for RBAC permissions, roles, and access control 
 
 # Permissions Reference
 
-Unchained Engine uses a declarative, role-based access control (RBAC) system with 126 permission actions and context-aware evaluation.
+Unchained Engine uses a declarative, role-based access control (RBAC) system with 111 permission actions and context-aware evaluation.
 
 ## Built-in Roles
 
@@ -155,9 +155,9 @@ Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **spe
 Use the `checkResolver` decorator:
 
 ```typescript
-import { checkResolver } from '@unchainedshop/api/acl';
+import { acl } from '@unchainedshop/api';
 
-export default checkResolver('viewUser')(
+export default acl.checkResolver('viewUser')(
   async (root, { userId }, context) => {
     return context.modules.users.findUserById(userId);
   }
@@ -169,11 +169,11 @@ export default checkResolver('viewUser')(
 Use `checkTypeResolver` for field-level access control:
 
 ```typescript
-import { checkTypeResolver } from '@unchainedshop/api/acl';
+import { acl } from '@unchainedshop/api';
 
 export const OrderType = {
-  deliveries: checkTypeResolver('viewOrder', 'deliveries'),
-  payments: checkTypeResolver('viewOrder', 'payments'),
+  deliveries: acl.checkTypeResolver('viewOrder', 'deliveries'),
+  payments: acl.checkTypeResolver('viewOrder', 'payments'),
 };
 ```
 
@@ -198,9 +198,9 @@ if (!allowed) {
 ### Define a Custom Role
 
 ```typescript
-import { configureRoles } from '@unchainedshop/api';
+import { roles } from '@unchainedshop/api';
 
-configureRoles({
+roles.configureRoles({
   additionalRoles: {
     support: (role, actions) => {
       // View all orders
@@ -248,7 +248,7 @@ await graphqlFetch({
 Rules can inspect the user, target object, and parameters:
 
 ```typescript
-configureRoles({
+roles.configureRoles({
   additionalRoles: {
     regionManager: (role, actions) => {
       // Only view orders from their region

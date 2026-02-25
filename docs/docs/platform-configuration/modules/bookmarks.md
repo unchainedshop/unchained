@@ -34,7 +34,7 @@ Access via `modules.bookmarks` in the Unchained API context.
 | `delete` | `bookmarkId` | Delete bookmark |
 | `deleteByUserId` | `userId` | Delete all bookmarks for a user |
 | `deleteByProductId` | `productId` | Delete all bookmarks for a product |
-| `replaceUserId` | `{ oldUserId, newUserId }` | Migrate bookmarks between users (used during guest-to-registered conversion) |
+| `replaceUserId` | `fromUserId, toUserId, bookmarkIds?` | Migrate bookmarks between users (used during guest-to-registered conversion) |
 
 ### Usage
 
@@ -49,10 +49,7 @@ await modules.bookmarks.create({
 const wishlist = await modules.bookmarks.findBookmarksByUserId('user-123');
 
 // Migrate bookmarks when guest converts to registered user
-await modules.bookmarks.replaceUserId({
-  oldUserId: 'guest-id',
-  newUserId: 'registered-id',
-});
+await modules.bookmarks.replaceUserId('guest-id', 'registered-id');
 ```
 
 ## Events
