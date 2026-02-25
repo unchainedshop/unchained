@@ -116,6 +116,7 @@ Plugins follow a Director/Adapter pattern: Directors manage collections of Adapt
         logo: {
           alt: 'Unchained Engine Logo',
           src: 'img/unchained-logomark.svg',
+          srcDark: 'img/unchained-logomark-dark.svg',
         },
         items: [
           {

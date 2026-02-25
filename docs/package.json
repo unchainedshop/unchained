@@ -9,7 +9,8 @@
     "build": "docusaurus build",
     "clear": "docusaurus clear",
     "start": "docusaurus serve",
-    "validate:graphql": "node scripts/validate-graphql.mjs"
+    "validate:graphql": "node scripts/validate-graphql.mjs",
+    "screenshots": "npx playwright test scripts/take-screenshots.ts"
   },
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
@@ -32,6 +33,7 @@
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
     "@graphql-markdown/types": "^1.8.0",
+    "@playwright/test": "^1.58.2",
     "docusaurus-plugin-llms": "^0.2.0",
     "docusaurus-plugin-typedoc": "^1.4.2",
     "typedoc": "^0.28.15",
