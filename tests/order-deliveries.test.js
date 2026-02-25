@@ -11,7 +11,7 @@ import {
   SimpleDeliveryProvider,
   PickupDeliveryProvider,
 } from './seeds/deliveries.js';
-import { SimpleOrder, SimpleDelivery, PickupDelivery } from './seeds/orders.js';
+import { SimpleOrder, SimpleDelivery } from './seeds/orders.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdmin;
@@ -477,8 +477,8 @@ test.describe('Order: Deliveries', () => {
     assert.partialDeepStrictEqual(updateCartDeliveryPickUp, {
       _id: SimpleOrder._id,
       delivery: {
-        _id: PickupDelivery._id,
         provider: {
+          _id: PickupDeliveryProvider._id,
           type: 'PICKUP',
         },
         activePickUpLocation: {
@@ -631,7 +631,6 @@ test.describe('Order: Deliveries', () => {
     assert.partialDeepStrictEqual(updateCartDeliveryPickUp, {
       _id: SimpleOrder._id,
       delivery: {
-        _id: PickupDelivery._id,
         activePickUpLocation: {
           _id: 'zurich',
           name: 'Zurich',
