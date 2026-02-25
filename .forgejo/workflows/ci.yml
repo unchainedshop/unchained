@@ -49,8 +49,8 @@ jobs:
       - name: Login to Forgejo registry
         run: >
           docker login
-          -u ${{ github.repository_owner }}
-          -p ${{ github.token }}
+          -u ${{ secrets.REGISTRY_USER }}
+          -p ${{ secrets.REGISTRY_TOKEN }}
           git.ucc.dev
 
       - name: Build docs image
