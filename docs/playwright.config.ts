@@ -5,7 +5,7 @@ export default defineConfig({
   testMatch: 'take-screenshots.ts',
   timeout: 5 * 60 * 1000,
   use: {
-    baseURL: 'http://localhost:4010',
+    baseURL: 'http://localhost:3000',
     viewport: { width: 1280, height: 800 },
     screenshot: 'off',
   },

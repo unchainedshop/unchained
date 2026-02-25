@@ -14,7 +14,17 @@ const config = {
   markdown: {
     mermaid: true,
   },
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        docsRouteBasePath: '/',
+        indexBlog: false,
+      },
+    ],
+  ],
 
   // Set the production url of your site here
   url: 'https://docs.unchained.shop',
@@ -119,24 +129,6 @@ Plugins follow a Director/Adapter pattern: Directors manage collections of Adapt
           srcDark: 'img/unchained-logomark-dark.svg',
         },
         items: [
-          {
-            type: 'docSidebar',
-            sidebarId: 'docsSidebar',
-            position: 'left',
-            label: 'Docs',
-          },
-          {
-            type: 'docSidebar',
-            sidebarId: 'guidesSidebar',
-            position: 'left',
-            label: 'Guides',
-          },
-          {
-            type: 'docSidebar',
-            sidebarId: 'adminUiSidebar',
-            position: 'left',
-            label: 'Admin UI',
-          },
           {
             position: 'left',
             label: 'GraphQL Playground',
