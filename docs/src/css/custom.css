@@ -285,6 +285,13 @@
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
 }
 
+/* Search dropdown - fix hover/active state in dark mode */
+[data-theme='dark'] [class*='suggestion']:hover,
+[data-theme='dark'] [class*='cursor'] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: inherit !important;
+}
+
 /* ===== Content Typography ===== */
 
 code {
