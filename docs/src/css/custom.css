@@ -343,7 +343,7 @@ code {
 }
 
 [data-theme='dark'] [class*='codeBlockContainer'] {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Content wrapper */
@@ -357,11 +357,11 @@ code {
   border: none !important;
   border-radius: 0 !important;
   margin: 0 !important;
-  background-color: rgba(0, 0, 0, 0.02) !important;
+  background-color: #f6f8fa !important;
 }
 
 [data-theme='dark'] [class*='codeBlockContent'] pre {
-  background-color: rgba(255, 255, 255, 0.03) !important;
+  background-color: #1e1e2e !important;
 }
 
 /* Title bar - always visible, positioned at the top */
@@ -378,12 +378,12 @@ code {
   padding: 0 0.75rem;
   height: 2.25rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: #eff1f3;
 }
 
-[data-theme='dark'] [class*='buttonGroup'] {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-  background-color: rgba(255, 255, 255, 0.02);
+[data-theme='dark'] [class*='codeBlockContent'] > [class*='buttonGroup'] {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background-color: #181825;
 }
 
 /* Language label - displayed on the left side of the title bar */
@@ -483,13 +483,13 @@ code {
   font-weight: 500;
   color: var(--ifm-color-emphasis-500);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: #eff1f3;
   border-radius: 0;
 }
 
 [data-theme='dark'] [class*='codeBlockTitle'] {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-  background-color: rgba(255, 255, 255, 0.02);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background-color: #181825;
 }
 
 /* When there's a title, hide the language pseudo-element and remove extra top padding */
