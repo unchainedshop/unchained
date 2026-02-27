@@ -155,51 +155,205 @@ function parseText(text: string): ScheduleData {
 }
 
 /**
- * Get the next occurrence(s) of a schedule from a reference date
+ * Find the smallest value in a sorted array that is >= minVal.
+ * Returns the value if found, or null if no value >= minVal exists.
+ */
+function findNextInSorted(sorted: number[], minVal: number): number | null {
+  for (const v of sorted) {
+    if (v >= minVal) return v;
+  }
+  return null;
+}
+
+/**
+ * Get the number of days in a given month (1-12) of a given year.
+ */
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
+
+/**
+ * Get the next occurrence(s) of a schedule from a reference date.
+ *
+ * Uses a field-advancing algorithm that directly jumps to the next matching
+ * date instead of iterating second-by-second. For a daily schedule like
+ * "0 3 * * *", this finds the next match in ~2 loop iterations instead of
+ * ~86,400.
  */
 function getNextOccurrences(scheduleData: ScheduleData, count: number, referenceDate: Date): Date[] {
   const results: Date[] = [];
-  const schedule = scheduleData.schedules[0];
+  const sched = scheduleData.schedules[0];
 
   // Start from the reference date, but move to the next second
-  const current = new Date(referenceDate.getTime());
-  current.setMilliseconds(0);
-  current.setSeconds(current.getSeconds() + 1);
+  const start = new Date(referenceDate.getTime());
+  start.setMilliseconds(0);
+  start.setSeconds(start.getSeconds() + 1);
 
-  const maxIterations = 366 * 24 * 60 * 60; // Max 1 year of seconds to prevent infinite loops
-  let iterations = 0;
+  let year = start.getFullYear();
+  let month = start.getMonth() + 1; // 1-12
+  let day = start.getDate();
+  let hour = start.getHours();
+  let minute = start.getMinutes();
+  let second = start.getSeconds();
 
-  while (results.length < count && iterations < maxIterations) {
-    iterations++;
+  const maxYear = year + 5; // Safety limit
 
-    const month = current.getMonth() + 1; // 1-12
-    const dayOfMonth = current.getDate(); // 1-31
-    const dayOfWeek = current.getDay(); // 0-6
-    const hour = current.getHours(); // 0-23
-    const minute = current.getMinutes(); // 0-59
-    const second = current.getSeconds(); // 0-59
-
-    // Check if current time matches the schedule
-    const matchesMonth = !schedule.M || schedule.M.includes(month);
-    const matchesDay = !schedule.D || schedule.D.includes(dayOfMonth);
-    const matchesDayOfWeek = !schedule.d || schedule.d.includes(dayOfWeek);
-    const matchesHour = !schedule.h || schedule.h.includes(hour);
-    const matchesMinute = !schedule.m || schedule.m.includes(minute);
-    const matchesSecond = !schedule.s || schedule.s.includes(second);
-
-    if (
-      matchesMonth &&
-      matchesDay &&
-      matchesDayOfWeek &&
-      matchesHour &&
-      matchesMinute &&
-      matchesSecond
-    ) {
-      results.push(new Date(current));
+  // eslint-disable-next-line no-restricted-syntax
+  search: while (results.length < count && year <= maxYear) {
+    // --- MONTH ---
+    if (sched.M) {
+      const nextMonth = findNextInSorted(sched.M, month);
+      if (nextMonth === null) {
+        year++;
+        month = sched.M[0];
+        day = sched.D ? sched.D[0] : 1;
+        hour = sched.h ? sched.h[0] : 0;
+        minute = sched.m ? sched.m[0] : 0;
+        second = sched.s ? sched.s[0] : 0;
+        continue search;
+      }
+      if (nextMonth > month) {
+        month = nextMonth;
+        day = sched.D ? sched.D[0] : 1;
+        hour = sched.h ? sched.h[0] : 0;
+        minute = sched.m ? sched.m[0] : 0;
+        second = sched.s ? sched.s[0] : 0;
+      }
     }
 
-    // Move to next second
-    current.setSeconds(current.getSeconds() + 1);
+    // --- DAY (day-of-month and/or day-of-week) ---
+    const maxDay = daysInMonth(year, month);
+
+    if (sched.D || sched.d) {
+      let found = false;
+      let candidateDay = day;
+
+      while (candidateDay <= maxDay) {
+        const matchesD = !sched.D || sched.D.includes(candidateDay);
+        if (matchesD) {
+          const dow = new Date(year, month - 1, candidateDay).getDay();
+          const matchesDow = !sched.d || sched.d.includes(dow);
+          if (matchesDow) {
+            if (candidateDay > day) {
+              hour = sched.h ? sched.h[0] : 0;
+              minute = sched.m ? sched.m[0] : 0;
+              second = sched.s ? sched.s[0] : 0;
+            }
+            day = candidateDay;
+            found = true;
+            break;
+          }
+        }
+        candidateDay++;
+      }
+
+      if (!found) {
+        month++;
+        if (month > 12) {
+          year++;
+          month = sched.M ? sched.M[0] : 1;
+        } else if (sched.M) {
+          const nextM = findNextInSorted(sched.M, month);
+          if (nextM === null) {
+            year++;
+            month = sched.M[0];
+          } else {
+            month = nextM;
+          }
+        }
+        day = sched.D ? sched.D[0] : 1;
+        hour = sched.h ? sched.h[0] : 0;
+        minute = sched.m ? sched.m[0] : 0;
+        second = sched.s ? sched.s[0] : 0;
+        continue search;
+      }
+    } else if (day > maxDay) {
+      month++;
+      if (month > 12) {
+        year++;
+        month = sched.M ? sched.M[0] : 1;
+      } else if (sched.M) {
+        const nextM = findNextInSorted(sched.M, month);
+        if (nextM === null) {
+          year++;
+          month = sched.M[0];
+        } else {
+          month = nextM;
+        }
+      }
+      day = 1;
+      hour = sched.h ? sched.h[0] : 0;
+      minute = sched.m ? sched.m[0] : 0;
+      second = sched.s ? sched.s[0] : 0;
+      continue search;
+    }
+
+    // --- HOUR ---
+    if (hour > 23) {
+      day++;
+      hour = sched.h ? sched.h[0] : 0;
+      minute = sched.m ? sched.m[0] : 0;
+      second = sched.s ? sched.s[0] : 0;
+      continue search;
+    }
+    if (sched.h) {
+      const nextHour = findNextInSorted(sched.h, hour);
+      if (nextHour === null) {
+        day++;
+        hour = sched.h[0];
+        minute = sched.m ? sched.m[0] : 0;
+        second = sched.s ? sched.s[0] : 0;
+        continue search;
+      }
+      if (nextHour > hour) {
+        hour = nextHour;
+        minute = sched.m ? sched.m[0] : 0;
+        second = sched.s ? sched.s[0] : 0;
+      }
+    }
+
+    // --- MINUTE ---
+    if (minute > 59) {
+      hour++;
+      minute = sched.m ? sched.m[0] : 0;
+      second = sched.s ? sched.s[0] : 0;
+      continue search;
+    }
+    if (sched.m) {
+      const nextMinute = findNextInSorted(sched.m, minute);
+      if (nextMinute === null) {
+        hour++;
+        minute = sched.m[0];
+        second = sched.s ? sched.s[0] : 0;
+        continue search;
+      }
+      if (nextMinute > minute) {
+        minute = nextMinute;
+        second = sched.s ? sched.s[0] : 0;
+      }
+    }
+
+    // --- SECOND ---
+    if (second > 59) {
+      minute++;
+      second = sched.s ? sched.s[0] : 0;
+      continue search;
+    }
+    if (sched.s) {
+      const nextSecond = findNextInSorted(sched.s, second);
+      if (nextSecond === null) {
+        minute++;
+        second = sched.s[0];
+        continue search;
+      }
+      second = nextSecond;
+    }
+
+    // All fields match — we found a valid occurrence
+    results.push(new Date(year, month - 1, day, hour, minute, second));
+
+    // Advance past this result for finding the next occurrence
+    second++;
   }
 
   return results;
