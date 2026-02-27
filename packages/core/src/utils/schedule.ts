@@ -198,7 +198,6 @@ function getNextOccurrences(scheduleData: ScheduleData, count: number, reference
 
   const maxYear = year + 5; // Safety limit
 
-  // eslint-disable-next-line no-restricted-syntax
   search: while (results.length < count && year <= maxYear) {
     // --- MONTH ---
     if (sched.M) {

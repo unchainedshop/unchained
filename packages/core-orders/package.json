@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-orders",
   "description": "Order management module for the Unchained Engine",
-  "version": "4.6.2",
+  "version": "4.8.0",
   "main": "lib/orders-index.js",
   "types": "lib/orders-index.d.ts",
   "type": "module",
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@kontsedal/locco": "1.0.0",
+    "@kontsedal/locco": "^1.1.0",
     "@unchainedshop/events": "^4.6.0",
     "@unchainedshop/logger": "^4.6.0",
     "@unchainedshop/utils": "^4.6.0"
