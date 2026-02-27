@@ -14,7 +14,7 @@ if (STRIPE_SECRET) {
   try {
     const { default: Stripe } = await import('stripe');
     stripe = new Stripe(STRIPE_SECRET, {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: '2026-02-25.clover',
     });
   } catch {
     logger.warn(`optional peer npm package 'stripe' not installed, stripe adapter will not work`);
