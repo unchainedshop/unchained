@@ -14,11 +14,8 @@ import {
   QrCodeIcon,
   CubeIcon,
   DocumentTextIcon,
-<<<<<<< HEAD
   FolderArrowDownIcon,
-=======
   TagIcon,
->>>>>>> 0c8e6d952 (Add tags list view)
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
