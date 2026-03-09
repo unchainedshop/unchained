@@ -11185,6 +11185,16 @@ export type IGlobalSearchQuery = {
   };
 };
 
+export type ITagsCountQueryVariables = Exact<{
+  tag: unknown;
+}>;
+
+export type ITagsCountQuery = {
+  productsCount: number;
+  assortmentsCount: number;
+  usersCount: number;
+};
+
 export type IInvalidateTokenMutationVariables = Exact<{
   tokenId: string | number;
 }>;

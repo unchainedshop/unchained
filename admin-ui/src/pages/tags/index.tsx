@@ -1,16 +1,16 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
 import TagList from '../../modules/tags/components/TagList';
 
 import { normalizeQuery } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useApp from '../../modules/common/hooks/useApp';
-import PageHeader from '../../modules/common/components/PageHeader';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import PageHeader from '@/components/ui/PageHeader';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 
 const Tags = () => {
   const { formatMessage } = useIntl();

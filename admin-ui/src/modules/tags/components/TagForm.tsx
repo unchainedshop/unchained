@@ -1,10 +1,10 @@
 import { useIntl } from 'react-intl';
 
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
-import TextAreaField from '../../forms/components/TextAreaField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
+import TextAreaField from '@/components/ui/form/TextAreaField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import { Validator } from '../../forms/lib/validators';
 import useForm from '../../forms/hooks/useForm';
 

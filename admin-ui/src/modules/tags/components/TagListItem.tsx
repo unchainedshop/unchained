@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import Table from '../../common/components/Table';
 import useTagsCount from '../hooks/useTagsCount';
 
