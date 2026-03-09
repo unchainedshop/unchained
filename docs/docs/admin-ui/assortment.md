@@ -30,13 +30,15 @@ In addition to these features, you can search, filter, and sort assortments usin
 1. ### Adding new Assortment
 If you want to create a new assortment, you can do so by clicking the "Add" button on the list view of assortments. This will take you to the assortment creation form page, where you can provide all the required information, including the name of the assortment, a brief description, and any other relevant details that are necessary. This form is easy to use and will guide you through the process of creating a new assortment quickly and efficiently.
 ![diagram](../assets/assortment-form.png)
+
 2. ### Edit assortment
 To modify an existing assortment, simply select the assortment from the list view, and you will be taken to its detail view page. From there, you can make changes to the assortment's information, including adding localized counterparts for each. If you want to add a localized text for an assortment, you will need to [add the language](./language/#add-language) first by going to the add the [language page](./language). This step is important to ensure that your assortment is accurately translated and localized for your customers in different regions. Once you have added the language, you can proceed to add the localized text for your assortment, making it more accessible and understandable for your global audience.
+![diagram](../assets/assortment-text-setting.png)
 
 3. ### Delete assortment
 If you have the necessary privileges, you can delete an assortment by using the delete button found on the assortment detail page. However, it is essential to be extra cautious when performing this operation, as it is not reversible. Deleting an assortment that is linked to other parts of the shop can have unintended consequences and lead to problems. Therefore, it is important to ensure that there are no dependencies on the assortment before proceeding with the deletion. If you are unsure about whether it is safe to delete an assortment, it is always a good idea to consult with a supervisor or someone with more experience before taking any action.
 
-![diagram](../assets/assortment-text-setting.png)
+
 
 ## Activating or deactivating assortment
 When you access an assortment's detail page, you will see a button that displays the current status of the assortment. This button can be used to toggle the assortment's status between active and inactive. Simply click on the button to change the status. This feature is useful when you need to temporarily remove an assortment from the shop or reactivate an inactive assortment.
@@ -65,7 +67,7 @@ To manage media files associated with an assortment, navigate to the "Media" tab
 ## Manage assortment Filters
 To manage filters associated with an assortment, navigate to the "Filter" tab on the assortment detail page. From there, you can add or remove links to filters that are relevant to your assortment. This feature is useful when you want to make it easier for customers to find products within a specific category or with certain attributes. Simply click on the "Filter" tab to access the filter management options, and you can easily add or remove links to filters as needed. Keep in mind that filters need to be created before they can be linked to an assortment. If you haven't created any filters yet, you can do so by following the instructions provided in the [Filter](./filter) documentation.
 
-![diagram](../assets/image.png)
+![diagram](../assets/assortment-filters-setting.png)
 
 ## Manage assortment Links
 To manage links to other assortments associated with an assortment, navigate to the "Links" tab on the assortment detail page. From there, you can add or remove links to other assortments as needed. This feature is useful when you want to create a hierarchy of related products or categories, and make it easy for customers to navigate through your assortment.
