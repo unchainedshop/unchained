@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { Request, Response } from 'express';
-import type { TicketingAPI } from '../types.ts';
+import type { TicketingAPI } from '../index.ts';
 
 const logger = createLogger('unchained:google-wallet-webservice');
 

@@ -1,4 +1,12 @@
-// Google Wallet Types
+import type { UnchainedCore } from '@unchainedshop/core';
+import type { TicketingModule } from './module.ts';
+import type { TicketingServices } from './services.ts';
+
+export type TicketingAPI = UnchainedCore & {
+  modules: TicketingModule;
+  services: TicketingServices;
+};
+
 export interface LocalizedString {
   defaultValue: { language: string; value: string };
   translatedValues?: { language: string; value: string }[];

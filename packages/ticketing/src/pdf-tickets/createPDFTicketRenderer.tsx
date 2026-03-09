@@ -1,8 +1,8 @@
 import React from 'react';
-import type { TicketingAPI } from '../types.js';
+import type { TicketingAPI } from '../types.ts';
 import type * as PDFRendererTypes from '@react-pdf/renderer';
 import type * as QRCodeTypes from 'qrcode';
-import type { BillingAddress, TicketItem, TicketReceiptData } from './types.js';
+import type { BillingAddress, TicketItem, TicketReceiptData } from '../types.ts';
 
 let PDFRenderer: typeof PDFRendererTypes | null = null;
 let QRCode: typeof QRCodeTypes | null = null;

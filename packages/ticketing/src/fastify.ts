@@ -1,6 +1,10 @@
 import type { FastifyInstance } from 'fastify';
 import { createServerAdapter } from '@whatwg-node/server';
+
 import { ticketingRoutes } from './routes.ts';
+import googleWalletHandler from './mobile-tickets/google-handler-fastify.ts';
+import printTicketsHandler from './pdf-tickets/print-handler-fastify.ts';
+import appleWalletHandler from './mobile-tickets/apple-handler-fastify.ts';
 
 export default (fastify: FastifyInstance) => {
   if (ticketingRoutes.length === 0) return;
@@ -20,6 +24,12 @@ export default (fastify: FastifyInstance) => {
     url: `${APPLE_WALLET_WEBSERVICE_PATH}*`,
     method: ['GET', 'POST', 'DELETE'],
     handler: appleWalletHandler,
+  });
+
+  fastify.route({
+    url: `${GOOGLE_WALLET_WEBSERVICE_PATH}/download/:tokenId`,
+    method: 'GET',
+    handler: googleWalletHandler,
   });
 
   // Register all ticketing routes in a scoped context with catch-all parser
@@ -73,8 +83,5 @@ export default (fastify: FastifyInstance) => {
     }
 
     registered();
-
-
-
-  })
-}
+  });
+};

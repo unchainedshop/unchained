@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import type { TicketingAPI } from '../types.ts';
+import type { TicketingAPI } from '../types.js';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:google-wallet-webservice');

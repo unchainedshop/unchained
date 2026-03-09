@@ -1,7 +1,7 @@
 import type { UnchainedCore } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import type * as PassJsTypes from '@walletpass/pass-js';
-import type { AppleWalletPassConfig, AppleWalletTemplateConfig, PassFieldLabels } from './types.js';
+import type { AppleWalletPassConfig, AppleWalletTemplateConfig, PassFieldLabels } from '../types.js';
 
 interface WarehousingToken {
   _id: string;

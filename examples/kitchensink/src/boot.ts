@@ -3,23 +3,12 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
-import defaultModules from '@unchainedshop/plugins/presets/all.js';
-import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
 import seed from './seed.ts';
 import { useErrorHandler } from '@envelop/core';
 
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
-import setupTicketing, {
-  type TicketingAPI, ticketingModules,
-  ticketingServices,
-} from "@unchainedshop/ticketing";
-import rest from "@unchainedshop/ticketing/lib/fastify.js"
-import { createPDFTicketRenderer } from "@unchainedshop/ticketing/lib/pdf-tickets/createPDFTicketRenderer.js"
-import googleWalletPass from "@unchainedshop/ticketing/lib/pdf-tickets/googleWalletPass.js"
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -57,7 +46,6 @@ try {
         }
       }),
     ],
-    modules: defaultModules,
   });
 
   connect(fastify, platform, {

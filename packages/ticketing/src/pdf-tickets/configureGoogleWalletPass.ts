@@ -3,7 +3,7 @@ import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import type * as GoogleApisTypes from 'googleapis';
 import type * as JwtTypes from 'jsonwebtoken';
-import type { EventTicketClass, GoogleWalletPassConfigOptions } from './types.js';
+import type { EventTicketClass, GoogleWalletPassConfigOptions } from '../types.js';
 
 interface WarehousingToken {
   _id: string;

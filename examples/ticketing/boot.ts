@@ -3,10 +3,11 @@ import { startPlatform } from '@unchainedshop/platform';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
 import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
-import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import configureAppleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureAppleWalletPass.js';
 import configureGoogleWalletPass from '@unchainedshop/ticketing/lib/pdf-tickets/configureGoogleWalletPass.js';
+
 import seed from './seed.ts';
 
 const fastify = Fastify({

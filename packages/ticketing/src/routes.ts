@@ -38,7 +38,7 @@ export async function printTicketsHandler(request: Request, context: Context): P
     const pdfStream = await render({ orderId, variant: variant as string }, context);
 
     // Convert Node.js Readable to WHATWG ReadableStream
-    const webStream = Readable.toWeb(pdfStream) as ReadableStream;
+    const webStream = Readable.toWeb(pdfStream as any) as ReadableStream;
 
     return new Response(webStream, {
       status: 200,

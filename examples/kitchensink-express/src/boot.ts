@@ -10,8 +10,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import { pluginRegistry } from '@unchainedshop/core';
-import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
-import '@unchainedshop/plugins/pricing/discount-100-off.js';
+
 
 const logger = createLogger('express');
 const app = express();
