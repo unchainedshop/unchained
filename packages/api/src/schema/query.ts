@@ -50,6 +50,7 @@ export default [
         slugs: [String!]
         includeDrafts: Boolean = false
         queryString: String
+        type: ProductType
       ): Int! @cacheControl(maxAge: 180)
 
       """
@@ -65,6 +66,7 @@ export default [
         offset: Int = 0
         includeDrafts: Boolean = false
         sort: [SortOptionInput!]
+        type: ProductType
       ): [Product!]!
 
       """
@@ -224,6 +226,22 @@ export default [
       Returns total tokens
       """
       tokensCount(queryString: String): Int!
+
+      """
+      List all ticket events (tokenized products), by default includes drafts
+      """
+      ticketEvents(
+        queryString: String
+        limit: Int = 50
+        offset: Int = 0
+        includeDrafts: Boolean = true
+        sort: [SortOptionInput!]
+      ): [Product!]!
+
+      """
+      Returns total number of ticket events (tokenized products)
+      """
+      ticketEventsCount(queryString: String, includeDrafts: Boolean = true): Int!
 
       """
       Returns total number of payment providers, optionally filtered by type

@@ -33,6 +33,12 @@ const TokenList = ({ tokens }) => {
               defaultMessage: 'Invalidated',
             })}
           </Table.Cell>
+          <Table.Cell>
+            {formatMessage({
+              id: 'token_cancelled',
+              defaultMessage: 'Cancelled',
+            })}
+          </Table.Cell>
         </Table.Row>
         {(tokens || []).map((token) => (
           <TokenListItem token={token} key={token?._id} />
