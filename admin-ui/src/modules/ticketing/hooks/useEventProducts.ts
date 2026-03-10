@@ -46,10 +46,7 @@ const TicketEventsQuery = gql`
         tokensCount
       }
     }
-    ticketEventsCount(
-      includeDrafts: $includeDrafts
-      queryString: $queryString
-    )
+    ticketEventsCount(includeDrafts: $includeDrafts, queryString: $queryString)
   }
 `;
 

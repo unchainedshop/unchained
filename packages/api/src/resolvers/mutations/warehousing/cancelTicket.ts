@@ -1,6 +1,11 @@
 import type { Context } from '../../../context.ts';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, TokenNotFoundError } from '../../../errors.ts';
+import { InvalidIdError, TokenNotFoundError, TicketingModuleNotFoundError } from '../../../errors.ts';
+
+interface PassesModule {
+  cancelTicket: (tokenId: string) => Promise<TokenSurrogate>;
+}
 
 export default async function cancelTicket(
   root: never,
@@ -19,18 +24,10 @@ export default async function cancelTicket(
     return token;
   }
 
-  // Use ticketing module if available, otherwise update directly
-  if ((modules as any).passes?.cancelTicket) {
-    return (modules as any).passes.cancelTicket(tokenId);
+  const passes = (modules as unknown as Record<string, unknown>).passes as PassesModule | undefined;
+  if (!passes?.cancelTicket) {
+    throw new TicketingModuleNotFoundError({});
   }
 
-  // Fallback: directly update token meta
-  const tokens = await modules.warehousing.findTokens({ _id: tokenId });
-  const existingToken = tokens[0];
-  if (!existingToken) throw new TokenNotFoundError({ tokenId });
-
-  // Invalidate the token and mark as cancelled
-  await modules.warehousing.invalidateToken(tokenId);
-  const updatedToken = await modules.warehousing.findToken({ tokenId });
-  return updatedToken;
+  return passes.cancelTicket(tokenId);
 }
