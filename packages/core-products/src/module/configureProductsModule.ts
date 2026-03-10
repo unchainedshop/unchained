@@ -85,8 +85,18 @@ export const buildFindSelector = ({
   type,
   bundleItemProductIds,
   proxyAssignmentProductIds,
+  type,
+  contractStandard,
 }: ProductQuery) => {
   const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector } : {};
+
+  if (type && !selector.type) {
+    selector.type = type as ProductType;
+  }
+
+  if (contractStandard) {
+    (selector as any)['tokenization.contractStandard'] = contractStandard;
+  }
 
   if (productIds && !selector._id) {
     selector._id = { $in: productIds };

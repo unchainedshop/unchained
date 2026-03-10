@@ -12,6 +12,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
 import useInvalidateTicket from '../../modules/token/hooks/useInvalidateTicket';
+import useCancelTicket from '../../modules/ticketing/hooks/useCancelTicket';
 import { toast } from 'react-toastify';
 import { useCallback } from 'react';
 import useAuth from '../../modules/Auth/useAuth';
@@ -20,8 +21,10 @@ const TokenDetailPage = ({ tokenId }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
 
-  const { token, loading } = useToken({ tokenId: tokenId as string });
+  const { token: rawToken, loading } = useToken({ tokenId: tokenId as string });
+  const token = rawToken as typeof rawToken & { isCanceled?: boolean };
   const { invalidateTicket } = useInvalidateTicket();
+  const { cancelTicket } = useCancelTicket();
   const { hasRole } = useAuth();
 
   const onInvalidateToken = useCallback(async () => {
@@ -72,19 +75,33 @@ const TokenDetailPage = ({ tokenId }) => {
               </div>
             )}
         </PageHeader>
-        {!token.invalidatedDate &&
-        token.isInvalidateable &&
-        hasRole(IRoleAction.UpdateToken) ? (
-          <Button
-            variant="danger"
-            icon={<XMarkIcon className="h-5 w-5" />}
-            text={formatMessage({
-              id: 'invalidate-token',
-              defaultMessage: 'Invalidate',
-            })}
-            onClick={onInvalidateToken}
-          />
-        ) : null}
+        <div className="flex items-center gap-2">
+          {!token.isCanceled && hasRole(IRoleAction.UpdateToken) && (
+            <Button
+              variant="danger"
+              icon={<XMarkIcon className="h-5 w-5" />}
+              text={formatMessage({
+                id: 'cancel-ticket',
+                defaultMessage: 'Cancel Ticket',
+              })}
+              onClick={onCancelToken}
+            />
+          )}
+          {!token.invalidatedDate &&
+          token.isInvalidateable &&
+          !token.isCanceled &&
+          hasRole(IRoleAction.UpdateToken) ? (
+            <Button
+              variant="danger"
+              icon={<XMarkIcon className="h-5 w-5" />}
+              text={formatMessage({
+                id: 'invalidate-token',
+                defaultMessage: 'Invalidate',
+              })}
+              onClick={onInvalidateToken}
+            />
+          ) : null}
+        </div>
       </div>
       <TokenDetail token={token} />
     </>
