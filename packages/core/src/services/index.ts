@@ -57,6 +57,7 @@ import { simulateConfigurablePriceRangeService } from './simulateConfigurablePri
 import { createFileDownloadURLService } from './createFileDownloadURL.ts';
 import { resolveTokenStatusService } from './resolveTokenStatus.ts';
 import { isTokenInvalidateableService } from './isTokenInvalidateable.ts';
+import { onTokenInvalidatedService } from './onTokenInvalidated.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -186,6 +187,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
       resolveTokenStatus: resolveTokenStatusService as Bound<typeof resolveTokenStatusService>,
       isTokenInvalidateable: isTokenInvalidateableService as Bound<typeof isTokenInvalidateableService>,
+      onTokenInvalidated: onTokenInvalidatedService as Bound<typeof onTokenInvalidatedService>,
     },
     worker: {
       addMessage: addMessageService as Bound<typeof addMessageService>,
