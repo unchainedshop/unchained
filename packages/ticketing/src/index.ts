@@ -39,10 +39,10 @@ export default function setupTicketing(
     createAppleWalletPass,
     createGoogleWalletPass,
   }: {
-    renderOrderPDF: any;
-    createAppleWalletPass: any;
-    createGoogleWalletPass: any;
-  },
+    renderOrderPDF?: any;
+    createAppleWalletPass?: any;
+    createGoogleWalletPass?: any;
+  } = {},
 ) {
   setupPDFTickets({
     renderOrderPDF,

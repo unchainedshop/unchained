@@ -44,6 +44,7 @@ const TicketEventsQuery = gql`
           quantity
         }
         tokensCount
+        isCanceled
       }
     }
     ticketEventsCount(includeDrafts: $includeDrafts, queryString: $queryString)

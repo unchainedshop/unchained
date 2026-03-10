@@ -52,6 +52,10 @@ export const TokenizedProduct = {
     });
   },
 
+  isCanceled(product: Product): boolean {
+    return Boolean(product.meta?.cancelled);
+  },
+
   async tokens(product: Product, params: never, requestContext: Context) {
     await checkAction(requestContext, actions.viewTokens, [undefined, params]);
     const tokens = await requestContext.modules.warehousing.findTokens({
