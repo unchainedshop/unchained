@@ -231,6 +231,11 @@ export const TokenWrongStatusError = createError(
 
 export const TokenNotFoundError = createError('TokenNotFoundError', 'Token not found');
 
+export const TokenAlreadyRedeemedError = createError(
+  'TokenAlreadyRedeemedError',
+  'Cannot cancel a redeemed ticket',
+);
+
 export const CyclicAssortmentLinkNotSupportedError = createError(
   'CyclicAssortmentLinkNotSupported',
   'Cyclic assortment link detected, make sure child assortment is not assigned as a parent on the assortment graph',

@@ -175,13 +175,15 @@ const TicketEventDetail = ({ product }) => {
                 </span>
                 <div className="mt-1">
                   <Badge
-                    text={product?.status}
+                    text={product?.isCanceled ? 'CANCELLED' : product?.status}
                     color={
-                      product?.status === 'ACTIVE'
-                        ? 'emerald'
-                        : product?.status === 'DRAFT'
-                          ? 'amber'
-                          : 'rose'
+                      product?.isCanceled
+                        ? 'rose'
+                        : product?.status === 'ACTIVE'
+                          ? 'emerald'
+                          : product?.status === 'DRAFT'
+                            ? 'amber'
+                            : 'rose'
                     }
                     square
                   />
@@ -218,7 +220,7 @@ const TicketEventDetail = ({ product }) => {
               </div>
             </div>
 
-            {product.status === 'ACTIVE' && (
+            {product.status === 'ACTIVE' && !product.isCanceled && (
               <div className="mt-6">
                 <button
                   type="button"

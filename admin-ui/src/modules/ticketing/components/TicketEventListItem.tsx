@@ -85,8 +85,12 @@ const TicketEventListItem = ({ product }) => {
       </Table.Cell>
       <Table.Cell>
         <Badge
-          text={product?.status}
-          color={EVENT_STATUSES[product?.status] || 'slate'}
+          text={product?.isCanceled ? 'CANCELLED' : product?.status}
+          color={
+            product?.isCanceled
+              ? 'rose'
+              : EVENT_STATUSES[product?.status] || 'slate'
+          }
           square
         />
       </Table.Cell>

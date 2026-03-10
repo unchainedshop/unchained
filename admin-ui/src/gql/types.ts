@@ -3718,6 +3718,7 @@ export type ITokenizedProduct = IProduct & {
   contractConfiguration?: Maybe<IContractConfiguration>;
   contractStandard?: Maybe<ISmartContractStandard>;
   created?: Maybe<Scalars['DateTimeISO']['output']>;
+  isCanceled?: Maybe<Scalars['Boolean']['output']>;
   leveledCatalogPrices: Array<IPriceLevel>;
   media: Array<IProductMedia>;
   proxies: Array<IConfigurableOrBundleProduct>;
@@ -4091,25 +4092,15 @@ export enum IWorkStatus {
 }
 
 export enum IWorkType {
-  Budgetsms = 'BUDGETSMS',
-  Bulkgate = 'BULKGATE',
   BulkExport = 'BULK_EXPORT',
   BulkImport = 'BULK_IMPORT',
   Email = 'EMAIL',
-  EnrollmentOrderGenerator = 'ENROLLMENT_ORDER_GENERATOR',
   ErrorNotifications = 'ERROR_NOTIFICATIONS',
-  ExportToken = 'EXPORT_TOKEN',
   External = 'EXTERNAL',
   Heartbeat = 'HEARTBEAT',
   HttpRequest = 'HTTP_REQUEST',
   Message = 'MESSAGE',
-  Push = 'PUSH',
-  RefreshTokens = 'REFRESH_TOKENS',
-  Twilio = 'TWILIO',
   Unknown = 'UNKNOWN',
-  UpdateCoinbaseRates = 'UPDATE_COINBASE_RATES',
-  UpdateEcbRates = 'UPDATE_ECB_RATES',
-  UpdateTokenOwnership = 'UPDATE_TOKEN_OWNERSHIP',
   ZombieKiller = 'ZOMBIE_KILLER',
 }
 
@@ -12524,6 +12515,7 @@ export type IProductQuery = {
       }
     | {
         tokensCount: number;
+        isCanceled?: boolean | null;
         _id: string;
         sequence: number;
         status: IProductStatus;
@@ -15879,6 +15871,7 @@ export type ITicketEventsQuery = {
       }
     | {
         tokensCount: number;
+        isCanceled?: boolean | null;
         _id: string;
         status: IProductStatus;
         tags?: Array<any> | null;
