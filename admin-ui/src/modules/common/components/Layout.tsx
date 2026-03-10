@@ -15,6 +15,7 @@ import {
   CubeIcon,
   DocumentTextIcon,
   FolderArrowDownIcon,
+  TicketIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -178,6 +179,12 @@ const Layout = ({
       name: formatMessage({ id: 'tokens', defaultMessage: 'Tokens' }),
       icon: QrCodeIcon,
       href: '/tokens',
+      requiredRole: 'viewTokens',
+    },
+    isSystemReady && {
+      name: formatMessage({ id: 'ticketing', defaultMessage: 'Ticketing' }),
+      icon: TicketIcon,
+      href: '/ticketing',
       requiredRole: 'viewTokens',
     },
     {

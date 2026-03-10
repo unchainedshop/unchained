@@ -122,6 +122,19 @@ const TokenDetail = ({ token }) => {
           </p>
         </div>
 
+        {token?.isCanceled && (
+          <div>
+            <span className="block font-medium text-slate-700 dark:text-slate-300">
+              {formatMessage({
+                id: 'cancelled_status',
+                defaultMessage: 'Cancelled',
+              })}
+              :
+            </span>
+            <Badge text="Cancelled" color="rose" square />
+          </div>
+        )}
+
         {token?.walletAddress && (
           <div>
             <span className="block font-medium text-slate-700 dark:text-slate-300">

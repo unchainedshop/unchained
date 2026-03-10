@@ -14,6 +14,7 @@ const TokenFragment = gql`
     ercMetadata
     accessKey
     isInvalidateable
+    isCanceled
   }
 `;
 

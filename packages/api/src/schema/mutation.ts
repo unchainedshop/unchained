@@ -859,6 +859,17 @@ export default [
       exportToken(tokenId: ID!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
 
       """
+      Cancel a ticket (token). Sets the cancelled flag on the token metadata.
+      """
+      cancelTicket(tokenId: ID!): Token!
+
+      """
+      Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
+      Returns the number of tickets cancelled.
+      """
+      cancelEvent(productId: ID!): Int!
+
+      """
       Store user W3C Push subscription object
       """
       addPushSubscription(subscription: JSON!, unsubscribeFromOtherUsers: Boolean): User!

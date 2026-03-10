@@ -64,6 +64,8 @@ import warehousingProvidersCount from './warehousing/warehousingProvidersCount.t
 import token from './warehousing/token.ts';
 import tokens from './warehousing/tokens.ts';
 import tokensCount from './warehousing/tokensCount.ts';
+import ticketEvents from './ticketing/ticketEvents.ts';
+import ticketEventsCount from './ticketing/ticketEventsCount.ts';
 import work from './worker/work.ts';
 import workQueue from './worker/workQueue.ts';
 import workStatistics from './worker/workStatistics.ts';
@@ -108,6 +110,8 @@ export default {
   token: acl(actions.viewToken)(token),
   tokens: acl(actions.viewTokens)(tokens),
   tokensCount: acl(actions.viewTokens)(tokensCount),
+  ticketEvents: acl(actions.viewTokens)(ticketEvents),
+  ticketEventsCount: acl(actions.viewTokens)(ticketEventsCount),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
   translatedProductMediaTexts: acl(actions.viewTranslations)(translatedProductMediaTexts),
   translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),

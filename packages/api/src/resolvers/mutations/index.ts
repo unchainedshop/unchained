@@ -84,6 +84,8 @@ import updateWarehousingProvider from './warehousing/updateWarehousingProvider.t
 import removeWarehousingProvider from './warehousing/removeWarehousingProvider.ts';
 import exportToken from './warehousing/exportToken.ts';
 import invalidateToken from './warehousing/invalidateToken.ts';
+import cancelTicket from './warehousing/cancelTicket.ts';
+import cancelEvent from './warehousing/cancelEvent.ts';
 import setPassword from './accounts/setPassword.ts';
 import setRoles from './users/setRoles.ts';
 import setUsername from './accounts/setUsername.ts';
@@ -266,6 +268,8 @@ export default {
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
   exportToken: acl(actions.updateToken)(exportToken),
   invalidateToken: acl(actions.updateToken)(invalidateToken),
+  cancelTicket: acl(actions.updateToken)(cancelTicket),
+  cancelEvent: acl(actions.manageProducts)(cancelEvent),
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
   removeFilter: acl(actions.manageFilters)(removeFilter),
