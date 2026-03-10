@@ -14,8 +14,7 @@ const EVENT_STATUSES = {
 
 const TicketEventListItem = ({ product }) => {
   const { formatDateTime } = useFormatDateTime();
-  const slot =
-    product?.contractConfiguration?.ercMetadataProperties?.slot;
+  const slot = product?.contractConfiguration?.ercMetadataProperties?.slot;
 
   const supply = product?.contractConfiguration?.supply || 0;
   const remaining =

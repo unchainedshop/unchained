@@ -14,7 +14,7 @@ export default async function invalidateToken(
   { tokenId }: { tokenId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log(`mutation invalidateToken ${tokenId}`, {
     userId,
   });
@@ -44,5 +44,11 @@ export default async function invalidateToken(
 
   if (!isInvalidateable) throw new TokenWrongStatusError({ tokenId });
 
-  return modules.warehousing.invalidateToken(tokenId);
+  const invalidatedToken = await modules.warehousing.invalidateToken(tokenId);
+
+  if (invalidatedToken) {
+    await services.warehousing.onTokenInvalidated({ token: invalidatedToken });
+  }
+
+  return invalidatedToken;
 }
