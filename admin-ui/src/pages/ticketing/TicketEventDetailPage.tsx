@@ -13,9 +13,7 @@ const TicketEventDetailPage = ({ slug }) => {
 
   return (
     <>
-      <BreadCrumbs
-        currentPageTitle={product?.texts?.title || slug}
-      />
+      <BreadCrumbs currentPageTitle={product?.texts?.title || slug} />
       <div className="items-center flex min-w-full justify-between gap-3 flex-wrap">
         <PageHeader
           headerText={formatMessage(

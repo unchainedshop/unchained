@@ -340,3 +340,8 @@ export const DuplicateFilterKeyError = createError(
   'DuplicateFilterKeyError',
   'Key already registered for another filter',
 );
+
+export const TicketingModuleNotFoundError = createError(
+  'TicketingModuleNotFoundError',
+  'Ticketing module (passes) is not available, please configure @unchainedshop/ticketing',
+);
