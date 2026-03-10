@@ -33,6 +33,8 @@ export interface ProductQuery {
   slugs?: string[];
   tags?: string[];
   skus?: string[];
+  type?: string;
+  contractStandard?: string;
   bundleItemProductIds?: string[];
   proxyAssignmentProductIds?: string[];
 }
@@ -74,8 +76,18 @@ export const buildFindSelector = ({
   skus,
   bundleItemProductIds,
   proxyAssignmentProductIds,
+  type,
+  contractStandard,
 }: ProductQuery) => {
   const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector } : {};
+
+  if (type && !selector.type) {
+    selector.type = type as ProductType;
+  }
+
+  if (contractStandard) {
+    (selector as any)['tokenization.contractStandard'] = contractStandard;
+  }
 
   if (productIds && !selector._id) {
     selector._id = { $in: productIds };
