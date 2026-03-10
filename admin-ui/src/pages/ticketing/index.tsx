@@ -64,8 +64,7 @@ const TicketingPage = () => {
         title={formatMessage(
           {
             id: 'ticketing_page_title',
-            defaultMessage:
-              '{count, plural, one {# Event} other {# Events}}',
+            defaultMessage: '{count, plural, one {# Event} other {# Events}}',
           },
           { count: productsCount },
         )}
@@ -79,11 +78,7 @@ const TicketingPage = () => {
           defaultSearchValue={queryString}
         >
           <>
-            {loading ? (
-              <Loading />
-            ) : (
-              <TicketEventList products={products} />
-            )}
+            {loading ? <Loading /> : <TicketEventList products={products} />}
             {!loading && !products?.length && (
               <NoData
                 message={formatMessage({
