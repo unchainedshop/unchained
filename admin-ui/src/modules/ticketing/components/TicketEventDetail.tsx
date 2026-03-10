@@ -22,15 +22,13 @@ const TicketEventDetail = ({ product }) => {
   const { cancelEvent } = useCancelEvent();
   const { invalidateTicket } = useInvalidateTicket();
 
-  const slot =
-    product?.contractConfiguration?.ercMetadataProperties?.slot;
+  const slot = product?.contractConfiguration?.ercMetadataProperties?.slot;
   const supply = product?.contractConfiguration?.supply || 0;
   const remaining =
     product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
   const sold = supply - remaining;
 
-  const activeTokens =
-    product?.tokens?.filter((t) => !t.isCanceled) || [];
+  const activeTokens = product?.tokens?.filter((t) => !t.isCanceled) || [];
   const redeemedTokens = activeTokens.filter((t) => t.invalidatedDate);
 
   const onCancelEvent = useCallback(async () => {
@@ -64,39 +62,35 @@ const TicketEventDetail = ({ product }) => {
     );
   }, [product?._id]);
 
-  const onCancelTicket = useCallback(
-    async (tokenId: string) => {
-      await setModal(
-        <DangerMessage
-          onCancelClick={() => setModal('')}
-          message={formatMessage({
-            id: 'cancel_ticket_confirmation',
-            defaultMessage:
-              'Are you sure you want to cancel this ticket?',
-          })}
-          onOkClick={async () => {
-            setModal('');
-            try {
-              await cancelTicket({ tokenId });
-              toast.success(
-                formatMessage({
-                  id: 'ticket_cancelled',
-                  defaultMessage: 'Ticket cancelled successfully',
-                }),
-              );
-            } catch (e) {
-              toast.error(e.message);
-            }
-          }}
-          okText={formatMessage({
-            id: 'cancel_ticket',
-            defaultMessage: 'Cancel Ticket',
-          })}
-        />,
-      );
-    },
-    [],
-  );
+  const onCancelTicket = useCallback(async (tokenId: string) => {
+    await setModal(
+      <DangerMessage
+        onCancelClick={() => setModal('')}
+        message={formatMessage({
+          id: 'cancel_ticket_confirmation',
+          defaultMessage: 'Are you sure you want to cancel this ticket?',
+        })}
+        onOkClick={async () => {
+          setModal('');
+          try {
+            await cancelTicket({ tokenId });
+            toast.success(
+              formatMessage({
+                id: 'ticket_cancelled',
+                defaultMessage: 'Ticket cancelled successfully',
+              }),
+            );
+          } catch (e) {
+            toast.error(e.message);
+          }
+        }}
+        okText={formatMessage({
+          id: 'cancel_ticket',
+          defaultMessage: 'Cancel Ticket',
+        })}
+      />,
+    );
+  }, []);
 
   const onInvalidateTicket = useCallback(async (tokenId: string) => {
     try {
@@ -111,7 +105,8 @@ const TicketEventDetail = ({ product }) => {
       toast.error(
         formatMessage({
           id: 'ticket_redeem_error',
-          defaultMessage: 'Ticket already redeemed or not redeemable at this time',
+          defaultMessage:
+            'Ticket already redeemed or not redeemable at this time',
         }),
       );
     }
