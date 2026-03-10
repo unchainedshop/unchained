@@ -61,6 +61,7 @@ export default [
       contractConfiguration: ContractConfiguration
       tokens: [Token!]!
       tokensCount: Int!
+      isCanceled: Boolean
     }
   `,
 ];
