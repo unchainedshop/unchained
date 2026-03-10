@@ -57,6 +57,56 @@ const GetProductQuery = (inlineFragment = '') => gql`
         __typename
       }
       }
+      ... on TokenizedProduct {
+        texts {
+          _id
+          title
+          subtitle
+          description
+        }
+        contractConfiguration {
+          ercMetadataProperties
+          supply
+        }
+        simulatedStocks {
+          quantity
+        }
+        tokensCount
+        tokens {
+          _id
+          tokenSerialNumber
+          isCanceled
+          invalidatedDate
+          isInvalidateable
+          quantity
+          status
+          walletAddress
+          user {
+            _id
+            username
+            isGuest
+            primaryEmail {
+              address
+              verified
+            }
+            avatar {
+              _id
+              url
+            }
+            profile {
+              displayName
+              address {
+                firstName
+                lastName
+              }
+            }
+            lastContact {
+              emailAddress
+              telNumber
+            }
+          }
+        }
+      }
     }
   }
   ${ProductDetailFragment}
