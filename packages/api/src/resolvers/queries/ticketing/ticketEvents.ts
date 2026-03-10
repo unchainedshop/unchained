@@ -23,7 +23,6 @@ export default async function ticketEvents(
 
   return modules.products.findProducts({
     type: 'TOKENIZED_PRODUCT',
-    contractStandard: 'ERC721',
     queryString,
     includeDrafts,
     limit,
