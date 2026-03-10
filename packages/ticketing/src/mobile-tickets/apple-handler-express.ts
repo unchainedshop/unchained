@@ -222,10 +222,9 @@ const appleWalletHandler = async (req: Request & { unchainedContext: TicketingAP
       const data = await result.arrayBuffer();
       const uint8View = new Uint8Array(data);
 
-      res.writeHead(200, {
-        'Content-Type': 'application/vnd.apple.pkpass',
-        'Last-Modified': lastModifiedDate.toUTCString(),
-      });
+      res.status(200);
+      res.setHeader('Content-Type', 'application/vnd.apple.pkpass');
+      res.setHeader('Last-Modified', lastModifiedDate.toUTCString());
       res.send(uint8View);
       return;
     }
