@@ -8,7 +8,7 @@ const TicketEventList = ({ products }) => {
   return (
     <Table className="min-w-full">
       <Table.Row header>
-        <Table.Cell>{' '}</Table.Cell>
+        <Table.Cell> </Table.Cell>
         <Table.Cell>
           {formatMessage({ id: 'title', defaultMessage: 'Title' })}
         </Table.Cell>
