@@ -72,6 +72,7 @@ const GetProductQuery = (inlineFragment = '') => gql`
           quantity
         }
         tokensCount
+        isCanceled
         tokens {
           _id
           tokenSerialNumber

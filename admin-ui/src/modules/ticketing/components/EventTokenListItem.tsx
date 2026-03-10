@@ -70,16 +70,18 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
             />
           ) : (
             <>
-              <button
-                type="button"
-                onClick={() => onCancelTicket(token._id)}
-                className="inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 px-3 py-1 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
-              >
-                {formatMessage({
-                  id: 'cancel_ticket',
-                  defaultMessage: 'Cancel',
-                })}
-              </button>
+              {!token.invalidatedDate && (
+                <button
+                  type="button"
+                  onClick={() => onCancelTicket(token._id)}
+                  className="inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 px-3 py-1 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+                >
+                  {formatMessage({
+                    id: 'cancel_ticket',
+                    defaultMessage: 'Cancel',
+                  })}
+                </button>
+              )}
               {token.isInvalidateable && !token.invalidatedDate && (
                 <button
                   type="button"
