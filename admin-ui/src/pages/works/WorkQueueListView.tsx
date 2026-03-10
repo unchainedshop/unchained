@@ -15,31 +15,44 @@ import {
   convertSortFieldsToQueryFormat,
   normalizeQuery,
 } from '../../modules/common/utils/utils';
-import { ISortOptionInput, IWorkStatus, IWorkType } from '../../gql/types';
+import { ISortOptionInput, IWorkStatus } from '../../gql/types';
 import groupMessageWorks from '../../modules/work/utils/groupMessageWorks';
 import { EnvelopeIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
-
+import useActiveWorkTypes from '../../modules/work/hooks/useActiveWorkTypes';
+const SYSTEM_MESSAGE_TYPES = ['MESSAGE', 'EMAIL', 'SMS', 'PUSH'];
 const WorkQueueListView = () => {
   const { query, push } = useRouter();
   const { formatMessage } = useIntl();
   const [expandedMessages, setExpandedMessages] = useState<Set<string>>(
     new Set(),
   );
+  let currentTypes = [];
+  const { activeWorkTypes } = useActiveWorkTypes();
+  const queryTypes = ((query.types as string) ?? '').split(',').filter(Boolean);
+  let availableTypeFilters = SYSTEM_MESSAGE_TYPES;
 
+  switch (query?.tab) {
+    case 'messages':
+      currentTypes = activeWorkTypes.filter((awt) =>
+        SYSTEM_MESSAGE_TYPES.includes(awt),
+      );
+      break;
+    default:
+      availableTypeFilters = activeWorkTypes.filter(
+        (t) => !SYSTEM_MESSAGE_TYPES.includes(t),
+      );
+      currentTypes = queryTypes.length
+        ? queryTypes.filter((t) => !SYSTEM_MESSAGE_TYPES.includes(t))
+        : availableTypeFilters;
+      break;
+  }
   const filter = {
     created: {
       start: query?.start,
       end: query?.end,
     },
     status: (query?.status as string)?.split(',') as IWorkStatus[],
-    types:
-      query?.tab === 'messages'
-        ? ([
-            'MESSAGE',
-            'EMAIL',
-            ...((query.types as string) ?? '').split(','),
-          ].filter(Boolean) as IWorkType[])
-        : ((query?.types as string)?.split(',') as IWorkType[]),
+    types: currentTypes.filter(Boolean),
   };
   const limit = parseInt(query?.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query?.skip as string, 10) || 0;
@@ -48,14 +61,13 @@ const WorkQueueListView = () => {
   const { queryString, workerId, ...restQuery } = query;
   const sortKeys = convertSortFieldsToQueryFormat(sort);
 
-  const { workQueue, loadMore, loading, activeWorkTypes, total, hasMore } =
-    useWorkQueue({
-      queryString: queryString as string,
-      limit,
-      ...filter,
-      sort: sortKeys as ISortOptionInput[],
-      offset,
-    });
+  const { workQueue, loadMore, loading, hasMore } = useWorkQueue({
+    queryString: queryString as string,
+    limit,
+    ...filter,
+    sort: sortKeys as ISortOptionInput[],
+    offset,
+  });
 
   const { messageGroups } = useMemo(
     () => ({
@@ -155,7 +167,7 @@ const WorkQueueListView = () => {
   return (
     <>
       <WorkFilter
-        workTypes={query?.tab === 'messages' ? [] : activeWorkTypes}
+        workTypes={query?.tab === 'messages' ? [] : availableTypeFilters}
       />
       <SearchWithTags
         onSearchChange={setQueryStringCallback}

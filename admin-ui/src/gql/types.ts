@@ -728,6 +728,8 @@ export type IEventStatistics = {
 };
 
 export enum IEventType {
+  AclDenied = 'ACL_DENIED',
+  AclGrantedSensitive = 'ACL_GRANTED_SENSITIVE',
   ApiLoginTokenCreated = 'API_LOGIN_TOKEN_CREATED',
   ApiLogout = 'API_LOGOUT',
   AssortmentAddFilter = 'ASSORTMENT_ADD_FILTER',
@@ -1124,6 +1126,11 @@ export type IMutation = {
   loginWithWebAuthn?: Maybe<ILoginMethodResponse>;
   /** Log the user out. */
   logout?: Maybe<ISuccessResponse>;
+  /**
+   * Log the user out of all sessions by invalidating all JWT tokens.
+   * This increments the token version, making all existing tokens invalid.
+   */
+  logoutAllSessions?: Maybe<ISuccessResponse>;
   /** Make a proposal as answer to the RFP by changing its status to PROCESSED */
   makeQuotationProposal: IQuotation;
   /** Make's the provided payment credential as the users preferred method of payment. */
@@ -3397,6 +3404,7 @@ export enum IRoleAction {
   LoginWithPassword = 'loginWithPassword',
   LoginWithWebAuthn = 'loginWithWebAuthn',
   Logout = 'logout',
+  LogoutAllSessions = 'logoutAllSessions',
   ManageAssortments = 'manageAssortments',
   ManageBookmarks = 'manageBookmarks',
   ManageCountries = 'manageCountries',
@@ -16046,6 +16054,10 @@ export type IWorkFragment = {
 };
 
 export type IWorkFragmentVariables = Exact<{ [key: string]: never }>;
+
+export type IActiveWorkTypesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type IActiveWorkTypesQuery = { activeWorkTypes: Array<IWorkType> };
 
 export type IAddWorkMutationVariables = Exact<{
   type: IWorkType;

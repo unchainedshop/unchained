@@ -11,7 +11,11 @@ import SelectField from '../../forms/components/SelectField';
 import { IProductType } from '../../../gql/types';
 import useApp from '../../common/hooks/useApp';
 
-const ProductAssignmentScaffoldForm = ({ proxyProduct, vectors, onSuccess }) => {
+const ProductAssignmentScaffoldForm = ({
+  proxyProduct,
+  vectors,
+  onSuccess,
+}) => {
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
   const scaffoldProduct = useScaffoldVariationProduct({
@@ -22,7 +26,10 @@ const ProductAssignmentScaffoldForm = ({ proxyProduct, vectors, onSuccess }) => 
   });
   const { hasRole } = useAuth();
 
-  const variations = useMemo(() => vectors.map(({ value }) => value), [vectors]);
+  const variations = useMemo(
+    () => vectors.map(({ value }) => value),
+    [vectors],
+  );
 
   const defaultTitle = useMemo(() => {
     const baseTitle = proxyProduct?.texts?.title ?? '';
