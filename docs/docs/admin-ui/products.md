@@ -204,6 +204,8 @@ To assign a product to a variation option, simply select the variation option fr
 
 ![diagram](../assets/product-variation-assignment.png)
 
+![diagram](../assets/product-variation-assignment-scaffold.png)
+
 
 
 6. **Token**
