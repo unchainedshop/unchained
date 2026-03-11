@@ -1,24 +1,20 @@
 import type { Context } from '../../../context.ts';
-import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductNotFoundError, TicketingModuleNotFoundError } from '../../../errors.ts';
+import { ProductStatus } from '@unchainedshop/core-products';
+import {
+  InvalidIdError,
+  ProductNotFoundError,
+  ProductWrongStatusError,
+  TicketingModuleNotFoundError,
+} from '../../../errors.ts';
 
-interface PassesModule {
-  cancelTicket: (tokenId: string) => Promise<TokenSurrogate>;
-}
-
-interface TicketingServices {
-  ticketing?: {
-    cancelTicketsForProduct: (productId: string) => Promise<number>;
-  };
-}
 
 export default async function cancelEvent(
   root: never,
-  { productId }: { productId: string },
+  { productId, generateDiscount }: { productId: string; generateDiscount?: boolean },
   context: Context,
 ) {
-  const { modules, services, userId } = context;
+  const { modules, services, userId, countryCode, currencyCode } = context;
   log(`mutation cancelEvent ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
@@ -26,25 +22,42 @@ export default async function cancelEvent(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  const passes = (modules as unknown as Record<string, unknown>).passes as PassesModule | undefined;
+  if (product.status !== ProductStatus.ACTIVE) {
+    throw new ProductWrongStatusError({ productId });
+  }
+
+  const passes = (modules as unknown as Record<string, unknown>).passes as any
   if (!passes?.cancelTicket) {
     throw new TicketingModuleNotFoundError({});
   }
 
-  const ticketingServices = services as unknown as TicketingServices;
-  if (ticketingServices.ticketing?.cancelTicketsForProduct) {
-    return ticketingServices.ticketing.cancelTicketsForProduct(productId);
+  const ticketingServices = (services as unknown as any).ticketing;
+  if (!ticketingServices?.cancelTicketsForProduct) {
+    throw new TicketingModuleNotFoundError({});
   }
 
-  // Cancel all tokens for the product
-  const tokensToCancel = await modules.warehousing.findTokens({
-    productId,
-    'meta.cancelled': null,
+  const result = await ticketingServices.cancelTicketsForProduct(productId, {
+    generateDiscount,
+    countryCode,
+    currencyCode,
   });
 
-  for (const token of tokensToCancel) {
-    await passes.cancelTicket(token._id);
+  if (result.discountCodes?.length) {
+    await Promise.allSettled(
+      result.discountCodes.map(async ({ userId: ticketUserId, discountCode, amount }) => {
+        await modules.worker.addWork({
+          type: 'MESSAGE',
+          input: {
+            template: 'EVENT_CANCELLED',
+            productId,
+            userId: ticketUserId,
+            discountCode,
+            discountAmount: amount,
+          },
+        });
+      }),
+    );
   }
 
-  return tokensToCancel.length;
+  return result.cancelledCount;
 }

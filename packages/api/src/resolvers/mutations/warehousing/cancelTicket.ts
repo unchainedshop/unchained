@@ -1,5 +1,4 @@
 import type { Context } from '../../../context.ts';
-import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 import {
   InvalidIdError,
@@ -8,17 +7,14 @@ import {
   TicketingModuleNotFoundError,
 } from '../../../errors.ts';
 
-interface PassesModule {
-  cancelTicket: (tokenId: string) => Promise<TokenSurrogate>;
-}
 
 export default async function cancelTicket(
   root: never,
-  { tokenId }: { tokenId: string },
+  { tokenId, generateDiscount = true }: { tokenId: string; generateDiscount?: boolean },
   context: Context,
 ) {
-  const { modules, userId } = context;
-  log(`mutation cancelTicket ${tokenId}`, { userId });
+  const { modules, services, userId, countryCode, currencyCode } = context;
+  log(`mutation cancelTicket ${tokenId}`, { userId, generateDiscount });
 
   if (!tokenId) throw new InvalidIdError({ tokenId });
 
@@ -33,10 +29,34 @@ export default async function cancelTicket(
     throw new TokenAlreadyRedeemedError({ tokenId });
   }
 
-  const passes = (modules as unknown as Record<string, unknown>).passes as PassesModule | undefined;
+  const passes = (modules as unknown as Record<string, unknown>).passes as any;
   if (!passes?.cancelTicket) {
     throw new TicketingModuleNotFoundError({});
   }
 
-  return passes.cancelTicket(tokenId);
+  const ticketingServices = (services as unknown as any).ticketing;
+  if (!ticketingServices?.cancelTicketWithDiscount) {
+    throw new TicketingModuleNotFoundError({});
+  }
+
+  const result = await ticketingServices.cancelTicketWithDiscount(tokenId, {
+    generateDiscount,
+    countryCode,
+    currencyCode,
+  });
+
+  if (result.discountCode && token.userId) {
+    await modules.worker.addWork({
+      type: 'MESSAGE',
+      input: {
+        template: 'TICKET_CANCELLED',
+        tokenId: token._id,
+        userId: token.userId,
+        discountCode: result.discountCode,
+        discountAmount: result.amount,
+      },
+    });
+  }
+
+  return result.token;
 }
