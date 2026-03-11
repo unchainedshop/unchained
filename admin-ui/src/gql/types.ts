@@ -1041,10 +1041,14 @@ export type IMutation = {
   bookmark: IBookmark;
   /**
    * Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
+   * Optionally generates discount codes for affected users.
    * Returns the number of tickets cancelled.
    */
   cancelEvent: Scalars['Int']['output'];
-  /** Cancel a ticket (token). Sets the cancelled flag on the token metadata. */
+  /**
+   * Cancel a ticket (token). Sets the cancelled flag on the token metadata.
+   * Optionally generates a discount code for reimbursement.
+   */
   cancelTicket: IToken;
   /** Change the current user's password. Must be logged in. */
   changePassword?: Maybe<ISuccessResponse>;
@@ -1262,6 +1266,11 @@ export type IMutation = {
   sendEnrollmentEmail?: Maybe<ISuccessResponse>;
   /** Send an email with a link the user can use verify their email address. */
   sendVerificationEmail?: Maybe<ISuccessResponse>;
+  /**
+   * Set or remove the scanner pass code for gate control on a tokenized product.
+   * Pass null to remove the pass code.
+   */
+  setEventScannerPassCode: IProduct;
   /** Set a new password for a specific user */
   setPassword: IUser;
   /** Set roles of a user */
@@ -1456,10 +1465,12 @@ export type IMutationBookmarkArgs = {
 };
 
 export type IMutationCancelEventArgs = {
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
   productId: Scalars['ID']['input'];
 };
 
 export type IMutationCancelTicketArgs = {
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
   tokenId: Scalars['ID']['input'];
 };
 
@@ -1876,6 +1887,11 @@ export type IMutationSendEnrollmentEmailArgs = {
 
 export type IMutationSendVerificationEmailArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IMutationSetEventScannerPassCodeArgs = {
+  passCode?: InputMaybe<Scalars['String']['input']>;
+  productId: Scalars['ID']['input'];
 };
 
 export type IMutationSetPasswordArgs = {
@@ -2850,6 +2866,11 @@ export type IQuery = {
   filtersCount: Scalars['Int']['output'];
   /** User impersonating currently logged in user */
   impersonator?: Maybe<IUser>;
+  /**
+   * Validates a scanner pass code for gate access. Pass code is checked via x-passcode header.
+   * Optionally restricted to a specific product.
+   */
+  isPassCodeValid: Scalars['Boolean']['output'];
   /** Get a specific language */
   language?: Maybe<ILanguage>;
   /** Get all languages, by default sorted by creation date (ascending) */
@@ -3087,6 +3108,10 @@ export type IQueryFiltersArgs = {
 export type IQueryFiltersCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IQueryIsPassCodeValidArgs = {
+  productId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type IQueryLanguageArgs = {
@@ -3432,6 +3457,7 @@ export enum IRoleAction {
   DownloadFile = 'downloadFile',
   EnrollUser = 'enrollUser',
   ForgotPassword = 'forgotPassword',
+  GateControl = 'gateControl',
   Heartbeat = 'heartbeat',
   Impersonate = 'impersonate',
   LoginAsGuest = 'loginAsGuest',
@@ -3481,6 +3507,7 @@ export enum IRoleAction {
   UploadTempFile = 'uploadTempFile',
   UploadUserAvatar = 'uploadUserAvatar',
   UseWebAuthn = 'useWebAuthn',
+  ValidatePassCode = 'validatePassCode',
   VerifyEmail = 'verifyEmail',
   ViewAssortment = 'viewAssortment',
   ViewAssortments = 'viewAssortments',
@@ -3725,6 +3752,7 @@ export type ITokenizedProduct = IProduct & {
   published?: Maybe<Scalars['DateTimeISO']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
+  scannerPassCode?: Maybe<Scalars['String']['output']>;
   sequence: Scalars['Int']['output'];
   siblings: Array<IProduct>;
   simulatedPrice?: Maybe<IPrice>;
@@ -4092,15 +4120,25 @@ export enum IWorkStatus {
 }
 
 export enum IWorkType {
+  Budgetsms = 'BUDGETSMS',
+  Bulkgate = 'BULKGATE',
   BulkExport = 'BULK_EXPORT',
   BulkImport = 'BULK_IMPORT',
   Email = 'EMAIL',
+  EnrollmentOrderGenerator = 'ENROLLMENT_ORDER_GENERATOR',
   ErrorNotifications = 'ERROR_NOTIFICATIONS',
+  ExportToken = 'EXPORT_TOKEN',
   External = 'EXTERNAL',
   Heartbeat = 'HEARTBEAT',
   HttpRequest = 'HTTP_REQUEST',
   Message = 'MESSAGE',
+  Push = 'PUSH',
+  RefreshTokens = 'REFRESH_TOKENS',
+  Twilio = 'TWILIO',
   Unknown = 'UNKNOWN',
+  UpdateCoinbaseRates = 'UPDATE_COINBASE_RATES',
+  UpdateEcbRates = 'UPDATE_ECB_RATES',
+  UpdateTokenOwnership = 'UPDATE_TOKEN_OWNERSHIP',
   ZombieKiller = 'ZOMBIE_KILLER',
 }
 
@@ -12516,6 +12554,7 @@ export type IProductQuery = {
     | {
         tokensCount: number;
         isCanceled?: boolean | null;
+        scannerPassCode?: string | null;
         _id: string;
         sequence: number;
         status: IProductStatus;
@@ -15895,6 +15934,77 @@ export type ITicketEventsQuery = {
         simulatedStocks?: Array<{ quantity?: number | null }> | null;
       }
   >;
+};
+
+export type IGateEventsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type IGateEventsQuery = {
+  ticketEvents: Array<
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | {
+        isCanceled?: boolean | null;
+        _id: string;
+        status: IProductStatus;
+        texts?: {
+          _id: string;
+          title?: string | null;
+          subtitle?: string | null;
+        } | null;
+        contractConfiguration?: {
+          ercMetadataProperties?: any | null;
+          supply: number;
+        } | null;
+        tokens: Array<{
+          _id: string;
+          tokenSerialNumber?: string | null;
+          isCanceled?: boolean | null;
+          invalidatedDate?: any | null;
+          isInvalidateable: boolean;
+          ercMetadata?: any | null;
+          user?: {
+            _id: string;
+            username?: string | null;
+            isGuest: boolean;
+            primaryEmail?: { address: string; verified: boolean } | null;
+            avatar?: { _id: string; url?: string | null } | null;
+            profile?: {
+              displayName?: string | null;
+              address?: {
+                firstName?: string | null;
+                lastName?: string | null;
+              } | null;
+            } | null;
+            lastContact?: {
+              emailAddress?: string | null;
+              telNumber?: string | null;
+            } | null;
+          } | null;
+        }>;
+      }
+  >;
+};
+
+export type IIsPassCodeValidQueryVariables = Exact<{
+  productId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+export type IIsPassCodeValidQuery = { isPassCodeValid: boolean };
+
+export type ISetEventScannerPassCodeMutationVariables = Exact<{
+  productId: Scalars['ID']['input'];
+  passCode?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type ISetEventScannerPassCodeMutation = {
+  setEventScannerPassCode:
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | { scannerPassCode?: string | null; _id: string };
 };
 
 export type IInvalidateTokenMutationVariables = Exact<{
