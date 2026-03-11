@@ -1,11 +1,9 @@
-
 export interface DiscountCodeHandlers {
   generate: (amount: number) => Promise<string>;
   verify: (code: string) => Promise<number | null>;
 }
 
-const defaultDiscountCodeSecret =
-  '0000000000000000000000000000000000000000000000000000000000000000';
+const defaultDiscountCodeSecret = '0000000000000000000000000000000000000000000000000000000000000000';
 
 async function siphash24Digest(payload: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
   const cryptoKey = await crypto.subtle.importKey(
@@ -84,7 +82,6 @@ export function createDefaultDiscountCodeHandlers(): DiscountCodeHandlers {
       const salt = uint16Array[1];
 
       const priceAmount = Math.floor(priceCents * 100);
-      const correctSignature = await generate(priceAmount);
 
       // Need to regenerate with same salt for comparison
       const saltedUint16 = new Uint16Array([priceCents, salt]);

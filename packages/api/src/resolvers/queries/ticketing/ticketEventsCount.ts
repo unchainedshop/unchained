@@ -7,16 +7,18 @@ export default async function ticketEventsCount(
   {
     queryString,
     includeDrafts = true,
+    onlyInvalidateable = false,
   }: {
     queryString?: string;
     includeDrafts?: boolean;
+    onlyInvalidateable?: boolean;
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log(`query ticketEventsCount`, { userId });
 
-  const passCode = context.getHeader('x-passcode') as string;
+  const passCode = context.getCookie?.('unchained_gate_passcode');
   const ticketingServices = (context.services as any)?.ticketing;
 
   if (!userId && passCode) {
@@ -24,12 +26,38 @@ export default async function ticketEventsCount(
       throw new TicketingModuleNotFoundError({});
     }
     const productIds = await ticketingServices.productIdsForPassCode(passCode);
-    return productIds.length;
+    if (!onlyInvalidateable) return productIds.length;
+
+    let count = 0;
+    for (const productId of productIds) {
+      const tokens = await modules.warehousing.findTokens({ productId });
+      const hasInvalidateable = await Promise.all(
+        tokens.map((token) => services.warehousing.isTokenInvalidateable({ token })),
+      );
+      if (hasInvalidateable.some(Boolean)) count++;
+    }
+    return count;
+  }
+
+  if (onlyInvalidateable) {
+    const products = await modules.products.findProducts({
+      type: 'TOKENIZED_PRODUCT',
+      queryString,
+      includeDrafts,
+    });
+    let count = 0;
+    for (const product of products) {
+      const tokens = await modules.warehousing.findTokens({ productId: product._id });
+      const hasInvalidateable = await Promise.all(
+        tokens.map((token) => services.warehousing.isTokenInvalidateable({ token })),
+      );
+      if (hasInvalidateable.some(Boolean)) count++;
+    }
+    return count;
   }
 
   return modules.products.count({
     type: 'TOKENIZED_PRODUCT',
-    contractStandard: 'ERC721',
     queryString,
     includeDrafts,
   });
