@@ -35,18 +35,36 @@ const TicketEventDetail = ({ product }) => {
   const redeemedTokens = activeTokens.filter((t) => t.invalidatedDate);
 
   const onCancelEvent = useCallback(async () => {
+    let generateDiscount = false;
     await setModal(
       <DangerMessage
         onCancelClick={() => setModal('')}
-        message={formatMessage({
-          id: 'cancel_event_confirmation',
-          defaultMessage:
-            'Are you sure you want to cancel this event? All tickets will be cancelled.',
-        })}
+        message={
+          <>
+            {formatMessage({
+              id: 'cancel_event_confirmation',
+              defaultMessage:
+                'Are you sure you want to cancel this event? All tickets will be cancelled.',
+            })}
+            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 dark:border-slate-600"
+                onChange={(e) => {
+                  generateDiscount = e.target.checked;
+                }}
+              />
+              {formatMessage({
+                id: 'generate_discount_codes',
+                defaultMessage: 'Generate discount codes for affected users',
+              })}
+            </label>
+          </>
+        }
         onOkClick={async () => {
           setModal('');
           try {
-            await cancelEvent({ productId: product._id });
+            await cancelEvent({ productId: product._id, generateDiscount });
             toast.success(
               formatMessage({
                 id: 'event_cancelled',
@@ -66,17 +84,35 @@ const TicketEventDetail = ({ product }) => {
   }, [product?._id]);
 
   const onCancelTicket = useCallback(async (tokenId: string) => {
+    let generateDiscount = false;
     await setModal(
       <DangerMessage
         onCancelClick={() => setModal('')}
-        message={formatMessage({
-          id: 'cancel_ticket_confirmation',
-          defaultMessage: 'Are you sure you want to cancel this ticket?',
-        })}
+        message={
+          <>
+            {formatMessage({
+              id: 'cancel_ticket_confirmation',
+              defaultMessage: 'Are you sure you want to cancel this ticket?',
+            })}
+            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 dark:border-slate-600"
+                onChange={(e) => {
+                  generateDiscount = e.target.checked;
+                }}
+              />
+              {formatMessage({
+                id: 'generate_discount_code',
+                defaultMessage: 'Generate discount code for the user',
+              })}
+            </label>
+          </>
+        }
         onOkClick={async () => {
           setModal('');
           try {
-            await cancelTicket({ tokenId });
+            await cancelTicket({ tokenId, generateDiscount });
             toast.success(
               formatMessage({
                 id: 'ticket_cancelled',

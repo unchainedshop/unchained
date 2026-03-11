@@ -60,7 +60,7 @@ export const TokenizedProduct = {
     try {
       await checkAction(requestContext, actions.viewTokens, [undefined, params]);
     } catch {
-      const passCode = requestContext.getHeader('x-passcode') as string;
+      const passCode = requestContext.getCookie?.('unchained_gate_passcode');
       const ticketingServices = (requestContext.services as any)?.ticketing;
       const isValid = await ticketingServices?.isPassCodeValid?.(passCode, product._id);
       if (!isValid) return [];
@@ -74,7 +74,7 @@ export const TokenizedProduct = {
     try {
       await checkAction(requestContext, actions.viewTokens, [undefined, params]);
     } catch {
-      const passCode = requestContext.getHeader('x-passcode') as string;
+      const passCode = requestContext.getCookie?.('unchained_gate_passcode');
       const ticketingServices = (requestContext.services as any)?.ticketing;
       const isValid = await ticketingServices?.isPassCodeValid?.(passCode, product._id);
       if (!isValid) return 0;

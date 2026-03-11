@@ -11,20 +11,24 @@ export default async function ticketEvents(
     offset = 0,
     includeDrafts = true,
     sort,
+    onlyInvalidateable = false,
   }: {
     queryString?: string;
     limit: number;
     offset: number;
     includeDrafts?: boolean;
     sort?: SortOption[];
+    onlyInvalidateable?: boolean;
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log(`query ticketEvents`, { userId });
 
-  const passCode = context.getHeader('x-passcode') as string;
+  const passCode = context.getCookie?.('unchained_gate_passcode');
   const ticketingServices = (context.services as any)?.ticketing;
+
+  let products;
 
   if (!userId && passCode) {
     if (!ticketingServices?.productIdsForPassCode) {
@@ -33,7 +37,7 @@ export default async function ticketEvents(
     const productIds = await ticketingServices.productIdsForPassCode(passCode);
     if (!productIds.length) return [];
 
-    const products = await modules.products.findProducts({
+    const allProducts = await modules.products.findProducts({
       type: 'TOKENIZED_PRODUCT',
       queryString,
       includeDrafts: false,
@@ -42,15 +46,30 @@ export default async function ticketEvents(
       sort,
     });
 
-    return products.filter((p) => productIds.includes(p._id));
+    products = allProducts.filter((p) => productIds.includes(p._id));
+  } else {
+    products = await modules.products.findProducts({
+      type: 'TOKENIZED_PRODUCT',
+      queryString,
+      includeDrafts,
+      limit,
+      offset,
+      sort,
+    });
   }
 
-  return modules.products.findProducts({
-    type: 'TOKENIZED_PRODUCT',
-    queryString,
-    includeDrafts,
-    limit,
-    offset,
-    sort,
-  });
+  if (onlyInvalidateable) {
+    const filtered = await Promise.all(
+      products.map(async (product) => {
+        const tokens = await modules.warehousing.findTokens({ productId: product._id });
+        const hasInvalidateable = await Promise.all(
+          tokens.map((token) => services.warehousing.isTokenInvalidateable({ token })),
+        );
+        return hasInvalidateable.some(Boolean) ? product : null;
+      }),
+    );
+    return filtered.filter(Boolean);
+  }
+
+  return products;
 }

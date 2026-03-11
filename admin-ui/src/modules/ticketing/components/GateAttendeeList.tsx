@@ -7,7 +7,7 @@ import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import formatUsername from '../../common/utils/formatUsername';
 import useInvalidateTicket from '../../token/hooks/useInvalidateTicket';
 
-const GateAttendeeList = ({ event }) => {
+const GateAttendeeList = ({ event, onRefetch }) => {
   const { formatMessage } = useIntl();
   const { formatDateTime } = useFormatDateTime();
   const { invalidateTicket } = useInvalidateTicket();
@@ -26,6 +26,7 @@ const GateAttendeeList = ({ event }) => {
           defaultMessage: 'Ticket redeemed successfully',
         }),
       );
+      onRefetch?.();
     } catch (e) {
       toast.error(
         formatMessage({
@@ -38,12 +39,9 @@ const GateAttendeeList = ({ event }) => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-6">
+    <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            {event?.texts?.title}
-          </h3>
           {slot && (
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {formatDateTime(slot, {
@@ -75,103 +73,105 @@ const GateAttendeeList = ({ event }) => {
           })}
         </p>
       ) : (
-        <Table className="min-w-full">
-          <Table.Row header>
-            <Table.Cell>
-              {formatMessage({
-                id: 'ticket_number',
-                defaultMessage: 'Ticket #',
-              })}
-            </Table.Cell>
-            <Table.Cell>
-              {formatMessage({
-                id: 'attendee',
-                defaultMessage: 'Attendee',
-              })}
-            </Table.Cell>
-            <Table.Cell>
-              {formatMessage({
-                id: 'email',
-                defaultMessage: 'E-Mail',
-              })}
-            </Table.Cell>
-            <Table.Cell>
-              {formatMessage({
-                id: 'status',
-                defaultMessage: 'Status',
-              })}
-            </Table.Cell>
-            <Table.Cell>
-              {formatMessage({
-                id: 'actions',
-                defaultMessage: 'Actions',
-              })}
-            </Table.Cell>
-          </Table.Row>
-          {activeTokens.map((token) => (
-            <Table.Row key={token._id}>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+          <Table className="min-w-full">
+            <Table.Row header>
               <Table.Cell>
-                <span className="font-medium text-slate-800 dark:text-slate-200">
-                  {token.tokenSerialNumber || token._id?.slice(-8)}
-                </span>
+                {formatMessage({
+                  id: 'ticket_number',
+                  defaultMessage: 'Ticket #',
+                })}
               </Table.Cell>
               <Table.Cell>
-                <span className="text-sm text-slate-800 dark:text-slate-200">
-                  {token.user ? formatUsername(token.user) : '-'}
-                </span>
+                {formatMessage({
+                  id: 'attendee',
+                  defaultMessage: 'Attendee',
+                })}
               </Table.Cell>
               <Table.Cell>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {token.user?.lastContact?.emailAddress ||
-                    token.user?.primaryEmail?.address ||
-                    '-'}
-                </span>
+                {formatMessage({
+                  id: 'email',
+                  defaultMessage: 'E-Mail',
+                })}
               </Table.Cell>
               <Table.Cell>
-                {token.invalidatedDate ? (
-                  <Badge
-                    text={formatDateTime(token.invalidatedDate, {
-                      timeStyle: 'short',
-                    })}
-                    color="emerald"
-                    square
-                  />
-                ) : (
-                  <Badge
-                    text={formatMessage({
-                      id: 'gate_pending',
-                      defaultMessage: 'Pending',
-                    })}
-                    color="amber"
-                    square
-                  />
-                )}
+                {formatMessage({
+                  id: 'status',
+                  defaultMessage: 'Status',
+                })}
               </Table.Cell>
               <Table.Cell>
-                {!token.invalidatedDate && token.isInvalidateable && (
-                  <button
-                    type="button"
-                    onClick={() => onRedeem(token._id)}
-                    className="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                  >
-                    {formatMessage({
-                      id: 'gate_redeem',
-                      defaultMessage: 'Redeem',
-                    })}
-                  </button>
-                )}
-                {token.invalidatedDate && (
-                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                    {formatMessage({
-                      id: 'gate_checked_in',
-                      defaultMessage: 'Checked in',
-                    })}
-                  </span>
-                )}
+                {formatMessage({
+                  id: 'actions',
+                  defaultMessage: 'Actions',
+                })}
               </Table.Cell>
             </Table.Row>
-          ))}
-        </Table>
+            {activeTokens.map((token) => (
+              <Table.Row key={token._id}>
+                <Table.Cell>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                    {token.tokenSerialNumber || token._id?.slice(-8)}
+                  </span>
+                </Table.Cell>
+                <Table.Cell>
+                  <span className="text-sm text-slate-800 dark:text-slate-200">
+                    {token.user ? formatUsername(token.user) : '-'}
+                  </span>
+                </Table.Cell>
+                <Table.Cell>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    {token.user?.lastContact?.emailAddress ||
+                      token.user?.primaryEmail?.address ||
+                      '-'}
+                  </span>
+                </Table.Cell>
+                <Table.Cell>
+                  {token.invalidatedDate ? (
+                    <Badge
+                      text={formatDateTime(token.invalidatedDate, {
+                        timeStyle: 'short',
+                      })}
+                      color="emerald"
+                      square
+                    />
+                  ) : (
+                    <Badge
+                      text={formatMessage({
+                        id: 'gate_pending',
+                        defaultMessage: 'Pending',
+                      })}
+                      color="amber"
+                      square
+                    />
+                  )}
+                </Table.Cell>
+                <Table.Cell>
+                  {!token.invalidatedDate && token.isInvalidateable && (
+                    <button
+                      type="button"
+                      onClick={() => onRedeem(token._id)}
+                      className="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                    >
+                      {formatMessage({
+                        id: 'gate_redeem',
+                        defaultMessage: 'Redeem',
+                      })}
+                    </button>
+                  )}
+                  {token.invalidatedDate && (
+                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                      {formatMessage({
+                        id: 'gate_checked_in',
+                        defaultMessage: 'Checked in',
+                      })}
+                    </span>
+                  )}
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table>
+        </div>
       )}
     </div>
   );

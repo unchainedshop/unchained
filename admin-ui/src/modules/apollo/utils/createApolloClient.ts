@@ -17,7 +17,6 @@ const allowedHeaders = [
   'x-mapihttpcapability',
   'x-real-ip',
   'x-user-identity',
-  'x-passcode',
   'host',
   'cookie',
   'authorization',
@@ -61,16 +60,6 @@ const createApolloClient = ({
     includeExtensions: true,
   });
 
-  const passCodeLink = new SetContextLink(() => {
-    if (typeof window !== 'undefined') {
-      const passCode = window.sessionStorage.getItem('gate-passcode');
-      if (passCode) {
-        return { headers: { 'x-passcode': passCode } };
-      }
-    }
-    return {};
-  });
-
   const errorLink = new ErrorLink(({ error, operation }) => {
     if (CombinedGraphQLErrors.is(error)) {
       error.errors.forEach(({ message, locations, path, extensions }) => {
@@ -100,9 +89,7 @@ const createApolloClient = ({
     },
 
     ssrMode: typeof window === 'undefined',
-    link: ApolloLink.from(
-      [errorLink, passCodeLink, localeLink, httpLink].filter(Boolean),
-    ),
+    link: ApolloLink.from([errorLink, localeLink, httpLink].filter(Boolean)),
     cache,
     devtools: {
       enabled: process.env.NODE_ENV === 'development',
