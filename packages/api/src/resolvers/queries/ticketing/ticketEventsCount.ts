@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { TicketingModuleNotFoundError } from '../../../errors.ts';
+import { GATE_COOKIE_NAME } from '../../../gate-cookie.ts';
 
 export default async function ticketEventsCount(
   root: never,
@@ -18,7 +19,7 @@ export default async function ticketEventsCount(
   const { modules, services, userId } = context;
   log(`query ticketEventsCount`, { userId });
 
-  const passCode = context.getCookie?.('unchained_gate_passcode');
+  const passCode = context.getCookie?.(GATE_COOKIE_NAME);
   const ticketingServices = (context.services as any)?.ticketing;
 
   if (!userId && passCode) {

@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { TicketingModuleNotFoundError } from '../../../errors.ts';
+import { GATE_COOKIE_NAME } from '../../../gate-cookie.ts';
 
 interface TicketingServices {
   ticketing?: {
@@ -16,7 +17,7 @@ export default async function isPassCodeValid(
   const { services, userId } = context;
   log(`query isPassCodeValid`, { userId });
 
-  const passCode = context.getCookie('unchained_gate_passcode');
+  const passCode = context.getCookie(GATE_COOKIE_NAME);
   if (!passCode) return false;
 
   const ticketingServices = services as unknown as TicketingServices;
