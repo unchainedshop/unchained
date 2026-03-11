@@ -57,17 +57,36 @@ export const TokenizedProduct = {
   },
 
   async tokens(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    try {
+      await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    } catch {
+      const passCode = requestContext.getHeader('x-passcode') as string;
+      const ticketingServices = (requestContext.services as any)?.ticketing;
+      const isValid = await ticketingServices?.isPassCodeValid?.(passCode, product._id);
+      if (!isValid) return [];
+    }
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,
     });
     return tokens;
   },
   async tokensCount(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    try {
+      await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    } catch {
+      const passCode = requestContext.getHeader('x-passcode') as string;
+      const ticketingServices = (requestContext.services as any)?.ticketing;
+      const isValid = await ticketingServices?.isPassCodeValid?.(passCode, product._id);
+      if (!isValid) return 0;
+    }
     return requestContext.modules.warehousing.tokensCount({
       productId: product._id,
     });
+  },
+
+  async scannerPassCode(product: Product, params: never, requestContext: Context) {
+    await checkAction(requestContext, actions.manageProducts, [undefined, params]);
+    return (product.meta as Record<string, any>)?.scannerPassCode || null;
   },
 };
 
