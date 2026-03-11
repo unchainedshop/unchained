@@ -37,6 +37,7 @@
     "@unchainedshop/api": "^5.0.0-alpha.7",
     "@unchainedshop/core": "^5.0.0-alpha.7",
     "@unchainedshop/core-files": "^5.0.0-alpha.7",
+    "@unchainedshop/core-orders": "^5.0.0-alpha.7",
     "@unchainedshop/core-warehousing": "^5.0.0-alpha.7",
     "@unchainedshop/core-worker": "^5.0.0-alpha.7",
     "@unchainedshop/events": "^5.0.0-alpha.7",
