@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
@@ -60,16 +61,27 @@ const TicketingPage = () => {
   return (
     <>
       <BreadCrumbs />
-      <PageHeader
-        title={formatMessage(
-          {
-            id: 'ticketing_page_title',
-            defaultMessage: '{count, plural, one {# Event} other {# Events}}',
-          },
-          { count: productsCount },
-        )}
-        headerText={headerText}
-      />
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <PageHeader
+          title={formatMessage(
+            {
+              id: 'ticketing_page_title',
+              defaultMessage: '{count, plural, one {# Event} other {# Events}}',
+            },
+            { count: productsCount },
+          )}
+          headerText={headerText}
+        />
+        <Link
+          href="/ticketing/gate"
+          className="inline-flex items-center rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-950"
+        >
+          {formatMessage({
+            id: 'gate_control',
+            defaultMessage: 'Gate Control',
+          })}
+        </Link>
+      </div>
       <div className="mt-5 inline-block min-w-full overflow-x-auto px-1 pb-5">
         <ListHeader />
 
