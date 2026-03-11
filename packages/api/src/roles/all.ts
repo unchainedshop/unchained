@@ -1,4 +1,5 @@
 import type { Context } from '../context.ts';
+import { GATE_COOKIE_NAME } from '../gate-cookie.ts';
 
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
@@ -112,7 +113,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewQuotation, () => false);
   role.allow(actions.viewEnrollment, () => false);
   const hasValidPassCode = async (_root: any, _params: any, context: Context) => {
-    const passCode = context.getCookie?.('unchained_gate_passcode');
+    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
     if (!passCode) return false;
     const ticketingServices = (context.services as any)?.ticketing;
     if (!ticketingServices?.isPassCodeValid) return false;
@@ -121,7 +122,16 @@ export const all = (role, actions) => {
 
   role.allow(actions.validatePassCode, () => true);
   role.allow(actions.gateControl, hasValidPassCode);
-  role.allow(actions.viewTokens, () => false);
+
+  const hasValidPassCodeForProduct = async (root: any, _params: any, context: Context) => {
+    if (!root?._id) return false;
+    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
+    if (!passCode) return false;
+    const ticketingServices = (context.services as any)?.ticketing;
+    if (!ticketingServices?.isPassCodeValid) return false;
+    return ticketingServices.isPassCodeValid(passCode, root._id);
+  };
+  role.allow(actions.viewTokens, hasValidPassCodeForProduct);
   role.allow(actions.viewStatistics, () => false);
   role.allow(actions.uploadUserAvatar, () => false);
   role.allow(actions.uploadTempFile, () => false);
@@ -145,7 +155,7 @@ export const all = (role, actions) => {
 
   // special case: access to token sometimes works via a X-Token-AccessKey Header or valid gate pass code
   const hasValidPassCodeForToken = async (_root: any, params: any, context: Context) => {
-    const passCode = context.getCookie?.('unchained_gate_passcode');
+    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
     if (!passCode) return false;
     const ticketingServices = (context.services as any)?.ticketing;
     if (!ticketingServices?.isPassCodeValid) return false;

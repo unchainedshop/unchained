@@ -2,6 +2,7 @@ import { log } from '@unchainedshop/logger';
 import type { SortOption } from '@unchainedshop/utils';
 import type { Context } from '../../../context.ts';
 import { TicketingModuleNotFoundError } from '../../../errors.ts';
+import { GATE_COOKIE_NAME } from '../../../gate-cookie.ts';
 
 export default async function ticketEvents(
   root: never,
@@ -25,7 +26,7 @@ export default async function ticketEvents(
   const { modules, services, userId } = context;
   log(`query ticketEvents`, { userId });
 
-  const passCode = context.getCookie?.('unchained_gate_passcode');
+  const passCode = context.getCookie?.(GATE_COOKIE_NAME);
   const ticketingServices = (context.services as any)?.ticketing;
 
   let products;
