@@ -860,14 +860,22 @@ export default [
 
       """
       Cancel a ticket (token). Sets the cancelled flag on the token metadata.
+      Optionally generates a discount code for reimbursement.
       """
-      cancelTicket(tokenId: ID!): Token!
+      cancelTicket(tokenId: ID!, generateDiscount: Boolean): Token!
 
       """
       Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
+      Optionally generates discount codes for affected users.
       Returns the number of tickets cancelled.
       """
-      cancelEvent(productId: ID!): Int!
+      cancelEvent(productId: ID!, generateDiscount: Boolean): Int!
+
+      """
+      Set or remove the scanner pass code for gate control on a tokenized product.
+      Pass null to remove the pass code.
+      """
+      setEventScannerPassCode(productId: ID!, passCode: String): Product!
 
       """
       Store user W3C Push subscription object
