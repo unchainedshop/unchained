@@ -7,10 +7,9 @@ import {
   TicketingModuleNotFoundError,
 } from '../../../errors.ts';
 
-
 export default async function cancelTicket(
   root: never,
-  { tokenId, generateDiscount = true }: { tokenId: string; generateDiscount?: boolean },
+  { tokenId, generateDiscount }: { tokenId: string; generateDiscount?: boolean },
   context: Context,
 ) {
   const { modules, services, userId, countryCode, currencyCode } = context;
@@ -44,19 +43,6 @@ export default async function cancelTicket(
     countryCode,
     currencyCode,
   });
-
-  if (result.discountCode && token.userId) {
-    await modules.worker.addWork({
-      type: 'MESSAGE',
-      input: {
-        template: 'TICKET_CANCELLED',
-        tokenId: token._id,
-        userId: token.userId,
-        discountCode: result.discountCode,
-        discountAmount: result.amount,
-      },
-    });
-  }
 
   return result.token;
 }

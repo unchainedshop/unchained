@@ -14,7 +14,6 @@ async function cancelTicketsForProduct(
   options?: DiscountOptions,
 ): Promise<{
   cancelledCount: number;
-  discountCodes?: Array<{ userId: string; discountCode: string; amount: number }>;
 }> {
   const tokensToCancel = await this.warehousing.findTokens({
     productId,
@@ -30,7 +29,9 @@ async function cancelTicketsForProduct(
     'meta.cancelled': true,
   });
 
-  let discountCodes: Array<{ userId: string; discountCode: string; amount: number }> | undefined;
+  const affectedUserIds = [...new Set(tokensToCancel.map((t) => t.userId).filter(Boolean))] as string[];
+
+  const discountByUser = new Map<string, { discountCode: string; amount: number }>();
 
   if (options?.generateDiscount && tokensToCancel.length > 0 && options.countryCode) {
     const product = await this.products.findProduct({ productId });
@@ -52,28 +53,44 @@ async function cancelTicketsForProduct(
         {} as Record<string, number>,
       );
 
-      discountCodes = [];
       for (const [userId, quantity] of Object.entries(userTokenCounts)) {
         const totalAmount = price.amount * quantity;
         const discountCode = await this.passes.generateDiscountCode(totalAmount);
-        discountCodes.push({ userId, discountCode, amount: totalAmount });
+        discountByUser.set(userId, { discountCode, amount: totalAmount });
       }
     }
   }
 
-  return { cancelledCount: tokensToCancel.length, discountCodes };
+  await Promise.allSettled(
+    affectedUserIds.map(async (userId) => {
+      const discount = discountByUser.get(userId);
+      await this.worker.addWork({
+        type: 'MESSAGE',
+        input: {
+          template: 'EVENT_CANCELLED',
+          productId,
+          userId,
+          discountCode: discount?.discountCode,
+          discountAmount: discount?.amount,
+        },
+      });
+    }),
+  );
+
+  return { cancelledCount: tokensToCancel.length };
 }
 
 async function cancelTicketWithDiscount(
   this: TicketingModule & UnchainedCore['modules'],
   tokenId: string,
   options?: DiscountOptions,
-): Promise<{ token: any; discountCode?: string; amount?: number }> {
+): Promise<{ token: any }> {
+  const token = await this.warehousing.findToken({ tokenId });
   await this.warehousing.invalidateToken(tokenId);
   const cancelledToken = await this.passes.cancelTicket(tokenId);
 
   let discountCode: string | undefined;
-  let amount: number | undefined;
+  let discountAmount: number | undefined;
 
   if (options?.generateDiscount && cancelledToken && options.countryCode) {
     const product = await this.products.findProduct({ productId: cancelledToken.productId });
@@ -85,12 +102,25 @@ async function cancelTicketWithDiscount(
       }));
 
     if (price?.amount) {
-      amount = price.amount;
-      discountCode = await this.passes.generateDiscountCode(amount);
+      discountAmount = price.amount;
+      discountCode = await this.passes.generateDiscountCode(discountAmount);
     }
   }
 
-  return { token: cancelledToken, discountCode, amount };
+  if (token?.userId) {
+    await this.worker.addWork({
+      type: 'MESSAGE',
+      input: {
+        template: 'TICKET_CANCELLED',
+        tokenId,
+        userId: token.userId,
+        discountCode,
+        discountAmount,
+      },
+    });
+  }
+
+  return { token: cancelledToken };
 }
 
 async function isPassCodeValid(

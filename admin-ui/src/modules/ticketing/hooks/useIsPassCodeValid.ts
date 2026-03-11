@@ -1,45 +1,57 @@
 import { gql } from '@apollo/client';
-import { useLazyQuery } from '@apollo/client/react';
+import { useMutation } from '@apollo/client/react';
 import {
-  IIsPassCodeValidQuery,
-  IIsPassCodeValidQueryVariables,
+  IAuthenticateGateMutation,
+  IAuthenticateGateMutationVariables,
+  IDeauthenticateGateMutation,
+  IDeauthenticateGateMutationVariables,
 } from '../../../gql/types';
 
-const IsPassCodeValidQuery = gql`
-  query IsPassCodeValid($productId: ID) {
-    isPassCodeValid(productId: $productId)
+const AuthenticateGateMutation = gql`
+  mutation AuthenticateGate($passCode: String!) {
+    authenticateGate(passCode: $passCode)
+  }
+`;
+
+const DeauthenticateGateMutation = gql`
+  mutation DeauthenticateGate {
+    deauthenticateGate
   }
 `;
 
 const useIsPassCodeValid = () => {
-  const [checkPassCode, { data, loading, error }] = useLazyQuery<
-    IIsPassCodeValidQuery,
-    IIsPassCodeValidQueryVariables
-  >(IsPassCodeValidQuery, {
-    fetchPolicy: 'network-only',
-  });
+  const [authenticateGate, { loading: authLoading }] = useMutation<
+    IAuthenticateGateMutation,
+    IAuthenticateGateMutationVariables
+  >(AuthenticateGateMutation);
+  const [deauthenticateGate, { loading: deauthLoading }] = useMutation<
+    IDeauthenticateGateMutation,
+    IDeauthenticateGateMutationVariables
+  >(DeauthenticateGateMutation);
 
-  const validatePassCode = async (passCode: string, productId?: string) => {
-    window.sessionStorage.setItem('gate-passcode', passCode);
-    const result = await checkPassCode({
-      variables: { productId },
-    });
-    if (!result.data?.isPassCodeValid) {
-      window.sessionStorage.removeItem('gate-passcode');
+  const validatePassCode = async (passCode: string) => {
+    try {
+      const result = await authenticateGate({
+        variables: { passCode },
+      });
+      return result.data?.authenticateGate || false;
+    } catch {
+      return false;
     }
-    return result.data?.isPassCodeValid || false;
   };
 
-  const clearPassCode = () => {
-    window.sessionStorage.removeItem('gate-passcode');
+  const clearPassCode = async () => {
+    try {
+      await deauthenticateGate();
+    } catch {
+      // ignore
+    }
   };
 
   return {
     validatePassCode,
     clearPassCode,
-    isValid: data?.isPassCodeValid || false,
-    loading,
-    error,
+    loading: authLoading || deauthLoading,
   };
 };
 
