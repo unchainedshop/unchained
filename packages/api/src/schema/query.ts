@@ -236,15 +236,20 @@ export default [
         offset: Int = 0
         includeDrafts: Boolean = true
         sort: [SortOptionInput!]
+        onlyInvalidateable: Boolean = false
       ): [Product!]!
 
       """
       Returns total number of ticket events (tokenized products)
       """
-      ticketEventsCount(queryString: String, includeDrafts: Boolean = true): Int!
+      ticketEventsCount(
+        queryString: String
+        includeDrafts: Boolean = true
+        onlyInvalidateable: Boolean = false
+      ): Int!
 
       """
-      Validates a scanner pass code for gate access. Pass code is checked via x-passcode header.
+      Validates a scanner pass code for gate access. Pass code is read from the unchained_gate_passcode cookie (set via authenticateGate mutation).
       Optionally restricted to a specific product.
       """
       isPassCodeValid(productId: ID): Boolean!
