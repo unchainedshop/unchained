@@ -16,7 +16,7 @@ export default async function isPassCodeValid(
   const { services, userId } = context;
   log(`query isPassCodeValid`, { userId });
 
-  const passCode = context.getHeader('x-passcode') as string;
+  const passCode = context.getCookie('unchained_gate_passcode');
   if (!passCode) return false;
 
   const ticketingServices = services as unknown as TicketingServices;

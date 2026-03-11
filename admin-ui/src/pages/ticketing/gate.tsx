@@ -1,24 +1,22 @@
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
+import { gql } from '@apollo/client';
 import useCurrentUser from '../../modules/accounts/hooks/useCurrentUser';
 import GatePassCodeForm from '../../modules/ticketing/components/GatePassCodeForm';
 import GateControl from '../../modules/ticketing/components/GateControl';
+import useCheckGateCookie from '../../modules/ticketing/hooks/useCheckGateCookie';
+
+const CheckGateCookieQuery = gql`
+  query CheckGateCookie {
+    isPassCodeValid
+  }
+`;
 
 const GateControlPage = () => {
   const { formatMessage } = useIntl();
   const { currentUser } = useCurrentUser();
-  const [authenticated, setAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const stored = window.sessionStorage.getItem('gate-passcode');
-    if (stored) setAuthenticated(true);
-  }, []);
-
-  const handleLogout = () => {
-    window.sessionStorage.removeItem('gate-passcode');
-    setAuthenticated(false);
-  };
+  const isAdmin = Boolean(currentUser?._id);
+  const { authenticated, loading, refetch } = useCheckGateCookie();
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 px-6 pt-16 pb-6">
@@ -42,9 +40,12 @@ const GateControlPage = () => {
         </Link>
       </div>
       {authenticated ? (
-        <GateControl onLogout={handleLogout} />
-      ) : (
-        <GatePassCodeForm onAuthenticated={() => setAuthenticated(true)} />
+        <GateControl
+          onLogout={!isAdmin ? () => refetch() : undefined}
+          isAdmin={isAdmin}
+        />
+      ) : loading ? null : (
+        <GatePassCodeForm onAuthenticated={() => refetch()} />
       )}
     </div>
   );

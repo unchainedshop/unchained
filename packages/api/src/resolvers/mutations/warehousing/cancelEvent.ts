@@ -8,7 +8,6 @@ import {
   TicketingModuleNotFoundError,
 } from '../../../errors.ts';
 
-
 export default async function cancelEvent(
   root: never,
   { productId, generateDiscount }: { productId: string; generateDiscount?: boolean },
@@ -26,7 +25,7 @@ export default async function cancelEvent(
     throw new ProductWrongStatusError({ productId });
   }
 
-  const passes = (modules as unknown as Record<string, unknown>).passes as any
+  const passes = (modules as unknown as Record<string, unknown>).passes as any;
   if (!passes?.cancelTicket) {
     throw new TicketingModuleNotFoundError({});
   }
@@ -41,23 +40,6 @@ export default async function cancelEvent(
     countryCode,
     currencyCode,
   });
-
-  if (result.discountCodes?.length) {
-    await Promise.allSettled(
-      result.discountCodes.map(async ({ userId: ticketUserId, discountCode, amount }) => {
-        await modules.worker.addWork({
-          type: 'MESSAGE',
-          input: {
-            template: 'EVENT_CANCELLED',
-            productId,
-            userId: ticketUserId,
-            discountCode,
-            discountAmount: amount,
-          },
-        });
-      }),
-    );
-  }
 
   return result.cancelledCount;
 }

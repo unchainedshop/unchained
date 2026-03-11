@@ -8,10 +8,7 @@ import type { File } from '@unchainedshop/core-files';
 
 import { RendererTypes, getRenderer } from './template-registry.ts';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.ts';
-import {
-  type DiscountCodeHandlers,
-  createDefaultDiscountCodeHandlers,
-} from './discount-codes.ts';
+import { type DiscountCodeHandlers, createDefaultDiscountCodeHandlers } from './discount-codes.ts';
 import { OrdersCollection, OrderStatus } from '@unchainedshop/core-orders';
 
 export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';

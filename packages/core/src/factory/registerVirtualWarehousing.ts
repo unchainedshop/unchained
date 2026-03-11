@@ -22,12 +22,12 @@ export default function registerVirtualWarehousing<Metadata = Record<string, any
   adapterId: string;
   orderIndex?: number;
   stock?:
-  | number
-  | ((
-    referenceDate: Date,
-    configuration: WarehousingConfiguration,
-    context: WarehousingContext,
-  ) => Promise<number>);
+    | number
+    | ((
+        referenceDate: Date,
+        configuration: WarehousingConfiguration,
+        context: WarehousingContext,
+      ) => Promise<number>);
 
   tokenize: (
     configuration: WarehousingConfiguration,
