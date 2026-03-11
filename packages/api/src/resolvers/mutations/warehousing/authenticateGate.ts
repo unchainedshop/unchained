@@ -1,16 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { TicketingModuleNotFoundError } from '../../../errors.ts';
-
-const {
-  UNCHAINED_COOKIE_PATH = '/',
-  UNCHAINED_COOKIE_DOMAIN,
-  UNCHAINED_COOKIE_SAMESITE = 'lax',
-  UNCHAINED_COOKIE_INSECURE,
-} = process.env;
-
-const GATE_COOKIE_NAME = 'unchained_gate_passcode';
-const GATE_COOKIE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
+import { GATE_COOKIE_NAME, GATE_COOKIE_MAX_AGE, getGateCookieOptions } from '../../../gate-cookie.ts';
 
 export default async function authenticateGate(
   root: never,
@@ -35,24 +26,7 @@ export default async function authenticateGate(
   const isValid = await ticketingServices.ticketing.isPassCodeValid(passCode);
   if (!isValid) return false;
 
-  const secure = !UNCHAINED_COOKIE_INSECURE;
-  const sameSite =
-    (
-      {
-        none: 'none',
-        lax: 'lax',
-        strict: 'strict',
-      } as Record<string, 'none' | 'lax' | 'strict'>
-    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || 'lax';
-
-  context.setCookie(GATE_COOKIE_NAME, passCode, {
-    domain: UNCHAINED_COOKIE_DOMAIN,
-    path: UNCHAINED_COOKIE_PATH,
-    secure,
-    httpOnly: true,
-    sameSite,
-    maxAge: GATE_COOKIE_MAX_AGE,
-  });
+  context.setCookie(GATE_COOKIE_NAME, passCode, getGateCookieOptions(GATE_COOKIE_MAX_AGE));
 
   return true;
 }
