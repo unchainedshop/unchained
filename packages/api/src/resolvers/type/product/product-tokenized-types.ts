@@ -58,12 +58,9 @@ export const TokenizedProduct = {
 
   async tokens(product: Product, params: never, requestContext: Context) {
     try {
-      await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+      await checkAction(requestContext, actions.viewTokens, [product, params]);
     } catch {
-      const passCode = requestContext.getCookie?.('unchained_gate_passcode');
-      const ticketingServices = (requestContext.services as any)?.ticketing;
-      const isValid = await ticketingServices?.isPassCodeValid?.(passCode, product._id);
-      if (!isValid) return [];
+      return [];
     }
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,
@@ -72,12 +69,9 @@ export const TokenizedProduct = {
   },
   async tokensCount(product: Product, params: never, requestContext: Context) {
     try {
-      await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+      await checkAction(requestContext, actions.viewTokens, [product, params]);
     } catch {
-      const passCode = requestContext.getCookie?.('unchained_gate_passcode');
-      const ticketingServices = (requestContext.services as any)?.ticketing;
-      const isValid = await ticketingServices?.isPassCodeValid?.(passCode, product._id);
-      if (!isValid) return 0;
+      return 0;
     }
     return requestContext.modules.warehousing.tokensCount({
       productId: product._id,
