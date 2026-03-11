@@ -6,8 +6,12 @@ import {
 } from '../../../gql/types';
 
 const GateEventsQuery = gql`
-  query GateEvents {
-    ticketEvents(limit: 100, includeDrafts: false) {
+  query GateEvents($onlyInvalidateable: Boolean!) {
+    ticketEvents(
+      limit: 100
+      includeDrafts: false
+      onlyInvalidateable: $onlyInvalidateable
+    ) {
       _id
       status
       ... on TokenizedProduct {
@@ -27,64 +31,32 @@ const GateEventsQuery = gql`
           isCanceled
           invalidatedDate
           isInvalidateable
-          ercMetadata
-          user {
-            _id
-            username
-            isGuest
-            primaryEmail {
-              address
-              verified
-            }
-            avatar {
-              _id
-              url
-            }
-            profile {
-              displayName
-              address {
-                firstName
-                lastName
-              }
-            }
-            lastContact {
-              emailAddress
-              telNumber
-            }
-          }
         }
       }
     }
   }
 `;
 
-const isToday = (dateStr: string) => {
-  if (!dateStr) return false;
-  const today = new Date().toLocaleDateString();
-  const target = new Date(dateStr).toLocaleDateString();
-  return today === target;
-};
-
-const useGateEvents = () => {
-  const { data, loading, error, refetch } = useQuery<
+const useGateEvents = ({
+  onlyInvalidateable = false,
+}: { onlyInvalidateable?: boolean } = {}) => {
+  const { data, loading, error, refetch, previousData } = useQuery<
     IGateEventsQuery,
     IGateEventsQueryVariables
   >(GateEventsQuery, {
+    variables: { onlyInvalidateable },
     fetchPolicy: 'cache-and-network',
     pollInterval: 10000,
   });
 
-  const allEvents = data?.ticketEvents || [];
-  const todayEvents = allEvents.filter(
-    (p: any) =>
-      p?.tokens?.length &&
-      !p.isCanceled &&
-      isToday(p?.contractConfiguration?.ercMetadataProperties?.slot),
-  );
+  const events = (
+    data?.ticketEvents ||
+    previousData?.ticketEvents ||
+    []
+  ).filter((p: any) => p?.tokens?.length && !p.isCanceled);
 
   return {
-    todayEvents,
-    allEvents,
+    events,
     loading,
     error,
     refetch,

@@ -42,10 +42,7 @@ export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
       orderId: context?.order?._id as string,
     });
 
-    const totalTickets = (orderPositions || []).reduce(
-      (sum, { quantity }) => sum + quantity,
-      0,
-    );
+    const totalTickets = (orderPositions || []).reduce((sum, { quantity }) => sum + quantity, 0);
 
     return {
       ...(await OrderDiscountAdapter.actions({ context })),

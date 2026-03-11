@@ -112,7 +112,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewQuotation, () => false);
   role.allow(actions.viewEnrollment, () => false);
   const hasValidPassCode = async (_root: any, _params: any, context: Context) => {
-    const passCode = context.getHeader?.('x-passcode');
+    const passCode = context.getCookie?.('unchained_gate_passcode');
     if (!passCode) return false;
     const ticketingServices = (context.services as any)?.ticketing;
     if (!ticketingServices?.isPassCodeValid) return false;
@@ -135,13 +135,17 @@ export const all = (role, actions) => {
   role.allow(actions.viewUserOrders, isInLoginMutationResponse);
   role.allow(actions.viewUserTokens, isInLoginMutationResponse);
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
-  role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
+  const isInLoginOrHasValidPassCode = async (root: any, params: any, context: Context) => {
+    if (isInLoginMutationResponse(root)) return true;
+    return hasValidPassCode(root, params, context);
+  };
+  role.allow(actions.viewUserPrivateInfos, isInLoginOrHasValidPassCode);
   role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
   role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
 
   // special case: access to token sometimes works via a X-Token-AccessKey Header or valid gate pass code
   const hasValidPassCodeForToken = async (_root: any, params: any, context: Context) => {
-    const passCode = context.getHeader?.('x-passcode');
+    const passCode = context.getCookie?.('unchained_gate_passcode');
     if (!passCode) return false;
     const ticketingServices = (context.services as any)?.ticketing;
     if (!ticketingServices?.isPassCodeValid) return false;

@@ -17,8 +17,7 @@ export const resolveTicketCancelledTemplate: TemplateResolver<{
   const product = await modules.products.findProduct({ productId: token.productId });
   if (!product) return [];
 
-  const recipient =
-    user.lastContact?.emailAddress || modules.users.primaryEmail(user)?.address;
+  const recipient = user.lastContact?.emailAddress || modules.users.primaryEmail(user)?.address;
   if (!recipient) return [];
 
   const locale = modules.users.userLocale(user);

@@ -54,18 +54,36 @@ const TokenDetailPage = ({ tokenId }) => {
   }, [tokenId]);
 
   const onCancelToken = useCallback(async () => {
+    let generateDiscount = false;
     await setModal(
       <DangerMessage
         onCancelClick={() => setModal('')}
-        message={formatMessage({
-          id: 'cancel_ticket_confirmation',
-          defaultMessage:
-            'Are you sure you want to cancel this ticket? This action cannot be undone.',
-        })}
+        message={
+          <>
+            {formatMessage({
+              id: 'cancel_ticket_confirmation',
+              defaultMessage:
+                'Are you sure you want to cancel this ticket? This action cannot be undone.',
+            })}
+            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 dark:border-slate-600"
+                onChange={(e) => {
+                  generateDiscount = e.target.checked;
+                }}
+              />
+              {formatMessage({
+                id: 'generate_discount_code',
+                defaultMessage: 'Generate discount code for the user',
+              })}
+            </label>
+          </>
+        }
         onOkClick={async () => {
           setModal('');
           try {
-            await cancelTicket({ tokenId });
+            await cancelTicket({ tokenId, generateDiscount });
             toast.success(
               formatMessage({
                 id: 'ticket_cancelled',
