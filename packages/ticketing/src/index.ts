@@ -14,7 +14,13 @@ export type TicketingAPI = UnchainedCore & {
   services: TicketingServices;
 };
 
-export type { RendererTypes, TicketingModule, TicketingServices, TicketingOptions, DiscountCodeHandlers };
+export type {
+  RendererTypes,
+  TicketingModule,
+  TicketingServices,
+  TicketingOptions,
+  DiscountCodeHandlers,
+};
 
 export { ticketingServices, ticketingModules };
 
@@ -52,7 +58,6 @@ export default function setupTicketing(
     createAppleWalletPass,
     createGoogleWalletPass,
   });
-
 
   if (!process.env.UNCHAINED_SECRET)
     throw new Error(
