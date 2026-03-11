@@ -14,7 +14,7 @@ export default async function invalidateToken(
   { tokenId }: { tokenId: string },
   context: Context,
 ) {
-  const { modules, services, userId } = context;
+  const { modules, userId } = context;
   log(`mutation invalidateToken ${tokenId}`, {
     userId,
   });
