@@ -878,6 +878,17 @@ export default [
       setEventScannerPassCode(productId: ID!, passCode: String): Product!
 
       """
+      Authenticate gate control by validating a pass code and setting an HttpOnly cookie.
+      Returns true if the pass code is valid.
+      """
+      authenticateGate(passCode: String!): Boolean!
+
+      """
+      Deauthenticate gate control by clearing the gate pass code cookie.
+      """
+      deauthenticateGate: Boolean!
+
+      """
       Store user W3C Push subscription object
       """
       addPushSubscription(subscription: JSON!, unsubscribeFromOtherUsers: Boolean): User!

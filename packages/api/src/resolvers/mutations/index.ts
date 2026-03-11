@@ -87,6 +87,8 @@ import invalidateToken from './warehousing/invalidateToken.ts';
 import cancelTicket from './warehousing/cancelTicket.ts';
 import cancelEvent from './warehousing/cancelEvent.ts';
 import setEventScannerPassCode from './warehousing/setEventScannerPassCode.ts';
+import authenticateGate from './warehousing/authenticateGate.ts';
+import deauthenticateGate from './warehousing/deauthenticateGate.ts';
 import setPassword from './accounts/setPassword.ts';
 import setRoles from './users/setRoles.ts';
 import setUsername from './accounts/setUsername.ts';
@@ -272,6 +274,8 @@ export default {
   cancelTicket: acl(actions.updateToken)(cancelTicket),
   cancelEvent: acl(actions.manageProducts)(cancelEvent),
   setEventScannerPassCode: acl(actions.manageProducts)(setEventScannerPassCode),
+  authenticateGate: acl(actions.validatePassCode)(authenticateGate),
+  deauthenticateGate: acl(actions.validatePassCode)(deauthenticateGate),
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
   removeFilter: acl(actions.manageFilters)(removeFilter),

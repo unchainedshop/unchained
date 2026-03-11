@@ -1034,6 +1034,11 @@ export type IMutation = {
    */
   allocateWork?: Maybe<IWork>;
   /**
+   * Authenticate gate control by validating a pass code and setting an HttpOnly cookie.
+   * Returns true if the pass code is valid.
+   */
+  authenticateGate: Scalars['Boolean']['output'];
+  /**
    * Toggle Bookmark state on a product as currently logged in user,
    * Does not work when multiple bookmarks with different explicit meta configurations exist.
    * In those cases please use createBookmark and removeBookmark
@@ -1101,6 +1106,8 @@ export type IMutation = {
   createWebAuthnCredentialCreationOptions?: Maybe<Scalars['JSON']['output']>;
   /** Create WebAuthn PublicKeyCredentialRequestrOptions to use for WebAuthn Login Flow */
   createWebAuthnCredentialRequestOptions?: Maybe<Scalars['JSON']['output']>;
+  /** Deauthenticate gate control by clearing the gate pass code cookie. */
+  deauthenticateGate: Scalars['Boolean']['output'];
   /** Manually mark a undelivered order as delivered */
   deliverOrder: IOrder;
   /**
@@ -1457,6 +1464,10 @@ export type IMutationAddWorkArgs = {
 export type IMutationAllocateWorkArgs = {
   types?: InputMaybe<Array<InputMaybe<IWorkType>>>;
   worker?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IMutationAuthenticateGateArgs = {
+  passCode: Scalars['String']['input'];
 };
 
 export type IMutationBookmarkArgs = {
@@ -2867,7 +2878,7 @@ export type IQuery = {
   /** User impersonating currently logged in user */
   impersonator?: Maybe<IUser>;
   /**
-   * Validates a scanner pass code for gate access. Pass code is checked via x-passcode header.
+   * Validates a scanner pass code for gate access. Pass code is read from the unchained_gate_passcode cookie (set via authenticateGate mutation).
    * Optionally restricted to a specific product.
    */
   isPassCodeValid: Scalars['Boolean']['output'];
@@ -3254,12 +3265,14 @@ export type IQueryTicketEventsArgs = {
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  onlyInvalidateable?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
 export type IQueryTicketEventsCountArgs = {
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
+  onlyInvalidateable?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -15851,12 +15864,14 @@ export type IVerifyQuotationMutation = {
 
 export type ICancelEventMutationVariables = Exact<{
   productId: Scalars['ID']['input'];
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 export type ICancelEventMutation = { cancelEvent: number };
 
 export type ICancelTicketMutationVariables = Exact<{
   tokenId: Scalars['ID']['input'];
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 export type ICancelTicketMutation = {
@@ -15868,6 +15883,10 @@ export type ICancelTicketMutation = {
     tokenSerialNumber?: string | null;
   };
 };
+
+export type ICheckGateCookieQueryVariables = Exact<{ [key: string]: never }>;
+
+export type ICheckGateCookieQuery = { isPassCodeValid: boolean };
 
 export type ITicketEventsQueryVariables = Exact<{
   queryString?: InputMaybe<Scalars['String']['input']>;
@@ -15936,18 +15955,19 @@ export type ITicketEventsQuery = {
   >;
 };
 
-export type IGateEventsQueryVariables = Exact<{ [key: string]: never }>;
+export type IGateEventDetailQueryVariables = Exact<{
+  productId: Scalars['ID']['input'];
+}>;
 
-export type IGateEventsQuery = {
-  ticketEvents: Array<
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
-    | { _id: string; status: IProductStatus }
+export type IGateEventDetailQuery = {
+  product?:
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
     | {
         isCanceled?: boolean | null;
         _id: string;
-        status: IProductStatus;
         texts?: {
           _id: string;
           title?: string | null;
@@ -15984,14 +16004,54 @@ export type IGateEventsQuery = {
           } | null;
         }>;
       }
+    | null;
+};
+
+export type IGateEventsQueryVariables = Exact<{
+  onlyInvalidateable: Scalars['Boolean']['input'];
+}>;
+
+export type IGateEventsQuery = {
+  ticketEvents: Array<
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | {
+        isCanceled?: boolean | null;
+        _id: string;
+        status: IProductStatus;
+        texts?: {
+          _id: string;
+          title?: string | null;
+          subtitle?: string | null;
+        } | null;
+        contractConfiguration?: {
+          ercMetadataProperties?: any | null;
+          supply: number;
+        } | null;
+        tokens: Array<{
+          _id: string;
+          tokenSerialNumber?: string | null;
+          isCanceled?: boolean | null;
+          invalidatedDate?: any | null;
+          isInvalidateable: boolean;
+        }>;
+      }
   >;
 };
 
-export type IIsPassCodeValidQueryVariables = Exact<{
-  productId?: InputMaybe<Scalars['ID']['input']>;
+export type IAuthenticateGateMutationVariables = Exact<{
+  passCode: Scalars['String']['input'];
 }>;
 
-export type IIsPassCodeValidQuery = { isPassCodeValid: boolean };
+export type IAuthenticateGateMutation = { authenticateGate: boolean };
+
+export type IDeauthenticateGateMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type IDeauthenticateGateMutation = { deauthenticateGate: boolean };
 
 export type ISetEventScannerPassCodeMutationVariables = Exact<{
   productId: Scalars['ID']['input'];
