@@ -58,6 +58,7 @@ window.AdminUiPermissions = () => {
     '/verify-email': 'UNRESTRICTED',
     '/oauth': 'UNRESTRICTED',
     '/external': 'UNRESTRICTED',
+    '/ticketing/gate': 'UNRESTRICTED',
     '/orders/[orderId]': 'viewOrders',
     '/orders': 'viewOrders',
     '/quotations': 'viewQuotations',
@@ -79,6 +80,7 @@ window.AdminUiPermissions = () => {
     '/verify-email',
     '/403',
     '/external',
+    '/ticketing/gate',
   ];
 
   const OnlyPublicPages = [

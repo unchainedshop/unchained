@@ -86,6 +86,7 @@ import exportToken from './warehousing/exportToken.ts';
 import invalidateToken from './warehousing/invalidateToken.ts';
 import cancelTicket from './warehousing/cancelTicket.ts';
 import cancelEvent from './warehousing/cancelEvent.ts';
+import setEventScannerPassCode from './warehousing/setEventScannerPassCode.ts';
 import setPassword from './accounts/setPassword.ts';
 import setRoles from './users/setRoles.ts';
 import setUsername from './accounts/setUsername.ts';
@@ -270,6 +271,7 @@ export default {
   invalidateToken: acl(actions.updateToken)(invalidateToken),
   cancelTicket: acl(actions.updateToken)(cancelTicket),
   cancelEvent: acl(actions.manageProducts)(cancelEvent),
+  setEventScannerPassCode: acl(actions.manageProducts)(setEventScannerPassCode),
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
   removeFilter: acl(actions.manageFilters)(removeFilter),

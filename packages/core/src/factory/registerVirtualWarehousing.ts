@@ -16,18 +16,18 @@ export default function registerVirtualWarehousing<Metadata = Record<string, any
   orderIndex = 0,
   stock,
   tokenize,
-  tokenMetadata,
-  isInvalidateable,
+  tokenMetadata: tokenMetadataFn,
+  isInvalidateable: isInvalidateableFn,
 }: {
   adapterId: string;
   orderIndex?: number;
   stock?:
-    | number
-    | ((
-        referenceDate: Date,
-        configuration: WarehousingConfiguration,
-        context: WarehousingContext,
-      ) => Promise<number>);
+  | number
+  | ((
+    referenceDate: Date,
+    configuration: WarehousingConfiguration,
+    context: WarehousingContext,
+  ) => Promise<number>);
 
   tokenize: (
     configuration: WarehousingConfiguration,
@@ -88,15 +88,15 @@ export default function registerVirtualWarehousing<Metadata = Record<string, any
         },
 
         async tokenMetadata(serialNumber, referenceDate) {
-          if (tokenMetadata) {
-            return tokenMetadata(serialNumber, referenceDate, configuration, context);
+          if (tokenMetadataFn) {
+            return tokenMetadataFn(serialNumber, referenceDate, configuration, context);
           }
           return null;
         },
 
         async isInvalidateable(serialNumber, referenceDate) {
-          if (isInvalidateable) {
-            return isInvalidateable(serialNumber, referenceDate, configuration, context);
+          if (isInvalidateableFn) {
+            return isInvalidateableFn(serialNumber, referenceDate, configuration, context);
           }
           return false;
         },

@@ -244,6 +244,12 @@ export default [
       ticketEventsCount(queryString: String, includeDrafts: Boolean = true): Int!
 
       """
+      Validates a scanner pass code for gate access. Pass code is checked via x-passcode header.
+      Optionally restricted to a specific product.
+      """
+      isPassCodeValid(productId: ID): Boolean!
+
+      """
       Returns total number of payment providers, optionally filtered by type
       """
       paymentProvidersCount(type: PaymentProviderType): Int! @cacheControl(scope: PRIVATE, maxAge: 0)

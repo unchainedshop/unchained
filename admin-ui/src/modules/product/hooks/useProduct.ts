@@ -73,6 +73,7 @@ const GetProductQuery = (inlineFragment = '') => gql`
         }
         tokensCount
         isCanceled
+        scannerPassCode
         tokens {
           _id
           tokenSerialNumber
