@@ -61,6 +61,8 @@ export default [
       contractConfiguration: ContractConfiguration
       tokens: [Token!]!
       tokensCount: Int!
+      isCanceled: Boolean
+      scannerPassCode: String @cacheControl(scope: PRIVATE, maxAge: 0)
     }
   `,
 ];

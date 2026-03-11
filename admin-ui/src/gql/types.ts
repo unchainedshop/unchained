@@ -1034,11 +1034,27 @@ export type IMutation = {
    */
   allocateWork?: Maybe<IWork>;
   /**
+   * Authenticate gate control by validating a pass code and setting an HttpOnly cookie.
+   * Returns true if the pass code is valid.
+   */
+  authenticateGate: Scalars['Boolean']['output'];
+  /**
    * Toggle Bookmark state on a product as currently logged in user,
    * Does not work when multiple bookmarks with different explicit meta configurations exist.
    * In those cases please use createBookmark and removeBookmark
    */
   bookmark: IBookmark;
+  /**
+   * Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
+   * Optionally generates discount codes for affected users.
+   * Returns the number of tickets cancelled.
+   */
+  cancelEvent: Scalars['Int']['output'];
+  /**
+   * Cancel a ticket (token). Sets the cancelled flag on the token metadata.
+   * Optionally generates a discount code for reimbursement.
+   */
+  cancelTicket: IToken;
   /** Change the current user's password. Must be logged in. */
   changePassword?: Maybe<ISuccessResponse>;
   /**
@@ -1090,6 +1106,8 @@ export type IMutation = {
   createWebAuthnCredentialCreationOptions?: Maybe<Scalars['JSON']['output']>;
   /** Create WebAuthn PublicKeyCredentialRequestrOptions to use for WebAuthn Login Flow */
   createWebAuthnCredentialRequestOptions?: Maybe<Scalars['JSON']['output']>;
+  /** Deauthenticate gate control by clearing the gate pass code cookie. */
+  deauthenticateGate: Scalars['Boolean']['output'];
   /** Manually mark a undelivered order as delivered */
   deliverOrder: IOrder;
   /**
@@ -1255,6 +1273,11 @@ export type IMutation = {
   sendEnrollmentEmail?: Maybe<ISuccessResponse>;
   /** Send an email with a link the user can use verify their email address. */
   sendVerificationEmail?: Maybe<ISuccessResponse>;
+  /**
+   * Set or remove the scanner pass code for gate control on a tokenized product.
+   * Pass null to remove the pass code.
+   */
+  setEventScannerPassCode: IProduct;
   /** Set a new password for a specific user */
   setPassword: IUser;
   /** Set roles of a user */
@@ -1443,9 +1466,23 @@ export type IMutationAllocateWorkArgs = {
   worker?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type IMutationAuthenticateGateArgs = {
+  passCode: Scalars['String']['input'];
+};
+
 export type IMutationBookmarkArgs = {
   bookmarked?: InputMaybe<Scalars['Boolean']['input']>;
   productId: Scalars['ID']['input'];
+};
+
+export type IMutationCancelEventArgs = {
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
+  productId: Scalars['ID']['input'];
+};
+
+export type IMutationCancelTicketArgs = {
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
+  tokenId: Scalars['ID']['input'];
 };
 
 export type IMutationChangePasswordArgs = {
@@ -1861,6 +1898,11 @@ export type IMutationSendEnrollmentEmailArgs = {
 
 export type IMutationSendVerificationEmailArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IMutationSetEventScannerPassCodeArgs = {
+  passCode?: InputMaybe<Scalars['String']['input']>;
+  productId: Scalars['ID']['input'];
 };
 
 export type IMutationSetPasswordArgs = {
@@ -2835,6 +2877,11 @@ export type IQuery = {
   filtersCount: Scalars['Int']['output'];
   /** User impersonating currently logged in user */
   impersonator?: Maybe<IUser>;
+  /**
+   * Validates a scanner pass code for gate access. Pass code is read from the unchained_gate_passcode cookie (set via authenticateGate mutation).
+   * Optionally restricted to a specific product.
+   */
+  isPassCodeValid: Scalars['Boolean']['output'];
   /** Get a specific language */
   language?: Maybe<ILanguage>;
   /** Get all languages, by default sorted by creation date (ascending) */
@@ -2892,6 +2939,10 @@ export type IQuery = {
   searchProducts: IProductSearchResult;
   /** Get shop-global data and the resolved country/language pair */
   shopInfo: IShop;
+  /** List all ticket events (tokenized products), by default includes drafts */
+  ticketEvents: Array<IProduct>;
+  /** Returns total number of ticket events (tokenized products) */
+  ticketEventsCount: Scalars['Int']['output'];
   /** Get token */
   token?: Maybe<IToken>;
   /** Get all tokens */
@@ -3070,6 +3121,10 @@ export type IQueryFiltersCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type IQueryIsPassCodeValidArgs = {
+  productId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export type IQueryLanguageArgs = {
   languageId: Scalars['ID']['input'];
 };
@@ -3164,6 +3219,7 @@ export type IQueryProductsArgs = {
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  type?: InputMaybe<IProductType>;
 };
 
 export type IQueryProductsCountArgs = {
@@ -3171,6 +3227,7 @@ export type IQueryProductsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  type?: InputMaybe<IProductType>;
 };
 
 export type IQueryQuotationArgs = {
@@ -3201,6 +3258,21 @@ export type IQuerySearchProductsArgs = {
   ignoreChildAssortments?: InputMaybe<Scalars['Boolean']['input']>;
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   orderBy?: InputMaybe<ISearchOrderBy>;
+  queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IQueryTicketEventsArgs = {
+  includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  onlyInvalidateable?: InputMaybe<Scalars['Boolean']['input']>;
+  queryString?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<Array<ISortOptionInput>>;
+};
+
+export type IQueryTicketEventsCountArgs = {
+  includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
+  onlyInvalidateable?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3398,6 +3470,7 @@ export enum IRoleAction {
   DownloadFile = 'downloadFile',
   EnrollUser = 'enrollUser',
   ForgotPassword = 'forgotPassword',
+  GateControl = 'gateControl',
   Heartbeat = 'heartbeat',
   Impersonate = 'impersonate',
   LoginAsGuest = 'loginAsGuest',
@@ -3447,6 +3520,7 @@ export enum IRoleAction {
   UploadTempFile = 'uploadTempFile',
   UploadUserAvatar = 'uploadUserAvatar',
   UseWebAuthn = 'useWebAuthn',
+  ValidatePassCode = 'validatePassCode',
   VerifyEmail = 'verifyEmail',
   ViewAssortment = 'viewAssortment',
   ViewAssortments = 'viewAssortments',
@@ -3655,6 +3729,7 @@ export type IToken = {
   ercMetadata?: Maybe<Scalars['JSON']['output']>;
   expiryDate?: Maybe<Scalars['DateTimeISO']['output']>;
   invalidatedDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  isCanceled?: Maybe<Scalars['Boolean']['output']>;
   isInvalidateable: Scalars['Boolean']['output'];
   product: ITokenizedProduct;
   quantity: Scalars['Int']['output'];
@@ -3683,12 +3758,14 @@ export type ITokenizedProduct = IProduct & {
   contractConfiguration?: Maybe<IContractConfiguration>;
   contractStandard?: Maybe<ISmartContractStandard>;
   created?: Maybe<Scalars['DateTimeISO']['output']>;
+  isCanceled?: Maybe<Scalars['Boolean']['output']>;
   leveledCatalogPrices: Array<IPriceLevel>;
   media: Array<IProductMedia>;
   proxies: Array<IConfigurableOrBundleProduct>;
   published?: Maybe<Scalars['DateTimeISO']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
+  scannerPassCode?: Maybe<Scalars['String']['output']>;
   sequence: Scalars['Int']['output'];
   siblings: Array<IProduct>;
   simulatedPrice?: Maybe<IPrice>;
@@ -11744,6 +11821,7 @@ export type ITokenFragment = {
   ercMetadata?: any | null;
   accessKey: string;
   isInvalidateable: boolean;
+  isCanceled?: boolean | null;
 };
 
 export type ITokenFragmentVariables = Exact<{ [key: string]: never }>;
@@ -12195,6 +12273,7 @@ export type IExportTokenMutation = {
     ercMetadata?: any | null;
     accessKey: string;
     isInvalidateable: boolean;
+    isCanceled?: boolean | null;
   };
 };
 
@@ -12486,6 +12565,9 @@ export type IProductQuery = {
         >;
       }
     | {
+        tokensCount: number;
+        isCanceled?: boolean | null;
+        scannerPassCode?: string | null;
         _id: string;
         sequence: number;
         status: IProductStatus;
@@ -12499,6 +12581,39 @@ export type IProductQuery = {
           subtitle?: string | null;
           description?: string | null;
         } | null;
+        contractConfiguration?: {
+          ercMetadataProperties?: any | null;
+          supply: number;
+        } | null;
+        simulatedStocks?: Array<{ quantity?: number | null }> | null;
+        tokens: Array<{
+          _id: string;
+          tokenSerialNumber?: string | null;
+          isCanceled?: boolean | null;
+          invalidatedDate?: any | null;
+          isInvalidateable: boolean;
+          quantity: number;
+          status: ITokenExportStatus;
+          walletAddress?: string | null;
+          user?: {
+            _id: string;
+            username?: string | null;
+            isGuest: boolean;
+            primaryEmail?: { address: string; verified: boolean } | null;
+            avatar?: { _id: string; url?: string | null } | null;
+            profile?: {
+              displayName?: string | null;
+              address?: {
+                firstName?: string | null;
+                lastName?: string | null;
+              } | null;
+            } | null;
+            lastContact?: {
+              emailAddress?: string | null;
+              telNumber?: string | null;
+            } | null;
+          } | null;
+        }>;
         media: Array<{
           _id: string;
           tags?: Array<any> | null;
@@ -14863,6 +14978,7 @@ export type IUserTokensQuery = {
       ercMetadata?: any | null;
       accessKey: string;
       isInvalidateable: boolean;
+      isCanceled?: boolean | null;
       product: {
         _id: string;
         sequence: number;
@@ -15746,6 +15862,211 @@ export type IVerifyQuotationMutation = {
   };
 };
 
+export type ICancelEventMutationVariables = Exact<{
+  productId: Scalars['ID']['input'];
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type ICancelEventMutation = { cancelEvent: number };
+
+export type ICancelTicketMutationVariables = Exact<{
+  tokenId: Scalars['ID']['input'];
+  generateDiscount?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type ICancelTicketMutation = {
+  cancelTicket: {
+    _id: string;
+    isCanceled?: boolean | null;
+    invalidatedDate?: any | null;
+    isInvalidateable: boolean;
+    tokenSerialNumber?: string | null;
+  };
+};
+
+export type ICheckGateCookieQueryVariables = Exact<{ [key: string]: never }>;
+
+export type ICheckGateCookieQuery = { isPassCodeValid: boolean };
+
+export type ITicketEventsQueryVariables = Exact<{
+  queryString?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
+  forceLocale?: InputMaybe<Scalars['Locale']['input']>;
+}>;
+
+export type ITicketEventsQuery = {
+  ticketEventsCount: number;
+  ticketEvents: Array<
+    | {
+        _id: string;
+        status: IProductStatus;
+        tags?: Array<any> | null;
+        updated?: any | null;
+        published?: any | null;
+      }
+    | {
+        _id: string;
+        status: IProductStatus;
+        tags?: Array<any> | null;
+        updated?: any | null;
+        published?: any | null;
+      }
+    | {
+        _id: string;
+        status: IProductStatus;
+        tags?: Array<any> | null;
+        updated?: any | null;
+        published?: any | null;
+      }
+    | {
+        _id: string;
+        status: IProductStatus;
+        tags?: Array<any> | null;
+        updated?: any | null;
+        published?: any | null;
+      }
+    | {
+        tokensCount: number;
+        isCanceled?: boolean | null;
+        _id: string;
+        status: IProductStatus;
+        tags?: Array<any> | null;
+        updated?: any | null;
+        published?: any | null;
+        texts?: {
+          _id: string;
+          slug?: string | null;
+          title?: string | null;
+          subtitle?: string | null;
+          description?: string | null;
+        } | null;
+        media: Array<{
+          _id: string;
+          file?: { _id: string; url?: string | null; name: string } | null;
+        }>;
+        contractConfiguration?: {
+          ercMetadataProperties?: any | null;
+          supply: number;
+        } | null;
+        simulatedStocks?: Array<{ quantity?: number | null }> | null;
+      }
+  >;
+};
+
+export type IGateEventDetailQueryVariables = Exact<{
+  productId: Scalars['ID']['input'];
+}>;
+
+export type IGateEventDetailQuery = {
+  product?:
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | {
+        isCanceled?: boolean | null;
+        _id: string;
+        texts?: {
+          _id: string;
+          title?: string | null;
+          subtitle?: string | null;
+        } | null;
+        contractConfiguration?: {
+          ercMetadataProperties?: any | null;
+          supply: number;
+        } | null;
+        tokens: Array<{
+          _id: string;
+          tokenSerialNumber?: string | null;
+          isCanceled?: boolean | null;
+          invalidatedDate?: any | null;
+          isInvalidateable: boolean;
+          ercMetadata?: any | null;
+          user?: {
+            _id: string;
+            username?: string | null;
+            isGuest: boolean;
+            primaryEmail?: { address: string; verified: boolean } | null;
+            avatar?: { _id: string; url?: string | null } | null;
+            profile?: {
+              displayName?: string | null;
+              address?: {
+                firstName?: string | null;
+                lastName?: string | null;
+              } | null;
+            } | null;
+            lastContact?: {
+              emailAddress?: string | null;
+              telNumber?: string | null;
+            } | null;
+          } | null;
+        }>;
+      }
+    | null;
+};
+
+export type IGateEventsQueryVariables = Exact<{
+  onlyInvalidateable: Scalars['Boolean']['input'];
+}>;
+
+export type IGateEventsQuery = {
+  ticketEvents: Array<
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | { _id: string; status: IProductStatus }
+    | {
+        isCanceled?: boolean | null;
+        _id: string;
+        status: IProductStatus;
+        texts?: {
+          _id: string;
+          title?: string | null;
+          subtitle?: string | null;
+        } | null;
+        contractConfiguration?: {
+          ercMetadataProperties?: any | null;
+          supply: number;
+        } | null;
+        tokens: Array<{
+          _id: string;
+          tokenSerialNumber?: string | null;
+          isCanceled?: boolean | null;
+          invalidatedDate?: any | null;
+          isInvalidateable: boolean;
+        }>;
+      }
+  >;
+};
+
+export type IAuthenticateGateMutationVariables = Exact<{
+  passCode: Scalars['String']['input'];
+}>;
+
+export type IAuthenticateGateMutation = { authenticateGate: boolean };
+
+export type IDeauthenticateGateMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type IDeauthenticateGateMutation = { deauthenticateGate: boolean };
+
+export type ISetEventScannerPassCodeMutationVariables = Exact<{
+  productId: Scalars['ID']['input'];
+  passCode?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type ISetEventScannerPassCodeMutation = {
+  setEventScannerPassCode:
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | { _id: string }
+    | { scannerPassCode?: string | null; _id: string };
+};
+
 export type IInvalidateTokenMutationVariables = Exact<{
   tokenId: Scalars['ID']['input'];
 }>;
@@ -15764,6 +16085,7 @@ export type IInvalidateTokenMutation = {
     ercMetadata?: any | null;
     accessKey: string;
     isInvalidateable: boolean;
+    isCanceled?: boolean | null;
   };
 };
 
@@ -15786,6 +16108,7 @@ export type ITokenQuery = {
     ercMetadata?: any | null;
     accessKey: string;
     isInvalidateable: boolean;
+    isCanceled?: boolean | null;
     product: {
       _id: string;
       sequence: number;
@@ -15855,6 +16178,7 @@ export type ITokensQuery = {
     ercMetadata?: any | null;
     accessKey: string;
     isInvalidateable: boolean;
+    isCanceled?: boolean | null;
     product: {
       _id: string;
       sequence: number;

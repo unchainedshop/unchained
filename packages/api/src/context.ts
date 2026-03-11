@@ -37,9 +37,22 @@ export interface AdminUiConfig {
   defaultUserTags?: string[];
 }
 
+export interface CookieOptions {
+  domain?: string;
+  path?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+  sameSite?: 'strict' | 'lax' | 'none' | boolean;
+  maxAge?: number;
+  expires?: Date;
+}
+
 export interface UnchainedHTTPServerContext {
   setHeader: (key: string, value: string) => void;
   getHeader: (key: string) => string;
+  getCookie: (name: string) => string | undefined;
+  setCookie: (name: string, value: string, options: CookieOptions) => void;
+  clearCookie: (name: string, options: CookieOptions) => void;
   remoteAddress?: string;
   remotePort?: number;
 }
@@ -75,6 +88,9 @@ export const createContextResolver =
   async ({
     getHeader,
     setHeader,
+    getCookie,
+    setCookie,
+    clearCookie,
     remoteAddress,
     remotePort,
     userId,
@@ -84,7 +100,15 @@ export const createContextResolver =
     login,
     logout,
   }) => {
-    const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
+    const abstractHttpServerContext = {
+      remoteAddress,
+      remotePort,
+      getHeader,
+      setHeader,
+      getCookie,
+      setCookie,
+      clearCookie,
+    };
     const loaders = instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
 

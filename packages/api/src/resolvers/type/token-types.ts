@@ -36,6 +36,10 @@ export const Token = {
     return services.warehousing.isTokenInvalidateable({ token });
   },
 
+  isCanceled: async (token: TokenSurrogate) => {
+    return Boolean(token.meta?.cancelled);
+  },
+
   accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
     const { modules } = requestContext;
     await checkAction(requestContext, actions.updateToken, [undefined, { tokenId: token._id }]);

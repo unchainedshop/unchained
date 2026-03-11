@@ -52,18 +52,35 @@ export const TokenizedProduct = {
     });
   },
 
+  isCanceled(product: Product): boolean {
+    return Boolean(product.meta?.cancelled);
+  },
+
   async tokens(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    try {
+      await checkAction(requestContext, actions.viewTokens, [product, params]);
+    } catch {
+      return [];
+    }
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,
     });
     return tokens;
   },
   async tokensCount(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+    try {
+      await checkAction(requestContext, actions.viewTokens, [product, params]);
+    } catch {
+      return 0;
+    }
     return requestContext.modules.warehousing.tokensCount({
       productId: product._id,
     });
+  },
+
+  async scannerPassCode(product: Product, params: never, requestContext: Context) {
+    await checkAction(requestContext, actions.manageProducts, [undefined, params]);
+    return (product.meta as Record<string, any>)?.scannerPassCode || null;
   },
 };
 

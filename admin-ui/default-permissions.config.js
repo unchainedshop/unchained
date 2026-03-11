@@ -58,6 +58,7 @@ module.exports = () => {
     '/verify-email': 'UNRESTRICTED',
     '/oauth': 'UNRESTRICTED',
     '/external': 'UNRESTRICTED',
+    '/ticketing/gate': 'UNRESTRICTED',
     '/orders/[orderId]': 'viewOrders',
     '/orders': 'viewOrders',
     '/quotations': 'viewQuotations',
@@ -79,6 +80,7 @@ module.exports = () => {
     '/verify-email',
     '/403',
     '/external',
+    '/ticketing/gate',
   ];
 
   const OnlyPublicPages = [

@@ -37,6 +37,7 @@
     "@unchainedshop/api": "^4.6.0",
     "@unchainedshop/core": "^4.6.0",
     "@unchainedshop/core-files": "^4.6.0",
+    "@unchainedshop/core-orders": "^4.6.0",
     "@unchainedshop/core-warehousing": "^4.6.0",
     "@unchainedshop/core-worker": "^4.6.0",
     "@unchainedshop/events": "^4.6.0",

@@ -8,14 +8,22 @@ import type { File } from '@unchainedshop/core-files';
 
 import { RendererTypes, getRenderer } from './template-registry.ts';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.ts';
+import { type DiscountCodeHandlers, createDefaultDiscountCodeHandlers } from './discount-codes.ts';
+import { OrdersCollection, OrderStatus } from '@unchainedshop/core-orders';
 
 export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';
 
 const logger = createLogger('unchained:apple-wallet-webservice');
 
-const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
+export interface TicketingOptions {
+  discountCode?: DiscountCodeHandlers;
+}
+
+const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) => {
+  const discountCodeHandlers = options?.discountCode || createDefaultDiscountCodeHandlers();
   const MediaObjects = await MediaObjectsCollection(db);
   const TokenSurrogates = await TokenSurrogateCollection(db);
+  const Orders = await OrdersCollection(db);
 
   await buildDbIndexes(TokenSurrogates as any, [
     { index: { 'meta.cancelled': 1 }, options: { sparse: true } },
@@ -224,6 +232,61 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     }
     return TokenSurrogates.countDocuments(selector);
   };
+  const discountCodeUsageBalance = async (discountCode: string): Promise<number> => {
+    const orders = await Orders.aggregate([
+      {
+        $match: {
+          status: {
+            $in: [OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'order_discounts',
+          localField: 'calculation.discountId',
+          foreignField: '_id',
+          as: 'discounts',
+        },
+      },
+      {
+        $unwind: '$discounts',
+      },
+      {
+        $match: { 'discounts.code': discountCode },
+      },
+      {
+        $project: {
+          calculations: {
+            $filter: {
+              input: '$calculation',
+              as: 'calc',
+              cond: {
+                $and: [
+                  { $eq: ['$$calc.category', 'DISCOUNTS'] },
+                  { $eq: ['$$calc.discountId', '$discounts._id'] },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ]).toArray();
+
+    return Math.round(
+      Math.abs(
+        orders.reduce((prev, { calculations }) => {
+          return (
+            prev +
+            (calculations as any[]).reduce(
+              (p: number, { amount }: { amount: number }) => p + amount / 100,
+              0,
+            )
+          );
+        }, 0),
+      ),
+    );
+  };
 
   return {
     upsertAppleWalletPass,
@@ -237,6 +300,9 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     cancelTicket,
     isTicketCancelled,
     getTicketsCreated,
+    generateDiscountCode: discountCodeHandlers.generate,
+    verifyDiscountCode: discountCodeHandlers.verify,
+    discountCodeUsageBalance,
   };
 };
 
