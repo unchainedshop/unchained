@@ -211,7 +211,6 @@ export default function initServices(modules: Modules, customServices: CustomSer
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
       resolveTokenStatus: resolveTokenStatusService as Bound<typeof resolveTokenStatusService>,
       isTokenInvalidateable: isTokenInvalidateableService as Bound<typeof isTokenInvalidateableService>,
-      onTokenInvalidated: onTokenInvalidatedService as Bound<typeof onTokenInvalidatedService>,
     },
     worker: {
       addMessage: addMessageService as Bound<typeof addMessageService>,

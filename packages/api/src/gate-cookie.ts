@@ -14,11 +14,11 @@ export const GATE_COOKIE_MAX_AGE = parseInt(UNCHAINED_GATE_COOKIE_MAX_AGE_SECOND
 
 const resolveSameSite = (): CookieOptions['sameSite'] =>
   (
-    {
+    ({
       none: 'none',
       lax: 'lax',
       strict: 'strict',
-    } as Record<string, 'none' | 'lax' | 'strict'>
+    }) as Record<string, 'none' | 'lax' | 'strict'>
   )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || 'lax';
 
 export function getGateCookieOptions(maxAge?: number): CookieOptions {
