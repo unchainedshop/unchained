@@ -62,6 +62,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
     req.session.userId = user._id;
     req.session.impersonatorId = impersonator?._id;
+    await req.session.save();
 
     const tokenObject = {
       _id: req.session.sessionId,
@@ -82,6 +83,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     };
     req.session.userId = null;
     req.session.impersonatorId = null;
+    await req.session.save();
     await emit(API_EVENTS.API_LOGOUT, tokenObject);
     return true;
   };
@@ -183,6 +185,8 @@ export const connect = (
   fastify.register(fastifySession as any, {
     secret: process.env.UNCHAINED_TOKEN_SECRET,
     cookieName,
+    rolling: false,
+    saveUninitialized: false,
     store: MongoStore.create({
       client: (db as any).client,
       dbName: db.databaseName,
