@@ -492,6 +492,11 @@ export default [
       eventsCount(types: [String!], queryString: String, created: DateFilterInput): Int!
 
       """
+      Get all registered event types
+      """
+      registeredEventTypes: [String!]!
+
+      """
       Determines if a token is valid/active for reset password
       """
       validateResetPasswordToken(token: String!): Boolean!

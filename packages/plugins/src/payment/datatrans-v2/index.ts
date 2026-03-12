@@ -70,13 +70,15 @@ const getMarketplaceSplits = async ({
   });
 
   const { amount: total } = pricing.total({ useNetPrice: false });
+  const roundedTotal = Math.round(total);
 
-  return Promise.all(
+  const splits = await Promise.all(
     config
       .filter((item) => item.key === 'marketplaceSplit')
       .map((item) => {
-        const [subMerchantId, staticDiscountId, sharePercentage] =
-          item.value || ''.split(';').map((f) => f.trim());
+        const [subMerchantId, staticDiscountId, sharePercentage] = (item.value || '')
+          .split(';')
+          .map((f) => f.trim());
 
         const { amount: discountSum } = pricingForOrderPayment.total({
           category: PaymentPricingRowCategory.Discount,
@@ -93,6 +95,17 @@ const getMarketplaceSplits = async ({
         };
       }),
   );
+
+  // Fix rounding: adjust last split so sum equals total
+  if (splits.length > 0) {
+    const currentSum = splits.reduce((sum, split) => sum + split.amount, 0);
+    const difference = roundedTotal - currentSum;
+    if (difference !== 0) {
+      splits[splits.length - 1].amount += difference;
+    }
+  }
+
+  return splits;
 };
 
 const Datatrans: IPaymentAdapter = {

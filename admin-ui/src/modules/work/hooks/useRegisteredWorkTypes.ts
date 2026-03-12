@@ -1,25 +1,21 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { IWorkTypesQuery, IWorkTypesQueryVariables } from '../../../gql/types';
 
-const WorkTypesQuery = gql`
-  query WorkTypes {
-    registeredWorkTypes: __type(name: "WorkType") {
-      options: enumValues {
-        value: name
-        label: name
-      }
-    }
+const ActiveWorkTypesQuery = gql`
+  query ActiveWorkTypes {
+    activeWorkTypes
   }
 `;
 
 const useRegisteredWorkTypes = () => {
-  const { data, loading, error } = useQuery<
-    IWorkTypesQuery,
-    IWorkTypesQueryVariables
-  >(WorkTypesQuery);
+  const { data, loading, error } = useQuery<{
+    activeWorkTypes: string[];
+  }>(ActiveWorkTypesQuery);
 
-  const workTypes = data?.registeredWorkTypes?.options || [];
+  const workTypes = (data?.activeWorkTypes || []).map((type) => ({
+    value: type,
+    label: type,
+  }));
 
   return {
     workTypes,

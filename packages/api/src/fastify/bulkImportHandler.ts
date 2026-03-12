@@ -52,9 +52,10 @@ const bulkImportHandler: RouteHandlerMethod = async (
     res.status(200);
     return res.send(work);
   } catch (e) {
-    logger.error(e);
+    logger.error(e.message);
     res.status(503);
-    return res.send({ name: e.name, code: e.code, message: e.message });
+    const cause = e.cause?.issues || e.cause;
+    return res.send({ name: e.name, code: e.code, message: e.message, cause });
   }
 };
 

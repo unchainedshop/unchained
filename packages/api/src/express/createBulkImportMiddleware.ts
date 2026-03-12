@@ -58,8 +58,9 @@ export default async function bulkImportMiddleware(
 
     res.status(200).send(work);
   } catch (e) {
-    logger.error(e);
-    res.status(503).send({ name: e.name, code: e.code, message: e.message });
+    logger.error(e.message);
+    const cause = e.cause?.issues || e.cause;
+    res.status(503).send({ name: e.name, code: e.code, message: e.message, cause });
     return;
   }
 }

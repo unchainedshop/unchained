@@ -3,9 +3,9 @@ import type { Context } from '../../../context.ts';
 import type { Work } from '@unchainedshop/core-worker';
 
 export default async function addWork(root: never, workData: Work, { modules, userId }: Context) {
-  const { type, input } = workData;
+  const { type, priority, retries, worker } = workData;
 
-  log(`mutation addWork ${type} ${JSON.stringify(input)}`, { userId });
+  log(`mutation addWork ${type}`, { userId, priority, retries, worker });
 
   return modules.worker.addWork(workData);
 }

@@ -9,7 +9,7 @@ import { ProductType } from '@unchainedshop/core-products';
 
 export const ProductCreateSpecificationSchema = z.object({
   type: z.enum(ProductType),
-  sequence: z.number(),
+  sequence: z.optional(z.number()),
   status: z.nullish(z.string()), // or null!
   published: z.nullish(z.iso.datetime()), // or null!
   tags: z.optional(z.array(z.string())),
@@ -91,6 +91,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
     content, // eslint-disable-line
     supply,
     warehousing,
+    sequence,
     ...productData
   } = specification;
 
@@ -104,6 +105,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
     warehousing,
     supply,
     proxy,
+    ...(sequence != null && { sequence }),
   };
 };
 

@@ -1,28 +1,21 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import {
-  IEventsTypeQuery,
-  IEventsTypeQueryVariables,
-} from '../../../gql/types';
 
-const EventsTypeQuery = gql`
-  query EventsType {
-    eventTypes: __type(name: "EventType") {
-      options: enumValues {
-        value: name
-        label: name
-      }
-    }
+const RegisteredEventTypesQuery = gql`
+  query RegisteredEventTypes {
+    registeredEventTypes
   }
 `;
 
 const useEventTypes = () => {
-  const { data, loading, error } = useQuery<
-    IEventsTypeQuery,
-    IEventsTypeQueryVariables
-  >(EventsTypeQuery);
+  const { data, loading, error } = useQuery<{
+    registeredEventTypes: string[];
+  }>(RegisteredEventTypesQuery);
 
-  const eventsType = data?.eventTypes?.options || [];
+  const eventsType = (data?.registeredEventTypes || []).map((type) => ({
+    value: type,
+    label: type,
+  }));
 
   return {
     eventsType,

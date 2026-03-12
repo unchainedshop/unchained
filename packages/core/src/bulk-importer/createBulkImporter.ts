@@ -100,9 +100,12 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
             fn.payloadSchema.parse(event.payload);
           }
         } catch (e) {
-          throw new Error(`🤧 ${entity}.${operation}.${event.payload?._id || '*'} (${e.message})`, {
-            cause: e,
-          });
+          const prefix = `🤧 ${entity}.${operation}.${event.payload?._id || '*'}`;
+          if (e.issues) {
+            const summary = e.issues.map((issue) => issue.message).join(', ');
+            throw new Error(`${prefix} (${summary})`, { cause: e });
+          }
+          throw new Error(`${prefix} (${e.message})`, { cause: e });
         }
       },
       prepare: async (event, unchainedAPI: { modules: Modules; services: Services }) => {
